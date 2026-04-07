@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 360" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow2" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="620" height="360" rx="16" fill="#fafafa" stroke="#e5e7eb" stroke-width="1.5"/>
+
+  <!-- Title -->
+  <text x="310" y="32" text-anchor="middle" font-size="16" font-weight="700" fill="#1e293b">A Single Neuron with 4 Inputs</text>
+
+  <!-- Input nodes -->
+  <circle cx="75" cy="80" r="28" fill="#e0e7ff" stroke="#6366f1" stroke-width="2"/>
+  <text x="75" y="85" text-anchor="middle" font-size="14" font-weight="600" fill="#3730a3">X₁</text>
+
+  <circle cx="75" cy="150" r="28" fill="#e0e7ff" stroke="#6366f1" stroke-width="2"/>
+  <text x="75" y="155" text-anchor="middle" font-size="14" font-weight="600" fill="#3730a3">X₂</text>
+
+  <circle cx="75" cy="220" r="28" fill="#e0e7ff" stroke="#6366f1" stroke-width="2"/>
+  <text x="75" y="225" text-anchor="middle" font-size="14" font-weight="600" fill="#3730a3">X₃</text>
+
+  <circle cx="75" cy="290" r="28" fill="#e0e7ff" stroke="#6366f1" stroke-width="2"/>
+  <text x="75" y="295" text-anchor="middle" font-size="14" font-weight="600" fill="#3730a3">X₄</text>
+
+  <!-- Neuron -->
+  <circle cx="330" cy="185" r="50" fill="#fef3c7" stroke="#f59e0b" stroke-width="2.5"/>
+  <text x="330" y="180" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">Σ + b</text>
+  <text x="330" y="198" text-anchor="middle" font-size="11" fill="#92400e">Neuron</text>
+
+  <!-- Connections with weight labels -->
+  <line x1="103" y1="80" x2="280" y2="168" stroke="#6366f1" stroke-width="1.8" marker-end="url(#arrow2)"/>
+  <text x="175" y="108" font-size="12" fill="#4f46e5" font-weight="600">W₁</text>
+
+  <line x1="103" y1="150" x2="280" y2="178" stroke="#6366f1" stroke-width="1.8" marker-end="url(#arrow2)"/>
+  <text x="185" y="156" font-size="12" fill="#4f46e5" font-weight="600">W₂</text>
+
+  <line x1="103" y1="220" x2="280" y2="192" stroke="#6366f1" stroke-width="1.8" marker-end="url(#arrow2)"/>
+  <text x="185" y="218" font-size="12" fill="#4f46e5" font-weight="600">W₃</text>
+
+  <line x1="103" y1="290" x2="280" y2="202" stroke="#6366f1" stroke-width="1.8" marker-end="url(#arrow2)"/>
+  <text x="175" y="268" font-size="12" fill="#4f46e5" font-weight="600">W₄</text>
+
+  <!-- Bias arrow from top -->
+  <line x1="330" y1="60" x2="330" y2="135" stroke="#10b981" stroke-width="1.8" stroke-dasharray="5,3" marker-end="url(#arrow2)"/>
+  <text x="347" y="75" font-size="12" fill="#059669" font-weight="600">b</text>
+
+  <!-- Output -->
+  <line x1="380" y1="185" x2="490" y2="185" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow2)"/>
+  <rect x="490" y="163" width="100" height="44" rx="10" fill="#fef9c3" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="540" y="190" text-anchor="middle" font-size="13" font-weight="600" fill="#92400e">Output</text>
+
+  <!-- Formula at the bottom -->
+  <text x="310" y="345" text-anchor="middle" font-size="13" fill="#475569">Output = X₁·W₁ + X₂·W₂ + X₃·W₃ + X₄·W₄ + b</text>
+</svg>

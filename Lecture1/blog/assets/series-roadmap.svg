@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 300" font-family="Segoe UI, Arial, sans-serif">
+  <!-- Background -->
+  <rect width="740" height="300" rx="16" fill="#fafafa" stroke="#e5e7eb" stroke-width="1.5"/>
+
+  <!-- Title -->
+  <text x="370" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">Series Roadmap — Neural Networks from Scratch</text>
+
+  <!-- Timeline line -->
+  <line x1="50" y1="72" x2="690" y2="72" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Node 1 - CURRENT -->
+  <circle cx="95" cy="72" r="14" fill="#6366f1" stroke="#4f46e5" stroke-width="2"/>
+  <text x="95" y="77" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">1</text>
+  <rect x="45" y="95" width="100" height="48" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="95" y="113" text-anchor="middle" font-size="10" font-weight="600" fill="#3730a3">Neurons &amp;</text>
+  <text x="95" y="130" text-anchor="middle" font-size="10" font-weight="600" fill="#3730a3">Layers</text>
+  <text x="95" y="160" text-anchor="middle" font-size="9" fill="#6366f1" font-weight="700">← YOU ARE HERE</text>
+
+  <!-- Node 2 -->
+  <circle cx="215" cy="72" r="14" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+  <text x="215" y="77" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">2</text>
+  <rect x="165" y="95" width="100" height="48" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+  <text x="215" y="113" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">Activation</text>
+  <text x="215" y="130" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">Functions</text>
+
+  <!-- Node 3 -->
+  <circle cx="335" cy="72" r="14" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+  <text x="335" y="77" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">3</text>
+  <rect x="285" y="95" width="100" height="48" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+  <text x="335" y="113" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">Loss</text>
+  <text x="335" y="130" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">Functions</text>
+
+  <!-- Node 4 -->
+  <circle cx="455" cy="72" r="14" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+  <text x="455" y="77" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">4</text>
+  <rect x="405" y="95" width="100" height="48" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+  <text x="455" y="113" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">Optimization &amp;</text>
+  <text x="455" y="130" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">Gradients</text>
+
+  <!-- Node 5 -->
+  <circle cx="575" cy="72" r="14" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+  <text x="575" y="77" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">5</text>
+  <rect x="525" y="95" width="100" height="48" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+  <text x="575" y="113" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">Back-</text>
+  <text x="575" y="130" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">propagation</text>
+
+  <!-- Node 6 -->
+  <circle cx="690" cy="72" r="14" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+  <text x="690" y="77" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">6+</text>
+  <rect x="640" y="95" width="100" height="48" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+  <text x="690" y="113" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">Training,</text>
+  <text x="690" y="130" text-anchor="middle" font-size="10" font-weight="600" fill="#475569">Regularization</text>
+
+  <!-- Bottom topics row -->
+  <rect x="40" y="185" width="660" height="95" rx="10" fill="#fff" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="370" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b">Full Series Covers</text>
+  <text x="180" y="235" text-anchor="middle" font-size="10" fill="#64748b">• Neurons &amp; Layers</text>
+  <text x="180" y="253" text-anchor="middle" font-size="10" fill="#64748b">• Activation Functions (ReLU, Softmax)</text>
+  <text x="180" y="271" text-anchor="middle" font-size="10" fill="#64748b">• Loss Functions</text>
+  <text x="480" y="235" text-anchor="middle" font-size="10" fill="#64748b">• Backpropagation</text>
+  <text x="480" y="253" text-anchor="middle" font-size="10" fill="#64748b">• L1/L2 Regularization, Dropout</text>
+  <text x="480" y="271" text-anchor="middle" font-size="10" fill="#64748b">• Real-life Examples from Scratch</text>
+</svg>

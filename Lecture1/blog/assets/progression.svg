@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 280" font-family="Segoe UI, Arial, sans-serif">
+  <!-- Background -->
+  <rect width="700" height="280" rx="16" fill="#fafafa" stroke="#e5e7eb" stroke-width="1.5"/>
+
+  <!-- Title -->
+  <text x="350" y="30" text-anchor="middle" font-size="16" font-weight="700" fill="#1e293b">From Manual Code → Loops → NumPy</text>
+
+  <!-- Box 1: Manual -->
+  <rect x="20" y="55" width="200" height="200" rx="12" fill="#fce7f3" stroke="#ec4899" stroke-width="2"/>
+  <text x="120" y="80" text-anchor="middle" font-size="13" font-weight="700" fill="#9d174d">Manual</text>
+  <text x="120" y="105" text-anchor="middle" font-size="10" fill="#9d174d" font-family="Consolas, monospace">inputs[0]*weights[0]</text>
+  <text x="120" y="120" text-anchor="middle" font-size="10" fill="#9d174d" font-family="Consolas, monospace">+ inputs[1]*weights[1]</text>
+  <text x="120" y="135" text-anchor="middle" font-size="10" fill="#9d174d" font-family="Consolas, monospace">+ inputs[2]*weights[2]</text>
+  <text x="120" y="150" text-anchor="middle" font-size="10" fill="#9d174d" font-family="Consolas, monospace">+ inputs[3]*weights[3]</text>
+  <text x="120" y="165" text-anchor="middle" font-size="10" fill="#9d174d" font-family="Consolas, monospace">+ bias</text>
+  <text x="120" y="200" text-anchor="middle" font-size="10" fill="#be185d">✗ Hardcoded</text>
+  <text x="120" y="218" text-anchor="middle" font-size="10" fill="#be185d">✗ Doesn't scale</text>
+  <text x="120" y="236" text-anchor="middle" font-size="10" fill="#be185d">✗ Repetitive</text>
+
+  <!-- Arrow 1 -->
+  <text x="245" y="155" text-anchor="middle" font-size="24" fill="#6366f1">→</text>
+
+  <!-- Box 2: Loop -->
+  <rect x="260" y="55" width="175" height="200" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+  <text x="347" y="80" text-anchor="middle" font-size="13" font-weight="700" fill="#92400e">Loops</text>
+  <text x="347" y="105" text-anchor="middle" font-size="10" fill="#92400e" font-family="Consolas, monospace">for w, b in</text>
+  <text x="347" y="120" text-anchor="middle" font-size="10" fill="#92400e" font-family="Consolas, monospace">  zip(weights, biases):</text>
+  <text x="347" y="140" text-anchor="middle" font-size="10" fill="#92400e" font-family="Consolas, monospace">  for x, wi in</text>
+  <text x="347" y="155" text-anchor="middle" font-size="10" fill="#92400e" font-family="Consolas, monospace">    zip(inputs, w):</text>
+  <text x="347" y="170" text-anchor="middle" font-size="10" fill="#92400e" font-family="Consolas, monospace">    out += x * wi</text>
+  <text x="347" y="200" text-anchor="middle" font-size="10" fill="#b45309">✓ Scalable</text>
+  <text x="347" y="218" text-anchor="middle" font-size="10" fill="#b45309">✓ Clean code</text>
+  <text x="347" y="236" text-anchor="middle" font-size="10" fill="#b45309">✗ Still slow</text>
+
+  <!-- Arrow 2 -->
+  <text x="460" y="155" text-anchor="middle" font-size="24" fill="#6366f1">→</text>
+
+  <!-- Box 3: NumPy -->
+  <rect x="480" y="55" width="200" height="200" rx="12" fill="#d1fae5" stroke="#10b981" stroke-width="2"/>
+  <text x="580" y="80" text-anchor="middle" font-size="13" font-weight="700" fill="#065f46">NumPy</text>
+  <text x="580" y="115" text-anchor="middle" font-size="10" fill="#065f46" font-family="Consolas, monospace">np.dot(weights,</text>
+  <text x="580" y="132" text-anchor="middle" font-size="10" fill="#065f46" font-family="Consolas, monospace">       inputs)</text>
+  <text x="580" y="149" text-anchor="middle" font-size="10" fill="#065f46" font-family="Consolas, monospace">+ biases</text>
+  <text x="580" y="200" text-anchor="middle" font-size="10" fill="#047857">✓ Scalable</text>
+  <text x="580" y="218" text-anchor="middle" font-size="10" fill="#047857">✓ Clean &amp; concise</text>
+  <text x="580" y="236" text-anchor="middle" font-size="10" fill="#047857">✓ Fast (vectorized)</text>
+</svg>

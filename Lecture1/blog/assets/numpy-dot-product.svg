@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 260" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrowD" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="680" height="260" rx="16" fill="#fafafa" stroke="#e5e7eb" stroke-width="1.5"/>
+
+  <!-- Title -->
+  <text x="340" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">NumPy Dot Product — How It Works</text>
+
+  <!-- Single neuron case -->
+  <rect x="20" y="50" width="300" height="190" rx="12" fill="#eff6ff" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="170" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#3730a3">Single Neuron (1D · 1D)</text>
+
+  <text x="40" y="105" font-size="11" fill="#3730a3" font-family="Consolas, monospace">weights = [0.2, 0.8, -0.5, 1.0]</text>
+  <text x="40" y="125" font-size="11" fill="#3730a3" font-family="Consolas, monospace">inputs  = [1.0, 2.0, 3.0, 2.5]</text>
+
+  <text x="40" y="155" font-size="11" fill="#1e40af" font-family="Consolas, monospace">np.dot(weights, inputs)</text>
+  <text x="40" y="175" font-size="11" fill="#475569">= 0.2×1 + 0.8×2 + (-0.5)×3 + 1×2.5</text>
+  <text x="40" y="195" font-size="11" fill="#475569">= 0.2 + 1.6 − 1.5 + 2.5</text>
+  <text x="40" y="215" font-size="13" fill="#1e293b" font-weight="700">= 2.8</text>
+  <text x="170" y="235" text-anchor="middle" font-size="10" fill="#64748b">→ scalar output</text>
+
+  <!-- Layer case -->
+  <rect x="350" y="50" width="310" height="190" rx="12" fill="#f0fdf4" stroke="#10b981" stroke-width="1.5"/>
+  <text x="505" y="75" text-anchor="middle" font-size="13" font-weight="700" fill="#065f46">Layer (2D · 1D)</text>
+
+  <text x="370" y="105" font-size="11" fill="#065f46" font-family="Consolas, monospace">weights = [[0.2, 0.8, -0.5, 1],</text>
+  <text x="370" y="120" font-size="11" fill="#065f46" font-family="Consolas, monospace">           [0.5, -0.91, 0.26, -0.5],</text>
+  <text x="370" y="135" font-size="11" fill="#065f46" font-family="Consolas, monospace">           [-0.26, -0.27, 0.17, 0.87]]</text>
+
+  <text x="370" y="162" font-size="11" fill="#047857" font-family="Consolas, monospace">np.dot(weights, inputs)</text>
+  <text x="370" y="182" font-size="11" fill="#475569">row 1 · inputs → 2.8</text>
+  <text x="370" y="198" font-size="11" fill="#475569">row 2 · inputs → -1.79</text>
+  <text x="370" y="214" font-size="11" fill="#475569">row 3 · inputs → 1.885</text>
+  <text x="505" y="235" text-anchor="middle" font-size="10" fill="#64748b">→ vector output (one per neuron)</text>
+</svg>

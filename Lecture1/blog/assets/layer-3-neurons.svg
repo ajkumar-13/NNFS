@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 480" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow3" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1"/>
+    </marker>
+    <marker id="arrowG" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#10b981"/>
+    </marker>
+    <marker id="arrowR" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#ec4899"/>
+    </marker>
+    <marker id="arrowO" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#f59e0b"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="760" height="480" rx="16" fill="#fafafa" stroke="#e5e7eb" stroke-width="1.5"/>
+
+  <!-- Title -->
+  <text x="380" y="32" text-anchor="middle" font-size="16" font-weight="700" fill="#1e293b">A Layer of 3 Neurons with 4 Inputs</text>
+
+  <!-- INPUT NODES -->
+  <circle cx="70" cy="100" r="28" fill="#e0e7ff" stroke="#6366f1" stroke-width="2"/>
+  <text x="70" y="105" text-anchor="middle" font-size="14" font-weight="600" fill="#3730a3">X₁</text>
+
+  <circle cx="70" cy="190" r="28" fill="#e0e7ff" stroke="#6366f1" stroke-width="2"/>
+  <text x="70" y="195" text-anchor="middle" font-size="14" font-weight="600" fill="#3730a3">X₂</text>
+
+  <circle cx="70" cy="280" r="28" fill="#e0e7ff" stroke="#6366f1" stroke-width="2"/>
+  <text x="70" y="285" text-anchor="middle" font-size="14" font-weight="600" fill="#3730a3">X₃</text>
+
+  <circle cx="70" cy="370" r="28" fill="#e0e7ff" stroke="#6366f1" stroke-width="2"/>
+  <text x="70" y="375" text-anchor="middle" font-size="14" font-weight="600" fill="#3730a3">X₄</text>
+
+  <!-- NEURON 1 (top) -->
+  <circle cx="380" cy="100" r="42" fill="#fce7f3" stroke="#ec4899" stroke-width="2.5"/>
+  <text x="380" y="95" text-anchor="middle" font-size="12" font-weight="600" fill="#9d174d">Σ + b₁</text>
+  <text x="380" y="112" text-anchor="middle" font-size="10" fill="#9d174d">Neuron 1</text>
+
+  <!-- NEURON 2 (middle) -->
+  <circle cx="380" cy="235" r="42" fill="#d1fae5" stroke="#10b981" stroke-width="2.5"/>
+  <text x="380" y="230" text-anchor="middle" font-size="12" font-weight="600" fill="#065f46">Σ + b₂</text>
+  <text x="380" y="247" text-anchor="middle" font-size="10" fill="#065f46">Neuron 2</text>
+
+  <!-- NEURON 3 (bottom) -->
+  <circle cx="380" cy="370" r="42" fill="#fef3c7" stroke="#f59e0b" stroke-width="2.5"/>
+  <text x="380" y="365" text-anchor="middle" font-size="12" font-weight="600" fill="#92400e">Σ + b₃</text>
+  <text x="380" y="382" text-anchor="middle" font-size="10" fill="#92400e">Neuron 3</text>
+
+  <!-- CONNECTIONS TO NEURON 1 (pink) -->
+  <line x1="98" y1="100" x2="338" y2="100" stroke="#ec4899" stroke-width="1.3" marker-end="url(#arrowR)" opacity="0.6"/>
+  <line x1="98" y1="190" x2="340" y2="115" stroke="#ec4899" stroke-width="1.3" marker-end="url(#arrowR)" opacity="0.6"/>
+  <line x1="98" y1="280" x2="343" y2="128" stroke="#ec4899" stroke-width="1.3" marker-end="url(#arrowR)" opacity="0.6"/>
+  <line x1="98" y1="370" x2="345" y2="135" stroke="#ec4899" stroke-width="1.3" marker-end="url(#arrowR)" opacity="0.6"/>
+
+  <!-- CONNECTIONS TO NEURON 2 (green) -->
+  <line x1="98" y1="100" x2="340" y2="218" stroke="#10b981" stroke-width="1.3" marker-end="url(#arrowG)" opacity="0.6"/>
+  <line x1="98" y1="190" x2="338" y2="228" stroke="#10b981" stroke-width="1.3" marker-end="url(#arrowG)" opacity="0.6"/>
+  <line x1="98" y1="280" x2="338" y2="242" stroke="#10b981" stroke-width="1.3" marker-end="url(#arrowG)" opacity="0.6"/>
+  <line x1="98" y1="370" x2="340" y2="255" stroke="#10b981" stroke-width="1.3" marker-end="url(#arrowG)" opacity="0.6"/>
+
+  <!-- CONNECTIONS TO NEURON 3 (amber) -->
+  <line x1="98" y1="100" x2="345" y2="340" stroke="#f59e0b" stroke-width="1.3" marker-end="url(#arrowO)" opacity="0.6"/>
+  <line x1="98" y1="190" x2="343" y2="348" stroke="#f59e0b" stroke-width="1.3" marker-end="url(#arrowO)" opacity="0.6"/>
+  <line x1="98" y1="280" x2="340" y2="358" stroke="#f59e0b" stroke-width="1.3" marker-end="url(#arrowO)" opacity="0.6"/>
+  <line x1="98" y1="370" x2="338" y2="370" stroke="#f59e0b" stroke-width="1.3" marker-end="url(#arrowO)" opacity="0.6"/>
+
+  <!-- Weight labels for Neuron 1 -->
+  <text x="200" y="88" font-size="10" fill="#ec4899" font-weight="600">w₁₁</text>
+  <text x="210" y="140" font-size="10" fill="#ec4899" font-weight="600">w₁₂</text>
+  <text x="218" y="184" font-size="10" fill="#ec4899" font-weight="600">w₁₃</text>
+  <text x="225" y="222" font-size="10" fill="#ec4899" font-weight="600">w₁₄</text>
+
+  <!-- Weight labels for Neuron 2 -->
+  <text x="195" y="148" font-size="10" fill="#10b981" font-weight="600">w₂₁</text>
+  <text x="200" y="200" font-size="10" fill="#10b981" font-weight="600">w₂₂</text>
+  <text x="200" y="256" font-size="10" fill="#10b981" font-weight="600">w₂₃</text>
+  <text x="210" y="306" font-size="10" fill="#10b981" font-weight="600">w₂₄</text>
+
+  <!-- Weight labels for Neuron 3 -->
+  <text x="190" y="210" font-size="10" fill="#f59e0b" font-weight="600">w₃₁</text>
+  <text x="192" y="266" font-size="10" fill="#f59e0b" font-weight="600">w₃₂</text>
+  <text x="195" y="325" font-size="10" fill="#f59e0b" font-weight="600">w₃₃</text>
+  <text x="210" y="376" font-size="10" fill="#f59e0b" font-weight="600">w₃₄</text>
+
+  <!-- Output arrows and labels -->
+  <line x1="422" y1="100" x2="530" y2="100" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowR)"/>
+  <rect x="530" y="80" width="100" height="40" rx="8" fill="#fce7f3" stroke="#ec4899" stroke-width="1.5"/>
+  <text x="580" y="105" text-anchor="middle" font-size="12" font-weight="600" fill="#9d174d">Output 1</text>
+
+  <line x1="422" y1="235" x2="530" y2="235" stroke="#10b981" stroke-width="2" marker-end="url(#arrowG)"/>
+  <rect x="530" y="215" width="100" height="40" rx="8" fill="#d1fae5" stroke="#10b981" stroke-width="1.5"/>
+  <text x="580" y="240" text-anchor="middle" font-size="12" font-weight="600" fill="#065f46">Output 2</text>
+
+  <line x1="422" y1="370" x2="530" y2="370" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowO)"/>
+  <rect x="530" y="350" width="100" height="40" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="580" y="375" text-anchor="middle" font-size="12" font-weight="600" fill="#92400e">Output 3</text>
+
+  <!-- Labels -->
+  <text x="70" y="435" text-anchor="middle" font-size="12" font-weight="600" fill="#6366f1">Inputs</text>
+  <text x="380" y="445" text-anchor="middle" font-size="12" font-weight="600" fill="#475569">Layer (3 Neurons)</text>
+  <text x="580" y="435" text-anchor="middle" font-size="12" font-weight="600" fill="#475569">Outputs</text>
+
+  <!-- Footer formula -->
+  <text x="380" y="470" text-anchor="middle" font-size="11" fill="#64748b">Each neuron: Output = Σ(Xᵢ · Wᵢ) + b    →   3 neurons produce 3 outputs</text>
+</svg>
