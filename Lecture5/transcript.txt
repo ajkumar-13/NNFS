@@ -1,0 +1,1133 @@
+0:00
+[Music]
+0:05
+hello everyone welcome to this next
+0:08
+lecture in building neural networks from
+0:12
+scratch before we move further to
+0:15
+activation
+0:17
+functions uh such as soft Max Etc I want
+0:21
+to uh cover two aspects of coding in
+0:24
+Python the first is array summation and
+0:29
+the second is broadcasting roles in
+0:32
+Python I have seen that a number of
+0:34
+students are really unclear about these
+0:37
+two uh topics in Python coding and they
+0:41
+show up at a number of places not just
+0:44
+in U neural networks but several other
+0:47
+aspects of machine learning as well uh
+0:50
+and they can be a bit complex to
+0:52
+understand but once you understand the
+0:54
+basics then you will never forget these
+0:57
+Concepts so I think it's worthwhile to
+0:59
+have a separate lecture on these two
+1:02
+concepts if you are already aware of
+1:04
+these uh then please feel free to skip
+1:08
+this lecture and directly move to the
+1:09
+next
+1:10
+one so I'm going to zoom in a bit on the
+Array summation: axis and keepdims
+1:13
+array sumission right now and then we
+1:16
+will move to broadcasting in the second
+1:18
+half of this
+1:19
+lecture okay so uh let's say we have an
+1:23
+array as is given here a which has three
+1:26
+rows and three
+1:27
+columns and I'm going to show you few
+1:30
+different summation commands in Python
+1:32
+and the differences between them first
+1:35
+of all if you just use NP which is nay.
+1:37
+sum of array a what it will do is that
+1:41
+it will just sum up the different
+1:43
+elements of this array 1 + 2 + 3 + 4 + 5
+1:47
++ 6 + 7 + 8 + 9 and the resulting answer
+1:51
+will be
+1:52
+45 so that's the simplest way to sum
+1:56
+this
+1:56
+array however when you do the summation
+2:00
+there is usually a second argument which
+2:02
+is called
+2:03
+axis and this is quite important because
+2:06
+sometimes we just want to sum the rows
+2:08
+of this array sometimes we just want to
+2:10
+sum The Columns of this array so let's
+2:13
+say if you write the same command NP do
+2:16
+sum a comma XIs equal to
+2:19
+none if you say XIs equal to none what
+2:23
+will happen is that uh it will just do
+2:26
+the same thing what it did in the
+2:28
+summation operation with earlier it will
+2:30
+just sum up the different elements and
+2:33
+we will again get an answer of
+2:35
+45 the real difference starts to come
+2:38
+when we use the AIS values as zero and
+2:41
+the AIS values as
+2:43
+one so this might be a bit confusing to
+2:47
+remember so just keep in mind that if we
+2:50
+write this command in P do sum a comma X
+2:54
+is equal to Z it just means sum the rows
+2:57
+of the array that's it
+3:00
+and when we write this command np. sum a
+3:03
+comma XIs equal to 1 it means sum The
+3:06
+Columns of the array so for example
+3:09
+let's uh look at this command in P do
+3:12
+sum a comma X is equal to
+3:14
+Z which means we have to sum the rows
+3:17
+and the first row of this is 1 2 3 the
+3:20
+second row is 4 5 6 and the third row is
+3:23
+7 8
+3:24
+9 UM and we will be summing the rows so
+3:27
+1 2 3 plus uh 456 + 78
+3:33
+9 so the answer here would be um the
+3:38
+first row plus the second row plus the
+3:40
+third row and the answer would be 12 15
+3:44
+and
+3:47
+18 uh in the second case if we do NP do
+3:51
+sum a comma XIs equal to 1 it means that
+3:54
+we have to sum The Columns so it will
+3:56
+take the First Column 147 uh take the
+3:59
+second column 258 and take the third
+4:02
+column 369 and add them
+4:05
+together uh so if you add these together
+4:08
+the first element would be six the
+4:10
+second element would be 15 and the third
+4:12
+element would be 24 so this is the
+4:15
+answer in this case in both of these
+4:18
+cases if we don't specify anything after
+4:20
+the
+4:21
+AIS uh like a third argument if we say x
+4:24
+is equal to 0 or X is equal to 1 the
+4:27
+resulting answer is an array with one
+4:31
+dimension uh so this is not a
+4:33
+two-dimensional array it will just be
+4:35
+one so if you plot the dimensions of
+4:37
+this in Python you will get just three
+4:39
+if you plot the dimensions of this in
+4:41
+Python you'll just get three you won't
+4:42
+get 3x one because it's not a
+4:44
+two-dimensional array it is a
+4:46
+onedimensional array and although this
+4:48
+might sound like a minor detail right
+4:51
+now it is very important to keep in
+4:54
+mind now if let's say we want the
+4:57
+summation uh along the row and summation
+5:00
+of the column to be a two- dimensional
+5:02
+array so if we want this to be 3x 1 and
+5:06
+this to be also 3x1 then um there is
+5:11
+another argument which can be uh used
+5:14
+and that is called keep
+5:16
+dims this is actually keep
+5:19
+Dimensions but the short hand notation
+5:22
+in Python is keep dims and the thing is
+5:25
+if we use keep dims equal to true what
+5:28
+it will do is that it will represent
+5:30
+that sum as a two- dimensional
+5:32
+array so let's say if we do NP do sum a
+5:36
+comma XIs equal to Z it will sum the
+5:39
+rows but the resulting answer will be a
+5:41
+two- dimensional array so if we sum the
+5:44
+rows here the resulting answer will be
+5:46
+12 15 and 18 but the dimensions of this
+5:49
+will be 1x3 so that's what it means when
+5:52
+keep the dimensions so a was a two-
+5:55
+dimensional array right and when we do
+5:57
+the summation we are telling that I want
+5:59
+to keep the The Final Answer also has
+6:01
+two
+6:01
+dimensions that's why it's called as
+6:03
+keep dims equal to true this will be
+6:06
+very important when we learn about the
+6:07
+soft Max Activation so keep this in
+6:11
+mind uh similarly when we do NP do sum a
+6:14
+comma XIs equal to 1 comma keep dims
+6:17
+equal to true it will sum The Columns so
+6:20
+column 1 plus column 2 plus column 3 and
+6:24
+the result will be a column
+6:26
+Vector uh which is a 3x1 vector and also
+6:29
+it will be a two- dimensional array so
+6:32
+remember that when you use keep dims
+6:34
+equal to true and X is equal to Z the
+6:37
+resultant will be a row Vector 1X 3 and
+6:40
+if you do X is equal to 1 and keep dims
+6:43
+equal to true the resultant will be a
+6:46
+column Vector which will be
+6:48
+3x1 okay this is the NP do sum in Python
+6:54
+so it's not as simple as just passing in
+6:56
+the array there are two additional
+6:57
+arguments which we learned about the
+7:00
+first argument is called
+7:02
+AIS and the second argument is called
+7:05
+keep dims and both of them are very
+7:07
+important if we want to Sum along rows
+7:10
+and if we want to Sum along
+7:13
+columns now let us look at the second
+Broadcasting rules in Python
+7:17
+main section of this lecture and that is
+7:20
+broadcasting rules so you might have
+7:23
+noticed earlier that when we did NP do
+7:26
+dot X comma W transpose Plus plus b this
+7:30
+is a bit weird right because if you do
+7:32
+this this is a 3X3 Matrix so let's say
+7:35
+it's 1 1 2 1 2 3 and 3 3 1 but this is a
+7:40
+3x1 matrix so it might be 1 comma 2
+7:42
+comma 3 and you might be thinking that
+7:45
+how can we add these two this is a
+7:48
+3X3 and this is a 3X 1 how can we add
+7:52
+these
+7:53
+two
+7:55
+so it is possible to do such additions
+7:58
+or even such multiplic subtractions
+8:00
+divisions in Python if you understand
+8:02
+what is called as broadcasting
+8:05
+rules and different libraries have their
+8:07
+broadcasting rules such as if you type
+8:09
+numai broadcasting you'll be taken to
+8:11
+this document if you if you type P torch
+8:15
+broadcasting pator is also a library for
+8:18
+neural network coding then you'll see
+8:20
+this particular
+8:22
+documentation I'm going to tell you very
+8:25
+simple rules about understanding
+8:27
+broadcasting because if you read right
+8:29
+it might be difficult to understand so
+8:32
+here it says two tensors are
+8:33
+broadcastable if each tensor has at
+8:35
+least one dimension and when iterating
+8:38
+over the dimension sizes starting at the
+8:40
+trailing Dimension the dimension sizes
+8:43
+must either be equal one of them is one
+8:45
+or one of them does not exist pretty
+8:47
+difficult to understand this uh and you
+8:50
+have to take some examples on paper to
+8:52
+really understand this so let us look at
+8:56
+broadcasting
+8:57
+rules okay so usually these rules are
+9:02
+you scan the dimensions from left the
+9:05
+arrays are broadcastable if the
+9:07
+dimensions when scanned from left are
+9:09
+either equal one of them must be one or
+9:12
+one of them does not exist so either the
+9:15
+dimensions must be equal one of them
+9:17
+must be one or one of them does not
+9:19
+exist let's see what this
+9:22
+means uh let's say I have a matrix which
+9:25
+looks like this it's a 3X3 Matrix 1 2 3
+9:28
+4 5 6 7 8 9 and I have the B Matrix
+9:32
+which looks like this 1 2 3 so it's a
+9:34
+3x1 matrix let us see if these two
+9:37
+matrices are
+9:40
+broadcastable uh so the first rule is
+9:43
+that you have to write down these
+9:45
+Dimensions okay write down the
+9:47
+dimensions so that they are aligned so
+9:49
+let us write it down 3x3 is the
+9:51
+dimensions of the first
+9:53
+Matrix and 3x1 is the dimensions of the
+9:56
+second Matrix okay now now we have to
+10:00
+start scanning from left to right for
+10:03
+every single Dimension and the arrays
+10:06
+are broadcastable only when the
+10:09
+dimensions are equal one of them is one
+10:11
+or one of them does not exist so let's
+10:14
+start scanning from left to right first
+10:16
+we encounter this first dimension of
+10:18
+both the arrays and one of them is equal
+10:21
+to one so that is satisfied so I'll
+10:23
+write a tick mark here then we move to
+10:26
+the second
+10:27
+dimension and here we can see see that
+10:29
+both dimensions are equal so it
+10:32
+satisfies so both the dimensions here
+10:35
+have satisfied that either they must be
+10:37
+equal one of them must be one or one of
+10:40
+them does not exist so these two arrays
+10:42
+are
+10:43
+broadcastable so what does it mean it
+10:45
+means that when we do an operation such
+10:47
+as a plus b what python does internally
+10:50
+is that it
+10:51
+copies uh B three times so that the
+10:55
+shape of B matches the shape of a so
+10:58
+let's say if you have A+ B uh and a is 1
+11:03
+2 3 4 5 6 7 8 9 and plus if B is 1 2
+11:10
+3 so the way python does this summation
+11:12
+is that it says that no problem I'll
+11:15
+just uh copy the dimensions of b or I'll
+11:20
+just expand B further by replicating its
+11:24
+values so that size of B matches the
+11:26
+size of
+11:27
+a and then you can do this summation
+11:30
+operation right like you would always do
+11:32
+add one and one two and one Etc now you
+11:35
+can do this
+11:36
+summation this is exactly what is done
+11:39
+over here when we do NP do do X comma W
+11:42
+transpose although this Matrix is 3x3
+11:44
+and 3x1 they are
+11:47
+broadcastable so what python does is
+11:49
+that it
+11:51
+converts the B Matrix to 1 2 3 1 2 3 and
+11:55
+1 2 3 it copies it so that the size of B
+11:58
+settis satisfies the size of this dot
+12:01
+product and this is exactly what is
+12:03
+written in the nump
+12:05
+documentation so if you were to add a
+12:07
+matrix or an array like a which has
+12:10
+three elements with B uh python
+12:12
+stretches or copies the values of B two
+12:15
+times till these two shapes match each
+12:17
+other and then it does the
+12:19
+addition so this is what is meant by
+12:22
+broadcasting rules okay now um I want to
+12:28
+take one more case so we looked at a + b
+12:32
+right but what if B is like this 1 2 3
+12:38
+so what if B is this or let me call it C
+12:42
+this is one the row and three columns
+12:44
+again first let us check whether a and C
+12:47
+are
+12:48
+broadcastable so let us write these
+12:50
+Dimensions so that they are aligned we
+12:53
+have written this down now let's begin
+12:55
+scanning from left to right so the first
+12:58
+set of dimensions are equal so they
+13:00
+satisfy and in the second set of
+13:02
+Dimensions one of the dimensions is one
+13:05
+so that is
+13:06
+also satisfied so then these two are
+13:10
+broadcastable so what python will do is
+13:12
+that it will create copy so it will
+13:14
+extend this to 1 2 3 and 1 2
+13:18
+3 uh and then it will add these two or
+13:21
+multiply these two but remember the way
+13:24
+uh B is extended and the way C is
+13:27
+extended is different B was extended
+13:31
+columnwise and C was extended rowwise
+13:33
+because that's their original shape so
+13:36
+the way python extends these matrices is
+13:38
+by maintaining their original shape that
+13:41
+is very important to keep in
+13:43
+mind now let us take a very interesting
+13:46
+example in which uh we are looking at
+13:50
+two
+13:51
+matrices one is a two dimensional array
+13:53
+and one is a onedimensional array and
+13:56
+let us see whether they are
+13:57
+broadcastable or not uh this will again
+14:00
+directly related to the keep Dimensions
+14:03
+so remember if we don't use keep
+14:04
+Dimensions we get an array with one
+14:06
+dimension
+14:07
+right let us see how the broadcasting
+14:09
+works with these two so a is a two
+14:11
+dimensional array 3x1 and B is a one
+14:14
+dimensional
+14:16
+array so let us see if they are
+14:17
+broadcastable what the broadcastable
+14:20
+rule says is that first we have to write
+14:21
+down the dimensions so that they are
+14:23
+aligned so 3x3 is the dimensions of a
+14:28
+and for B now the thing is it has only
+14:30
+one dimension which is three and it's
+14:33
+not does not have the second dimension
+14:35
+so we begin aligning it so first we
+14:38
+write three and then there is nothing
+14:41
+here nothing since it is not a
+14:44
+two-dimensional array right it's only
+14:46
+one dimension so these are the
+14:47
+dimensions of
+14:49
+B now let us start testing whether they
+14:52
+are broadcast table so we'll start
+14:54
+scanning from left to right so let's
+14:56
+look at the first set of Dimensions they
+14:58
+are equal
+14:59
+so this is fine in the second set of
+15:02
+Dimensions notice that one of them does
+15:05
+not exist however the broadcastable rule
+15:08
+also has a provision for this when we
+15:10
+scan from left the dimensions must be
+15:12
+equal one of them must be one or one of
+15:15
+them does not
+15:16
+exist so here this Dimension does not
+15:19
+exist right but it's fine since it is
+15:21
+mentioned in the broadcast T rule so
+15:24
+great this will also
+15:25
+be done so which means that these two
+15:28
+arrays are broadcastable so what python
+15:31
+will do is that it will assume that it's
+15:33
+a two-dimensional array and replicate
+15:35
+this two times so this B will be
+15:37
+reframed by python as 1 2 3 1 2 3 and 1
+15:40
+2 3 as a
+15:42
+3X3 and it will Summit up so then this
+15:45
+will be the resulting
+15:48
+answer so one more thing to remember is
+15:50
+that when there is nothing here python
+15:53
+replaces the nothing value by
+15:55
+one uh so if this has no Dimension and
+15:59
+if we are still broadcasting the python
+16:01
+will replace it by one so now python
+16:03
+treats b as a
+16:06
+1x3 1x3 so then it will just be
+16:10
+broadcasting a 3X3 with a 1x3 which we
+16:12
+already saw
+16:14
+before uh so then it will just copy 1 2
+16:17
+3 1 2 3 and 1 2 3 and submit
+16:20
+up so the reason I'm showing this to you
+Practical application
+16:23
+is because I want to take two examples
+16:27
+here and show you if you you are not
+16:29
+careful how a knowledge of these two
+16:33
+things can help you or if you are not
+16:36
+knowledgeable about uh the keep dims and
+16:40
+the broadcasting rules how it can land
+16:42
+you in trouble so let's say we have the
+16:45
+Matrix a and I give you the task that
+16:48
+from each row of a you have to subtract
+16:50
+the maximum value of that row so
+16:53
+basically what it means is that from
+16:54
+first row you have to subtract the value
+16:56
+three from the second row you have to
+16:58
+subtract the value six and from third
+17:01
+row from each entry you have to subtract
+17:03
+the value nine which means that from the
+17:06
+first row you have to subtract three so
+17:08
+1 Min - 3 first entry will be min-2
+17:11
+second entry will be minus one and third
+17:13
+entry will be zero of the first row from
+17:16
+the second row you have to subtract six
+17:18
+from all entries so first entry will be
+17:20
+minus 2 second entry will be minus one
+17:23
+and third entry will be zero and for
+17:25
+third row you have to subtract nine from
+17:27
+all the entries so again it will be
+17:29
+min-2 -1 and 0 so this is the answer
+17:32
+which we expect okay now let us see uh
+17:36
+how you can do this in Python so the
+17:39
+first thing is that U I have to take the
+17:44
+maximum along each row right so I will
+17:48
+use np. max a comma X is equal to
+17:52
+1 what x is equal to 1 does is that
+17:56
+remember that uh it will just do the
+18:00
+calculation along the column so what it
+18:03
+will do is that
+18:06
+uh it will first take the
+18:09
+maximum uh along this row so it will
+18:12
+take a look at these three columns and
+18:14
+take a maximum so then that will be
+18:18
+three then it will take a look along so
+18:22
+remember X is equal to 1 deals with
+18:24
+columns right so it will look at the
+18:26
+First Column the second column and third
+18:28
+column and then take a
+18:30
+maximum uh of these three for the first
+18:33
+first row so then that will be three
+18:36
+then it will look at the second so then
+18:38
+that will be six and then that will be
+18:41
+and then it will look at the
+18:42
+third uh so then that will be
+18:45
+N9 correct in the second case what we do
+18:49
+is we do np. Max a comma X is equal to 1
+18:52
+but we do keep dims equal to true so
+18:56
+what this will do is again this will
+18:57
+lead this will result in a maximum uh
+19:01
+values from each row 3 6 and 9 but it
+19:07
+the resulting Dimensions will be 3x 1
+19:11
+and the resulting dimensions of this
+19:12
+will be one dimensional
+19:14
+array now if you do a minus
+19:18
+this remember the broadcasting which we
+19:21
+saw uh this is a is
+19:24
+3x3 and this this let's say let's say
+19:27
+call this B
+19:29
+this will be something like nothing
+19:31
+Dimension here and three here so what we
+19:34
+saw exactly in broadcasting is that the
+19:37
+python fills the nothing Dimension with
+19:40
+one one so then this will be treated
+19:43
+like a 1x3 so then what we will do here
+19:46
+is that this will be replicated three
+19:48
+times 369 369
+19:50
+369 so the resultant would be that from
+19:53
+the first row different values are
+19:55
+subtracted we need 3 3 three to be
+19:57
+subtracted from the first row so we'll
+20:00
+get a wrong answer
+20:02
+here whereas if you look at the second
+20:05
+case uh it will be a which is
+20:09
+3x3 minus 3x 1 so the python will
+20:12
+replicate this column wise since because
+20:15
+keep dims equal to true we retain this
+20:18
+as a column
+20:19
+Vector remember when we use x is equal
+20:22
+to one we retain a column Vector right
+20:26
+similarly here what has been done is
+20:29
+that we have returned a column Vector
+20:32
+here so this is 3x one so while
+20:35
+broadcasting this column will be
+20:37
+replicated 369 369 369 so from the first
+20:41
+row from all values three will be
+20:43
+subtracted from the second row from all
+20:45
+values six will be subtracted and from
+20:48
+the third row from all values 9 will be
+20:50
+subtracted so it will lead us to this
+20:52
+which is exactly what we expected here
+20:55
+so this leads to the correct answer but
+20:58
+if if we do not use keep dims equal to
+21:00
+true it leads to the wrong
+21:03
+answer that's the importance of
+21:05
+understanding the keep dims function and
+21:07
+the broadcasting rules in Python
+21:10
+remember uh the x is equal to 0 and the
+21:13
+x is equal to 1 which we learned for np.
+21:15
+sum that works for any function what we
+21:18
+did was np. Max a comma X is equal to 1
+21:22
+which means that it will take the
+21:23
+maximum value by comparing the columns
+21:26
+so it will compare the First Column with
+21:28
+the second second column third column
+21:29
+and then it will take the maximum value
+21:32
+so then the resultant will be 3 6 and
+21:36
+9 because if you compare the First
+21:39
+Column uh with the second column with
+21:41
+the third column the first value will be
+21:43
+three second will be six and third will
+21:45
+be
+21:47
+n uh okay and the reason we failed here
+21:51
+is because we did not use keep dims
+21:53
+equal to true so while broadcasting
+21:55
+python treated it as a 1x3 array and
+21:59
+that was replicated three times 369 369
+22:01
+369 so from the first row we ended up
+22:04
+subtracting three
+22:06
+from the first element which is one we
+22:09
+ended up subtracting six from the second
+22:11
+element which is true two and we ended
+22:14
+up subtracting nine from the third
+22:16
+element which is three so it led to
+22:18
+completely wrong answers whereas keep
+22:20
+dim equal to True led to the correct
+22:24
+answer and uh I have implemented the
+22:26
+code for this in uh
+22:30
+uh in Python so here you can do np. sum
+22:35
+and uh it will do
+22:36
+45 but if you print np. sum a comma XIs
+22:40
+equal to Z it will Sum along the rows so
+22:44
+we will get an
+22:46
+answer of 12 15 and 18 which is what we
+22:49
+have got here and if you print the shape
+22:53
+as I mentioned it will be a
+22:54
+one-dimensional shape since you are not
+22:56
+using keep dims equal to true so it will
+22:58
+will be just three because it's a one
+23:00
+dimensional array when we do NP do Sum
+23:03
+along X is equal to 1 it will lead to
+23:06
+the answer 6514 since we sum The
+23:09
+Columns uh so 6524 sorry and if we print
+23:13
+the shape it will again be a
+23:15
+onedimensional array with three
+23:17
+elements now let us look at keep dims
+23:20
+equal to true so if we Sum along X is
+23:23
+equal to Z and keep dims equal to true
+23:26
+the answer will be 12 158 which is the
+23:28
+same as when we not kept keep dims equal
+23:31
+to true but look at the shape the shape
+23:33
+is 1x3 which is a three-dimensional row
+23:36
+Vector uh sorry two dimensional row
+23:38
+Vector exactly like we saw over
+23:42
+here and then when we kept um keep dims
+23:47
+equal to true and we summed along XIs
+23:49
+equal to 1 the resultant is
+23:52
+6524 is exactly the same as the result
+23:54
+here but now it's a column vector and a
+23:56
+two- dimensional array of three by
+23:59
+one so just keep this in mind and uh we
+24:03
+can actually try one more thing we can
+24:06
+also do
+24:09
+print np. Max a comma X isal to
+24:16
+0 and we can print np. Max a comma X is
+24:20
+equal to
+24:22
+1 okay so if you print along X is equal
+24:26
+to Z and if you take the maximum values
+24:29
+it will compare the rows so the answer
+24:31
+will be 7 8 and 9 which is this 7 8 and
+24:35
+9 but like what we have done over here
+24:38
+if you do np. Max along the axis it will
+24:42
+along AIS equal to 1 it will compare the
+24:44
+columns so then First Column second
+24:47
+column third column so the answer will
+24:49
+be three 6 and N which is exactly what
+24:52
+we see over here so I'll be providing
+24:55
+these codes also with you I'll be
+24:57
+sharing these codes on uh the
+24:59
+information section so please try to run
+25:01
+this the reason I'm going into these
+25:04
+many details is that if you understand
+25:06
+the array sumission and the broadcasting
+25:08
+rules you will not get into difficult
+25:11
+situations when we deal with softmax or
+25:13
+other functions later and debugging will
+25:16
+also be easier to you so thank you so
+25:18
+much everyone and I look forward to
+25:20
+seeing you in the next lecture

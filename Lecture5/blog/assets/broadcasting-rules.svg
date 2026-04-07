@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 340">
+  <rect width="800" height="340" fill="#fafafa" rx="16"/>
+
+  <text x="400" y="30" text-anchor="middle" font-family="Segoe UI" font-size="18" font-weight="bold" fill="#1e293b">Broadcasting: How NumPy Stretches Arrays to Match Shapes</text>
+
+  <!-- Case 1: (3×3) + (3×1) -->
+  <rect x="30" y="55" width="240" height="260" rx="12" fill="#f0fdf4" stroke="#10b981" stroke-width="1.5"/>
+  <text x="150" y="78" text-anchor="middle" font-family="Consolas" font-weight="bold" font-size="13" fill="#047857">(3×3) + (3×1)</text>
+
+  <!-- A matrix -->
+  <g transform="translate(50,92)" font-family="Consolas" font-size="12">
+    <rect width="90" height="72" rx="4" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
+    <text x="15" y="20" fill="#374151">1 2 3</text>
+    <text x="15" y="42" fill="#374151">4 5 6</text>
+    <text x="15" y="64" fill="#374151">7 8 9</text>
+  </g>
+  <text x="155" y="132" font-family="Segoe UI" font-size="16" fill="#374151">+</text>
+
+  <!-- B column vector -->
+  <g transform="translate(170,92)" font-family="Consolas" font-size="12">
+    <rect width="30" height="72" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+    <text x="15" y="20" text-anchor="middle" fill="#374151">1</text>
+    <text x="15" y="42" text-anchor="middle" fill="#374151">2</text>
+    <text x="15" y="64" text-anchor="middle" fill="#374151">3</text>
+  </g>
+
+  <!-- Arrow -->
+  <text x="150" y="185" text-anchor="middle" font-family="Segoe UI" font-size="14" fill="#64748b">↓ stretch →</text>
+
+  <!-- Stretched B -->
+  <g transform="translate(50,196)" font-family="Consolas" font-size="12">
+    <rect width="90" height="72" rx="4" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
+    <text x="15" y="20" fill="#374151">1 2 3</text>
+    <text x="15" y="42" fill="#374151">4 5 6</text>
+    <text x="15" y="64" fill="#374151">7 8 9</text>
+  </g>
+  <text x="155" y="236" font-family="Segoe UI" font-size="16" fill="#374151">+</text>
+  <g transform="translate(170,196)" font-family="Consolas" font-size="12">
+    <rect width="90" height="72" rx="4" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+    <text x="15" y="20" fill="#92400e">1 1 1</text>
+    <text x="15" y="42" fill="#92400e">2 2 2</text>
+    <text x="15" y="64" fill="#92400e">3 3 3</text>
+  </g>
+
+  <text x="150" y="290" text-anchor="middle" font-family="Segoe UI" font-size="12" fill="#047857">Column copied rightward ✓</text>
+
+  <!-- Case 2: (3×3) + (1×3) -->
+  <rect x="290" y="55" width="240" height="260" rx="12" fill="#eff6ff" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="410" y="78" text-anchor="middle" font-family="Consolas" font-weight="bold" font-size="13" fill="#4338ca">(3×3) + (1×3)</text>
+
+  <g transform="translate(310,92)" font-family="Consolas" font-size="12">
+    <rect width="90" height="72" rx="4" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
+    <text x="15" y="20" fill="#374151">1 2 3</text>
+    <text x="15" y="42" fill="#374151">4 5 6</text>
+    <text x="15" y="64" fill="#374151">7 8 9</text>
+  </g>
+  <text x="415" y="132" font-family="Segoe UI" font-size="16" fill="#374151">+</text>
+  <g transform="translate(430,108)" font-family="Consolas" font-size="12">
+    <rect width="80" height="24" rx="4" fill="#fce7f3" stroke="#ec4899" stroke-width="1"/>
+    <text x="10" y="17" fill="#374151">1 2 3</text>
+  </g>
+
+  <text x="410" y="185" text-anchor="middle" font-family="Segoe UI" font-size="14" fill="#64748b">↓ stretch ↓</text>
+
+  <g transform="translate(310,196)" font-family="Consolas" font-size="12">
+    <rect width="90" height="72" rx="4" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
+    <text x="15" y="20" fill="#374151">1 2 3</text>
+    <text x="15" y="42" fill="#374151">4 5 6</text>
+    <text x="15" y="64" fill="#374151">7 8 9</text>
+  </g>
+  <text x="415" y="236" font-family="Segoe UI" font-size="16" fill="#374151">+</text>
+  <g transform="translate(430,196)" font-family="Consolas" font-size="12">
+    <rect width="80" height="72" rx="4" fill="#fce7f3" stroke="#ec4899" stroke-width="1"/>
+    <text x="10" y="20" fill="#9d174d">1 2 3</text>
+    <text x="10" y="42" fill="#9d174d">1 2 3</text>
+    <text x="10" y="64" fill="#9d174d">1 2 3</text>
+  </g>
+
+  <text x="410" y="290" text-anchor="middle" font-family="Segoe UI" font-size="12" fill="#4338ca">Row copied downward ✓</text>
+
+  <!-- Rules box -->
+  <rect x="550" y="55" width="230" height="260" rx="12" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="665" y="82" text-anchor="middle" font-family="Segoe UI" font-weight="bold" font-size="14" fill="#1e293b">Broadcasting Rules</text>
+
+  <text x="570" y="110" font-family="Segoe UI" font-size="12" fill="#374151">Scan dims left to right.</text>
+  <text x="570" y="130" font-family="Segoe UI" font-size="12" fill="#374151">Each pair must satisfy:</text>
+
+  <rect x="565" y="145" width="200" height="30" rx="6" fill="#d1fae5" stroke="#10b981" stroke-width="1"/>
+  <text x="665" y="165" text-anchor="middle" font-family="Segoe UI" font-size="12" fill="#047857">✓ Dimensions are equal</text>
+
+  <rect x="565" y="182" width="200" height="30" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
+  <text x="665" y="202" text-anchor="middle" font-family="Segoe UI" font-size="12" fill="#1d4ed8">✓ One of them is 1</text>
+
+  <rect x="565" y="219" width="200" height="30" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+  <text x="665" y="239" text-anchor="middle" font-family="Segoe UI" font-size="12" fill="#b45309">✓ One doesn't exist</text>
+
+  <rect x="565" y="266" width="200" height="34" rx="6" fill="#fee2e2" stroke="#ef4444" stroke-width="1"/>
+  <text x="665" y="288" text-anchor="middle" font-family="Segoe UI" font-size="12" fill="#dc2626">✗ Otherwise: Error!</text>
+</svg>
