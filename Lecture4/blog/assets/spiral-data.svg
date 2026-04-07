@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+  <rect width="800" height="400" fill="#fafafa" rx="16"/>
+
+  <text x="400" y="30" text-anchor="middle" font-family="Segoe UI" font-size="18" font-weight="bold" fill="#1e293b">Spiral Data: 3-Class Non-Linear Classification Problem</text>
+
+  <!-- Coordinate system -->
+  <line x1="80" y1="220" x2="380" y2="220" stroke="#94a3b8" stroke-width="1.5"/>
+  <line x1="230" y1="70" x2="230" y2="370" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="385" y="224" font-family="Segoe UI" font-size="12" fill="#64748b">X₁</text>
+  <text x="234" y="65" font-family="Segoe UI" font-size="12" fill="#64748b">X₂</text>
+
+  <!-- Spiral 1 (red/rose) -->
+  <g fill="#ef4444" opacity="0.7">
+    <circle cx="230" cy="220" r="3"/><circle cx="237" cy="213" r="3"/><circle cx="250" cy="205" r="3"/>
+    <circle cx="268" cy="200" r="3"/><circle cx="285" cy="202" r="3"/><circle cx="296" cy="212" r="3"/>
+    <circle cx="298" cy="228" r="3"/><circle cx="290" cy="248" r="3"/><circle cx="273" cy="262" r="3"/>
+    <circle cx="250" cy="270" r="3"/><circle cx="225" cy="272" r="3"/><circle cx="200" cy="265" r="3"/>
+    <circle cx="180" cy="250" r="3"/><circle cx="168" cy="228" r="3"/><circle cx="165" cy="203" r="3"/>
+    <circle cx="172" cy="178" r="3"/><circle cx="188" cy="157" r="3"/><circle cx="212" cy="142" r="3"/>
+    <circle cx="240" cy="135" r="3"/><circle cx="268" cy="137" r="3"/><circle cx="293" cy="148" r="3"/>
+    <circle cx="313" cy="167" r="3"/><circle cx="325" cy="192" r="3"/>
+  </g>
+
+  <!-- Spiral 2 (green) -->
+  <g fill="#10b981" opacity="0.7">
+    <circle cx="230" cy="220" r="3"/><circle cx="220" cy="228" r="3"/><circle cx="207" cy="233" r="3"/>
+    <circle cx="192" cy="232" r="3"/><circle cx="181" cy="224" r="3"/><circle cx="178" cy="212" r="3"/>
+    <circle cx="182" cy="198" r="3"/><circle cx="193" cy="188" r="3"/><circle cx="208" cy="182" r="3"/>
+    <circle cx="227" cy="180" r="3"/><circle cx="247" cy="183" r="3"/><circle cx="264" cy="192" r="3"/>
+    <circle cx="276" cy="206" r="3"/><circle cx="280" cy="224" r="3"/><circle cx="278" cy="243" r="3"/>
+    <circle cx="268" cy="260" r="3"/><circle cx="253" cy="273" r="3"/><circle cx="233" cy="282" r="3"/>
+    <circle cx="210" cy="285" r="3"/><circle cx="187" cy="281" r="3"/><circle cx="167" cy="270" r="3"/>
+    <circle cx="152" cy="253" r="3"/><circle cx="143" cy="230" r="3"/>
+  </g>
+
+  <!-- Spiral 3 (blue) -->
+  <g fill="#6366f1" opacity="0.7">
+    <circle cx="230" cy="220" r="3"/><circle cx="224" cy="210" r="3"/><circle cx="213" cy="207" r="3"/>
+    <circle cx="202" cy="210" r="3"/><circle cx="196" cy="220" r="3"/><circle cx="198" cy="232" r="3"/>
+    <circle cx="206" cy="242" r="3"/><circle cx="220" cy="247" r="3"/><circle cx="235" cy="246" r="3"/>
+    <circle cx="249" cy="240" r="3"/><circle cx="258" cy="228" r="3"/><circle cx="260" cy="214" r="3"/>
+    <circle cx="256" cy="199" r="3"/><circle cx="245" cy="186" r="3"/><circle cx="230" cy="178" r="3"/>
+    <circle cx="213" cy="175" r="3"/><circle cx="196" cy="178" r="3"/><circle cx="182" cy="186" r="3"/>
+    <circle cx="172" cy="199" r="3"/><circle cx="168" cy="214" r="3"/><circle cx="170" cy="232" r="3"/>
+    <circle cx="178" cy="248" r="3"/><circle cx="192" cy="262" r="3"/>
+  </g>
+
+  <!-- Legend -->
+  <rect x="100" y="378" width="12" height="12" rx="2" fill="#ef4444"/>
+  <text x="118" y="389" font-family="Segoe UI" font-size="12" fill="#64748b">Class 0</text>
+  <rect x="190" y="378" width="12" height="12" rx="2" fill="#10b981"/>
+  <text x="208" y="389" font-family="Segoe UI" font-size="12" fill="#64748b">Class 1</text>
+  <rect x="280" y="378" width="12" height="12" rx="2" fill="#6366f1"/>
+  <text x="298" y="389" font-family="Segoe UI" font-size="12" fill="#64748b">Class 2</text>
+
+  <!-- Right side: explanation -->
+  <rect x="430" y="55" width="340" height="320" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <text x="600" y="85" text-anchor="middle" font-family="Segoe UI" font-weight="bold" font-size="15" fill="#1e293b">Why Non-Linear Data?</text>
+
+  <rect x="455" y="105" width="290" height="55" rx="8" fill="#fee2e2" stroke="#ef4444" stroke-width="1"/>
+  <text x="600" y="125" text-anchor="middle" font-family="Segoe UI" font-size="12" fill="#991b1b">Linear data: easy — even simple</text>
+  <text x="600" y="145" text-anchor="middle" font-family="Segoe UI" font-size="12" fill="#991b1b">regression can handle it</text>
+
+  <rect x="455" y="175" width="290" height="55" rx="8" fill="#d1fae5" stroke="#10b981" stroke-width="1"/>
+  <text x="600" y="195" text-anchor="middle" font-family="Segoe UI" font-size="12" fill="#065f46">Non-linear data: complex patterns</text>
+  <text x="600" y="215" text-anchor="middle" font-family="Segoe UI" font-size="12" fill="#065f46">Neural networks are built for this!</text>
+
+  <rect x="455" y="248" width="290" height="110" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
+  <text x="600" y="270" text-anchor="middle" font-family="Segoe UI" font-weight="600" font-size="13" fill="#4338ca">Spiral Data Properties</text>
+  <text x="470" y="295" font-family="Segoe UI" font-size="12" fill="#374151">• 2 input features (X₁, X₂)</text>
+  <text x="470" y="315" font-family="Segoe UI" font-size="12" fill="#374151">• 3 classes (spirals)</text>
+  <text x="470" y="335" font-family="Segoe UI" font-size="12" fill="#374151">• 100 samples per class</text>
+  <text x="470" y="355" font-family="Segoe UI" font-size="12" fill="#374151">• Not linearly separable!</text>
+</svg>
