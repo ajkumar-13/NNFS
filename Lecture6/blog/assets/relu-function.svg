@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 240">
+  <rect width="800" height="240" fill="#fafafa" rx="16"/>
+
+  <text x="400" y="28" text-anchor="middle" font-family="Segoe UI" font-size="18" font-weight="bold" fill="#1e293b">ReLU: Rectified Linear Unit</text>
+
+  <!-- ReLU graph -->
+  <rect x="30" y="48" width="320" height="175" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Axes -->
+  <line x1="180" y1="200" x2="330" y2="200" stroke="#94a3b8" stroke-width="1.5"/>
+  <line x1="180" y1="210" x2="180" y2="65" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="335" y="204" font-family="Segoe UI" font-size="11" fill="#64748b">x</text>
+  <text x="184" y="62" font-family="Segoe UI" font-size="11" fill="#64748b">y</text>
+
+  <!-- Negative part (y=0) -->
+  <line x1="50" y1="200" x2="180" y2="200" stroke="#ef4444" stroke-width="3"/>
+
+  <!-- Positive part (y=x) -->
+  <line x1="180" y1="200" x2="310" y2="70" stroke="#10b981" stroke-width="3"/>
+
+  <!-- Labels -->
+  <text x="110" y="192" text-anchor="middle" font-family="Consolas" font-size="12" fill="#ef4444">y = 0</text>
+  <text x="260" y="120" font-family="Consolas" font-size="12" fill="#047857">y = x</text>
+
+  <!-- Breakpoint dot -->
+  <circle cx="180" cy="200" r="5" fill="#1e293b"/>
+  <text x="180" y="220" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="#64748b">origin</text>
+
+  <!-- Formula and code -->
+  <rect x="380" y="48" width="390" height="175" rx="10" fill="#f0fdf4" stroke="#10b981" stroke-width="1.5"/>
+
+  <text x="575" y="78" text-anchor="middle" font-family="Segoe UI" font-weight="bold" font-size="15" fill="#047857">Definition</text>
+
+  <text x="575" y="108" text-anchor="middle" font-family="Consolas" font-size="14" fill="#374151">ReLU(x) = max(0, x)</text>
+
+  <line x1="410" y1="122" x2="740" y2="122" stroke="#d1fae5" stroke-width="1"/>
+
+  <text x="575" y="145" text-anchor="middle" font-family="Segoe UI" font-weight="bold" font-size="13" fill="#047857">Python Implementation</text>
+
+  <rect x="420" y="155" width="320" height="50" rx="6" fill="white" stroke="#86efac" stroke-width="1"/>
+  <text x="430" y="175" font-family="Consolas" font-size="12" fill="#374151">def forward(self, inputs):</text>
+  <text x="430" y="195" font-family="Consolas" font-size="12" fill="#374151">  self.output = np.maximum(0, inputs)</text>
+</svg>

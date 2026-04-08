@@ -1,0 +1,791 @@
+0:00
+[Music]
+0:05
+hello everyone welcome to the next lecture in the neural networks from
+0:11
+scratch Series so first let me recap whatever we have done so far up till now what we
+0:19
+have done is that we have coded the class layer dense which essentially looks something like this and we saw
+0:26
+this in the last lecture where uh we had two methods the init method which
+0:31
+initializes the weights and then a method called forward which basically takes a DOT product between the inputs
+0:38
+and the weights and adds the biases and it gives the output to a layer we saw that this is tremendously
+0:46
+useful in um having multiple layers so even if we have multiple layers we can
+0:52
+just call this layer dense class every time we want to initialize a new layer
+0:58
+so then we don't need to write this dot product every single time when we Define a new
+1:04
+layer um so then what we can do simply is that if you define the first layer as
+1:10
+layer dense uh 2 three which has been defined here like this uh and dense one
+1:17
+do forward comma and X which is the input this is the output of the first
+1:23
+layer then if you can directly Define the second layer dense 2 is layer
+1:31
+dense and the number of outputs of the number of inputs will be the number of
+1:37
+outputs of the previous layer right and that will be three and the number of neurons can be
+1:44
+anything so let's say if these are 10 neurons this is the second layer which I have created then the output of the
+1:51
+second layer would be dense 2 dot
+1:56
+forward um dense 1 do forward of x that's it this will be the output of the
+2:03
+second layer so this is how you chain multiple layers together using the layer
+2:08
+dense class in Python and we looked at this last time
+2:15
+um so let me just zoom out a bit okay and uh we saw that this works for a
+2:21
+batch of data as well so the first row is the output of the three neurons for
+2:27
+the first batch of data the second row is the output of the three neurons for the second batch of data and the fifth
+2:34
+row is the output of the three neurons for the fifth batch of data we also saw that throughout this
+2:41
+rest of the course we are going to be dealing with the spiral data which has two input Dimensions the X1 and X2 and
+2:49
+we are going to be performing a classification task as we move forward so the data has been encoded so that
+2:55
+it's in three categories red green and blue you can see that that that each of it each of the class represents a
+3:02
+different spiral the red spiral is here the green spiral is here and the blue spiral is here eventually we will code
+3:11
+the neural network so that it can it will be able to distinguish between these three
+3:16
+colors so we have reached a stage where we can stack number of layers together using the layer dense class but up till
+3:23
+now there is one very important feature uh of neural networks which I have not
+3:29
+yet introduced and that is called as activation
+3:36
+functions so let me switch to the writing functionality here activation
+Activation functions introduction
+3:42
+functions now what are activation functions and why are they needed in neural networks so in the machine learning
+3:50
+teach by doing project which is another playlist which I have I have a 1H hour lecture on explaining activation
+3:56
+functions in detail all of them uh and and I'm going to be linking them in this
+4:01
+video I'm going to be linking that video so you can just click on that video to see more details about activation
+4:08
+functions in this video I'm just going to give you a brief introduction of what are activation functions and why do we
+4:15
+really need them in the first place so essentially uh the reason we
+4:22
+need activation functions is to implement nonlinearities so let me uh
+4:27
+explain what that means so up till now we have looked at neural network architecture which looks something like
+4:33
+this there are four inputs and there are three neurons and then uh every neuron has an
+4:43
+output which is then fed into the next layer and that output looks something like X into W +
+4:50
+B now what activation function says that this is not good we need to add more
+4:57
+nonlinearities up till now everything is linear and so we are not essentially
+5:02
+making the neural network powerful so what activation function says that instead of feeding this output
+5:09
+directly into the next layer we pass it through another layer which is called as
+5:14
+an activation layer so there is an activation layer in between and the when these outputs pass
+5:23
+through the activation layer what simply happens is a function f gets applied so then it's F of X into W + B and this is
+5:32
+then fed into the next layer so instead of directly feeding this x into W plus b
+5:38
+into the next layer we apply a function and then it is fed into the next layer
+5:44
+the reason this function is applied is that this function typically introduces nonlinearities and I'll explain in a
+5:50
+moment what that means but this activation function really gives the power to the neural networks to be
+5:57
+expressive to be able to capture any underlying function so when you think of the neural
+6:03
+network now you can think of it as a block representation there is an input X
+6:08
+which goes into a set of weight uh matrices initially of the first hidden
+6:14
+layer then the output is X into W + B then it goes into an activation layer A1
+6:21
+the output of this is f of x into W + B and then we go to the second layer again
+6:27
+so then there is W2 then there is A2 dot dot dot WN and a
+6:34
+n and then we have the output of this neural network so remember that an activation
+6:41
+layer really needs to be added at every hidden layer and even at the output
+6:47
+layer uh when we do the forward pass okay and the reason and activation
+6:54
+function is needed is because uh if you don't have the activation function let's say that
+7:01
+everything is just linear let's see what happens okay so look at the blue curve
+7:07
+here the blue curve is my underlying data and I want to capture it
+7:12
+okay now imagine that we don't have an activation function or we just have a
+7:17
+linear Activation so let's say these blocks here uh A1 A2 dot do do n are
+7:24
+just yal to X if these blocks are just y y equal to
+7:30
+X it means that the f is just an identity function so it's effectively like not having these activation
+7:36
+functions right so if we don't have an activation function or if we have an
+7:41
+identity activation like a linear activation function y = to X and let's say we train a neural
+7:48
+network with two hidden layers and eight neurons in each layer
+7:55
+on this underlying blue data the result which we obtain is this
+8:01
+pink line and you can see that it's just a linear function and the reason it's
+8:07
+linear is because look at this block representation if we don't if this
+8:12
+activation function is just an identity function there is no nonlinearity here right the output from the first weights
+8:20
+is X into W + B that is linear when it passes through y = x this this will
+8:25
+again be X into W + B then the second weight Matrix will again apply a linear
+8:31
+transformation so essentially all we will have is straight lines which are the outputs of the neural network and
+8:38
+that's why we won't be able to capture this complicated function such as the sign function in this
+8:44
+case this is the reason activation functions exist we need to have some
+8:50
+nonlinearity in this neural network and the advantage of activation functions is
+8:56
+that when you add these nonlinear functions and when you stack them on top of each other the nonlinearity compounds
+9:04
+due to which we can approximate more and more and more complex functions we don't want this pink line
+9:11
+here it's just a linear function we would have just done regression in this case uh but a neural network is much
+9:18
+more powerful and the real power comes from these activation functions so what are activation functions and what do
+9:25
+they represent so it turns out that one of the most famous activation functions is something called
+ReLU activation function and it’s power
+9:31
+Ru or rectified linear unit and it just differs from the linear function in one
+9:37
+small simple way uh for X positive it is y = x but if x is
+9:45
+negative the output is zero and this is The Rao activation
+9:51
+function uh can you think of why the relo activation function is so powerful
+9:56
+what why do we even make this small change such as putting everything on the
+10:03
+negative side to zero how does that help us how does that help us capture
+10:08
+complicated functions so let me give you a small demonstration here
+10:14
+okay uh let's say um I have a a
+10:21
+function uh which is this is the neuron one and this is
+10:27
+Neuron 2 and this is my output okay okay so
+10:33
+uh these are the inputs from the first neuron to the second neuron these are
+10:38
+the inputs from the first neuron i1 inputs from the second neuron I2 and then the output is i1 + I2 okay and the
+10:47
+underlying function which I want to capture using this simple neural network
+10:52
+is something like this so this is not a straight line but
+10:58
+it's a nonlinear function which looks like a triangle now if I don't have an
+11:04
+activation function then um i1 will probably just be a linear
+11:13
+function of X right so if no activation if no activation then i1 will
+11:20
+be a linear function of X and I2 will also be a linear function and whatever
+11:26
+the slopes even if we add i1 and I2 the output will just be a linear
+11:31
+function so we will never be able to capture this triangular shape like
+11:37
+this so this is the case when we have no activation function or the identity
+11:42
+activation function but now let's say if we have the
+11:48
+railu okay uh and the i1 is just a simple
+11:57
+reu uh so I'm going to say say that i1 is just ru of
+12:04
+X which will look like
+12:18
+this okay and uh now what I'm going to say is
+12:24
+that um I'm going to play around a bit with I2 so first I want you to check
+12:31
+what is Ru of xus 0 or x - 2 so if Ru of X looks like
+12:40
+this ra of x - 2 will be Max of 0a x - 2
+12:47
+right so at x = 2 it will have this breakoff point or transition point so
+12:53
+this will look something like this correct
+13:00
+cor uh now what if I have uh negative of
+13:09
+Ru what if I have negative of Ru x - 2 what will happen to this function now
+13:17
+is that it will flip because I'm taking a negative so it will be something like
+13:24
+this okay and then what if I add two to this so what will be 2 minus Ru of x -
+13:34
+2 it will look something like uh something like
+13:45
+this something like U
+13:51
+this now what if so let's say I2 is
+13:57
+this what if I add i1 and I2 now so if you add i1 and I2 what you
+14:04
+will get is that the resultant function will kind of have like a positive thing
+14:11
+here uh because this is anyway zero on the negative side then it will raise
+14:18
+everything here by this much value and then it will have this
+14:24
+downward slope it will have something like this
+14:30
+now do you see how close we are to capturing this triangle uh this is where we are at
+14:38
+right now and I could just even add one simple neuron to bring this side down so
+14:43
+that we just have a triangle that is the beauty of the railu function just making sure that one side
+14:51
+is zero introduces a nonlinearity and so we can stack multiple raus together by offsetting
+14:57
+them like this by by changing their slope Etc and we can capture even complex shapes we can even capture
+15:04
+sinusoidal functions like this that's why it's so important to have nonlinearities in the activation
+15:10
+function and not just have it linear so it turns out that if you use
+15:15
+the Rao activation function with two hidden layers and eight neurons you can perfectly capture this underlying sign
+15:23
+function in fact there is a very nice animation to show how the railu actually
+15:29
+can be trained to capture the uh sign function and uh I'm just
+15:35
+displaying it on the screen right now so here we are just showing how you
+15:40
+can adjust the slope of the ru function uh by playing around with
+15:46
+the uh offset and by playing around with how much you add or subtract to it now
+15:52
+slowly we'll be going to the point where uh we'll be approximating the sign
+15:57
+function okay so look at this right now so currently we only have two neurons
+16:03
+and we are adjusting the weights and the red line is what we have from the ru function right now and the green line is
+16:10
+the underlying data which we wish to approximate so you can see here we are
+16:15
+playing around with the input U to the second neuron which we
+16:20
+are going to pass it to the reu and here we are playing with the input of the last neuron and uh now we bring the second
+16:28
+neuron into the picture and we change their input we change their bias and here you can see how using the
+16:34
+nonlinearities in the ru function we are slowly trying to approximate the underlying green curve which is the sign
+16:40
+function so two neurons are done now now we bring a neuron again at the bottom
+16:46
+and we change its input to offset the red curve now we bring the third set of
+16:51
+neurons in the picture so now you can see that we have we are slowly trying to capture this
+16:58
+part of the sign curve we have captured up till the peak and now we are capturing the decline and towards the
+17:06
+end of this video you'll see that we can adjust the uh slope of the railu and the
+17:12
+shoot off point and then we can capture any underlying function which we need
+17:18
+here we here I'm just showing you how we can change the offset term and the slope
+17:24
+of the ru to capture the sign function okay so this was a brief demonstration
+17:31
+to show um why we need to introduce nonlinearities in our activation
+17:36
+function and how that helps in neural networks uh now I just want to show you
+Implementing ReLU Class in Python
+17:43
+how to implement the ru class in code so uh here you can see The Rao is
+17:51
+just a maximum of0 comma X right so in npay that just written as np. Max of 0
+18:00
+X so here you can see if we have an input sorry in numai it's written np. maximum 0 comma X so let me just make
+18:08
+that change over here in numai it's written NP do
+18:13
+maximum 0 comma X so if you have an input array right
+18:18
+like this and if you define the output as np. maximum 0 comma inputs it will
+18:24
+essentially trim off all the inputs which are negative put them to zero
+18:29
+uh like this and then all the positive values will be retained uh we can implement it as a
+18:37
+class very simply uh similar to the way we did using the layer dense class so
+18:43
+here is a class which is called activation underscore Ru and we don't need to initialize anything here similar
+18:50
+uh unlike what we did in the layer dense we just need to define a forward pass or forward method which takes in the inputs
+18:58
+and then the railu that's it so what this forward function is doing is that
+19:04
+uh it takes in these inputs which are the outputs from the neurons and then it
+19:09
+just applies the railu function to create the output which will be fed into
+19:14
+the next layer so uh the forward method just takes inputs as an attribute and then uh
+19:22
+it does np. maximum 0 comma inputs and then it outputs the result so then the
+19:28
+output will will have the same shape as inputs so this is the simple implementation of the ru activation
+19:34
+class in uh python remember the data set which we are dealing with uh involves us to do a
+ReLU and Classification
+19:42
+classification task so we are given a data set and we need to classify it into three types Ru is not the best
+19:49
+activation function really to be used for classification tasks uh in classification we really
+19:57
+want an activation function which can tell us um which class the data belongs
+20:03
+to so let's say if we have a neural network block representation which looks
+20:08
+something like this uh let me draw it again let's say
+20:14
+if we have a neural network block representation which looks something like this this is A1 then
+20:21
+W2 A2 and let's say this is my final layer
+20:26
+which is W let's say 100 and a00 and this is my
+20:33
+output okay so uh essentially these layers can be Ru this can be a Ru layer
+20:40
+this can be a Ru activation layer but the final activation function cannot be relu because in the final activation
+20:47
+layer I need a prediction as to what my class really belongs to right so let's
+20:53
+say U I have input from this spiral data and as I told told you there are two
+20:59
+Dimensions to the input X1 and X2 so let's say I have X1 and I have X2 as
+21:06
+inputs and let's say the first layer has three neurons um so these two inputs feed into
+21:13
+these three neurons let's say the second layer also has three neurons
+21:18
+uh let's say or let's say the second layer has two neurons which is my final
+21:24
+layer right so um these two inputs will feed into
+21:30
+the first layer these these two will feed into the next
+21:37
+layer and then there will be an output from this neuron and then there will be an output from this
+21:43
+neuron uh and maybe there should be one more neuron because I have three color
+21:49
+categories right in the spiral data so I have outputs okay from three
+21:57
+neurons maybe this is five maybe this is 10 and maybe this is 15 based on these three outputs I want to make a guess as
+22:05
+to this input X1 and X2 which color does it belong to does it belong to the red
+22:11
+class do it does it belong to the green class or does it belong to the blue class this is a classification problem
+22:19
+right so any new input my main task is to train a neural network so that the
+22:24
+output from the final neurons is such that it can tell me something about which class it belongs
+22:31
+to So based on this output based on this output I want to make some prediction
+22:38
+that whether this data X1 comma X2 X1 comma X2 it belongs to the red
+22:45
+class it belongs to the blue class or it belongs to the green
+22:50
+class and if we have a Rao activation function at the end we may get outputs
+22:56
+like these there are two problems with these outputs first of all they are on a scale
+23:01
+of all real numbers so they can be zero 100,000 they can be anything and that
+23:07
+does not tell me anything too much about um whether I can just see that oh this
+23:12
+magnitude is higher so maybe the green class is higher maybe uh this five magnitude is the
+23:20
+lowest so maybe the red class is the lowest uh so that's the first problem
+23:26
+the second problem is that there is no way these outputs are related to probabilities ideally I want outputs
+23:33
+which can tell me what is the probability that my input is in red class what is the probability that the
+23:39
+input is in blue class and what is the probability that the input is in green class right so essentially what actually
+23:47
+I want to do is that I want all these outputs to sum to
+23:53
+one but these are not summing to anything and that actually leads us to
+23:59
+another activation function which is called as the softmax activation
+Softmax activation function
+24:07
+function and so all other blocks can be reu but towards the end just before we
+24:12
+have the output we need the soft Max activation function this is usually the most preferred activation function for a
+24:19
+multiclass classification like what we have this function does two things it makes sure that the output is 0 to one
+24:26
+it lies between 0o to one and it makes sure that the output is related to
+24:31
+probabilities so all of the outputs essentially sum to one so just by taking
+24:37
+a single glance we can say uh which class uh is the most
+24:45
+probable so what is the softmax activation function let me explain it to you in a very simple manner so let's say
+24:52
+these are the outputs o1 is equal to 5 O2 is equal to 10 and O3 is equal to
+24:59
+15 what softmax does is that it makes a transformation it first takes the
+25:05
+exponential of this value e 5 and then divides it by E 5 + E 10 + e 15 so this
+25:15
+will be now the output from the first neuron the output from the second neuron will be e to 10 divided e 5 + e to 10 +
+25:23
+e to 15 and the output from the third neuron will be be e 15 ided e 5 + E 10 +
+25:33
+e 15 so first thing which you need to check is that since we are doing
+25:39
+exponent all of these quantities will be positive that's number one second thing to check is that in all
+25:47
+these quantities if you see the denominator is always greater than the numerator because in the denominator we
+25:53
+are taking a summation and the numerator is just one term of that summation so they lie between zero and one this is
+26:01
+also a tick and secondly the most important if you sum these three uh the
+26:07
+sum will be e 5 + E 10 + e 15 divided by
+26:14
+E 5 + E 10 + e 15 so the sum is equal to 1 so now these will be related more to
+26:22
+probabilities I can just look at the output and say that the probability of my output being in the green class is e
+26:29
+to 15 divided by E to 5 plus E 10 plus e to 15 let's
+26:34
+say so this is the soft Max activation function and now we need to uh have an
+26:41
+understanding of how this needs to be implemented really in code okay so
+26:47
+remember that this is the neural network which we are considering right but the input is usually a batch of data which
+26:55
+looks something like this uh this is the first batch this is the second batch third batch dot dot dot so maybe we'll
+27:02
+have 100 batches of data like this 100 so the number of rows can be uh 100
+27:13
+and the number of columns will be two because the input data Dimension is two so if we have three neurons as output
+27:21
+the output will be uh 1 2 3 for each data and there will be 100 like these
+27:29
+there will be 100 so now let us look at what we need
+27:35
+to do with this output so let's say we have an output uh which looks something
+27:40
+like this 1 2 3 4 5 6 789 let's say this
+27:46
+is the output for three batches of data this is the first batch this is the second batch and this is the third
+27:53
+batch now this actually needs to be replaced with e so in the first batch uh
+28:00
+we will need to uh take a exponent of all these values and divide by the summation so the first will be e to 1 by
+28:08
+E to 1 + e 2 + e to 3 the second will be e to2 by e 1 + e 2 + e to 3 and the
+28:17
+third will be e to 3 divided e to 1 + E2 + e
+28:24
+to3 uh this will be the updated first row see similarly the updated second row
+28:29
+will be e 4 by e 4 + e 5 + e 6 dot dot
+28:35
+dot and the updated third row will be e to 7 by e 7 + e to 8 + e 9 and dot dot
+28:44
+dot okay so this is actually what we want to do so we want to take an
+28:50
+exponent of all these values and just divide it by the row summation of these
+28:56
+exponents uh before we actually do that in in Practical settings we are going to do
+29:03
+one more thing from every row we are going to subtract the maximum value of that row before we take an exponent and
+29:11
+the reason for this is to prevent the uh exponent values from becoming very
+29:17
+large so that is just one small practical addition which we will be doing now I'm going to take you to the
+29:23
+code in Python to see how the softw soft Max activation class is implemented uh I
+29:29
+hope you have understood up up up till this point and when we go to the code remember that what we learned in the
+29:36
+previous lecture of uh XIs equal to 1 XIs equal to0 sums along the rows XIs
+29:43
+equal to one sums along the columns and we also learned that it's very important to use keep dims equal to true because
+29:50
+that retains the dimensions when we do summation along XIs okay so if you have
+29:55
+not seen this lecture I am going to link think it about it's very important for you to see this before you understand
+30:02
+how the soft Max uh activation class is really implemented so let us jump into the code
+Implementing Softmax Class in Python
+30:09
+so we saw the activation function for Ru now let us see how the activation
+30:14
+function for soft Max is implemented before that let's say we have these inputs uh the first row is 1
+30:22
+2 3 uh so let me actually write this here so that I want want you to understand
+30:28
+everything from scratch so I won't skip any step so the input which we are looking here is 1 123
+30:35
+2.5 1 2 3 2.5 then 25 - 1 2 2 5 -1 2 and then -
+30:47
+1.5 2.7 3.3 and -8 - 1.5 2.7 3.3 and
+30:55
+minus8 okay now the first thing which we need to do
+31:00
+is subtract the maximum value from each row from that row okay so here look at
+31:09
+this the reason why we are doing X is equal to 1 is that we want to take a
+31:14
+maximum value of the first row and then subtract all or subtract it from all the
+31:20
+elements of the first row if we did X is equal to Z here it would take the maximum value from the First Column
+31:27
+that's why we are taking X is equal to 1 and the reason we use keep dims equal to True is
+31:33
+because uh the broadcasting needs to be correct so for example when you do the
+31:41
+NP so when you do the np. max this Matrix a let's say comma X is
+31:48
+equal to 1 if you use keep dims equal to
+31:54
+true you will get uh a column Vector which looks like this 2.5 5 and 3.3 which are the maximum
+32:02
+values from each row and then you need to do the subtraction right so what
+32:07
+python will do internally is that it will use broadcasting so uh it will
+32:14
+copy these values two times so that the matrix dimensions are aligned so what it
+32:21
+will do is that it will copy these values actually three times
+32:30
+so that you can do this subtraction so when you subtract from the first row 2.5
+32:36
+will be subtracted from every element from the second row five will be subtracted from every element and from
+32:42
+the third row 3.3 will be subtracted from every element if you don't use keep
+32:48
+dims equal to true you will land into trouble because what you will end up doing is
+32:53
+that you will end up uh subtracting 2.55 3.3 Etc from the first row so this will
+33:01
+be a huge mess I deliberately have the previous lecture on broadcasting so that you
+33:07
+understand this and I'm linking it above again for reference where I've taken an exact same example and I've explained to
+33:13
+you why we need to use keep dims equal to true so this is the first step subtract
+33:20
+the maximum value from each row from the inputs and then you take the exponent so up till now so so up till
+33:28
+now what we have essentially done is that uh we have taken the exponents and
+33:34
+now we have to divide by the summation of each row right so then what we do is
+33:40
+we take these exponentiated values and we use the np. sum
+33:47
+operation uh and again keep XIs equal to 1 and keep dims equal to
+33:52
+true so let me show you why so again take a look look at this
+33:58
+particular thing up till now we let's look at the first row up till now we have e to 1 E2 and E to 3 but now we
+34:05
+need to divide every element by the summation so uh what we do is that
+34:12
+uh let me write this Matrix fully e to 4 e to 5 e to 6 e to 7 e to 8 e to 9 now
+34:22
+if you take this Matrix and you do NP do sum
+34:28
+this Matrix x x is equal to one and keep dims equal to true so NP do sum let's
+34:33
+say this Matrix is called b b comma X isal to 1 and keep dims equal to
+34:41
+True remember X is equal to 1 sums The Columns right so uh you will get a
+34:48
+matrix which looks like a column Matrix e to 1 + e 2 + e to 3 e to 4 + e 5 + e 6
+34:57
+and E to 7 + e 8+ e to 9 let's say this is Matrix
+35:03
+C and now you're doing the division operation between B and C see you're
+35:08
+dividing the original Matrix B with this C so you're doing the division operation
+35:15
+now B divided by C what python will do is that it will
+35:22
+now replicate this two times so that uh now the C Matrix will
+35:29
+b c Matrix will be made sure to have same dimensions as B in the broadcasting
+35:36
+rule so then it will just be e to 1 + E2 + e to 3 e to 1 + E2 + e to 3 e to 1 +
+35:46
+E2 + e 3 e 4 + e 5 + e to 6 2 * e 7 + e to 8 +
+35:56
+e to 9 two times and then when we divide B with this you can now do element wise
+36:03
+division so then the result will be that the first
+36:09
+element of this will be divided with the first element of this the second element of this will be divided with the second
+36:15
+element Etc then we will get exactly this value which we
+36:21
+needed and if you do not use keep dims equal to true you will get a wrong answer here and I really encourage you
+36:27
+to try this on your own the reason we had the previous lecture is only so that you can understand these two commands
+36:33
+when we write the soft Max okay so in the First Command here we
+36:40
+subtract the maximum value of each row and in the second command here uh we just take the uh division of this
+36:48
+exponent Matrix with the summation of the exponent and then broadcasting rules
+36:54
+are used so ultimately we get Matrix like this where every output is converted
+37:01
+into probabilities now you can actually print this probabilities and take the
+37:07
+summation so here is the output Matrix from this input Matrix look at the first
+37:13
+row uh the first row of this the first row of this output Matrix uh corresponds to the first batch
+37:22
+and the probabilities and if you sum it up it will sum up to one the the second
+37:27
+row corresponds to the second batch and if you submit up it will sum up to one
+37:32
+third row corresponds to the third batch and if you Summit up it will sum up to
+37:39
+one um okay so uh this is how
+37:46
+essentially the soft Max activation function is employed now let us
+37:52
+construct the soft Max activation class uh so here we have a forward
+37:59
+function and uh what it does is it takes an in forward method rather it takes an
+38:05
+input uh subtracts the maximum value and then uh from the exponentiated values it
+38:11
+just divides it by the sum of the exponent values so in this class actually exactly the same things are
+38:18
+written as has been written above so this is how the soft Max
+38:24
+activation function is actually implemented in practice
+38:30
+this uh okay now um I want to show you
+Coding a forward pass with 2 layers and 2 activations
+38:36
+how these things all align together for our spiral data so how we can use the
+38:42
+different classes which we have created and create an output so in this code
+38:48
+which I'm going to show you now what is simply done is that uh we have an input
+38:53
+data which are two values it goes through I think initially it goes through three
+39:00
+neurons so initially it goes through a layer of three neurons then it goes through a layer of three neurons and
+39:06
+then there is an output okay but in terms of activations
+39:11
+here the ru activation function is used and here the soft Max activation function is used so to create this layer
+39:19
+we'll use the layer dense class then we will use the reu class to
+39:24
+apply the activation function then we again use layer dense class to create the second layer and then we will use
+39:31
+the soft Max to apply this activation function to the output of this second layer and let's see how easy it is to do
+39:38
+that so first we have the data set of 100 data points now we create the first
+39:44
+layer with two inputs and three neurons uh we initiate the first activation remember no attribute needs
+39:51
+to be pass because there is no initialization function in this class then we create the second layer with
+39:57
+three inputs and three neurons exactly like what we saw here uh and then we initiate an instance
+40:04
+of the soft Max activation now let us start doing the forward pass so dense one. forward what
+40:12
+this will do is that it will generate outputs from the first layer of neurons
+40:17
+WX + B WX + B then this
+40:24
+output output of the first layer which is dense 1 do output it will be passed
+40:30
+to the first Activation so then this will be passed to the
+40:35
+ru WX + B uh and then the output of this will be
+40:41
+passed as an input to the second layer so then this is the output of the first layer activation 1. forward dense 1.
+40:49
+output now when you do the dense two. forward for the second layer you use the
+40:55
+output of the previous activation as this input and then the so the dense two.
+41:03
+forward is this so W2 into x + B this x
+41:08
+is the input which is this which is the output from the first activation and then finally you apply
+41:15
+the soft Max which is activation 2. forward that's it it's as simple as that
+41:21
+so essentially what you get finally is that uh for all the 100 data samples you
+41:27
+you have three outputs so this is 100 data samples and you have uh since we have three output
+41:35
+neurons and uh what I'm doing here is that I'm plotting the first first five
+41:41
+now just look at the each row it will sum up to one because every element now
+41:46
+corresponds to the probability so the first element is when we look at the first batch of input probability of
+41:54
+being red probability of being green and probability of being blue and that is similar to all the
+42:01
+rows okay so now you can see how defining classes makes it very easy to
+42:06
+execute the entire forward pass what we have done in this 10 to 11 lines of code
+42:13
+uh for that you just need to understand the first layer then reu then second
+42:19
+layer then soft Max that's it and in 11 lines of code you can execute this forward
+42:25
+pass uh so this was a bit of a dense lecture and it also depended a bit on
+42:30
+the previous lecture but I deliberately created the previous lecture on broadcasting so that you will understand
+42:36
+this so uh please stick with me through this course because now things are getting interesting after this lecture
+42:43
+we'll move to the loss function and then um we will move to back propagation
+42:48
+after that so thank you so much everyone uh I know things are getting a bit
+42:54
+complex but stick with me and try to replicate get this in the code so that you understand exactly what is going on
+43:01
+as always I try to explain everything from scratch that's why lectures become a bit long but I think it's needed so
+43:07
+thank you everyone and I'll see you in the next lecture
