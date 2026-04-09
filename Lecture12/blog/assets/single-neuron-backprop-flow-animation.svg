@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 430" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow12" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <rect width="940" height="430" rx="20" fill="#fafafa"/>
+
+  <text x="470" y="34" text-anchor="middle" font-size="18" font-weight="700" fill="#1e293b">Single-Neuron Backpropagation</text>
+  <text x="470" y="56" text-anchor="middle" font-size="12" fill="#64748b">Forward values move right. One upstream gradient returns left and scales each weight by its input.</text>
+
+  <line x1="154" y1="172" x2="774" y2="172" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow12)"/>
+  <line x1="786" y1="278" x2="166" y2="278" stroke="#f97316" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow12)"/>
+
+  <rect x="60" y="108" width="180" height="120" rx="16" fill="#ffffff" stroke="#dbeafe" stroke-width="1.5"/>
+  <text x="150" y="134" text-anchor="middle" font-size="14" font-weight="700" fill="#1d4ed8">Inputs + parameters</text>
+  <text x="150" y="160" text-anchor="middle" font-size="12" fill="#475569">x = [1, -2, 3]</text>
+  <text x="150" y="182" text-anchor="middle" font-size="12" fill="#475569">w = [-3, -1, 2]</text>
+  <text x="150" y="204" text-anchor="middle" font-size="12" fill="#475569">b = 1</text>
+
+  <rect x="280" y="108" width="150" height="120" rx="16" fill="#ffffff" stroke="#dbeafe" stroke-width="1.5"/>
+  <text x="355" y="134" text-anchor="middle" font-size="14" font-weight="700" fill="#1d4ed8">Weighted sum</text>
+  <text x="355" y="164" text-anchor="middle" font-size="12" fill="#475569">1(-3) + (-2)(-1)</text>
+  <text x="355" y="184" text-anchor="middle" font-size="12" fill="#475569">+ 3(2) + 1</text>
+  <text x="355" y="208" text-anchor="middle" font-size="18" font-weight="700" fill="#1d4ed8">sum = 6</text>
+
+  <rect x="470" y="108" width="150" height="120" rx="16" fill="#ffffff" stroke="#dcfce7" stroke-width="1.5"/>
+  <text x="545" y="134" text-anchor="middle" font-size="14" font-weight="700" fill="#047857">ReLU gate</text>
+  <text x="545" y="172" text-anchor="middle" font-size="12" fill="#475569">ReLU(6) = 6</text>
+  <text x="545" y="196" text-anchor="middle" font-size="12" fill="#047857">local derivative = 1</text>
+
+  <rect x="660" y="108" width="220" height="120" rx="16" fill="#ffffff" stroke="#fef3c7" stroke-width="1.5"/>
+  <text x="770" y="134" text-anchor="middle" font-size="14" font-weight="700" fill="#92400e">Loss</text>
+  <text x="770" y="164" text-anchor="middle" font-size="12" fill="#475569">target = 0</text>
+  <text x="770" y="188" text-anchor="middle" font-size="18" font-weight="700" fill="#92400e">L = 6^2 = 36</text>
+  <text x="770" y="210" text-anchor="middle" font-size="12" fill="#92400e">dL/doutput = 12</text>
+
+  <circle r="7" fill="#2563eb">
+    <animateMotion dur="5s" repeatCount="indefinite" path="M150 172 L355 172 L545 172 L770 172"/>
+  </circle>
+  <circle r="7" fill="#ea580c">
+    <animateMotion dur="5s" begin="2.5s" repeatCount="indefinite" path="M770 278 L545 278 L355 278 L150 278"/>
+  </circle>
+
+  <rect x="86" y="248" width="200" height="84" rx="14" fill="#ffffff" stroke="#dbeafe" stroke-width="1.2"/>
+  <text x="186" y="274" text-anchor="middle" font-size="13" font-weight="700" fill="#1d4ed8">Final parameter gradients</text>
+  <text x="186" y="298" text-anchor="middle" font-size="12" fill="#475569">dw = 12 x [1, -2, 3]</text>
+  <text x="186" y="320" text-anchor="middle" font-size="12" font-weight="700" fill="#1d4ed8">[12, -24, 36], db = 12</text>
+
+  <rect x="328" y="248" width="180" height="84" rx="14" fill="#ffffff" stroke="#ffedd5" stroke-width="1.2"/>
+  <text x="418" y="274" text-anchor="middle" font-size="13" font-weight="700" fill="#c2410c">Backward chain</text>
+  <text x="418" y="298" text-anchor="middle" font-size="12" fill="#475569">12 from the loss</text>
+  <text x="418" y="320" text-anchor="middle" font-size="12" fill="#475569">x 1 through ReLU x 1 through sum</text>
+
+  <rect x="550" y="248" width="304" height="84" rx="14" fill="#ffffff" stroke="#dcfce7" stroke-width="1.2"/>
+  <text x="702" y="274" text-anchor="middle" font-size="13" font-weight="700" fill="#047857">Key pattern</text>
+  <text x="702" y="298" text-anchor="middle" font-size="12" fill="#475569">Every weight sees the same upstream 12.</text>
+  <text x="702" y="320" text-anchor="middle" font-size="12" fill="#475569">Only the connected input changes the final gradient.</text>
+
+  <text x="470" y="388" text-anchor="middle" font-size="11" fill="#64748b">If the pre-activation had been negative, ReLU would contribute 0 and every gradient here would be blocked.</text>
+</svg>
