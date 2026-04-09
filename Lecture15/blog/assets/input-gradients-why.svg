@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 430" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrowForward15" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#94a3b8"/>
+    </marker>
+    <marker id="arrowBackward15" markerWidth="10" markerHeight="8" refX="0" refY="4" orient="auto">
+      <path d="M10,0 L0,4 L10,8 Z" fill="#ef4444"/>
+    </marker>
+  </defs>
+
+  <rect width="940" height="430" rx="20" fill="#fafafa" stroke="#e5e7eb" stroke-width="1.5"/>
+
+  <text x="470" y="34" text-anchor="middle" font-size="18" font-weight="700" fill="#1e293b">Why Input Gradients Matter</text>
+  <text x="470" y="56" text-anchor="middle" font-size="12" fill="#64748b">The output of one layer becomes the input of the next, so backprop needs dL/dX to continue upstream.</text>
+
+  <rect x="44" y="94" width="220" height="116" rx="16" fill="#ffffff" stroke="#dbeafe" stroke-width="1.5"/>
+  <text x="154" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#1d4ed8">Layer 1</text>
+  <text x="154" y="148" text-anchor="middle" font-size="12" fill="#475569">forward output = A1</text>
+  <text x="154" y="170" text-anchor="middle" font-size="12" fill="#475569">This becomes the next layer's input.</text>
+
+  <rect x="360" y="94" width="220" height="116" rx="16" fill="#ffffff" stroke="#dcfce7" stroke-width="1.5"/>
+  <text x="470" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#047857">Layer 2</text>
+  <text x="470" y="148" text-anchor="middle" font-size="12" fill="#475569">input = A1</text>
+  <text x="470" y="170" text-anchor="middle" font-size="12" fill="#475569">Backprop here must return dL/dX.</text>
+
+  <rect x="676" y="94" width="220" height="116" rx="16" fill="#ffffff" stroke="#fee2e2" stroke-width="1.5"/>
+  <text x="786" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#b91c1c">Loss</text>
+  <text x="786" y="148" text-anchor="middle" font-size="12" fill="#475569">Loss sends gradients backward.</text>
+  <text x="786" y="170" text-anchor="middle" font-size="12" fill="#475569">That signal must pass through every layer.</text>
+
+  <line x1="264" y1="152" x2="360" y2="152" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrowForward15)"/>
+  <line x1="580" y1="152" x2="676" y2="152" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrowForward15)"/>
+  <line x1="676" y1="184" x2="580" y2="184" stroke="#ef4444" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrowBackward15)"/>
+  <line x1="360" y1="184" x2="264" y2="184" stroke="#ef4444" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrowBackward15)"/>
+
+  <rect x="70" y="242" width="380" height="120" rx="16" fill="#ffffff" stroke="#dbeafe" stroke-width="1.5"/>
+  <text x="260" y="270" text-anchor="middle" font-size="14" font-weight="700" fill="#1d4ed8">Weight gradients from Part 14</text>
+  <text x="260" y="298" text-anchor="middle" font-size="14" fill="#1d4ed8">dL/dW = (dL/dZ)^T x X</text>
+  <text x="260" y="320" text-anchor="middle" font-size="11" fill="#475569">Keeps the stored layout: rows = neurons, columns = inputs.</text>
+  <text x="260" y="342" text-anchor="middle" font-size="11" fill="#475569">NumPy: dL_dW = dL_dZ.T @ X</text>
+
+  <rect x="490" y="242" width="380" height="120" rx="16" fill="#ffffff" stroke="#dcfce7" stroke-width="1.5"/>
+  <text x="680" y="270" text-anchor="middle" font-size="14" font-weight="700" fill="#047857">Input gradients in this lecture</text>
+  <text x="680" y="298" text-anchor="middle" font-size="14" fill="#047857">dL/dX = dL/dZ x W</text>
+  <text x="680" y="320" text-anchor="middle" font-size="11" fill="#475569">Each input adds contributions from every neuron it feeds.</text>
+  <text x="680" y="342" text-anchor="middle" font-size="11" fill="#475569">NumPy: dL_dX = dL_dZ @ W</text>
+
+  <text x="470" y="396" text-anchor="middle" font-size="11" fill="#64748b">Once you have dL/dX, the previous layer can treat it as its incoming upstream gradient and continue backpropagation.</text>
+</svg>

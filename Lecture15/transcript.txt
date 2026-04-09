@@ -1,0 +1,1256 @@
+Problem formulation
+0:00
+[Music]
+0:05
+hello everyone welcome to this lecture
+0:08
+in the neural networks from scratch
+0:10
+Series today we are going to learn about
+0:14
+how to calculate gradients of the loss
+0:17
+with respect to inputs during back
+0:23
+propagation if you have followed the
+0:26
+previous lectures on back propagation
+0:28
+the previous two lectures have been
+0:30
+dedicated to calculating gradient of the
+0:32
+loss with respect to
+0:34
+weights so we looked at especially this
+0:37
+formula in the last lecture input
+0:39
+transpose multiplied by the gradient of
+0:42
+loss with respect to the Zed Matrix and
+0:45
+we saw that just this matrix
+0:47
+multiplication gives us the gradient of
+0:50
+the loss with respect to all the
+0:53
+weights and uh we looked at the
+0:57
+comparison of this formula with with
+1:00
+respect to calculation of the grade
+1:02
+gradients with respect to the weights
+1:04
+manually and we saw that both of them
+1:07
+essentially L to the same
+1:10
+answer now in today's lecture remember
+1:14
+that along with weights there are also
+1:18
+the inputs and the inputs of one
+1:23
+layer can be the outputs of the
+1:26
+preceding
+1:27
+layer so why do we need the gradient of
+1:30
+the loss with respect to inputs remember
+1:33
+that in back propagation we are always
+1:35
+chaining gradients in the backward
+1:37
+Direction so we first calculate gradient
+1:40
+of loss with respect to Y then gradient
+1:42
+of Y with respect to A1 A1 with respect
+1:45
+to Z1 Z1 with respect to X1 Etc now the
+1:49
+reason we need the derivative with
+1:51
+respect to the inputs is that if there
+1:52
+is a layer behind this particular layer
+1:56
+like
+1:57
+this when we are doing back propagation
+2:01
+and let's say we want to find the
+2:02
+derivative of loss with respect to
+2:04
+weights in this layer when we do the
+2:06
+back propagation we will need the
+2:09
+derivative loss with respect to the
+2:12
+inputs because that comes in the middle
+2:15
+when we back propagate although it is
+2:18
+true that to update the weights only the
+2:21
+gradient of the weights is needed but
+2:24
+when we compute the gradients of the
+2:26
+weight with respect to pre with the
+2:28
+preceding layer we need the gradient
+2:31
+with respect to the inputs of the next
+2:33
+layer so for example if we need the
+2:36
+gradient of loss with respect to weights
+2:37
+in this layer it will depend on the
+2:40
+gradient of the loss with respect
+2:43
+to the inputs of the next layer because
+2:46
+that's the sequence when we do back
+2:49
+propagation remember when we do back
+2:51
+propagation we'll go backwards so we'll
+2:53
+take this we'll multiply it with this
+2:57
+and then we'll multiply it with the last
+2:58
+Arrow but remember remember this middle
+3:00
+arrow that is the gradient of the loss
+3:03
+with respect to the inputs so the inputs
+3:06
+lie in the middle of calculating the
+3:08
+gradient of loss with respect to the
+3:11
+weights in the earlier layer that's why
+3:13
+it is very important to have a lecture
+3:16
+on how to find the gradient of loss with
+3:18
+respect to
+3:20
+inputs so let's get started this is the
+3:23
+neural network architecture which we are
+3:25
+considering and it's the same one which
+3:27
+we have been considering in back
+3:28
+propagation we have four inputs X1 X2 X3
+3:32
+and X4 and we have three neurons the
+3:35
+output of the neurons are Z1 Z2 and Z3
+3:39
+then Ru activation function is applied
+3:42
+to these neurons which leads to an
+3:44
+answer of A1 A2 and A3 finally these
+3:47
+outputs are fed into one more neuron
+3:50
+whose output is Y which is A1 + A2 + A3
+3:54
+and then the loss is given by y
+3:57
+s the problem is that we have to find
+4:00
+these weights and
+4:02
+biases these weights and biases which
+4:04
+have been mentioned here which
+4:06
+essentially minimize the
+4:08
+loss um now let us take a look at these
+4:12
+weights and biases every neuron will
+4:14
+have four weights associated with it
+4:16
+each weight will correspond to one input
+4:19
+so for example the weights associated
+4:21
+with neuron 1 will be w11 W12 W13 w14
+4:26
+and B1 the weights associated with
+4:28
+neuron 2 will be w21 w22 w23 w24 and B2
+4:35
+and the weights associated with neuron 3
+4:38
+will be w31 w32 w33 w34 and
+4:44
+B3 in this example here is the values of
+4:47
+the weights which we are considering W1
+4:50
+Matrix is w11
+4:54
+W12 W13 and w14 and those values are 01
+5:00
+2.3 and4 similarly we have the values
+5:03
+for w21 w22 w23 w24 and w31 w32 w33 and
+5:11
+w34 the values for the bias are B1 = to
+5:14
+0.1 B2 = to2 and B3 = to3 and the inputs
+5:20
+are 1 2 3 and 4 which is X1 X2 X3 and
+5:25
+X4 in this lecture we are going to look
+5:28
+at how to find the the gradient or the
+5:30
+partial derivative of the loss with
+5:32
+respect to the first input X1 with
+5:35
+respect to the second input X2 with
+5:37
+respect to the third input X3 and with
+5:40
+respect to the last input which is
+5:43
+X4 if someone asks you this question
+5:45
+always try to look at it visually first
+5:48
+visually let's look at X1 and I want to
+5:51
+find the partial derivative of loss with
+5:53
+respect to X1 L and X1 are very far
+5:56
+apart right that's why we need to use
+5:58
+back propagation for first I'll find
+6:00
+partial derivative of L with respect to
+6:02
+Y then I'll find partial derivative of y
+6:05
+with respect to A1 now remember here is
+6:08
+the difference between taking gradient
+6:10
+of loss with inputs and weights if you
+6:13
+look at this one input
+6:15
+X1 it has the per pink line originating
+6:21
+from it which affect Z1 which affects A1
+6:25
+it also has the green line originating
+6:27
+from it which affects Z2 and which which
+6:29
+affects A2 and it also has the Orange
+6:32
+Line originating from it which affects
+6:34
+Z3 and which affects
+6:37
+A3 so
+6:39
+basically X1 has an impact on A1 A2 as
+6:43
+well as
+6:44
+A3 whereas if we look at the first
+6:46
+weight w11 it only has the impact on A1
+6:50
+so when we do the back propagation we
+6:52
+only have to move along
+6:54
+this this path which I just showed right
+6:56
+now using the purple Arrow but when we
+6:59
+are doing the back propagation for
+7:01
+gradient of L with respect to X1 we have
+7:03
+to move along all three paths A1 A2 as
+7:07
+well as A3 and we need to sum the
+7:09
+partial derivatives with respect to
+7:11
+these three paths the way this is
+Chain Rule
+7:14
+written mathematically is something like
+7:16
+this we have to find the partial
+7:19
+derivative of L with respect to inputs
+7:21
+so partial derivative of L with respect
+7:24
+to X1 is written as partial derivative
+7:26
+of L with respect to A1 multiplied by
+7:29
+the par I derivative of A1 with respect
+7:31
+to X1 this is the contribution from this
+7:35
+yellow line here but we do not stop here
+7:38
+because X1 also has an impact on A2 and
+7:41
+A3 so we have to add those terms here so
+7:45
+this is the first contribution then X1
+7:48
+also has a contribution on A2 that is
+7:50
+captured by this term which is partial
+7:53
+derivative of L with respect to A2
+7:55
+multiplied by partial derivative of A2
+7:57
+with respect to X1
+8:00
+so this term is essentially this second
+8:03
+yellow
+8:04
+arrow which is essentially the
+8:06
+contribution of X1 to A2 and then we
+8:09
+have to add a third term which is
+8:11
+partial derivative of L with respect to
+8:13
+A3 multiplied by partial derivative of
+8:16
+A3 with respect to
+8:18
+X1 this captures the contribution of X1
+8:22
+on the loss through A3 remember what
+8:25
+these three summations represent is that
+8:28
+they kind of are an indication of how
+8:30
+the loss depends on X1 we are saying
+8:33
+that the loss depends on A1 and A1
+8:35
+depends on X1 loss depends on A2 and A2
+8:38
+also depends on X1 and loss depends on
+8:41
+A3 and A3 also depends on X1 so we have
+8:44
+to essentially add these three terms
+8:46
+together this addition was not there
+8:48
+when we took the partial derivative with
+8:50
+respect to the weights so please
+8:52
+remember this key
+8:54
+difference and try to have an intuitive
+8:56
+sense for why we are adding the reason
+8:58
+we are adding is that X1 contributes to
+9:00
+A1 A2 and A3 both which in turn affect
+9:03
+the loss so when we do the back
+9:05
+propagation we have to move along this
+9:07
+Arrow the second arrow and the third
+9:10
+Arrow as well and we have to add the
+9:12
+contributions from these three arrows
+9:15
+that's why we have these three summation
+9:16
+terms
+9:17
+here now if you look at the first term
+9:20
+partial derivative of L with respect to
+9:22
+A1 multiplied by the partial derivative
+9:25
+of A1 with respect to X1 this can also
+9:27
+be written as partial derivative with
+9:29
+respect to A1 which is directly the
+9:31
+first term and partial derivative of A1
+9:34
+with respect to X1 can be written as the
+9:36
+partial derivative of A1 with respect to
+9:38
+Z1 multiplied by the partial derivative
+9:41
+of Z1 with respect to X1 and this is
+9:44
+similar for the second and third terms
+9:46
+as well so the second term can be
+9:49
+written as partial derivative of L with
+9:51
+respect to A2 multiplied by A2 with
+9:53
+respect to Z2 multiplied by Z2 with
+9:55
+respect to X1 and the third term can be
+9:58
+written as l with respect to A3
+10:00
+multiplied by A3 with respect to Z3
+10:03
+multiplied by Z3 with respect to
+10:06
+X1 and we can calculate each of these
+10:09
+terms pretty easily so remember L is
+10:12
+just uh if you scroll above L is just y
+10:16
+s which is A1 + A2 + A3 whole sare so
+10:20
+partial derivative of L with respect to
+10:21
+A1 will be equal to partial derivative
+10:24
+of L with respect to Y multiplied by
+10:29
+itial derivative of y with respect to A1
+10:32
+and this is just one and this will be 2
+10:35
+y because L is equal to y
+10:38
+s so then this partial derivative of L
+10:41
+with respect to A1 will be 2 I to find
+10:44
+partial deriv of A1 with respect to Z1
+10:47
+let's see what A1 is so A1 is
+10:50
+essentially Ru of X11 w11 X1 + W12 X2 +
+10:56
+W1 3 X3 + w14 X4 + B1 and all of this is
+11:01
+Z1 so A1 is RA of Z1 and if you look at
+11:06
+the ra function it looks like this so
+11:10
+the derivative of A1 with respect to Z1
+11:12
+will be equal to 1 if Z1 is greater than
+11:15
+Z and it will be equal to Z if Z1 is
+11:19
+less than
+11:20
+Z so it depends on the value of Z1 so
+11:24
+let's do one forward pass actually we
+11:26
+already have defined the weights
+11:30
+we have uh so we have the values for the
+11:33
+weights we have the values for the
+11:35
+biases and we have the values for X1 X2
+11:38
+X3 and X4 so let's do the forward pass
+11:41
+so when you do the forward pass and
+11:43
+calculate Z1 Z2 and Z3 you will get Z1 =
+11:47
+3 Z2 = 7.2 and Z3 is equal to
+11:53
+11.4 so all of these are greater than
+11:55
+zero so A1 will be 3 A2 will be 7.2 and
+11:59
+A3 will be 11.4 remember the relation
+12:02
+between A1 Z1 A2 Z2 and A3 Z3 is just
+12:06
+through a Ru operation so if the output
+12:11
+of Z1 Z2 Z3 is greater than zero A1 A2
+12:14
+A3 will be that output if it's less than
+12:16
+Z A1 A2 A3 will be
+12:18
+zero so now Z 1 Z2 Z3 is greater than
+12:22
+Zer so partial derivative of A1 with
+12:24
+respect to Z1 will be one now let's look
+12:27
+at partial derivative of Z1 with respect
+12:29
+to X1 so Z1 can be written as w11 X1 +
+12:34
+W12 X2 + W13 X3 plus w14 X4 + B1 so
+12:40
+partial derivative of Z1 with respect to
+12:42
+X1 will be equal to
+12:46
+w11 so if you multiply these terms
+12:49
+together the first term will be 2 Y into
+12:53
+1 into w11 similarly the second term
+12:56
+will be 2 Y into 1 into
+12:59
+w21 and the third term will be 2 Y into
+13:02
+1 into
+13:04
+w31 if you want an intuitive
+13:06
+understanding of why do we have w11 w21
+13:09
+and w31 let's look at this graphical
+13:13
+representation so w11 is
+13:16
+actually the weight which goes from X1
+13:19
+to the first neuron w21 is the weight
+13:23
+which goes from X1 to the second neuron
+13:25
+and w31 is the weight which goes from X1
+13:29
+to the third neuron now X1 is directly
+13:32
+connected to all of these three weights
+13:34
+so it makes sense that when we take the
+13:36
+partial derivative of loss with respect
+13:38
+to X1 we have contributions from all
+13:40
+these three terms w11 w21 and
+13:45
+w31 so that's why these terms have been
+13:48
+mentioned here w11 w21 and
+13:52
+w31 so the contribution for from the
+13:56
+first term is 2y into w11 the
+13:59
+contribution from the second term is 2y
+14:01
+into w21 and the contribution from the
+14:04
+third term is 2y into w31 so if you sum
+14:08
+this up the partial derivative of loss
+14:10
+with respect to X1 would be 2y into w11
+14:14
++ w21 +
+14:17
+w31 now if you do the partial derivative
+14:21
+of L with respect to X2 it will be the
+14:23
+same formula the only thing which will
+14:25
+change is W12 w22 and w32 and these are
+14:29
+the weights which originate from X2 so
+14:32
+this will be w21 this will be w22 and
+14:35
+this will be W 32 similarly for
+14:40
+X3 the partial derivative of L with
+14:43
+respect to X3 will be 2 Y into W13 + w23
+14:47
+and
+14:48
+w33 so it will be these three weights W
+14:52
+13 w23 and
+14:56
+w33 similarly for the partial derivative
+14:59
+of L with respect to X4 we will have
+15:03
+contributions from w14 w24 and
+15:08
+w34 so this will be w14 this will be w24
+15:13
+and this will be w34
+15:16
+34 so this is how we get the partial
+15:19
+derivative of the loss with respect to
+15:21
+X1 with respect to X2 with respect to X3
+15:24
+and with respect to
+15:27
+X4 uh now we have already calculated the
+15:30
+values of Z1 Z2 Z3 A1 A2 A3 um Y and L
+15:37
+in the forward pass so let us substitute
+15:40
+these values uh and we also have the
+15:42
+values for w11 W12 W13 w14 and all the
+15:47
+weights so let's calculate these partial
+15:50
+derivatives so if you plug in the values
+15:52
+you will get that partial derivative of
+15:54
+loss with respect to X1 is 64.8
+15:59
+partial derivative of loss with respect
+16:01
+to X2 is
+16:05
+77.7 partial derivative of loss with
+16:07
+respect to X3 is
+16:10
+9.72 and partial derivative of loss with
+16:13
+respect to X4 is
+16:16
+3.68 so the these are the four partial
+16:20
+derivatives now very similar to what we
+Matrix formulation
+16:23
+did for the partial derivatives with
+16:24
+respect to weights you may ask yourself
+16:27
+the question that is it always necessary
+16:30
+to write everything explicitly can we
+16:32
+think of a matrix
+16:34
+representation which lets us calculate
+16:37
+the partial derivative with respect to
+16:39
+the inputs remember for the partial
+16:41
+derivatives with respect to the weights
+16:44
+we needed two Matrix the input and the
+16:47
+partial derivative of loss with respect
+16:49
+to zed and if these two Matrix were
+16:52
+given we could get the partial
+16:54
+derivative of loss with respect to all
+16:55
+the weights just by multiplying these
+16:58
+two matrices
+17:00
+similarly let's think of a matrix
+17:02
+representation for getting the partial
+17:04
+derivative of the loss with respect to
+17:07
+inputs so partial derivative of loss
+17:09
+with respect to X1 can also be written
+17:11
+as partial derivative of loss with
+17:13
+respect to Z1 multiplied by partial
+17:16
+derivative of Z1 with respect to X1 plus
+17:19
+L with respect to Z2 multiplied by Z2
+17:21
+with respect to X1 plus L with respect
+17:24
+to Z3 MTI Z3 with respect to X1 so this
+17:28
+will give us the same answer as what we
+17:29
+got here 2 Y into w11 + w21 +
+17:33
+w31 so partial derivative of Z1 with
+17:37
+respect to X1 will be w11 this will be
+17:40
+w21 partial derivative of Z2 with
+17:42
+respect to X1 and partial derivative of
+17:45
+Z3 with respect to X1 will be
+17:48
+w31 so it seems that we just need
+17:52
+actually two matris for this we need a
+17:54
+dld DZ Matrix which is the partial
+17:57
+derivative of Z1 Z2 and Z3 and we need
+18:01
+the weight
+18:02
+Matrix so it will be arranged in the
+18:04
+format of columns so the First Column
+18:08
+will give us the weights of the first
+18:10
+neuron which is w11 W12 W13 and
+18:13
+w14 the second column will give us the
+18:16
+weights of the second neuron which is
+18:18
+w21 w22 w23 w24 and the third column
+18:24
+will give us the weights of the third
+18:25
+neuron which is w31 w32 W 33 and
+18:30
+w34 so the dimensions of this Matrix
+18:33
+will be four rows and three columns
+18:35
+which will be
+18:36
+4x3 and the dimensions of the dld DZ
+18:39
+Matrix will be
+18:41
+1x3 now you cannot multiply DL DZ with
+18:45
+this directly because it won't be
+18:46
+compatible The Columns of the first
+18:48
+Matrix are three but the rows of the
+18:51
+second Matrix are four but we need The
+18:54
+Columns of the first Matrix to be equal
+18:55
+to the rows of the second Matrix for the
+18:57
+multiplication so we will take the
+18:59
+transpose of the weights
+19:01
+Matrix so then every row will correspond
+19:04
+to the weights of each neuron so the
+19:06
+first row will be the weights of the
+19:08
+first neuron
+19:11
+Etc and uh we will do this product DL DZ
+19:16
+multiplied by weights transpose and
+19:18
+let's look at what the result will be so
+19:21
+dld DZ is 1x3 and this weights transpose
+19:24
+is 3x4 so the product will have number
+19:28
+of rows equal to number of rows of the
+19:30
+first Matrix which is one and number of
+19:33
+columns of the second Matrix which is
+19:34
+four so the result will be one row and
+19:37
+four
+19:39
+columns let's let's find each element so
+19:43
+let's look at the first row and First
+19:45
+Column so we will multiply the first row
+19:48
+of this multiplied by the First Column
+19:51
+so it will be partial derivative of L
+19:54
+with respect to Z1 multiplied w11 plus L
+19:57
+with respect to Z2 m
+19:59
+w21 plus L with respect to Z3 *
+20:03
+w31 and let's look at what we had
+20:06
+obtained here this is exactly what we
+20:09
+had obtained right partial derivative of
+20:10
+L with respect to X1 is partial
+20:13
+derivative of L with respect to Z1 MTI
+20:15
+w11 plus L with respect to Z2 multiplied
+20:19
+w21 plus L with respect to Z3 MIP
+20:23
+w31 so it turns out that the first entry
+20:27
+of this is partial derivative L with
+20:29
+respect to X1 similarly the second entry
+20:33
+will be partial derivative of L with
+20:35
+respect to Z1 multiplied by W12 w22 and
+20:39
+w32 here so this will be partial
+20:42
+derivative of L with respect to X2 the
+20:44
+third entry will be partial derivative
+20:46
+of L with respect to X3 and the fourth
+20:49
+entry will be partial derivative of L
+20:51
+with respect to
+20:53
+X2 so just with this one matrix product
+20:57
+DL DZ Matrix multiplied by the weights
+21:00
+transposed we actually get the partial
+21:03
+derivative or the gradient of the loss
+21:05
+with respect to all the weights which is
+21:07
+exactly similar to what we had obtained
+21:09
+over
+21:11
+here this is very Compact and an
+21:14
+efficient notation of finding partial
+21:17
+derivatives with respect to inputs but
+Batch of input data
+21:19
+now the question is does this work for a
+21:21
+batch of data batch of input data so
+21:24
+right now we saw that there was only one
+21:27
+batch of input data right X1 X2 X3 and
+21:29
+X4 what if there are three batches or
+21:32
+more batches of input data let us test
+21:35
+out this formula so let's say we have
+21:37
+four batches or three batches of input
+21:40
+data the first batch looks something
+21:42
+like this the second batch looks
+21:43
+something like this and third batch it
+21:45
+look something like
+21:47
+this uh the weight Dimension will remain
+21:50
+the same the weight transpose was
+21:52
+3x4 here also it was 3x4 here also it
+21:55
+will be 3x4 only the batch of input data
+21:58
+changing but the weights and biases will
+22:01
+remain the same what will change is that
+22:03
+for every batch uh Z1 Z2 and Z3 will be
+22:07
+different for the first batch there will
+22:09
+be one Z 1 Z2 Z3 for the second batch
+22:12
+there will be another Z1 Z2 Z3 and for
+22:15
+the third batch there will be yet
+22:16
+another Z1 Z2 Z3 so there will be
+22:19
+actually three sets of partial
+22:22
+derivatives with respect to zed the
+22:24
+first batch will give one set of partial
+22:26
+derivative with respect to Z1 Z to Z3
+22:29
+which is essentially represented in this
+22:31
+first row
+22:33
+here if you look at the dld DZ Matrix
+22:37
+the first row represents the partial
+22:39
+derivative of loss with respect to zed
+22:42
+for the first input
+22:47
+batch the second row represents the
+22:50
+partial derivative of loss with respect
+22:52
+to zed for the second input
+22:55
+batch and the third row represents the
+22:58
+partial derivative of loss with respect
+23:00
+to zed for the third input
+23:04
+badge uh so this Matrix is actually
+23:07
+3x3 now let us test out the product
+23:10
+earlier we mentioned that the partial
+23:13
+derivative of loss with respect to the
+23:14
+inputs we'll just involve two matrix
+23:17
+multiplication d l DZ multiplied by
+23:20
+weights transpose so DL DZ is 3x3 and
+23:23
+weight's transpose is 3x4 so let's check
+23:26
+if it's if it's compatible to multip
+23:28
+them the number of columns here is three
+23:32
+and the number of rows here is three so
+23:35
+it can be multiplied and the resultant
+23:37
+Matrix will have three rows and it will
+23:39
+have four
+23:41
+columns so uh if you find the matrix
+23:46
+multiplication of this you will get the
+23:48
+resultant Matrix which is three rows and
+23:50
+first colum four columns the first row
+23:53
+will give you the partial derivatives of
+23:55
+loss with respect to uh X1 X2 X3 and X4
+23:59
+for the first input
+24:01
+batch the second row will give you the
+24:03
+partial derivative of loss with respect
+24:05
+to X1 X2 X3 X4 for the second input
+24:09
+batch and the third row will give you
+24:11
+the partial derivatives of loss with
+24:13
+respect to the inputs for the third
+24:15
+batch which is partial derivative of
+24:17
+loss with respect to X1 X2 X3 and X4 so
+24:21
+when you are doing the product rows will
+24:23
+be multiplied by columns here right so
+24:25
+if you want to look at the first row you
+24:27
+will take a you will first take the
+24:29
+first row um you will take the first row
+24:33
+here and multiply with the First Column
+24:36
+then you will take the first row here
+24:38
+and multiply with the second column then
+24:40
+you will take the first row here
+24:42
+multiply with the third column and then
+24:44
+you will take the first row here and
+24:45
+multiply with the fourth column this
+24:47
+will give you one value second value two
+24:50
+value and third value and fourth value
+24:53
+so it will give you four values in the
+24:55
+first
+24:56
+row so remember the first input batch
+24:58
+will not care about the dld DZ in the
+25:00
+second input batch right so you don't
+25:02
+have to consider the second and the
+25:04
+third row when you are calculating the
+25:07
+derivatives of loss with respect to
+25:09
+Second input you will only look at the
+25:10
+second row of this D DZ Matrix similarly
+25:14
+when you're calculating derivative of
+25:16
+loss with respect to the third input
+25:17
+you'll only look at the third row of the
+25:20
+dld DZ
+25:22
+Matrix this is how you can get the
+25:24
+partial derivative of loss with respect
+25:26
+to the inputs
+25:28
+so remember now we have formulas for
+25:30
+getting the partial derivative of loss
+25:32
+with respect to the inputs and in the
+25:34
+last lecture we also looked at the
+25:36
+partial derivative of loss with respect
+25:37
+to the weights and we saw
+25:42
+that that formula was X
+25:47
+transpose multiplied by dld
+25:51
+DZ so if you now think about it we have
+25:54
+two formulas which can help us calculate
+25:57
+the partial der of loss with respect to
+25:59
+inputs as well as weights so essentially
+26:02
+we have covered all the parameters in
+26:04
+the neural network so if you look at
+26:06
+this neural
+26:08
+network the parameters which it has are
+26:11
+the inputs the weights and the biases to
+26:13
+get the partial derivative loss with
+26:15
+respect to the
+26:17
+weights we just use this
+26:20
+formula to get the partial derivative of
+26:22
+loss with respect to inputs we just use
+26:24
+this Matrix formula and why do we need
+26:27
+partial derivative of loss with respect
+26:29
+to inputs you may be thinking to update
+26:31
+the weights and biases we only need this
+26:34
+and that's true if we have only one
+26:36
+layer but if we have multiple layers
+26:39
+let's
+26:40
+say let me just zoom in a bit more and
+26:44
+let's say if we have multiple layers so
+26:46
+let's
+26:47
+say this is the first layer this is the
+26:51
+second layer and this is the third layer
+26:53
+and when we are back
+26:55
+propagating so let's say when we are
+26:58
+back propagating from the loss to here
+27:00
+to here and then to here so if we want
+27:04
+to find the partial derivative of loss
+27:06
+with respect to the weights in this
+27:07
+layer we will need the partial
+27:09
+derivative of the loss with respect to
+27:11
+the output of this layer right and then
+27:14
+propagate it
+27:15
+backward uh but this is actually the
+27:18
+input which feeds into the next layer so
+27:21
+that's why we need the partial
+27:23
+derivatives of inputs because the inputs
+27:26
+in one layer are the outputs of the
+27:28
+previous
+27:30
+layer uh so we need the partial
+27:32
+derivatives of the inputs when we chain
+27:34
+different layers together and now we
+27:36
+have two formulas which can give us the
+27:39
+partial derivative with respect to the
+27:40
+inputs as well as the weights so we are
+27:43
+now fully equipped to write the backward
+27:45
+pass in Python for how much ever large
+27:49
+the neural network is and we will be
+27:51
+covering that in the next
+27:53
+lecture so thank you so much for
+27:55
+sticking with me during these lectures I
+27:57
+know there are mathematical in nature
+27:59
+but I deliberately am covering
+28:01
+everything from scratch so that you're
+28:04
+equipped with back propagation and you
+28:06
+equipped to know the process for finding
+28:08
+the partial derivative of loss with
+28:10
+respect to weights as well as inputs I
+28:13
+really encourage you all to write this
+28:15
+down as you follow along with the
+28:16
+lectures and that way you will never
+28:18
+forget it thank you so much everyone and
+28:20
+I look forward to seeing you in the next
+28:22
+lecture
