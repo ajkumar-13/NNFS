@@ -1,0 +1,1276 @@
+Introducing Optimization
+0:00
+[Music]
+0:05
+hello everyone welcome to this lecture
+0:09
+in the neural networks from scratch
+0:12
+Series today we will be talking about a
+0:15
+very important subject and that is
+0:17
+related to
+0:19
+optimization so let me quickly summarize
+0:22
+what all we have covered up till now if
+0:25
+you look at the schematic of a neural
+0:26
+network up till now we have implemented
+0:29
+a method to do an entire forward pass
+0:32
+and then to calculate the loss between
+0:35
+our predicted output and the True
+0:37
+Value here is how the forward pass
+0:40
+actually looks like we have an input
+0:42
+which currently has two features X1 and
+0:44
+X2 it goes through a first hidden layer
+0:47
+which has three units then it goes
+0:49
+through the second hidden layer which is
+0:51
+also our output layer in this case which
+0:53
+has three units and then uh those three
+0:57
+outputs will then tell do something
+1:00
+about the loss we looked at different
+1:03
+activation functions in the first hidden
+1:06
+layer we have used the ru activation
+1:08
+function and in the output layer we have
+1:10
+used the softmax activation function
+1:13
+since this is a classification
+1:15
+problem uh up till now the problem which
+1:17
+we have looked at is something like this
+1:20
+we have a data which is called as a
+1:23
+spiral data set and it looks like this
+1:26
+what I'm showing on the screen right now
+1:29
+so each data point has two attributes X1
+1:32
+and X2 and it belongs to one of the
+1:34
+three classes red green or
+1:37
+blue uh and the goal of the neural
+1:39
+network is ultimately to predict from
+1:42
+these output neurons that whether it
+1:44
+belongs to the red the green or the
+1:47
+blue we implemented different classes in
+1:51
+Python the first class which we
+1:52
+implemented is the dense layer class
+1:55
+then we implemented a class for The Rao
+1:58
+activation function
+2:00
+which you can see over here Class
+2:02
+Activation reu and then we implemented a
+2:04
+class for the soft Max activation
+2:07
+function uh initially we did a forward
+2:10
+pass without the loss where we chained
+2:12
+these different classes together first
+2:13
+we created a layer using the layer dense
+2:16
+then we changed an activation class to
+2:18
+it then we created the second layer and
+2:20
+then we changed the soft Max exactly
+2:23
+like what I have shown in the schematic
+2:25
+here and in the previous lecture we
+2:28
+looked at loss so we understood what is
+2:30
+the cross entropy loss we created a
+2:33
+class for the cross entropy loss and
+2:35
+then we integrated that also along with
+2:37
+the forward pass so the full code up to
+2:40
+this point is given here we create the
+2:42
+first layer then add a REO activation
+2:45
+create the second layer add softmax and
+2:48
+then finally add the categorical cross
+2:50
+entropy
+2:51
+loss this is where we have reached up
+2:53
+till this point we also looked at
+2:55
+accuracy and loss as Matrix for
+2:59
+predicting whether neural network is
+3:00
+doing a good job or
+3:02
+not up till now we have not seen
+3:05
+anything about tuning the neural network
+3:08
+weights and biases we have not seen
+3:10
+anything about how to find the optimal
+3:12
+weights and biases which reduce the loss
+3:15
+all we have seen is if the weights and
+3:17
+biases are initialized to some random
+3:19
+values how can we get the loss in the
+3:21
+first place so the first layer has
+3:25
+weights W1 and bias B1 and the final
+3:29
+layer which is the output layer has
+3:31
+weights W2 and bias
+3:34
+B2 uh currently the values in each of
+3:38
+these matrices are initialized randomly
+3:40
+so for example if you look at the W1
+3:43
+Matrix it will be like something like
+3:45
+this so the first neuron will have two
+3:48
+weights the second neuron will have two
+3:50
+weights and the third neuron will will
+3:52
+have two weights so this is the W1
+3:55
+Matrix and the bias will look like this
+3:58
+one so each
+4:00
+each neuron will have one bias term
+4:03
+associated with it so if you look at W1
+4:07
+and B1 in terms of just numerical values
+4:10
+there are six numerical values in The
+4:12
+Matrix W1 and there are three numerical
+4:16
+values in The Matrix B2 so there are
+4:19
+nine values here similarly if you look
+4:23
+at
+4:25
+W2 so if I write down
+4:28
+W2 the first neuron weights will be
+4:31
+three second neuron weights will be
+4:33
+three and third neuron weights will be
+4:35
+three so this is a 3X3 Matrix and if I
+4:39
+write B2 which are the biases associated
+4:41
+with these final neurons each will have
+4:43
+one bias so that will be a 3x1 matrix so
+4:47
+if you look at W2 the number of
+4:49
+numerical values are 9 and if you look
+4:51
+at B2 the number of numerical values are
+4:54
+three so if we add the total number of
+4:56
+numerical values from the first weight
+4:58
+and bias it's nine from the second it's
+5:00
+12 so total there are 21 values which
+5:03
+are not yet
+5:04
+optimized those have been initialized
+5:07
+randomly what if there is a minimum or
+5:10
+what if there are some best values for
+5:12
+which the loss is very low the question
+5:15
+is how to find these values so just to
+5:18
+give you a vis visual understanding
+5:20
+let's say if the loss function looks
+5:21
+something like
+5:23
+this and we are currently here with the
+5:26
+current values of weights and bias the
+5:29
+question is how to find the weights and
+5:31
+bias values which get us to this Minima
+5:35
+point and uh the whole of neural network
+5:38
+literature henceforth is dedicated to
+5:40
+gradient descent methods and back
+5:42
+propagation which exactly help in
+5:44
+solving this problem but now you can
+5:47
+imagine that you are a student or a
+5:49
+researcher who is living in a century or
+5:52
+living in an age where back propagation
+5:54
+and gradient descent have not yet been
+5:56
+discovered and someone asks you that I
+5:59
+have weights and biases which are
+6:01
+initialized to some R random values can
+6:04
+you help me to find the best values of
+6:07
+these 21 parameters the weights and
+6:09
+biases so that the loss is
+6:11
+minimized let us think of some
+6:14
+strategies which we can Implement to
+Strategy 1: Randomly select weights and biases
+6:16
+adjust the weights and biases to
+6:18
+decrease the
+6:20
+loss so if we have no knowledge of
+6:23
+optimization procedures gradient descent
+6:25
+or back propagation the simplest
+6:27
+strategy which can which you can think
+6:29
+about is this right okay let me randomly
+6:32
+select weights and biases so I'll pick
+6:35
+weights and biases completely randomly
+6:38
+I'll calculate the loss and I'll do this
+6:41
+for 100 times thousand times 10,000
+6:44
+times and then the hope is that I will
+6:48
+eventually hit the weights and biases
+6:51
+which minimize the loss so in this
+6:53
+analogy which we have
+6:55
+described the first strategy which is
+6:59
+the first first thing which comes to
+7:00
+your mind is okay this weight and bias
+7:03
+did not work let me try this let me try
+7:05
+this let me try this let me try this
+7:07
+this this so let me just keep on trying
+7:10
+um 10,000 times and hopefully something
+7:13
+will work it's like trying to put an
+7:16
+arrow on the D board uh hoping that
+7:19
+something will
+7:21
+stick so that's the first strategy and
+7:23
+it's not a bad strategy let's just see
+7:26
+whether it works or not so you come up
+7:28
+with this strategy and uh you tell to
+7:31
+that person that I can help you find the
+7:34
+weights and bias which minimize the loss
+7:36
+and I have this strategy for you let us
+7:38
+see whether this works in practice or
+7:40
+not so I'm now going to the Jupiter
+7:43
+notebook where I'm going to implement
+7:45
+this
+7:47
+strategy and for this we are going to
+7:49
+take a simpler data set in the spiral
+7:51
+data set which we looked before the data
+7:53
+itself was a bit complicated to
+7:55
+illustrate this I'm going to take a data
+7:57
+set which looks something like this this
+7:59
+is also called as a vertical data set so
+8:02
+again there are three categories red
+8:04
+green and blue uh and these are the
+8:06
+points so this is my input data every
+8:09
+input again will have two features X1
+8:11
+and
+8:12
+X2 okay this is the input data and the
+8:16
+goal is that uh you have a neural
+8:18
+network like this which takes in the
+8:21
+input data the X1 and X2 are the two
+8:23
+features you have the first layer which
+8:26
+has three neurons you have the second
+8:27
+layer three neurons and you have the
+8:29
+cross entropy loss the goal is using
+8:32
+this strategy try to find the weights
+8:34
+and bias which minimize the
+8:36
+loss so let's try to understand what to
+8:39
+do initially let's u define an instance
+8:43
+of the layer dense class this will
+8:45
+create the first layer remember the
+8:48
+first argument of this class is the
+8:49
+number of inputs in that layer second
+8:51
+argument is number of neurons so in the
+8:54
+first hidden layer we have two inputs
+8:56
+and three neurons so it's 2 comma 3 here
+8:59
+then this is the second layer which has
+9:02
+three inputs which are the outputs from
+9:04
+the first layer and it has three
+9:07
+neurons the first and the final
+9:09
+activation function is the soft Max and
+9:12
+the first activation function is Ru so
+9:14
+we also uh create instances of those
+9:17
+classes and finally we create an
+9:20
+instance of the loss which is the
+9:22
+categorical cross entropy loss which is
+9:24
+applied at the final uh
+9:28
+output okay great so I'm am going to
+9:31
+first initialize the weights and biases
+9:34
+fully randomly so here the best dense
+9:39
+one weights means the weights of the
+9:41
+first layer best dense one biases are
+9:43
+the biases of the first layer best dense
+9:46
+two weights are the weights of the
+9:48
+second layer and best dense two biases
+9:50
+will be the biases of the second
+9:53
+layer um and this will eventually
+9:56
+contain the value of the best weights
+9:59
+and biases for me currently I have just
+10:02
+initialized them randomly so dense one.
+10:05
+weights will give me uh weights which
+10:07
+are initialized when you instantiate
+10:09
+this layer dense class so those are
+10:12
+weights which are sampled from a goian
+10:14
+distribution biases are initialized as
+10:17
+zero dense two do weights will give me
+10:20
+the weights as initialized by the layer
+10:22
+dense class those are again goian and
+10:25
+dens two. biosis will give me zero
+10:27
+values for the biases
+10:30
+now here you can see that I'm going to
+10:32
+do 100,000 iterations which means I'm
+10:34
+going to try to hit that arrow on the
+10:37
+dart board 100,000 times hoping that
+10:40
+something will
+10:41
+stick and as you can see at every
+10:44
+iteration I'm going to initialize the
+10:45
+weights and biases
+10:47
+randomly so uh remember uh the first
+10:52
+weights has the dimensions of two rows
+10:55
+and three columns as we have seen over
+10:57
+here
+10:59
+uh
+11:00
+2x3 and the second weights has
+11:02
+Dimensions 3x3 so when you initialize
+11:05
+the first set of Weights uh it's a goian
+11:08
+distribution 2x3 and you multiply it by
+11:12
+0.05 so it will create a matrix exactly
+11:16
+with the same dimensions as this and it
+11:17
+will initialize it randomly from a goian
+11:20
+distribution this is similar for the
+11:23
+biases uh and for the second layer
+11:26
+weights and for the second layer biases
+11:28
+remember that the argument which you
+11:30
+give to np. random. randn function it
+11:34
+will create an output of exactly the
+11:36
+same size as this argument so for
+11:38
+example mp. random. randn 1 comma 3 uh
+11:43
+this will create
+11:45
+a a matrix whose dimensions are one row
+11:50
+and three columns uh so basically it
+11:53
+will be like uh it will create the bias
+11:57
+terms so this this this can also be
+11:59
+represented as one row three
+12:05
+columns okay so at each new iteration we
+12:08
+are initializing the weights and the
+12:11
+bias term
+12:13
+randomly and then we are doing a forward
+12:16
+pass through the first layer we are
+12:18
+applying the first layer activation
+12:20
+which is reu the outputs of the first
+12:22
+layer which is activation. output will
+12:25
+go to the second layer and then we
+12:27
+finally do the soft Max output which is
+12:29
+the final layer output and that is then
+12:32
+passed to the loss function so then we
+12:34
+find the loss between the prediction and
+12:37
+the True
+12:39
+Value and then we are also going to
+12:41
+print the accuracy here uh one thing
+12:44
+which we do here is that if our current
+12:46
+loss is less than the loss of the
+12:48
+previous
+12:49
+iteration um we change this best denses
+12:53
+to the current values because the loss
+12:55
+is lower in the current
+12:57
+iteration so ultimately the best dense
+13:00
+one weights best dense one biases best
+13:04
+dense two weights and best dense two
+13:06
+biases will contain the optimized
+13:08
+weights and biases of every layer now
+13:12
+let's run this function and I'm printing
+13:15
+it only when the loss in the current
+13:17
+iteration is lower than the loss in the
+13:21
+previous iteration so only if the loss
+13:23
+is lower than the previous loss uh or
+13:26
+the lowest loss up till that point I
+13:28
+going to to print the current weights
+13:30
+and the current uh accuracy and the
+13:32
+current loss so let me print this
+13:36
+part so I'm running this right now and
+13:39
+uh it will run for some time because I
+13:42
+have 100,000 iterations
+13:44
+here so currently you will see that
+13:47
+although number of iterations have
+13:49
+proceeded 11,000 it has printed only
+13:51
+around 10 times because it only prints
+13:55
+when if you are at an iteration the
+13:57
+current loss is less than the lowest
+14:00
+loss found up till that particular
+14:03
+point so here we can see that it has
+14:07
+printed
+14:08
+till iteration number
+14:12
+10,848 so if you look at the loss up
+14:15
+till this point it's not decreasing at
+14:17
+all in fact the loss has started out
+14:20
+with
+14:22
+1.99
+14:24
+1.99 and currently it has reached 1.95
+14:30
+Let Me Wait for some time here until
+14:33
+the uh iterations are finished until the
+14:37
+100,000 iterations are finished and then
+14:40
+we will check how the loss varies for
+14:43
+all of these
+14:57
+iterations okay so here here you can see
+14:59
+that we have printed the loss at
+15:01
+iteration
+15:03
+93926 and the lowest loss up till this
+15:05
+point is
+15:07
+1.95 in fact all the iterations have
+15:09
+finished it took about 1
+15:11
+minute uh so let us track the
+15:14
+loss the loss which is printed here is
+15:16
+the lowest loss which we have obtained
+15:18
+in 100,000 iterations and it is not very
+15:20
+less from the first loss which we
+15:22
+started
+15:23
+with so this strategy turns out to be
+15:26
+not very good at all and in fact the
+15:28
+Accura
+15:29
+is33 which is like a coin toss because
+15:33
+if you look at the final
+15:35
+output uh the if the accuracy is 33 it
+15:40
+means that with 33% confidence we are if
+15:43
+the input is
+15:45
+red um if the input is red category like
+15:49
+here with 33% confidence we are saying
+15:52
+it's red which is essentially like not
+15:54
+confident at all so the loss did not
+15:57
+decrease too much that accuracy also did
+15:59
+not increase too
+16:01
+much this is the first indication that
+16:03
+this strategy is not good at all and it
+16:06
+does not
+16:08
+work the reason it does not work is that
+16:10
+when we use neural networks we are
+16:12
+typically in a high dimensional space so
+16:15
+the functions which we have don't look
+16:17
+as simple as the one which we have
+16:18
+plotted here we have so many parameters
+16:21
+here we have 21 parameters and there is
+16:24
+a huge number of variations of weights
+16:26
+and biases and we cannot try all of them
+16:28
+right we did 100,000 iterations but even
+16:31
+then it's very difficult to find the
+16:34
+best weights and
+16:36
+biases so this strategy does not work at
+16:39
+all so we think of something clever we
+Strategy 2: Randomly adjusting weights and biases
+16:42
+think that let's say in one particular
+16:45
+iteration the loss actually decreased so
+16:48
+let's say that earlier what we were
+16:50
+doing is that let's say if this was the
+16:53
+loss function curve so in one iteration
+16:55
+if we were here and in the second
+16:57
+iteration if we are here this is
+16:59
+actually good for us because the loss is
+17:01
+decreased but in the previous strategy
+17:03
+we did not take this information into
+17:05
+account for the next iteration we went
+17:07
+randomly to another place so in this
+17:10
+strategy what we do is that we say that
+17:13
+if in the current iteration the loss is
+17:15
+less than the previous iteration the
+17:18
+next weight and biases which you try
+17:20
+should be closer to the weights and
+17:22
+biases which you tried in the current
+17:23
+iteration because you are generally you
+17:26
+generally seem to be headed in a good
+17:27
+direction
+17:30
+um so if the weights and biases here
+17:32
+were W1 and
+17:35
+B1 the next weights and biases should be
+17:38
+close to W1 and B1 because these weights
+17:40
+and biases reduced your loss and you
+17:42
+seem to be moving in the right descent
+17:44
+Direction so this is exactly what our
+17:47
+second strategy is the first strategy
+17:49
+was randomly select weights and biases
+17:52
+our second strategy is going to be
+17:54
+randomly adjust weights and biases the
+17:58
+difference here is that if we notice
+18:00
+that the loss decreases for some weights
+18:02
+or biases the next value of weights and
+18:05
+biases will be chosen to be closer to
+18:07
+the current value of weights and biases
+18:10
+and if the loss increases so let's say
+18:12
+if we turn out to be going in the other
+18:14
+direction here then you simply don't
+18:16
+update the weights and biases you keep
+18:18
+it what it was in the previous iteration
+18:21
+this is also different than the previous
+18:23
+strategy where even if the loss
+18:24
+increased we randomly chose some other
+18:27
+value in the next iteration we did not
+18:28
+stick with the previous
+18:30
+value so there is a lot of good things
+18:33
+which we are doing in the second
+18:34
+strategy we're encoding some previous
+18:36
+information of the previous iteration so
+18:39
+now let us see how well this strategy
+18:43
+works I am again going to the code right
+18:45
+now the for the first strategy where we
+18:48
+randomly selected weights and biases it
+18:50
+did not
+18:51
+work so now what we are going to do is
+18:53
+we are going to implement the second
+18:55
+strategy in which we are going to
+18:57
+randomly adjust weights and
+18:59
+es so the layers and the activations
+19:03
+will be initialized in a similar manner
+19:05
+first layer instance the activation Rao
+19:08
+instance second layer instance and
+19:11
+activation soft Max instance they are
+19:14
+initialized but the way we do the rest
+19:17
+of the code is a bit different so very
+19:19
+similar to the previous code we Define
+19:21
+the best dense weights and biases which
+19:23
+will ultimately contain the optimum
+19:26
+value of the weights and bias when we
+19:29
+start the
+19:30
+iteration uh when we start the
+19:32
+iterations you will see that uh instead
+19:35
+of just in the previous code this was
+19:38
+just dense. weights equal to right but
+19:41
+now we are saying plus equal
+19:43
+to uh so essentially if you look at this
+19:47
+part of the code here if the
+19:50
+loss uh if the loss of the current it
+19:53
+iteration is lower than the lowest loss
+19:55
+then we update the best dense weights
+19:58
+and B dense biases and what are the
+20:00
+updated values the updated values are
+20:03
+you just add something small to the
+20:06
+previous
+20:07
+values so these four statements which
+20:10
+are over here they will be invoked if
+20:12
+the current loss is lower than the
+20:14
+previous loss and this plus equal to
+20:18
+here makes all the difference the plus
+20:19
+equal to means add this small value to
+20:23
+what your current weight and vas Matrix
+20:25
+is so this indicates update weight with
+20:28
+small random values and this will be
+20:31
+done only if the current loss is lower
+20:34
+than the lowest loss up till that point
+20:37
+so the updation will be done only if we
+20:39
+are kind of moving below this
+20:45
+Parabola uh
+20:47
+else uh nothing changes
+20:50
+actually else you revert back to the
+20:53
+original weights and biases that's the
+20:55
+simple code which have which has been
+20:57
+written here everything everything else
+20:59
+is very similar to the previous code so
+21:01
+let me run this piece of the code right
+21:04
+now so here you can see that I am
+21:06
+running for uh 10,000
+21:09
+iterations and we are going to see the
+21:12
+changes in the loss so first of all you
+21:15
+can see that the loss is now decreasing
+21:18
+right the loss started with
+21:21
+1.99 and with every subsequent iteration
+21:24
+so at at the iteration number 100 it was
+21:27
+96 at the iteration
+21:30
+number, the loss
+21:33
+was7 in the earlier iterations the loss
+21:36
+never went below
+21:37
+1.09 so we are actually doing very well
+21:40
+here in fact if you go below and if you
+21:44
+see till 10,000
+21:47
+iteration uh so now this code has run
+21:49
+and if you see till the last iteration
+21:51
+we have got the lowest loss as 16 so the
+21:55
+loss has reduced by almost 10 times
+21:57
+which we started with and I accuracy is
+22:00
+94% this is much higher than the
+22:03
+accuracy of 33% which we had uh gotten
+22:06
+in the previous strategy so actually it
+22:09
+turns out that this particular strategy
+22:11
+does work for the example which we
+22:14
+considered here the vertical data set
+22:17
+and if you do this strategy for
+22:21
+uh 100,000 data points currently I'm
+22:25
+showing for 10,000 right if you show it
+22:27
+if you do it for 100,000 ,000 iterations
+22:29
+sorry or if you do it for 1 million
+22:31
+iterations you will get an accuracy of
+22:34
+even higher like 095 or
+22:36
+96 so it turns out that strategy 2 does
+22:40
+work for this vertical data set so this
+22:43
+is amazing without needing back
+22:45
+propagation or gradient descent you have
+22:47
+converged on this strategy but now you
+22:50
+would be thinking then why do we even
+22:51
+need to study back propagation I can
+22:54
+just implement this strategy to optimize
+22:56
+every neural network out there but it
+22:58
+turns out that this strategy is not
+23:00
+robust to different data sets so we used
+23:03
+a simple data set here right now let's
+23:05
+try with a more complex data set which
+23:07
+is the spiral data set so the only
+23:10
+change which we'll do here is that U
+23:13
+here the X and Y were taken from the
+23:16
+vertical data what I'm going to do now
+23:18
+is that I'm going to take the X and Y
+23:20
+from the spiral data set and I'm going
+23:23
+to run this same code again and now
+23:25
+let's see the loss so I'm going to run
+23:27
+this same code again and now you can see
+23:30
+that the loss is not decreasing too much
+23:32
+initially the loss was
+23:34
+1.1 let us see after 3,000 iterations
+23:38
+the loss is
+23:39
+1.06 after 5,000
+23:42
+iterations the loss is
+23:46
+uh 1.06 and U let's see if this so this
+23:50
+code is still running but it will finish
+23:53
+in some
+23:54
+time uh now it has fully run and you can
+23:57
+see the loss when I reach the end the
+23:59
+loss is
+24:00
+1.04 so the loss started out with 1.1
+24:04
+and it has reached only
+24:06
+1.04 and the accuracy is also 04 which
+24:09
+is very bad and even the loss did not
+24:11
+decrease too much so it turns out that
+24:14
+this method is not robust at all in fact
+24:17
+it works for some data set but it does
+24:19
+not work for complicated data sets so we
+24:21
+cannot work with this method also so
+24:24
+both of the strategies which we thought
+24:27
+about the first strategy did not even
+24:29
+work for the vertical data set uh the
+24:32
+second strategy which we thought about
+24:33
+it works better but it fails for complex
+24:37
+data that is the reason we need to
+24:40
+encode some more information about
+24:42
+whether we are moving in the correct
+24:43
+direction or not and how we should
+24:45
+upload update the weights and biases the
+24:48
+reason the second strategy was working
+24:50
+in a better manner is that we were kind
+24:53
+of updating the weights and biases
+24:55
+whether we are moving in a based on
+24:56
+whether we are moving in a correct
+24:58
+direction or not that is good but the
+25:00
+way we are updating them is not good we
+25:02
+are updating them randomly right we
+25:05
+should update them in a specific manner
+Why we need calculus
+25:08
+in fact the exact specific manner to
+25:11
+update the weights and biases is taking
+25:13
+the slope of the function so let's say
+25:15
+I'm currently at this point
+25:17
+right uh the best way to decrease the
+25:20
+loss sharply is to go along the negative
+25:23
+gradient of the
+25:24
+slope so how much amount the weights and
+25:28
+biases needs to be updated it actually
+25:30
+depends on the gradient of the loss
+25:34
+function and that is why calculus comes
+25:37
+into the picture if we did not need to
+25:40
+find gradients then people would not say
+25:42
+that you need to study calculus to
+25:44
+understand neural networks but the
+25:47
+important thing is that derivatives
+25:49
+actually give us an indication of which
+25:51
+direction are we moving so it turns out
+25:54
+that the negative of the gradient at a
+25:56
+particular point is the direction of the
+25:58
+deepest
+25:59
+descent and if we move in that direction
+26:02
+we are optimizing the loss at a much
+26:04
+faster
+26:05
+manner that's why we need to find
+26:07
+gradients so the second strategy is good
+26:09
+but the way we move when the loss is
+26:12
+decreasing it should be determined by
+26:14
+the slope or the gradient at that
+26:16
+particular point and that's why we need
+26:19
+to study optimization in a better manner
+26:22
+we need better ways to do
+26:25
+optimization so in the next lecture
+26:27
+we'll be covering the basics of
+26:29
+derivatives gradient partial derivatives
+26:32
+and chain rule once these four things
+26:34
+are mastered then we are on track to
+26:36
+learn about back propagation which is
+26:39
+how to update the weights and biases so
+26:41
+that the loss keeps on decreasing but
+26:44
+before that as I said we need to learn
+26:45
+four things derivatives partial
+26:48
+derivatives gradient and the chain Rule
+26:51
+and these four things will be covered in
+26:53
+a separate
+26:55
+lecture uh so thank you so much everyone
+26:58
+I'll look forward to seeing you in the
+26:59
+next lecture
