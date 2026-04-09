@@ -1,0 +1,1136 @@
+0:00
+[Music]
+0:05
+hello everyone welcome to this next
+0:08
+lecture in the neural networks from
+0:10
+scratch
+0:11
+Series in this lecture we are going to
+0:14
+essentially cover three things the first
+0:17
+thing is
+0:18
+derivatives the second is gradients
+0:21
+partial derivatives and the final thing
+0:24
+is chain
+0:25
+rules so uh if you are already familiar
+0:28
+with derivatives gradient partial
+0:31
+derivative and chain rule you can feel
+0:34
+free to skip this video however if you
+0:37
+need to refresh the calculus needed to
+0:39
+understand neural networks this one
+0:42
+lecture will go through all the key
+0:44
+Concepts which are
+0:45
+needed there is a reason why many people
+0:48
+say that calculus is the building block
+0:51
+of understanding back
+0:53
+propagation and uh I've deliberately
+0:56
+created this lecture so that before we
+0:58
+start with back propagation which is
+1:00
+essentially taking the gradient of the
+1:03
+or the derivative of the loss function
+1:05
+with respect to the weights and biases
+1:06
+of the neural
+1:08
+network I want to make sure that all of
+1:11
+you are aware and your foundations are
+1:14
+clear about these calculus Concepts so
+Derivatives
+1:17
+let's start with the first concept which
+1:19
+is
+1:20
+derivatives so the reason we care about
+1:23
+derivatives is because if you want to
+1:27
+adapt the weights and biases so that the
+1:30
+loss function decreases we first need to
+1:34
+understand the impact of weights and
+1:36
+biases on the loss function itself so
+1:40
+that we can change them such that the
+1:43
+loss function
+1:45
+reduces if we do not know how the
+1:47
+weights and biases impact the loss
+1:49
+function it will be very difficult for
+1:52
+us to know how to change them so if you
+1:55
+consider two quantities X and Y we need
+1:58
+to know
+2:01
+the
+2:04
+impact of X on
+2:07
+y or rather we need to know the impact
+2:11
+of Delta X on Delta Y which means the
+2:16
+change in X on the change in
+2:21
+y and this exact quantity the impact of
+2:26
+change in X on change in y can can be
+2:30
+calculated if you know the derivative of
+2:32
+a function so let us look at this
+2:35
+further how to find the impact of a
+2:37
+parameter or input on the
+2:39
+output and uh through this we will also
+2:42
+understand the concept of derivatives
+2:45
+first I'm going to take a linear
+2:46
+function f ofx = 2X and I've plotted
+2:50
+this over here right
+2:51
+now so if you find the slope of this
+2:55
+function at every single time Point
+2:57
+let's say if I take uh first point as 1A
+3:01
+2 and the second Point as 2A 4 the slope
+3:05
+of this
+3:06
+function at any point essentially is
+3:09
+given by Y2 - y1 / X2 -
+3:13
+X1 uh so let me do this 4 - 2 / 2 - 1 so
+3:18
+that will be equal to
+3:20
+2 so if you find the slope of this
+3:23
+function at any point along this line
+3:25
+it's essentially constant and it will
+3:27
+have a magnitude of two
+3:30
+okay now let us look at F ofx =
+3:35
+2x² which looks like this it's a
+3:37
+parabola ship and now if I ask you to
+3:40
+find the slope of the function at every
+3:42
+Point let us see first qualitatively how
+3:45
+the slope
+3:46
+changes at X = to
+3:49
+0 it's a flat line right the slope so
+3:52
+the slope is zero here then slowly the
+3:54
+slope starts to increase as my x x
+3:58
+becomes more large my my slope becomes
+4:00
+even steeper and steeper and steeper so
+4:03
+in fact as the x coordinate increases
+4:06
+you will see that the slope becomes
+4:07
+Higher and Higher and Higher and how am
+4:10
+I making this intuitive prediction
+4:12
+because I'm looking at this tangent to a
+4:14
+particular point so whenever I say find
+4:17
+the slope just look at the tangent at
+4:20
+that particular point and draw that
+4:22
+tangent and look at how steep that
+4:25
+tangent is if the tangent is flat like
+4:28
+it is at xal to 0
+4:30
+it means the slope is zero if the
+4:32
+tangent is slightly inclined it's a
+4:34
+higher slope if the tangent is vertical
+4:37
+it's infinite slope so if you look at
+4:41
+this line over here this straight line
+4:43
+it has infinite slope so from a
+4:45
+horizontal line to vertical line the
+4:47
+slope changes from 0 to
+4:49
+Infinity now if you look at this
+4:52
+function and uh if you try to find its
+4:55
+slope at every single point you will see
+4:57
+that as X increases the the line becomes
+5:00
+steeper and steeper and steeper in fact
+5:03
+if you extend this even further the
+5:05
+slope becomes steeper and steeper and
+5:08
+steeper whereas here if you see in the
+5:11
+linear line if you draw the tangent at
+5:13
+any point it's essentially along this
+5:16
+line
+5:17
+itself and it makes the same angle with
+5:20
+the horizontal and hence the slope is
+5:23
+constant so if you measure the slope of
+5:26
+the tangent line at any point
+5:29
+it actually gives you the impact which X
+5:33
+has on y so let's say if you take this
+5:39
+function again and if you want to see
+5:42
+what is the impact of the change in this
+5:46
+point x which is xal to 0 on y you will
+5:49
+just take the tangent at this point and
+5:52
+you will see the slope is zero which
+5:53
+means the even if I move
+5:56
+slightly even if I move slightly in this
+5:59
+direction right direction or the left
+6:01
+Direction the Y value is not going to
+6:03
+change much so a small increase or
+6:06
+decrease X or a small change in X is not
+6:09
+going to lead to Too Much change in y
+6:11
+when x equal to Zer however if you go on
+6:14
+increasing X so if x equal to
+6:17
+here then if you look at the tangent the
+6:20
+slope is higher this means that if I if
+6:24
+I take a small change in X in either
+6:26
+direction it will lead to a greater
+6:28
+change in y
+6:30
+compared to xal
+6:32
+to0 whereas if I take a very high X if I
+6:35
+take let's say x = 5 and again I look at
+6:40
+Delta
+6:41
+X which is a small change in X the line
+6:44
+here the slope will be even
+6:47
+steeper so a small change in X will lead
+6:50
+to an even higher or a much larger
+6:52
+change in
+6:53
+y so the slope of a function at a
+6:56
+particular point the slope or rather the
+7:00
+slope of the tangent
+7:02
+line the slope of a tangent line at a
+7:05
+particular point x gives us an
+7:08
+indication of the impact which a change
+7:11
+in X has on the change in y so it tells
+7:14
+us that if I have a small change in X
+7:17
+Delta X how much it is going to affect
+7:19
+Delta Y and you see this is exactly what
+7:23
+we started with at the beginning of the
+7:24
+lecture we need to know the impact of
+7:27
+Delta X on Delta y so now we have a
+7:30
+quantity which can give us that impact
+7:32
+you have a function you just find the
+7:34
+slope of a tangent line at a point and
+7:37
+that will give you that if you move
+7:39
+slightly to the left or slightly to the
+7:41
+right how much does y
+7:42
+change which means what's the impact of
+7:45
+that particular point x on the output or
+7:48
+rather what's the impact of the change
+7:50
+in X on the
+7:52
+output it turns out that for any
+7:55
+function uh there is a way to calculate
+7:59
+this slope of the tangent line at any
+8:02
+point and that is actually called as the
+8:04
+derivative of the function at that point
+8:07
+and it is defined by the notation d by
+8:10
+DX so uh if you have any polinomial
+8:14
+let's say if you have polinomial a into
+8:16
+X to n it D its derivative is given by a
+8:20
+into n into x n
+8:24
+minus1 so if you have this x then its
+8:27
+derivative will be given by 1 into X to
+8:30
+0 which is 1 if you have a function as
+8:34
+x² its derivative will be given by 2x if
+8:38
+you have a function X Cub + 2x² + 6 its
+8:43
+derivative will be given as 3x² +
+8:47
+4x another rule which a derivative
+8:50
+follows is that if there are two
+8:51
+functions F ofx + G of X the derivative
+8:56
+of the combined function is the
+8:58
+derivative of of the first function plus
+9:00
+derivative of the second function so if
+9:03
+you look at the summation of functions
+9:04
+here x CU + 2x2 + 6 if I want to find
+9:08
+the derivative of this combined function
+9:11
+I just find the derivative of the first
+9:13
+which is 3x² add it to the derivative of
+9:15
+the second which is 4X and add it to the
+9:18
+derivative of the third remember that
+9:20
+the derivative of a constant is always
+9:22
+zero and to get an intuition for this
+9:24
+always try to visualize the graph so for
+9:27
+a constant function the graph will
+9:29
+always look like this right so if you
+9:31
+find the slope at any point it's always
+9:33
+the horizontal line the slope is
+9:37
+zero um and the derivative of a function
+9:41
+is also denoted by notation f- of X so f
+9:45
+of x is the function itself and f- of X
+9:49
+is the derivative of the
+9:50
+function so for the first function here
+9:54
+f- of x = 1 for the second function f-
+9:57
+of X = 2X for this third function f- of
+10:01
+x = 3x² +
+10:04
+4x remember that this is not intended to
+10:07
+be a course on calculus so I'm briefly
+10:09
+explaining you the derivative formulas
+10:12
+but if you really want to go into depth
+10:15
+I encourage you to take some basic
+10:17
+calculus courses which can explain about
+10:19
+derivatives in a lot more detail however
+10:22
+for the purposes of following this
+10:23
+course this much knowledge is enough for
+10:25
+derivatives of simple functions
+10:29
+now we look at the second part of this
+Partial Derivatives
+10:31
+lecture in which we'll be talking about
+10:33
+gradients partial derivatives and chain
+10:36
+rule so up till now we only looked at
+10:39
+functions of one variable there was Y
+10:41
+which was the dependent variable and
+10:43
+There Was X which was the independent
+10:45
+variable and we tried to see how change
+10:48
+of X led to a change of Y
+10:51
+right but what if the function itself
+10:54
+was let's say f is a function of x y and
+10:58
+Zed
+10:59
+then how do you find the derivatives
+11:01
+with respect to e x y and Zed how do you
+11:04
+even represent it because if you just
+11:06
+write F Das of x y and Zed the question
+11:09
+is that okay this denotes a change in F
+11:12
+but with respect to change in what
+11:14
+remember for just one function f- of X
+11:17
+denotes the change in y with respect to
+11:19
+change in X but if you just write f- of
+11:22
+X it's very vag because you don't know
+11:24
+whether it's change in the function f
+11:26
+with respect to change in X or Y or Zed
+11:30
+that's why for functions of multiple
+11:31
+variables there is this idea of partial
+11:35
+derivatives which basically gives you
+11:38
+the um impact of every single input on
+11:42
+the function output so impact of X on F
+11:45
+or change of X on change of change in F
+11:48
+change of Y on change in F and change of
+11:51
+Zed on the change in
+11:54
+F uh so we'll look at gradients also and
+11:57
+finally we'll look at the chain rule
+11:59
+which is essentially the backbone of
+12:01
+back
+12:02
+propagation so first I want to introduce
+12:04
+you to the notation of partial
+12:06
+derivatives so as I said we cannot have
+12:09
+fdh randomly because we need to specify
+12:12
+we are taking the derivative with
+12:14
+respect to which variable so the
+12:16
+notation is
+12:18
+this and uh so henceforth in this series
+12:22
+when I say d by DX I mean normal
+12:26
+derivative and when I say Do by dox
+12:30
+I mean partial derivative so if I
+12:33
+represent do by dox of f it means the
+12:35
+partial derivative of f with respect to
+12:38
+X so partial
+12:40
+derivative of f with respect to
+12:44
+X which means what is the impact of the
+12:46
+change in X on change in F if I write do
+12:50
+F by do y it is the partial
+12:55
+derivative of f with respect to y
+13:00
+which means what is the impact of change
+13:02
+in y on the change in
+13:04
+F and if I write do F by do Z it means
+13:07
+the partial derivative of f with respect
+13:09
+to zed which is
+13:12
+essentially so partial derivative of f
+13:15
+with respect to zed which is essentially
+13:18
+what is the impact of a change in X on
+13:21
+the change in F so this is the notation
+13:24
+for partial derivative now let's see how
+13:27
+to compute partial derivative it's
+13:29
+actually very simple the simple trick is
+13:31
+that you just ignore the other variables
+13:35
+so for example uh or rather you just
+13:38
+treat the other variables as constants
+13:41
+so if my f is 2x + 3 y² and if I want to
+13:45
+take the partial derivative of f with
+13:47
+respect to X I will treat y as a
+13:51
+constant so and you know that the
+13:53
+derivative of any constant with respect
+13:55
+to X will be zero right so if I take the
+13:58
+partial derivative of f with respect to
+14:00
+X this will be the partial derivative
+14:03
+with respect to partial derivative of x
+14:06
+partial derivative of 2x with respect to
+14:08
+X plus the partial derivative of 3 y²
+14:11
+with respect to X now Y is another
+14:15
+independent variable so you can treat
+14:17
+this as a constant when you take the
+14:19
+derivative with respect to X so then
+14:21
+this will be zero because y does not
+14:24
+depend on X both of them are independent
+14:26
+variables so this term would be zero so
+14:28
+the only thing which will survive is the
+14:30
+derivative of 2x with respect to X and
+14:32
+we have already seen how to calculate
+14:34
+that when we looked at
+14:36
+derivatives so this will be equal to
+14:39
+two when you want to calculate the
+14:42
+partial derivative of f with respect to
+14:44
+Y it will be the partial derivative of
+14:46
+2x with respect to Y plus partial
+14:49
+derivative of 3 Y2 with respect to Y now
+14:54
+the trick which I mentioned before if
+14:55
+you are taking partial derivative with
+14:57
+respect to Y all other VAR Ables need to
+14:59
+be taken as constants so this will be
+15:02
+taken as a constant and derivative of a
+15:04
+constant with respect to Y will be zero
+15:07
+so the only thing which will survive is
+15:08
+the derivative of 3 y s with respect to
+15:11
+Y and that will be 6
+15:14
+y so if you look at F the partial
+15:16
+derivative of f with respect to X is 2
+15:19
+and the partial derivative of f with
+15:21
+respect to Y is 6
+15:23
+y uh what this means is that what is the
+15:26
+meaning of these two derivatives right
+15:29
+here we saw that in one dimension the
+15:31
+meaning of the derivative was equal to
+15:33
+slope uh if you look at this function f
+15:37
+of x = 2x + 3 Y2 and if you plot it it
+15:40
+will actually be a three-dimensional
+15:42
+function so if you take the slope of a
+15:45
+three-dimensional function function it
+15:46
+will actually slope in two sides it will
+15:49
+slope along X and it will slope along y
+15:51
+so it has two slopes so when you
+15:54
+calculate the slope you need to specify
+15:57
+along which direction are you
+15:58
+calculating the slope slope so do F by
+16:00
+dox is the slope along the X Direction
+16:03
+and do F by do y is the slope along the
+16:06
+Y Direction so if you plot the
+16:08
+threedimensional function it will look
+16:10
+like a parabola but in three
+16:12
+dimensions and
+16:14
+uh the actual gradient will be a vector
+16:17
+summation of derivative with respect to
+16:20
+X and derivative with respect to Y so
+16:22
+the actual gradient will be a vector
+16:24
+summation of these two
+16:26
+gradients uh so that's why we have to
+16:29
+take two gradients here because the
+16:31
+slope will have slope in X and slope in
+16:34
+y if there are three variables we need
+16:37
+to take three partial
+16:40
+derivatives okay so as I mentioned three
+16:43
+variables let's take an example of three
+16:45
+variables here which is a bit complex
+16:47
+since there is a product term but
+16:49
+remember our trick when you take the
+16:51
+partial derivative with respect to one
+16:53
+variable all other variables will be
+16:54
+treated as constant so let's say this is
+16:57
+f of x y and z 3 x CU Z - Y 2 + 5 Z + 2
+17:02
+y z if you take the partial derivative
+17:05
+of f with respect to X it will be the
+17:08
+partial derivative with respect to the
+17:09
+first term plus the partial derivative
+17:11
+with respect to the second third and
+17:13
+fourth term now remember the second
+17:16
+third and fourth term does not have X so
+17:18
+these will be treated as constants so
+17:20
+their derivative with respect to X will
+17:22
+be
+17:23
+zero in the first term 3 and Z will also
+17:28
+be taken as constants because we are
+17:30
+taking the partial derivative with
+17:31
+respect to X so when you take the
+17:33
+derivative of 3 x Cub Z 3 and Z will be
+17:37
+taken as constant so they'll they'll
+17:38
+come out of this uh so then the only
+17:41
+thing which remains is the derivative
+17:43
+with respect to X Cube and that is
+17:46
+3x² so the partial derivative of f with
+17:49
+respect to X will be 3 Z into 3x² which
+17:52
+is equal to 9 x²
+17:56
+Z and uh I want to take one one more
+17:59
+example just to motivate this idea
+18:01
+further if f of x comma Y is the maximum
+18:04
+of X and Y let's say if that's the
+18:07
+function so if x is 2 and Y is three F
+18:10
+will be three if x is 2 and Y is four F
+18:13
+will be four if x is 4 and Y is 2 F will
+18:16
+be four so it will just take the maximum
+18:18
+of X and
+18:20
+Y so what is the partial derivative of f
+18:23
+with respect to x if x is greater than y
+18:27
+this will be just X
+18:29
+if x is greater than y and if Y is
+18:33
+greater than x it will be y so if x is
+18:36
+less than y then it will be y so if you
+18:39
+take the partial derivative if x is
+18:41
+greater than y it will just be one and
+18:44
+if x is less than y then it will be zero
+18:47
+because the partial derivative of y with
+18:49
+respect to X is zero you just have to
+18:51
+treat y as a constant so the answer is
+18:53
+if x is greater than y this will be
+18:55
+equal to 1 if it and it will be zero if
+18:58
+x is less than than
+19:00
+y a special case of this is when f of x
+19:04
+comma Y is maximum of X and zero and the
+19:07
+reason I'm taking it is because it is
+19:09
+exactly what happens in Ru activation
+19:12
+function so if you take the partial
+19:14
+derivative of this with respect to X it
+19:16
+will essentially be 1 if x is greater
+19:19
+than Z and it will be zero if x is less
+19:21
+than zero so it's exactly same as this
+19:24
+case you just have to replace y with a
+19:26
+zero
+19:29
+so this is the meaning of partial
+19:32
+derivatives the way they operate is
+19:34
+exactly similar to normal derivatives if
+19:36
+you remember the trick the trick is that
+19:39
+if you take partial derivative with
+19:40
+respect to one variable the other
+19:42
+variables can be treated as a
+19:45
+constant why will we need partial
+19:47
+derivatives in neural networks because
+19:49
+we will have a function of a huge number
+19:51
+of parameters all the weights will be
+19:54
+treated as separate parameters all the
+19:56
+biases will be treated as separate
+19:58
+parameters
+19:59
+so we will have a function of a huge
+20:00
+number of variables so we will need to
+20:03
+know how to take the gradient or the
+20:06
+derivative of the loss function with
+20:08
+respect to each of these
+20:10
+variables that's why we need to have an
+20:12
+intuitive understanding of partial
+20:15
+derivatives
+20:17
+um okay and now we will cover the
+Gradient
+20:21
+gradient after learning partial grad uh
+20:24
+derivatives understanding the gradient
+20:26
+becomes very easy so if you have a
+20:28
+function of three variables X Y and Z as
+20:31
+3 x Cub Z - Y 2 + 5 Z + 2 y z if you
+20:36
+take the partial derivative with respect
+20:38
+to X you will get 9 x² Z if you take the
+20:41
+partial derivative of y you will get - 2
+20:43
+y + 2 Z and if you take partial
+20:46
+derivative with respect to zed you will
+20:48
+get 3x Cub + 5 + 2
+20:51
+y now the gradient is just the vector of
+20:54
+all possible partial derivatives so the
+20:57
+gradient can be written as a vector like
+20:58
+this it has three rows and one column
+21:01
+the first element is partial derivative
+21:03
+with respect to X the second element is
+21:06
+partial derivative with respect to Y and
+21:08
+third element is partial derivative with
+21:10
+respect to zed so if someone asks you
+21:13
+what is the gradient of this function f
+21:15
+you can just say that it's a vector
+21:17
+whose first value will be do F by dox
+21:21
+which is 9 x² Z second value will be do
+21:25
+F by do Y which is - 2 y + 2 Z
+21:29
+and the third value will be do F by do Z
+21:31
+which is 3x CU + 5 + 2
+21:35
+y so the gradient actually is a vector
+21:38
+which contains the uh
+21:42
+direction of the steepest
+21:44
+Ascent so let's say if you have a
+21:47
+threedimensional function the gradient
+21:49
+gives you the direction in which the
+21:50
+function will increase the most so it
+21:53
+turns out the negative gradient is the
+21:55
+direction where the function decreases
+21:56
+the most and why we care about the
+21:59
+gradient is because we eventually want
+22:00
+to move in a direction where function
+22:02
+decreases the most right let's say this
+22:04
+is the loss function and if we are here
+22:07
+we want to move in a direction of
+22:08
+steepest descent so remember the
+22:11
+gradient gives us the direction of
+22:13
+steepest Ascent which will be in this
+22:14
+direction gr
+22:16
+F however negative of grad F will give
+22:19
+us the direction of Cs descent so this
+22:22
+this negative of gr f is the direction
+22:25
+which we will need to go when minimizing
+22:27
+the loss function and that is why we are
+22:29
+learning about the gradient right now
+22:32
+when we look at back propagation this
+22:34
+loss will be a multi-dimensional loss
+22:37
+function of Weights biases Etc but the
+22:40
+underlying philosophy is the same you
+22:43
+just calculate the gradient of this loss
+22:45
+function and then move in the direction
+22:46
+of the negative
+22:49
+gradient uh okay so this is the
+22:52
+explanation of gradient initially I
+22:55
+thought I'll cover the chain rule also
+22:56
+in this lecture but I think the will
+22:58
+become a bit long so I'll cover it in
+Lecture Summary
+23:01
+the next lecture just as a recap in this
+23:04
+lecture we looked at uh first partial
+23:09
+derivatives uh first we looked at normal
+23:11
+derivatives so we looked at polinomial a
+23:13
+into X to n and saw that the derivatives
+23:16
+is n into a into x n minus1 and the
+23:20
+visual understanding of this is that
+23:22
+it's given by the slope at a particular
+23:25
+point now if we have function of
+23:27
+multiple variables such as this function
+23:30
+here we have to look at partial
+23:31
+derivatives the trick of partial
+23:33
+derivatives is that when you take
+23:35
+partial derivative with respect to one
+23:37
+variable the other variable Can Be
+23:38
+Imagined to be constant so do F by dox
+23:42
+which is the symbolic representation of
+23:44
+partial derivative of f with respect to
+23:46
+X will just be derivative of x with
+23:49
+respect to X so this will be one and do
+23:51
+F by DOI will be also equal to 1 if you
+23:54
+have the function as X into y do F by
+23:57
+dox will be y y because y will be
+24:00
+treated as a constant and do F by doy
+24:02
+will be X because X will be treated as a
+24:05
+constant if the function is f of x Comm
+24:08
+Y is Max of X comma y do F by dox will
+24:12
+be 1 if x greater than y and 0er
+24:15
+otherwise whereas if the function f of x
+24:17
+Comm Y is Max of X comma 0 which is what
+24:21
+is what happens in a Rao activation
+24:23
+function then do F by dox is 1 if x is
+24:26
+greater than zero and it's Z
+24:30
+otherwise so I hope you have understood
+24:32
+the concepts of derivatives partial
+24:34
+derivatives and gradient in the next
+24:37
+lecture we'll be looking in detail about
+24:40
+the chain
+24:41
+Rule and uh we'll understand it because
+24:44
+it is the backbone of back propagation
+24:47
+so thank you so much everyone and I'll
+24:48
+see you in the next lecture

@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 400">
+  <rect width="700" height="400" rx="16" fill="#fafafa"/>
+  <text x="350" y="30" text-anchor="middle" font-family="Segoe UI" font-size="17" font-weight="700" fill="#1e1e2e">Derivative = Slope of Tangent Line</text>
+
+  <!-- Axes for f(x)=2x² -->
+  <line x1="60" y1="50" x2="60" y2="340" stroke="#64748b" stroke-width="1.2"/>
+  <line x1="60" y1="340" x2="340" y2="340" stroke="#64748b" stroke-width="1.2"/>
+  <text x="200" y="380" text-anchor="middle" font-family="Segoe UI" font-size="12" fill="#64748b">x</text>
+  <text x="30" y="200" text-anchor="middle" font-family="Segoe UI" font-size="12" fill="#64748b" transform="rotate(-90,30,200)">f(x) = 2x²</text>
+
+  <!-- Parabola curve -->
+  <path d="M 60,340 Q 100,336 140,310 Q 180,260 200,200 Q 240,90 280,50" stroke="#6366f1" stroke-width="2.5" fill="none"/>
+
+  <!-- Tangent at x=0 (flat) -->
+  <line x1="30" y1="340" x2="120" y2="340" stroke="#10b981" stroke-width="2"/>
+  <circle cx="60" cy="340" r="5" fill="#10b981" stroke="white" stroke-width="2"/>
+  <text x="80" y="358" font-family="Segoe UI" font-size="10" fill="#10b981">slope = 0</text>
+
+  <!-- Tangent at mid point -->
+  <line x1="120" y1="340" x2="230" y2="230" stroke="#f59e0b" stroke-width="2"/>
+  <circle cx="170" cy="290" r="5" fill="#f59e0b" stroke="white" stroke-width="2"/>
+  <text x="210" y="260" font-family="Segoe UI" font-size="10" fill="#f59e0b">slope = moderate</text>
+
+  <!-- Tangent at high point -->
+  <line x1="200" y1="250" x2="270" y2="80" stroke="#ef4444" stroke-width="2"/>
+  <circle cx="238" cy="155" r="5" fill="#ef4444" stroke="white" stroke-width="2"/>
+  <text x="276" y="110" font-family="Segoe UI" font-size="10" fill="#ef4444">slope = steep</text>
+
+  <!-- Right side: Derivative rules -->
+  <rect x="370" y="50" width="310" height="320" rx="12" fill="white" stroke="#e2e8f0" stroke-width="1.2"/>
+  <text x="525" y="78" text-anchor="middle" font-family="Segoe UI" font-size="14" font-weight="700" fill="#1e1e2e">Derivative Rules</text>
+
+  <!-- Power rule -->
+  <rect x="390" y="92" width="270" height="40" rx="8" fill="#eef2ff" stroke="#6366f1"/>
+  <text x="525" y="108" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="#3730a3">Power Rule</text>
+  <text x="525" y="124" text-anchor="middle" font-family="Consolas" font-size="12" fill="#3730a3">d/dx [axⁿ] = n·a·xⁿ⁻¹</text>
+
+  <!-- Examples -->
+  <text x="400" y="158" font-family="Consolas" font-size="12" fill="#64748b">f(x) = x</text>
+  <text x="560" y="158" font-family="Consolas" font-size="12" fill="#6366f1">f'(x) = 1</text>
+
+  <text x="400" y="182" font-family="Consolas" font-size="12" fill="#64748b">f(x) = x²</text>
+  <text x="560" y="182" font-family="Consolas" font-size="12" fill="#6366f1">f'(x) = 2x</text>
+
+  <text x="400" y="206" font-family="Consolas" font-size="12" fill="#64748b">f(x) = 2x²</text>
+  <text x="560" y="206" font-family="Consolas" font-size="12" fill="#6366f1">f'(x) = 4x</text>
+
+  <text x="400" y="230" font-family="Consolas" font-size="12" fill="#64748b">f(x) = x³</text>
+  <text x="560" y="230" font-family="Consolas" font-size="12" fill="#6366f1">f'(x) = 3x²</text>
+
+  <line x1="390" y1="248" x2="660" y2="248" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Sum rule -->
+  <rect x="390" y="258" width="270" height="40" rx="8" fill="#fef3c7" stroke="#f59e0b"/>
+  <text x="525" y="274" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="#92400e">Sum Rule</text>
+  <text x="525" y="290" text-anchor="middle" font-family="Consolas" font-size="12" fill="#92400e">[f+g]' = f' + g'</text>
+
+  <!-- Constant rule -->
+  <rect x="390" y="310" width="270" height="40" rx="8" fill="#d1fae5" stroke="#10b981"/>
+  <text x="525" y="326" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="#065f46">Constant Rule</text>
+  <text x="525" y="342" text-anchor="middle" font-family="Consolas" font-size="12" fill="#065f46">d/dx [c] = 0</text>
+</svg>
