@@ -1,0 +1,556 @@
+0:00
+[Music]
+0:05
+hello everyone welcome to this lecture in the neural networks from scratch
+0:10
+Series in the previous lecture we looked at back propagation through a single neuron in this lecture our main
+0:18
+objective is to look at back propagation through multiple neurons or back
+0:23
+propagating through one layer so uh let me just provide a brief
+0:29
+summary of the prev previous lecture we took one neuron and which had three inputs and each input had a weight
+0:36
+associated with it it had a Ru activation function and then the loss
+0:41
+function was just the squared loss the True Value was zero so our goal was to
+0:46
+how to optimize the weights and biases of the neuron so that the output is close to
+0:52
+zero so for that we needed to find the gradient of the loss function with respect to W KN with respect to W1 and
+1:00
+W2 which are the three weights and the gradient of loss with respect to the bias term and the way to obtain that is
+1:08
+to obtain the gradient of the loss with respect to W not you have to find the gradient of the loss with respect to the
+1:15
+uh preceding unit which is the ru then you have to find the gradient of Ru with
+1:20
+respect to the summation operation then the gradient of the summation with respect to x w and then the gradient of
+1:27
+x w with respect to w so when you chain these four derivatives
+1:33
+together through the chain rule ultimately you obtain the derivative of loss with respect to W not and that's
+1:40
+why it's called as back propagation we even saw how to do one pass of the back
+1:45
+propagation for each of the weight so we calculated gradient of loss with W1 W2
+1:51
+W3 and w0 and we also calculated gradient of lot loss with respect to B uh finally we
+1:59
+showed one iteration of the gradient descent and uh we showed that the new loss is 33.876770
+2:14
+[Music]
+2:29
+question would be that okay this is fine for a single neuron but the real power of neural networks comes from stacking
+2:36
+these neurons together so the real power of neural network comes from multiple
+2:42
+neurons or a layer today we are again going to look at back propagation but back propagating
+2:49
+through an entire layer of neurons similar to the previous lecture I'll make this lecture extremely Hands-On uh
+2:57
+we'll do everything from scratch we'll even do a one iteration of gradient descent back propagation on the white
+3:03
+board itself and then I'll take you to the uh vs code or we'll code in Python
+3:11
+the 200 iterations so let me explain the problem statement we have four inputs
+3:16
+here and uh we have three neurons in the first hidden layer if you see each neuron has four
+3:24
+weights associated with it so if you look at the first neuron the weights are
+3:29
+Ed by the pink line and they are w11 W12 W13 and
+3:35
+w14 and the bias of the first neuron is B1 for the second neuron it also has
+3:41
+four weights associated with it which are w21 w22 w23 and
+3:47
+w24 and the bias associated with the second neuron is B2 the third neuron
+3:53
+again has four weights associated with it w31 w32 w33 and w34 4 and the bias
+4:01
+associated with the third neuron is B3 okay then the output of each of these
+4:08
+neurons the output of the first neuron is w11 X1 plus W12 X2 plus W13 X3 plus
+4:15
+w14 X4 + B1 that is passed through the ru that leads to the answer of A1 the
+4:22
+output of the second neuron which is Z2 is passed through Ru which leads to an
+4:27
+answer of A2 and and the output of the third neuron which is Z3 it is passed
+4:33
+through Ru which leads to an answer of A3 and then finally there is another
+4:38
+neuron here which sums up these outputs A1 + A2 plus A3 and the loss is
+4:44
+basically A1 + A2 + A3 - 0 the whole Square which is essentially A1 + A2 + A3
+4:52
+whole Square so the true value of the output is equal to
+4:57
+zero so the question which you asking indirectly is that given this architecture what are the best values of
+5:04
+these 12 weights and these three biases so that the loss is as close to zero as
+5:13
+possible in other words what are the values of the weights and biases so that
+5:18
+A1 + A2 + A3 is very close to
+5:23
+zero so if you look at the number of parameters here there are 12 weight
+5:28
+parameters and three bias parameters so overall there are 15 parameters to maximize in this case and again I'm
+5:37
+going to show you 15 parameters to optimize rather not maximize and again
+5:42
+I'm going to show you how to optimize these parameters using the technique of back
+5:48
+propagation so just a simple notation to start with whenever you are learning
+5:53
+back propagation it's very important to use a clear notation of symbols so I'm
+5:58
+going to use Z1 as the output of the first neuron before going to its activation A1 as the output after The
+6:05
+Rao activation similarly Z2 and A2 and Z3 and A3 so A1 is Ru of Z1 A2 is Ru of
+6:15
+Z2 and A3 is RA of Z3 the output of this final neuron here A1 + A2 + A3 I'm going
+6:22
+to call as Y and so the loss which is my final loss is just equal to Y squ which is A1 + A2
+6:29
++ A3 whole squ so this is the notation which we are going to follow in today's
+6:35
+lecture um now the whole idea of back propagation is to find the gradient of
+6:41
+the loss which which is obtained at this point with respect to the weights
+6:47
+here since we cannot find this directly we find first find the gradient of loss
+6:52
+with respect to remember this is y we first find the gradient of loss with respect to Y then we find the GR rent of
+7:00
+Y with respect to A1 then we find the gradient of A1 with respect to Z1 and
+7:05
+then we find the gradient of Z1 with respect to let's say the first
+7:10
+weight okay now I want to focus on the first neuron the first neuron has four
+7:15
+weights w11 W12 W13 and w14 first I'm going to find the gradient of loss with
+7:22
+respect to w11 and I'm going to show you how to find this so let's say this is let's say
+7:29
+this is w11 so to find the gradient of loss with respect to w11 I'll need to back
+7:35
+propagate I'll first need to find gradient of or partial derivative of loss with respect to Y multiplied by
+7:42
+partial derivative of y with respect to A1 multiplied by partial derivative of A1 with respect to Z1 multiplied by
+7:49
+partial derivative of Z1 with respect to w11 that's it this is exactly what I
+7:54
+have written in mathematical formula here the partial derivative of the loss with respect respect to w11 is equal to
+8:02
+the partial derivative of the loss with respect to Y multiplied by the partial derivative of
+8:07
+y uh with respect to A1 multiplied by the partial derivative of A1 with
+8:14
+respect to Z1 which is here multiplied by the partial derivative of Z1 with
+8:19
+respect to w11 so this is the chain rule in action
+8:24
+and once I take the product of these four terms I'll get the partial derivative of loss with respect to
+8:31
+w11 now let me go ahead and find the find each of these quantities here and
+8:37
+for that the notation will be very useful which I mentioned before so let's look at the partial derivative of L with
+8:43
+respect to Y remember loss which is L is just y s so the partial derivative of L
+8:49
+with respect to Y is equal to 2 y then Y is equal to A1 + A2 + A3 so
+8:56
+partial derivative of y with respect to A1 is just equal to 1 then partial derivative of A1 with respect to Z1
+9:04
+remember A1 is Ru of Z1 and for a ra function which looks like this if we are
+9:09
+on this side which means if Z1 is greater than zero the derivative will be one if we are on this side the
+9:16
+derivative will be zero so partial derivative of A1 with respect to Z1 is 1 if Z1 is greater than
+9:24
+zero and then finally partial derivative of Z1 with respect to w11 so if you look
+9:29
+at Z1 Z1 is w11 X1 + W12 X2 + W13 X3 +
+9:36
+w14 X4 + B1 so partial derivative of Z1 with respect to w11 will just be equal
+9:43
+to X1 here and that's exactly what I have written here so when we find the
+9:49
+partial derivative of loss with respect to w11 we will just take the product of these four
+9:55
+terms so then partial derivative of loss with respect to w will be 2 y multiplied
+10:01
+by 1 multiplied by 1 if Z1 is greater than Z and multiplied by X1
+10:08
+okay similarly partial derivative of L with respect to
+10:13
+W12 will also be equal to 2 Y into 1 if Z1 is greater than 0 *
+10:21
+X2 remember for W12 uh which is the weight coming into
+10:28
+this neuron from from this particular input the only thing which will change is that we will need to take derivative
+10:35
+of Z1 with respect to W12 so only X2 Will Survive so in the formula the
+10:43
+answer for the derivative of L with respect to W12 is very same as
+10:49
+w11 uh except that instead of X1 it will be X2 similarly partial derivative of L
+10:56
+with respect to W13 is 2 I multiplied by 1 if Z1 is greater than 0 multiplied
+11:03
+X3 and partial derivative of L with respect to w14 is 2 Y into 1 if Z1
+11:09
+greater than 0 * X4 it's very simple to calculate each of
+11:15
+these partial derivatives if you have written the notation correctly now let me do one iteration of the forward pass
+11:22
+and calculate y calculate Z1 and then multiply to get the derivatives
+11:29
+okay so I'm going to use these values I'm going to use W1 as 0.1 23 point4 W2
+11:38
+which is the second weight Matrix so this is the first weight Matrix so each of these so this is w11 this is W12 this
+11:45
+is W13 and this is w14 similarly this is w21 w22 w23 w24
+11:54
+and this is w31 w32 w33 and w W 34 and this is my B1
+12:01
+B2 B3 which are the biases of the three neurons and my inputs which are feeding
+12:06
+here X1 X2 X3 and X4 they are fixed so they are 1 2 3 and four these are the
+12:14
+values which I'm starting with Okay so let's do one iteration of the forward pass
+12:20
+actually uh and let's try to find out uh
+12:26
+what each of these values are so when you do the forward pass you will calculate Z 1 Z2 and Z3 through these
+12:32
+summations and it turns out that Z1 is equal to 3 Z2 is equal to 7.2 and Z3 is
+12:39
+equal to 11.4 so immediately Z1 is greater than Zer so this will be just 1 so the
+12:46
+gradient of L with respect to w11 will be just 2 y * X1 gradient of L with
+12:52
+respect to W12 will be just 2 y * X2 gradient of L with respect to W13 will
+12:58
+be just 2 y * X3 and gradient of L with respect to w14 will be 2 y *
+13:07
+X4 so we need to calculate the value of y okay so Z1 is 3 Z2 is 7.2 and Z3 is
+13:15
+11.4 remember to get A1 A2 and A3 we just apply Ru and all of these are
+13:21
+greater than zero so Ru will be just equal to the values of the Zed so A1 will be equal to Z 1 which is 3 A2 will
+13:29
+will be equal to Z2 which is 7.2 and A3 will be equal to Z3 which is
+13:35
+11.4 and Y is equal to A1 + A2 + A3 which is 21.6 and the initial loss is y Square
+13:42
+which is 46656 this is one iteration of the forward pass okay now as we calculated
+13:49
+here gradient of L with or partial derivative of L with respect to w11 will just be 2y into X1 I have just written
+13:57
+it here again for reference so partial derivative of L with respect to w11 will be 2 Y into X1 since Y is 21.6 this will
+14:06
+be 43.2 the partial derivative partial derivative of L with respect to W12 will
+14:13
+be 2 Y into X2 which is 86.4 partial derivative of L with
+14:19
+respect to W13 will be 2 Y into X3 into X3 which is 129. 6 and partial
+14:26
+derivative of L with respect to w14 will be 2 y into X4 which is
+14:31
+172.2 so we have calculated these four partial derivatives of the weights belonging to the first neuron which are
+14:38
+these weights now we have to calculate the partial derivative of loss with respect to the weights belonging to Second
+14:45
+neuron which are w21 w22 w23 and
+14:50
+w24 so let's go ahead and calculate those uh very similar to this back
+14:56
+propagation which we did we will find that the partial derivative of L with respect to
+15:01
+w21 will be just equal to 2 y * X1 because since Z2 is also greater than
+15:09
+zero this term will also become one so the only thing which will survive is again the inputs X1 X2 X3 or X4 so it
+15:17
+turns out partial derivative of L with respect to w21 is also 2y and 2x1 and in
+15:23
+fact partial derivative of L with respect to w31 is also 2 I into X1
+15:29
+and this is the same for partial derivative of L with respect to w22 that's 2 I into X2 which is same as what
+15:35
+we calculated for W12 and that's the same for w32 and it's similar for
+15:41
+w23 and w33 and w24 and w34 in short partial derivative with
+15:48
+respect to w11 21 and 31 are identical and that value is 43.2 partial derivative of loss with
+15:56
+respect to W12 w22 and w32 are identical and that value is
+16:01
+86.4 partial value of loss with respect to W13 W2 3 and w33 are identical that
+16:08
+value is 129. 6 and partial derivative of loss with respect to w14 w24 and w34
+16:15
+are identical and that value is 172.2 so this is the partial derivative
+16:22
+with respect to 12 uh partial derivative with respect to 12 weights but remember
+16:28
+we also have biases so three more parameters are remaining so now let us calculate the partial derivative of loss
+16:35
+with respect to the biases so with respect to the first bias it will turn out let's look at it from the diagram
+16:42
+partial derivative of loss with respect to a of a with respect to sorry partial
+16:48
+derivative of loss with respect to Y multiplied by loss with respect to A1
+16:53
+multiplied by A1 with respect to Z1 and multiplied by Z1 with respect to B1 and
+16:58
+remember partial derivative of Z1 with respect to B1 is equal to 1 so only thing which will survive is 2
+17:06
+Y into partial derivative of y with respect to A1 which is anyway one so it turns out partial derivative
+17:14
+of L with respect to B1 is 2 I of L with respect to B2 is 2 I of L with respect
+17:20
+to B3 is 2 I so partial derivative of loss with respect to all the biased
+17:25
+terms is equal and that's given by 43.2
+17:30
+that's great now we have the partial derivatives with respect to all the 15 parameters which has been computed over
+17:38
+here over here and now we are ready to do the first update of the gradient
+17:43
+descent right so the way we are going to update the gradient descent is that we are going to subtract by the Learning
+17:50
+rate multiplied by the partial derivative of the loss with respect to that weight so the new value of
+17:57
+w11 the new value will be the old value uh minus
+18:05
+0.001 which is the step size multiplied by the partial
+18:10
+derivative of loss with respect to w11 so it turns out that the updated value for w11 is
+18:17
+0.0568 similarly we can get the updated values for all the other weights and all the other biases which have been
+18:24
+mentioned in this box here
+18:30
+we do the exact same rule as has been written here so for example W if you see
+18:35
+w34 the updat value of w34 is the original value of w34 minus the step
+18:42
+size into the partial derivative of loss with respect to w34 and we have already calculated the
+18:48
+partial derivatives above so then it's very easy to get all these 15 updated
+18:54
+values of the weights and the biases once we have the updated values we can do a forward pass again and check
+19:01
+to see the new loss value and is it less than the original loss so the original
+19:07
+loss was 46656 right now let us look at the new loss value okay when you find Z1
+19:16
+Z2 uh Z1 Z2 Z3 and A1 A2 A3 for these updated values of weights and biases it
+19:23
+turns out that A1 is 1.76 A2 is 5.86 and A3 is
+19:29
+9.96 so Y which is equal to A1 + A2 + A3 will be equal to
+19:34
+17582 4 so the loss which is just y sare will be equal to 30
+19:40
+9.14 this is the new loss which you obtain and the original Lo loss value
+19:46
+was 46656 so just in one iteration of gradient descent we were able to reduce
+19:51
+the loss by around 150 that's amazing right I
+19:57
+hope you are able to see that back propagation is not difficult it was not difficult for a neuron and it was not
+20:03
+difficult for a layer of neurons also we just need to make sure that the notations like the Zed uh The Zed
+20:10
+notation the a notation the Y notation is written correctly and once we have
+20:16
+this visual map right of where the information is Flowing we can just
+20:22
+compute the gradient by doing this back propagation passes like this so if you want to find the gradient of loss with
+20:29
+respect to w11 visually you should be able to see that it will be the produ product of four four terms partial
+20:36
+derivative of loss with respect to Y multiplied by partial derivative of y with respect to A1 multiplied by partial
+20:42
+derivative of A1 with respect to Z1 and multiplied by partial derivative of Z1 with respect to w11 that's why it's
+20:49
+called back proposition okay so we have done one iteration of gradient descent and the
+20:56
+loss is minimized or loss is rather reduced but it's still not Optimum because the loss is pretty high so for
+21:03
+that we'll need to do a large number of iterations of gradient descent uh and right now since it's
+21:09
+difficult to do all those iterations on a piece of paper I'm again going to take you to python code to show you how easy
+21:16
+it is to write this code of the backward propagation in Python so I'm just going to increase
+21:25
+the zoom in here okay so now now we have zoomed in a bit here and I'm going to
+21:33
+now show you how to do a backward pass through a layer so first we have the inputs which is one uh 1 2 3 and
+21:41
+four uh and then we have the weights so as we have the uh weight values
+21:48
+determined here the weights of the first neuron will be1
+21:54
+2.3.4 second neuron will be. 5 6 7 8 and
+21:59
+third neuron will be .91 1.1 and 1.2 this is exactly what has been written
+22:04
+over here these are the weights the first row are the weights of the first neuron second row are the weights of the
+22:11
+second neuron and third row are the weights of the third neuron and here are the three biases 0.1
+22:18
+Point 2 and 3 so the learning rate which we have obtained here is
+22:26
+0.001 uh which we are going to use because it's a practical small rate
+22:31
+which is generally used and then uh we just need to Define two functions we Define Ru which is maximum of 0 comma X
+22:39
+and we Define the derivative of Ru which is one when X is greater than Z and if it's 0 otherwise so it's important to
+22:46
+note that there is this np. where function so what this does is wherever X is greater than zero the value is one
+22:53
+otherwise it is zero it's useful to know about this function as well the reason
+22:58
+we calculated these two functions is because this third term right gradient or partial derivative of A1 uh with
+23:07
+respect to Z1 this term that is basically the derivative of
+23:13
+the ra okay now we will do uh forward and
+23:20
+the backward passes so first we calculate the forward pass so the Z is just the dot product of Weights inputs
+23:26
+and then we add the biases then we take the ru of all the output and then we do the sum and then the loss is y Square so
+23:34
+these four steps which are which have been described in the code they are exactly the steps which we discussed
+23:40
+over here first you find Z1 Z2 Z3 then you find A1 A2 A3 then you do A1 + A2 +
+23:47
+A3 and the loss is A1 + A2 + A3 whole
+23:52
+Square now we will be doing the procedure of backward pass remember that in the backward pass we actually need
+23:59
+the following quantities we need 2 I we need the ru derivative and we need the
+24:06
+inputs X1 X2 X3 and X4 and we just need to multiply these quantities that's
+24:11
+exactly what's done here first you compute the 2y which is the gradient or
+24:17
+the partial derivative of loss with respect to Y then there is this Ru derivative term here and essentially you
+24:23
+are multiplying uh this term which is 2 y MTI by a vector of
+24:30
+ones multiplied by the ru derivative so essentially when you do the gradient or
+24:36
+the partial derivatives what you will have is just the product of these terms
+24:42
+2 I into 1 into R derivative multiplied by the input X1 X2 X3 or
+24:51
+X4 okay
+24:57
+so yes yes okay so see this last term which is inputs here is this last
+25:04
+multiplication term gr partial derivative of Z1 with respect to w11 Etc
+25:09
+so essentially what is done in this part of the code this backward pass is just we are Computing those different partial
+25:15
+derivatives and multiplying them with each other and remember when we do the
+25:20
+partial derivative with respect to the bias we don't need to do the multiplication with these inputs because
+25:26
+the partial derivative with respect to to bias is just 2 I into one so then
+25:32
+this X1 term does not need to be there and so that's the reason why we don't
+25:38
+take this dot product which we do for the uh partial derivative with respect to the
+25:43
+weights once we have computed the partial derivative we'll just update the weights and biases so the new weights
+25:50
+will be the original weights minus learning rate into partial derivative of loss with respect to W and the new
+25:56
+biases will be the original biases minus the learning rate multiplied by the
+26:01
+partial derivative of loss with respect to B this is exactly what we had shown
+26:07
+uh in the gradient descent step sizes or in the gradient descent
+26:12
+updates so now what I'll be doing is that I'll actually be just running for two iterations and I'll be showing you
+26:18
+the loss so I'll print out the loss after every iteration so let me just run
+26:23
+this code here I think it's still running for 200 so
+26:30
+let me again run this code uh great so the first loss was
+26:37
+46656 and the second loss was 30 9.14 let's see what we had
+26:43
+obtained uh our first loss was 4665 56 so that's correct that is matching
+26:49
+what's there in the code but the more important is the second loss uh so second loss is 39.1 4 and and here also
+26:59
+it is 30 9.14 great so what we had calculated on the Whiteboard for the
+27:04
+second loss is matching the code second loss so we can proceed and go ahead with
+27:09
+the code if I did 200 iterations on this piece of whiteboard I also have reached
+27:15
+the minimum loss which is close to zero and the optimal weights and biases but it will take a long time so what I'm
+27:21
+going to do is just I'm going to run this for 200 iterations and I'm going to print out the loss after every 20
+27:29
+iterations so let's see the updated loss and the final weights and biases so look
+27:34
+at the loss at iteration 18 180 the loss is 6 into 10 to - 9 which means the loss
+27:40
+is almost zero and now our neural network is trained which means that we
+27:45
+have the weights and the biases which minimize the loss these are the 12
+27:50
+weights and these are the three biases which minimize the loss or these are the weights and biases for which the output
+27:57
+of this network with three neurons is closer to zero which was the True
+28:03
+Value so now using back propagation through a layer of neurons we have
+28:09
+computed the optimal values of weights and the biases which would minimize the
+28:15
+loss what we did right now is exactly what is done for a group of layers as well so if you look at large neural
+28:22
+networks it just that more back propagation passes happen so right now we just looked at one hidden layer right
+28:28
+if you have multiple hidden layers there will be more back propagation passes which
+28:34
+happen but the underlying logic is simple you just chain these different passes together and take a product of
+28:40
+these partial derivatives uh similar to the product which we took in the backward pass right
+28:47
+now and based on these products we get the partial derivative of loss with respect to weights and biases and then
+28:53
+we update the weights and biases and we then do it for multiple times
+28:58
+um right now we are using simple gradient descent but later we'll be learning about more complex methods like
+29:06
+uh stochastic gradient descent adag grad ad Delta Adam Etc which are adaptive
+29:12
+step sizes right now the step size is fixed but we will come to that a bit later the main purpose of this lecture
+29:19
+and the previous one on back propagation is so that you are not scared of back propagation it is not a very complicated
+29:26
+concept if you just understand the change rule uh and I also have a lecture on chain rule in this series then you
+29:33
+will you are in a very good position to understand back propagation I would just encourage you to write this on a piece
+29:39
+of paper or on a whiteboard format like I'm doing once you do this these product
+29:44
+of partial derivatives on your own you will never forget back propagation in
+29:50
+fact neural networks will start seeming easier to you and not just rocket science or magic I wish it was Ted to me
+29:57
+like this when I was was in school or college thank you so much everyone and I look forward to seeing you in the next
+30:02
+lecture of the neural networks from scratch series
