@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 300">
+  <rect width="700" height="300" rx="16" fill="#fafafa"/>
+  <text x="350" y="30" text-anchor="middle" font-family="Segoe UI" font-size="17" font-weight="700" fill="#1e1e2e">Accuracy: Argmax Comparison</text>
+
+  <!-- Softmax output -->
+  <text x="30" y="66" font-family="Segoe UI" font-size="12" font-weight="600" fill="#64748b">Softmax Output</text>
+  <!-- Row headers -->
+  <text x="30" y="100" font-family="Segoe UI" font-size="11" fill="#94a3b8">Batch 1</text>
+  <text x="30" y="130" font-family="Segoe UI" font-size="11" fill="#94a3b8">Batch 2</text>
+  <text x="30" y="160" font-family="Segoe UI" font-size="11" fill="#94a3b8">Batch 3</text>
+
+  <!-- Row 1 -->
+  <rect x="100" y="84" width="50" height="26" rx="5" fill="#10b981" stroke="#059669" stroke-width="1.2"/>
+  <text x="125" y="102" text-anchor="middle" font-family="Consolas" font-size="12" font-weight="700" fill="white">0.7</text>
+  <rect x="154" y="84" width="50" height="26" rx="5" fill="#f1f5f9" stroke="#e2e8f0"/>
+  <text x="179" y="102" text-anchor="middle" font-family="Consolas" font-size="12" fill="#94a3b8">0.1</text>
+  <rect x="208" y="84" width="50" height="26" rx="5" fill="#f1f5f9" stroke="#e2e8f0"/>
+  <text x="233" y="102" text-anchor="middle" font-family="Consolas" font-size="12" fill="#94a3b8">0.2</text>
+  <!-- Row 2 -->
+  <rect x="100" y="114" width="50" height="26" rx="5" fill="#f1f5f9" stroke="#e2e8f0"/>
+  <text x="125" y="132" text-anchor="middle" font-family="Consolas" font-size="12" fill="#94a3b8">0.1</text>
+  <rect x="154" y="114" width="50" height="26" rx="5" fill="#10b981" stroke="#059669" stroke-width="1.2"/>
+  <text x="179" y="132" text-anchor="middle" font-family="Consolas" font-size="12" font-weight="700" fill="white">0.5</text>
+  <rect x="208" y="114" width="50" height="26" rx="5" fill="#f1f5f9" stroke="#e2e8f0"/>
+  <text x="233" y="132" text-anchor="middle" font-family="Consolas" font-size="12" fill="#94a3b8">0.4</text>
+  <!-- Row 3 -->
+  <rect x="100" y="144" width="50" height="26" rx="5" fill="#f1f5f9" stroke="#e2e8f0"/>
+  <text x="125" y="162" text-anchor="middle" font-family="Consolas" font-size="12" fill="#94a3b8">0.02</text>
+  <rect x="154" y="144" width="50" height="26" rx="5" fill="#10b981" stroke="#059669" stroke-width="1.2"/>
+  <text x="179" y="162" text-anchor="middle" font-family="Consolas" font-size="12" font-weight="700" fill="white">0.9</text>
+  <rect x="208" y="144" width="50" height="26" rx="5" fill="#f1f5f9" stroke="#e2e8f0"/>
+  <text x="233" y="162" text-anchor="middle" font-family="Consolas" font-size="12" fill="#94a3b8">0.08</text>
+
+  <!-- Arrow to argmax -->
+  <text x="290" y="130" font-family="Segoe UI" font-size="13" font-weight="700" fill="#6366f1">argmax →</text>
+
+  <!-- Argmax results -->
+  <text x="378" y="66" font-family="Segoe UI" font-size="12" font-weight="600" fill="#64748b">Predicted</text>
+  <rect x="378" y="84" width="40" height="26" rx="5" fill="#eef2ff" stroke="#6366f1"/>
+  <text x="398" y="102" text-anchor="middle" font-family="Consolas" font-size="13" font-weight="600" fill="#3730a3">0</text>
+  <rect x="378" y="114" width="40" height="26" rx="5" fill="#eef2ff" stroke="#6366f1"/>
+  <text x="398" y="132" text-anchor="middle" font-family="Consolas" font-size="13" font-weight="600" fill="#3730a3">1</text>
+  <rect x="378" y="144" width="40" height="26" rx="5" fill="#eef2ff" stroke="#6366f1"/>
+  <text x="398" y="162" text-anchor="middle" font-family="Consolas" font-size="13" font-weight="600" fill="#3730a3">1</text>
+
+  <!-- vs -->
+  <text x="444" y="130" font-family="Segoe UI" font-size="16" font-weight="700" fill="#64748b">==</text>
+
+  <!-- True labels -->
+  <text x="478" y="66" font-family="Segoe UI" font-size="12" font-weight="600" fill="#64748b">True</text>
+  <rect x="478" y="84" width="40" height="26" rx="5" fill="#fef3c7" stroke="#f59e0b"/>
+  <text x="498" y="102" text-anchor="middle" font-family="Consolas" font-size="13" font-weight="600" fill="#92400e">0</text>
+  <rect x="478" y="114" width="40" height="26" rx="5" fill="#fef3c7" stroke="#f59e0b"/>
+  <text x="498" y="132" text-anchor="middle" font-family="Consolas" font-size="13" font-weight="600" fill="#92400e">1</text>
+  <rect x="478" y="144" width="40" height="26" rx="5" fill="#fef3c7" stroke="#f59e0b"/>
+  <text x="498" y="162" text-anchor="middle" font-family="Consolas" font-size="13" font-weight="600" fill="#92400e">1</text>
+
+  <!-- Result -->
+  <text x="544" y="130" font-family="Segoe UI" font-size="16" font-weight="700" fill="#64748b">→</text>
+
+  <rect x="570" y="84" width="50" height="26" rx="5" fill="#d1fae5" stroke="#10b981"/>
+  <text x="595" y="102" text-anchor="middle" font-family="Consolas" font-size="12" font-weight="700" fill="#065f46">✓</text>
+  <rect x="570" y="114" width="50" height="26" rx="5" fill="#d1fae5" stroke="#10b981"/>
+  <text x="595" y="132" text-anchor="middle" font-family="Consolas" font-size="12" font-weight="700" fill="#065f46">✓</text>
+  <rect x="570" y="144" width="50" height="26" rx="5" fill="#d1fae5" stroke="#10b981"/>
+  <text x="595" y="162" text-anchor="middle" font-family="Consolas" font-size="12" font-weight="700" fill="#065f46">✓</text>
+
+  <!-- Final accuracy -->
+  <rect x="560" y="180" width="110" height="30" rx="8" fill="#10b981"/>
+  <text x="615" y="200" text-anchor="middle" font-family="Segoe UI" font-size="14" font-weight="700" fill="white">Acc = 100%</text>
+
+  <!-- Code block -->
+  <rect x="30" y="200" width="500" height="80" rx="10" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+  <text x="50" y="224" font-family="Consolas" font-size="12" fill="#047857">predictions = np.argmax(softmax_outputs, axis=1)</text>
+  <text x="50" y="244" font-family="Consolas" font-size="12" fill="#047857">accuracy = np.mean(predictions == class_targets)</text>
+  <text x="50" y="268" font-family="Consolas" font-size="12" fill="#64748b"># Note: accuracy ignores confidence levels!</text>
+</svg>

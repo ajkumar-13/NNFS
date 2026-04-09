@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520">
+  <rect width="720" height="520" rx="16" fill="#fafafa"/>
+  <text x="360" y="32" text-anchor="middle" font-family="Segoe UI" font-size="17" font-weight="700" fill="#1e1e2e">Two Ways to Extract Correct-Class Probabilities</text>
+
+  <!-- =================== CASE 1 =================== -->
+  <rect x="20" y="48" width="330" height="450" rx="12" fill="white" stroke="#6366f1" stroke-width="1.5"/>
+  <rect x="20" y="48" width="330" height="34" rx="12" fill="#6366f1"/>
+  <rect x="20" y="68" width="330" height="14" fill="#6366f1"/>
+  <text x="185" y="72" text-anchor="middle" font-family="Segoe UI" font-size="13" font-weight="700" fill="white">Case 1: Labels as Numbers</text>
+
+  <!-- Labels -->
+  <text x="40" y="106" font-family="Segoe UI" font-size="12" font-weight="600" fill="#64748b">class_targets =</text>
+  <rect x="170" y="92" width="30" height="22" rx="4" fill="#eef2ff" stroke="#6366f1"/>
+  <text x="185" y="108" text-anchor="middle" font-family="Consolas" font-size="12" fill="#3730a3">0</text>
+  <rect x="204" y="92" width="30" height="22" rx="4" fill="#eef2ff" stroke="#6366f1"/>
+  <text x="219" y="108" text-anchor="middle" font-family="Consolas" font-size="12" fill="#3730a3">1</text>
+  <rect x="238" y="92" width="30" height="22" rx="4" fill="#eef2ff" stroke="#6366f1"/>
+  <text x="253" y="108" text-anchor="middle" font-family="Consolas" font-size="12" fill="#3730a3">1</text>
+
+  <!-- Softmax output matrix -->
+  <text x="40" y="140" font-family="Segoe UI" font-size="12" font-weight="600" fill="#64748b">softmax_outputs:</text>
+  <!-- Row 0 -->
+  <rect x="40" y="150" width="44" height="24" rx="4" fill="#10b981" stroke="#059669" stroke-width="1.2"/>
+  <text x="62" y="167" text-anchor="middle" font-family="Consolas" font-size="11" font-weight="700" fill="white">0.7</text>
+  <rect x="88" y="150" width="44" height="24" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="110" y="167" text-anchor="middle" font-family="Consolas" font-size="11" fill="#94a3b8">0.1</text>
+  <rect x="136" y="150" width="44" height="24" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="158" y="167" text-anchor="middle" font-family="Consolas" font-size="11" fill="#94a3b8">0.2</text>
+  <text x="196" y="168" font-family="Segoe UI" font-size="10" fill="#10b981">← col 0</text>
+  <!-- Row 1 -->
+  <rect x="40" y="178" width="44" height="24" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="62" y="195" text-anchor="middle" font-family="Consolas" font-size="11" fill="#94a3b8">0.1</text>
+  <rect x="88" y="178" width="44" height="24" rx="4" fill="#10b981" stroke="#059669" stroke-width="1.2"/>
+  <text x="110" y="195" text-anchor="middle" font-family="Consolas" font-size="11" font-weight="700" fill="white">0.5</text>
+  <rect x="136" y="178" width="44" height="24" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="158" y="195" text-anchor="middle" font-family="Consolas" font-size="11" fill="#94a3b8">0.4</text>
+  <text x="196" y="196" font-family="Segoe UI" font-size="10" fill="#10b981">← col 1</text>
+  <!-- Row 2 -->
+  <rect x="40" y="206" width="44" height="24" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="62" y="223" text-anchor="middle" font-family="Consolas" font-size="11" fill="#94a3b8">0.02</text>
+  <rect x="88" y="206" width="44" height="24" rx="4" fill="#10b981" stroke="#059669" stroke-width="1.2"/>
+  <text x="110" y="223" text-anchor="middle" font-family="Consolas" font-size="11" font-weight="700" fill="white">0.9</text>
+  <rect x="136" y="206" width="44" height="24" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="158" y="223" text-anchor="middle" font-family="Consolas" font-size="11" fill="#94a3b8">0.08</text>
+  <text x="196" y="224" font-family="Segoe UI" font-size="10" fill="#10b981">← col 1</text>
+
+  <!-- Indexing code -->
+  <rect x="36" y="244" width="300" height="46" rx="8" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1"/>
+  <text x="186" y="262" text-anchor="middle" font-family="Consolas" font-size="11" fill="#3730a3">softmax_outputs[</text>
+  <text x="186" y="280" text-anchor="middle" font-family="Consolas" font-size="11" fill="#3730a3">  [0,1,2], class_targets]</text>
+
+  <!-- Arrow -->
+  <line x1="186" y1="296" x2="186" y2="316" stroke="#6366f1" stroke-width="1.5"/>
+  <polygon points="180,316 192,316 186,326" fill="#6366f1"/>
+
+  <!-- Result -->
+  <rect x="80" y="332" width="210" height="30" rx="8" fill="#eef2ff" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="185" y="352" text-anchor="middle" font-family="Consolas" font-size="13" font-weight="600" fill="#3730a3">[0.7, 0.5, 0.9]</text>
+
+  <!-- How it works -->
+  <text x="40" y="386" font-family="Segoe UI" font-size="11" fill="#64748b">Row 0 → col 0 → 0.7</text>
+  <text x="40" y="402" font-family="Segoe UI" font-size="11" fill="#64748b">Row 1 → col 1 → 0.5</text>
+  <text x="40" y="418" font-family="Segoe UI" font-size="11" fill="#64748b">Row 2 → col 1 → 0.9</text>
+
+  <rect x="40" y="434" width="296" height="48" rx="8" fill="#d1fae5" stroke="#10b981" stroke-width="1"/>
+  <text x="188" y="454" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="#065f46">NumPy advanced indexing picks</text>
+  <text x="188" y="470" text-anchor="middle" font-family="Segoe UI" font-size="11" fill="#065f46">one element per row by label index</text>
+
+  <!-- =================== CASE 2 =================== -->
+  <rect x="370" y="48" width="330" height="450" rx="12" fill="white" stroke="#ec4899" stroke-width="1.5"/>
+  <rect x="370" y="48" width="330" height="34" rx="12" fill="#ec4899"/>
+  <rect x="370" y="68" width="330" height="14" fill="#ec4899"/>
+  <text x="535" y="72" text-anchor="middle" font-family="Segoe UI" font-size="13" font-weight="700" fill="white">Case 2: One-Hot Encoded Labels</text>
+
+  <!-- One-hot labels -->
+  <text x="390" y="106" font-family="Segoe UI" font-size="12" font-weight="600" fill="#64748b">class_targets:</text>
+  <!-- Row 0 -->
+  <rect x="390" y="112" width="28" height="22" rx="4" fill="#ec4899" stroke="#be185d"/>
+  <text x="404" y="128" text-anchor="middle" font-family="Consolas" font-size="11" font-weight="700" fill="white">1</text>
+  <rect x="422" y="112" width="28" height="22" rx="4" fill="#fce7f3" stroke="#f9a8d4"/>
+  <text x="436" y="128" text-anchor="middle" font-family="Consolas" font-size="11" fill="#9d174d">0</text>
+  <rect x="454" y="112" width="28" height="22" rx="4" fill="#fce7f3" stroke="#f9a8d4"/>
+  <text x="468" y="128" text-anchor="middle" font-family="Consolas" font-size="11" fill="#9d174d">0</text>
+  <!-- Row 1 -->
+  <rect x="390" y="138" width="28" height="22" rx="4" fill="#fce7f3" stroke="#f9a8d4"/>
+  <text x="404" y="154" text-anchor="middle" font-family="Consolas" font-size="11" fill="#9d174d">0</text>
+  <rect x="422" y="138" width="28" height="22" rx="4" fill="#ec4899" stroke="#be185d"/>
+  <text x="436" y="154" text-anchor="middle" font-family="Consolas" font-size="11" font-weight="700" fill="white">1</text>
+  <rect x="454" y="138" width="28" height="22" rx="4" fill="#fce7f3" stroke="#f9a8d4"/>
+  <text x="468" y="154" text-anchor="middle" font-family="Consolas" font-size="11" fill="#9d174d">0</text>
+  <!-- Row 2 -->
+  <rect x="390" y="164" width="28" height="22" rx="4" fill="#fce7f3" stroke="#f9a8d4"/>
+  <text x="404" y="180" text-anchor="middle" font-family="Consolas" font-size="11" fill="#9d174d">0</text>
+  <rect x="422" y="164" width="28" height="22" rx="4" fill="#ec4899" stroke="#be185d"/>
+  <text x="436" y="180" text-anchor="middle" font-family="Consolas" font-size="11" font-weight="700" fill="white">1</text>
+  <rect x="454" y="164" width="28" height="22" rx="4" fill="#fce7f3" stroke="#f9a8d4"/>
+  <text x="468" y="180" text-anchor="middle" font-family="Consolas" font-size="11" fill="#9d174d">0</text>
+
+  <!-- × symbol -->
+  <text x="500" y="156" font-family="Segoe UI" font-size="20" font-weight="700" fill="#ec4899">×</text>
+
+  <!-- Softmax output (repeated) -->
+  <text x="530" y="106" font-family="Segoe UI" font-size="12" font-weight="600" fill="#64748b">predictions:</text>
+  <rect x="530" y="112" width="38" height="22" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="549" y="128" text-anchor="middle" font-family="Consolas" font-size="10" fill="#475569">0.7</text>
+  <rect x="572" y="112" width="38" height="22" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="591" y="128" text-anchor="middle" font-family="Consolas" font-size="10" fill="#475569">0.1</text>
+  <rect x="614" y="112" width="38" height="22" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="633" y="128" text-anchor="middle" font-family="Consolas" font-size="10" fill="#475569">0.2</text>
+
+  <rect x="530" y="138" width="38" height="22" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="549" y="154" text-anchor="middle" font-family="Consolas" font-size="10" fill="#475569">0.1</text>
+  <rect x="572" y="138" width="38" height="22" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="591" y="154" text-anchor="middle" font-family="Consolas" font-size="10" fill="#475569">0.5</text>
+  <rect x="614" y="138" width="38" height="22" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="633" y="154" text-anchor="middle" font-family="Consolas" font-size="10" fill="#475569">0.4</text>
+
+  <rect x="530" y="164" width="38" height="22" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="549" y="180" text-anchor="middle" font-family="Consolas" font-size="10" fill="#475569">0.02</text>
+  <rect x="572" y="164" width="38" height="22" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="591" y="180" text-anchor="middle" font-family="Consolas" font-size="10" fill="#475569">0.9</text>
+  <rect x="614" y="164" width="38" height="22" rx="4" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="633" y="180" text-anchor="middle" font-family="Consolas" font-size="10" fill="#475569">0.08</text>
+
+  <!-- Step 1: Elementwise multiply -->
+  <rect x="386" y="200" width="300" height="26" rx="6" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1"/>
+  <text x="536" y="218" text-anchor="middle" font-family="Consolas" font-size="11" fill="#9d174d">result = targets * predictions</text>
+
+  <!-- Arrow -->
+  <line x1="536" y1="232" x2="536" y2="248" stroke="#ec4899" stroke-width="1.5"/>
+  <polygon points="530,248 542,248 536,258" fill="#ec4899"/>
+
+  <!-- Element-wise result -->
+  <text x="390" y="276" font-family="Consolas" font-size="11" fill="#64748b">[0.7, 0,   0  ]</text>
+  <text x="390" y="294" font-family="Consolas" font-size="11" fill="#64748b">[0,   0.5, 0  ]</text>
+  <text x="390" y="312" font-family="Consolas" font-size="11" fill="#64748b">[0,   0.9, 0  ]</text>
+
+  <!-- Step 2: Sum axis=1 -->
+  <rect x="386" y="324" width="300" height="26" rx="6" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1"/>
+  <text x="536" y="342" text-anchor="middle" font-family="Consolas" font-size="11" fill="#9d174d">np.sum(result, axis=1)</text>
+
+  <!-- Arrow -->
+  <line x1="536" y1="356" x2="536" y2="372" stroke="#ec4899" stroke-width="1.5"/>
+  <polygon points="530,372 542,372 536,382" fill="#ec4899"/>
+
+  <!-- Result -->
+  <rect x="430" y="386" width="210" height="30" rx="8" fill="#fce7f3" stroke="#ec4899" stroke-width="1.5"/>
+  <text x="535" y="406" text-anchor="middle" font-family="Consolas" font-size="13" font-weight="600" fill="#9d174d">[0.7, 0.5, 0.9]</text>
+
+  <rect x="390" y="434" width="296" height="48" rx="8" fill="#fce7f3" stroke="#ec4899" stroke-width="1"/>
+  <text x="538" y="454" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="#9d174d">Element-wise multiply zeros out</text>
+  <text x="538" y="470" text-anchor="middle" font-family="Segoe UI" font-size="11" fill="#9d174d">wrong classes, then sum per row</text>
+</svg>
