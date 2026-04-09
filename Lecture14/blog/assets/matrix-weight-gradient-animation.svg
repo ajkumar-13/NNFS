@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 430" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow14Anim" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <rect width="940" height="430" rx="20" fill="#fafafa"/>
+
+  <rect width="940" height="430" rx="20" fill="#fafafa" stroke="#e5e7eb" stroke-width="1.5"/>
+
+  <text x="470" y="34" text-anchor="middle" font-size="18" font-weight="700" fill="#1e293b">Outer Product for Weight Gradients</text>
+  <text x="470" y="56" text-anchor="middle" font-size="12" fill="#64748b">Transpose the neuron-gradient row into a column, then multiply it by the input row.</text>
+
+  <rect x="52" y="92" width="160" height="236" rx="16" fill="#ffffff" stroke="#fee2e2" stroke-width="1.5"/>
+  <text x="132" y="118" text-anchor="middle" font-size="14" font-weight="700" fill="#b91c1c">(dL/dZ)^T</text>
+  <text x="132" y="138" text-anchor="middle" font-size="11" fill="#64748b">One gradient per neuron</text>
+  <rect x="114" y="160" width="36" height="108" rx="8" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/>
+  <line x1="114" y1="196" x2="150" y2="196" stroke="#fca5a5" stroke-width="1"/>
+  <line x1="114" y1="232" x2="150" y2="232" stroke="#fca5a5" stroke-width="1"/>
+  <!-- Row highlight that scans down the column vector -->
+  <rect x="112" y="160" width="40" height="36" rx="6" fill="#ef4444" opacity="0">
+    <animate attributeName="y" values="160;196;232;160" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.25;0.25;0.25;0.25" dur="3s" repeatCount="indefinite"/>
+  </rect>
+  <text x="132" y="184" text-anchor="middle" font-size="12" font-weight="700" fill="#b91c1c">43.2</text>
+  <text x="132" y="220" text-anchor="middle" font-size="12" font-weight="700" fill="#b91c1c">43.2</text>
+  <text x="132" y="256" text-anchor="middle" font-size="12" font-weight="700" fill="#b91c1c">43.2</text>
+
+  <line x1="212" y1="214" x2="304" y2="214" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow14Anim)"/>
+  <text x="258" y="198" text-anchor="middle" font-size="12" font-weight="700" fill="#475569">outer product</text>
+
+  <rect x="324" y="92" width="180" height="236" rx="16" fill="#ffffff" stroke="#dbeafe" stroke-width="1.5"/>
+  <text x="414" y="118" text-anchor="middle" font-size="14" font-weight="700" fill="#1d4ed8">Input row X</text>
+  <text x="414" y="138" text-anchor="middle" font-size="11" fill="#64748b">One feature value per column</text>
+  <rect x="350" y="192" width="128" height="42" rx="10" fill="#dbeafe" stroke="#3b82f6" stroke-width="2">
+    <animate attributeName="stroke-width" values="2;3;2" dur="1.8s" repeatCount="indefinite"/>
+  </rect>
+  <text x="414" y="219" text-anchor="middle" font-size="13" font-weight="700" fill="#1d4ed8">[1, 2, 3, 4]</text>
+
+  <line x1="504" y1="214" x2="586" y2="214" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow14Anim)"/>
+
+  <rect x="606" y="92" width="282" height="236" rx="16" fill="#ffffff" stroke="#dcfce7" stroke-width="1.5"/>
+  <text x="747" y="118" text-anchor="middle" font-size="14" font-weight="700" fill="#047857">dL/dW</text>
+  <text x="747" y="138" text-anchor="middle" font-size="11" fill="#64748b">Rows = neurons, columns = inputs</text>
+  <rect x="650" y="160" width="194" height="120" rx="12" fill="#dcfce7" stroke="#10b981" stroke-width="2"/>
+  <g stroke="#86efac" stroke-width="1">
+    <line x1="698" y1="160" x2="698" y2="280"/>
+    <line x1="746" y1="160" x2="746" y2="280"/>
+    <line x1="794" y1="160" x2="794" y2="280"/>
+    <line x1="650" y1="200" x2="844" y2="200"/>
+    <line x1="650" y1="240" x2="844" y2="240"/>
+  </g>
+  <rect x="650" y="160" width="194" height="40" rx="12" fill="#10b981" opacity="0.12">
+    <animate attributeName="opacity" values="0.12;0.32;0.12;0.12" dur="3s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="650" y="200" width="194" height="40" rx="12" fill="#10b981" opacity="0.12">
+    <animate attributeName="opacity" values="0.12;0.12;0.32;0.12" dur="3s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="650" y="240" width="194" height="40" rx="12" fill="#10b981" opacity="0.12">
+    <animate attributeName="opacity" values="0.12;0.12;0.12;0.32" dur="3s" repeatCount="indefinite"/>
+  </rect>
+  <text x="674" y="186" text-anchor="middle" font-size="11" font-weight="700" fill="#047857">43.2</text>
+  <text x="722" y="186" text-anchor="middle" font-size="11" font-weight="700" fill="#047857">86.4</text>
+  <text x="770" y="186" text-anchor="middle" font-size="11" font-weight="700" fill="#047857">129.6</text>
+  <text x="818" y="186" text-anchor="middle" font-size="11" font-weight="700" fill="#047857">172.8</text>
+  <text x="674" y="226" text-anchor="middle" font-size="11" font-weight="700" fill="#047857">43.2</text>
+  <text x="722" y="226" text-anchor="middle" font-size="11" font-weight="700" fill="#047857">86.4</text>
+  <text x="770" y="226" text-anchor="middle" font-size="11" font-weight="700" fill="#047857">129.6</text>
+  <text x="818" y="226" text-anchor="middle" font-size="11" font-weight="700" fill="#047857">172.8</text>
+  <text x="674" y="266" text-anchor="middle" font-size="11" font-weight="700" fill="#047857">43.2</text>
+  <text x="722" y="266" text-anchor="middle" font-size="11" font-weight="700" fill="#047857">86.4</text>
+  <text x="770" y="266" text-anchor="middle" font-size="11" font-weight="700" fill="#047857">129.6</text>
+  <text x="818" y="266" text-anchor="middle" font-size="11" font-weight="700" fill="#047857">172.8</text>
+
+  <rect x="96" y="360" width="748" height="30" rx="12" fill="#ffffff" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="470" y="379" text-anchor="middle" font-size="11" fill="#334155">Every neuron-gradient entry multiplies the whole input row, so one column vector and one row vector expand into a full gradient matrix.</text>
+</svg>

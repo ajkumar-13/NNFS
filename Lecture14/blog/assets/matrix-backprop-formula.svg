@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 470" font-family="Segoe UI, Arial, sans-serif">
+
+  <rect width="940" height="470" rx="20" fill="#fafafa"/>
+
+  <text x="470" y="36" text-anchor="middle" font-size="18" font-weight="700" fill="#1e293b">Matrix Weight Gradients</text>
+  <text x="470" y="58" text-anchor="middle" font-size="12" fill="#64748b">For this repo's weight layout, the correct formula is dL/dW = (dL/dZ)^T x X</text>
+
+  <rect x="38" y="94" width="220" height="150" rx="16" fill="#ffffff" stroke="#fee2e2" stroke-width="1.5"/>
+  <text x="148" y="120" text-anchor="middle" font-size="14" font-weight="700" fill="#b91c1c">Neuron gradients</text>
+  <text x="148" y="140" text-anchor="middle" font-size="11" fill="#64748b">dL/dZ starts as one row per sample</text>
+  <rect x="72" y="162" width="152" height="42" rx="10" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/>
+  <text x="148" y="189" text-anchor="middle" font-size="13" font-weight="700" fill="#b91c1c">[g1, g2, g3]</text>
+  <text x="148" y="220" text-anchor="middle" font-size="11" fill="#b91c1c">shape: (1 x 3)</text>
+
+  <rect x="290" y="94" width="120" height="150" rx="16" fill="#ffffff" stroke="#dbeafe" stroke-width="1.5"/>
+  <text x="350" y="120" text-anchor="middle" font-size="14" font-weight="700" fill="#1d4ed8">Transpose</text>
+  <rect x="332" y="146" width="36" height="78" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+  <line x1="332" y1="172" x2="368" y2="172" stroke="#93c5fd" stroke-width="1"/>
+  <line x1="332" y1="198" x2="368" y2="198" stroke="#93c5fd" stroke-width="1"/>
+  <text x="350" y="165" text-anchor="middle" font-size="10" font-weight="700" fill="#1d4ed8">g1</text>
+  <text x="350" y="191" text-anchor="middle" font-size="10" font-weight="700" fill="#1d4ed8">g2</text>
+  <text x="350" y="217" text-anchor="middle" font-size="10" font-weight="700" fill="#1d4ed8">g3</text>
+  <text x="350" y="236" text-anchor="middle" font-size="11" fill="#1d4ed8">(3 x 1)</text>
+
+  <rect x="442" y="94" width="220" height="150" rx="16" fill="#ffffff" stroke="#dcfce7" stroke-width="1.5"/>
+  <text x="552" y="120" text-anchor="middle" font-size="14" font-weight="700" fill="#047857">Input row</text>
+  <text x="552" y="140" text-anchor="middle" font-size="11" fill="#64748b">One sample's features stay as a row</text>
+  <rect x="476" y="162" width="152" height="42" rx="10" fill="#dcfce7" stroke="#10b981" stroke-width="2"/>
+  <text x="552" y="189" text-anchor="middle" font-size="13" font-weight="700" fill="#047857">[x1, x2, x3, x4]</text>
+  <text x="552" y="220" text-anchor="middle" font-size="11" fill="#047857">shape: (1 x 4)</text>
+
+  <rect x="686" y="94" width="216" height="258" rx="16" fill="#ffffff" stroke="#fef3c7" stroke-width="1.5"/>
+  <text x="794" y="120" text-anchor="middle" font-size="14" font-weight="700" fill="#92400e">Result: dL/dW</text>
+  <text x="794" y="140" text-anchor="middle" font-size="11" fill="#64748b">Rows are neurons, columns are inputs</text>
+  <rect x="732" y="160" width="124" height="144" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+  <g stroke="#fcd34d" stroke-width="1">
+    <line x1="763" y1="160" x2="763" y2="304"/>
+    <line x1="794" y1="160" x2="794" y2="304"/>
+    <line x1="825" y1="160" x2="825" y2="304"/>
+    <line x1="732" y1="196" x2="856" y2="196"/>
+    <line x1="732" y1="232" x2="856" y2="232"/>
+    <line x1="732" y1="268" x2="856" y2="268"/>
+  </g>
+  <text x="747" y="154" text-anchor="middle" font-size="10" fill="#64748b">x1</text>
+  <text x="778" y="154" text-anchor="middle" font-size="10" fill="#64748b">x2</text>
+  <text x="809" y="154" text-anchor="middle" font-size="10" fill="#64748b">x3</text>
+  <text x="840" y="154" text-anchor="middle" font-size="10" fill="#64748b">x4</text>
+  <text x="721" y="181" text-anchor="end" font-size="10" fill="#64748b">n1</text>
+  <text x="721" y="217" text-anchor="end" font-size="10" fill="#64748b">n2</text>
+  <text x="721" y="253" text-anchor="end" font-size="10" fill="#64748b">n3</text>
+  <text x="747" y="182" text-anchor="middle" font-size="10" fill="#92400e">g1*x1</text>
+  <text x="778" y="182" text-anchor="middle" font-size="10" fill="#92400e">g1*x2</text>
+  <text x="809" y="182" text-anchor="middle" font-size="10" fill="#92400e">g1*x3</text>
+  <text x="840" y="182" text-anchor="middle" font-size="10" fill="#92400e">g1*x4</text>
+  <text x="747" y="218" text-anchor="middle" font-size="10" fill="#92400e">g2*x1</text>
+  <text x="778" y="218" text-anchor="middle" font-size="10" fill="#92400e">g2*x2</text>
+  <text x="809" y="218" text-anchor="middle" font-size="10" fill="#92400e">g2*x3</text>
+  <text x="840" y="218" text-anchor="middle" font-size="10" fill="#92400e">g2*x4</text>
+  <text x="747" y="254" text-anchor="middle" font-size="10" fill="#92400e">g3*x1</text>
+  <text x="778" y="254" text-anchor="middle" font-size="10" fill="#92400e">g3*x2</text>
+  <text x="809" y="254" text-anchor="middle" font-size="10" fill="#92400e">g3*x3</text>
+  <text x="840" y="254" text-anchor="middle" font-size="10" fill="#92400e">g3*x4</text>
+  <text x="794" y="324" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e">shape: (3 x 4)</text>
+
+  <rect x="58" y="286" width="596" height="66" rx="14" fill="#ffffff" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="356" y="312" text-anchor="middle" font-size="13" font-weight="700" fill="#1e293b">Why the transpose is on dL/dZ</text>
+  <text x="356" y="334" text-anchor="middle" font-size="11" fill="#475569">Stored weights are arranged as neurons x inputs, so the gradient matrix must land in that same layout.</text>
+
+  <rect x="58" y="378" width="844" height="42" rx="14" fill="#ffffff" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="480" y="404" text-anchor="middle" font-size="11" fill="#334155">Batch version uses the same layout rule: dL/dW = (dL/dZ)^T x X, where rows still correspond to neurons and columns to inputs.</text>
+</svg>
