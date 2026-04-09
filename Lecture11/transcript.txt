@@ -1,0 +1,810 @@
+0:00
+[Music]
+0:05
+hello everyone welcome to this lecture
+0:08
+in the neural networks from scratch
+0:11
+Series this is the second lecture on
+0:13
+calculus in the previous lecture we
+0:16
+looked at derivatives partial
+0:18
+derivatives and gradients in this
+0:20
+lecture we are going to specifically
+0:22
+look at the chain Rule and the chain
+0:25
+rule is a simple rule but it is the
+0:28
+backbone
+0:32
+it is the backbone of an algorithm
+0:34
+called as back
+0:37
+propagation and uh back propagation is
+0:40
+the algorithm which helps us to optimize
+0:43
+the weights of the neural network so
+0:45
+that the loss is
+0:47
+minimized and uh at the heart of back
+0:51
+propagation lies the chain
+0:54
+rule it's a very simple rule if you
+0:56
+understand what's going on but if you
+1:01
+uh just skim over the chain Rule and if
+1:03
+you really don't understand the
+1:05
+mathematics behind it then quickly the
+1:08
+math of back propagation becomes
+1:09
+difficult to master but if you really
+1:13
+understand the intuition behind the
+1:14
+chain rule then actually understanding
+1:17
+back propagation becomes really easy so
+1:20
+let me get started with explanation of
+1:22
+the chain rule so the way the rule works
+1:24
+is as
+1:26
+follows let's say I have a function Zed
+1:29
+which is a fun function of
+1:31
+uh X or rather let me start from y so
+1:35
+let's say I have a function y which is
+1:39
+uh which depends on
+1:41
+Z okay and or which depends on Zed and
+1:45
+Zed in turn depends on
+1:49
+X so if you write this these two
+1:53
+functions in a combined manner so Y is
+1:56
+equal to F of Z right but Z is equal to
+1:58
+G of X so y Y is equal to F of G of
+2:03
+X now uh here is where chain rule comes
+2:07
+into the picture if y was just equal to
+2:10
+F ofx then calculating calculating the
+2:13
+derivative of y with respect to X
+2:15
+becomes very easy Dy by DX is just f- of
+2:19
+X but now there is one more layer
+2:23
+between Y and X in this case Y is equal
+2:27
+to F of G of
+2:31
+X so the real question is how do we now
+2:34
+find the derivative of
+2:37
+y with respect to X so we clearly see
+2:41
+that y depends on X right but it depends
+2:44
+on X through another function so Y is a
+2:47
+function of something and that something
+2:50
+is a function of
+2:52
+X so that's why it's called chain rule
+2:55
+so we are essentially chaining two
+2:56
+functions
+2:58
+here so we are chaining two functions
+3:04
+here we are chaining two functions and
+3:07
+we want to find the derivative of y with
+3:09
+respect to the innermost variable which
+3:12
+is
+3:13
+X so let us see actually a practical
+3:16
+example of this so let's say you have a
+3:19
+car okay and you are going from point A
+3:22
+to point B let's say you are going from
+3:25
+New
+3:27
+York to California
+3:33
+and let's say the speed of your car is
+3:35
+60 km/
+3:37
+hour uh what I really want to know is
+3:40
+how much is the fuel consumption of my
+3:43
+car vary with the time which the car
+3:45
+travels so this is very important right
+3:48
+because I need to plan for the fuel so I
+3:51
+want to know if a small change in time
+3:54
+how much does it affect the fuel
+3:56
+consumption so if I call the fuel
+3:59
+consumption as Y in this case and if
+4:02
+I uh call the time which the car travels
+4:06
+X I essentially want to calculate Dy by
+4:10
+DX where Y is the fuel
+4:14
+consumption and X is the time okay now
+4:19
+it turns out that the fuel consumption
+4:21
+of the car depends on the
+4:26
+distance so it turns out that the car
+4:29
+consumes s 1 L per 30
+4:36
+kilm so the fuel consumption actually Y
+4:40
+is a function of the distance Zed and
+4:44
+here we denoted that by F right so
+4:49
+y so Y is actually a function of
+4:54
+Zed and Z is the distance
+4:58
+right so in fact this function is just Z
+5:02
+/
+5:03
+30 because if Zed is 30 km the answer
+5:07
+will be 1 lit if Z is 60 km the answer
+5:10
+will be 2 lit remember 1 lit is consumed
+5:13
+per 30
+5:15
+km so if the number of kilometers is X
+5:18
+or Zed the fuel consumed will be Z by
+5:23
+30 so here's a problem right you wanted
+5:26
+Dy by DX but it turns out that Y which
+5:29
+is the fuel consumption does not depend
+5:31
+directly on
+5:32
+time but the fuel consumption depends on
+5:35
+the distance then you are thinking okay
+5:38
+if fuel consumption does not depend on
+5:40
+time how do I find the derivative of
+5:42
+fuel consumption with respect to time
+5:44
+but you have a Lifeline here right fuel
+5:46
+consumption actually depends on the
+5:48
+distance so fuel consumption depends on
+5:50
+distance so if somehow you can find the
+5:54
+relation between distance and
+5:56
+time then fuel consumption can be
+5:59
+related to to
+6:00
+time and it turns out that since the car
+6:03
+travels at a speed of 60 km/ hour the
+6:06
+function between distance and time is
+6:08
+very easy so
+6:09
+Zed uh is just
+6:12
+uh so Zed
+6:16
+is G of X let me check if the notation
+6:19
+is correct over here yeah Zed is G of
+6:23
+X
+6:26
+so Zed which is the distance
+6:30
+so let me write it over here actually to
+6:33
+make it clear so this dependent Zed is G
+6:36
+of X which is
+6:39
+uh 60 into
+6:43
+X remember X is the
+6:47
+time and Zed is the
+6:51
+distance so the fuel consumption which
+6:54
+is y so the fuel consumption which is y
+6:56
+let me write it here again
+7:02
+depends on the distance which is
+7:07
+z and Zed depends on time which is
+7:14
+X so the function connecting Y and Zed
+7:17
+is f and the function connecting Zed and
+7:21
+X is
+7:22
+G now I want to find the derivative of y
+7:26
+with respect to
+7:28
+X derivative y with respect to
+7:31
+X right so I essentially want to find
+7:35
+derivative d by DX of f
+7:39
+of G of
+7:43
+X with respect to X remember y so let me
+7:47
+make it more clear so Y is f of Z which
+7:52
+is z by 30 so this is f of
+7:56
+Z and what is zed zed is G of
+8:00
+X so we are essentially finding
+8:03
+derivative of f of G of
+8:07
+X remember this is exactly the premise
+8:10
+which we started with in the lecture we
+8:12
+want to find the derivative of
+8:17
+uh uh d by DX of f of G of
+8:22
+X so this is where the chain rule
+8:24
+actually comes into the picture the
+8:26
+chain rule actually says that
+8:30
+uh okay since you cannot directly take
+8:35
+the derivative the why don't you chain
+8:38
+the things so for example the simplest
+8:41
+way to visualize the chain rule is d by
+8:43
+DX of f of Z right so Zed does not
+8:46
+depend on X so we can write it as d by d
+8:50
+z of f of Z multiplied by DZ ided
+8:57
+DX uh
+9:00
+and what is z z is equal to G of X so Z
+9:04
+depends on
+9:06
+X so this will just be f d of Z
+9:11
+multiplied g- of
+9:19
+x uh so simple way to think about the
+9:22
+chain rule is that if so if you want to
+9:26
+find the derivative of f of G of x you
+9:30
+first take the outer
+9:32
+function and you take the dot uh you do
+9:34
+a dash operation which means the
+9:36
+derivative operation F
+9:38
+Dash uh and then you take the inner
+9:41
+function and then you do its derivative
+9:43
+into G Dash that's it this is the answer
+9:47
+it just that here it will be fdh and the
+9:51
+variable will be Z so it will be a
+9:53
+function of Zed and multiplied by G Das
+9:56
+of X so remember F does not depend
+9:59
+directly on X but it depends on Z so
+10:01
+this will be f- of Z multiplied g- of X
+10:05
+let's see how this happens in practice
+10:07
+so f is now equal
+10:10
+to remember we have already seen these
+10:13
+functions F of Z is z by 30 so F of
+10:18
+Z is z by
+10:20
+30 this means that f- of
+10:24
+Z is just 1X 30
+10:30
+and G of
+10:31
+X is equal to
+10:38
+60x so this means that g dash of X is
+10:43
+just uh
+10:48
+60 so then the answer here would be f-
+10:51
+of Z multiplied g- of X which is equal
+10:54
+to 1x 30 into 60 which is equal to 2
+10:59
+which means that Dy by DX is equal to 2
+11:03
+and Y was fuel consumption X was time
+11:05
+which means 2 L are consumed every
+11:08
+hour this is how you find the derivative
+11:11
+with respect to uh in a chain rule
+11:15
+fashion so this same thing which we did
+11:17
+right now can be expressed in terms of a
+11:19
+mathematical formula so if you want to
+11:22
+find the derivative of f of G of X with
+11:24
+respect to X first you find the
+11:27
+derivative of f with respect to G of X
+11:31
+and then you take the derivative of G of
+11:33
+X with respect to X so this is just f-
+11:36
+of G ofx and this will be just g- of
+11:41
+X so in the example which we saw this
+11:44
+this is just
+11:45
+Z so this will be f- of Zed into g- of X
+11:50
+and now remember you can chain multiple
+11:52
+functions like this together so the
+11:54
+advantage of the chain rule is that you
+11:56
+can have how many other functions you
+11:57
+have you want so let's say we have d by
+12:00
+DX F of G of H of M of
+12:06
+X remember the trick which I told you is
+12:10
+start from the outermost function uh
+12:14
+take its Dash multiply by the inner
+12:17
+function take it d g Dash multiply by
+12:21
+the function within H dash and then
+12:23
+finally multiply by m
+12:26
+Dash uh and the variables just will be
+12:29
+different so m d so it will be m- of X
+12:33
+this will be h- of M of
+12:37
+X this will be G Das of H of M of
+12:43
+X and this will
+12:45
+be F Das of G of H of M of X that's it
+12:51
+so you just need to find the derivatives
+12:54
+of each of these individual functions
+12:56
+and then substitute the values of these
+12:58
+quantities
+12:59
+and then you will get the derivative of
+13:01
+the entire function with respect to the
+13:03
+innermost
+13:04
+variable or DF by
+13:07
+DX that's it this is the chain rule
+13:10
+which is at the heart of back
+13:12
+propagation we will take another example
+13:14
+to motivate this idea further so let's
+13:17
+say we have an example h of x = 3 into
+13:21
+2x²
+13:23
+5 so if if I have given you this and I
+13:27
+want you to find the derivative of
+13:30
+derivative with respect to x h of
+13:38
+X which means that I want you to
+13:41
+find derivative with respect to
+13:44
+x 3
+13:48
+into
+13:50
+2x² ra to 5 so first thing to remember
+13:55
+is that this is not an easy calculation
+13:58
+because there are two functions involved
+14:00
+so you need to apply chain rule but for
+14:03
+that you need to First understand which
+14:05
+functions are chained together so the
+14:08
+trick to doing that is that look at this
+14:10
+inner inner function first this is
+14:13
+clearly looks like one function right so
+14:16
+let me call this as uh G of X =
+14:23
+2x² and so if you consider this as now Z
+14:28
+if you call this as
+14:30
+Z then h of X is just 3 into Z
+14:35
+5 so I will Define one function G of X
+14:40
+as
+14:41
+2x² right and uh I will Define the
+14:44
+second function f of Z is 3 Z 5 so then
+14:50
+h of
+14:51
+x h of
+14:54
+X let me write this here h of X then can
+14:58
+be written as f F of G of
+15:01
+X because f is 3 Z to 5 and
+15:06
+Zed
+15:09
+uh so f is 3 into Z 5 right so F of G of
+15:15
+X will be 3 into G of x 5 and G of X is
+15:19
+2x² so then F of G of X will be h h of X
+15:24
+so now I'm asking you to find the
+15:26
+derivative of H of X which is d by DX of
+15:28
+f of G of
+15:30
+X so then you can directly break it down
+15:32
+to the chain rule formula right you
+15:34
+first find f- of G of X and multiply it
+15:38
+by g- of
+15:40
+X okay now uh let us see what f- and G
+15:44
+Das are so F of Z is 3 into Z 5 so f- of
+15:49
+Z will be 3 * 5 Z 4 which is 15 Z
+15:55
+4 and g- of X will be dtive of 2x² which
+16:00
+will be equal to
+16:01
+4X so the derivative of f of G of X will
+16:05
+be f- of G of X which will be 15 * G of
+16:10
+x 4 and multiplied by g- of X which is
+16:14
+just 4X so the answer will be 15 into G
+16:18
+of x 4 * 4X and what is g of x g of X is
+16:23
+this 2x² so it will be 15 * 2 x² 4
+16:28
+multiplied by 4X so that will be 960
+16:32
+into x
+16:35
+9 this is the simple way to calculate
+16:38
+the derivatives using the chain rule
+16:40
+remember what we did here so if you have
+16:43
+a function like this the first thing to
+16:45
+identify is that this is a function
+16:47
+which is created by chaining two
+16:50
+functions together and the way to
+16:52
+identify which functions are chained is
+16:54
+start with the innermost function so we
+16:56
+see 2x² right so then just replace this
+17:00
+by a separate variable Zed then the
+17:02
+outer function becomes 3 Z 5 so then the
+17:05
+inner function let me call this
+17:08
+inner the inner function is 2x² and let
+17:12
+me call this
+17:13
+outer the outer function is 3 Z 5 so
+17:17
+then H can just be written as F of G of
+17:19
+X so then taking the derivative of H
+17:22
+with respect to X simply means taking
+17:25
+the derivative
+17:27
+of f of G of X with respect to X and
+17:31
+that will be f- of G of x * g- of
+17:35
+X and remember calculating f- and G Das
+17:38
+is very easy because those are just
+17:40
+simple polinomial so f- will be just 3 *
+17:44
+5 * Z 4 and G Das will be 4X remember if
+17:48
+there is a polinomial a x to B which is
+17:51
+f its derivative is a into B into x b
+17:57
+minus1 which has been covered in the
+17:59
+previous lecture so then g- of X is 4X
+18:02
+and f- of Z is 15 Z 4 so f- of G of X
+18:07
+into g- of X will be 15 G of x 4 * 4X
+18:13
+which will be 15 into 2x² 4 * 4X which
+18:17
+is 960 x 9 so that is the derivative of
+18:23
+this function with respect to
+18:25
+X now why are we really doing this
+18:28
+because the reason we are doing all of
+18:30
+this is because if you take a neural
+18:32
+network right uh if you take a neural
+18:35
+network which looks something like this
+18:37
+there are multiple
+18:40
+layers this neural network essentially
+18:43
+can be expressed something like Y is
+18:45
+equal to
+18:47
+Ru of
+18:50
+W1 into of or
+18:53
+Ru of Ru of
+18:57
+Ru of
+18:59
+maybe W1 into X1 +
+19:03
+B1
+19:06
++ uh B 0 multiplied by W2 something like
+19:12
+that so it will be a lot of functions
+19:14
+which are chained together like this so
+19:17
+if you think of it in the formula or in
+19:19
+the analogy which we just saw this will
+19:21
+be F of G of H of M of
+19:24
+X so if you want to take the derivative
+19:27
+with respect to X you need to apply the
+19:30
+chain rule because there are a lot of
+19:32
+functions chained together so ultimately
+19:35
+we'll need to find the derivative of the
+19:37
+loss function with respect to the
+19:38
+weights right and if the prediction has
+19:41
+this formula then the loss function will
+19:44
+also look like a multiple number of
+19:46
+functions which are chained
+19:48
+together so to find the derivative of
+19:51
+the loss function with respect to the
+19:53
+weights we will need to find the
+19:55
+derivative of f of G of H of multiple
+19:58
+functions like this so that is why you
+20:00
+need to really
+20:02
+understand uh what the chain rule is and
+20:06
+uh how it is
+20:09
+implemented okay so this brings us to
+20:11
+the end of this lecture remember at the
+20:13
+end of the day chain rule is very simple
+20:15
+just remember this trick if Y is f of G
+20:19
+of X then Dy by DX is just f- MTI G Das
+20:22
+that's it you start with the outer
+20:24
+function take its derivative fdh then
+20:26
+multiply it with the inner function der
+20:30
+and that way if you keep this trick in
+20:32
+mind no matter how many functions are
+20:34
+chained together start with the outer do
+20:36
+F Dash then go to the inner then do G
+20:38
+Dash then go inner finally reach the end
+20:42
+that's how you can multiply different
+20:43
+derivatives
+20:45
+together thank you so much everyone and
+20:47
+I hope you have understood this calculus
+20:49
+part which has been covered in this
+20:51
+lecture and the previous lecture
+20:53
+starting from the next lecture onwards
+20:55
+we'll be directly looking at back
+20:57
+propagation
+20:59
+uh so thank you everyone and I'll see
+21:01
+you in the next lecture
