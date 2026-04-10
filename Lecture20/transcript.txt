@@ -1,0 +1,1100 @@
+Visual introduction to backpropagation pipeline
+0:00
+[Music]
+0:05
+hello everyone welcome to this very
+0:07
+important lecture in the neural network
+0:10
+from scratch Series this will be the
+0:13
+last lecture in the back propagation
+0:15
+part and in this lecture we will be
+0:17
+assembling all the building blocks of
+0:19
+back propagation which we have worked so
+0:22
+hard for in the previous lectures so
+0:25
+this is similar to Avengers Assemble so
+0:28
+I have just uh put this photo over here
+0:31
+as you will see each of the building
+0:33
+blocks which we have developed are very
+0:35
+powerful and each of them will perform a
+0:37
+very specific function when we do the
+0:39
+back
+0:40
+propagation if you have not seen the
+0:42
+previous four to five lectures and have
+0:44
+directly come to this lecture it's
+0:46
+totally fine uh if you have seen
+0:49
+previous lectures then it's amazing
+0:51
+because then you'll be able to follow
+0:52
+much better nonetheless I'll try to make
+0:56
+this lecture as if it's completely
+0:58
+self-sufficient um and this will be a
+1:00
+detailed lecture on back propagation in
+1:03
+which we'll be also going into python
+1:05
+code so first let me explain the problem
+1:09
+which we are trying to solve here is the
+1:11
+neural network architecture which we are
+1:13
+considering so the neural network
+1:16
+actually has two inputs X1 and X2 the
+1:19
+first layer has three neurons the second
+1:22
+layer has three neurons which is also
+1:25
+the output layer and then we have the
+1:27
+loss function towards the end the
+1:29
+activation function attached to the
+1:31
+first layer is reu the output of
+1:35
+this uh the output of the first layer
+1:37
+activation goes into the second layer uh
+1:41
+the activation in the second layer is
+1:43
+the soft Max and then based on the
+1:47
+output from each of these three neurons
+1:49
+the loss function is calculated let me
+1:52
+uh show you the data set which we have
+1:54
+and the problem which we are considering
+1:56
+so the data set which we have looks like
+1:58
+this every point Point has two
+2:00
+attributes X1 and X2 and every Point
+2:03
+belongs to either one of these three
+2:05
+classes either it belongs to the red
+2:07
+class or it belongs to the green class
+2:09
+or it belongs to the blue class the goal
+2:12
+for us is to design a neural network and
+2:15
+optimize the weights and biases of the
+2:16
+neural network so that given any new
+2:19
+data point such as this one we will
+2:22
+correctly predict which class it belongs
+2:24
+to whether it belongs to the r the G or
+2:26
+the B the red green or blue class since
+2:30
+this is a classification problem that's
+2:32
+the reason why we have the softmax
+2:34
+activation function attached to the
+2:36
+output layer and that's also the reason
+2:38
+why the loss which we'll be using will
+2:40
+be the categorical cross entropy loss so
+2:44
+this is the neural network architecture
+2:46
+and this is the problem which we are
+2:47
+going to
+2:48
+solve now in order to optimize the
+2:52
+weights and the biases we need the
+2:55
+backward pass or we need the gradient or
+2:58
+the partial derivative of loss with
+3:01
+respect to many things in these layers
+3:03
+so let me actually expand this neural
+3:06
+network architecture further to First
+3:08
+tell you which all gradients will be
+3:10
+require so here's the two inputs and uh
+3:14
+the first three neurons in the first
+3:16
+layer each neuron has two weights
+3:19
+associated with it so in the first layer
+3:21
+there will be a weight Matrix which is
+3:24
+W1 uh and there will be a bias Matrix
+3:27
+which is B1
+3:30
+okay then there is the railu activation
+3:33
+the output of the railu goes to the
+3:35
+second layer and uh similar to the first
+3:38
+layer the weights in the second layer
+3:40
+will be
+3:41
+W2 uh The Matrix will be W2 and the bias
+3:46
+Matrix will be
+3:49
+B2 so every neuron in the second layer
+3:52
+will have three weights so there will be
+3:54
+nine weights and three biases in the
+3:56
+second layer and then finally each of
+3:58
+the output of these neurons goes through
+4:00
+the softmax activation function now in
+4:03
+order to update the weights uh and the
+4:07
+biases of this layer and this layer we
+4:10
+need ultimately we need the partial
+4:12
+derivative of the loss with respect to
+4:14
+W1 partial derivative of the loss with
+4:17
+respect to B1 partial derivative of the
+4:19
+loss with respect to W2 and partial
+4:22
+derivative of the loss with respect to
+4:24
+B2 that's our final goal but to find
+4:28
+these partial derivatives we cannot
+4:30
+directly go from the partial derivative
+4:32
+of loss to W1 since those are far apart
+4:35
+we need to make a number of jumps and
+4:38
+that's where backward propagation comes
+4:39
+into the picture so let's say if you
+4:41
+want to find the partial derivative of
+4:43
+loss with respect to W1 let's see the
+4:46
+number of jumps which we'll need to make
+4:49
+first we will need to find the partial
+4:50
+derivative of loss with respect to the
+4:53
+input to the soft Max that's the first
+4:56
+jump which we'll need to make um let me
+4:59
+actually Mark these jumps with a
+5:01
+different color so that it's easier for
+5:03
+you to follow the second jump which
+5:06
+we'll need to make is the partial
+5:09
+derivatives of
+5:12
+the this layers
+5:14
+outputs which are Z1 Z2 and Z3 with
+5:17
+respect to the weights and biases of
+5:19
+this layer so that's the second
+5:26
+jump so when we have reached up till
+5:29
+this point we have obtained the partial
+5:31
+derivatives of the loss with respect to
+5:32
+the outputs of the railu function then
+5:35
+we'll have to make the third jump which
+5:37
+is the partial derivative of the loss
+5:39
+with of the output of the railu with
+5:41
+respect to the input of the railu only
+5:44
+after we have made these jumps we have
+5:46
+come to the last stage where we have to
+5:48
+find the partial derivative of the
+5:49
+output of these neurons which was the
+5:52
+input to the reu with respect to the
+5:54
+weights and biases of the first layer so
+5:56
+that's how we are going to get the
+5:58
+weights and the partial IAL derivative
+6:00
+of the loss with respect to the weights
+6:01
+and biases of the very first layer to
+6:04
+get the partial derivative of the loss
+6:05
+with respect to the weights and biases
+6:07
+of the second layer we'll just need to
+6:09
+do two
+6:10
+jumps but to get the partial derivative
+6:12
+with respect to weights and biases of
+6:14
+the first layer we'll need to do four
+6:16
+jumps 1 2 3 and then the
+6:20
+four so whenever we Define classes in
+6:24
+Python we'll Define the forward method
+6:26
+as well as the backward method so the
+6:28
+first class which which we'll Define is
+6:30
+the class for a layer so we'll be
+6:32
+creating the first layer which has uh
+6:35
+two weights for each neuron and one bias
+6:38
+for each neuron and we'll be creating
+6:40
+the second uh we'll be creating a class
+6:42
+for the second layer so we'll attach a
+6:45
+forward method to this layer class which
+6:48
+will actually take the outputs of which
+6:50
+will find the outputs of the neurons in
+6:52
+that layer uh based on the number of
+6:55
+neurons and the number of Weights but
+6:58
+for each layer class which we will
+7:00
+create we'll also create a backward
+7:01
+method what this will do is that based
+7:04
+on the gradients which have been
+7:06
+received to that layer up till that
+7:08
+point so for example if you have if
+7:10
+you're considering the first layer the
+7:13
+this layer has received the gradients of
+7:14
+the loss up till this point which I'm
+7:16
+marking in red right now which are the
+7:18
+inputs to the railu this layer has
+7:21
+received those gradients so that will be
+7:23
+the input to the backward method and the
+7:25
+output of the backward method has to be
+7:27
+the partial derivative of the loss with
+7:29
+respect to the weights and biases of
+7:31
+that
+7:32
+layer so we'll add a backward method in
+7:35
+this layer and the second layer which
+7:37
+gives the partial derivative of the loss
+7:39
+with respect to weights and biases of
+7:41
+that layer and the backward method will
+7:43
+receive as an input uh the partial
+7:46
+derivative of the loss with respect to
+7:49
+uh whatever stage we have reached up
+7:51
+till that layer so for example when we
+7:54
+reach the SEC when when we are finding
+7:56
+the partial derivative of the weights
+7:59
+and bias
+8:00
+with respect to the second layer we we
+8:04
+have obtained the partial derivative of
+8:06
+loss with respect to these outputs up
+8:08
+till here so that will be the input and
+8:12
+then we'll find the partial derivative
+8:14
+of the loss with respect to W2 and B2 so
+8:16
+we'll need a class to define the layers
+8:18
+the forward and backward method in the
+8:20
+layers then we will also need a class to
+8:23
+define the ray Loop when we Define this
+8:26
+class we'll need two methods we'll
+8:28
+attach or we'll Define a for forward
+8:29
+method which essentially just implements
+8:32
+the output of The Rao activation which
+8:34
+looks like this it is zero if the input
+8:37
+is negative and then it is equal to X if
+8:40
+the input is positive but it will also
+8:43
+Define a backward method which will
+8:45
+essentially find the partial derivative
+8:47
+of the ru output with respect to Ru
+8:50
+input and remember up till this point we
+8:53
+have received the partial derivative of
+8:55
+loss up till this point so we have
+8:57
+received the partial derivative of the
+8:58
+loss with respect to to Rao output now
+9:01
+we have to find the partial derivative
+9:02
+of the loss with respect to Rao
+9:05
+input so that's what the backward method
+9:07
+will do for the soft Max and the loss
+9:10
+we'll Implement something special which
+9:11
+we looked at in the last lecture we will
+9:13
+not look at these two as separate
+9:15
+classes but we'll Club them into one
+9:17
+class the softmax loss class and we'll
+9:20
+Define the forward method which will
+9:22
+take the softmax and the loss so it will
+9:26
+so given the inputs as Z1 Z2 and Z3 the
+9:29
+forward method will calculate the soft
+9:31
+Max activation function such as e to Z1
+9:34
+divided e to Z2 plus e to Z2 plus e to
+9:37
+Z3 Etc and then it will find the cross
+9:40
+entropy loss and the backward method
+9:43
+here will actually calculate the partial
+9:45
+derivative of the loss with respect to
+9:47
+the inputs to the soft Max and it turns
+9:50
+out that there is a very simple formula
+9:51
+for this which we have seen in the
+9:53
+previous
+9:54
+lecture so we will need the classes to
+9:57
+create layers we'll need a class for the
+9:59
+reu and we will need a class for the
+10:02
+soft Max and the loss so let's look at
+10:05
+how these classes are created and what
+10:07
+are the methods in each class so when we
+Building block 1 - Layer class
+10:10
+create the class for the layers we will
+10:13
+of course Define
+10:14
+a uh we'll of course Define a forward
+10:18
+pass and we'll Define a backward pass so
+10:22
+when we Define the forward pass we will
+10:23
+have two methods in the forward pass the
+10:26
+first method will be the init which will
+10:27
+be called automatically when this layer
+10:29
+is created what this init method will do
+10:32
+is that it will initialize the weights
+10:34
+and the biases randomly and it will take
+10:37
+as an input the number of neurons and
+10:41
+the number of inputs so for example uh
+10:44
+this first layer will have two inputs
+10:46
+and three neurons the second layer will
+10:48
+have three inputs and three neurons so
+10:52
+the init method will take as arguments
+10:54
+the number of layers and number of
+10:56
+neurons sorry the number of inputs and
+10:59
+the number of neurons in that layer and
+11:01
+based on that it will initialize the
+11:03
+weights and biases of that layer
+11:04
+randomly using goian distribution so for
+11:08
+example when we call the init function
+11:10
+or the init method on the first layer it
+11:12
+will initialize W1 and B1 randomly when
+11:16
+we create an instance of the second
+11:17
+layer it will initialize W2 and B2
+11:21
+randomly so that's the init method the
+11:24
+second method uh which is in the layers
+11:27
+class is the forward method
+11:30
+what this method will do is that it will
+11:32
+take a DOT product between the input to
+11:35
+that layer and the weights and then add
+11:37
+the bias so basically it will give the
+11:40
+output of every it will give the output
+11:42
+of neurons so essentially what the
+11:44
+forward method will do for the first
+11:46
+layer is that we have three neurons
+11:48
+right it will give the output of this
+11:49
+neuron so it will give the output of
+11:51
+this neuron this neuron and this
+11:54
+neuron and remember what the neurons are
+11:57
+doing is simply a DOT product of the
+11:59
+input to that layer and the weights of
+12:01
+that layer and then adding a bias term
+12:04
+so that's what the forward method is
+12:06
+doing then we will have one more method
+12:09
+as we said and that's the backward
+12:10
+method what this method will do is that
+12:13
+it will take uh as an
+12:15
+input or it will take as an argument is
+12:18
+dld DZ this is very important as I told
+12:21
+you before this dld DZ is the gradient
+12:23
+of loss up till that point so if we are
+12:26
+looking for the first layer then the
+12:29
+input will be partial derivative of loss
+12:31
+with respect to the outputs of that
+12:35
+layer which will be the DL DZ and we
+12:37
+have obtained that we have obtained this
+12:40
+since we are doing back
+12:41
+propagation uh this will be given to us
+12:45
+uh since the first layer will come at
+12:46
+the end so when we accumulate gradients
+12:49
+up till that point we will have found
+12:51
+the partial derivative of the loss with
+12:52
+respect to the outputs of the first
+12:55
+layer or the outputs of these three
+12:57
+neurons so that's the input here which
+13:00
+this backward method will receive and
+13:02
+then it will find three things it will
+13:04
+find the partial derivative of loss with
+13:06
+respect to the weights of that layer it
+13:09
+will find the partial derivative of the
+13:10
+loss with respect to bias um of the
+13:13
+three neurons and it will also find the
+13:15
+partial derivative of the loss with
+13:17
+respect to the input of that layer so if
+13:20
+you look at the second
+13:21
+layer the backward method will find the
+13:24
+partial derivative of the loss with
+13:26
+respect to W2 and B2 which is definitely
+13:29
+needed because we need to update the
+13:31
+weights W2 and B2 using gradient descent
+13:34
+but you might be asking why are we
+13:35
+finding the partial deriva of loss with
+13:37
+respect to
+13:39
+inputs now remember the reason we are
+13:41
+finding is when we move to the ru method
+13:44
+the partial derivative of the loss with
+13:46
+respect to the inputs of these layers so
+13:48
+let me Mark it with different color the
+13:51
+partial derivative of the loss with
+13:52
+respect to the input of this
+13:55
+layer which are the points which I'm
+13:57
+marking in green right now will serve as
+13:59
+an input to the backward method of Rao
+14:02
+because using these partial derivatives
+14:04
+we'll find the partial derivatives of
+14:06
+the input to The
+14:08
+Rao so that's why when we Define the
+14:11
+backward method for any layer we of
+14:13
+course find the partial derivative of
+14:14
+the loss with respect to weights and
+14:16
+biases of that layer but we also find
+14:19
+the partial derivative of the loss with
+14:20
+respect to the inputs of that layer
+14:23
+because those inputs are the outputs of
+14:25
+the preceding layer and they are needed
+14:28
+for the back propagation in the
+14:29
+preceding layer which is the ru
+14:32
+here so uh as I said we find three
+14:35
+things over here we find the partial
+14:39
+derivative with respect to the weights
+14:42
+partial derivatives with respect to the
+14:43
+bias and partial derivatives with
+14:45
+respect to the input given dld DZ as an
+14:48
+argument now we have seen in the
+14:51
+previous lectures the mathematical
+14:53
+formulations for this but I'll explain
+14:55
+that to you over here to find the
+14:57
+partial derivatives of the loss with
+14:59
+respect to weights of a given layer the
+15:01
+mathematical formula is taking the
+15:03
+transpose of the inputs of that layer
+15:05
+and multiplying it by the gradient
+15:08
+accumulated up till this that point to
+15:10
+find the partial derivative of the loss
+15:13
+with respect to the bias we just take
+15:16
+the dld DZ which is the Matrix of the
+15:19
+gradients accumulated up till that point
+15:21
+and then sum the rows of that Matrix and
+15:23
+to find the partial derivatives of the
+15:25
+loss with respect to the inputs we take
+15:28
+the
+15:29
+dld DZ Matrix and multiply with W
+15:32
+transpose so remember to find the
+15:34
+partial derivatives with respect to the
+15:36
+weight we have an X transpose to find
+15:39
+the partial derivatives with respect to
+15:40
+input we have W transpose so that's a
+15:43
+good way to think about it waights have
+15:46
+inputs in the maths formula inputs have
+15:48
+weights in the math
+15:50
+formula so this is the layer class which
+15:53
+is defined in the forward pass it has
+15:55
+two methods in it and forward and in the
+15:57
+backward pass it has one method which is
+15:59
+called as backward okay now the second
+Building block 2 - ReLU activation class
+16:03
+class which we will Define is the reu
+16:05
+activation
+16:06
+class and uh it will also have two
+16:09
+things it will have a forward pass and
+16:11
+it will have a backward pass what will
+16:13
+happen in the forward pass is just uh
+16:16
+finding the ru of the input so in the
+16:19
+forward pass we'll just take the input
+16:20
+to The Rao and find the maximum of 0a X
+16:25
+which is shown in this graph
+16:27
+here in the backward path CL what we'll
+16:29
+be doing is that we'll just take the
+16:32
+partial derivatives of the railu output
+16:34
+of the loss of the partial derivatives
+16:37
+of loss with respect to The Rao output
+16:39
+that will be an argument or the input to
+16:42
+this backward method and that will be
+16:44
+called as dld DZ so this backward method
+16:47
+similar to the backward method for the
+16:49
+layer will receive the gradients
+16:51
+accumulated up till that point as an
+16:52
+input so uh if if I represent the railu
+16:56
+box like this
+17:01
+so
+17:04
+Rao this is the output and this is the
+17:07
+input so we have in the backward method
+17:10
+the partial derivative of the loss with
+17:12
+respect to The Rao output is given and
+17:15
+then we have to find the partial
+17:16
+derivative of loss with respect to The
+17:18
+Rao input and the way to find this is
+17:21
+that we set it equal to the dld DZ which
+17:25
+is the partial derivative of the loss
+17:26
+with respect to railu output and
+17:28
+wherever the input is zeroo we set this
+17:31
+to zero so we have the inputs which are
+17:33
+coming to this railu because we
+17:35
+calculated during the forward pass and
+17:37
+wherever the input is so this should be
+17:39
+actually less than zero so wherever the
+17:41
+input is less than zero we set the that
+17:45
+particular elements in The Matrix to
+17:47
+zero um and that's just how the
+17:49
+derivative of the ru um happens so if x
+17:53
+is positive the derivative is 1 if x is
+17:55
+negative the derivative is zero I'm
+17:57
+going a bit fast year but I have a
+17:59
+special lecture directly dedicated to
+18:02
+Rao activation and how to do the
+18:04
+backward pass so please refer to that
+18:06
+lecture in this
+18:08
+series but for the sake of uh
+18:10
+completeness the way to calculate it is
+18:12
+just first set the uh partial deriv or
+18:15
+the answer to dld DZ and wherever the
+18:19
+input is less than zero so find the
+18:22
+input which is the Zed Matrix which is
+18:25
+the inputs coming into the reu wherever
+18:27
+that is less than zero you set those
+18:29
+particular entries in the dld DZ Matrix
+18:32
+to zero and remember dld DZ is the
+18:34
+partial derivative of the loss with
+18:36
+respect to the railu
+18:38
+output uh so that is the backward pass
+18:41
+and then the third class which we'll be
+Building block 3 - Softmax + loss class
+18:44
+looking at is the soft Max Plus loss so
+18:47
+this is what I explained over here the
+18:50
+trick which we have is that we'll not
+18:52
+Define separate classes for softmax and
+18:54
+loss we'll combine both of them into one
+18:56
+class the softmax plus loss class and
+18:59
+we'll Define a forward method and the
+19:01
+backward method in the forward pass so
+19:03
+in the forward method we'll take the
+19:05
+soft Max of the output and then we'll
+19:08
+apply the cross entropy loss remember
+19:11
+the cross entropy loss is just a
+19:12
+summation of negative of Y true
+19:15
+multiplied by log of Y of the prediction
+19:19
+which is the summation of True Values
+19:21
+multiplied by log of the predicted
+19:22
+values and we take a negative
+19:25
+sign uh and in the backward pass essenti
+19:29
+we have to find the partial derivative
+19:30
+of the loss with respect to the soft Max
+19:33
+inputs and that actually turns out to be
+19:35
+a very simple formula which is just the
+19:37
+predicted values so these these values
+19:40
+which are predicted by the soft Max and
+19:43
+we subtract the ground truth so in the
+19:46
+previous lecture we actually saw the
+19:48
+implementation of this in Python and
+19:51
+also on the Whiteboard but if you are
+19:53
+seeing this lecture from scratch or if
+19:55
+you have not seen previous lectures just
+19:57
+remember that
+19:59
+uh in the backward method of the Cross
+20:01
+entropy plus loss class it's actually
+20:04
+very simple
+20:05
+to um calculate
+20:10
+the uh backward path so it's very simple
+20:13
+to calculate the partial derivative of
+20:14
+the loss with respect to the softmax
+20:17
+inputs all we have to do is just
+20:19
+subtract the ground truth values from
+20:22
+the predicted values so let me just
+20:24
+minimize the screen a bit and show you
+20:26
+what all we have seen up till now so we
+20:28
+have seen that there are
+20:31
+essentially three building blocks the
+20:33
+first is layers the second is reu
+20:35
+activation and the third is softmax plus
+20:38
+loss and in each of these building
+20:40
+blocks we have a in each of these
+20:43
+building blocks we have a forward pass
+20:46
+and a backward pass and there are
+20:48
+different methods in the forward and the
+20:51
+backward pass so if you look at the
+20:53
+screen right now this is all what the
+20:55
+back propagation building blocks are
+20:57
+each of these build building blocks
+20:59
+carry a very specific purpose and each
+21:02
+of these building blocks are needed to
+21:04
+do the back propagation on the entire
+21:06
+neural
+21:07
+network in the next module we are going
+21:10
+to look at uh how to essentially put all
+21:14
+of these building blocks together in the
+21:16
+code and how to run one forward pass and
+21:20
+run one backward pass in Python so I
+21:23
+hope you really enjoyed this lecture
+21:26
+because the main purpose of this lecture
+21:28
+was to to not hide anything from you but
+21:31
+to show you how all the things come
+21:34
+together so we had a lot of lectures on
+21:36
+back propagation and this was what it
+21:38
+was building up to now we have
+21:40
+everything on one page and I'll show you
+21:42
+in Python code how simple it is to
+21:44
+assemble all of these things together
+21:46
+once we have written the uh forward pass
+21:49
+and backward pass and the different
+21:51
+methods on the Whiteboard so stay tuned
+21:54
+for the next module in which we will be
+21:56
+going into Python and coding this out in
+21:59
+Python thank you so much and I look
+22:01
+forward to seeing you in the next module
