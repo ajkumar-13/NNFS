@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 380" font-family="Segoe UI, sans-serif">
+  <rect width="800" height="380" rx="16" fill="#fafafa" stroke="#e2e8f0"/>
+  <text x="400" y="32" text-anchor="middle" font-size="17" font-weight="bold" fill="#1e293b">Dense Layer — backward() Method</text>
+
+  <!-- Class box -->
+  <g transform="translate(140,55)">
+    <rect width="520" height="300" rx="12" fill="white" stroke="#6366f1" stroke-width="2"/>
+    <rect width="520" height="40" rx="12" fill="#6366f1" opacity=".12"/>
+    <text x="260" y="27" text-anchor="middle" font-size="15" font-weight="700" fill="#6366f1">class Layer_Dense</text>
+
+    <!-- __init__ -->
+    <g transform="translate(20,55)">
+      <rect width="480" height="35" rx="6" fill="#f1f5f9" stroke="#94a3b8"/>
+      <text x="12" y="23" font-size="13" font-family="Consolas" fill="#475569">__init__(n_inputs, n_neurons)  →  weights, biases</text>
+    </g>
+
+    <!-- forward -->
+    <g transform="translate(20,105)">
+      <rect width="480" height="35" rx="6" fill="#f0fdf4" stroke="#10b981"/>
+      <text x="12" y="23" font-size="13" font-family="Consolas" fill="#065f46">forward(inputs)  →  output = inputs @ W + B</text>
+    </g>
+
+    <!-- backward (highlighted) -->
+    <g transform="translate(20,160)">
+      <rect width="480" height="120" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+      <text x="12" y="22" font-size="14" font-weight="700" font-family="Consolas" fill="#ef4444">backward(dvalues):    # dvalues = ∂L/∂Z</text>
+      <text x="24" y="48" font-size="12" font-family="Consolas" fill="#7f1d1d">self.dweights = self.inputs.T @ dvalues</text>
+      <text x="24" y="68" font-size="12" font-family="Consolas" fill="#7f1d1d">self.dbiases  = np.sum(dvalues, axis=0, keepdims=True)</text>
+      <text x="24" y="88" font-size="12" font-family="Consolas" fill="#7f1d1d">self.dinputs  = dvalues @ self.weights.T</text>
+      <text x="24" y="108" font-size="10" fill="#94a3b8">↑ Weight grads   ↑ Bias grads        ↑ Input grads (for prev layer)</text>
+    </g>
+  </g>
+</svg>
