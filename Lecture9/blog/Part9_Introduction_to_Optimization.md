@@ -186,8 +186,4 @@ In **Part 10**, we build the calculus foundation: what are derivatives, partial 
 
 ---
 
-*All code from this post is available in the accompanying Jupyter notebook.*
-
----
-
 > **Try It Yourself:** Hands-on exercises for this lecture are in [Exercises](../../exercises.md) and [Quizzes](../../quizzes.md).
