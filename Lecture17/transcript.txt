@@ -1,0 +1,594 @@
+Theoretical understanding
+0:00
+[Music]
+0:05
+hello everyone welcome to this lecture
+0:08
+in the neural networks from scratch
+0:10
+Series in the previous lecture we looked
+0:13
+at coding the back propagation building
+0:16
+blocks in Python in particular we saw
+0:20
+how to find the derivative of the loss
+0:22
+with respect to the weights and how to
+0:25
+find the derivative of the loss with
+0:27
+respect to the inputs of a given layer
+0:30
+and we wrote that code in Python so uh
+0:33
+here was the code which we wrote down in
+0:35
+python in the previous lecture we saw
+0:38
+how to add another method which is
+0:40
+called as the backward method whenever
+0:44
+uh an instance of a layer is created so
+0:46
+along with the forward pass whenever a
+0:48
+layer is
+0:50
+initiated we Define the backward method
+0:52
+which in an Essence calculates the
+0:55
+gradient of the loss with respect to the
+0:57
+weights and the biases of the that layer
+1:00
+and it also calculates the gradient
+1:03
+gradient of the loss with respect to the
+1:05
+inputs which are coming into that layer
+1:08
+what is needed uh for this backward
+1:10
+method is D values which is the gradient
+1:13
+of the loss with respect to the output
+1:15
+at that particular point so let's say if
+1:18
+you are looking at this layer and if you
+1:20
+want to find the gradient of the loss
+1:22
+with respect to the weights and biases
+1:25
+in this layer and the inputs in this
+1:27
+layer what you need as an input is the
+1:29
+gradient of loss with respect to the
+1:30
+outputs of this layer because remember
+1:33
+we are doing back
+1:35
+propagation in today's lecture what we
+1:37
+are going to learn about is that when we
+1:40
+are doing back propagation there are
+1:42
+activation functions which also come in
+1:43
+the middle so when we are back
+1:45
+propagating from the next layer to the
+1:47
+previous layer to the previous layer
+1:50
+along with the weights and biases there
+1:51
+are activation functions which
+1:54
+definitely come into the picture
+1:56
+something like this so let's say this is
+1:58
+one layer and the out put of that the
+2:01
+neurons from that layer as are zed1 Z2
+2:03
+and Z3 these three outputs pass through
+2:07
+an activation function so here we are
+2:09
+using Ru and then the output of this Ru
+2:12
+activation function is A1 A2 and
+2:16
+A3 now remember that we are doing back
+2:18
+propagation so let's say when we reach
+2:20
+this particular stage we will have the
+2:23
+partial derivative of loss with respect
+2:25
+to A1 we will have the partial
+2:27
+derivative of loss with respect to A2
+2:30
+and we will have the partial derivative
+2:32
+of the loss with respect to
+2:34
+A3 the question which we want to answer
+2:36
+now is that based on these three values
+2:39
+how do you find the partial derivative
+2:41
+of loss with respect to Z1 Z2 and Z3 so
+2:45
+basically we want to back propagate
+2:47
+through the railu activation
+2:49
+function which is shown by the green
+2:51
+arrows right now so very is similar to
+2:54
+how we called uh or how we defined the
+2:57
+backward method whenever we initiated a
+2:58
+layer we we also have to define a
+3:01
+backward method when we initiate an
+3:03
+activation function such as a
+3:05
+reu so uh remember we have The Rao
+3:09
+activation class so let me actually take
+3:11
+you to that class in the notebook
+3:13
+here um so we had a lecture on
+3:16
+activation functions where we actually
+3:18
+defined The Rao activation class and I'm
+3:22
+just taking you to um that
+3:26
+lecture okay so this was The Rao
+3:28
+activation class and we have defined the
+3:30
+class like this it has only one method
+3:33
+forward but now we are going to Define
+3:35
+another method in this activation class
+3:38
+which will be the backward method
+3:40
+because we need to find the partial
+3:42
+derivative of loss with respect to Z1 Z2
+3:45
+and Z3 remember the inputs are the
+3:48
+partial derivative of the loss with
+3:49
+respect to A1 A2 and A3 which are the
+3:52
+outputs after the ru uh function is
+3:55
+called and I'm going to call these
+3:57
+values which are the inputs as D
+4:01
+values D
+4:04
+values and this comes as a matrix so if
+4:07
+you have three neurons then the D values
+4:09
+will be let's say uh 5 6 and
+4:14
+7 so if it gets a matrix like this you
+4:17
+will know that the first element is the
+4:20
+partial derivative of loss with respect
+4:22
+to A1 the second element is the partial
+4:25
+derivative of loss with respect to A2
+4:27
+and the third element is the partial
+4:29
+derivative of loss with respect to A3
+4:31
+remember we have these values which is
+4:34
+the input to this method which we are
+4:35
+trying to generate and we also have the
+4:38
+values Z1 Z2 and Z3 as an output we want
+4:41
+to find the partial derivative of loss
+4:43
+with respect to zed1 with respect to Z2
+4:45
+and with respect to Z3 let me first show
+4:48
+you how to find it for zed1 and then you
+4:50
+will have a much Clear idea how to find
+4:52
+it for Z2 and Z3 so we will of course
+4:56
+use the chain rule the partial
+4:57
+derivative of loss with respect to Z1
+5:00
+is defined as the partial derivative of
+5:02
+loss with respect to A1 multiplied by
+5:05
+the partial derivative of A1 with
+5:07
+respect to
+5:08
+Z1 now remember we already have the
+5:10
+partial derivative of loss with respect
+5:12
+to A1 that is given to us but we need to
+5:15
+include partial derivative of A1 with
+5:17
+respect to Z1 so let's find find this so
+5:21
+A1
+5:24
+is
+5:26
+A1 is actually ru
+5:32
+uh A1 is actually Ru
+5:37
+of Ru of
+5:41
+Z1 correct so if you write the or if you
+5:45
+plot the ru activation function it
+5:47
+actually looks something like
+5:49
+this it is zero over here and it's a
+5:53
+straight line over here so if you find
+5:56
+the partial derivative of A1 with
+5:58
+respect to Z1 if Z1 is negative the
+6:01
+partial derivative will be zero and if
+6:03
+Z1 is positive the partial derivative
+6:05
+will be
+6:06
+one so the answer would be that partial
+6:09
+derivative of L with respect to Z1 will
+6:11
+be equal to partial derivative of L with
+6:13
+respect to A1 multiplied by partial
+6:16
+derivative of A1 with respect to Z1 and
+6:19
+this quantity partial derivative of A1
+6:21
+with respect to Z1 is 1 if Z1 is greater
+6:23
+than zero and it's zero
+6:26
+otherwise so similar thing will happen
+6:28
+for Z1 and Z2 so the trick which we will
+6:31
+do is that if we have partial derivative
+6:34
+of L with respect to A1 A2 and A3 and if
+6:37
+we want to find partial derivative of L
+6:39
+with respect to Z1 Z2 and Z3 first what
+6:42
+we will do is we will say that partial
+6:44
+derivative with respect to Z1 Z2 and Z3
+6:47
+is the
+6:49
+same is the same as the partial
+6:52
+derivative with respect to A1 partial
+6:55
+derivative with respect to A2
+7:04
+and partial derivative with respect to
+7:11
+A3 we will first say that this is the
+7:14
+same then what we will do is that we
+7:16
+will check the values Z1 Z2 and Z3 so if
+7:20
+Z1 is actually greater than zero this
+7:23
+thing will stay like this if Z2 is less
+7:25
+than zero this thing will be substituted
+7:28
+by zero and if Z Z3 is greater than Z it
+7:30
+will stay like this but if Z3 is less
+7:32
+than Z it will also be substituted by
+7:35
+Zer so that's the protocol which you
+7:37
+will be following just to repeat let's
+7:39
+say if Z1 Z2 and Z3 are the
+7:42
+inputs partial derivative of L with
+7:45
+respect to A1 A2 and A3 are D values and
+7:48
+let's say inputs are 1 minus 2 and 3 and
+7:51
+these D values are 5 6 7 now we need to
+7:54
+find D inputs which is partial
+7:56
+derivative of L with respect to Z1 Z2
+7:58
+and Z3
+7:59
+first what we will do is that we will
+8:01
+set D inputs equal to D values so first
+8:04
+we will set D inputs to be equal to 5 6
+8:09
+and
+8:12
+7 then what we will do is that we will
+8:15
+find Z 1 Z2 and Z3 Z1 is greater than Z
+8:19
+so this first quantity will stay like
+8:21
+this Z2 is less than Zer so the second
+8:24
+term will be substituted by zero and the
+8:26
+third term is greater than zero so the
+8:28
+third quantity will stay like this so
+8:31
+then partial derivative of L with
+8:32
+respect to zed is the this Matrix 5 0
+8:36
+and 7 that's our
+8:38
+answer so if if I were to explain the
+8:41
+protocol in English First We Set uh this
+8:45
+answer equal to d uh equal to D values
+8:48
+which is 5 6 and 7 and then wherever the
+8:51
+input is less than zero we set that D
+8:53
+value to be equal to or we set that
+8:55
+value to be equal to zero like we set
+8:57
+this second value to be equal to zero
+8:59
+and then that's our final
+9:01
+answer this is exactly what we will be
+Python code walkthrough
+9:03
+doing in code just remember the notation
+9:06
+the inputs are called as inputs partial
+9:09
+derivative with respect to A1 A2 and A3
+9:11
+are called D values and the answer which
+9:14
+I want is called as D inputs so now let
+9:17
+me go to the code so this is The Rao
+9:20
+activation class and we have a forward
+9:22
+method which we have already defined
+9:24
+it's the maximum between zero and X
+9:26
+which is the input that's the ru
+9:28
+function basically now we will be
+9:30
+defining a backward
+9:32
+method uh and it will look something
+9:35
+like this so we have already defined the
+9:37
+forward method so now let's define the
+9:40
+backward method which will be the
+9:42
+backward pass on The Rao Activation so
+9:45
+remember that D values are given to us
+9:49
+so that will be an input to this method
+9:52
+and first we make a copy so first what
+9:54
+we are doing is we set the output which
+9:56
+is D inputs this is our output first we
+9:59
+set it equal to D values remember this
+10:01
+is exactly what we did over here we set
+10:04
+the output which is also noted as D
+10:07
+inputs to D values and then what we will
+10:10
+be doing is that we will check the
+10:13
+inputs and wherever the inputs are less
+10:16
+than or equal to zero we will set the
+10:18
+self. D inputs to be equal to zero so
+10:21
+basically first we are going to copy D
+10:24
+values so 5 6 and 7 and then we are
+10:26
+going to look at inputs and wherever
+10:30
+the so wherever the input is less than
+10:32
+zero which is over here we are going to
+10:34
+set that particular element to be equal
+10:36
+to zero this is exactly what is done in
+10:39
+the code so self. D inputs this is our
+10:42
+answer first it is the copy of the D
+10:44
+values and then wherever the inputs are
+10:47
+less than or equal to zero we set those
+10:49
+values to be equal to zero that's it so
+10:53
+defining a backward pass and the
+10:55
+backward method in The Rao activation is
+10:57
+as simple as this defining this for the
+11:00
+soft Max activation is a bit more
+11:02
+challenging and we will have a separate
+11:04
+lecture dedicated to that and one more
+11:06
+lecture we have not yet covered is how
+11:08
+to do the backward pass on the loss so
+11:12
+up till now we have covered how to do
+11:13
+the backward pass on the weights bias
+11:15
+inputs and The Rao activation class but
+11:18
+we have not yet covered how to do the
+11:20
+backward pass on the loss which is the
+11:21
+last layer itself and it is a bit
+11:23
+challenging if you have a cross entropy
+11:25
+loss so we'll have a separate lecture
+11:28
+for that which will cover in the next
+11:29
+lecture in today's lecture it we
+11:32
+specifically covered how to implement
+11:34
+back propagation for the reu activation
+11:36
+layer uh it's very simple you just have
+11:39
+to define a backward method and uh first
+11:43
+you the output is the copy of the D
+11:46
+values which are the gradients which are
+11:48
+reached up till that point uh so the D
+11:50
+values are partial derivative of L with
+11:52
+A1 A2 and A3 and then wherever the input
+11:56
+is less than or equal to zero we set the
+11:58
+output to be zero
+11:59
+because that's what Ru does so if you
+12:02
+understand the mathematical intuition
+12:04
+and if you have written this on a piece
+12:05
+of paper understanding the code will be
+12:08
+very easy remember that if you use the
+12:10
+railu directly in Python you will never
+12:13
+understand how the backward pass for Rao
+12:15
+is implemented but the whole purpose of
+12:18
+this lecture series is for you to look
+12:20
+behind the curtains and to see
+12:22
+everything from scratch um the next
+12:25
+lecture we'll be looking at the partial
+12:27
+derivative um or the backward pass
+12:30
+implemented on the loss function then we
+12:32
+will look at the backward pass
+12:34
+implemented on the softmax activation
+12:36
+class thank you so much everyone and
+12:38
+I'll see you in the next lecture

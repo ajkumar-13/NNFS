@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 380" font-family="'Segoe UI', Arial, sans-serif">
+  <defs>
+  </defs>
+
+  <text x="375" y="30" text-anchor="middle" font-size="18" font-weight="700" fill="#1e293b">Element-wise vs. Coupled Activations</text>
+  <text x="375" y="50" text-anchor="middle" font-size="12" fill="#64748b">Why ReLU backward is simple but softmax backward is not</text>
+
+  <!-- Left: Element-wise (ReLU) -->
+  <rect x="30" y="70" width="330" height="290" rx="12" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="195" y="100" text-anchor="middle" font-size="16" font-weight="700" fill="#14532d">Element-wise (ReLU)</text>
+  <text x="195" y="118" text-anchor="middle" font-size="12" fill="#15803d">Each output depends on ONE input</text>
+
+  <!-- ReLU diagram: independent paths -->
+  <text x="80" y="155" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">Inputs</text>
+  <text x="310" y="155" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">Outputs</text>
+
+  <circle cx="80" cy="180" r="16" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="80" y="185" text-anchor="middle" font-size="12" font-weight="600" fill="#1e3a5f">z₁</text>
+  <circle cx="310" cy="180" r="16" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="310" y="185" text-anchor="middle" font-size="12" font-weight="600" fill="#14532d">a₁</text>
+  <line x1="96" y1="180" x2="294" y2="180" stroke="#16a34a" stroke-width="2"/>
+
+  <circle cx="80" cy="225" r="16" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="80" y="230" text-anchor="middle" font-size="12" font-weight="600" fill="#1e3a5f">z₂</text>
+  <circle cx="310" cy="225" r="16" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="310" y="230" text-anchor="middle" font-size="12" font-weight="600" fill="#14532d">a₂</text>
+  <line x1="96" y1="225" x2="294" y2="225" stroke="#16a34a" stroke-width="2"/>
+
+  <circle cx="80" cy="270" r="16" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="80" y="275" text-anchor="middle" font-size="12" font-weight="600" fill="#1e3a5f">z₃</text>
+  <circle cx="310" cy="270" r="16" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="310" y="275" text-anchor="middle" font-size="12" font-weight="600" fill="#14532d">a₃</text>
+  <line x1="96" y1="270" x2="294" y2="270" stroke="#16a34a" stroke-width="2"/>
+
+  <text x="195" y="315" text-anchor="middle" font-size="12" fill="#15803d" font-weight="600">Jacobian = diagonal matrix</text>
+  <text x="195" y="335" text-anchor="middle" font-size="11" fill="#64748b">Backward = element-wise multiply</text>
+  <text x="195" y="350" text-anchor="middle" font-size="12" font-weight="700" fill="#16a34a">Simple!</text>
+
+  <!-- Right: Coupled (Softmax) -->
+  <rect x="390" y="70" width="330" height="290" rx="12" fill="#fefce8" stroke="#d97706" stroke-width="1.5"/>
+  <text x="555" y="100" text-anchor="middle" font-size="16" font-weight="700" fill="#78350f">Coupled (Softmax)</text>
+  <text x="555" y="118" text-anchor="middle" font-size="12" fill="#b45309">Each output depends on ALL inputs</text>
+
+  <!-- Softmax diagram: cross-connected -->
+  <text x="440" y="155" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">Inputs</text>
+  <text x="670" y="155" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">Outputs</text>
+
+  <circle cx="440" cy="180" r="16" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="440" y="185" text-anchor="middle" font-size="12" font-weight="600" fill="#1e3a5f">z₁</text>
+  <circle cx="670" cy="180" r="16" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="670" y="185" text-anchor="middle" font-size="12" font-weight="600" fill="#78350f">a₁</text>
+
+  <circle cx="440" cy="225" r="16" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="440" y="230" text-anchor="middle" font-size="12" font-weight="600" fill="#1e3a5f">z₂</text>
+  <circle cx="670" cy="225" r="16" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="670" y="230" text-anchor="middle" font-size="12" font-weight="600" fill="#78350f">a₂</text>
+
+  <circle cx="440" cy="270" r="16" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="440" y="275" text-anchor="middle" font-size="12" font-weight="600" fill="#1e3a5f">z₃</text>
+  <circle cx="670" cy="270" r="16" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="670" y="275" text-anchor="middle" font-size="12" font-weight="600" fill="#78350f">a₃</text>
+
+  <!-- Cross connections for softmax -->
+  <line x1="456" y1="180" x2="654" y2="180" stroke="#d97706" stroke-width="1.2"/>
+  <line x1="456" y1="180" x2="654" y2="225" stroke="#d97706" stroke-width="0.8" opacity="0.5"/>
+  <line x1="456" y1="180" x2="654" y2="270" stroke="#d97706" stroke-width="0.8" opacity="0.5"/>
+  <line x1="456" y1="225" x2="654" y2="180" stroke="#d97706" stroke-width="0.8" opacity="0.5"/>
+  <line x1="456" y1="225" x2="654" y2="225" stroke="#d97706" stroke-width="1.2"/>
+  <line x1="456" y1="225" x2="654" y2="270" stroke="#d97706" stroke-width="0.8" opacity="0.5"/>
+  <line x1="456" y1="270" x2="654" y2="180" stroke="#d97706" stroke-width="0.8" opacity="0.5"/>
+  <line x1="456" y1="270" x2="654" y2="225" stroke="#d97706" stroke-width="0.8" opacity="0.5"/>
+  <line x1="456" y1="270" x2="654" y2="270" stroke="#d97706" stroke-width="1.2"/>
+
+  <text x="555" y="315" text-anchor="middle" font-size="12" fill="#b45309" font-weight="600">Jacobian = full matrix</text>
+  <text x="555" y="335" text-anchor="middle" font-size="11" fill="#64748b">Backward = matrix multiplication</text>
+  <text x="555" y="350" text-anchor="middle" font-size="12" font-weight="700" fill="#d97706">Harder (Parts 19-20)</text>
+</svg>
