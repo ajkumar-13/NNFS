@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 430" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow19" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <rect width="940" height="430" rx="20" fill="#fafafa" stroke="#e5e7eb" stroke-width="1.5"/>
+
+  <text x="470" y="34" text-anchor="middle" font-size="18" font-weight="700" fill="#1e293b">Softmax + Cross-Entropy Shortcut</text>
+  <text x="470" y="56" text-anchor="middle" font-size="12" fill="#64748b">Separate backward passes look messy. The combined derivative collapses to predicted minus true.</text>
+
+  <rect x="40" y="96" width="360" height="238" rx="18" fill="#ffffff" stroke="#fee2e2" stroke-width="1.5"/>
+  <text x="220" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#b91c1c">Separate view</text>
+  <text x="220" y="142" text-anchor="middle" font-size="11" fill="#64748b">Softmax couples every class through one denominator.</text>
+
+  <rect x="72" y="172" width="82" height="54" rx="12" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/>
+  <text x="113" y="194" text-anchor="middle" font-size="12" font-weight="700" fill="#b91c1c">logits</text>
+  <text x="113" y="211" text-anchor="middle" font-size="11" fill="#991b1b">z</text>
+
+  <rect x="179" y="172" width="82" height="54" rx="12" fill="#fff7ed" stroke="#fb923c" stroke-width="2"/>
+  <text x="220" y="194" text-anchor="middle" font-size="12" font-weight="700" fill="#c2410c">softmax</text>
+  <text x="220" y="211" text-anchor="middle" font-size="11" fill="#9a3412">y_hat</text>
+
+  <rect x="286" y="172" width="82" height="54" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+  <text x="327" y="194" text-anchor="middle" font-size="12" font-weight="700" fill="#b45309">cross-entropy</text>
+  <text x="327" y="211" text-anchor="middle" font-size="11" fill="#92400e">L</text>
+
+  <line x1="154" y1="199" x2="179" y2="199" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow19)"/>
+  <line x1="261" y1="199" x2="286" y2="199" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow19)"/>
+
+  <rect x="134" y="246" width="172" height="54" rx="12" fill="#fef2f2" stroke="#ef4444" stroke-width="1.2">
+    <animate attributeName="opacity" values="1;1;0.3;0" keyTimes="0;0.3;0.5;0.65" dur="6s" repeatCount="indefinite" fill="freeze"/>
+  </rect>
+  <text x="220" y="268" text-anchor="middle" font-size="12" font-weight="700" fill="#b91c1c">
+    Jacobian is dense
+    <animate attributeName="opacity" values="1;1;0.3;0" keyTimes="0;0.3;0.5;0.65" dur="6s" repeatCount="indefinite"/>
+  </text>
+  <text x="220" y="286" text-anchor="middle" font-size="11" fill="#991b1b">
+    Every logit influences every probability.
+    <animate attributeName="opacity" values="1;1;0.3;0" keyTimes="0;0.3;0.5;0.65" dur="6s" repeatCount="indefinite"/>
+  </text>
+
+  <!-- Animated "collapse" arrow that pulses when the simplification happens -->
+  <line x1="420" y1="214" x2="500" y2="214" stroke="#94a3b8" stroke-width="3" marker-end="url(#arrow19)">
+    <animate attributeName="stroke" values="#94a3b8;#16a34a;#94a3b8" keyTimes="0;0.5;1" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="stroke-width" values="3;5;3" keyTimes="0;0.5;1" dur="6s" repeatCount="indefinite"/>
+  </line>
+  <text x="460" y="198" text-anchor="middle" font-size="12" font-weight="700" fill="#475569">
+    simplify
+    <animate attributeName="fill" values="#475569;#16a34a;#475569" keyTimes="0;0.5;1" dur="6s" repeatCount="indefinite"/>
+  </text>
+
+  <rect x="530" y="96" width="370" height="238" rx="18" fill="#ffffff" stroke="#dcfce7" stroke-width="1.5"/>
+  <text x="715" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#047857">Combined view</text>
+  <text x="715" y="142" text-anchor="middle" font-size="11" fill="#64748b">Softmax backward and cross-entropy backward cancel into one clean result.</text>
+
+  <rect x="590" y="168" width="250" height="64" rx="14" fill="#ecfdf5" stroke="#10b981" stroke-width="2">
+    <animate attributeName="stroke-width" values="2;3;2" dur="1.8s" repeatCount="indefinite"/>
+  </rect>
+  <text x="715" y="195" text-anchor="middle" font-size="14" font-weight="700" fill="#047857">dL/dz = y_hat - y</text>
+  <text x="715" y="217" text-anchor="middle" font-size="11" fill="#047857">then divide by batch size</text>
+
+  <rect x="566" y="248" width="298" height="60" rx="12" fill="#ffffff" stroke="#bbf7d0" stroke-width="1.2"/>
+  <text x="715" y="270" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b">Worked row</text>
+  <text x="715" y="291" text-anchor="middle" font-size="12" fill="#475569">[0.7, 0.1, 0.2] - [1, 0, 0] = [-0.3, 0.1, 0.2]</text>
+
+  <rect x="100" y="360" width="740" height="30" rx="12" fill="#ffffff" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="470" y="379" text-anchor="middle" font-size="11" fill="#334155">The shortcut is not a trick. It is the exact derivative after the softmax and cross-entropy algebra cancel.</text>
+</svg>
