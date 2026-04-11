@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 380" font-family="Segoe UI, sans-serif">
+  <rect width="860" height="380" rx="16" fill="#fafafa" stroke="#e2e8f0"/>
+  <text x="430" y="28" text-anchor="middle" font-size="16" font-weight="bold" fill="#1e293b">Learning Rate Decay — Exploration → Exploitation</text>
+
+  <!-- Decay curve -->
+  <g transform="translate(30,50)">
+    <text x="180" y="0" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">α(t) = α₀ / (1 + decay × t)</text>
+    <!-- Axes -->
+    <line x1="30" y1="200" x2="370" y2="200" stroke="#94a3b8" stroke-width="1.5"/>
+    <line x1="30" y1="200" x2="30" y2="20" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="200" y="225" text-anchor="middle" font-size="10" fill="#94a3b8">Iterations (t)</text>
+    <text x="12" y="110" text-anchor="middle" font-size="10" fill="#94a3b8" transform="rotate(-90,12,110)">Learning Rate</text>
+    <!-- Curve -->
+    <path d="M30,30 Q80,50 130,100 Q180,140 230,160 Q280,175 330,183 L370,187" fill="none" stroke="#6366f1" stroke-width="2.5"/>
+    <!-- α₀ label -->
+    <text x="38" y="26" font-size="10" font-weight="600" fill="#6366f1">α₀</text>
+    <!-- Exploration zone -->
+    <rect x="30" y="20" width="120" height="185" rx="0" fill="#6366f1" opacity=".06"/>
+    <text x="90" y="215" text-anchor="middle" font-size="10" font-weight="600" fill="#6366f1">Exploration</text>
+    <!-- Exploitation zone -->
+    <rect x="150" y="20" width="220" height="185" rx="0" fill="#10b981" opacity=".06"/>
+    <text x="260" y="215" text-anchor="middle" font-size="10" font-weight="600" fill="#10b981">Exploitation</text>
+  </g>
+
+  <!-- Comparison table -->
+  <g transform="translate(430,50)">
+    <text x="200" y="0" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">Performance Comparison</text>
+
+    <!-- Fixed LR -->
+    <rect x="0" y="15" width="400" height="55" rx="8" fill="#fef2f2" stroke="#ef4444"/>
+    <text x="15" y="35" font-size="12" font-weight="600" fill="#ef4444">Fixed α = 1.0</text>
+    <text x="15" y="55" font-size="11" fill="#7f1d1d">Accuracy: 57.3%  |  Loss: 0.768  |  Stuck in local minima</text>
+
+    <!-- Decaying LR -->
+    <rect x="0" y="85" width="400" height="55" rx="8" fill="#f0fdf4" stroke="#10b981"/>
+    <text x="15" y="105" font-size="12" font-weight="600" fill="#10b981">Decaying α₀ = 1.0, decay = 0.001</text>
+    <text x="15" y="125" font-size="11" fill="#14532d">Accuracy: 71.7%  |  Loss: 0.653  |  Smooth decrease</text>
+
+    <!-- Improvement arrow -->
+    <text x="200" y="160" text-anchor="middle" font-size="12" font-weight="600" fill="#6366f1">+14.4% accuracy improvement</text>
+  </g>
+
+  <!-- Code structure -->
+  <g transform="translate(30,290)">
+    <rect width="800" height="70" rx="12" fill="#f1f5f9" stroke="#94a3b8" stroke-dasharray="4,2"/>
+    <text x="20" y="22" font-size="12" font-weight="600" fill="#475569">Optimizer_SGD with Decay — Three Methods:</text>
+    <text x="20" y="44" font-size="11" font-family="Consolas" fill="#64748b">pre_update_params()  →  current_lr = lr / (1 + decay × iterations)</text>
+    <text x="20" y="62" font-size="11" font-family="Consolas" fill="#64748b">update_params(layer)  →  W -= current_lr × dW;  B -= current_lr × dB</text>
+    <text x="540" y="62" font-size="11" font-family="Consolas" fill="#64748b">post_update_params()  →  iterations += 1</text>
+  </g>
+</svg>
