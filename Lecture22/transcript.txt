@@ -1,0 +1,579 @@
+Gradient Descent Introduction
+0:00
+[Music]
+0:05
+hello everyone welcome to this neural network from scratch series
+0:10
+lecture up till now we have looked at forward pass and we have looked at the
+0:17
+backward pass we have had several lectures on both of these sections until
+0:23
+now and uh now we will begin to cover one of the last sections in in this
+0:30
+neural networks from scratch series and uh that is regarding
+0:36
+optimizers so until now we have learned that let's say if we have a neural network such as this which has weights
+0:44
+which has biases and U which has a stack of neurons and layers we know how to
+0:50
+find the outputs we know how to find the loss function in the forward pass and we
+0:57
+also know how to find the partial derivative of the with respect to the weights and biases
+1:03
+of each and every layer of the neural network we also know how to find the
+1:08
+partial derivative of the loss with respect to inputs of each and every layer of the neural network and we also
+1:15
+know how to find the partial derivative of the loss with respect to uh the soft
+1:21
+Max activation function or The Rao activation function great so let me in ruce the
+1:30
+problem which we are trying to solve in the first place the problem is that we have a data set such as this and every
+1:37
+data set has two attributes so on the x axis the attribute is X1 and on the y
+1:42
+axis the attribute is X2 um and each data point can belong to
+1:49
+either of the three classes it can belong to the red class it can belong to the green class or it can belong to the
+1:56
+blue class our goal is that we want to design a neural network and optimize the
+2:02
+weights and the biases of this particular neural network so that if I
+2:08
+give you any new Point such as let's say this point which was not there in the training data it should correctly
+2:13
+classify it as red if I give this particular point the neural network should correctly classify it as green
+2:20
+that's the main purpose and up till now we have seen how to find the uh loss in
+2:26
+the forward pass and how to find all the gradients in the backward pass but we have not seen how do you get
+2:33
+to the optimum weights and how do you get to the optimum biases so for example
+2:38
+if your loss function looks something like this and uh you want to get here
+2:44
+which is the local Minima or rather you're looking at the global Minima if the loss function is more complex you
+2:51
+want to get to this minimum Point ideally and if you start here this is
+2:56
+clearly not the lowest loss right so somehow you you have to go from the starting position number one to the
+3:03
+position number two why we learn about optimizers is all
+3:09
+about this journey from point number one to point number two optimizers will help
+3:14
+us to get to Point number two or they will help us in this journey of going from point number one to point number
+3:22
+two in one of our previous lectures we have covered the importance of gradients in optimizers right if you start from
+3:29
+this point uh it turns out that the best direction to move is the direction of
+3:36
+the steepest descent so ideally we would want to move in this direction right so
+3:42
+if the loss function is L and if the parameters are W it turns out that
+3:47
+partial derivative or gradient of L with respect to W is the direction of steepest Ascent so it's this direction
+3:56
+so partial derivative or gradient gives the direction which we should move for
+4:01
+the largest change in the function or largest change in the loss so naturally if we take negative of this so negative
+4:08
+of partial derivative of L with respect to W or negative of the gradient is the
+4:14
+direction of the steepest descent so negative of this gradient
+4:19
+gives us the Direction Where We should move so that the loss function decreases the
+4:25
+fastest so this is the Direction Where We should be moving and it's because of
+4:30
+this intuition that's why we spent so many lectures on back propagation and we
+4:36
+spent so many lectures on calculating these derivatives and now you'll see how useful they are essentially the main
+4:42
+idea is that moving in the direction of steepest descent or moving in the direction of negative gradients is the
+4:49
+best strategy which we can Implement to minimize the loss function so let's say you start out with
+4:56
+random weights and you start out with random biases in every l of the neural network obviously that won't be the
+5:02
+optimal loss that won't be the lowest loss and that's fine so we will Implement an iterative procedure where
+5:09
+where we will keep on updating the weights and biases the simplest way to
+5:15
+do this updation of the weights and biases is something called as gradient
+5:21
+descent and now there are many forms of this but today we will look at the simplest version of updating weights and
+5:28
+biases through grade descent we will also look at coding this in
+5:33
+Python so the simple idea behind gradient descent is that you start with random weights and biases and you
+5:40
+perform iterations in every iteration what you do is that you move in the direction of
+5:45
+the steepest descent so for example you update the weights by this formula so weight new is the weight original minus
+5:54
+Alpha * the gradient of L with respect to W and Alpha Al is my uh learning
+6:08
+rate today we will talk a lot about this learning rate parameter because when we do gradient descent is the only
+6:15
+parameter which we can vary remember that although I have written partial derivative of L with respect to W this
+6:22
+includes all the weights of this neural network so for example if you look at the first layer every neuron
+6:30
+has two weights so there are six weights in the first layer in the second layer
+6:35
+every neuron has three weights associated with it so there are nine weights in the second layer so totally
+6:41
+if you look at this neural network there are 15 weights which we need to update in every single iteration the larger the
+6:49
+neural network is the more weights we need to update similarly we do this
+6:54
+procedure for bias also we start with random bias values which is typically even zero and then we subtract the
+7:00
+learning rate multiplied by the gradient of L with respect to the
+7:06
+biases uh similar to the weights each layer and each neuron will have a separate bias so for example in the
+7:12
+first layer every neuron will have a bias associated with it so that's three bias terms and in the second layer which
+7:19
+is also the output layer every neuron will have a bias associated with it so that's again three biases so there are
+7:26
+total of six bias terms and there are a toal total of 15 weight terms which need to be optimized for this particular
+7:33
+neural network architecture which we have chosen so this update rule which I have
+7:38
+mentioned here that needs to be applied for all the weights and for all the
+7:44
+biases and remember that uh when we need these partial derivatives we have
+7:51
+already found these during back propagation so when we uh instantiate a
+7:57
+layer class in Python we will have a forward method in that layer and we will have a backward method in that layer
+8:03
+what the backward method will do is that whenever the layer is called it will automatically store the value of the
+8:10
+partial derivative of the loss with respect to the weights the biases and the inputs of that layer so all of these
+8:18
+gradients or partial derivatives will be available to us uh when we do the forward and backward passs I have spent
+8:25
+a lot of lectures in this series on the backward pass especially so please have a look at it that way you'll appreciate
+8:32
+this lecture much much more you'll clearly understand why we spend so much time on back propagation because once
+8:39
+you do all that hard work now comes the easy part where you really really can uh
+8:45
+use the knowledge which you have gained in the previous lectures okay now that you all have this
+Python code walkthrough
+8:51
+understanding let me take you through the code file which we are going to implement so today the main task for us
+8:58
+is to implement the gradient descent Optimizer in Jupiter notebook and the
+9:04
+problem which we are considering is the same problem which I explained to you uh
+9:09
+on the Whiteboard we have this data set and we are going to construct a neural network which basically takes in any
+9:15
+input and classifies it into three categories red green and blue remember that we have two activation functions
+9:22
+here the first layer we'll have the uh let me draw it in or write it in
+9:28
+different color the first layer will have the reu activation function
+9:33
+um and since this is a classification problem my final layer is going to have
+9:40
+the soft Max activation function okay so this is the problem
+9:46
+which we have in the last lecture we saw that how we defined classes in the forward pass and the backward pass so we
+9:52
+had a class called layer dense to create the layer we had a class called activation rloop which defines the r
+9:59
+activation class um after the first layer or the first set of neurons then
+10:06
+we have the second layer and then finally we have the combined softmax
+10:11
+plus categorical law cross entropy loss class at the end uh remember that since
+10:17
+this is a classification task the loss function which we'll be using is something called as categorical
+10:22
+crossentropy loss and I already have a lecture for this in this uh series if
+10:27
+you are not aware of this loss so these are the classes which we have
+10:33
+and uh now let us start looking at optimizers and gradient descent and how
+10:39
+to implement this in Python so we will Define a separate class for the gradient descent so this is not a stochastic
+10:45
+gradient so let me just change the name to uh GD Optimizer GD but for the sake
+10:51
+of reference let's just keep it like this okay so now when you when you
+10:57
+create an instance of this class the optimizer SGD class it will first
+11:04
+call this init Constructor which will take learning rate as an argument remember I mentioned that for gradient
+11:10
+descent the only thing which you can vary or control is the learning rate so initially when we get started I'm going
+11:17
+to set the learning rate to be equal to one so when we create an instance of this Optimizer class the learning rate
+11:23
+will be set to one and then what we'll be doing is that we'll call this update
+11:29
+params function which will take the particular layer as an argument so whichever layer we are considering we'll
+11:35
+look at the weights and biases of that layer and then we will update the weights and biases of that layer by
+11:41
+subtracting the learning rate multiplied by the partial derivatives of the weights and the partial derivatives with
+11:48
+respect to the biases you might be wondering where do these quantities come from so these partial derivatives
+11:55
+actually come from the backward method which is defined in the layer dense CL class so let me actually show you the
+12:02
+layer dense class quickly for someone who is directly coming to this lecture so if you look at the layer dense class
+12:09
+it has a forward method like this and it has a backward method uh what the backward method does is is is that it
+12:16
+stores the gradients of the loss with respect to the weights the biases and the inputs of that particular layer so
+12:25
+the partial derivatives with respect to the weights and biases are what we are accessing over here when we update the
+12:32
+weights and the biases of that particular layer so the update params method is very important in this
+12:39
+Optimizer class okay now since this Optimizer class has been defined we can
+12:46
+just integrate it with the rest of the code so first we have the data set which has 100 samples and three classes it's
+12:53
+called as the spiral data set the reason it's called spiral data set is because the data set itself looks like a spiral
+13:00
+with three categories the red green and blue okay then we are then we will first
+13:07
+create the initial layer um so here you can see that uh the initial layer has uh
+13:13
+two inputs and I'm going to use 64 neurons in the initial layer so for the
+13:19
+sake of representation here I only showed three neurons but uh for the code
+13:25
+I'm going to use 64 neurons so I have two inputs and 64 neurons in the first layer I'm going to chain it with an
+13:32
+activation class which is reu then I'm going to define the second layer which will be having 64 inputs which are here
+13:39
+64 inputs and then finally I'll have three outputs r g and B so uh it will
+13:45
+have 64 inputs and it will have three neurons uh which are the output
+13:54
+values so remember that this layer dense class the first argument is the input uh
+14:02
+inputs to those particular neurons and the second argument is the number of outputs so in the second layer if you
+14:09
+see second layer we'll receive 64 inputs and we will have three outputs because we'll need to classify whether it's r g
+14:16
+or B and then finally we will chain a combined class of soft Max and
+14:22
+categorical cross entropy in the previous lectures we have seen why we Define this combined class ideally you
+14:28
+can even Define a soft Max separately and the law separately but
+14:34
+then in back propagation it gives us a tremendous Advantage if we Define this combined class because calculating the
+14:40
+derivatives just becomes that much easier and then finally we create an instance of the optimizer HGD class
+14:47
+which we have already defined over here okay now what we will be doing is
+14:52
+that we will be performing iterations so we will be performing 10,000 iterations
+14:58
+of the forward pass and the backward pass and after each iteration we'll be updating the weights and the biases of
+15:04
+every layer according to the update rule of gradient descent so initially let's do the
+15:11
+forward pass dense 1. forward what this will do is that it will take the first layer and then it will calculate the
+15:18
+output from every each of the 64 neurons uh that output will be just W
+15:24
+transpose X Plus bias where X is input and W is the weights of the first layer
+15:30
+then we will apply the ru Activation so activation 1. forward dense 1. output
+15:36
+which means that we'll take the output coming from the first layer and then we'll apply The Rao
+15:41
+activation then we'll move to the second layer remember the input to the second layer is going to be the output from the
+15:48
+previous layer and then the output of the second layer we are going to pass to the loss
+15:54
+activation do forward what this loss activation is going to do is that it
+15:59
+will calculate the softmax output predictions plus it will also calculate
+16:05
+the cross entropy loss so it will be doing two things and then we have a a
+16:12
+code which calculates the accuracy based on uh whether the prediction values
+16:18
+match the correct inputs what's very important to note is that we have a backward Passover here so
+16:26
+we'll start it from the last layer so first we will call call loss activation. backward remember that the backward
+16:33
+class or the back propagation always starts from the last layer and then we keep moving uh right to the first layer so
+16:40
+first we will um do the backward pass on the loss activation which is the combined soft Max Plus categorical cross
+16:47
+entropy loss um and then what we'll be doing is then we'll be back propagating through the second layer we'll be back
+16:54
+propagating through the reu activation and then we'll be back propagating through the first layer
+16:59
+remember when I'm saying back propagating through the second layer and first layer Whenever I Call These commands we'll be storing the partial
+17:07
+derivative of the loss with respect to the inputs the weight and biases of that layer so in this code we are going to
+17:15
+access the D partial derivative of loss with respect to inputs but when we come to the optimizer we'll be accessing the
+17:22
+partial deriva of the loss with respect to the weights and the bias because remember the update params function will
+17:28
+require the partial derivative of the loss with respect to weights and bias of the particular
+17:34
+layer so then finally what we'll be doing is that for both the layers we'll be calling the optimizer do update
+17:40
+params so for the first layer we'll call this which means that it it will update the weights and biases of the first
+17:47
+layer and then we'll call this for the second layer as well so it will update
+17:52
+the weights and biases of the second layer and as the iterations are proceeding what we'll do is that for
+17:58
+every 100 EPO we'll be printing the accuracy and the loss remember that
+18:03
+Epoch is going through the entire forward pass and entire data set once so when we are doing 100 epox we'll be
+18:10
+going through the entire data set 100 times uh remember that the data set
+18:15
+consists of 100 samples so this is the simple code and if you have understood the forward pass and the backward pass
+18:22
+the only thing which we have added here is Optimizer do update parms in both the layers so now I'm going to run this
+18:29
+piece of code and let us see the epoch and the accuracy in every
+18:35
+Epoch so here you can see that the EPO have started and I'm going to run 10,000 EPO the accuracy is33 initially which is
+18:42
+pretty bad right it's like if we are going to determine r g and B and
+18:48
+classify among three classes 333 is just like a coin TOS it just predicting 1/3
+18:55
+with one3 probability we are correct of our predictions but you can see that as the EPO are increasing the accuracy is
+19:01
+increasing this indicates that we are kind of moving in the correct direction and the loss is also decreasing which is
+19:08
+good this is the whole purpose of gradient descent but as you can see as the EPO kind of increase further and as
+19:15
+we reach 690 the epoch has start the loss has started to
+19:20
+stagnate and when we reach 10,000 deox we'll see that the loss is 681 so the
+19:26
+loss really stagnated in the last 1,000 to 2,00 ,000 iterations it did not decrease too much after this that's the
+19:33
+first observation in fact even if you run this for 1 million more iterations the loss will not decrease too much
+19:39
+further so you might be thinking what happened here is this the best we can do
+19:45
+before that let me actually show you an animation uh with respect to what we
+19:51
+just saw and uh so this is the spiral data set which we are considering and we
+19:57
+took a learning rate of right so this animation will show you what is the answer after these many number of epoch
+20:04
+and that answer corresponds to what we just ran in code right now so as you can see the optimizer is running and here
+20:12
+you can see the different colors and you can see the loss and the accuracy plotted on the right hand side ideally
+20:19
+if we have done a good job what will happen is that the red green and the blue so let me again pause here okay now
+20:28
+look at this image we have almost reached the end of the simulation but we are nowhere close to classifying the red
+20:35
+dots into this red color the blue dots into this blue color and the green dots into the green color ideally if our
+20:42
+Optimizer is correct the green background should only correspond to the green dots the red background should
+20:48
+only correspond to the red dots and the blue background should only correspond to the blue dots but now look at this
+20:54
+data point over here it belongs to the blue category right but its background is red red so it's incorrectly
+21:00
+classified in fact all the points here in the top right they are blue but they are in the red background which means
+21:06
+they are incorrectly classified this means that we have clearly not done a good job uh with
+21:12
+respect to classification of the data points which was our initial task look at this data point for example it's a
+21:19
+green data point but uh it's been classified as blue that's also not good
+21:25
+if you look at the plots on the right hand side you will see that the accuracy stagnated to around 6 or 7 and the loss
+21:32
+also stagnated to around 8 or 7 and The Learning rate was fixed as
+21:37
+one so this clearly shows that the gradient descent although it's good we decreased our loss definitely as you can
+21:43
+see in this plot we decreased our loss which is good but we have not reached the optimum
+21:49
+value so now you might be thinking that okay what is really happening here so it
+Local minima and effect of learning rate
+21:55
+turns out that what's happening is that you are probably getting stuck in something called as a local
+22:01
+Minima so when we look at neural network uh the when we look at neural network
+22:06
+the function the loss function landscape is not as simple as what we considered over here the loss function landscape is
+22:13
+in many dimensions and it can be very complex and it can look something like this this is just for illustration
+22:19
+purposes so if you look at the loss function landscape over here you can see that it has multiple local Minima what
+22:26
+local Minima means that it's a point which is the lowest value but in a specific region for example if you look
+22:33
+at this particular Point here which I have marked here and let me actually mark it in a different
+22:40
+color just so that I show it in a better way so if you if you look at this
+22:45
+particular point this is clearly the global Minima what Global Minima means is that if you look at the entire loss
+22:54
+function this is the point at which the loss function reaches lowest value so
+23:00
+this is the global Minima but at several places before the global Minima you actually have local Minima which are
+23:07
+localized regions where that point is the Minima so if you look at this point and if you consider only this much area
+23:14
+this point is the lowest in that area if you consider this point and only consider this much area this point
+23:21
+corresponds to the lowest loss in this area similarly for this point and this area that's why these three points are
+23:27
+called as loow local Minima okay now imagine that if you start from this particular Point let's
+23:34
+say if you start from this point and if you start uh the gradient descent and
+23:39
+let's say if you go here you go here and you go here and then you get
+23:45
+stuck here and then it really becomes difficult to come out of this local Minima that's why the loss function
+23:50
+actually stagnates that's why the loss function actually stagnates so let me
+23:56
+write this over here and this is exactly what we observed
+24:02
+right uh in the training process the loss function has clearly uh the loss has clearly
+24:09
+stagnated so this might indicate that we have been stuck in a local Minima so the
+24:15
+parameter which we vary learning rate is very important it turns out that if you have a very high learning rate that is
+24:21
+also very bad because then we'll just keep jumping around here and there but at least we'll escape the local Minima
+24:27
+but if we have very low learning rate we might get stuck in a local minimum so let me show you some animations here is
+24:33
+an animation of a learning rate which is too big so let me start this from
+24:44
+scratch okay so as you can see this is the function and since the learning rate is very high we just keep bouncing from
+24:50
+one point to another and it's very difficult to reach the global Minima which is over here we are getting close
+24:56
+to the global Minima as you can see uh but it's a very long process and we just keep oscillating back and forth
+25:03
+this is the problem with a very high learning rate now if you want to look at low learning rate there is another video
+25:10
+which I want to show if the learning rate is actually very low you can look at this video so okay this is a low
+25:18
+learning rate and as you can see we are clearly getting stuck in this local Minima Warrior we are not even exploring
+25:24
+the other side of this Global Minima this is analogous to having very low
+25:29
+Ambitions if we have very low Ambitions we always get stuck into this particular part of the loss function we don't even
+25:35
+know that on the other side there are even points which have lower Minima whereas if we have very high Ambitions
+25:42
+if the learning rate is very high it might lead to oscillations like this so
+25:47
+it is very important to decide a learning rate which is kind of optimal and sometimes that might be difficult to
+25:53
+do right uh so it turns out that there is another concept which is called momentum
+26:00
+and we'll come to this in the next lecture it turns out that normal gradient descent is not too effective
+26:06
+and we always get either stuck in local Minima or we keep bouncing here and there that's why people introduce the
+26:12
+concept of momentum in gradient descent here is how the momentum actually looks like so let me start this video from
+26:22
+scratch okay so if you add momentum to gradient descent here you can see that we are perfectly converging to to the
+26:28
+global Minima and then we kind of settle around here what momentum does is that if we get stuck in local Minima it gives
+26:35
+a small nudge it gives a small momentum so that we are kicked out of that local Minima that's the whole idea of momentum
+26:42
+in gradient descent and as you can see we have clearly reached the optimum value
+26:47
+here great in this code itself actually we can um experiment with different
+26:54
+learning rates and we can see what actually happens so let let's try with a learning rate of
+27:00
+0.5 so now I'm going to put a learning rate of 0.5 over here and I'm going to
+27:06
+run this part of the code and then I'm going to run this part of the code now let us look at the accuracy as you can
+27:13
+see the learning rate is lower so the iterations might take longer to reach
+27:19
+the same level of loss which we earlier saw but even earlier at least we reached
+27:24
+an accuracy of 6 or 7 but here we are getting St ated to you on 0.5 or 6 so
+27:31
+this actually indicates that we we have again got stuck in a local Minima and this is usually the problem with lower
+27:36
+learning rates very similar to what I showed you over here we are getting stuck in local Minima probably
+27:44
+so if you run this uh if you run the animation for lower learning rates so
+27:51
+this is with 05 learning rate and if you start from scratch you will see that the
+27:56
+oscillations proceed something like this here also we try to get to the correct answer but ultimately the optimum value
+28:04
+which we get is a bit better but not that great actually because here also there are many
+28:10
+misclassifications for example if you look at this particular section over here this point the true value is red
+28:17
+but the background is blue which means it's been classified as a blue point so again this is not very good here also
+28:23
+you can see the accuracy has gotten stagnated to 6 so this clearly indicates that just
+28:30
+normal gradient descent is not working too much but this gave us a lot of insight into understanding why learning
+28:37
+rate matters and uh why changing the learning rate can actually help us
+28:43
+actually increasing the learning rate can get us out of the local Minima but it can lead to many oscillations
+28:48
+decreasing the learning rate too much can get us stuck in the local Minima I think that it's always better
+28:54
+to start with a high learning rate and see what's happening rather than getting stuck in a local Minima in a lower
+29:01
+learning rate and the reason for this is that if you have a high learning rate uh
+29:07
+so if you have a high learning rate like this although it's difficult to converge Al you you'll at least see the different
+29:14
+parts of the loss landscape like although we don't converge here we get to This Global Minima multiple times in
+29:21
+these oscillations so we know that there is a part in the loss landscape which is actually very small but if you start
+29:27
+with a uh learning rate which is very low you might not even discover these other
+29:33
+parts of the loss function so I always actually recommend to start with uh Higher Learning rates and then if needed
+29:41
+go to lower learning
+29:47
+rates okay this actually brings us to the end of this lecture where we discussed about optimizers gradient
+29:54
+descent and implementing them in Python we tried to do a a good job and we
+30:00
+definitely lowered the loss with normal gradient descent and I showed you a glimpse of momentum and I showed you how
+30:06
+momentum can actually help us a lot such as for example this video this is an example of momentum and here we you can
+30:13
+see that we clearly convers to the global minimum very nicely so in the next lectures we'll be looking at uh
+30:20
+something called as decaying learning rate and then we'll look at momentum adagrad ad Delta Adam Etc which are the
+30:28
+modern ways to optimize or improve gradient descent a bit so uh with this I
+30:36
+would like to say that thank you so much everyone for sticking with me in this neural network from scratch series we
+30:42
+have done around 20 to 21 videos now and I think this is the series on YouTube
+30:47
+which goes in a lot of depth in neural networks and I don't assume anything if you have seen the previous
+30:52
+lectures thank you so much everyone and I look forward to seeing you in the next lecture
