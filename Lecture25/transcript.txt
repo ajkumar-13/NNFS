@@ -1,0 +1,729 @@
+Adagrad concept: individual step sizes
+0:00
+[Music]
+0:05
+hello everyone welcome to this lecture in the neural networks from scratch
+0:11
+Series today we are going to learn about an important Optimizer for neural
+0:17
+network training and that Optimizer is called as adagrad eventually adagrad led to the
+0:26
+development of the optimizer Adam which which is now used commonly in most
+0:33
+modern machine learning Frameworks so to really understand the Adam Optimizer first we need to
+0:40
+understand the basics of the adagrad optimizer in many uh modern machine
+0:46
+learning settings adagrad is not used nowadays but still the concepts which
+0:51
+adagrad teaches us are very important and that's why it's necessary to learn
+0:58
+about this optimizer in the previous lectures we have looked at gradient descent with momentum and we
+1:05
+saw that when we use momentum we really get an accelerated convergence which
+1:12
+means that we reach towards our Minima in a much faster way with very less
+1:19
+number of oscillations so momentum actually helps us to reduce the
+1:26
+oscillations and we saw that with momentum the accuracy of the neural network training is very high and the
+1:34
+loss is very low essentially the way momentum worked is that it also gave importance to the
+1:42
+previous weights but the key thing to note in the momentum if you look at the weight updates of course the weight
+1:49
+updates depend on the previous weight updates but if you look at the learning rate Alpha this is a common shared
+1:55
+learning rate among all the weights so all the weights of the neural network use this same Alpha and that Alpha
+2:04
+decays with time so we specify a learning rate Decay and as the
+2:09
+iterations go on proceeding Alpha goes on decreasing with time this is to make
+2:15
+sure that uh we start off with a high step size and we explore the entire loss
+2:20
+landscape but later the step size goes on reducing so that when we settle in
+2:26
+places close to the global Minima we don't keep on oscillating the key thing which I want you to noce
+2:33
+that in momentum there is a common or a shared step size among all the weights
+2:38
+although it is decaying with time it is the same step size which all the weights use this is the key idea upon which
+2:46
+adagrad operates the main premise or the main concept of adagrad is that okay why
+2:53
+do all the weights essentially have the same learning rate why is there a common
+2:58
+learning rate across all the weights why can't the different parameters or the
+3:04
+different weights of a neural network have different learning rates and this
+3:09
+is a very key concept to understand so the first thing which we will look at is that how does it help us if different
+3:17
+weights have different learning rates associated with them uh let's look at a neural network
+3:23
+like this this is a neural network which has two inputs over here it has three
+3:29
+neurons in the first layer and it has three neurons in the output layer which are then used to calculate the loss in
+3:38
+the first layer every neuron has two weights associated with it so there will be six weights in the first layer in the
+3:45
+second layer every neuron has three weights associated with it and there are three neurons so there will be nine
+3:51
+weights in the second layer in the first layer there are three neurons so there will be three biases one corresponding
+3:57
+to each neuron and in the second second layer there are again three neurons so there will be three biases one
+4:03
+corresponding to each neuron so essentially there are six + 3 + 9 + 3 which is 21 different parameters
+4:11
+here and adagrad says that all these parameters should have
+4:18
+different learning rates for better performance let's see why do we need different learning rates for different
+4:24
+weight parameters so I am going to take a simple example here which is something
+4:31
+like so let's say if we have just two parameters W1 and W2 and the loss
+4:36
+function is a function of W1 and W2 given by this formula W1 squ by 100+ W2 W2 square is
+4:46
+the loss okay if you plot this in a two-dimensional landscape The Contours
+4:51
+of the loss will look something like this since there is a factor of 100 we
+4:57
+have the loss function which is hugely stretched in the horizontal Direction but which is not very stretched in the
+5:03
+vertical Direction uh so W1 is my x-axis and W2
+5:09
+is my y AIS so let us do some calculations let us take W1 = to 1 and W2 equal to 1 it
+5:17
+will probably lie somewhere around here 1 comma 1 right and I want to find the
+5:23
+partial derivative of loss with respect to W1 and I want to find the partial derivative of the loss with respect
+5:29
+respect to W2 uh so let's find the partial
+5:34
+derivative of loss with W1 when we do this W2 will be treated as a constant so
+5:40
+we'll just take the derivative of this term with W1 which is 2 W1 / 100 and
+5:46
+since W1 is equal to 1 the partial derivative of loss with respect to W1 is
+5:52
+0.02 now let us find the partial derivative of loss with respect to W2
+5:57
+when we do this the first term has W1 so it will be treated as a constant so all we need to do is find the derivative of
+6:04
+this term with W2 and that is just 2 W2 since W2 is equal to 1 the partial
+6:11
+derivative of loss with respect to W2 will be equal to 2 now I want you to compare these two
+6:18
+partial derivatives partial derivative of loss with respect to W1 which is 0.02 and partial derivative of loss with
+6:26
+respect to W2 which is two so you will see that partial derivative of loss with
+6:31
+respect to W2 is 100 times greater than the partial derivative of the loss with
+6:37
+respect to W1 what does this mean it means that if we make small changes in W1 it would not
+6:44
+increase or decrease the loss too much but if we make small changes in W2 that
+6:50
+will be 100 times more significant than changes in W1 what does this tell you let's say if
+6:57
+we are doing the gradient descent and we are updating uh W1 and W2 so let's say
+7:04
+we are using the St same step size to update W1 and W2 then both W1 and W2
+7:10
+will be updated by Alpha time so W1 will be updated by Alpha times partial
+7:15
+derivative of L with respect to W1 and W2 will be updated by Alpha
+7:24
+* Alpha times partial derivative of uh
+7:29
+let me write this again partial derivative of L with respect to W2 so W2
+7:35
+will be updated by uh this this value now since partial
+7:41
+derivative with respect to W2 is so high you will see that W2 will change by a
+7:46
+huge amount but if and partial derivative of L with respect to W1 is very low so W1 will not be changing too
+7:54
+much at all this would indicate that some weights will change very fast and some weights will change in a very slow
+8:02
+Manner and this is not very good at all in fact this can lead to uh
+8:08
+non-convergence of the loss because one weight value will not update at all
+8:14
+ideally we want normalization which means that all the weights are updating on the same scales we do not want one
+8:21
+weight to be updating very very quickly and uh we do not want the other weights to be not updating at all if some
+8:28
+weights are not up dating it means that that neuron is not contributing anything it's like a dead neuron since we want
+8:35
+all the neurons to be contributing ideally what we we want is that if
+8:40
+partial derivative of L with respect to W2 is so high then why don't we make the alpha associated with it so let me Mark
+8:48
+it with a different color if the partial derivative of L with respect to W2 is so
+8:54
+high why don't we make the step size or Alpha associated with it to be very low
+8:59
+so that the change is same uh this can also be represented as if the partial derivative of L with
+9:06
+respect to W1 is so low why don't we make the step size associated with it
+9:11
+high so if the so let me call this Alpha 2 and let me call this alpha 1 so
+9:17
+ideally what we want is that we want Alpha 2 to be much much
+9:27
+smaller than Alpha
+9:32
+so ideally we want Alpha 2 to be much much smaller than alpha 1 because the partial derivative of L with respect to
+9:39
+W2 is much much higher than the partial derivative of L with respect to W so to put it in another words the step
+9:47
+size for W2 should be smaller than the step size for W1 this can also be uh described as
+9:55
+follows higher the parameter derivatives smaller should be the step size so if
+10:03
+the parameter derivative is very high the step size should be small and if the parameter derivatives are small then the
+10:11
+step size should be large this is what we ideally want and
+10:17
+that's where the concept of adagrad comes into the picture what adagrad says
+10:23
+is that we don't want one weight to be updated much faster than the other weights that would lead to some neuron
+10:29
+neur being inactive or dead neurons we want all neurons to be contributing so
+10:35
+the step sizes should be in accordance with the parameter derivatives if the parameter derivatives are high the step
+10:42
+sizes should be small if the parameter derivatives are small the step sizes should be
+10:48
+large uh I hope you have understood the intuition behind adagrad now I'll move
+10:54
+to the second part of this lecture which is the mathematical procedure for adagrad and in the third part we will
+11:00
+look at how to code adagrad in Python so uh
+11:07
+okay we know intuitively what we want to implement we want the step size to be inversely proportional to the parameter
+11:14
+derivative higher the parameter derivative smaller the step size smaller the parameter derivative larger the step
+11:20
+size that's what we want so the way adagrad is implemented in practice is as follows first for
+Adagrad mathematics
+11:28
+every every given parameter we maintain an history of the previous gradients of
+11:34
+that parameter note that as the iterations are proceeding the gradients of the loss with respect to a parameter
+11:41
+go on continuously changing right so there is a history of these gradients so
+11:46
+we maintain this history in this uh variable which is called cache or cach
+11:51
+value so what this cache will do is that uh let's say we start out with the
+11:57
+iterations the cach will be set to Z in the next iteration the cach will be set
+12:02
+to the gradient of the parameter hold square and in the next iteration the
+12:07
+cache will be the previous crack cache Value Plus the current parameter gradient the whole Square so basically
+12:16
+to find the cash value at a given time point you add the parameter gradients of
+12:21
+all the previous iterations with the current iteration that's how you find the cash
+12:27
+value so the main thing to note here is that we are storing a history of
+12:32
+gradients and we are not just storing the gradient value but we are storing the value of gradient
+12:39
+square and I will tell you why we are doing gradient Square in a minute but
+12:44
+for now just keep in mind that uh we are storing the history of the parameter
+12:51
+gradient values or the partial derivative of the loss with respect to that parameter so let's say we are in
+12:57
+the fifth iteration we will find the partial derivative of the loss with respect to weights in the current
+13:02
+iterations Square them uh and we'll keep that so that will with this term
+13:08
+parameter gradient whole square but we will add this with the summation of all
+13:13
+the previous gradient values because that will be stored in the cache until the fifth
+13:18
+iteration the reason we store this cach value is because that will be used in
+13:24
+the parameter updates remember that when we did a normal gradient descent uh we
+13:29
+just used this for the parameter update we took a weight which is w and then we
+13:35
+updated the weight like this the new weight is equal to original weight minus
+13:43
+Alpha uh multiplied by uh parameter
+13:49
+gradient this was the uh original gradient descent update so in the original gradient descent update we only
+13:56
+take Alpha into a multiplication of parameter gradient so this part of the update is the same uh but what is new in
+14:05
+the adagrad is that we divide this by the square root of cache Value Plus
+14:11
+Epsilon and remember the cache value is the summation of the parameter gradient whole Square so let us understand the
+14:18
+two terms of the denominator cach a and Epsilon the reason this cache term is in
+14:24
+the denominator is that if the cache is high which means that the parameter
+14:29
+gradient values are historically very high not just in the present iteration but in the past iterations also and if
+14:37
+that is the case we need the step size to be smaller so that's why we are
+14:42
+dividing by the cache if so higher the cache uh higher the cache smaller is the
+14:49
+effective step size since we are dividing by it and if the cache is smaller it means that the gradients are
+14:56
+small so the step size can be larger and that that's why we have put this cache
+15:03
+in the denominator so higher the cache higher the gradient values smaller is the effective step size smaller the
+15:10
+cache smaller the gradient values and larger is the effective step size and
+15:16
+the reason we add this Epsilon is that Epsilon is a very small quantity it's basically a hyper parameter which is
+15:22
+added just to prevent the division by zero so in the initial iteration cach a
+15:28
+value is equal to Z so for some reason if the parameter gradients are all zero
+15:33
+we don't want to divide by zero right so that's why we add Epsilon so now did you understand why
+15:40
+did we do a parameter gradient Square in the cache calculation the reason we do a
+15:45
+square here is that to prevent taking the square root of negative values so
+15:50
+when we do the parameter gradient square and then add it with Epsilon uh it automatically means that
+15:57
+the denominator is a positive value so taking the square root will result in a
+16:03
+valid answer so we are going to update the weight values by this particular formula
+16:11
+so when we write it in practice it will look like the new weights will be equal
+16:17
+to the old weights minus Alpha time the parameter gradient divided by square
+16:24
+root of cach a plus Epsilon uh so parameter GR gradient is
+16:29
+just the gradient of the loss with respect to the parameter at the current iteration and cach a will effectively be
+16:38
+a accumulated squared gradient up till that point so for that particular
+16:44
+parameter if the accumulated Square gradient values are very high we need to have a smaller effective step size and
+16:50
+that will be ensured since square root of cache is in the denominator on the other hand if the
+16:57
+accumulated Square gradient up till that point are very small then the square
+17:02
+root of cache will be small and so the effective step size will be large this is exactly uh what we wanted if you look
+17:10
+at this pieces of text over here we wanted the higher the derivative smaller
+17:15
+the step size and smaller the derivatives larger the step size by including this cachier term in the
+17:21
+denominator we ensure that uh when we move towards the code uh
+17:27
+let me tell you the General values for Alpha uh and for Epsilon so Alpha value
+17:35
+is generally uh taken to be one so this is actually Alpha with DK so U this will
+17:42
+be something like here so we are going to use a learning rate Decay and the
+17:47
+initial step size for this adagrad is usually taken to be equal to one and then we will use a DK rate of 0.001 or
+17:55
+0.1 that's the typical value which is used
+18:01
+in practice the Epsilon value is usually used as very small 10us 5 10us 6 Etc
+18:09
+I'll show you what these values are in the code um but for now I just want you
+18:15
+to intuitively understand why do we do a square root why do we divide by the
+18:20
+cache and if you think about it we could have just replaced the cache with the
+18:25
+current gradient whole square right why do we need to take the history into account why are we accumulating the
+18:31
+gradients the reason we are accumulating the gradients is because we also want to know whether that parameter has high
+18:37
+gradients in the past if it has high gradients in the past we also want to ensure that still the step sizes should
+18:45
+be smaller so we are not only looking at the current gradient of the parameter we
+18:51
+are also taking into account its past gradients as well uh before moving into the code we
+18:57
+can do a practical demonstration of how the cash value actually accumulates so
+Adagrad practical demonstration
+19:03
+let's say we start uh so let's say there are 10 iterations and we are looking at one particular parameter which is called
+19:09
+as W1 in the first iteration the gradient of the loss with W1 is5 in the
+19:15
+second iteration the gradient of the loss with W1 is 0.5 and the same thing continues till the 10th iteration where
+19:22
+the gradient of loss with respect to W1 is 0.5 now let me show you how the cash
+19:28
+value accumulates initially the cash starts with zero so the cash is denoted
+19:33
+by capital G g0 is zero then remember to calculate the new value of cash we add
+19:40
+the old value of Cash Plus the current gradient Square so Capital G1 will be g0
+19:46
++ G1 whole squar small G1 is the current gradient which will be 0 +5 square which
+19:53
+is 25 this is the first cash value uh the second cash Val value is
+19:59
+the previous cash value G1 plus the current gradient which is small G2 whole Square so this will be 25 plus5 Square
+20:08
+which is .5 similarly when we reach to the 10th cash value this will be Capital G9 which
+20:15
+is the previous cash value plus small G10 whole Square which is the current gradient whole square and this value
+20:22
+will be equal to 2.5 so when we are going to do the weight update uh the W1
+20:28
+weight update at the 10th iteration uh ideally what we will be doing is we will be just doing W1 = to
+20:35
+W1 minus Alpha into 2.5 for normal gradient descent but now we will divide
+20:41
+it by square root of cash value plus Epsilon so since we did 10 iterations
+20:48
+the cash value is 2.5 so that's why we are dividing it by
+20:53
+2.5 okay so this is how it is simply used in practice we we just accumulate
+20:59
+the sum of the squared gradients and we divide it by the square root plus Epsilon I also want to highlight one
+21:07
+disadvantage of the adagrad method because of which it did not become too popular see we are doing 10 iterations
+21:13
+here right and the cash value is already reached 2.5 if we did 100
+21:19
+iterations so if we did 100 iterations you will see that the cash value
+21:25
+actually reaches uh
+21:30
+the cash value actually reaches a value of 25 if you actually do uh 10 rais to
+21:38
+maybe five iterations you will see that the cash value actually reaches
+21:44
+two 5 0 0 and 0
+21:50
+25,000 do you see the problem which will happen if the cash value reaches
+21:55
+25,000 uh what will happen is that if we divide by 25,000 this whole part will be
+22:00
+very very small so that means that the weights will not get updated at all uh
+22:07
+after those many number of iterations so after 10 to 5 iterations the weights will not get updated at all that is the
+22:14
+main problem with adagrad what's happening is in adagrad is that the cache value is continuously increasing
+22:20
+right because we are updating the pre we adding the previous gradients so the cache value is continuously increasing
+22:26
+which means this denominator is continuously increasing so if we reach the a particular stage let's say
+22:33
+thousand iterations or 10,000 iterations where the denominator value becomes very high the weights will not get updated at
+22:41
+all and so the learning will stagnate the learning will not improve at all
+22:47
+this is the main disadvantage of the adagrad optimizer please keep this in mind because sometimes this question is
+22:53
+asked in interviews as well so one of the main disadvantage of adagrad is that in the cach a it keeps on accumulating
+23:00
+the sum of gradients so the cach a will keep on increasing now as we reach very high number of iterations the cache
+23:07
+value can become very large that might make the denominator very large so the
+23:12
+step size effectively will become very very small and so the weights won't update at all our learning will stagnate
+23:20
+and I demonstrated this to you why numbers if we have 10 iterations the cach a will be 2.5 but if we have
+23:26
+100,000 iterations the cach a will be 25,000 so imagine dividing by square
+23:32
+root of 25,000 already it will be a very small the effective learning rate so the
+23:38
+learning will stagnate uh okay so now I hope you have
+23:43
+understood the intuition behind the adagrad optimizer and also the mathematical uh equations which govern
+23:51
+the adagrad optimizer we are now going to jump right into the python code where
+Python Code walkthrough
+23:56
+I'll be showing you how to implement the adagrad optimizer class and uh also
+24:02
+running our code on a specific data set so before jumping to the um adagrad
+24:10
+Optimizer let me show you the data set which we are using in our example so this is the data set every point on this
+24:17
+data set has two attributes X1 and X2 and it belongs to either of the three
+24:22
+classes red green or blue our goal is to design a neural network so our goal is to design a
+24:29
+neural network which looks something like this to classify correctly which
+24:35
+point which color a point belongs to so let's say we have optimized the weights and biases of the neural network and if
+24:42
+I give it a new data point the neural network should tell it correctly whether it's red green or blue so that's the
+24:49
+problem which we are considering and now let me jump towards the adagrad piece of
+24:56
+code Okay so so first we'll Define the optimizer adagrad class uh and uh in
+25:04
+this class there are different methods such as init pre-update params update params and post-update params let me
+25:11
+explain each of them in the init method this method will be automatically called when an instance of this class is
+25:17
+created what will happen in this method is that we will keep track of some parameters so for example as I told you
+25:25
+we will use a learning rate Decay right so the the DK parameter by default is zero it will keep track of that
+25:31
+parameter it will keep track of the learning rate Alpha not so remember uh
+25:36
+let me take you to the DK formula again so the learning rate DK formula is this Alpha not divided 1 plus learning rate
+25:44
+Decay into time so there are two parameters here the initial step size and the learning rate Decay so by
+25:51
+default we start with an initial step size of one and a learning rate decay of zero and in this uh method we also
+25:58
+tracking the current learning rate so the learning rate will be changing with time right according to uh this formula
+26:05
+over here so we are tracking the current learning rate here and we are also tracking the iteration number which we
+26:11
+are on the reason we track the iteration number is because the learning rate depends on the iteration number higher
+26:18
+the iteration number smaller the learning rate so these are the parameters which
+26:23
+we are tracking we are also tracking Epsilon this Epsilon is used in the the
+26:29
+adagrad denominator um and I showed you that over here so you can see we can we add
+26:35
+an Epsilon in the denominator and the Epsilon value is very small 10us 7 we
+26:41
+usually don't change this value after defining it then uh before any parameter updates
+26:48
+we first update the learning rate remember the learning rate is changing at each iteration according to Alpha not
+26:56
+divided by 1 + DK rate into the number of iteration we are on so that's why
+27:02
+it's important to track which iteration we are doing right now the current learning rate will be very important
+27:09
+because uh when we are going to use this formula for adagrad this Alpha this
+27:15
+Alpha which I'm denoting here by green color is the current learning
+27:21
+rate okay and then the most important piece of this class is the update params
+27:26
+method so what will happen in this method basically is that uh it will
+27:32
+first create two uh arrays weight cache and bias cache those will all be
+27:38
+initialized to zero right now and the size of this arrays will be the same as the number of Weights U and uh the
+27:45
+number of biases because remember that for each weight we are maintaining the cach uh okay and so what we will be
+27:54
+doing here currently is that the cash value we will be taking the previous
+27:59
+cach and adding the parameter gradient square right so that's exactly what's written here for the weight cach we'll
+28:05
+take the original cash so plus equal to means we'll take the uh previous cash
+28:11
+and then add the partial derivative of loss with respect to weight whole Square which is the current gradient Square
+28:18
+similarly for the bias cach we'll retain the previous bias cash and then add the
+28:24
+partial derivative of the loss with respect to the bias whole Square and then what we'll be doing is that
+28:31
+using these cach values we'll be updating the weights and the biases so the new weight is equal to the original
+28:38
+weight minus Alpha which is the current learning rate into the partial deriva of
+28:44
+loss with respect to W up till here it's the same as normal gradient descent but
+28:49
+then we divide by the square root of cach plus Epsilon this is exactly what we saw over here Alpha into gradient
+28:57
+divided by square root of cach plus Epsilon and when you look at the bias
+29:02
+part it's the same you take the bias and you subtract Alpha into gradient with
+29:08
+respect to bias and then you divide by the square root of bias cache plus
+29:13
+Epsilon note that in the white board I always mentioned about weights but the
+29:18
+same logic and the same discussion holds equally well for the biases as well so this is how we'll be updating
+29:26
+the weights and the bias in the method called update params and then the final
+29:31
+method here is the post update params what will happen in the post update params is that we'll just increase the
+29:36
+iteration count by one because we have updated the parameters in that iteration and then we'll move to the next
+29:42
+iteration whenever we move to the next iteration remember that the learning rate will change since we are at a
+29:48
+different iteration and then we'll update the weights and biases according to the similar formula which we
+29:54
+discussed over here so this is the optimizer class and and we'll be calling it in the neural network so now uh I'm
+30:02
+going to show you how to apply the adagrad class in practice on a practical
+30:07
+problem so we are going to be looking at the spiral data set which I showed you before where there are points who belong
+30:14
+to either of three classes red green or blue so I'm going to take 100 samples of
+30:20
+that data set and this is the neural network I'm going to construct I'll have one layer initially which which has two
+30:27
+inputs because every data point has two attributes and 64 neurons then that will
+30:33
+be having a Rao activation then the output of The Rao activation will be chained with the second layer the second
+30:40
+layer has 64 neurons and it has three output neurons those output neurons will
+30:46
+go through the softmax activation and then I will get either red green or blue
+30:51
+classification that's why we have three output neurons and then we will have the categorical cross entropy loss since
+30:57
+this is the classification problem okay now um I'm going to use the
+31:03
+optimizer adagrad and the DK rate which I'm going to use is 10us
+31:09
+4 um so these are the parameters if you look look over here if we don't specify
+31:15
+the DK rate it would have started with zero and I'm going to use the default Alpha not which is one and Epsilon as 10
+31:22
+to- 7 so I have initiated an instance of the optimizer class over here then I I'm
+31:28
+going to perform 10,000 iterations of the forward pass and I'm going to perform uh the backward pass as well so
+31:35
+first we'll do a forward pass through the first layer the output of the first layer will go through The Rao activation
+31:42
+function the output of The Rao activation function will go through the second layer the output of the second
+31:48
+layer will go through softmax and then we'll find the loss the cross entropy loss in this part of the code we are
+31:55
+just printing the accuracy and we are printing the epoch number the accuracy
+32:00
+loss and the learning rate at each Epoch remember one Epoch is basically one cycle through the entire data
+32:07
+set of course we'll need to do the forward backward pass because it is here that we'll be maintaining the partial
+32:13
+derivative of the loss with respect to the inputs weights and biases of every layer which will be needed to update the
+32:20
+weights and biases uh and the update rule is specified uh over here the update rule
+32:28
+is specified like this weights new equal to weights old minus Alpha time the gradient divided square root of Kash
+32:35
+Plus or cach plus Epsilon okay so we'll do the backward pass we'll start right at the end then
+32:42
+we'll do the backward pass then we'll do the backward pass through the second layer this will give us the partial
+32:47
+derivative of the loss with respect to the inputs weights and biases of the second layer then we'll do a backward
+32:53
+pass through the reu and then finally we'll do a backward pass through the first layer this this will give us the
+32:58
+partial derivative of the loss with respect to the inputs weights and bias of the first layer now that we have all
+33:05
+the gradients we can essentially call these four methods pre-update params update params uh for both layers layer
+33:13
+one and layer two and then the post update params the reason we call the update params for both layer 1 and Layer
+33:20
+Two is because we want to update the weights and biases in both of these layers and the way we are updating it is
+33:26
+based on the adag formula which we saw and then we'll call the post update
+33:32
+params because we are going to track the iterations since that will determine the current learning rate uh that's it so if
+33:39
+you think of the code first we create an instance of all the classes then we call the forward pass then we call the
+33:45
+backward pass uh backward pass and then we call the methods of the optimizer so that we tell the code how how do you
+33:53
+update the weights and the biases so basically what's happening in these four lines is that every weight or
+34:00
+bias is getting updated by its own learning rate which is determined by the cash value which it is storing for that
+34:08
+particular weight or bias now I'm going to run this piece of the code and let us
+34:13
+actually track the epoch and the accuracy so here we can see that U
+34:19
+around 1,500 epochs the accuracy is 7 now the accuracy is slightly stagnating
+34:25
+as you can see to7 but it's again going up it's
+34:32
+8685 uh 86 again and as you can see now we are at
+34:39
+around I think 7,500 epox and the accuracy is 887 and
+34:45
+now it is not changing at all in fact it's only slightly increasing and now
+34:50
+the final accuracy is .893 so keep this final accuracy in mind
+34:55
+and I I want to now compare to PR previous accuracies so for the SGD with
+35:01
+momentum we got a accuracy of 953 which is definitely much higher than adagrad
+35:06
+in adagrad right now when we ran the code we got an accuracy of Point uh 893 so that's an indication
+35:16
+that the SGD with momentum might sometimes yield better results than adagrad now let's compare with just the
+35:23
+learning rate Decay so if we just used a learning rate decay
+35:28
+without uh anything so without adagrad or without momentum then we can see that
+35:34
+the accuracy was around 717 which is much lower than
+35:39
+adagrad so one thing is for sure is that when we implement the adagrad optimizer uh it leads to a much higher
+35:47
+accuracy than let's say we just use a learning rate Decay so uh what I mean by
+35:53
+just using learning rate Decay is that if we didn't have this denominator so if we didn't have a denominator which
+36:00
+basically gives a different step size to each parameter uh the only thing we'll
+36:06
+have is the numerator so that's just the learning rate Decay and we get a lower accuracy in that case so this means that
+36:13
+adding the denominator actually helps us so adding adding a individual step size
+36:19
+or an Adaptive gradient for each parameter helps us that's number one the
+36:25
+second conclusion is that momentum Still Remains our best method so adagrad gave us an accuracy of 83 over here but uh if
+36:33
+you look at the momentum accuracy again we had an accuracy of0 953 so momentum
+36:38
+Still Remains the best method and that's one of the reasons why adagrad is not very commonly used in practice it is
+36:45
+used but Adam is an Optimizer which is preferred the most and we'll look at Adam in one of the subsequent lectures
+36:52
+now I just want to show you a video of this exact same code optimization which
+Visual results through video
+36:57
+we did right now so that you can understand the training much better so I'm going to play this video right
+37:05
+now okay here you can see that the training is proceeding right now and I want you to look at the background so
+37:12
+the background color is our prediction and these dots are the True Value so you
+37:17
+can see so let me play it till the end now it has almost stagnated uh so I'm going to stop over
+37:26
+here okay so look let's look at the predictions made by this particular uh
+37:31
+Optimizer first of all uh let's see at this this portion so in or let's
+37:38
+see in this portion in this portion the boundary is green in color but there are
+37:44
+three red points which are clearly misclassified let's look at this this point the boundary is red in color but
+37:50
+this point is blue clearly misclassified again here the boundary is red in color but this point is blue so misclassified
+37:58
+it has a good accuracy as you can see in the plot on the right it has an accuracy of around 08 which is also the same
+38:04
+accuracy which we had obtained over here uh but there are some mistakes which
+38:10
+this uh adagrad Optimizer does so it's not the best Optimizer but it's
+38:15
+definitely much better than just using a learning rate so this actually brings us to this
+38:21
+lecture on adagrad in the next lecture we are going to be looking at another Optimizer called RMS prop
+38:28
+and then using adagrad and RMS prop we'll have a lecture on the Adam Optimizer thank you so much everyone and
+38:34
+I look forward to seeing you in the next lecture
