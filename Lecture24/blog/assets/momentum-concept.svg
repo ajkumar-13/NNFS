@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 460" font-family="Segoe UI, sans-serif">
+  <rect width="860" height="460" rx="16" fill="#fafafa" stroke="#e2e8f0"/>
+  <text x="430" y="28" text-anchor="middle" font-size="16" font-weight="bold" fill="#1e293b">Momentum — The Past Teaches the Direction</text>
+
+  <!-- Without momentum: oscillating path -->
+  <g transform="translate(30,50)">
+    <text x="180" y="0" text-anchor="middle" font-size="13" font-weight="600" fill="#ef4444">Without Momentum</text>
+    <rect x="0" y="10" width="370" height="150" rx="10" fill="#fef2f2" stroke="#ef4444" opacity=".5"/>
+    <!-- Valley shape -->
+    <path d="M30,140 Q100,30 185,140 Q270,30 340,140" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+    <!-- Oscillating path -->
+    <circle cx="60" cy="110" r="4" fill="#ef4444"/>
+    <line x1="60" y1="110" x2="280" y2="50" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <circle cx="280" cy="50" r="4" fill="#ef4444"/>
+    <line x1="280" y1="50" x2="100" y2="60" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <circle cx="100" cy="60" r="4" fill="#ef4444"/>
+    <line x1="100" y1="60" x2="240" y2="70" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <circle cx="240" cy="70" r="4" fill="#ef4444"/>
+    <line x1="240" y1="70" x2="150" y2="90" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <text x="185" y="148" text-anchor="middle" font-size="10" fill="#ef4444">Many oscillations → slow convergence</text>
+  </g>
+
+  <!-- With momentum: smooth path -->
+  <g transform="translate(440,50)">
+    <text x="190" y="0" text-anchor="middle" font-size="13" font-weight="600" fill="#10b981">With Momentum (β = 0.9)</text>
+    <rect x="0" y="10" width="380" height="150" rx="10" fill="#f0fdf4" stroke="#10b981" opacity=".5"/>
+    <!-- Valley shape -->
+    <path d="M30,140 Q100,30 195,140 Q290,30 360,140" fill="none" stroke="#cbd5e1" stroke-width="2"/>
+    <!-- Smooth path -->
+    <circle cx="60" cy="110" r="4" fill="#10b981"/>
+    <path d="M60,110 Q120,70 195,140" fill="none" stroke="#10b981" stroke-width="2.5"/>
+    <circle cx="195" cy="140" r="6" fill="#10b981" stroke="#fff" stroke-width="2"/>
+    <text x="195" y="148" text-anchor="middle" font-size="10" fill="#10b981">Smooth, fast convergence</text>
+  </g>
+
+  <!-- Vector cancellation explanation -->
+  <g transform="translate(30,230)">
+    <rect width="800" height="90" rx="12" fill="#eef2ff" stroke="#6366f1"/>
+    <text x="400" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="#6366f1">Why It Works: Vector Cancellation</text>
+    <g transform="translate(40,35)">
+      <text x="0" y="14" font-size="12" fill="#312e81">Step 1: ← ↓ (left + down)</text>
+      <text x="0" y="38" font-size="12" fill="#312e81">Step 2: → ↓ (right + down)</text>
+      <text x="0" y="58" font-size="12" fill="#312e81">Sum:        ↓ (left and right cancel, down survives)</text>
+    </g>
+    <g transform="translate(500,35)">
+      <!-- visual arrows -->
+      <line x1="0" y1="10" x2="-30" y2="30" stroke="#ef4444" stroke-width="2"/>
+      <text x="-35" y="40" font-size="9" fill="#ef4444">Step 1</text>
+      <line x1="0" y1="10" x2="30" y2="30" stroke="#f59e0b" stroke-width="2"/>
+      <text x="25" y="40" font-size="9" fill="#f59e0b">Step 2</text>
+      <text x="70" y="25" font-size="16" fill="#475569">→</text>
+      <line x1="100" y1="5" x2="100" y2="45" stroke="#10b981" stroke-width="3"/>
+      <polygon points="92,45 108,45 100,55" fill="#10b981"/>
+      <text x="115" y="30" font-size="9" font-weight="600" fill="#10b981">Net</text>
+    </g>
+  </g>
+
+  <!-- Formula and results -->
+  <g transform="translate(30,340)">
+    <rect width="390" height="100" rx="12" fill="#f1f5f9" stroke="#94a3b8" stroke-dasharray="4,2"/>
+    <text x="195" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#475569">Momentum Update Formula</text>
+    <text x="20" y="48" font-size="12" font-family="Consolas" fill="#475569">v_t = β × v_{t-1} − α × ∂L/∂W</text>
+    <text x="20" y="70" font-size="12" font-family="Consolas" fill="#475569">W_t = W_{t-1} + v_t</text>
+    <text x="20" y="90" font-size="10" fill="#94a3b8">β = momentum factor (0.5–0.9)</text>
+  </g>
+
+  <g transform="translate(440,340)">
+    <rect width="390" height="100" rx="12" fill="#f0fdf4" stroke="#10b981"/>
+    <text x="195" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#10b981">Accuracy Progression</text>
+    <text x="20" y="44" font-size="11" fill="#14532d">No decay, no momentum:     57.3%</text>
+    <text x="20" y="62" font-size="11" fill="#14532d">Decay only:                71.7%</text>
+    <text x="20" y="78" font-size="11" fill="#14532d">Decay + momentum (β=0.5):  83.0%</text>
+    <text x="20" y="94" font-size="11" font-weight="600" fill="#10b981">Decay + momentum (β=0.9):  95.3%</text>
+  </g>
+</svg>
