@@ -1,0 +1,854 @@
+Gradient descent, Momentum and RMSProp
+0:00
+[Music]
+0:05
+hello everyone welcome to this lecture in the neural networks from scratch
+0:10
+Series today I'm very excited because today we are going to learn about an
+0:15
+Optimizer which is used in most modern machine learning Frameworks if you are
+0:22
+working in an industry or if you are working on a research project and if you have designed a neural network to solve
+0:28
+any problem the default Optimizer which all Engineers generally start with is
+0:34
+the Adam Optimizer in the previous lectures we have looked at normal gradient descent
+0:40
+we have looked at momentum and we have also looked at adagrad and RMS prop if
+0:47
+you have not seen these lectures I highly encourage you to go through them so that you will appreciate this lecture
+0:54
+even more I deliberately have constructed those previous lectures so that when we come to to Adam your
+1:00
+Concepts will be clear because we will be using all of those building blocks while constructing the Adam Optimizer if
+1:07
+you have not seen the previous lectures no problem at all I I've designed this lecture so that I'll go from the start
+1:15
+to explain each and every step my name is Dr Raj dander and I have
+1:20
+a PhD in machine learning from Massachusetts Institute of Technology I graduated with my PhD in 2022 and before
+1:29
+that I graduated with a btech in mechanical engineering from IIT Madras
+1:35
+so let's get started Adam Optimizer was constructed
+1:41
+in steps so a number of advances happened before researchers eventually
+1:48
+reached the Adam Optimizer and it's very useful as we learn machine learning to
+1:54
+go through these advances sequentially first came gradient descent when there
+1:59
+was a neural Network people realize that to optimize the weights and biases of
+2:04
+the neural network uh one of the best strategies is to move in the direction
+2:10
+of the steepest descent so that we reach the Minima of the loss function and the
+2:16
+direction of the steepest descent is given by negative of the gradient negative of the
+2:24
+gradient that's why people formulated the gradient descent procedure so
+2:29
+whatever weights and biases which we have uh you start with some random weight or bias and then you keep on
+2:36
+updating the weights or bias by moving in the direction of the steepest descent
+2:41
+that's why you subtract a learning rate multiplied by the partial deriva of the loss with respect to the weight or with
+2:48
+respect to the bias you keep on doing this iterative procedure for a large number of iterations and then the hope
+2:55
+is that you will eventually reach the Minima or you will minimize the loss Lo function and the neural network will be
+3:03
+optimized so here you can see that there is a fixed step size so whichever weight
+3:09
+you are looking for whichever bias you're looking for all of the weights and biases have a fixed step size which
+3:15
+is shared among all of them that's the first feature of normal gradient descent so this is the first feature the second
+3:22
+feature of the normal gradient descent is that to update the weights and the biases only the current value of the
+3:29
+gradient is used so for example if you have reached the 50 50th iteration and
+3:34
+you want to find the weight at the 51st iteration then you take the weight at
+3:40
+the 50th iteration and then you subtract Alpha times the partial derivative of loss with respect to W at that current
+3:48
+iteration at the 51st iteration and that is how you uh find the current value uh
+3:55
+of the weights so here you can see that only current gradient value is used and we do
+4:02
+not give any importance to the Past gradient values so for example you might be asking what about the partial
+4:07
+derivative of loss with respect to the weight for the first iteration second iteration 49th iteration don't they
+4:14
+matter at all and in normal gradient descent the answer is no they don't matter in normal gradient
+4:19
+descent uh people soon realize that normal gradient descent has a huge number of disadvantages the first
+4:27
+disadvantage is that we get stuck in a local mining so let's say if the loss function landscape looks something like this we
+4:34
+there's a high tendency for normal gradient descent to get stuck in local minimas like this and it's very
+4:40
+difficult to discover the global Minima that's one of the biggest drawbacks of using normal gradient descent and that's
+4:47
+due to several reasons which people try to fix slowly the first reason is the
+4:52
+fixed step size and trying to make it more adaptive or more Dynamic the second reason which is more predominant is that
+5:00
+why do we only use the current gradient value uh for updating the weights why don't we use the past gradient values
+5:08
+also the past has a lot to teach us so why don't we use it uh that eventually
+5:14
+led to momentum the main idea of momentum in gradient descent is that the past
+5:20
+gradients also matter we definitely need need to give importance to the Past
+5:25
+gradients what this does is that if you give importance to the Past gradients uh oscillations reduce and we
+5:33
+converge to the Minima much faster so momentum is used to accelerate gradient
+5:38
+descent one way to think about this is that let's say if the loss function landscape is something like
+5:45
+this and uh we start we start from here right and we want to reach the local
+5:51
+Minima which let's say is here now ideally we should go in this kind of a manner right this kind of a straight
+5:57
+kind of a line to the Minima but what happens Happ s is that if we use normal gradient descent we will keep on moving
+6:03
+in the direction of the negative gradient at that point so that will leak to the zigzag oscillations like these if
+6:09
+you use momentum uh at a particular iteration for a particular weight all
+6:14
+the past weights are also given precedence and when you give precedence to the Past weights the directions in
+6:20
+left and the directions in right cancel each other out and the only Direction which survives is the direction in the
+6:26
+vertically downward so if we use uh momentum it's more likely that we get
+6:32
+this stream line descent towards the Minima and we reduce the oscillations the way this this is
+6:38
+represented in mathematical formula is that uh the new weight is the old weight
+6:44
+minus step size multiplied by the partial derivative of loss with respect to W this is the same uh as for normal
+6:52
+gradient descent the only difference is that we add this Factor here so we add a
+6:58
+momentum Factor multip multiplied by the previous weight updates so here you can see in this term the previous weights
+7:04
+are also given a lot of importance or rather I should say the prevent previous gradient values are also given a lot of
+7:12
+importance the current gradient is not the only one which is used this formula
+7:17
+is also this same thing which I have written over here is also sometimes represented as this formula the current
+7:24
+weight is equal to the previous weight minus the learning rate multiplied by
+7:30
+beta which is the momentum factor and which controls how much weight is given to the Past multiplied by the uh current
+7:38
+momentum Value Plus 1 minus beta * partial derivative of loss with respect to W this is the current gradient so
+7:46
+it's this term which actually adds the weightage to the Past values or the past
+7:51
+values of the gradient um to those who are familiar
+7:57
+with more advanced mathematics this term in the bracket is also sometimes called as the moving average uh to those who
+8:03
+are not familiar it's completely fine the way this term is represented it actually means that we are giving a lot
+8:10
+of importance to the past or the previous weight updates that's the whole concept behind momentum and it really
+8:16
+does accelerate the convergence in a gradient descent by huge Factor uh and
+8:22
+it's routinely used in gradient descent so momentum with gradient descent is much much better than normal gradient
+8:29
+descent one problem with this method is that here again the step size is common and
+8:35
+it's shared across all the parameters right but people soon started to wonder that why is the step size same for all
+8:42
+the weights so let's say if the loss function landscape looked something like this right U and it's given by this
+8:50
+function that uh W1 s by
+8:56
+100 uh plus W2 squ let's say this is my loss
+9:02
+function now you can see that even small changes in W1 will not lead to two much
+9:07
+changes in the loss because there's a division of 100 here but small changes in W2 will be now 100 times more
+9:14
+powerful because it does not have the division Factor so shouldn't this mean that we should take larger step sizes
+9:21
+for W1 and smaller step sizes for W2 shouldn't we have adaptive gradients the
+9:28
+main idea of adaptive gradients is that smaller the gradient higher as the step size uh so for W1 the gradient is small
+9:35
+because small changes in W1 lead to no changes in loss so we should use higher step size for W1 otherwise W1 won't get
+9:42
+updated at all and for W2 the gradient is large so we should use a smaller step
+9:49
+size so then people started thinking that this makes sense because if we
+9:54
+don't use adaptive step sizes then W1 will almost stagnate and not contrib
+9:59
+anything and only W2 will keep on changing in the iterations so all the neurons which are associated with W1
+10:05
+will essentially become dead and that would lead to the dead neuron problem where some neurons won't contribute at
+10:11
+all this is not good so that led to the idea of adaptive gradients where the
+10:18
+main idea was uh that every weight should have a different step size uh or
+10:25
+an Adaptive gradient rather um so that that the step size
+10:30
+effectively depends on the gradient value for that parameter if the gradient value of the parameter is large the step
+10:36
+size will be small if the gradient value of the parameter is small the step size will be large this led to the RMS prop
+10:44
+method where the update rule is given by this the current weight is the old weight minus the learning rate
+10:51
+multiplied by the partial derivative of loss with respect to W now when I say learning rate you can consider this
+10:57
+whole thing as the learning rate and you'll see that if the denominator is not there this just its normal
+11:03
+gradient descent but it's the denominator which makes the learning rate adaptive let's see
+11:08
+how the denominator is given by this formula beta 2 multiplied by the cach
+11:15
+value so cache is equal to Beta 2 * the cache + 1 - beta 2 into gradient Square
+11:22
+so if you look at this formula here over here here we gave importance to the Past
+11:28
+gradients right while Computing the momentum here you can see that it's a very similar formula but we are giving
+11:34
+importance to gradient Square um and since this cash value comes in the denominator higher the
+11:41
+gradient higher will this value be and smaller will the effective step size
+11:47
+smaller the gradient higher will the cash value be and smaller will be the so
+11:53
+higher the gradient higher the cach value smaller the step size smaller the gradient smaller the cash Cas value and
+12:00
+higher the step size U now the way the cache value is calculated is that we definitely give
+12:07
+importance to the Past gradient Square also so we don't just keep on accumulating the current gradient we
+12:13
+give importance to the Past gradient Square also so whenever something like this is introduced where beta is there
+12:19
+and 1 minus beta is there it means that we are giving importance to the past and instead of gradient here we have
+12:26
+gradient square and instead of the beta 1 parameter here we have the beta 2 parameter here this beta 2 parameter is
+12:33
+called as the cache memory DK rate and it controls how much importance do we give to gradient
+12:40
+Square so if we are at a particular parameter okay and we are wanting to update the parameter value at a current
+12:48
+iteration we first take into account all the gradient Square values for that parameter so we find partial derivative
+12:55
+of loss with respect to the parameter whole Square for all the previous values uh and through that we compute the cache
+13:02
+value so if beta2 value is very high a lot of importance will be given to the previous gradient Square parameters and
+13:09
+the reason it's gradient square is because we are using a square root here so we are kind of effectively dividing
+13:15
+by only the gradient and the reason the Epsilon parameter is added here is to
+13:20
+prevent the denominator from becoming zero so this thing which I have shown in
+13:26
+the orange bracket here it introduces the adap learning rate for each parameter and that's the main idea of
+13:33
+optimizers like RMS prop or even optimizers like adagrad or adad
+13:43
+Delta so here we can see that uh this is a bit different than momentum because we do not take into account the past
+13:50
+gradients here so here you see the current only the current partial derivative of loss with respect to W is
+13:55
+used but we do take into account the past gradient Square uh for finding these adaptive step sizes
+14:03
+so you should now appreciate the difference between momentum and RMS prop in momentum the past gradients matter
+14:10
+and they matter for finding the current gradient term in RMS prop uh the past gradient
+14:17
+Square matters and they matter for finding the Adaptive or effective step size but in the current gradient the
+14:24
+only the current gradient is used partial derivative of loss with respect to W that's the difference between RMS
+14:30
+prop and momentum but both momentum and RMS prop are significant improvements to
+14:35
+the normal gradient descent the main idea behind the Adam Optimizer is that what if we combine
+ADAM concept
+14:43
+momentum with Adam with adaptive learning rates let me reframe this differently let's look at this
+14:49
+particular formula here right we are using adaptive learning rates but here we are only looking at the current
+14:55
+gradient value right so the main idea of Adam is that what if this term which is
+15:02
+the current which is the partial derivative of loss with respect to weight in the current iteration what if
+15:07
+this term is replaced by this term which was used in the momentum so what if this
+15:13
+term was replaced with the momentum term so instead of just using the
+15:20
+current gradients what if we replace this with the current momentum so that
+15:26
+we take into account all the past gradients into m into consideration this will use the advantages of the momentum
+15:34
+method as well as it will use the advantages of the Adaptive step sizes as introduced in the RMS prop so it will
+15:41
+kind of be the best of both worlds for us and that is the main idea behind the
+15:47
+ADM Optimizer so what the ADM Optimizer says is that the why don't we do this
+15:52
+why don't we say that the present weight is the old weight minus the learning rate multiplied by the momentum term so
+15:59
+instead of using the partial derivative of loss with respect to w we use the momentum term here as you can see which
+16:06
+gives importance to the Past weights also past gradients also and then we divide by the square root of cache plus
+16:12
+Epsilon which was exactly similar to what we did in RMS prop uh so let me call this numerator
+16:21
+term as momentum term and let me call this cach over here as cach term in the
+16:27
+Adam Optimizer there is one small addition which is done so uh what what
+16:32
+is done here is that sometimes this momentum term can start out with a very small value so it might lead to the cold
+16:39
+start problem for us right uh so we we don't want that we want the initial
+16:46
+weight to make quick update so that we explore the entire loss landscape so for example if the loss landscape looks like
+16:53
+this okay and the initial weight updates are very small we'll just keep getting stuck in this part but there are lot of
+17:00
+other areas in the loss landscape to explore so we want the initial weight updates to be quick so that we explore
+17:06
+these other loss landscape also other parts of the loss landscape also so what
+17:12
+we'll be doing is that we'll be dividing the momentum term by a correction factor called 1 minus beta 1 ra to T and we'll
+17:20
+be dividing the cash term by a correction factor called 1 minus beta 2 ra to T why this term because see if T is very
+17:28
+small first you can see if T is very large remember beta 1 is less than one so let's say beta 1 is
+17:34
+.9 so if T is very uh very large it let's say 0.9 to 50 this will almost be
+17:40
+close to zero so for higher iterations it's like dividing uh so this term will
+17:46
+be zero so it's like dividing by one so it will make no impact at all but for lower iterations let's say t is equal to
+17:52
+1 then this division term or this correction term will be 0.9 ra to 1 which is 0.9 so so 1 -9 will be so this
+18:01
+term will be .9 and 1 -9 will be 0.1 so we'll be dividing the momentum term by
+18:07
+0.1 so which will increase it by 10 times right which will make sure that the weights are getting updated
+18:13
+similarly for the cash term if beta 2 is equal to point if beta 2 is equal to
+18:19
+.9 uh if T is very high this term will be approximately zero so it will be like
+18:26
+dividing by one and no changes at all if if we are at higher number of iterations but if we are at the iteration number
+18:32
+one then this will again be 0.9 to 1 so it will be 1 -9 which will again be 0.1
+18:39
+so then it will be dividing the cachier term by 0.1 which is multiplying it by 10 times again that will ensure that the
+18:45
+weight updates are happening in the initial iterations combining these two things we ultimately get the final
+ADAM mathematics
+18:52
+formula for the Adam Optimizer weight updates so w is equal to wus Alpha into
+18:58
+momentum term divided by 1 - beta 1 to T this is the correction factor divided by
+19:05
+square root of cach term divided by 1us Beta 2 ra to T this is the correction
+19:11
+term plus Epsilon and Epsilon is added just to make sure that the denominator does not become zero that's it if you
+19:19
+look at the parameters in the ADM Optimizer there are generally two parameters beta 1 and beta 2 remember
+19:27
+the origins of BET beta 1 beta 1 controls the momentum term so it defines how much importance is given to the past
+19:35
+gradients in the gradient update whereas if you look at the cach term the cach term has beta 2 and beta 2
+19:42
+is called cach memory DK rate and it controls how much importance is given to gradient Square so how much importance
+19:50
+do we need to give to the past to adapt the learning rates generally in practice beta 1 is
+19:57
+taken to be around point 9 and beta 2 is taken to be around
+20:02
+999 imagine this beta 2 is 999 which means that when we calculate the cash
+20:08
+term we give tremendous amount of importance to the past gradients so let's say if I am at a current iteration
+20:14
+of a parameter and its past gradients are very high even if its current gradient is low I'm going to use a small
+20:21
+step size because I will give so much importance to the Past
+20:26
+gradients uh so this is is the ADM Optimizer and as you can see it builds upon two key Concepts the first key
+20:33
+concept is that of momentum and the second key concept is that of adaptive learning rate and what is the Adaptive
+20:40
+learning rate it's this term which I'm right now marking in the orange color you can think of this as the effective
+20:46
+learning rate uh whereas this term is the partial derivative or is the gradient term so instead of just using
+20:53
+the current gradient we also give importance to the past and that's the reason the ADM optimizer has two
+20:59
+parameters beta 1 and beta 2 that's it this is the simple explanation of Adam
+21:04
+Optimizer and the origins of the Adam Optimizer in the first place uh I hope you have understood up
+21:11
+till this part and how we reached the Adam Optimizer starting first from the gradient descent then moving to the
+21:17
+momentum uh then moving to RMS prop and then finally using all those building
+21:22
+blocks to construct the ADM Optimizer uh now in part two of this
+21:29
+lecture I want to actually take you through the Practical demonstration of this uh but before that the first one
+21:36
+thing I would like to clarify is that when I use Alpha here this Alpha itself is not fixed but it will be going it
+21:42
+will be decaying with time so generally the DK is prescribed by Alpha not
+21:48
+divided by 1 U so let me show this rather than writing it again let me show
+21:54
+it over here so generally the alpha is given by Alpha not divided 1 + DK into
+22:01
+time where this is the learning rate DK so even the alpha when I say it's not
+22:06
+fixed it's decreasing with time to make sure that uh the initial learning rates
+22:12
+are high all of this we are doing to make sure we don't have the cold start problem and the weights are not getting
+22:17
+stagnated at the start okay so in the part two of this lecture I'm going to implement the ADM
+22:24
+Optimizer completely in Python and uh I'm going to show you step by step how
+22:30
+to uh code the ADM Optimizer and how to uh solve an entire neural network using
+22:37
+the ADM Optimizer so uh let us implement this in code first let me explain the problem
+Neural network architecture
+22:45
+statement to you this is the data set which we have if you look at the data set every data point has two attributes
+22:52
+X1 or two features X1 and X2 and if you look at any particular data point let's
+22:57
+say this it it belongs to either one of the three classes it belongs to r or G
+23:03
+or B the goal for us is to train a neural network so that any new Point let's say if this new point is given to
+23:09
+us based on its values X1 and X2 we should be able to correctly classify
+23:15
+whether it belongs to the red class whether it belongs to the green class or whether it belongs to the blue class
+23:21
+that's the problem which we have to solve and this is a classification problem so let's first see how the
+23:27
+neural Network architecture will look like this is the neural network architecture which we are going to use
+23:33
+and this is the same one I'll be coding out today so first the data point has two input features X1 and X2 and they'll
+23:40
+be going through the first layer so the first layer in this neural network has let's say 64
+23:46
+neurons uh and then every neuron has a Rao activation function connected to the
+23:51
+output after the output goes through the railu it's passed to the second layer in
+23:56
+the second layer there are just three neurons and the output of these neurons is passed through the soft Max and then
+24:03
+we'll get some output for each input we'll have three different output so let's say for one if for the current X1
+24:11
+X2 the output is 0.9.1 and zero uh this current this clearly says
+24:19
+that there is 90% probability that this point belongs to Red class and 10% probability that this point belongs to
+24:25
+blue green class and based on these values then we'll calculate the loss based on the actual data so this is how
+24:33
+we'll train the neural network to make the correct classification between red green or blue and we'll be using the
+24:39
+Adam Optimizer for it so let me jump into code to show you how exactly this
+Python Code implementation
+24:45
+is done uh so before we actually uh
+24:51
+integrate the Adam Optimizer with the forward and backward path of the neural network we first need to define a class
+24:57
+and that class is called as Optimizer Adam this class will have four methods it will have the init method the
+25:03
+pre-update params the update params and then finally the post update params let
+25:09
+me explain each method step by step so when we create an instance of the optimizer class it will by default call
+25:15
+this init method now we are keeping track of many things in this init method so if you have understood this uh this
+25:24
+formula you will really understand what all different parameters I have first let me start from these parameters beta
+25:30
+1 beta 2 and Epsilon okay uh so beta 1
+25:35
+is by default set to 0.9 and remember beta 1 is the momentum
+25:41
+how much uh momentum rate or how much importance is given to the Past gradients beta 2 is the cach cach DK
+25:49
+memory rate and it governs how much importance is given to the gradient Square in the Adaptive learning rate so
+25:56
+by default beta 1 is set to point 9 and beta 2 is set to 999 so these are the two parameters we
+26:03
+track we also track Epsilon remember Epsilon is added to the denominator to make sure denominator is
+26:10
+not zero and it is typically a very small value 1 into 10 to - 7 other
+26:16
+parameters which we track all correspond to this Alpha remember this Alpha term which is here is not constant but we are
+26:22
+going to use uh uh we are going to use the Adaptive
+26:28
+learning rate or rather U the learning rate Decay so I'm just going to go to
+26:34
+that part where yes so the alpha for Alpha we are going to be using the
+26:39
+learning rate DK so Alpha is Alpha not divided 1+ DK into time right so we need
+26:45
+to keep track of three things we need to keep track of initial step size the DK rate and the iteration
+26:51
+number right and these three things which we need to keep track of have been mentioned over here so first first is
+26:58
+the initial learning rate which is by default set to 0.01 second is the DK rate which is by
+27:04
+default set to zero and third we also need to keep track of the number of iterations because as you can see here
+27:11
+the the learning rate also depends on the number of iterations which is mentioned by T over here that's the
+27:17
+iteration number so all of this we are keeping track in the init method then we come to
+27:23
+pre-update params so before we update the parameter values we need to uh
+27:29
+calculate this Alpha which is Alpha not divid 1 + DK into time uh so this Alpha
+27:35
+is the one which has been uh mentioned over here this Alpha so first we need to
+27:41
+calculate this Alpha and uh that has been calculated in this pre-update params function where the current
+27:47
+learning rate as I mentioned is Alpha divided 1 + DK into time then comes the most important
+27:54
+method where we are actually going to update the parameters okay now I want you to focus on two things first in the
+28:01
+code or in the Whiteboard rather I always talked about weights right but the same thing will be done for the
+28:06
+biases of the neural network as well so in the update params method you will see that U there is the update rule for
+28:14
+weights as well as biases so I'm just going to focus on the weights here and you can apply the same learning or the
+28:19
+same logic to bias also so there are two things which we need to keep track of
+28:24
+there is this numerator which is the momentum term and there is the denominator which is the cache term
+28:30
+right so uh for every weight and for every bias we'll have a momentum term in
+28:36
+the numerator and we will have a cach term in the denominator so first we create empty matrices so for the
+28:43
+momentum term it will have the same dimensions as the weights of the neural network because every weight will have a
+28:50
+momentum term associated with it similarly the cache value has the same
+28:56
+size as the number of weights in the neural network because for every weight we are maintaining a cache remember
+29:02
+every weight has a different step size right so for every weight we are maintaining a cash value and the same
+29:08
+thing happens for bias also then what we are going to do is we are going to abdate the momentums so if
+29:16
+you look at the momentum uh which is mentioned over here let's look at the momentum term it's beta 1 into the
+29:23
+previous momentum plus 1 minus beta 1 into the current gradient so remember this formula it's beta 1
+29:31
+into the previous momentums plus 1- beta into current gradients so remember layer
+29:38
+uh when we initiate a class of the layer it has the backward method in it so we are automatically storing the partial
+29:45
+derivative of loss with respect to the weights and biases of that layer similarly for bias we do beta 1 into the
+29:53
+uh past bias plus 1us beta 1 into the partial derivative of loss with respect to bias which is the current
+30:00
+gradient and then we are going to employ the correction term so remember that uh
+30:06
+the momentum term is going to be divided by this 1 minus beta 1 ra to
+30:11
+T so in this part of the code we are implementing the correction term we take the momentum term and we divide by 1
+30:18
+minus beta 1 ra to T for practical purposes we have added one in the denominator so that the iterations don't
+30:25
+start from zero and we don't have a den division by Z over here or rather we don't have starting
+30:32
+from a very uh large value I think that's why plus one is added so remember
+30:38
+this is beta 1 raised to t + 1 right it's not beta 1 multiplied by T but it's
+30:43
+1us beta 1 raised to t + 1 uh you can also do it just with t but I've seen
+30:50
+that in all the codes it's always the plus one is added I think it helps to
+30:55
+give a better start to the initial weights and the biases the similar thing is done for the
+31:01
+bias correction term as well and then finally we look at the cach so remember
+31:06
+uh the formula for the cache is that uh uh beta 2 into the previous cache plus 1
+31:14
+minus beta 2 into the current gradient square right so the weight cache is beta
+31:20
+2 into the previous cache + 1 - beta 2 into the current gradient Square
+31:25
+similarly the bias cach is beta 2 into the prior bias cache plus 1us beta 2
+31:32
+into the current gradient of the bias whole Square remember when two star operators
+31:38
+are put together in Python it's actually the exponent or rais two uh then we get the corrected cache
+31:45
+so similar to The Way We corrected the momentum in the numerator in the denominator we will also need to correct
+31:52
+the cash term or we'll need to divide it by 1 minus beta 2 ra to T so what we'll
+31:58
+be doing is that for the weight cache and the bias cache we'll be dividing the denominator by 1 - beta 2 to t + 1 again
+32:05
+the plus one is added here similar to for the momentum for the bias also we
+32:11
+take the bias cache and divide by 1 minus beta 2 ra to t + 1 then that's it
+32:16
+once we have calculated the numerator term which is the modified moment ter
+32:22
+and the denominator term all we need to do is update the weights so the new weight is the past weight minus Alpha
+32:28
+times the momentum divided square root of cach plus Epsilon that's exactly
+32:33
+what's done here weights the current weights are the previous weights minus Alpha times the corrected momentum
+32:41
+divided by square root of the corrected cache plus Epsilon similarly for the biases the
+32:47
+current bias is equal to the Past bias minus Alpha *
+32:53
+uh the momentum in the bias corrected divided by square root of bias cache
+32:59
+corrected plus Epsilon so this is how then the weights and biases of every single layer of the neural network are
+33:06
+updated according to the adim optimizer and finally it's very important to call the post update params after we update
+33:13
+the parameters we need to increase the iterations because remember that the next iteration step size depends on the
+33:20
+number of iterations alpha is equal to Alpha / 1 + DK into T so we definitely need to keep
+33:27
+track on the number of iterations which we are on currently and that's why we need to call
+33:33
+the post update params so now this is the Adam Optimizer class and I'm just
+33:38
+going to run it so okay this has been run and now I'm going to implement this
+33:43
+class on the neural network please remember the neural network data set
+33:49
+which we have so this is called as spiral data and please also remember the architecture we are going to be using 64
+33:55
+neurons in the first layer then reu then three neurons in the output then soft Max then the categorical cross entropy
+34:03
+loss so first we create the data set uh we are using spiral data set here with
+34:09
+100 samples and it has three classes it can belong to red green or blue then we
+34:14
+create the first layer the first layer has two inputs and 64 neurons we chain
+34:19
+it with the Rao activation function then we create the second layer which has three neurons uh then we chain it with
+34:27
+the soft Max and the categorical cross entropy loss uh this is exactly
+34:32
+following the architecture which we have drawn on the white board over here once we have written up till this
+34:38
+part we have to specify the optimizer in the previous lectures we have tested with SGD adagrad and RMS prop in today's
+34:45
+lecture we are going to be using Adam and the learning rate which is the alpha not is 0.02 and the DK rate we are going
+34:53
+to use is 10 raus 5 all other parameters have already been predefined here such
+34:58
+as Epsilon beta which is beta 1 which is .9 and beta 2 which is
+35:04
+999 great then we come to the forward pass and the backward pass so we'll be
+35:10
+doing 10,000 iterations of the forward pass and the backward pass remember that in each forward pass we calculate the
+35:17
+output of all layers of the neural network in the backward pass we find the partial derivative of the loss with
+35:23
+respect to the weights the inputs and the biases of the neural network and then we'll up date the weights and
+35:28
+biases of the neural network based on the optimizer ADM Optimizer so the first thing what we do
+35:35
+is uh forward pass through the first layer which is the forward pass through this this first
+35:41
+layer so let me actually mark it with a different color um the first thing what
+35:47
+we'll be doing is taking the forward pass through this layer then going through the reu so we
+35:53
+take the forward pass through the first layer the out output of the first layer
+35:59
+is fed as the input to The Rao activation then we uh do the forward
+36:04
+pass through the Rao activation the output of the reu is fed as an input to the next layer which is the second layer
+36:11
+and then we calculate the soft Max and the categorical cross entropy loss so
+36:17
+all these four statements up till here are the forward pass in this part of the code we are just printing out the epoch
+36:24
+number the accuracy the loss at every epoch and remember the learning rate is adaptive so so the learning rate is
+36:31
+changing with each Epoch so that also we are printing it out one Epoch is just going through the
+36:37
+data set entirely once so keep that in mind and then we will be running the backward pass so first we'll find the
+36:44
+partial derivative of the loss with respect to the soft Max input then we'll find the partial derivative of the loss
+36:50
+with respect to the weights and biases of the second layer then we'll find the partial derivative of the loss with
+36:56
+respect to Rao input and finally we'll find the partial derivative of the loss with respect to the weights and biases
+37:03
+of the first layer once we have found all the partial derivatives of the loss we are ready to call the different
+37:09
+Optimizer methods which we have defined over here so first we are going to call
+37:14
+the pre-update params which will make sure that the learning rate is updated
+37:20
+then we are going to call the update params which will make sure that the weights and biases of every layer are updated according to the current partial
+37:28
+derivatives of the loss with respect to those weights and biases and then we'll call post update parameters just to cre
+37:34
+increase the iteration number and to keep track of the iterations so we call pre-update params then we call update
+37:40
+params for the layer one and we call update params for Layer Two because the parameters of both these layers need to
+37:47
+be updated and then we call the post update params to make sure that
+37:52
+uh uh then we call post update params to make sure that the iteration number is updated so that the learning rate in the
+37:59
+next iteration can be adapted accordingly uh so this is how the entire uh forward and backward pass code is
+38:06
+written with the ADM Optimizer class and I'm going to run this code now to see the outputs so let's see the outputs
+38:13
+here we can see that we are running 10,000 deox uh so you can see 10,000 epox has
+38:19
+been run and let's see the final accuracy it's 957 and the loss is
+38:25
+0.099 so let me know put down this accuracy here which is uh for the Adam
+38:31
+Optimizer we got the final accuracy as 957 right uh which is amazing and here
+38:37
+you can see that the loss has decreased to 0.099 if you have followed the previous lectures you will see that this is the
+38:44
+best accuracy which we have got so far but now we can test out different accuracies right so first I'm going to
+38:50
+test out the accuracy with just the uh let's say if I test it out with
+38:56
+RMS prop so if I test it out with RMS prop and then just run it so remember that RMS
+39:03
+prop just uses the cash value and it does not take into account the momentum term in the den in the
+39:10
+numerator uh and the RMS prop is now running and right now I'm at around 3,000 depo and here you can see that the
+39:17
+accuracy is still 63 let's see how much the accuracy uh is when we reach around
+39:23
+10,000 epochs so now I'm at Epoch number
+39:30
+7,600 okay finally I'm at 9,000 deox and now you can see that 10,000 deox have
+39:36
+been completed and the accuracy is 717 so for RMS
+39:41
+prop the accuracy is 717 which is nowhere compared to the Adam Optimizer
+39:47
+accuracy which we obtained now let us try to see the accuracy for just the stochastic gradient descent with
+39:54
+momentum so this is with momentum but we are not using the Adaptive step sizes
+40:00
+like which are used in RMS prop and Adam so let's run this right now okay so as you can see I'm running
+40:07
+the SGD or the gradient descent with momentum rather which just uses the momentum term in the in the numerator
+40:14
+but it does not use the cach term uh in the denominator so here you can see that
+40:19
+we are getting a better accuracy which is good and the accuracy will reach to around 0. N I think so we are at around
+40:26
+uh 10,000 iterations and the accuracy is 873 so I'll just
+40:32
+write just using the momentum the accuracy is 873 sometimes when you run different
+40:39
+iterations you will see that the momentum accuracy is as high as Adam so momentum is good but for all other
+40:46
+problems of neural networks and machine learning the Adam Optimizer is the best Optimizer to get started with because it
+40:53
+takes into account the momentum plus it takes into account the ad learning rate or the cash term which is used in RMS
+41:01
+prop this is amazing right now I just want to take you through some videos to show you the difference between the Adam
+Visual results through video
+41:08
+Optimizer convergence and the other optimizers so first let me just show you if we just use a decaying learning rate
+41:15
+uh and here we are not even using momentum we are not even using the cast term in the denominator this is just
+41:21
+decaying learning rate so here you can see that uh the iterations will start now okay
+41:28
+here you can see that the iterations have started and if you see the background colors they are the predictions they should ideally match
+41:35
+the true data colors which we have uh so now if you can see this is the final
+41:41
+prediction if we just use a decaying learning rate without momentum or without the RMS prop here you can see
+41:47
+it's pretty bad right with respect to prediction because if you see these points over here our prediction which is
+41:53
+the blue background that's our prediction but these two are green so they are misclass classified if you take
+41:58
+these points here they are in a green background so these red points are misclassified so it's not very good now
+42:05
+let's look at the RMS prop the RMS prop Optimizer uh does not use momentum but
+42:10
+it uses the cash term in the denominator and it does a slightly better job so here you can see that it's kind of
+42:16
+looking like a spiral now it's not exactly looking like a spiral the outside color it's definitely doing a
+42:22
+better job than just using uh the DK rate without moment momentum or
+42:28
+without the cash term in the denominator so here also you can see that there are
+42:33
+number of misclassifications these green points over here are misclassified as blue uh then these this blue point here
+42:41
+is misclassified as red Etc so it's not the best now let's look at Adam so I'm
+42:46
+going to be running the Adam Optimizer now so here you can see right from the start the ADM Optimizer leads to amazing
+42:53
+results uh here you can see that the if you look at at the backgrounds they look like
+43:01
+spirals so this is the final result given by the ADM Optimizer and you can see that almost all points have been
+43:07
+classified correctly there are very few misclassified points the Border colors
+43:12
+which we have look like spirals which match the colors of the data points this is brilliant right U this clearly shows
+43:19
+that the ADM Optimizer is probably the most robust optimizers among the different ones which we have
+43:25
+tested okay okay so thank you so much everyone for attending this lecture or
+43:31
+for listening to this lecture I tried to explain Adam right from the basics and I
+43:36
+try to motivate the concept of Adam through first showing you momentum then
+43:41
+showing you gradient descent then showing you the cash term uh and then uh
+43:47
+showing you how all of these three tools so first we have the normal gradient descent then we have momentum then we
+43:53
+have the cash term and then showing you how all of these contribute together to lead to the Adam Optimizer so the Adam
+44:00
+is just a culmination of these building blocks which people had worked on previously but it turns out to be the
+44:06
+best and most robust optimizers which is used in many machine learning settings remember that the Adam has two
+44:13
+parameters which are most important the beta one generally taken to be around 0.9 which is the momentum factor and the
+44:21
+beta 2 which is the cash memory DK rate or the Adaptive or the rate which
+44:27
+controls how much importance is given to the gradient square or the past gradient Square values to make the Adaptive step
+44:35
+sizes and then we looked at the Adam Optimizer in code we saw how the Adam Optimizer class was created and how it
+44:42
+was integrated uh with the the forward pass and the backward pass I hope you're
+44:49
+deriving a lot of value from these lectures when I was taught Adam for the first time I did not really understand
+44:55
+it at all uh but but I realize that you need to break it down into different small Concepts and when you put them all
+45:01
+together it's quite easy to understand I really encourage you to write all of the steps which I'm describing here and to
+45:08
+also replicate the codes which I'm providing thank you so much everyone and I'll see you in the next lecture
