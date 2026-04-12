@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" font-family="Segoe UI, sans-serif">
+  <defs>
+  </defs>
+
+  <rect width="900" height="520" rx="18" fill="#fafafa"/>
+
+  <text x="450" y="36" text-anchor="middle" font-size="20" font-weight="700" fill="#1e1b4b">L1 &amp; L2 Regularization — Penalizing Large Weights</text>
+
+  <!-- Overfitting → Regularization motiviation -->
+  <rect x="30" y="55" width="260" height="170" rx="14" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="160" y="78" text-anchor="middle" font-size="14" font-weight="700" fill="#991b1b">Overfitting ↔ Large Weights</text>
+  <!-- Jagged curve -->
+  <path d="M55 180 Q65 130 80 170 Q90 120 105 160 Q115 110 130 150 Q145 100 160 145 Q175 95 190 140 Q200 100 220 130 Q240 90 260 120" stroke="#ef4444" stroke-width="2" fill="none"/>
+  <!-- Data points -->
+  <circle cx="70" cy="165" r="3" fill="#10b981"/>
+  <circle cx="95" cy="155" r="3" fill="#10b981"/>
+  <circle cx="120" cy="145" r="3" fill="#10b981"/>
+  <circle cx="150" cy="140" r="3" fill="#10b981"/>
+  <circle cx="180" cy="132" r="3" fill="#10b981"/>
+  <circle cx="210" cy="125" r="3" fill="#10b981"/>
+  <circle cx="245" cy="115" r="3" fill="#10b981"/>
+  <text x="160" y="205" text-anchor="middle" font-size="11" fill="#991b1b">Complex model = sharp curves</text>
+  <text x="160" y="218" text-anchor="middle" font-size="11" fill="#991b1b">= large weight magnitudes</text>
+
+  <!-- Arrow -->
+  <path d="M295 140 L325 140" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#arr30)"/>
+  <defs><marker id="arr30" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#64748b"/></marker></defs>
+
+  <!-- Good generalization -->
+  <rect x="330" y="55" width="260" height="170" rx="14" fill="#d1fae5" stroke="#10b981" stroke-width="1.5"/>
+  <text x="460" y="78" text-anchor="middle" font-size="14" font-weight="700" fill="#065f46">Good Gen. ↔ Small Weights</text>
+  <!-- Smooth curve -->
+  <path d="M355 180 Q400 140 460 135 Q520 130 560 105" stroke="#10b981" stroke-width="2.5" fill="none"/>
+  <circle cx="370" cy="170" r="3" fill="#10b981"/>
+  <circle cx="395" cy="155" r="3" fill="#10b981"/>
+  <circle cx="420" cy="145" r="3" fill="#10b981"/>
+  <circle cx="450" cy="138" r="3" fill="#10b981"/>
+  <circle cx="485" cy="130" r="3" fill="#10b981"/>
+  <circle cx="515" cy="120" r="3" fill="#10b981"/>
+  <circle cx="545" cy="110" r="3" fill="#10b981"/>
+  <text x="460" y="205" text-anchor="middle" font-size="11" fill="#065f46">Simple model = smooth curves</text>
+  <text x="460" y="218" text-anchor="middle" font-size="11" fill="#065f46">= small weight magnitudes</text>
+
+  <!-- Loss formulas -->
+  <rect x="620" y="55" width="250" height="170" rx="14" fill="#eef2ff" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="745" y="78" text-anchor="middle" font-size="14" font-weight="700" fill="#4338ca">Augmented Loss</text>
+  <text x="640" y="104" font-size="12" fill="#312e81" font-weight="600">Without regularization:</text>
+  <text x="640" y="122" font-size="12" font-family="Consolas, monospace" fill="#4338ca">Loss = data_loss</text>
+  <line x1="640" y1="133" x2="850" y2="133" stroke="#c7d2fe" stroke-width="1"/>
+  <text x="640" y="152" font-size="12" fill="#312e81" font-weight="600">With L2 regularization:</text>
+  <text x="640" y="170" font-size="12" font-family="Consolas, monospace" fill="#4338ca">Loss = data_loss</text>
+  <text x="640" y="188" font-size="12" font-family="Consolas, monospace" fill="#6366f1">  + λ_w · Σ(w²)</text>
+  <text x="640" y="206" font-size="12" font-family="Consolas, monospace" fill="#6366f1">  + λ_b · Σ(b²)</text>
+
+  <!-- L1 vs L2 comparison -->
+  <rect x="30" y="245" width="420" height="255" rx="14" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="240" y="272" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">L1 vs L2 — Forward &amp; Backward</text>
+
+  <!-- Table header -->
+  <text x="55" y="300" font-size="12" font-weight="700" fill="#64748b">Property</text>
+  <text x="195" y="300" font-size="12" font-weight="700" fill="#f59e0b">L1</text>
+  <text x="335" y="300" font-size="12" font-weight="700" fill="#6366f1">L2</text>
+  <line x1="50" y1="308" x2="430" y2="308" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Rows -->
+  <text x="55" y="328" font-size="11" fill="#1e293b">Penalty term</text>
+  <text x="195" y="328" font-size="11" font-family="Consolas, monospace" fill="#92400e">λ·Σ|w|</text>
+  <text x="335" y="328" font-size="11" font-family="Consolas, monospace" fill="#4338ca">λ·Σw²</text>
+
+  <text x="55" y="352" font-size="11" fill="#1e293b">Gradient</text>
+  <text x="195" y="352" font-size="11" font-family="Consolas, monospace" fill="#92400e">λ·sign(w)</text>
+  <text x="335" y="352" font-size="11" font-family="Consolas, monospace" fill="#4338ca">2λ·w</text>
+
+  <text x="55" y="376" font-size="11" fill="#1e293b">Shape</text>
+  <text x="195" y="376" font-size="11" fill="#92400e">V-shape (|w|)</text>
+  <text x="335" y="376" font-size="11" fill="#4338ca">Parabola (w²)</text>
+
+  <text x="55" y="400" font-size="11" fill="#1e293b">Small w penalty</text>
+  <text x="195" y="400" font-size="11" fill="#ef4444" font-weight="600">High (linear)</text>
+  <text x="335" y="400" font-size="11" fill="#10b981" font-weight="600">Low (quadratic)</text>
+
+  <text x="55" y="424" font-size="11" fill="#1e293b">w = 0.01 example</text>
+  <text x="195" y="424" font-size="11" font-family="Consolas, monospace" fill="#92400e">λ×0.01</text>
+  <text x="335" y="424" font-size="11" font-family="Consolas, monospace" fill="#4338ca">λ×0.0001</text>
+
+  <text x="55" y="450" font-size="11" fill="#1e293b">Preferred?</text>
+  <text x="195" y="450" font-size="11" fill="#92400e">Paired with L2</text>
+  <text x="335" y="450" font-size="11" fill="#10b981" font-weight="600">✓ Most common</text>
+
+  <text x="55" y="482" font-size="11" fill="#64748b" font-style="italic">L2 is preferred because it does not over-penalize</text>
+  <text x="55" y="495" font-size="11" fill="#64748b" font-style="italic">already-small weights.</text>
+
+  <!-- Results panel -->
+  <rect x="470" y="245" width="400" height="255" rx="14" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="670" y="272" text-anchor="middle" font-size="15" font-weight="700" fill="#92400e">Results — L2 Regularization</text>
+
+  <text x="500" y="302" font-size="12" fill="#78350f" font-weight="600">Setup:</text>
+  <text x="500" y="320" font-size="11" fill="#78350f">λ = 5×10⁻⁴ (weights &amp; biases)</text>
+  <text x="500" y="338" font-size="11" fill="#78350f">Adam, α₀=0.02, 10K epochs, 64 neurons</text>
+
+  <line x1="500" y1="350" x2="840" y2="350" stroke="#fde68a" stroke-width="1"/>
+
+  <text x="500" y="375" font-size="13" fill="#78350f" font-weight="600">With L2 regularization:</text>
+  <text x="520" y="395" font-size="12" fill="#78350f">Training accuracy:  94.7%</text>
+  <text x="520" y="415" font-size="12" fill="#065f46" font-weight="600">Validation accuracy: 82%</text>
+
+  <text x="500" y="440" font-size="13" fill="#991b1b" font-weight="600">Without regularization:</text>
+  <text x="520" y="460" font-size="12" fill="#991b1b">Validation accuracy: 80% (↓2%)</text>
+
+  <line x1="500" y1="472" x2="840" y2="472" stroke="#fde68a" stroke-width="1"/>
+  <text x="500" y="492" font-size="12" fill="#065f46" font-weight="600">+ More data (1000 samples):</text>
+  <text x="520" y="508" font-size="12" fill="#065f46">Validation accuracy: ~89% ★</text>
+</svg>
