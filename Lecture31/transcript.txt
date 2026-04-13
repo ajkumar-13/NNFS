@@ -1,0 +1,606 @@
+What is dropout?
+0:00
+[Music]
+0:05
+hello everyone welcome to this lecture in the neural networks from scratch
+0:11
+Series today we will be learning about a very important concept which is called
+0:16
+as Dropout in the previous lectures we looked at different ways to prevent or
+0:23
+uh reduce overfitting and we looked at something called regularization l and L2
+0:31
+regularization which can help prevent overfitting so that the neural network can have a better generalization
+0:38
+performance today we are going to look at another such technique which can help
+0:43
+us to prevent overfitting and to improve the generalization of neural networks this
+0:50
+technique is called as Dropout it's a very simple technique and
+0:56
+the main idea of this technique is that during the forward pass we will choose
+1:02
+some neurons and we will randomly turn off or disable the output from those
+1:07
+neurons what this means is that it's like turning on and off a switch neurons
+1:13
+will have some weights and some outputs associated with them we will randomly choose certain neurons and put their
+1:19
+output equal to zero so that they don't contribute during the forward pass and in every
+1:25
+iteration we'll choose different neurons and disable them now you might be thinking how does this
+1:33
+really help and uh why do we do this the main reason we do this is because during
+1:40
+the forward pass what can happen is that let's say we have four neurons like this
+1:45
+one uh we have neuron number two neuron number three and neuron number four
+1:51
+sometimes what can happen is that some neurons become lazy and they start depending too much on other neurons for
+1:58
+example neuron 2 May learn that if it just copies the output from neuron one
+2:04
+the neural network is having very low loss and it doesn't need to update its weights again and again so then what
+2:10
+neuron 2 does is that in every iteration it just copies the weights which neuron 1 has and this problem may happen in
+2:18
+different layers this lay this problem is also called as the co- adaptation problem where neurons start to adapt
+2:25
+according to each other's outputs the problem with this is that uh
+2:30
+it will not have a good generalization performance if this neuron is always dependent on neuron one's output if it's
+2:37
+given some new data it will not try to produce weights of its own right it will
+2:42
+again try to have the same weights which neuron one has and that's not a good
+2:47
+idea for generalization in fact such a neural network can have poor performance on the data which it has not seen
+2:56
+before another uh reason why we use the Dropout or why we turn off neurons in
+3:03
+certain um iterations is that let's say in iteration number one this neuron is
+3:09
+turned on and it learns something and it has certain weights uh and it learns to capture the
+3:15
+underlying data pretty well in the next iteration let's say this neuron is turned off now there is no other option for
+3:23
+neuron two but to learn weights on its own so it first of all it it cannot rely
+3:29
+on neuron one now because neuron one is turned off in the next iteration so this neuron 2 has to learn weights on its own
+3:36
+that's number one and number two is that neuron one cannot now memorize on data
+3:42
+because in some iterations it can be turned off so uh our model can't use specific
+3:51
+neurons to memorize certain samples so for example if our model is always using
+3:57
+neuron one to memorize certain part of the sample or certain part of the underlying
+4:02
+data that is overfitting right but now if neuron one is turned off the model has no choice but to adapt from other
+4:10
+neurons so Dropout actually helps in two things first it prevents the co-
+4:15
+adaptation problem it prevents neurons from being lazy and adapting on other neurons um the neurons which depend on
+4:22
+other neurons let's say neuron 2 depends on neuron 1 but if neuron one is turned
+4:28
+off in some iteration neuron 2 has no option but to learn weights on its own that's the number one problem which is
+4:34
+solved by Dropout and this leads to better generalization the second problem which is solved is that if the model is
+4:41
+always using neuron one for memorizing certain samples or certain features of the samples uh Dropout prevents that
+4:50
+because in some iterations this neuron one would be turned off as I mentioned and then the model cannot use this
+4:56
+neuron to learn those features neurons 2 three and four then need to be trained it's more about uh
+5:04
+generalization so if you think about it when does overfitting happen overfitting happens when neurons
+5:12
+memorize too much on the underlying data set drop out prevents this memorization
+5:17
+problem because certain neurons are turned off and other neurons then we'll have to do that
+5:22
+work so uh in if I were to show you how this actually happens in an image or how
+5:29
+it happens practi ically let's say we have a certain layer of a neural network which has six
+5:34
+neurons uh the parameter which is chosen is something which is called as the dropout rate if the dropout rate is
+5:41
+equal to 0.5 it means that we have to choose 50% of uh neurons on an average
+5:47
+and we have to set them to zero or we have to set their outputs to zero and disable them so what can happen is that
+5:54
+in one particular iteration let's say this neuron this neuron and this neuron are set to to zero in another iteration
+6:01
+maybe some other three neurons are set to zero but always the model makes sure that about 50% of the total number of
+6:08
+neurons is inactive or its output is set to zero one common misconception we drop
+6:14
+out is that many students say that does it mean that we are increasing the speed of the computation since some neurons
+6:21
+will not be there no the speed does not increase because of Dropout it's just that the output from these three neurons
+6:28
+this neuron um this neuron this neuron and this neuron the output from these three
+6:34
+neurons is set to zero so the speed does not increase um I also want to show you a
+6:41
+very nice video uh which is made by uh Kinsley and other authors so if you look
+6:48
+at this video here you can see that uh you can see Dropout so let's say if
+6:54
+Dropout is zero then all neurons are active if Dropout is 0.1 it means you'll see that roughly 10% of the neurons are
+7:01
+inactive if the Dropout increases you will see that more number of neurons in each layer become inactive so slowly
+7:09
+you'll see that as Dropout increases to. 3 point4 and5 uh many neurons start becoming
+7:16
+inactive and you'll see that at much higher Dropout let's say when we go to a Dropout of around 6 OR7 or8 almost all
+7:26
+the neurons are inactive so uh I'll close this right
+7:36
+now okay so the way Dropout is implemented in practice is that uh we
+7:41
+look at layers of a neural network and for every layer we add another layer which is called as a Dropout layer what
+7:47
+happens in that Dropout layer is that it takes one parameter which is called as the dropout rate and then whatever
+7:53
+output is coming from the previous layer depending on this dropout rate it sets those many number of neurons equal to
+8:01
+zero now let me show you how this is actually implemented in Python and then we'll look at a detailed code walk
+Dropout layer and binomial distribution
+8:08
+through in Python so uh remember we are always talking about randomly selecting
+8:13
+some neurons and setting them to zero right when I use the word randomly selecting you already should think about
+8:20
+probability so we need to include probab uh distributions in this case when we set
+8:28
+randomly 50 % or 20% of the neurons to zero we'll use the probability distribution called the binomial
+8:35
+distribution in Python the way to specify the binomial distribution is np.
+8:41
+random. binomial and it takes three arguments the first is to in this case it's two the second
+8:49
+in this case is 05 and the third is size which is equal to 10 let me show you what this will create when we write this
+8:56
+command in Python what it will create is that it will create an array of of size 10 where each element is the sum of two
+9:02
+coin tosses why two because it's the first element and the probability of one
+9:08
+in each coin toss is 50% note that the coin toss can have zero or one and in each coin toss the probability of
+9:15
+getting one is 50% and uh in this case the first argument is two so we'll have
+9:21
+two coins and then we'll sum up what those two coins uh contain or what those
+9:27
+two coins show up so let's say I toss one coin and it shows one at to the second coin that also shows one so the
+9:33
+summation is equal to two so then my first array element will be equal to two and I'll do this 10 times already you
+9:40
+must you must start to think that uh getting the value of two will be very
+9:47
+improbable because the first coin also has to show one and the second coin also has to show one only then the summation
+9:53
+will be equal to two uh so that's why if you look at the output you'll see that two comes only
+10:01
+three times um and zero comes the maximum number of times one also comes the
+10:06
+maximum number of times so this is how the binomial distribution works if you have the first argument equal to one
+10:13
+which is what we'll be doing when we uh so if you have the first argument equal
+10:18
+to one which is what we'll be doing when we Implement Dropout let's see um let's
+10:23
+see what this looks like so now let's say um
+10:30
+I have the first argument here equal to one which means that we'll just toss one coin and uh let's say I have this equal
+10:37
+to8 right now let's say I have this equal
+10:43
+to8 and the size equal to five what this means is that I'll toss a coin five
+10:48
+times okay and the probability of uh one
+10:53
+appearing is equal to8 do you see what this will mean this will mean that on an average out of the five times four times
+11:01
+I'll get one and one time I'll get zero so on an average the output array will
+11:06
+look something like this I'll get zero one time and I'll get one four times because there's 80% probability of it
+11:12
+being one and this very nicely simulates a Dropout equal to
+11:18
+02 so if I want if I have the output from five neurons let's say and I want
+11:23
+to randomly select one neuron to go off what I'll just do is that uh I'll
+11:29
+Implement a binomial distribution and I'll use the first argument as one because I'll do one coin toss the second
+11:36
+will be the probability of one which is one minus the dropout rate so that will be equal to 0.5 and then the size will
+11:42
+be equal to five if there are five neurons in my output layer what this will mean is that with 80% probability
+11:48
+which means four out of the five neurons will on an average stay equal to one but one neuron will be turned
+11:55
+off and that's the advantage of using np. random. B nomial in this case and
+12:00
+this is exactly what we will be using when we code this dropout rate in Python
+Dropout layers on testing data
+12:06
+now this possesses or this uh leads to one problem the problem is that uh let's
+12:12
+say we train the neural network uh with the Dropout and all of that is fine what
+12:18
+about testing let's say during testing so
+12:23
+let's say during training we had used a Dropout of0 five on this layer right and that's fine but in testing if we
+12:29
+continue to use Dropout equal to 0.5 the output of this layer to the next layer
+12:34
+will be 50% smaller right because three neurons will be inactive so that's not very good because the output should be
+12:42
+of the same magnitude um if the output starts reducing in every layer our test output
+12:48
+will be something completely new we do not want that so to handle this what will do is that we'll scale the Dropout
+12:55
+output during the training itself so what we'll do is that earlier I showed you that to do the forward pass through
+13:02
+a layer of neurons so let's say we have a layer right and we have a layer of five neurons so this is the first
+13:08
+neurons this is the second neuron this is the third neuron this is the fourth
+13:13
+neuron and this the fifth neuron right what I showed you earlier is that to implement Dropout in the forward pass
+13:21
+we'll just implement this formula NP binomial 1 comma 1 minus dropout rate comma the size in this case the size
+13:27
+will be five so we'll get get an array like this and using this we'll just know which neuron to be turned off and which
+13:34
+neurons to keep it like this but now we'll divide the output by uh this magnitude 1 minus the Dropout so if the
+13:41
+Dropout is equal to 0.5 let's say then I'll multiply in every training
+13:48
+iteration I'll multiply this by two um and the reason is because on an
+13:55
+average uh I want the summation to stay the same so remember remember that uh
+14:01
+let's say the output now is 0 1 1 1 and one right and uh I'll multiply in this
+14:08
+case I'll multiply by or rather I'll divide by so let me show you that so it
+14:13
+will be
+14:19
+0o 1 then the third will also be
+14:27
+one the fourth element will be one and The Fifth Element will also be one and
+14:34
+I'm going to divide this I'm going to divide this by 08
+14:41
+which is 1 minus Dropout right so what this will do is that it will increase all the magnitudes
+14:49
+by uh 1.25 times so now the
+14:54
+actual so now each value here would be 1.25 time Times Higher but the first
+15:01
+value will still be zero so now the values will be zero okay so this is how the array will
+15:08
+look like after we divide by 1 minus Dropout now if you take the summation of
+15:13
+this summation of all the elements you will see that uh the summation of all the elements equals to
+15:20
+five and uh this is actually exactly the summation of uh the input which we would
+15:25
+have started with so the original input which which is the output from the
+15:31
+neurons that would look something like this right so the output from the original neurons would look like this
+15:36
+one one one one and one and this original output sums up to
+15:50
+five now I hope you understand why we divided by 08 the reason we divided by
+15:55
+08 was that one neuron was switched off to zero so if we wanted to make the sum of a similar magnitude we have to
+16:02
+increase the magnitude of all the other neurons right so that's why we scale everything up by 1 minus the dropout
+16:09
+rate and this usually works in practice also uh during the testing we don't want
+16:15
+the input to the next layer to be smaller because some neurons were inactive so it just helps if we just
+16:22
+during the training itself we divide by 1 minus dropout rate so that we do we won't have to face this problem during
+16:28
+the testing so the way we will Implement Dropout in the forward pass looks something like
+16:33
+this we will use np. random. binomial 1 comma 1 minus Dropout comma size 1 minus
+16:40
+Dropout is the dropout rate for that particular layer and the size is the number of neurons in the layer and we'll
+16:47
+also divide by 1 minus Dropout so this is the way we implement the forward path during the Dropout um and so if you look
+16:56
+at how python implements the dropout layer in practice is that after every layer we can add a Dropout layer so here
+17:03
+this is the first Dropout layer then here you can see that there's a second Dropout layer and after the third layer
+17:09
+there is another Dropout layer and in each Dropout layer you can specify the dropout rate it can be same or it can be
+17:16
+different according to different layers and this just becomes another hyper parameter which which you have to set
+17:21
+before the training process begins now uh similar to all the other
+Dropout layer backward pass
+17:26
+components in this neural networks from series we also have to implement the backward pass when we implement the
+17:32
+Dropout layer right so let's say if you have reached up till this stage where you have the partial derivative of loss
+17:38
+with respect to the Dropout outputs you need to find the partial derivative of the loss with respect to Dropout inputs
+17:45
+so the way to do this is that um partial derivative of loss with respect to Dropout inputs is equal to the partial
+17:53
+derivative of loss with respect to Dropout outputs multiplied by the derivative of the dropout outputs with
+17:59
+respect to inputs so now think about what the Dropout outputs are if uh if
+18:06
+the neuron is dropped out then its output will be zero but if the neuron is
+18:11
+not dropped out then its output will be scaled by uh 1 upon 1 minus Dropout right so when we take the derivative if
+18:19
+the neuron is active the derivative will just be 1 upon 1 minus Dropout Because the actual value of the output is the
+18:26
+neuron's output divided by 1 minus drop out if the neuron is active so when we take the derivative it will just be 1
+18:33
+upon 1 minus Dropout and the output or the derivative will be equal to zero if
+18:38
+the neuron is inactive so if the neuron is inactive the output is equal to zero anyways so the derivative of the output
+18:46
+with respect to the input is equal to zero for that particular neuron so calculating the backward pass with
+18:53
+respect to a Dropout layer actually turns out to be very easy so until this point I hope you have
+18:59
+understood uh how to implement the uh forward
+19:05
+pass in the Dropout layer we'll use the np. random. binomial and I hope you have also
+19:12
+understood how to implement the backward pass when we look at the Dropout this is all which is needed for us to code um
+19:21
+the Dropout example in Python so now let's look at uh coding the Dropout in Python so I'm going to take you to the
+Python code walkthrough
+19:28
+python code file now okay so before we uh we'll actually
+19:35
+code the Dropout layer I would like to show you the data which which we will use ultimately to train the neural
+19:40
+network so this is the data which we have it's also called as the spiral data set and uh because the data set itself
+19:48
+looks like a spiral and you'll see that every data point here has two attributes on the xaxis is the first attribute on
+19:54
+the y axis is the second attribute and every single data point here belongs to either one of the three classes red
+20:00
+green or blue our task here is to train a neural network uh which can classify
+20:07
+any given point to it as red green or blue so it's a classification problem
+20:12
+and now I'm going to show you how to implement the Dropout so first what we'll need to do is that we'll actually
+20:18
+need to uh create the class which is called as the layer Dropout and we'll have two methods in this class we'll
+20:25
+have the actually three methods we'll have a init method meod which is invoked by default when an instance of this
+20:31
+class is created then we'll have the forward method and then we'll have the
+20:37
+backward method if you use py torch or tensor flow they directly have a Dropout layer but you'll never understand how it
+20:43
+works beneath the surface so the whole part of this series is that for you to
+20:49
+give an inside Peak into how these different layers are constructed so as I mentioned earlier we
+20:55
+just need one argument when you create the dropout CER and that is equal to the dropout rate so if the dropout rate is
+21:02
+02 which means that uh the success rate or the number of neurons which remain active is 1us point2 so that's the self.
+21:11
+rate equal to 1 minus rate and then what we'll do is that uh we'll just uh create
+21:17
+this np. random. binomial 1 comma self. rate which is actually 1 minus Dropout
+21:24
+and then the third uh the Third argument here is the
+21:30
+shape remember here when I say inputs it's actually the output uh so when we say inputs over
+21:37
+here it's actually the output of the layer which is fed to the Dropout right
+21:42
+so look at this this formula over here NP do np. random. binomial 1 comma self.
+21:50
+rates comma size divided by self do rate it's actually uh exactly the same
+21:56
+formula which we had seen um in our whiteboard approach so let me take you
+22:01
+to the uh whiteboard right now uh just to show you the forward pass
+22:07
+formula uh so I'm going to scroll up a bit here right now and uh let me show you the forward
+22:15
+pass formula which we had looked at so this was the forward pass formula which
+22:20
+we had looked at the example output which has been shown over here and uh if you look at the code it's exactly the
+22:27
+same in P do random. binomial this one minus Dropout is replaced by a term
+22:33
+called rate so one comma rate comma size divided by rate and uh that is exactly
+22:39
+what has been implemented in the coding part here np. random. binomial 1 comma
+22:44
+self. rate comma size divided by rate and then what we'll do is that we'll
+22:49
+just do an elementwise multiplication so if the output of the layer which is also termed as inputs
+22:55
+over here is the true outputs of the neuron and if the binary mass is 0 1 1
+23:01
+and 1 so we'll just do elementwise multiplication which means that the output of the first neuron will be zero
+23:07
+and the outputs of all remaining neurons will be as it is uh similarly when we take the
+23:13
+derivatives we'll just look at the partial derivative loss with respect to the Dropout outputs which is given to us
+23:19
+and then we'll just multiply with the binary mask so which means that if the output of the neuron is zero the binary
+23:26
+mask will anyways be zero so then that derivative will be zero and if the output of the neuron is one then the
+23:32
+binary mask will just be one upon uh 1 minus the
+23:38
+rate so then the derivative will just be divided by 1 minus the dropout rate
+23:43
+which is what we had seen in the Whiteboard approach so implementing the forward pass and the backward pass in
+23:49
+the layer Dropout is actually very simple and it just two to three lines of code if you understand the logic behind
+23:55
+the np. random. binomial uh we also looked at the data set and now we'll be
+24:00
+training the neural network on this data set with Dropout so I'll go a bit fast
+24:05
+with respect to the different architecture because we have already seen it before I'll give you a brief
+24:11
+overview of what all we'll be doing so first we construct the training data set we have thousand samples in the training
+24:17
+data set and then we construct the first layer of the neural network which has 64
+24:23
+neurons it has two inputs because as I showed you each data point has two attributes the x-axis and the y-
+24:30
+axis and then we'll also be using regularization we'll be using the L2 regularizer and for all the weight and
+24:37
+bias we'll add a penalty to the magnitude and the Lambda of that penalty is 5 into 10us 4 uh we'll chain the
+24:46
+first layer with a Rao activation layer so that will be the activation function
+24:51
+after the first layer and then we'll also add a Dropout layer after the first layer so this is the main part which
+24:58
+which I want to show you in today's video the dropout rate which we are going to use is 0.1 which means around
+25:04
+10% of the neurons will be switched off in every iteration then we'll chain the
+25:09
+second layer which has 64 inputs uh and it has three outputs why
+25:16
+three outputs because we want to classify every Point as belonging to red green or blue and then we will uh apply
+25:23
+the soft Max activation along with the categorical cross entropy loss to give us the loss in the forward pass we'll be
+25:30
+using the Adam Optimizer and uh the learning rate is 0.05 and the DK is 10us
+25:36
+5 so remember the Adam Optimizer requires the learning rate which is Alpha not divided 1 + DK into time and
+25:43
+it has two other parameters beta 1 and beta 2 which we have earlier defined it's 09 for beta 1 and 999 I think for
+25:51
+beta 2 and then we'll be running the forward pass and the backward pass we'll be
+25:57
+doing 10,000 iterations so first we uh take the output of the first layer then
+26:03
+we will apply The Rao activation function then we will apply the Dropout um so this is where the Dropout is
+26:11
+actually applied and then we'll actually pass the Dropout output to the second
+26:16
+layer as the input and then we'll do the soft Max activation and the cross entropy loss but we'll also add the
+26:23
+regularization loss here since we are going to penalize the weight and the bias mag
+26:29
+udes and then in this part of the code um in this part right here we are
+26:36
+actually just printing out the accuracy and the loss the data loss the regularization loss and also the
+26:42
+learning rate at every EPO and then finally what we'll be doing is that we'll be doing a backward pass so we'll
+26:49
+be doing the backward pass starting right from the very end so we'll be doing a backward pass through the
+26:54
+softmax and the loss function then we'll find the partial d derivative of the loss with respect to the weights and the
+27:00
+biases and inputs of the second layer then very importantly we do a backward pass through the Dropout that's where
+27:07
+the Dropout backward pass formula will come into the picture then we will do a drop backward pass through the rail Loop
+27:13
+and then finally we'll do the backward pass through the first layer where we'll find the partial derivative of the loss
+27:19
+with respect to weights and the biases of the first layer remember the Adam Optimizer also changes the learning rate
+27:26
+in every iteration so we need to call these functions Optimizer pre-update params update params and post-update
+27:33
+params I'm not showing what these functions mean here because we covered that when we looked at in the Adam
+27:38
+Optimizer class for now you just need to keep in mind that the Adam Optimizer
+27:44
+changes the step size uh at every iteration we have an Adaptive step size and uh even the gradient is a past
+27:52
+average of everything which has happened up till now so that's why we need to keep track of the gradient values and
+27:58
+also the iteration number which we are at currently after this routine is defined
+28:04
+then we'll do the testing remember that even if you get 100% accuracy on the training data it does not mean anything
+28:11
+in fact the Dropout is only meant so that we can get a better accuracy on testing the real good thing for us will
+28:17
+be that if we get a testing accuracy which is comparable or a bit better than the training accuracy this means that
+28:23
+the model is generalizing well so in the testing we just do the forward pass with we don't do the backward pass because we
+28:29
+just want to compare our predictions with the actual data and then we print out the validation accuracy which shows
+28:35
+how much of our data actually matches the test data how much of our neural network predictions match the test data
+28:42
+so for example if my neural network predicts one particular point is red but it's green that hits my accuracy
+28:50
+score um but if it's red and my neural network also predicts red then it's good
+28:55
+for my accuracy score so I've already run this for 10,000 iterations uh 10,000
+29:00
+iterations so let me show you uh how the iterations proceed so here you can see that as the number of epoch increase my
+29:08
+accuracy is increasing and I can see that at 10,000 Epoch my training
+29:14
+accuracy has reached 666 and uh if you have followed this
+29:21
+series in the previous lectures you'll see that this accuracy is much lower than the previous training and we can
+29:26
+improve it much more through the through hyper parameter optimization but I want
+29:32
+to bring your attention to this point where we can see that the validation accuracy is actually higher than the
+29:37
+training accuracy and this has happened for the first time in all the previous lectures we always had the training
+29:43
+accuracy higher than the validation accuracy in all the previous lectures we actually had the training accuracy Which
+29:50
+is higher than the validation accuracy but this is the only lecture in which the validation accuracy is actually
+29:56
+higher than the training accur accuracy and uh that's actually amazing because
+30:01
+it shows that Dropout can actually help neural network generalize better and uh
+30:07
+to prevent overfitting okay so this is the training
+30:14
+code which I have showed and uh this brings us to the end of our lecture I'll
+30:19
+be uh sharing this code file um so let me take you back to the
+30:26
+code so I'll be sharing this code file with you um in the information section
+30:33
+of the YouTube video so you can have a look at it and you can run the code file try doing different hyperparameter
+30:39
+optimization so for example you can maybe change the regularization Lambda
+30:45
+that's one hyper parameter you can try playing around with the ADM Optimizer learning rate DK rate you can change the
+30:52
+training samples you can change the number of units uh in each layer of the
+30:57
+neural Network so for example I have used 64 units here right what if you used higher number of units what if it
+31:03
+leads to a better uh what if it leads to a better accuracy before we end this lecture I
+Visual demo of training with dropout
+31:10
+just want to show you a training video implementing Dropout so I'm just going to run this video right now um here you
+31:18
+can see that the dots are the data and the boundaries are what we are predicting so I'm just going to play
+31:25
+this animation again right now so here you can see that uh our predictions are also starting to look like a spiral ship
+31:31
+and they have started to match the underlying data pretty well so this shows that the uh Dropout is actually
+31:38
+working okay so we actually saw that the Dropout was working and it matched the underlying data pretty well uh thank you
+31:46
+so much everyone for following along uh up till now we have covered several regularization aspects like L1 L2
+31:52
+regularization and today we cover Dropout uh in the next set of lectures
+31:58
+we'll be looking at some practical applications of neural networks and we'll code it out in Python thank you
+32:04
+everyone and I look forward to seeing you in the next lecture
