@@ -440,10 +440,10 @@ Everything else we'll build in this series (activation functions, loss functions
 
 ## What's Next
 
-In **Part 2**, we'll cover:
-- **Activation functions** and why the linear sum isn't enough
-- **ReLU** and **Softmax**, the two most common activations
-- How to chain layers together into a real network
+In **Part 2**, we'll deep-dive into `np.dot()`:
+- The three forms of the dot product: **vector · vector**, **matrix · vector**, and **matrix · matrix**
+- Why the **order of arguments matters** and how each form maps to a neuron, a layer, or a batch
+- How transposing the weight matrix enables processing a whole batch in one call
 
 ---
 
