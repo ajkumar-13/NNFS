@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" role="img" aria-labelledby="t d">
+  <title id="t">The input gradient sums contributions from every neuron the input feeds</title>
+  <desc id="d">A two-panel diagram contrasting the weight gradient and the input gradient. Left panel: the weight W11 has exactly one forward path (from input X1 through to neuron Z1), so its gradient is one product. Right panel: the input X1 feeds all three neurons (Z1, Z2, Z3) via W11, W21, W31, so its gradient is the sum of three contributions. Bottom band shows the matrix form for the entire input-gradient vector and the shape arithmetic.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel-bad{fill:var(--ce-warn);fill-opacity:0.06;stroke:var(--ce-warn);stroke-width:1.5;}
+    .panel-ok {fill:var(--ce-success);fill-opacity:0.07;stroke:var(--ce-success);stroke-width:1.5;}
+    .pill-bad{fill:var(--ce-warn);}
+    .pill-ok{fill:var(--ce-success);}
+    .head-bad{font-weight:700;font-size:14px;fill:var(--ce-warn);}
+    .head-ok {font-weight:700;font-size:14px;fill:var(--ce-success);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .input-pill{fill:var(--ce-primary);fill-opacity:0.18;stroke:var(--ce-primary);stroke-width:1.5;}
+    .neuron-pill{fill:var(--ce-accent);fill-opacity:0.18;stroke:var(--ce-accent);stroke-width:1.5;}
+    .neuron-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:700;fill:var(--ce-ink);}
+    .var-name{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;fill:var(--ce-ink);}
+    .conn-active{stroke:var(--ce-success);stroke-width:2;fill:none;}
+    .conn-faint{stroke:var(--ce-ink-subtle);stroke-width:0.8;fill:none;opacity:0.3;}
+    .weight-label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-success);}
+    .formula-pill{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .formula-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--ce-ink);}
+    .insight-band{fill:var(--ce-primary);fill-opacity:0.08;stroke:var(--ce-primary);stroke-width:1.5;}
+    .insight-head{font-weight:700;font-size:13px;fill:var(--ce-primary);}
+    .insight-body{font-size:11px;fill:var(--ce-ink);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="460"/>
+
+  <text class="title"    x="48" y="48">Input gradient = sum of contributions from every neuron</text>
+  <text class="subtitle" x="48" y="70">A weight has one path through the layer. An input has m paths — its gradient sums them all.</text>
+
+  <!-- ============================ LEFT PANEL: weight has 1 path ============================ -->
+  <rect class="panel-bad" x="48" y="96" width="424" height="264" rx="12"/>
+  <rect class="pill-bad"  x="48" y="96" width="6"   height="264" rx="3"/>
+  <text class="head-bad" x="68" y="124">∂L/∂W₁₁: only one forward path</text>
+  <text class="panel-sub" x="68" y="142">W₁₁ connects X₁ to neuron Z₁ — and only neuron Z₁.</text>
+
+  <!-- Inputs -->
+  <circle class="input-pill" cx="110" cy="178" r="18"/>
+  <text class="var-name" x="110" y="183" text-anchor="middle">X₁</text>
+  <circle class="input-pill" cx="110" cy="230" r="18"/>
+  <text class="var-name" x="110" y="235" text-anchor="middle">X₂</text>
+  <circle class="input-pill" cx="110" cy="282" r="18"/>
+  <text class="var-name" x="110" y="287" text-anchor="middle">X₃</text>
+
+  <!-- Neurons -->
+  <circle class="neuron-pill" cx="340" cy="178" r="22"/>
+  <text class="neuron-text" x="340" y="183" text-anchor="middle">Z₁</text>
+  <circle class="neuron-pill" cx="340" cy="230" r="22"/>
+  <text class="neuron-text" x="340" y="235" text-anchor="middle">Z₂</text>
+  <circle class="neuron-pill" cx="340" cy="282" r="22"/>
+  <text class="neuron-text" x="340" y="287" text-anchor="middle">Z₃</text>
+
+  <!-- Faint connections (all 9) -->
+  <line class="conn-faint" x1="128" y1="178" x2="318" y2="178"/>
+  <line class="conn-faint" x1="128" y1="178" x2="318" y2="230"/>
+  <line class="conn-faint" x1="128" y1="178" x2="318" y2="282"/>
+  <line class="conn-faint" x1="128" y1="230" x2="318" y2="178"/>
+  <line class="conn-faint" x1="128" y1="230" x2="318" y2="230"/>
+  <line class="conn-faint" x1="128" y1="230" x2="318" y2="282"/>
+  <line class="conn-faint" x1="128" y1="282" x2="318" y2="178"/>
+  <line class="conn-faint" x1="128" y1="282" x2="318" y2="230"/>
+  <line class="conn-faint" x1="128" y1="282" x2="318" y2="282"/>
+
+  <!-- Highlighted connection: only X₁ → Z₁ via W₁₁ -->
+  <line class="conn-active" x1="128" y1="178" x2="318" y2="178"/>
+  <text class="weight-label" x="223" y="170" text-anchor="middle">W₁₁ (only path)</text>
+
+  <!-- Formula -->
+  <rect class="formula-pill" x="68" y="320" width="384" height="28" rx="6"/>
+  <text class="formula-text" x="80" y="338">∂L/∂W₁₁ = ∂L/∂Z₁ · X₁   (one product, one term)</text>
+
+  <!-- ============================ RIGHT PANEL: input has 3 paths ============================ -->
+  <rect class="panel-ok" x="488" y="96" width="424" height="264" rx="12"/>
+  <rect class="pill-ok"  x="488" y="96" width="6"   height="264" rx="3"/>
+  <text class="head-ok" x="508" y="124">∂L/∂X₁: three forward paths</text>
+  <text class="panel-sub" x="508" y="142">X₁ connects to every neuron via W₁₁, W₂₁, W₃₁ — its gradient sums all three.</text>
+
+  <!-- Inputs -->
+  <circle class="input-pill" cx="550" cy="178" r="18"/>
+  <text class="var-name" x="550" y="183" text-anchor="middle">X₁</text>
+  <circle class="input-pill" cx="550" cy="230" r="18"/>
+  <text class="var-name" x="550" y="235" text-anchor="middle">X₂</text>
+  <circle class="input-pill" cx="550" cy="282" r="18"/>
+  <text class="var-name" x="550" y="287" text-anchor="middle">X₃</text>
+
+  <!-- Neurons -->
+  <circle class="neuron-pill" cx="780" cy="178" r="22"/>
+  <text class="neuron-text" x="780" y="183" text-anchor="middle">Z₁</text>
+  <circle class="neuron-pill" cx="780" cy="230" r="22"/>
+  <text class="neuron-text" x="780" y="235" text-anchor="middle">Z₂</text>
+  <circle class="neuron-pill" cx="780" cy="282" r="22"/>
+  <text class="neuron-text" x="780" y="287" text-anchor="middle">Z₃</text>
+
+  <!-- Faint connections (all 9 minus X₁'s) -->
+  <line class="conn-faint" x1="568" y1="230" x2="758" y2="178"/>
+  <line class="conn-faint" x1="568" y1="230" x2="758" y2="230"/>
+  <line class="conn-faint" x1="568" y1="230" x2="758" y2="282"/>
+  <line class="conn-faint" x1="568" y1="282" x2="758" y2="178"/>
+  <line class="conn-faint" x1="568" y1="282" x2="758" y2="230"/>
+  <line class="conn-faint" x1="568" y1="282" x2="758" y2="282"/>
+
+  <!-- Highlighted: X₁ → Z₁, Z₂, Z₃ -->
+  <line class="conn-active" x1="568" y1="178" x2="758" y2="178"/>
+  <line class="conn-active" x1="568" y1="178" x2="758" y2="230"/>
+  <line class="conn-active" x1="568" y1="178" x2="758" y2="282"/>
+  <text class="weight-label" x="665" y="170" text-anchor="middle">W₁₁</text>
+  <text class="weight-label" x="640" y="218" text-anchor="middle">W₂₁</text>
+  <text class="weight-label" x="640" y="270" text-anchor="middle">W₃₁</text>
+
+  <!-- Formula -->
+  <rect class="formula-pill" x="508" y="320" width="384" height="28" rx="6"/>
+  <text class="formula-text" x="520" y="338">∂L/∂X₁ = ∂L/∂Z₁·W₁₁ + ∂L/∂Z₂·W₂₁ + ∂L/∂Z₃·W₃₁</text>
+
+  <!-- ============================ Bottom band: matrix form ============================ -->
+  <rect class="insight-band" x="48" y="376" width="864" height="64" rx="12"/>
+  <text class="insight-head" x="68" y="402">Matrix form (all inputs at once):</text>
+  <text class="formula-text" x="68" y="424">∂L/∂X = ∂L/∂Z @ W            shape (1, m) · (m, n) = (1, n)            one matrix product, every input gradient</text>
+</svg>

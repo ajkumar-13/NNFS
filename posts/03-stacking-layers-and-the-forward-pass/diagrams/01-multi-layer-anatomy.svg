@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">A two-layer network: forward pass with shapes labelled</title>
+  <desc id="d">A two-layer dense network drawn from left to right. The input X enters as a 4-feature vector and is fed into the first layer, which has 3 neurons with weight matrix W1 of shape 3 by 4 and bias b1 of shape 3. The first layer produces an intermediate output F1 of shape 3, which becomes the input to the second layer. The second layer has 3 neurons with weight matrix W2 of shape 3 by 3 and bias b2 of shape 3, producing the final output F2 of shape 3. Shape badges accompany every array; the per-layer formula F = dot(input, W transpose) + b is shown under each layer.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .input-node{fill:var(--ce-primary);fill-opacity:0.16;stroke:var(--ce-primary);stroke-width:1.5;}
+    .input-label{font-weight:600;font-size:13px;fill:var(--ce-ink);}
+    .n1{fill:var(--ce-accent);fill-opacity:0.18;stroke:var(--ce-accent);stroke-width:1.8;}
+    .n2{fill:var(--ce-success);fill-opacity:0.18;stroke:var(--ce-success);stroke-width:1.8;}
+    .neuron-label{font-weight:600;font-size:12px;fill:var(--ce-ink);}
+    .conn1{stroke:var(--ce-accent);stroke-width:1.2;fill:none;opacity:0.6;}
+    .conn2{stroke:var(--ce-success);stroke-width:1.2;fill:none;opacity:0.6;}
+    .layer-card{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;stroke-dasharray:5 3;}
+    .layer-tag{font-weight:700;font-size:12px;fill:var(--ce-ink);text-transform:uppercase;letter-spacing:0.06em;}
+    .layer-formula{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--ce-ink);}
+    .shape-badge{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .shape-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
+    .data-label{font-weight:700;font-size:13px;fill:var(--ce-ink);}
+    .data-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .arr-prim{fill:var(--ce-primary);}
+    .arr-acc{fill:var(--ce-accent);}
+    .arr-ok{fill:var(--ce-success);}
+  ]]></style>
+
+  <defs>
+    <marker id="aP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arr-prim"/>
+    </marker>
+    <marker id="aA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arr-acc"/>
+    </marker>
+    <marker id="aO" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arr-ok"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="48">Forward pass through two stacked layers</text>
+  <text class="subtitle" x="48" y="70">The same operation runs twice. Layer 1's output is layer 2's input.</text>
+
+  <!-- ============= Input ============= -->
+  <text class="data-label" x="90" y="120" text-anchor="middle">Input  X</text>
+  <text class="data-sub"   x="90" y="138" text-anchor="middle">4 features</text>
+  <g>
+    <circle class="input-node" cx="90" cy="180" r="18"/>
+    <text class="input-label" x="90" y="184" text-anchor="middle">X₁</text>
+    <circle class="input-node" cx="90" cy="240" r="18"/>
+    <text class="input-label" x="90" y="244" text-anchor="middle">X₂</text>
+    <circle class="input-node" cx="90" cy="300" r="18"/>
+    <text class="input-label" x="90" y="304" text-anchor="middle">X₃</text>
+    <circle class="input-node" cx="90" cy="360" r="18"/>
+    <text class="input-label" x="90" y="364" text-anchor="middle">X₄</text>
+  </g>
+  <rect class="shape-badge" x="58" y="394" width="64" height="22" rx="6"/>
+  <text class="shape-text"  x="90" y="410" text-anchor="middle">(N, 4)</text>
+
+  <!-- ============= Layer 1 box ============= -->
+  <rect class="layer-card" x="170" y="100" width="280" height="360" rx="14"/>
+  <text class="layer-tag" x="310" y="124" text-anchor="middle">Layer 1</text>
+
+  <!-- L1 neurons -->
+  <circle class="n1" cx="310" cy="200" r="28"/>
+  <text class="neuron-label" x="310" y="195" text-anchor="middle">Σ + b₁</text>
+  <text class="data-sub" x="310" y="212" text-anchor="middle">n1.1</text>
+
+  <circle class="n1" cx="310" cy="280" r="28"/>
+  <text class="neuron-label" x="310" y="275" text-anchor="middle">Σ + b₁</text>
+  <text class="data-sub" x="310" y="292" text-anchor="middle">n1.2</text>
+
+  <circle class="n1" cx="310" cy="360" r="28"/>
+  <text class="neuron-label" x="310" y="355" text-anchor="middle">Σ + b₁</text>
+  <text class="data-sub" x="310" y="372" text-anchor="middle">n1.3</text>
+
+  <!-- inputs → L1 (fan-in) -->
+  <line class="conn1" x1="108" y1="180" x2="282" y2="195"/>
+  <line class="conn1" x1="108" y1="240" x2="282" y2="200"/>
+  <line class="conn1" x1="108" y1="300" x2="282" y2="205"/>
+  <line class="conn1" x1="108" y1="360" x2="282" y2="210"/>
+  <line class="conn1" x1="108" y1="180" x2="282" y2="275"/>
+  <line class="conn1" x1="108" y1="240" x2="282" y2="280"/>
+  <line class="conn1" x1="108" y1="300" x2="282" y2="285"/>
+  <line class="conn1" x1="108" y1="360" x2="282" y2="290"/>
+  <line class="conn1" x1="108" y1="180" x2="282" y2="355"/>
+  <line class="conn1" x1="108" y1="240" x2="282" y2="360"/>
+  <line class="conn1" x1="108" y1="300" x2="282" y2="365"/>
+  <line class="conn1" x1="108" y1="360" x2="282" y2="370"/>
+
+  <text class="layer-formula" x="310" y="428" text-anchor="middle">F₁ = X · W₁ᵀ + b₁</text>
+  <text class="data-sub"      x="310" y="446" text-anchor="middle">W₁: (3, 4)  ·  b₁: (3,)</text>
+
+  <!-- ============= F1 between the layers ============= -->
+  <text class="data-label" x="510" y="120" text-anchor="middle">F₁</text>
+  <text class="data-sub"   x="510" y="138" text-anchor="middle">3 values per sample</text>
+  <g>
+    <line stroke="var(--ce-accent)" stroke-width="2" x1="340" y1="200" x2="486" y2="220" marker-end="url(#aA)"/>
+    <line stroke="var(--ce-accent)" stroke-width="2" x1="340" y1="280" x2="486" y2="280" marker-end="url(#aA)"/>
+    <line stroke="var(--ce-accent)" stroke-width="2" x1="340" y1="360" x2="486" y2="340" marker-end="url(#aA)"/>
+  </g>
+  <g>
+    <rect class="input-node" x="492" y="208" width="32" height="24" rx="6" style="fill:var(--ce-accent);fill-opacity:0.18;stroke:var(--ce-accent);"/>
+    <text class="input-label" x="508" y="225" text-anchor="middle">F₁.1</text>
+    <rect class="input-node" x="492" y="268" width="32" height="24" rx="6" style="fill:var(--ce-accent);fill-opacity:0.18;stroke:var(--ce-accent);"/>
+    <text class="input-label" x="508" y="285" text-anchor="middle">F₁.2</text>
+    <rect class="input-node" x="492" y="328" width="32" height="24" rx="6" style="fill:var(--ce-accent);fill-opacity:0.18;stroke:var(--ce-accent);"/>
+    <text class="input-label" x="508" y="345" text-anchor="middle">F₁.3</text>
+  </g>
+  <rect class="shape-badge" x="476" y="394" width="64" height="22" rx="6"/>
+  <text class="shape-text"  x="508" y="410" text-anchor="middle">(N, 3)</text>
+
+  <!-- ============= Layer 2 box ============= -->
+  <rect class="layer-card" x="560" y="100" width="280" height="360" rx="14"/>
+  <text class="layer-tag" x="700" y="124" text-anchor="middle">Layer 2</text>
+
+  <circle class="n2" cx="700" cy="200" r="28"/>
+  <text class="neuron-label" x="700" y="195" text-anchor="middle">Σ + b₂</text>
+  <text class="data-sub" x="700" y="212" text-anchor="middle">n2.1</text>
+
+  <circle class="n2" cx="700" cy="280" r="28"/>
+  <text class="neuron-label" x="700" y="275" text-anchor="middle">Σ + b₂</text>
+  <text class="data-sub" x="700" y="292" text-anchor="middle">n2.2</text>
+
+  <circle class="n2" cx="700" cy="360" r="28"/>
+  <text class="neuron-label" x="700" y="355" text-anchor="middle">Σ + b₂</text>
+  <text class="data-sub" x="700" y="372" text-anchor="middle">n2.3</text>
+
+  <!-- F1 → L2 (fan-in) -->
+  <line class="conn2" x1="528" y1="220" x2="672" y2="195"/>
+  <line class="conn2" x1="528" y1="280" x2="672" y2="200"/>
+  <line class="conn2" x1="528" y1="340" x2="672" y2="205"/>
+  <line class="conn2" x1="528" y1="220" x2="672" y2="275"/>
+  <line class="conn2" x1="528" y1="280" x2="672" y2="280"/>
+  <line class="conn2" x1="528" y1="340" x2="672" y2="285"/>
+  <line class="conn2" x1="528" y1="220" x2="672" y2="355"/>
+  <line class="conn2" x1="528" y1="280" x2="672" y2="360"/>
+  <line class="conn2" x1="528" y1="340" x2="672" y2="365"/>
+
+  <text class="layer-formula" x="700" y="428" text-anchor="middle">F₂ = F₁ · W₂ᵀ + b₂</text>
+  <text class="data-sub"      x="700" y="446" text-anchor="middle">W₂: (3, 3)  ·  b₂: (3,)</text>
+
+  <!-- ============= F2 output ============= -->
+  <text class="data-label" x="900" y="120" text-anchor="middle">F₂</text>
+  <text class="data-sub"   x="900" y="138" text-anchor="middle">final output</text>
+  <g>
+    <line stroke="var(--ce-success)" stroke-width="2" x1="730" y1="200" x2="876" y2="220" marker-end="url(#aO)"/>
+    <line stroke="var(--ce-success)" stroke-width="2" x1="730" y1="280" x2="876" y2="280" marker-end="url(#aO)"/>
+    <line stroke="var(--ce-success)" stroke-width="2" x1="730" y1="360" x2="876" y2="340" marker-end="url(#aO)"/>
+
+    <rect x="882" y="208" width="32" height="24" rx="6" style="fill:var(--ce-success);fill-opacity:0.18;stroke:var(--ce-success);stroke-width:1.5;"/>
+    <text class="input-label" x="898" y="225" text-anchor="middle">ŷ₁</text>
+    <rect x="882" y="268" width="32" height="24" rx="6" style="fill:var(--ce-success);fill-opacity:0.18;stroke:var(--ce-success);stroke-width:1.5;"/>
+    <text class="input-label" x="898" y="285" text-anchor="middle">ŷ₂</text>
+    <rect x="882" y="328" width="32" height="24" rx="6" style="fill:var(--ce-success);fill-opacity:0.18;stroke:var(--ce-success);stroke-width:1.5;"/>
+    <text class="input-label" x="898" y="345" text-anchor="middle">ŷ₃</text>
+  </g>
+  <rect class="shape-badge" x="866" y="394" width="64" height="22" rx="6"/>
+  <text class="shape-text"  x="898" y="410" text-anchor="middle">(N, 3)</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="498">Each layer is one matrix multiply plus a bias. Depth is repetition, not new mathematics.</text>
+  <text class="footer" x="48"  y="514">Without an activation function between layers, the entire stack collapses to one linear map. See Part 06.</text>
+</svg>

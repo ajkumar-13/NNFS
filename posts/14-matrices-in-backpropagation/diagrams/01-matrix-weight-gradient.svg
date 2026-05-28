@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" role="img" aria-labelledby="t d">
+  <title id="t">The weight-gradient matrix as an outer product of upstream gradient and input</title>
+  <desc id="d">A schematic of the matrix-form weight gradient. On the left, the upstream gradient column ∂L/∂Z transposed has shape (3, 1) with values 43.2, 43.2, 43.2. In the middle, a dot symbol. On the right, the input row X has shape (1, 4) with values 1, 2, 3, 4. The result of the matrix product on the right side of the diagram is a (3, 4) matrix whose entry at row k, column j is 43.2 times X_j. The shape arithmetic at the bottom shows (3, 1) dot (1, 4) equals (3, 4), and a footer note states the result has the exact same shape as the stored weights matrix.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .label-head{font-weight:700;font-size:14px;fill:var(--ce-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .label-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .upstream-cell{fill:var(--ce-alert);fill-opacity:0.20;stroke:var(--ce-alert);stroke-width:1.2;}
+    .input-cell{fill:var(--ce-primary);fill-opacity:0.18;stroke:var(--ce-primary);stroke-width:1.2;}
+    .out-cell{fill:var(--ce-success);fill-opacity:0.20;stroke:var(--ce-success);stroke-width:1.2;}
+    .cell-num{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:600;fill:var(--ce-ink);}
+    .op{font-weight:700;font-size:22px;fill:var(--ce-ink);}
+    .shape-pill{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .shape-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
+    .formula-band{fill:var(--ce-primary);fill-opacity:0.08;stroke:var(--ce-primary);stroke-width:1.5;}
+    .formula-head{font-weight:700;font-size:13px;fill:var(--ce-primary);}
+    .formula-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;fill:var(--ce-ink);font-weight:600;}
+    .insight-text{font-size:11px;fill:var(--ce-ink-muted);}
+    .col-tag{font-size:10px;fill:var(--ce-ink-muted);}
+    .row-tag{font-size:10px;fill:var(--ce-ink-muted);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="480"/>
+
+  <text class="title"    x="48" y="48">∂L/∂W = (∂L/∂Z)ᵀ · X</text>
+  <text class="subtitle" x="48" y="70">One matrix product produces every weight gradient, in the same shape as the stored weights.</text>
+
+  <!-- ============================ Upstream column ============================ -->
+  <text class="label-head" x="120" y="112" text-anchor="middle">(∂L/∂Z)ᵀ</text>
+  <text class="label-sub"  x="120" y="128" text-anchor="middle">upstream column</text>
+
+  <g transform="translate(80, 144)">
+    <rect class="upstream-cell" x="0" y="0"  width="80" height="36"/>
+    <rect class="upstream-cell" x="0" y="36" width="80" height="36"/>
+    <rect class="upstream-cell" x="0" y="72" width="80" height="36"/>
+    <text class="cell-num" x="40" y="22" text-anchor="middle">43.2</text>
+    <text class="cell-num" x="40" y="58" text-anchor="middle">43.2</text>
+    <text class="cell-num" x="40" y="94" text-anchor="middle">43.2</text>
+  </g>
+  <text class="row-tag" x="72" y="167" text-anchor="end">k=1</text>
+  <text class="row-tag" x="72" y="203" text-anchor="end">k=2</text>
+  <text class="row-tag" x="72" y="239" text-anchor="end">k=3</text>
+  <rect class="shape-pill" x="88" y="262" width="64" height="22" rx="6"/>
+  <text class="shape-text" x="120" y="278" text-anchor="middle">(3, 1)</text>
+
+  <!-- ============================ Dot operator ============================ -->
+  <text class="op" x="216" y="198" text-anchor="middle">·</text>
+
+  <!-- ============================ Input row ============================ -->
+  <text class="label-head" x="360" y="112" text-anchor="middle">X</text>
+  <text class="label-sub"  x="360" y="128" text-anchor="middle">input row</text>
+
+  <g transform="translate(248, 162)">
+    <rect class="input-cell" x="0"  y="0" width="56" height="36"/>
+    <rect class="input-cell" x="56" y="0" width="56" height="36"/>
+    <rect class="input-cell" x="112" y="0" width="56" height="36"/>
+    <rect class="input-cell" x="168" y="0" width="56" height="36"/>
+    <text class="cell-num" x="28"  y="22" text-anchor="middle">1</text>
+    <text class="cell-num" x="84"  y="22" text-anchor="middle">2</text>
+    <text class="cell-num" x="140" y="22" text-anchor="middle">3</text>
+    <text class="cell-num" x="196" y="22" text-anchor="middle">4</text>
+  </g>
+  <text class="col-tag" x="276" y="158" text-anchor="middle">j=1</text>
+  <text class="col-tag" x="332" y="158" text-anchor="middle">j=2</text>
+  <text class="col-tag" x="388" y="158" text-anchor="middle">j=3</text>
+  <text class="col-tag" x="444" y="158" text-anchor="middle">j=4</text>
+  <rect class="shape-pill" x="328" y="262" width="64" height="22" rx="6"/>
+  <text class="shape-text" x="360" y="278" text-anchor="middle">(1, 4)</text>
+
+  <!-- ============================ Equals ============================ -->
+  <text class="op" x="500" y="198" text-anchor="middle">=</text>
+
+  <!-- ============================ Result matrix (3 x 4) ============================ -->
+  <text class="label-head" x="700" y="112" text-anchor="middle">∂L/∂W</text>
+  <text class="label-sub"  x="700" y="128" text-anchor="middle">weight gradients</text>
+
+  <g transform="translate(536, 144)">
+    <rect class="out-cell" x="0"   y="0"  width="80" height="36"/>
+    <rect class="out-cell" x="80"  y="0"  width="80" height="36"/>
+    <rect class="out-cell" x="160" y="0"  width="80" height="36"/>
+    <rect class="out-cell" x="240" y="0"  width="80" height="36"/>
+    <rect class="out-cell" x="0"   y="36" width="80" height="36"/>
+    <rect class="out-cell" x="80"  y="36" width="80" height="36"/>
+    <rect class="out-cell" x="160" y="36" width="80" height="36"/>
+    <rect class="out-cell" x="240" y="36" width="80" height="36"/>
+    <rect class="out-cell" x="0"   y="72" width="80" height="36"/>
+    <rect class="out-cell" x="80"  y="72" width="80" height="36"/>
+    <rect class="out-cell" x="160" y="72" width="80" height="36"/>
+    <rect class="out-cell" x="240" y="72" width="80" height="36"/>
+
+    <text class="cell-num" x="40"  y="22" text-anchor="middle">43.2</text>
+    <text class="cell-num" x="120" y="22" text-anchor="middle">86.4</text>
+    <text class="cell-num" x="200" y="22" text-anchor="middle">129.6</text>
+    <text class="cell-num" x="280" y="22" text-anchor="middle">172.8</text>
+    <text class="cell-num" x="40"  y="58" text-anchor="middle">43.2</text>
+    <text class="cell-num" x="120" y="58" text-anchor="middle">86.4</text>
+    <text class="cell-num" x="200" y="58" text-anchor="middle">129.6</text>
+    <text class="cell-num" x="280" y="58" text-anchor="middle">172.8</text>
+    <text class="cell-num" x="40"  y="94" text-anchor="middle">43.2</text>
+    <text class="cell-num" x="120" y="94" text-anchor="middle">86.4</text>
+    <text class="cell-num" x="200" y="94" text-anchor="middle">129.6</text>
+    <text class="cell-num" x="280" y="94" text-anchor="middle">172.8</text>
+  </g>
+  <text class="row-tag" x="528" y="167" text-anchor="end">k=1</text>
+  <text class="row-tag" x="528" y="203" text-anchor="end">k=2</text>
+  <text class="row-tag" x="528" y="239" text-anchor="end">k=3</text>
+  <text class="col-tag" x="576" y="138" text-anchor="middle">j=1</text>
+  <text class="col-tag" x="656" y="138" text-anchor="middle">j=2</text>
+  <text class="col-tag" x="736" y="138" text-anchor="middle">j=3</text>
+  <text class="col-tag" x="816" y="138" text-anchor="middle">j=4</text>
+  <rect class="shape-pill" x="664" y="262" width="64" height="22" rx="6"/>
+  <text class="shape-text" x="696" y="278" text-anchor="middle">(3, 4)</text>
+
+  <!-- ============================ Shape arithmetic + formula band ============================ -->
+  <rect class="formula-band" x="48" y="316" width="864" height="100" rx="12"/>
+  <text class="formula-head" x="68" y="342">Shape arithmetic and code</text>
+  <text class="formula-text" x="68" y="370">  (3, 1) · (1, 4) = (3, 4)                       dL_dW = dL_dZ.T @ X</text>
+  <text class="insight-text" x="68" y="392">The result has the same shape as the stored weights matrix. NumPy applies the update with weights -= lr * dL_dW.</text>
+  <text class="insight-text" x="68" y="408">For batched inputs the shapes become (m, N) · (N, n) = (m, n); the matrix product sums over the batch axis automatically.</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="456">The bias gradient is dL_dB = np.sum(dL_dZ, axis=0). Two lines replace per-weight loops of any size.</text>
+</svg>

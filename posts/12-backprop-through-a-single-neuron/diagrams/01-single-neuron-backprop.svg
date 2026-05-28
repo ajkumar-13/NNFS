@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">Backpropagation through a single neuron with three inputs</title>
+  <desc id="d">A two-row diagram for backprop through one neuron. The top row (forward, primary-blue arrows) shows the three inputs x₀, x₁, x₂ being multiplied by weights w₀, w₁, w₂, summed with bias b to give z = 6, then passed through ReLU to give ŷ = 6, then squared to give the loss L = 36. The bottom row (backward, alert-red arrows) shows the chain rule walking right to left: ∂L/∂ŷ = 12 enters the ReLU node, becomes ∂L/∂z = 12 after multiplying by ReLU's derivative of 1, becomes the upstream gradient 12 after the sum's derivative of 1, then fans out into per-weight gradients by multiplying by each input: 12, −24, 36, and the bias gradient 12. A footer band summarises that the upstream gradient is shared across all parameters; only the last per-weight factor differs.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .row-label{font-weight:700;font-size:12px;fill:var(--ce-ink-muted);text-transform:uppercase;letter-spacing:0.06em;}
+    .input-pill{fill:var(--ce-primary);fill-opacity:0.18;stroke:var(--ce-primary);stroke-width:1.5;}
+    .var-name{font-weight:700;font-size:13px;fill:var(--ce-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .op-box{fill:var(--ce-surface);stroke:var(--ce-ink);stroke-width:1.5;stroke-dasharray:5 3;}
+    .op-name{font-weight:700;font-size:13px;fill:var(--ce-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .op-sub{font-size:10px;fill:var(--ce-ink-muted);}
+    .val-pill{fill:var(--ce-accent);fill-opacity:0.18;stroke:var(--ce-accent);stroke-width:1.5;}
+    .val-pill-ok{fill:var(--ce-success);fill-opacity:0.20;stroke:var(--ce-success);stroke-width:1.5;}
+    .fwd-arrow{stroke:var(--ce-primary);stroke-width:1.8;fill:none;}
+    .fwd-head{fill:var(--ce-primary);}
+    .bwd-arrow{stroke:var(--ce-alert);stroke-width:1.8;fill:none;}
+    .bwd-head{fill:var(--ce-alert);}
+    .grad-label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:700;fill:var(--ce-alert);}
+    .grad-val{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;fill:var(--ce-alert);}
+    .insight-band{fill:var(--ce-primary);fill-opacity:0.08;stroke:var(--ce-primary);stroke-width:1.5;}
+    .insight-head{font-weight:700;font-size:13px;fill:var(--ce-primary);}
+    .insight-body{font-size:11px;fill:var(--ce-ink);}
+    .weight-label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-primary);}
+  ]]></style>
+
+  <defs>
+    <marker id="aFwd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="fwd-head"/>
+    </marker>
+    <marker id="aBwd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="bwd-head"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="48">Backprop through a single neuron</text>
+  <text class="subtitle" x="48" y="70">Forward computes the loss (top); backward multiplies four local derivatives back to each weight (bottom).</text>
+
+  <!-- ============================ FORWARD ROW ============================ -->
+  <text class="row-label" x="48" y="110">forward (values flow left to right)</text>
+
+  <!-- Three inputs stacked vertically on the left -->
+  <circle class="input-pill" cx="80" cy="148" r="22"/>
+  <text class="var-name" x="80" y="153" text-anchor="middle">x₀ = 1</text>
+
+  <circle class="input-pill" cx="80" cy="200" r="22"/>
+  <text class="var-name" x="80" y="205" text-anchor="middle">x₁ = −2</text>
+
+  <circle class="input-pill" cx="80" cy="252" r="22"/>
+  <text class="var-name" x="80" y="257" text-anchor="middle">x₂ = 3</text>
+
+  <!-- Forward arrows to the sum node -->
+  <line class="fwd-arrow" x1="103" y1="148" x2="220" y2="190" marker-end="url(#aFwd)"/>
+  <line class="fwd-arrow" x1="103" y1="200" x2="220" y2="200" marker-end="url(#aFwd)"/>
+  <line class="fwd-arrow" x1="103" y1="252" x2="220" y2="212" marker-end="url(#aFwd)"/>
+
+  <!-- Weight labels along the arrows -->
+  <text class="weight-label" x="150" y="160">w₀ = −3</text>
+  <text class="weight-label" x="150" y="195">w₁ = −1</text>
+  <text class="weight-label" x="150" y="240">w₂ =  2</text>
+
+  <!-- Bias arrow from above -->
+  <line class="fwd-arrow" x1="244" y1="120" x2="244" y2="172" stroke-dasharray="4 3" marker-end="url(#aFwd)" stroke="var(--ce-success)"/>
+  <text class="weight-label" x="262" y="138" style="fill:var(--ce-success);">b = 1</text>
+
+  <!-- Sum node (Σ) -->
+  <rect class="op-box" x="220" y="172" width="64" height="56" rx="10"/>
+  <text class="op-name" x="252" y="196" text-anchor="middle">Σ</text>
+  <text class="op-sub"  x="252" y="216" text-anchor="middle">sum + bias</text>
+
+  <!-- Forward arrow to z -->
+  <line class="fwd-arrow" x1="288" y1="200" x2="324" y2="200" marker-end="url(#aFwd)"/>
+
+  <!-- z value -->
+  <circle class="val-pill" cx="350" cy="200" r="22"/>
+  <text class="var-name" x="350" y="205" text-anchor="middle">z = 6</text>
+
+  <!-- Forward arrow to ReLU -->
+  <line class="fwd-arrow" x1="376" y1="200" x2="412" y2="200" marker-end="url(#aFwd)"/>
+
+  <!-- ReLU box -->
+  <rect class="op-box" x="416" y="172" width="80" height="56" rx="10"/>
+  <text class="op-name" x="456" y="196" text-anchor="middle">ReLU</text>
+  <text class="op-sub"  x="456" y="216" text-anchor="middle">max(0, ·)</text>
+
+  <!-- Forward arrow to ŷ -->
+  <line class="fwd-arrow" x1="500" y1="200" x2="536" y2="200" marker-end="url(#aFwd)"/>
+
+  <!-- ŷ value -->
+  <circle class="val-pill" cx="562" cy="200" r="22"/>
+  <text class="var-name" x="562" y="205" text-anchor="middle">ŷ = 6</text>
+
+  <!-- Forward arrow to squared-error box -->
+  <line class="fwd-arrow" x1="588" y1="200" x2="624" y2="200" marker-end="url(#aFwd)"/>
+
+  <!-- Squared error -->
+  <rect class="op-box" x="628" y="172" width="120" height="56" rx="10"/>
+  <text class="op-name" x="688" y="196" text-anchor="middle">(·)²</text>
+  <text class="op-sub"  x="688" y="216" text-anchor="middle">squared error</text>
+
+  <!-- Forward arrow to L -->
+  <line class="fwd-arrow" x1="752" y1="200" x2="788" y2="200" marker-end="url(#aFwd)"/>
+
+  <!-- L value -->
+  <circle class="val-pill-ok" cx="820" cy="200" r="28"/>
+  <text class="var-name" x="820" y="205" text-anchor="middle">L = 36</text>
+
+  <!-- ============================ BACKWARD ROW ============================ -->
+  <text class="row-label" x="48" y="312">backward (gradients flow right to left)</text>
+
+  <!-- Backward from L through (·)² → ŷ -->
+  <line class="bwd-arrow" x1="788" y1="346" x2="752" y2="346" marker-end="url(#aBwd)"/>
+  <text class="grad-label" x="770" y="336" text-anchor="middle">×2ŷ</text>
+  <line class="bwd-arrow" x1="624" y1="346" x2="588" y2="346" marker-end="url(#aBwd)"/>
+
+  <!-- ŷ → ReLU -->
+  <text class="grad-val" x="562" y="332" text-anchor="middle">∂L/∂ŷ = 12</text>
+  <line class="bwd-arrow" x1="536" y1="346" x2="500" y2="346" marker-end="url(#aBwd)"/>
+  <text class="grad-label" x="518" y="336" text-anchor="middle">×1</text>
+
+  <!-- ReLU → z -->
+  <line class="bwd-arrow" x1="412" y1="346" x2="376" y2="346" marker-end="url(#aBwd)"/>
+  <text class="grad-val" x="350" y="332" text-anchor="middle">∂L/∂z = 12</text>
+  <line class="bwd-arrow" x1="324" y1="346" x2="288" y2="346" marker-end="url(#aBwd)"/>
+
+  <!-- Sum → splits into 4 per-weight gradients (fan-out) -->
+  <text class="grad-label" x="252" y="262" text-anchor="middle">upstream = 12</text>
+
+  <line class="bwd-arrow" x1="220" y1="346" x2="120" y2="346" marker-end="url(#aBwd)"/>
+  <text class="grad-label" x="170" y="336" text-anchor="middle">× x_i</text>
+
+  <!-- Per-weight gradient cards -->
+  <rect class="insight-band" x="48" y="370" width="864" height="76" rx="12"/>
+  <text class="insight-head" x="68" y="396">Per-parameter gradients (the same upstream 12, scaled by the connected input):</text>
+  <text class="grad-val" x="68"  y="426">∂L/∂w₀ = 12 · 1 =</text>
+  <text class="grad-val" x="220" y="426" style="fill:var(--ce-alert);">12</text>
+
+  <text class="grad-val" x="270" y="426">∂L/∂w₁ = 12 · (−2) =</text>
+  <text class="grad-val" x="450" y="426" style="fill:var(--ce-alert);">−24</text>
+
+  <text class="grad-val" x="510" y="426">∂L/∂w₂ = 12 · 3 =</text>
+  <text class="grad-val" x="660" y="426" style="fill:var(--ce-alert);">36</text>
+
+  <text class="grad-val" x="720" y="426">∂L/∂b = 12 · 1 =</text>
+  <text class="grad-val" x="858" y="426" style="fill:var(--ce-alert);">12</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="496">The upstream gradient (12) is computed once and shared. Every weight's gradient is upstream × that weight's input.</text>
+  <text class="footer" x="48"  y="512">The bias's "input" is 1, so its gradient is just the upstream value.</text>
+</svg>

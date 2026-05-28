@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">The fifteen-line full forward + backward script</title>
+  <desc id="d">A code-and-shapes layout for the complete training-step script on the spiral dataset. The left column shows the script in three blocks (network instantiation, forward pass, backward pass). The right column shows the four gradient arrays produced (dense1.dweights shape 2 by 3, dense1.dbiases shape 1 by 3, dense2.dweights shape 3 by 3, dense2.dbiases shape 1 by 3) with the total parameter count of 21. A footer band notes that the script is one step; Part 22 wraps it in a loop with an optimiser.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--ce-ink);}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .code-panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .block-tag-net{font-weight:700;font-size:11px;fill:var(--ce-ink-muted);text-transform:uppercase;letter-spacing:0.06em;}
+    .block-tag-fwd{font-weight:700;font-size:11px;fill:var(--ce-primary);text-transform:uppercase;letter-spacing:0.06em;}
+    .block-tag-bwd{font-weight:700;font-size:11px;fill:var(--ce-alert);text-transform:uppercase;letter-spacing:0.06em;}
+    .comment{fill:var(--ce-ink-muted);font-style:italic;}
+    .grad-card{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .grad-pill-w1{fill:var(--ce-primary);}
+    .grad-pill-b1{fill:var(--ce-accent);}
+    .grad-pill-w2{fill:var(--ce-success);}
+    .grad-pill-b2{fill:var(--ce-warn);}
+    .grad-name{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:700;fill:var(--ce-ink);}
+    .grad-shape{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--ce-ink-muted);}
+    .grad-count{font-size:11px;fill:var(--ce-ink-muted);}
+    .total-pill{fill:var(--ce-primary);fill-opacity:0.10;stroke:var(--ce-primary);stroke-width:1.5;}
+    .total-text{font-weight:700;font-size:14px;fill:var(--ce-ink);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="48">The full forward + backward, in fifteen lines</text>
+  <text class="subtitle" x="48" y="70">One step of training. Add an optimiser update (Part 22) and a loop, and the spiral classifier converges.</text>
+
+  <!-- ============================ Code panel ============================ -->
+  <rect class="code-panel" x="48" y="96" width="560" height="396" rx="12"/>
+
+  <text class="block-tag-net" x="68" y="124">1 — Network</text>
+  <text class="mono" x="68" y="146">dense1          = Layer_Dense(2, 3)</text>
+  <text class="mono" x="68" y="162">activation1     = Activation_ReLU()</text>
+  <text class="mono" x="68" y="178">dense2          = Layer_Dense(3, 3)</text>
+  <text class="mono" x="68" y="194">loss_activation = Activation_Softmax_Loss_CategoricalCrossentropy()</text>
+
+  <line x1="68" y1="216" x2="588" y2="216" stroke="var(--ce-border)" stroke-width="1"/>
+
+  <text class="block-tag-fwd" x="68" y="240">2 — Forward pass</text>
+  <text class="mono" x="68" y="262">dense1.forward(X)</text>
+  <text class="mono" x="68" y="278">activation1.forward(dense1.output)</text>
+  <text class="mono" x="68" y="294">dense2.forward(activation1.output)</text>
+  <text class="mono" x="68" y="310">loss = loss_activation.forward(dense2.output, y)</text>
+
+  <line x1="68" y1="332" x2="588" y2="332" stroke="var(--ce-border)" stroke-width="1"/>
+
+  <text class="block-tag-bwd" x="68" y="356">3 — Backward pass</text>
+  <text class="mono" x="68" y="378">loss_activation.backward(loss_activation.output, y)</text>
+  <text class="mono" x="68" y="394">dense2.backward(loss_activation.dinputs)</text>
+  <text class="mono" x="68" y="410">activation1.backward(dense2.dinputs)</text>
+  <text class="mono" x="68" y="426">dense1.backward(activation1.dinputs)</text>
+
+  <text class="comment mono" x="68" y="458"># Gradients are ready:</text>
+  <text class="comment mono" x="68" y="474">#   dense1.dweights, dense1.dbiases,</text>
+  <text class="comment mono" x="68" y="488">#   dense2.dweights, dense2.dbiases</text>
+
+  <!-- ============================ Gradient cards ============================ -->
+  <text class="block-tag-net" x="624" y="124">Gradients produced</text>
+
+  <rect class="grad-card" x="624" y="140" width="288" height="64" rx="10"/>
+  <rect class="grad-pill-w1" x="624" y="140" width="6" height="64" rx="3"/>
+  <text class="grad-name"  x="644" y="162">dense1.dweights</text>
+  <text class="grad-shape" x="644" y="180">shape (2, 3)</text>
+  <text class="grad-count" x="644" y="196">6 numbers</text>
+
+  <rect class="grad-card" x="624" y="216" width="288" height="64" rx="10"/>
+  <rect class="grad-pill-b1" x="624" y="216" width="6" height="64" rx="3"/>
+  <text class="grad-name"  x="644" y="238">dense1.dbiases</text>
+  <text class="grad-shape" x="644" y="256">shape (1, 3)</text>
+  <text class="grad-count" x="644" y="272">3 numbers</text>
+
+  <rect class="grad-card" x="624" y="292" width="288" height="64" rx="10"/>
+  <rect class="grad-pill-w2" x="624" y="292" width="6" height="64" rx="3"/>
+  <text class="grad-name"  x="644" y="314">dense2.dweights</text>
+  <text class="grad-shape" x="644" y="332">shape (3, 3)</text>
+  <text class="grad-count" x="644" y="348">9 numbers</text>
+
+  <rect class="grad-card" x="624" y="368" width="288" height="64" rx="10"/>
+  <rect class="grad-pill-b2" x="624" y="368" width="6" height="64" rx="3"/>
+  <text class="grad-name"  x="644" y="390">dense2.dbiases</text>
+  <text class="grad-shape" x="644" y="408">shape (1, 3)</text>
+  <text class="grad-count" x="644" y="424">3 numbers</text>
+
+  <!-- Total -->
+  <rect class="total-pill" x="624" y="444" width="288" height="44" rx="10"/>
+  <text class="total-text" x="768" y="472" text-anchor="middle">Total: 21 gradient numbers, same as parameters.</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="524">Sanity check: every dgrad array has the same shape as its parameter. Mismatch = bug.</text>
+</svg>

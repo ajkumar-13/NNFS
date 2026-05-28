@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" role="img" aria-labelledby="t d">
+  <title id="t">Shape audit through the complete forward pass</title>
+  <desc id="d">A horizontal shape-tracking diagram for a batch of 300 spiral samples through the four-stage network. The batch dimension 300 is preserved at every step. The input X has shape 300 by 2; dense1 changes the feature dim to 3 producing 300 by 3; activation1 leaves the shape at 300 by 3; dense2 leaves it at 300 by 3; activation2 also leaves it at 300 by 3. Two key annotations: the batch dimension never changes (vertical separator), and activations never change the shape (only dense layers do).</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .shape-card{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .shape-tag{font-weight:700;font-size:11px;fill:var(--ce-ink-muted);text-transform:uppercase;letter-spacing:0.06em;}
+    .shape-big{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:18px;font-weight:700;fill:var(--ce-ink);}
+    .shape-desc{font-size:11px;fill:var(--ce-ink-muted);}
+    .dim-batch{font-size:11px;font-weight:700;fill:var(--ce-primary);}
+    .dim-feat{font-size:11px;font-weight:700;fill:var(--ce-accent);}
+    .op-arrow{stroke:var(--ce-ink-muted);stroke-width:1.5;fill:none;}
+    .op-arrow-head{fill:var(--ce-ink-muted);}
+    .op-label{font-size:11px;fill:var(--ce-ink);font-weight:600;}
+    .op-sub{font-size:10px;fill:var(--ce-ink-muted);}
+    .insight-band{fill:var(--ce-primary);fill-opacity:0.08;stroke:var(--ce-primary);stroke-width:1.5;}
+    .insight-head{font-weight:700;font-size:13px;fill:var(--ce-primary);}
+    .insight-body{font-size:11px;fill:var(--ce-ink);}
+  ]]></style>
+
+  <defs>
+    <marker id="aM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="op-arrow-head"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="420"/>
+
+  <text class="title"    x="48" y="48">Shape audit through the pipeline</text>
+  <text class="subtitle" x="48" y="70">Batch dim never changes. Feature dim only changes at dense layers.</text>
+
+  <!-- ======= Step 0: X ======= -->
+  <rect class="shape-card" x="48" y="120" width="120" height="100" rx="10"/>
+  <text class="shape-tag"  x="108" y="142" text-anchor="middle">step 0 · X</text>
+  <text class="shape-big"  x="108" y="178" text-anchor="middle">(300, 2)</text>
+  <text class="shape-desc" x="108" y="202" text-anchor="middle">input data</text>
+
+  <!-- arrow w/ op label -->
+  <line class="op-arrow" x1="172" y1="170" x2="220" y2="170" marker-end="url(#aM)"/>
+  <text class="op-label" x="196" y="158" text-anchor="middle">dense1</text>
+  <text class="op-sub"   x="196" y="188" text-anchor="middle">linear</text>
+
+  <!-- ======= Step 1 ======= -->
+  <rect class="shape-card" x="224" y="120" width="120" height="100" rx="10"/>
+  <text class="shape-tag"  x="284" y="142" text-anchor="middle">step 1</text>
+  <text class="shape-big"  x="284" y="178" text-anchor="middle">(300, 3)</text>
+  <text class="shape-desc" x="284" y="202" text-anchor="middle">linear out</text>
+
+  <line class="op-arrow" x1="348" y1="170" x2="396" y2="170" marker-end="url(#aM)"/>
+  <text class="op-label" x="372" y="158" text-anchor="middle">act1</text>
+  <text class="op-sub"   x="372" y="188" text-anchor="middle">ReLU</text>
+
+  <!-- ======= Step 2 ======= -->
+  <rect class="shape-card" x="400" y="120" width="120" height="100" rx="10"/>
+  <text class="shape-tag"  x="460" y="142" text-anchor="middle">step 2</text>
+  <text class="shape-big"  x="460" y="178" text-anchor="middle">(300, 3)</text>
+  <text class="shape-desc" x="460" y="202" text-anchor="middle">ReLU'd</text>
+
+  <line class="op-arrow" x1="524" y1="170" x2="572" y2="170" marker-end="url(#aM)"/>
+  <text class="op-label" x="548" y="158" text-anchor="middle">dense2</text>
+  <text class="op-sub"   x="548" y="188" text-anchor="middle">linear</text>
+
+  <!-- ======= Step 3 ======= -->
+  <rect class="shape-card" x="576" y="120" width="120" height="100" rx="10"/>
+  <text class="shape-tag"  x="636" y="142" text-anchor="middle">step 3</text>
+  <text class="shape-big"  x="636" y="178" text-anchor="middle">(300, 3)</text>
+  <text class="shape-desc" x="636" y="202" text-anchor="middle">logits</text>
+
+  <line class="op-arrow" x1="700" y1="170" x2="748" y2="170" marker-end="url(#aM)"/>
+  <text class="op-label" x="724" y="158" text-anchor="middle">act2</text>
+  <text class="op-sub"   x="724" y="188" text-anchor="middle">Softmax</text>
+
+  <!-- ======= Step 4 ======= -->
+  <rect class="shape-card" x="752" y="120" width="160" height="100" rx="10" style="fill:var(--ce-success);fill-opacity:0.12;stroke:var(--ce-success);"/>
+  <text class="shape-tag"  x="832" y="142" text-anchor="middle">step 4 · ŷ</text>
+  <text class="shape-big"  x="832" y="178" text-anchor="middle">(300, 3)</text>
+  <text class="shape-desc" x="832" y="202" text-anchor="middle">probabilities</text>
+
+  <!-- ======= Dimension annotation row ======= -->
+  <text class="dim-batch" x="108" y="252" text-anchor="middle">batch: 300</text>
+  <text class="dim-batch" x="284" y="252" text-anchor="middle">batch: 300</text>
+  <text class="dim-batch" x="460" y="252" text-anchor="middle">batch: 300</text>
+  <text class="dim-batch" x="636" y="252" text-anchor="middle">batch: 300</text>
+  <text class="dim-batch" x="832" y="252" text-anchor="middle">batch: 300</text>
+
+  <text class="dim-feat" x="108" y="270" text-anchor="middle">features: 2</text>
+  <text class="dim-feat" x="284" y="270" text-anchor="middle">features: 3</text>
+  <text class="dim-feat" x="460" y="270" text-anchor="middle">features: 3</text>
+  <text class="dim-feat" x="636" y="270" text-anchor="middle">features: 3</text>
+  <text class="dim-feat" x="832" y="270" text-anchor="middle">features: 3</text>
+
+  <!-- ======= Insight band ======= -->
+  <rect class="insight-band" x="48" y="296" width="864" height="80" rx="12"/>
+  <text class="insight-head" x="68" y="322">Two invariants to keep in mind:</text>
+  <text class="insight-body" x="68" y="344">1) The batch dimension (300) is preserved everywhere. A change here means something is transposed.</text>
+  <text class="insight-body" x="68" y="362">2) Activations leave the shape alone. Only dense layers change the feature dim (here, 2 → 3 at dense1; unchanged at dense2 since both layers are 3-wide).</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="400">Printing .shape after every step catches almost every "shape mismatch" bug before it becomes a stack trace.</text>
+</svg>

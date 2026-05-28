@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">L1 vs L2 regularisation: penalty shapes and gradient pressure</title>
+  <desc id="d">A two-panel diagram comparing L1 and L2 regularisation penalties side by side. The left panel plots y equals absolute value of w over the weight range minus 2 to plus 2, producing a V-shape with a sharp corner at the origin. Three short downward arrows of equal length sit on top of the curve at w equals 0.5, 1.0, and 1.5, indicating that L1's gradient pressure has constant magnitude lambda regardless of how large the weight is. The right panel plots y equals w squared over the same range, producing a smooth parabola with a flat bottom at the origin. Three arrows of progressively larger length sit on top of the curve at the same w values, indicating that L2's gradient pressure grows linearly with the weight: small weights are barely pushed, large weights are pushed hard. A summary band at the bottom contrasts the two: L1 has constant pressure that drives weights to exactly zero and produces sparse solutions; L2 has proportional pressure that shrinks large weights aggressively but leaves small ones alone, producing dense solutions.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --ce-grid:rgba(26,26,26,0.06);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --ce-grid:rgba(241,238,232,0.08);
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel-l1{fill:var(--ce-accent);fill-opacity:0.05;stroke:var(--ce-accent);stroke-width:1.5;}
+    .panel-l2{fill:var(--ce-primary);fill-opacity:0.05;stroke:var(--ce-primary);stroke-width:1.5;}
+    .pill-l1{fill:var(--ce-accent);}
+    .pill-l2{fill:var(--ce-primary);}
+    .head-l1{font-weight:700;font-size:14px;fill:var(--ce-accent);}
+    .head-l2{font-weight:700;font-size:14px;fill:var(--ce-primary);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .formula-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;font-weight:700;fill:var(--ce-ink);}
+
+    .axis{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
+    .grid{stroke:var(--ce-grid);stroke-width:0.75;fill:none;}
+    .axis-label{font-size:10px;fill:var(--ce-ink-muted);}
+    .axis-title{font-size:10.5px;font-style:italic;fill:var(--ce-ink-muted);}
+
+    .curve-l1{stroke:var(--ce-accent);stroke-width:2.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+    .curve-l2{stroke:var(--ce-primary);stroke-width:2.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+
+    .pressure-l1{stroke:var(--ce-accent);stroke-width:2;fill:none;}
+    .pressure-l2{stroke:var(--ce-primary);stroke-width:2;fill:none;}
+    .pressure-label{font-size:10px;font-family:"JetBrains Mono",ui-monospace,monospace;font-weight:600;}
+
+    .anno-text{font-size:10.5px;font-style:italic;fill:var(--ce-ink-muted);}
+    .compare-panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .compare-head{font-weight:700;font-size:12px;fill:var(--ce-ink);}
+    .col-head{font-weight:700;font-size:10.5px;fill:var(--ce-ink-muted);}
+    .row-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
+    .takeaway-text{font-size:11px;fill:var(--ce-ink);}
+    .row-line{stroke:var(--ce-border);stroke-width:1;fill:none;}
+  ]]></style>
+
+  <defs>
+    <marker id="ar-l1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-accent)"/>
+    </marker>
+    <marker id="ar-l2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-primary)"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="40">L1 vs L2: same idea, different penalty shapes</text>
+  <text class="subtitle" x="48" y="60">L1 is a V; L2 is a parabola. The shape determines how the optimiser pushes weights of different magnitudes.</text>
+
+  <!-- ============================ LEFT panel: L1 ============================ -->
+  <!-- Plot maths (LEFT): center x = 264, 80 px/unit on X. Y range 0..2 with 100 px/unit. -->
+  <!-- x(-2)=104, x(-1)=184, x(0)=264, x(1)=344, x(2)=424 -->
+  <!-- y(0)=340 (bottom), y(1)=240, y(2)=140 (top) -->
+  <rect class="panel-l1" x="24" y="80" width="444" height="304" rx="10"/>
+  <rect class="pill-l1"  x="24" y="80" width="6"   height="304" rx="3"/>
+  <text class="head-l1"   x="44" y="106">L1  ·  linear penalty</text>
+  <text class="panel-sub" x="44" y="122">constant gradient pressure of magnitude λ on every non-zero weight</text>
+  <text class="formula-text" x="246" y="146" text-anchor="middle">penalty = λ · |w|</text>
+
+  <!-- Plot frame (L1) -->
+  <line class="axis" x1="84"  y1="340" x2="444" y2="340"/>
+  <line class="axis" x1="264" y1="140" x2="264" y2="340"/>
+
+  <!-- X gridlines -->
+  <g class="grid">
+    <line x1="104" y1="140" x2="104" y2="340"/>
+    <line x1="184" y1="140" x2="184" y2="340"/>
+    <line x1="344" y1="140" x2="344" y2="340"/>
+    <line x1="424" y1="140" x2="424" y2="340"/>
+  </g>
+  <text class="axis-label" x="104" y="356" text-anchor="middle">−2</text>
+  <text class="axis-label" x="184" y="356" text-anchor="middle">−1</text>
+  <text class="axis-label" x="264" y="356" text-anchor="middle">0</text>
+  <text class="axis-label" x="344" y="356" text-anchor="middle">1</text>
+  <text class="axis-label" x="424" y="356" text-anchor="middle">2</text>
+  <text class="axis-title" x="264" y="372" text-anchor="middle">weight w</text>
+
+  <!-- Y gridlines -->
+  <g class="grid">
+    <line x1="84" y1="240" x2="444" y2="240"/>
+    <line x1="84" y1="140" x2="444" y2="140"/>
+  </g>
+  <text class="axis-label" x="78" y="244" text-anchor="end">1</text>
+  <text class="axis-label" x="78" y="144" text-anchor="end">2</text>
+
+  <!-- L1 curve: y = |w|, V-shape -->
+  <path class="curve-l1" d="M 104 140 L 264 340 L 424 140"/>
+
+  <!-- Constant-pressure arrows (3 down-arrows of equal length 28 px) on positive side -->
+  <!-- At w=0.5: curve y=0.5 → y_pix=290. Arrow tip at (304, 286), tail at (304, 258). -->
+  <line class="pressure-l1" x1="304" y1="258" x2="304" y2="285" marker-end="url(#ar-l1)"/>
+  <text class="pressure-label" x="308" y="254" style="fill:var(--ce-accent);">λ</text>
+  <!-- At w=1.0: curve y=1 → y_pix=240. Arrow tip at (344, 236), tail at (344, 208). -->
+  <line class="pressure-l1" x1="344" y1="208" x2="344" y2="235" marker-end="url(#ar-l1)"/>
+  <text class="pressure-label" x="348" y="204" style="fill:var(--ce-accent);">λ</text>
+  <!-- At w=1.5: curve y=1.5 → y_pix=190. Arrow tip at (384, 186), tail at (384, 158). -->
+  <line class="pressure-l1" x1="384" y1="158" x2="384" y2="185" marker-end="url(#ar-l1)"/>
+  <text class="pressure-label" x="388" y="154" style="fill:var(--ce-accent);">λ</text>
+
+  <!-- Annotation -->
+  <text class="anno-text" x="246" y="172" text-anchor="middle" style="fill:var(--ce-accent);">three arrows, same length → constant pressure</text>
+
+  <!-- ============================ RIGHT panel: L2 ============================ -->
+  <!-- Plot maths (RIGHT): center x = 732, 80 px/unit. Y range 0..4 with 45 px/unit. -->
+  <!-- x(-2)=572, x(-1)=652, x(0)=732, x(1)=812, x(2)=892 -->
+  <!-- y(0)=340, y(1)=295, y(2)=250, y(3)=205, y(4)=160 -->
+  <rect class="panel-l2" x="492" y="80" width="444" height="304" rx="10"/>
+  <rect class="pill-l2"  x="492" y="80" width="6"   height="304" rx="3"/>
+  <text class="head-l2"  x="512" y="106">L2  ·  squared penalty</text>
+  <text class="panel-sub" x="512" y="122">gradient pressure proportional to the weight: 2λw</text>
+  <text class="formula-text" x="714" y="146" text-anchor="middle">penalty = λ · w²</text>
+
+  <!-- Plot frame (L2) -->
+  <line class="axis" x1="552" y1="340" x2="912" y2="340"/>
+  <line class="axis" x1="732" y1="140" x2="732" y2="340"/>
+
+  <!-- X gridlines -->
+  <g class="grid">
+    <line x1="572" y1="140" x2="572" y2="340"/>
+    <line x1="652" y1="140" x2="652" y2="340"/>
+    <line x1="812" y1="140" x2="812" y2="340"/>
+    <line x1="892" y1="140" x2="892" y2="340"/>
+  </g>
+  <text class="axis-label" x="572" y="356" text-anchor="middle">−2</text>
+  <text class="axis-label" x="652" y="356" text-anchor="middle">−1</text>
+  <text class="axis-label" x="732" y="356" text-anchor="middle">0</text>
+  <text class="axis-label" x="812" y="356" text-anchor="middle">1</text>
+  <text class="axis-label" x="892" y="356" text-anchor="middle">2</text>
+  <text class="axis-title" x="732" y="372" text-anchor="middle">weight w</text>
+
+  <!-- Y gridlines -->
+  <g class="grid">
+    <line x1="552" y1="295" x2="912" y2="295"/>
+    <line x1="552" y1="250" x2="912" y2="250"/>
+    <line x1="552" y1="205" x2="912" y2="205"/>
+    <line x1="552" y1="160" x2="912" y2="160"/>
+  </g>
+  <text class="axis-label" x="546" y="299" text-anchor="end">1</text>
+  <text class="axis-label" x="546" y="254" text-anchor="end">2</text>
+  <text class="axis-label" x="546" y="209" text-anchor="end">3</text>
+  <text class="axis-label" x="546" y="164" text-anchor="end">4</text>
+
+  <!-- L2 curve: y = w², parabola sampled at 17 points then connected. -->
+  <polyline class="curve-l2" points="
+    572,160
+    592,178.5
+    612,238.75
+    632,266
+    652,295
+    672,316.45
+    692,328.75
+    712,336.75
+    732,340
+    752,336.75
+    772,328.75
+    792,316.45
+    812,295
+    832,266
+    852,238.75
+    872,178.5
+    892,160" />
+  <!-- (note: the 'curve-l2' polyline uses the analytic values y_pix = 340 - 45*w^2 at evenly spaced w from -2 to +2 step 0.25) -->
+
+  <!-- Proportional-pressure arrows on positive side. -->
+  <!-- At w=0.5: curve y=0.25 → y_pix = 328.75. Gradient magnitude = 2λ*0.5 = 1·λ. Arrow length 10 px. Tail (772, 314), tip (772, 324). -->
+  <line class="pressure-l2" x1="772" y1="314" x2="772" y2="324" marker-end="url(#ar-l2)"/>
+  <text class="pressure-label" x="776" y="312" style="fill:var(--ce-primary);">λ</text>
+  <!-- At w=1.0: y_pix = 295. Gradient = 2λ. Arrow length 20 px. Tail (812, 270), tip (812, 290). -->
+  <line class="pressure-l2" x1="812" y1="270" x2="812" y2="290" marker-end="url(#ar-l2)"/>
+  <text class="pressure-label" x="816" y="268" style="fill:var(--ce-primary);">2λ</text>
+  <!-- At w=1.5: y_pix = 238.75. Gradient = 3λ. Arrow length 30 px. Tail (852, 204), tip (852, 234). -->
+  <line class="pressure-l2" x1="852" y1="204" x2="852" y2="234" marker-end="url(#ar-l2)"/>
+  <text class="pressure-label" x="856" y="202" style="fill:var(--ce-primary);">3λ</text>
+
+  <!-- Annotation -->
+  <text class="anno-text" x="714" y="172" text-anchor="middle" style="fill:var(--ce-primary);">three arrows, growing → pressure scales with weight</text>
+
+  <!-- ============================ Compare panel: practical effect ============================ -->
+  <rect class="compare-panel" x="24" y="400" width="912" height="116" rx="10"/>
+  <text class="compare-head" x="40" y="422">Practical effect on the weight distribution</text>
+
+  <!-- Header row -->
+  <line class="row-line" x1="40" y1="430" x2="920" y2="430"/>
+  <text class="col-head" x="60"  y="446">|w|</text>
+  <text class="col-head" x="220" y="446" style="fill:var(--ce-accent);">L1 gradient (λ = 0.01)</text>
+  <text class="col-head" x="440" y="446" style="fill:var(--ce-primary);">L2 gradient (λ = 0.01)</text>
+  <text class="col-head" x="720" y="446">Effect on the weight</text>
+  <line class="row-line" x1="40" y1="454" x2="920" y2="454"/>
+
+  <!-- Data rows -->
+  <text class="row-mono" x="60"  y="470">0.01</text>
+  <text class="row-mono" x="220" y="470" style="fill:var(--ce-accent);">0.0100</text>
+  <text class="row-mono" x="440" y="470" style="fill:var(--ce-primary);">0.0002</text>
+  <text class="takeaway-text" x="720" y="470"><tspan style="fill:var(--ce-accent);">L1 → 0</tspan> · <tspan style="fill:var(--ce-primary);">L2 barely moves</tspan></text>
+
+  <text class="row-mono" x="60"  y="488">1.0</text>
+  <text class="row-mono" x="220" y="488" style="fill:var(--ce-accent);">0.0100</text>
+  <text class="row-mono" x="440" y="488" style="fill:var(--ce-primary);">0.0200</text>
+  <text class="takeaway-text" x="720" y="488">comparable pressure</text>
+
+  <text class="row-mono" x="60"  y="506">10</text>
+  <text class="row-mono" x="220" y="506" style="fill:var(--ce-accent);">0.0100</text>
+  <text class="row-mono" x="440" y="506" style="fill:var(--ce-primary);">0.2000</text>
+  <text class="takeaway-text" x="720" y="506"><tspan style="fill:var(--ce-primary);">L2 dominates</tspan> · shrinks large weights hard</text>
+</svg>

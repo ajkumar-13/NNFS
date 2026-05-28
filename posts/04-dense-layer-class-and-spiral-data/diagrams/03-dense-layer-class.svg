@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">The Layer_Dense class: anatomy and lifecycle</title>
+  <desc id="d">A schematic showing the structure and lifecycle of the Layer_Dense class. The top half shows the class as a box with two methods, __init__ and forward. __init__ takes n_inputs and n_neurons and allocates self.weights (shape n_inputs by n_neurons) and self.biases (shape 1 by n_neurons). forward takes the inputs and computes self.output = np.dot(inputs, self.weights) + self.biases. The bottom half shows two instances, dense1 of shape 2 by 3 and dense2 of shape 3 by 3, each with their own independent weights and biases. Arrows show that dense1.forward(X) feeds dense1.output into dense2.forward.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--ce-ink);}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .class-panel{fill:var(--ce-surface);stroke:var(--ce-ink);stroke-width:1.5;}
+    .class-pill{fill:var(--ce-primary);}
+    .class-head{font-weight:700;font-size:14px;fill:var(--ce-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .method-tag{font-weight:700;font-size:11px;fill:var(--ce-ink-muted);text-transform:uppercase;letter-spacing:0.08em;}
+    .method-box{fill:var(--ce-neutral-1);stroke:var(--ce-border);stroke-width:1;}
+    .method-name{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;fill:var(--ce-ink);}
+    .method-body-text{font-size:11px;fill:var(--ce-ink-muted);}
+    .attr-name{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:600;fill:var(--ce-primary);}
+    .attr-shape{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--ce-ink-muted);}
+    .instance-panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .inst-head{font-weight:700;font-size:13px;fill:var(--ce-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .inst-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .arrow{stroke:var(--ce-ink-muted);stroke-width:1.5;fill:none;}
+    .arrow-head{fill:var(--ce-ink-muted);}
+    .flow-label{font-size:11px;fill:var(--ce-ink-muted);font-style:italic;}
+    .section-head{font-weight:700;font-size:12px;fill:var(--ce-ink-muted);text-transform:uppercase;letter-spacing:0.08em;}
+  ]]></style>
+
+  <defs>
+    <marker id="aM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arrow-head"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="48">The Layer_Dense class</text>
+  <text class="subtitle" x="48" y="70">Two methods, six lines of code. Each instance owns its own weights and biases.</text>
+
+  <!-- ====================== TOP: Class blueprint ====================== -->
+  <text class="section-head" x="48" y="100">Blueprint (the class)</text>
+
+  <rect class="class-panel" x="48" y="116" width="864" height="172" rx="14"/>
+  <rect class="class-pill"  x="48" y="116" width="6"   height="172" rx="3"/>
+  <text class="class-head" x="68" y="142">class Layer_Dense:</text>
+
+  <!-- __init__ method -->
+  <rect class="method-box" x="80" y="156" width="380" height="116" rx="8"/>
+  <text class="method-tag" x="96" y="178">__init__  (runs once, when an instance is created)</text>
+  <text class="method-name" x="96" y="200">def __init__(self, n_inputs, n_neurons):</text>
+  <text class="mono"        x="112" y="222">self.weights = 0.01 * np.random.randn(</text>
+  <text class="mono"        x="128" y="238">n_inputs, n_neurons)</text>
+  <text class="mono"        x="112" y="258">self.biases  = np.zeros((1, n_neurons))</text>
+
+  <!-- forward method -->
+  <rect class="method-box" x="492" y="156" width="408" height="116" rx="8"/>
+  <text class="method-tag" x="508" y="178">forward  (runs every time the layer is called)</text>
+  <text class="method-name" x="508" y="200">def forward(self, inputs):</text>
+  <text class="mono"        x="524" y="222">self.output = np.dot(inputs, self.weights)</text>
+  <text class="mono"        x="612" y="240">+ self.biases</text>
+  <text class="method-body-text" x="508" y="262">result is stored on self.output for the next layer to use</text>
+
+  <!-- ====================== BOTTOM: Two instances ====================== -->
+  <text class="section-head" x="48" y="316">Two instances (each one is a separate layer with its own state)</text>
+
+  <!-- Instance 1: dense1 -->
+  <rect class="instance-panel" x="48" y="332" width="280" height="140" rx="12"/>
+  <text class="inst-head" x="68" y="358">dense1 = Layer_Dense(2, 3)</text>
+  <text class="inst-sub"  x="68" y="376">layer 1: 2 inputs, 3 neurons</text>
+  <text class="attr-name" x="68" y="402">.weights</text>
+  <text class="attr-shape" x="228" y="402" text-anchor="end">shape (2, 3)</text>
+  <text class="attr-name" x="68" y="420">.biases</text>
+  <text class="attr-shape" x="228" y="420" text-anchor="end">shape (1, 3)</text>
+  <text class="attr-name" x="68" y="438">.output</text>
+  <text class="attr-shape" x="228" y="438" text-anchor="end">shape (N, 3)</text>
+  <text class="method-body-text" x="68" y="460">filled after dense1.forward(X)</text>
+
+  <!-- Flow arrow with X label -->
+  <line class="arrow" x1="20" y1="400" x2="48" y2="400" marker-end="url(#aM)"/>
+  <text class="flow-label" x="34" y="392" text-anchor="middle">X</text>
+
+  <!-- Flow arrow between instances -->
+  <line class="arrow" x1="328" y1="400" x2="488" y2="400" marker-end="url(#aM)"/>
+  <text class="flow-label" x="408" y="392" text-anchor="middle">dense1.output</text>
+
+  <!-- Instance 2: dense2 -->
+  <rect class="instance-panel" x="488" y="332" width="280" height="140" rx="12"/>
+  <text class="inst-head" x="508" y="358">dense2 = Layer_Dense(3, 3)</text>
+  <text class="inst-sub"  x="508" y="376">layer 2: 3 inputs, 3 neurons</text>
+  <text class="attr-name" x="508" y="402">.weights</text>
+  <text class="attr-shape" x="668" y="402" text-anchor="end">shape (3, 3)</text>
+  <text class="attr-name" x="508" y="420">.biases</text>
+  <text class="attr-shape" x="668" y="420" text-anchor="end">shape (1, 3)</text>
+  <text class="attr-name" x="508" y="438">.output</text>
+  <text class="attr-shape" x="668" y="438" text-anchor="end">shape (N, 3)</text>
+  <text class="method-body-text" x="508" y="460">filled after dense2.forward(dense1.output)</text>
+
+  <!-- Final output arrow -->
+  <line class="arrow" x1="768" y1="400" x2="920" y2="400" marker-end="url(#aM)"/>
+  <text class="flow-label" x="844" y="392" text-anchor="middle">dense2.output  (final)</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="508">dense1.weights and dense2.weights are completely independent arrays.</text>
+  <text class="footer" x="912" y="508" text-anchor="end">Mirrors PyTorch nn.Module and Keras Layer.</text>
+</svg>

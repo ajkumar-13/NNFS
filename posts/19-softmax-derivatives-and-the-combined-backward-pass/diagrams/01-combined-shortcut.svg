@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" role="img" aria-labelledby="t d">
+  <title id="t">Softmax + cross-entropy backward: the full Jacobian vs the clean shortcut</title>
+  <desc id="d">Two side-by-side derivations for the gradient of cross-entropy with respect to softmax inputs. Left, in alert-red: the messy path computes the full softmax Jacobian (a 3-by-3 dense matrix per sample) and multiplies it by the loss gradient -y/y_hat, producing the result after a non-trivial matrix product. Right, in success-green: the combined shortcut substitutes the softmax expression into the cross-entropy, simplifies symbolically, and lands directly at the formula (y_hat - y) / N. A bottom band shows the three-line implementation and notes that production frameworks ship this fused op.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel-bad{fill:var(--ce-alert);fill-opacity:0.06;stroke:var(--ce-alert);stroke-width:1.5;}
+    .panel-ok {fill:var(--ce-success);fill-opacity:0.07;stroke:var(--ce-success);stroke-width:1.5;}
+    .pill-bad{fill:var(--ce-alert);}
+    .pill-ok{fill:var(--ce-success);}
+    .head-bad{font-weight:700;font-size:15px;fill:var(--ce-alert);}
+    .head-ok {font-weight:700;font-size:15px;fill:var(--ce-success);}
+    .step-label{font-weight:700;font-size:11px;fill:var(--ce-ink-muted);text-transform:uppercase;letter-spacing:0.06em;}
+    .formula{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;fill:var(--ce-ink);}
+    .formula-emph{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;fill:var(--ce-ink);font-weight:700;}
+    .cost-bad{font-size:12px;font-weight:700;fill:var(--ce-alert);}
+    .cost-ok{font-size:12px;font-weight:700;fill:var(--ce-success);}
+    .arrow{stroke:var(--ce-ink-muted);stroke-width:1.5;fill:none;}
+    .arrow-head{fill:var(--ce-ink-muted);}
+    .insight-band{fill:var(--ce-primary);fill-opacity:0.08;stroke:var(--ce-primary);stroke-width:1.5;}
+    .insight-head{font-weight:700;font-size:13px;fill:var(--ce-primary);}
+    .insight-body{font-size:12px;fill:var(--ce-ink);}
+  ]]></style>
+
+  <defs>
+    <marker id="aM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arrow-head"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="500"/>
+
+  <text class="title"    x="48" y="48">Softmax + cross-entropy backward: two paths, one answer</text>
+  <text class="subtitle" x="48" y="70">The naive path multiplies by the full Jacobian; the combined shortcut collapses to (ŷ − y)/N.</text>
+
+  <!-- ============================ LEFT PANEL: naive ============================ -->
+  <rect class="panel-bad" x="48" y="96" width="424" height="304" rx="12"/>
+  <rect class="pill-bad"  x="48" y="96" width="6"   height="304" rx="3"/>
+  <text class="head-bad" x="68" y="124">Option 1: naive (compute Jacobian, multiply)</text>
+
+  <text class="step-label" x="68" y="156">step 1 · cross-entropy backward</text>
+  <text class="formula"    x="68" y="178">∂L/∂ŷ = −y / ŷ              shape (N, C)</text>
+
+  <line class="arrow" x1="240" y1="194" x2="240" y2="216" marker-end="url(#aM)"/>
+
+  <text class="step-label" x="68" y="240">step 2 · softmax Jacobian (per sample)</text>
+  <text class="formula"    x="68" y="262">J[k,j] = A_k(1−A_k) if k=j</text>
+  <text class="formula"    x="68" y="280">         −A_k · A_j  otherwise         shape (C, C)</text>
+
+  <line class="arrow" x1="240" y1="296" x2="240" y2="318" marker-end="url(#aM)"/>
+
+  <text class="step-label" x="68" y="338">step 3 · matrix product</text>
+  <text class="formula"    x="68" y="358">dinputs[i] = (∂L/∂ŷ)[i] @ J[i]      one per sample</text>
+
+  <text class="cost-bad" x="68" y="388">cost: O(N · C²) compute,  O(N · C²) memory</text>
+
+  <!-- ============================ RIGHT PANEL: combined ============================ -->
+  <rect class="panel-ok" x="488" y="96" width="424" height="304" rx="12"/>
+  <rect class="pill-ok"  x="488" y="96" width="6"   height="304" rx="3"/>
+  <text class="head-ok" x="508" y="124">Option 2: combined (substitute, then differentiate)</text>
+
+  <text class="step-label" x="508" y="156">step 1 · plug softmax into cross-entropy</text>
+  <text class="formula"    x="508" y="178">L = −Z_t + log(Σ_j exp(Z_j))           t = true class</text>
+
+  <line class="arrow" x1="700" y1="194" x2="700" y2="216" marker-end="url(#aM)"/>
+
+  <text class="step-label" x="508" y="240">step 2 · differentiate term by term</text>
+  <text class="formula"    x="508" y="262">−Z_t  →  contributes −1 only at k = t  (= −y_k)</text>
+  <text class="formula"    x="508" y="280">log Σ exp →  contributes ŷ_k for every k</text>
+
+  <line class="arrow" x1="700" y1="296" x2="700" y2="318" marker-end="url(#aM)"/>
+
+  <text class="step-label" x="508" y="338">step 3 · combine</text>
+  <text class="formula-emph" x="508" y="362">∂L/∂Z = (ŷ − y) / N            shape (N, C)</text>
+
+  <text class="cost-ok" x="508" y="388">cost: O(N · C) compute,  O(N · C) memory</text>
+
+  <!-- ============================ Bottom band: three-line code ============================ -->
+  <rect class="insight-band" x="48" y="416" width="864" height="68" rx="12"/>
+  <text class="insight-head" x="68" y="442">Three-line implementation (and what every framework ships)</text>
+  <text class="formula"      x="68" y="464">self.dinputs = dvalues.copy()    self.dinputs[range(N), y_true] -= 1    self.dinputs /= N</text>
+</svg>

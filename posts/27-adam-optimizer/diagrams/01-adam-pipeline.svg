@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">The Adam optimiser pipeline: two EMAs, two bias corrections, one update</title>
+  <desc id="d">A left-to-right pipeline diagram of the Adam update rule. On the left the current gradient g enters the pipeline and splits into two parallel lanes. The top lane is the first-moment branch inherited from momentum: an exponential moving average box computes m equals beta_1 times m plus one minus beta_1 times g, then a bias-correction box divides by one minus beta_1 to the t to produce m hat. The bottom lane is the second-moment branch inherited from RMSProp: an exponential moving average box computes v equals beta_2 times v plus one minus beta_2 times g squared, then a bias-correction box divides by one minus beta_2 to the t to produce v hat. Both lanes feed into a final update box on the right that computes theta equals theta minus alpha times m hat divided by the square root of v hat plus epsilon. Below the pipeline a results panel shows the final spiral accuracy for each optimiser introduced in the optimiser group, with Adam topping the list at 95.7 percent.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --ce-grid:rgba(26,26,26,0.06);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --ce-grid:rgba(241,238,232,0.08);
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+
+    .node-input{fill:var(--ce-primary);fill-opacity:0.12;stroke:var(--ce-primary);stroke-width:1.5;}
+    .node-m{fill:var(--ce-success);fill-opacity:0.10;stroke:var(--ce-success);stroke-width:1.5;}
+    .node-v{fill:var(--ce-warn);fill-opacity:0.10;stroke:var(--ce-warn);stroke-width:1.5;}
+    .node-out{fill:var(--ce-ink);fill-opacity:0.05;stroke:var(--ce-ink);stroke-width:1.5;}
+
+    .node-label{font-weight:700;font-size:12px;}
+    .node-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;fill:var(--ce-ink);}
+    .node-sub{font-size:10px;fill:var(--ce-ink-muted);}
+
+    .arrow-m{stroke:var(--ce-success);stroke-width:2;fill:none;}
+    .arrow-v{stroke:var(--ce-warn);stroke-width:2;fill:none;}
+    .arrow-in{stroke:var(--ce-primary);stroke-width:2;fill:none;}
+
+    .lane-head-m{font-weight:700;font-size:11px;fill:var(--ce-success);}
+    .lane-head-v{font-weight:700;font-size:11px;fill:var(--ce-warn);}
+
+    .result-panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .result-head{font-weight:700;font-size:12px;fill:var(--ce-ink);}
+    .result-sub{font-size:10.5px;fill:var(--ce-ink-muted);}
+    .bar-bg{fill:var(--ce-neutral-1);stroke:none;}
+    .bar-vanilla{fill:var(--ce-ink-subtle);}
+    .bar-decay{fill:var(--ce-ink-subtle);}
+    .bar-adagrad{fill:var(--ce-warn);}
+    .bar-rmsprop{fill:var(--ce-warn);}
+    .bar-momentum{fill:var(--ce-success);}
+    .bar-adam{fill:var(--ce-primary);}
+    .bar-label{font-size:10.5px;fill:var(--ce-ink);}
+    .bar-pct{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--ce-ink);}
+  ]]></style>
+
+  <defs>
+    <marker id="m-arrow-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-success)"/>
+    </marker>
+    <marker id="m-arrow-v" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-warn)"/>
+    </marker>
+    <marker id="m-arrow-in" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-primary)"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="40">Adam = momentum (numerator) + RMSProp (denominator) + bias correction</text>
+  <text class="subtitle" x="48" y="60">The gradient enters once; two parallel EMAs maintain m and v; bias-corrected, they form the per-parameter update.</text>
+
+  <!-- ============================ Lane headers ============================ -->
+  <text class="lane-head-m" x="20" y="116">first-moment lane (from momentum, Part 24)</text>
+  <text class="lane-head-v" x="20" y="332">second-moment lane (from RMSProp, Part 26)</text>
+
+  <!-- ============================ Input node: g ============================ -->
+  <rect class="node-input" x="24" y="180" width="100" height="80" rx="10"/>
+  <text class="node-mono"  x="74" y="216" text-anchor="middle">g_t</text>
+  <text class="node-sub"   x="74" y="234" text-anchor="middle">current gradient</text>
+  <text class="node-sub"   x="74" y="248" text-anchor="middle">∂L/∂θ</text>
+
+  <!-- Split arrows from g to two lanes -->
+  <path class="arrow-m" d="M 124 200 L 160 200 L 160 152 L 184 152" marker-end="url(#m-arrow-m)"/>
+  <path class="arrow-v" d="M 124 240 L 160 240 L 160 288 L 184 288" marker-end="url(#m-arrow-v)"/>
+
+  <!-- ============================ First-moment lane (top) ============================ -->
+  <!-- EMA box (m) -->
+  <rect class="node-m" x="184" y="124" width="216" height="64" rx="10"/>
+  <text class="node-label" x="292" y="142" text-anchor="middle" style="fill:var(--ce-success);">EMA of g  (β₁ = 0.9)</text>
+  <text class="node-mono"  x="292" y="166" text-anchor="middle">m ← β₁·m + (1−β₁)·g</text>
+  <text class="node-sub"   x="292" y="180" text-anchor="middle">running average of recent gradients</text>
+
+  <!-- Arrow to bias-correction box -->
+  <path class="arrow-m" d="M 400 156 L 444 156" marker-end="url(#m-arrow-m)"/>
+
+  <!-- Bias-correction box (m̂) -->
+  <rect class="node-m" x="444" y="124" width="200" height="64" rx="10"/>
+  <text class="node-label" x="544" y="142" text-anchor="middle" style="fill:var(--ce-success);">bias correction</text>
+  <text class="node-mono"  x="544" y="166" text-anchor="middle">m̂ = m / (1 − β₁ᵗ)</text>
+  <text class="node-sub"   x="544" y="180" text-anchor="middle">amplifies early steps (10× at t = 1)</text>
+
+  <!-- Arrow to update box -->
+  <path class="arrow-m" d="M 644 156 L 700 156 L 700 226" marker-end="url(#m-arrow-m)"/>
+  <text class="node-mono" x="666" y="151" style="fill:var(--ce-success);">m̂</text>
+
+  <!-- ============================ Second-moment lane (bottom) ============================ -->
+  <!-- EMA box (v) -->
+  <rect class="node-v" x="184" y="252" width="216" height="64" rx="10"/>
+  <text class="node-label" x="292" y="270" text-anchor="middle" style="fill:var(--ce-warn);">EMA of g²  (β₂ = 0.999)</text>
+  <text class="node-mono"  x="292" y="294" text-anchor="middle">v ← β₂·v + (1−β₂)·g²</text>
+  <text class="node-sub"   x="292" y="308" text-anchor="middle">running average of squared gradients</text>
+
+  <!-- Arrow to bias-correction box -->
+  <path class="arrow-v" d="M 400 284 L 444 284" marker-end="url(#m-arrow-v)"/>
+
+  <!-- Bias-correction box (v̂) -->
+  <rect class="node-v" x="444" y="252" width="200" height="64" rx="10"/>
+  <text class="node-label" x="544" y="270" text-anchor="middle" style="fill:var(--ce-warn);">bias correction</text>
+  <text class="node-mono"  x="544" y="294" text-anchor="middle">v̂ = v / (1 − β₂ᵗ)</text>
+  <text class="node-sub"   x="544" y="308" text-anchor="middle">amplifies early steps (1000× at t = 1)</text>
+
+  <!-- Arrow to update box -->
+  <path class="arrow-v" d="M 644 284 L 700 284 L 700 248" marker-end="url(#m-arrow-v)"/>
+  <text class="node-mono" x="668" y="280" style="fill:var(--ce-warn);">v̂</text>
+
+  <!-- ============================ Update node ============================ -->
+  <rect class="node-out" x="700" y="200" width="236" height="80" rx="10"/>
+  <text class="node-label" x="818" y="218" text-anchor="middle">parameter update</text>
+  <text class="node-mono"  x="818" y="244" text-anchor="middle">θ ← θ − α · m̂ / (√v̂ + ε)</text>
+  <text class="node-sub"   x="818" y="262" text-anchor="middle">α = 0.001 default;  ε = 10⁻⁷</text>
+
+  <!-- ============================ Results panel ============================ -->
+  <rect class="result-panel" x="24" y="356" width="912" height="138" rx="10"/>
+  <text class="result-head" x="40" y="378">Final accuracy on the spiral dataset · 10 000 epochs</text>
+  <text class="result-sub"  x="40" y="392">Adam tops the optimiser group; SGD + momentum is the next-best at +0.4 points behind</text>
+
+  <!-- Bars. 0% at x=200, 100% at x=720 (width 520 → 5.2 px per percent). Each row ~16 px tall, spacing 4. -->
+  <!-- Row 1: Vanilla SGD 57.3% -->
+  <text class="bar-label" x="190" y="416" text-anchor="end">Vanilla SGD</text>
+  <rect class="bar-bg" x="200" y="406" width="520" height="12" rx="3"/>
+  <rect class="bar-vanilla" x="200" y="406" width="298" height="12" rx="3"/>
+  <text class="bar-pct" x="726" y="416">57.3%</text>
+
+  <!-- Row 2: SGD + decay 71.7% -->
+  <text class="bar-label" x="190" y="434" text-anchor="end">SGD + decay</text>
+  <rect class="bar-bg" x="200" y="424" width="520" height="12" rx="3"/>
+  <rect class="bar-decay" x="200" y="424" width="373" height="12" rx="3"/>
+  <text class="bar-pct" x="726" y="434">71.7%</text>
+
+  <!-- Row 3: AdaGrad 89.3% -->
+  <text class="bar-label" x="190" y="452" text-anchor="end">AdaGrad</text>
+  <rect class="bar-bg" x="200" y="442" width="520" height="12" rx="3"/>
+  <rect class="bar-adagrad" x="200" y="442" width="464" height="12" rx="3"/>
+  <text class="bar-pct" x="726" y="452">89.3%</text>
+
+  <!-- Row 4: RMSProp 88.0% -->
+  <text class="bar-label" x="190" y="470" text-anchor="end">RMSProp</text>
+  <rect class="bar-bg" x="200" y="460" width="520" height="12" rx="3"/>
+  <rect class="bar-rmsprop" x="200" y="460" width="458" height="12" rx="3"/>
+  <text class="bar-pct" x="726" y="470">88.0%</text>
+
+  <!-- Row 5: SGD + momentum 95.3% -->
+  <text class="bar-label" x="190" y="488" text-anchor="end">SGD + momentum</text>
+  <rect class="bar-bg" x="200" y="478" width="520" height="12" rx="3"/>
+  <rect class="bar-momentum" x="200" y="478" width="496" height="12" rx="3"/>
+  <text class="bar-pct" x="726" y="488">95.3%</text>
+
+  <!-- Row 6: Adam 95.7% (highlighted) -->
+  <text class="bar-label" x="190" y="506" text-anchor="end" style="font-weight:700;fill:var(--ce-primary);">Adam (this lecture)</text>
+  <rect class="bar-bg" x="200" y="496" width="520" height="12" rx="3"/>
+  <rect class="bar-adam" x="200" y="496" width="498" height="12" rx="3"/>
+  <text class="bar-pct" x="726" y="506" style="fill:var(--ce-primary);">95.7%</text>
+
+  <!-- 0% and 100% scale markers -->
+  <text class="result-sub" x="200" y="528" text-anchor="middle">0%</text>
+  <text class="result-sub" x="720" y="528" text-anchor="middle">100%</text>
+
+  <!-- ============================ Footer (none needed, results panel goes to bottom) ============================ -->
+</svg>

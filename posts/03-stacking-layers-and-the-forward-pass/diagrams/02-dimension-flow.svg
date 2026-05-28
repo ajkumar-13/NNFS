@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" role="img" aria-labelledby="t d">
+  <title id="t">Dimension flow across two stacked layers</title>
+  <desc id="d">A left-to-right shape-flow chart for a batch of N samples passing through two dense layers. The input X has shape N by 4. After layer 1, with weights of shape 3 by 4 and bias of shape 3, the output F1 has shape N by 3. After layer 2, with weights of shape 3 by 3 and bias of shape 3, the final output F2 has shape N by 3. Inner-dimension checks are annotated at each step: 4 matches 4 between X and W1 transpose, 3 matches 3 between F1 and W2 transpose. A footer says that shape continuity must hold from layer to layer.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .data-pill{fill:var(--ce-primary);fill-opacity:0.18;stroke:var(--ce-primary);stroke-width:1.5;}
+    .data-pill-int{fill:var(--ce-accent);fill-opacity:0.18;stroke:var(--ce-accent);stroke-width:1.5;}
+    .data-pill-out{fill:var(--ce-success);fill-opacity:0.18;stroke:var(--ce-success);stroke-width:1.5;}
+    .data-name{font-weight:700;font-size:16px;fill:var(--ce-ink);}
+    .data-shape{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;font-weight:600;fill:var(--ce-ink);}
+    .data-desc{font-size:11px;fill:var(--ce-ink-muted);}
+    .op-box{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1.5;stroke-dasharray:5 3;}
+    .op-head{font-weight:700;font-size:12px;fill:var(--ce-ink);text-transform:uppercase;letter-spacing:0.06em;}
+    .op-body{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--ce-ink);}
+    .op-weight{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--ce-ink-muted);}
+    .match-ok{font-size:11px;font-weight:600;fill:var(--ce-success);}
+    .arrow{stroke:var(--ce-ink-muted);stroke-width:1.5;fill:none;}
+    .arrow-head{fill:var(--ce-ink-muted);}
+  ]]></style>
+
+  <defs>
+    <marker id="aM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arrow-head"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="420"/>
+
+  <text class="title"    x="48" y="48">Dimension flow through two layers</text>
+  <text class="subtitle" x="48" y="70">Shape continuity: every layer's output dimension must match the next layer's input dimension.</text>
+
+  <!-- =================== X (input) =================== -->
+  <rect class="data-pill" x="48" y="160" width="120" height="100" rx="12"/>
+  <text class="data-name"  x="108" y="194" text-anchor="middle">X</text>
+  <text class="data-shape" x="108" y="222" text-anchor="middle">(N, 4)</text>
+  <text class="data-desc"  x="108" y="244" text-anchor="middle">input batch</text>
+
+  <!-- arrow -->
+  <line class="arrow" x1="172" y1="210" x2="216" y2="210" marker-end="url(#aM)"/>
+
+  <!-- =================== Op 1 =================== -->
+  <rect class="op-box" x="220" y="148" width="200" height="124" rx="12"/>
+  <text class="op-head"   x="320" y="172" text-anchor="middle">Layer 1</text>
+  <text class="op-body"   x="320" y="198" text-anchor="middle">X · W₁ᵀ + b₁</text>
+  <text class="op-weight" x="320" y="222" text-anchor="middle">W₁: (3, 4) → W₁ᵀ: (4, 3)</text>
+  <text class="op-weight" x="320" y="240" text-anchor="middle">b₁: (3,)</text>
+  <text class="match-ok"  x="320" y="262" text-anchor="middle">inner: 4 matches 4</text>
+
+  <!-- arrow -->
+  <line class="arrow" x1="424" y1="210" x2="468" y2="210" marker-end="url(#aM)"/>
+
+  <!-- =================== F1 =================== -->
+  <rect class="data-pill-int" x="472" y="160" width="120" height="100" rx="12"/>
+  <text class="data-name"  x="532" y="194" text-anchor="middle">F₁</text>
+  <text class="data-shape" x="532" y="222" text-anchor="middle">(N, 3)</text>
+  <text class="data-desc"  x="532" y="244" text-anchor="middle">layer 1 output</text>
+
+  <!-- arrow -->
+  <line class="arrow" x1="596" y1="210" x2="640" y2="210" marker-end="url(#aM)"/>
+
+  <!-- =================== Op 2 =================== -->
+  <rect class="op-box" x="644" y="148" width="180" height="124" rx="12"/>
+  <text class="op-head"   x="734" y="172" text-anchor="middle">Layer 2</text>
+  <text class="op-body"   x="734" y="198" text-anchor="middle">F₁ · W₂ᵀ + b₂</text>
+  <text class="op-weight" x="734" y="222" text-anchor="middle">W₂: (3, 3)</text>
+  <text class="op-weight" x="734" y="240" text-anchor="middle">b₂: (3,)</text>
+  <text class="match-ok"  x="734" y="262" text-anchor="middle">inner: 3 matches 3</text>
+
+  <!-- arrow -->
+  <line class="arrow" x1="828" y1="210" x2="864" y2="210" marker-end="url(#aM)"/>
+
+  <!-- =================== F2 (final) =================== -->
+  <rect class="data-pill-out" x="864" y="160" width="80" height="100" rx="12"/>
+  <text class="data-name"  x="904" y="194" text-anchor="middle">F₂</text>
+  <text class="data-shape" x="904" y="222" text-anchor="middle">(N, 3)</text>
+  <text class="data-desc"  x="904" y="244" text-anchor="middle">final</text>
+
+  <!-- =================== Bottom band: rule =================== -->
+  <rect class="op-box" x="48" y="312" width="864" height="76" rx="12"/>
+  <text class="op-head"  x="68" y="338">Rule</text>
+  <text class="data-desc" x="68" y="358" style="font-size:12px;fill:var(--ce-ink);">The inner dimension of np.dot(F_{ℓ-1}, W_ℓᵀ) must match at every layer.</text>
+  <text class="data-desc" x="68" y="378" style="font-size:12px;fill:var(--ce-ink);">Equivalent: weights per neuron in layer ℓ = neurons in layer ℓ-1.</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="410">Adding a layer means choosing one new size: its neuron count. The previous layer's size fixes W_ℓ's shape automatically.</text>
+</svg>

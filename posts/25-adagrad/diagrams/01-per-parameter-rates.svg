@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">AdaGrad: per-parameter effective learning rate decay</title>
+  <desc id="d">A diagram of AdaGrad's per-parameter mechanism. Top: the update rule G plus equals g squared, then theta minus equals alpha times g divided by square root of G plus epsilon. Left chart: the effective learning rate alpha divided by square root of G plotted on a log-log scale over 10 000 iterations for two parameters. Parameter A has a consistent gradient magnitude of 2.0 and its effective rate falls quickly from 0.5 at iteration 1 to 0.005 at iteration 10 000. Parameter B has a consistent gradient magnitude of 0.2 and its rate falls more slowly from 5 to 0.05 over the same period. Both curves are parallel on the log-log scale because both decay as one over square root of t, but parameter B's rate stays ten times higher throughout, the per-parameter rescaling AdaGrad is designed to produce. Right sidebar: a snapshot at iteration 1000 showing the cache and effective rate values for each parameter, and a note that the per-parameter gap is the upside while the global downward drift is the fatal flaw.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --ce-grid:rgba(26,26,26,0.06);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --ce-grid:rgba(241,238,232,0.08);
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .rule-band{fill:var(--ce-primary);fill-opacity:0.08;stroke:var(--ce-primary);stroke-width:1.5;}
+    .rule-head{font-weight:700;font-size:13px;fill:var(--ce-primary);}
+    .rule-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:15px;fill:var(--ce-ink);font-weight:700;}
+    .rule-note{font-size:11px;fill:var(--ce-ink-muted);}
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .panel-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .axis{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
+    .grid{stroke:var(--ce-grid);stroke-width:0.75;fill:none;}
+    .axis-label{font-size:10px;fill:var(--ce-ink-muted);}
+    .axis-title{font-size:11px;fill:var(--ce-ink-muted);font-style:italic;}
+    .curve-bad {stroke:var(--ce-alert);stroke-width:2.6;fill:none;stroke-linecap:round;}
+    .curve-ok  {stroke:var(--ce-success);stroke-width:2.6;fill:none;stroke-linecap:round;stroke-dasharray:6 4;}
+    .dead-band {fill:var(--ce-alert);fill-opacity:0.05;stroke:none;}
+    .dead-label{font-size:10px;font-style:italic;fill:var(--ce-alert);}
+    .legend-text{font-size:11px;fill:var(--ce-ink);}
+    .legend-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
+    .side-head{font-weight:700;font-size:12px;fill:var(--ce-ink);}
+    .side-sub{font-size:10.5px;fill:var(--ce-ink-muted);}
+    .side-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
+    .side-row-bad{fill:var(--ce-alert);fill-opacity:0.06;stroke:var(--ce-alert);stroke-width:1;}
+    .side-row-ok {fill:var(--ce-success);fill-opacity:0.06;stroke:var(--ce-success);stroke-width:1;}
+    .side-tag-bad{font-weight:700;font-size:11px;fill:var(--ce-alert);}
+    .side-tag-ok {font-weight:700;font-size:11px;fill:var(--ce-success);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="40">AdaGrad: per-parameter rates that adapt — then quietly die</text>
+  <text class="subtitle" x="48" y="60">Each parameter keeps a running sum of its squared gradients; its effective rate is α divided by the square root of that sum.</text>
+
+  <!-- ============================ Rule band ============================ -->
+  <rect class="rule-band" x="24" y="76" width="912" height="60" rx="10"/>
+  <text class="rule-head" x="40" y="98">The update rule (per parameter, elementwise)</text>
+  <text class="rule-text" x="480" y="118" text-anchor="middle">G ← G + g²,   then   θ ← θ − α · g / (√G + ε)</text>
+  <text class="rule-note" x="480" y="132" text-anchor="middle">G has the same shape as θ — one scalar cache per scalar weight. ε ≈ 10⁻⁷ guards the first step.</text>
+
+  <!-- ============================ Main chart ============================ -->
+  <rect class="panel" x="24" y="152" width="620" height="320" rx="10"/>
+  <text class="panel-head" x="40" y="174">Effective learning rate α/√G over 10 000 iterations</text>
+  <text class="panel-sub"  x="40" y="190">two parameters with constant but very different gradient magnitudes</text>
+
+  <!-- Plot frame -->
+  <line class="axis" x1="80" y1="432" x2="620" y2="432"/>
+  <line class="axis" x1="80" y1="192" x2="80"  y2="432"/>
+
+  <!-- Y log gridlines (4 decades from 0.001 at bottom to 10 at top) -->
+  <g class="grid">
+    <line x1="80" y1="192" x2="620" y2="192"/>
+    <line x1="80" y1="252" x2="620" y2="252"/>
+    <line x1="80" y1="312" x2="620" y2="312"/>
+    <line x1="80" y1="372" x2="620" y2="372"/>
+  </g>
+  <text class="axis-label" x="74" y="196" text-anchor="end">10</text>
+  <text class="axis-label" x="74" y="256" text-anchor="end">1</text>
+  <text class="axis-label" x="74" y="316" text-anchor="end">0.1</text>
+  <text class="axis-label" x="74" y="376" text-anchor="end">0.01</text>
+  <text class="axis-label" x="74" y="436" text-anchor="end">0.001</text>
+  <text class="axis-title" x="40" y="312" transform="rotate(-90 40 312)" text-anchor="middle">α / √G  (log)</text>
+
+  <!-- X log gridlines (4 decades from 1 to 10 000) -->
+  <g class="grid">
+    <line x1="215" y1="192" x2="215" y2="432"/>
+    <line x1="350" y1="192" x2="350" y2="432"/>
+    <line x1="485" y1="192" x2="485" y2="432"/>
+    <line x1="620" y1="192" x2="620" y2="432"/>
+  </g>
+  <text class="axis-label" x="80"  y="448" text-anchor="middle">1</text>
+  <text class="axis-label" x="215" y="448" text-anchor="middle">10</text>
+  <text class="axis-label" x="350" y="448" text-anchor="middle">100</text>
+  <text class="axis-label" x="485" y="448" text-anchor="middle">1 000</text>
+  <text class="axis-label" x="620" y="448" text-anchor="middle">10 000</text>
+  <text class="axis-title" x="350" y="464" text-anchor="middle">iteration t  (log)</text>
+
+  <!-- "Tiny step" shaded zone: rate < 0.01 (y > 372) -->
+  <rect class="dead-band" x="80" y="372" width="540" height="60"/>
+  <text class="dead-label" x="616" y="426" text-anchor="end">tiny-step zone (rate &lt; 0.01)</text>
+
+  <!-- Param A curve: high gradient |g|=2.0, rate = 0.5/√t -->
+  <line class="curve-bad" x1="80" y1="270.1" x2="620" y2="390.1"/>
+  <circle cx="80"  cy="270.1" r="3" fill="var(--ce-alert)"/>
+  <circle cx="620" cy="390.1" r="3" fill="var(--ce-alert)"/>
+
+  <!-- Param B curve: low gradient |g|=0.2, rate = 5/√t -->
+  <line class="curve-ok"  x1="80" y1="210.1" x2="620" y2="330.1"/>
+  <circle cx="80"  cy="210.1" r="3" fill="var(--ce-success)"/>
+  <circle cx="620" cy="330.1" r="3" fill="var(--ce-success)"/>
+
+  <!-- Endpoint value labels -->
+  <text class="legend-mono" x="610" y="384" text-anchor="end" style="fill:var(--ce-alert);">0.005</text>
+  <text class="legend-mono" x="610" y="324" text-anchor="end" style="fill:var(--ce-success);">0.05</text>
+  <text class="legend-mono" x="92"  y="207" style="fill:var(--ce-success);">5.0</text>
+  <text class="legend-mono" x="92"  y="267" style="fill:var(--ce-alert);">0.5</text>
+
+  <!-- Legend -->
+  <g transform="translate(390, 204)">
+    <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="0" y="0" width="222" height="50" rx="6"/>
+    <line class="curve-bad" x1="12" y1="18" x2="40" y2="18"/>
+    <text class="legend-mono" x="48" y="22">Param A · |g| = 2.0</text>
+    <line class="curve-ok"  x1="12" y1="38" x2="40" y2="38"/>
+    <text class="legend-mono" x="48" y="42">Param B · |g| = 0.2</text>
+  </g>
+
+  <!-- ============================ Sidebar: snapshot at t=1000 ============================ -->
+  <rect class="panel" x="664" y="152" width="272" height="320" rx="10"/>
+  <text class="side-head" x="680" y="174">Snapshot at t = 1 000</text>
+  <text class="side-sub"  x="680" y="190">cache and effective rate per parameter</text>
+
+  <!-- Param A row -->
+  <rect class="side-row-bad" x="680" y="206" width="240" height="106" rx="6"/>
+  <text class="side-tag-bad" x="692" y="226">Parameter A · high gradient</text>
+  <line x1="692" y1="232" x2="908" y2="232" stroke="var(--ce-alert)" stroke-opacity="0.3" stroke-width="1"/>
+  <text class="side-sub"  x="692" y="250">|g|</text>
+  <text class="side-mono" x="908" y="250" text-anchor="end">2.0</text>
+  <text class="side-sub"  x="692" y="270">G (sum of g²)</text>
+  <text class="side-mono" x="908" y="270" text-anchor="end">4 000</text>
+  <text class="side-sub"  x="692" y="290">√G</text>
+  <text class="side-mono" x="908" y="290" text-anchor="end">63.2</text>
+  <text class="side-sub"  x="692" y="308" style="font-weight:700;fill:var(--ce-alert);">α / √G</text>
+  <text class="side-mono" x="908" y="308" text-anchor="end" style="fill:var(--ce-alert);">0.0158</text>
+
+  <!-- Param B row -->
+  <rect class="side-row-ok" x="680" y="320" width="240" height="106" rx="6"/>
+  <text class="side-tag-ok" x="692" y="340">Parameter B · low gradient</text>
+  <line x1="692" y1="346" x2="908" y2="346" stroke="var(--ce-success)" stroke-opacity="0.3" stroke-width="1"/>
+  <text class="side-sub"  x="692" y="364">|g|</text>
+  <text class="side-mono" x="908" y="364" text-anchor="end">0.2</text>
+  <text class="side-sub"  x="692" y="384">G (sum of g²)</text>
+  <text class="side-mono" x="908" y="384" text-anchor="end">40</text>
+  <text class="side-sub"  x="692" y="404">√G</text>
+  <text class="side-mono" x="908" y="404" text-anchor="end">6.32</text>
+  <text class="side-sub"  x="692" y="422" style="font-weight:700;fill:var(--ce-success);">α / √G</text>
+  <text class="side-mono" x="908" y="422" text-anchor="end" style="fill:var(--ce-success);">0.158</text>
+
+  <!-- Gap callout -->
+  <text class="side-sub" x="800" y="450" text-anchor="middle" style="font-style:italic;">→ B keeps a 10× larger step size than A</text>
+  <text class="side-sub" x="800" y="464" text-anchor="middle" style="font-style:italic;">  (the per-parameter rescaling at work)</text>
+
+  <!-- ============================ Footer ============================ -->
+  <text class="footer" x="48"  y="510">Both curves slope the same way: every parameter's effective rate decays as 1/√t and eventually enters the tiny-step zone. RMSProp (Part 26) is the direct fix.</text>
+</svg>

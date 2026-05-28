@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" role="img" aria-labelledby="t d">
+  <title id="t">Element-wise vs coupled activation backwards: Jacobian shape determines code shape</title>
+  <desc id="d">Two side-by-side panels contrasting the backward pass for element-wise activations (left, success-green) and coupled activations like softmax (right, alert-red). Left: a diagonal 3-by-3 Jacobian with non-zero entries only on the diagonal, paired with the one-line formula dinputs = dvalues * f-prime(Z). Right: a fully populated 3-by-3 Jacobian with non-zero entries everywhere, paired with the matrix product formula dinputs = dvalues @ J. A bottom band states that ReLU, sigmoid, and tanh are diagonal; softmax is dense.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel-ok {fill:var(--ce-success);fill-opacity:0.07;stroke:var(--ce-success);stroke-width:1.5;}
+    .panel-bad{fill:var(--ce-alert);fill-opacity:0.06;stroke:var(--ce-alert);stroke-width:1.5;}
+    .pill-ok{fill:var(--ce-success);}
+    .pill-bad{fill:var(--ce-alert);}
+    .head-ok {font-weight:700;font-size:15px;fill:var(--ce-success);}
+    .head-bad{font-weight:700;font-size:15px;fill:var(--ce-alert);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .cell-zero{fill:var(--ce-neutral-1);stroke:var(--ce-border);stroke-width:1;}
+    .cell-ok  {fill:var(--ce-success);fill-opacity:0.30;stroke:var(--ce-success);stroke-width:1.2;}
+    .cell-bad {fill:var(--ce-alert);fill-opacity:0.30;stroke:var(--ce-alert);stroke-width:1.2;}
+    .cell-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
+    .code-pill{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .code-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--ce-ink);}
+    .label-head{font-weight:700;font-size:12px;fill:var(--ce-ink);}
+    .label-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .insight-band{fill:var(--ce-primary);fill-opacity:0.08;stroke:var(--ce-primary);stroke-width:1.5;}
+    .insight-head{font-weight:700;font-size:13px;fill:var(--ce-primary);}
+    .insight-body{font-size:12px;fill:var(--ce-ink);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="480"/>
+
+  <text class="title"    x="48" y="48">Element-wise vs coupled activation backwards</text>
+  <text class="subtitle" x="48" y="70">Jacobian shape determines code shape: diagonal → scalar multiply; full → matrix product.</text>
+
+  <!-- ============================ LEFT PANEL: element-wise ============================ -->
+  <rect class="panel-ok" x="48" y="96" width="424" height="288" rx="12"/>
+  <rect class="pill-ok"  x="48" y="96" width="6"   height="288" rx="3"/>
+  <text class="head-ok" x="68" y="124">Element-wise: ReLU, sigmoid, tanh</text>
+  <text class="panel-sub" x="68" y="142">A_k depends only on Z_k. Jacobian is diagonal.</text>
+
+  <!-- Diagonal Jacobian: 3x3 grid, only diagonal cells active -->
+  <text class="label-head" x="180" y="170" text-anchor="middle">∂A / ∂Z   (3 × 3)</text>
+  <g transform="translate(116, 184)">
+    <rect class="cell-ok"   x="0"  y="0"  width="40" height="32"/>
+    <rect class="cell-zero" x="40" y="0"  width="40" height="32"/>
+    <rect class="cell-zero" x="80" y="0"  width="40" height="32"/>
+    <rect class="cell-zero" x="0"  y="32" width="40" height="32"/>
+    <rect class="cell-ok"   x="40" y="32" width="40" height="32"/>
+    <rect class="cell-zero" x="80" y="32" width="40" height="32"/>
+    <rect class="cell-zero" x="0"  y="64" width="40" height="32"/>
+    <rect class="cell-zero" x="40" y="64" width="40" height="32"/>
+    <rect class="cell-ok"   x="80" y="64" width="40" height="32"/>
+
+    <text class="cell-text" x="20"  y="21" text-anchor="middle">f'(Z₁)</text>
+    <text class="cell-text" x="60"  y="21" text-anchor="middle">0</text>
+    <text class="cell-text" x="100" y="21" text-anchor="middle">0</text>
+    <text class="cell-text" x="20"  y="53" text-anchor="middle">0</text>
+    <text class="cell-text" x="60"  y="53" text-anchor="middle">f'(Z₂)</text>
+    <text class="cell-text" x="100" y="53" text-anchor="middle">0</text>
+    <text class="cell-text" x="20"  y="85" text-anchor="middle">0</text>
+    <text class="cell-text" x="60"  y="85" text-anchor="middle">0</text>
+    <text class="cell-text" x="100" y="85" text-anchor="middle">f'(Z₃)</text>
+  </g>
+
+  <text class="label-sub" x="300" y="200">Only diagonal entries are non-zero.</text>
+  <text class="label-sub" x="300" y="218">f'(Z_k) is one scalar per neuron.</text>
+  <text class="label-sub" x="300" y="252">"Multiply by the Jacobian"</text>
+  <text class="label-sub" x="300" y="270">reduces to scalar-per-element</text>
+  <text class="label-sub" x="300" y="288">multiplication.</text>
+
+  <rect class="code-pill" x="68" y="316" width="384" height="48" rx="8"/>
+  <text class="code-text" x="80" y="334">dinputs = dvalues * f_prime(Z)        # one element-wise multiply</text>
+  <text class="code-text" x="80" y="354">                                       # for ReLU: a 1-line mask</text>
+
+  <!-- ============================ RIGHT PANEL: coupled (softmax) ============================ -->
+  <rect class="panel-bad" x="488" y="96" width="424" height="288" rx="12"/>
+  <rect class="pill-bad"  x="488" y="96" width="6"   height="288" rx="3"/>
+  <text class="head-bad" x="508" y="124">Coupled: softmax</text>
+  <text class="panel-sub" x="508" y="142">Each A_k depends on every Z_j. Jacobian is full.</text>
+
+  <text class="label-head" x="620" y="170" text-anchor="middle">∂A / ∂Z   (3 × 3)</text>
+  <g transform="translate(556, 184)">
+    <rect class="cell-bad" x="0"  y="0"  width="40" height="32"/>
+    <rect class="cell-bad" x="40" y="0"  width="40" height="32"/>
+    <rect class="cell-bad" x="80" y="0"  width="40" height="32"/>
+    <rect class="cell-bad" x="0"  y="32" width="40" height="32"/>
+    <rect class="cell-bad" x="40" y="32" width="40" height="32"/>
+    <rect class="cell-bad" x="80" y="32" width="40" height="32"/>
+    <rect class="cell-bad" x="0"  y="64" width="40" height="32"/>
+    <rect class="cell-bad" x="40" y="64" width="40" height="32"/>
+    <rect class="cell-bad" x="80" y="64" width="40" height="32"/>
+
+    <text class="cell-text" x="20"  y="21" text-anchor="middle">A₁(1−A₁)</text>
+    <text class="cell-text" x="60"  y="21" text-anchor="middle">−A₁A₂</text>
+    <text class="cell-text" x="100" y="21" text-anchor="middle">−A₁A₃</text>
+    <text class="cell-text" x="20"  y="53" text-anchor="middle">−A₂A₁</text>
+    <text class="cell-text" x="60"  y="53" text-anchor="middle">A₂(1−A₂)</text>
+    <text class="cell-text" x="100" y="53" text-anchor="middle">−A₂A₃</text>
+    <text class="cell-text" x="20"  y="85" text-anchor="middle">−A₃A₁</text>
+    <text class="cell-text" x="60"  y="85" text-anchor="middle">−A₃A₂</text>
+    <text class="cell-text" x="100" y="85" text-anchor="middle">A₃(1−A₃)</text>
+  </g>
+
+  <text class="label-sub" x="740" y="200">Every cell is non-zero.</text>
+  <text class="label-sub" x="740" y="218">Each output entangles all inputs</text>
+  <text class="label-sub" x="740" y="236">through the softmax denominator.</text>
+  <text class="label-sub" x="740" y="270">Backward needs a real matrix</text>
+  <text class="label-sub" x="740" y="288">product, one per sample.</text>
+
+  <rect class="code-pill" x="508" y="316" width="384" height="48" rx="8"/>
+  <text class="code-text" x="520" y="334">dinputs = dvalues @ J   # full matrix product</text>
+  <text class="code-text" x="520" y="354">                        # Part 19: clean shortcut when paired with CE</text>
+
+  <!-- ============================ Bottom band ============================ -->
+  <rect class="insight-band" x="48" y="400" width="864" height="56" rx="12"/>
+  <text class="insight-head" x="68" y="426">Rule of thumb</text>
+  <text class="insight-body" x="68" y="446">If A_k depends only on Z_k → diagonal Jacobian → element-wise backward. Otherwise → full Jacobian → matrix product per sample.</text>
+</svg>

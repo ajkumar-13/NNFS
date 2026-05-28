@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">The three forms of np.dot</title>
+  <desc id="d">Three side-by-side panels showing the three forms of np.dot. Left panel: vector by vector, two 1-D arrays of length n give a single scalar; neural-network meaning is one neuron with one sample. Middle panel: matrix by vector, an m-by-n weight matrix times a length-n input gives a length-m output vector; meaning is a layer of m neurons on one sample. Right panel: matrix by matrix, an m-by-n weight matrix times an n-by-p input matrix gives an m-by-p result; meaning is a layer of m neurons on a batch of p samples. A footer band reminds the reader that the inner dimensions must always match.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .pill-prim{fill:var(--ce-primary);}
+    .pill-acc{fill:var(--ce-accent);}
+    .pill-ok{fill:var(--ce-success);}
+    .panel-head{font-weight:700;font-size:14px;fill:var(--ce-ink);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .cell-vec{fill:var(--ce-primary);fill-opacity:0.14;stroke:var(--ce-primary);stroke-width:1;}
+    .cell-mat{fill:var(--ce-accent);fill-opacity:0.16;stroke:var(--ce-accent);stroke-width:1;}
+    .cell-out{fill:var(--ce-success);fill-opacity:0.18;stroke:var(--ce-success);stroke-width:1;}
+    .op{font-weight:700;font-size:18px;fill:var(--ce-ink);}
+    .shape-badge{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .shape-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
+    .meaning-head{font-weight:700;font-size:11px;fill:var(--ce-ink-muted);text-transform:uppercase;letter-spacing:0.06em;}
+    .meaning-body{font-size:12px;fill:var(--ce-ink);}
+    .rule-band{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .rule-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
+    .rule-body{font-size:12px;fill:var(--ce-ink-muted);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <!-- Header -->
+  <text class="title"    x="48" y="48">Three forms of np.dot</text>
+  <text class="subtitle" x="48" y="70">One function, three behaviours. The shape of the inputs decides which.</text>
+
+  <!-- ============================ Panel 1: Vector · Vector ============================ -->
+  <rect class="panel"     x="48" y="96" width="280" height="280" rx="12"/>
+  <rect class="pill-prim" x="48" y="96" width="6"   height="280" rx="3"/>
+  <text class="panel-head" x="68" y="124">Vector · Vector</text>
+  <text class="panel-sub"  x="68" y="142">np.dot(a, b)</text>
+
+  <!-- a (1xN row of 4 cells) -->
+  <g transform="translate(78, 180)">
+    <rect class="cell-vec" x="0"  y="0" width="24" height="24"/>
+    <rect class="cell-vec" x="24" y="0" width="24" height="24"/>
+    <rect class="cell-vec" x="48" y="0" width="24" height="24"/>
+    <rect class="cell-vec" x="72" y="0" width="24" height="24"/>
+  </g>
+  <text class="op" x="190" y="198" text-anchor="middle">·</text>
+  <!-- b (1xN row of 4 cells) -->
+  <g transform="translate(204, 180)">
+    <rect class="cell-vec" x="0"  y="0" width="24" height="24"/>
+    <rect class="cell-vec" x="24" y="0" width="24" height="24"/>
+    <rect class="cell-vec" x="48" y="0" width="24" height="24"/>
+    <rect class="cell-vec" x="72" y="0" width="24" height="24"/>
+  </g>
+
+  <text class="op" x="170" y="240" text-anchor="middle">=</text>
+  <!-- Scalar output -->
+  <rect class="cell-out" x="178" y="226" width="32" height="32"/>
+
+  <rect class="shape-badge" x="78"  y="284" width="96" height="24" rx="6"/>
+  <text class="shape-text"  x="126" y="301" text-anchor="middle">(n,)</text>
+  <rect class="shape-badge" x="204" y="284" width="96" height="24" rx="6"/>
+  <text class="shape-text"  x="252" y="301" text-anchor="middle">(n,)</text>
+
+  <text class="meaning-head" x="68" y="334">Means</text>
+  <text class="meaning-body" x="68" y="352">one neuron,</text>
+  <text class="meaning-body" x="68" y="368">one sample → scalar</text>
+
+  <!-- ============================ Panel 2: Matrix · Vector ============================ -->
+  <rect class="panel"    x="344" y="96" width="280" height="280" rx="12"/>
+  <rect class="pill-acc" x="344" y="96" width="6"   height="280" rx="3"/>
+  <text class="panel-head" x="364" y="124">Matrix · Vector</text>
+  <text class="panel-sub"  x="364" y="142">np.dot(W, x)</text>
+
+  <!-- W (3x4) -->
+  <g transform="translate(368, 168)">
+    <rect class="cell-mat" x="0"  y="0"  width="24" height="24"/>
+    <rect class="cell-mat" x="24" y="0"  width="24" height="24"/>
+    <rect class="cell-mat" x="48" y="0"  width="24" height="24"/>
+    <rect class="cell-mat" x="72" y="0"  width="24" height="24"/>
+    <rect class="cell-mat" x="0"  y="24" width="24" height="24"/>
+    <rect class="cell-mat" x="24" y="24" width="24" height="24"/>
+    <rect class="cell-mat" x="48" y="24" width="24" height="24"/>
+    <rect class="cell-mat" x="72" y="24" width="24" height="24"/>
+    <rect class="cell-mat" x="0"  y="48" width="24" height="24"/>
+    <rect class="cell-mat" x="24" y="48" width="24" height="24"/>
+    <rect class="cell-mat" x="48" y="48" width="24" height="24"/>
+    <rect class="cell-mat" x="72" y="48" width="24" height="24"/>
+  </g>
+  <text class="op" x="480" y="208" text-anchor="middle">·</text>
+  <!-- x (4-vector, vertical column for clarity) -->
+  <g transform="translate(500, 168)">
+    <rect class="cell-vec" x="0" y="0"  width="24" height="24"/>
+    <rect class="cell-vec" x="0" y="24" width="24" height="24"/>
+    <rect class="cell-vec" x="0" y="48" width="24" height="24"/>
+  </g>
+  <!-- only 3 cells visible, but it's "(n,)" abstractly; will note via badge -->
+
+  <text class="op" x="555" y="216" text-anchor="middle">=</text>
+  <!-- Output: 3-vector -->
+  <g transform="translate(575, 168)">
+    <rect class="cell-out" x="0" y="0"  width="28" height="24"/>
+    <rect class="cell-out" x="0" y="24" width="28" height="24"/>
+    <rect class="cell-out" x="0" y="48" width="28" height="24"/>
+  </g>
+
+  <rect class="shape-badge" x="368" y="252" width="96" height="24" rx="6"/>
+  <text class="shape-text"  x="416" y="269" text-anchor="middle">(m, n)</text>
+  <rect class="shape-badge" x="488" y="252" width="48" height="24" rx="6"/>
+  <text class="shape-text"  x="512" y="269" text-anchor="middle">(n,)</text>
+  <rect class="shape-badge" x="568" y="252" width="48" height="24" rx="6"/>
+  <text class="shape-text"  x="592" y="269" text-anchor="middle">(m,)</text>
+
+  <text class="meaning-head" x="364" y="334">Means</text>
+  <text class="meaning-body" x="364" y="352">a layer of m neurons,</text>
+  <text class="meaning-body" x="364" y="368">one sample → vector</text>
+
+  <!-- ============================ Panel 3: Matrix · Matrix ============================ -->
+  <rect class="panel"   x="640" y="96" width="272" height="280" rx="12"/>
+  <rect class="pill-ok" x="640" y="96" width="6"   height="280" rx="3"/>
+  <text class="panel-head" x="660" y="124">Matrix · Matrix</text>
+  <text class="panel-sub"  x="660" y="142">np.dot(A, B)</text>
+
+  <!-- A (3x4) -->
+  <g transform="translate(664, 168)">
+    <rect class="cell-mat" x="0"  y="0"  width="20" height="20"/>
+    <rect class="cell-mat" x="20" y="0"  width="20" height="20"/>
+    <rect class="cell-mat" x="40" y="0"  width="20" height="20"/>
+    <rect class="cell-mat" x="60" y="0"  width="20" height="20"/>
+    <rect class="cell-mat" x="0"  y="20" width="20" height="20"/>
+    <rect class="cell-mat" x="20" y="20" width="20" height="20"/>
+    <rect class="cell-mat" x="40" y="20" width="20" height="20"/>
+    <rect class="cell-mat" x="60" y="20" width="20" height="20"/>
+    <rect class="cell-mat" x="0"  y="40" width="20" height="20"/>
+    <rect class="cell-mat" x="20" y="40" width="20" height="20"/>
+    <rect class="cell-mat" x="40" y="40" width="20" height="20"/>
+    <rect class="cell-mat" x="60" y="40" width="20" height="20"/>
+  </g>
+  <text class="op" x="758" y="200" text-anchor="middle">·</text>
+  <!-- B (4x3) -->
+  <g transform="translate(772, 168)">
+    <rect class="cell-mat" x="0"  y="0"  width="20" height="20"/>
+    <rect class="cell-mat" x="20" y="0"  width="20" height="20"/>
+    <rect class="cell-mat" x="40" y="0"  width="20" height="20"/>
+    <rect class="cell-mat" x="0"  y="20" width="20" height="20"/>
+    <rect class="cell-mat" x="20" y="20" width="20" height="20"/>
+    <rect class="cell-mat" x="40" y="20" width="20" height="20"/>
+    <rect class="cell-mat" x="0"  y="40" width="20" height="20"/>
+    <rect class="cell-mat" x="20" y="40" width="20" height="20"/>
+    <rect class="cell-mat" x="40" y="40" width="20" height="20"/>
+    <rect class="cell-mat" x="0"  y="60" width="20" height="20"/>
+    <rect class="cell-mat" x="20" y="60" width="20" height="20"/>
+    <rect class="cell-mat" x="40" y="60" width="20" height="20"/>
+  </g>
+  <text class="op" x="847" y="216" text-anchor="middle">=</text>
+  <!-- output (3x3) -->
+  <g transform="translate(861, 168)">
+    <rect class="cell-out" x="0"  y="0"  width="14" height="20"/>
+    <rect class="cell-out" x="14" y="0"  width="14" height="20"/>
+    <rect class="cell-out" x="28" y="0"  width="14" height="20"/>
+    <rect class="cell-out" x="0"  y="20" width="14" height="20"/>
+    <rect class="cell-out" x="14" y="20" width="14" height="20"/>
+    <rect class="cell-out" x="28" y="20" width="14" height="20"/>
+    <rect class="cell-out" x="0"  y="40" width="14" height="20"/>
+    <rect class="cell-out" x="14" y="40" width="14" height="20"/>
+    <rect class="cell-out" x="28" y="40" width="14" height="20"/>
+  </g>
+
+  <rect class="shape-badge" x="660" y="252" width="80" height="24" rx="6"/>
+  <text class="shape-text"  x="700" y="269" text-anchor="middle">(m, n)</text>
+  <rect class="shape-badge" x="752" y="252" width="80" height="24" rx="6"/>
+  <text class="shape-text"  x="792" y="269" text-anchor="middle">(n, p)</text>
+  <rect class="shape-badge" x="844" y="252" width="64" height="24" rx="6"/>
+  <text class="shape-text"  x="876" y="269" text-anchor="middle">(m, p)</text>
+
+  <text class="meaning-head" x="660" y="334">Means</text>
+  <text class="meaning-body" x="660" y="352">a layer of m neurons,</text>
+  <text class="meaning-body" x="660" y="368">batch of p samples → matrix</text>
+
+  <!-- ============================ Rule band ============================ -->
+  <rect class="rule-band" x="48" y="408" width="864" height="76" rx="12"/>
+  <text class="rule-head" x="68" y="436">One rule covers all three:</text>
+  <text class="rule-body" x="68" y="458">The last axis of the first array is contracted with the first axis of the second array.</text>
+  <text class="rule-body" x="68" y="474">Those two lengths must be equal. The surviving axes form the output shape.</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="518">Vector · vector is commutative; the other two are not.</text>
+  <text class="footer" x="912" y="518" text-anchor="end">BLAS underneath: Lawson et al., 1979.</text>
+</svg>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" role="img" aria-labelledby="t d">
+  <title id="t">A layer is several neurons sharing the same inputs</title>
+  <desc id="d">Two side-by-side panels compare a single neuron with a layer of three neurons, both fed by the same four-element input vector. The left panel shows one neuron with four weights and one bias — five parameters. The right panel shows three neurons stacked vertically, each with its own four weights and its own bias — fifteen parameters in total. A parameter-count band at the bottom contrasts the two and states the general formula: a layer of m neurons with n inputs has m × (n + 1) parameters.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .panel-head{font-weight:700;font-size:14px;fill:var(--ce-ink);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .input-node{fill:var(--ce-primary);fill-opacity:0.16;stroke:var(--ce-primary);stroke-width:1.5;}
+    .input-label{font-weight:600;font-size:12px;fill:var(--ce-ink);}
+    .n1{fill:var(--ce-accent);fill-opacity:0.18;stroke:var(--ce-accent);stroke-width:1.8;}
+    .n2{fill:var(--ce-success);fill-opacity:0.18;stroke:var(--ce-success);stroke-width:1.8;}
+    .n3{fill:var(--ce-primary);fill-opacity:0.18;stroke:var(--ce-primary);stroke-width:1.8;}
+    .n-label{font-weight:600;font-size:12px;fill:var(--ce-ink);}
+    .conn-prim{stroke:var(--ce-primary);stroke-width:1.2;fill:none;opacity:0.75;}
+    .conn1{stroke:var(--ce-accent);stroke-width:1.1;fill:none;opacity:0.65;}
+    .conn2{stroke:var(--ce-success);stroke-width:1.1;fill:none;opacity:0.65;}
+    .conn3{stroke:var(--ce-primary);stroke-width:1.1;fill:none;opacity:0.65;}
+    .out-acc{fill:var(--ce-accent);fill-opacity:0.16;stroke:var(--ce-accent);stroke-width:1.5;}
+    .out-ok{fill:var(--ce-success);fill-opacity:0.16;stroke:var(--ce-success);stroke-width:1.5;}
+    .out-prim{fill:var(--ce-primary);fill-opacity:0.16;stroke:var(--ce-primary);stroke-width:1.5;}
+    .out-label{font-weight:600;font-size:12px;fill:var(--ce-ink);}
+    .badge-1{fill:var(--ce-accent);}
+    .badge-3{fill:var(--ce-primary);}
+    .badge-text{font-weight:700;font-size:14px;fill:#FFFFFF;}
+    .count-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
+    .count-body{font-size:12px;fill:var(--ce-ink-muted);}
+    .count-num{font-weight:700;font-size:20px;fill:var(--ce-ink);}
+    .count-num-acc{font-weight:700;font-size:20px;fill:var(--ce-accent);}
+    .count-num-prim{font-weight:700;font-size:20px;fill:var(--ce-primary);}
+    .arr-prim{fill:var(--ce-primary);}
+  ]]></style>
+
+  <defs>
+    <marker id="aPrim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arr-prim"/>
+    </marker>
+    <marker id="aAcc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" style="fill:var(--ce-accent);"/>
+    </marker>
+    <marker id="aOk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" style="fill:var(--ce-success);"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="500"/>
+
+  <!-- Header -->
+  <text class="title"    x="48" y="48">A layer is several neurons sharing the same inputs</text>
+  <text class="subtitle" x="48" y="70">One neuron has n + 1 parameters. A layer of m such neurons has m × (n + 1), exactly m times more.</text>
+
+  <!-- Left panel: single neuron -->
+  <rect class="panel" x="48" y="96" width="412" height="320" rx="14"/>
+  <circle class="badge-1" cx="78" cy="124" r="16"/>
+  <text class="badge-text" x="78" y="129" text-anchor="middle">1</text>
+  <text class="panel-head" x="106" y="124">A single neuron</text>
+  <text class="panel-sub"  x="106" y="140">4 inputs · 4 weights · 1 bias  =  5 parameters</text>
+
+  <g>
+    <circle class="input-node" cx="100" cy="200" r="18"/><text class="input-label" x="100" y="204" text-anchor="middle">X₁</text>
+    <circle class="input-node" cx="100" cy="260" r="18"/><text class="input-label" x="100" y="264" text-anchor="middle">X₂</text>
+    <circle class="input-node" cx="100" cy="320" r="18"/><text class="input-label" x="100" y="324" text-anchor="middle">X₃</text>
+    <circle class="input-node" cx="100" cy="380" r="18"/><text class="input-label" x="100" y="384" text-anchor="middle">X₄</text>
+  </g>
+
+  <circle class="n1" cx="280" cy="290" r="38"/>
+  <text class="n-label" x="280" y="286" text-anchor="middle">Σ + b</text>
+  <text class="n-label" x="280" y="302" text-anchor="middle" style="font-size:10px;fill:var(--ce-ink-muted);">neuron</text>
+
+  <line class="conn-prim" x1="118" y1="200" x2="244" y2="278" marker-end="url(#aPrim)"/>
+  <line class="conn-prim" x1="118" y1="260" x2="244" y2="285" marker-end="url(#aPrim)"/>
+  <line class="conn-prim" x1="118" y1="320" x2="244" y2="295" marker-end="url(#aPrim)"/>
+  <line class="conn-prim" x1="118" y1="380" x2="244" y2="302" marker-end="url(#aPrim)"/>
+
+  <line class="conn-prim" x1="320" y1="290" x2="354" y2="290" marker-end="url(#aPrim)"/>
+  <rect class="out-acc" x="356" y="270" width="76" height="40" rx="10"/>
+  <text class="out-label" x="394" y="294" text-anchor="middle">ŷ</text>
+
+  <!-- Right panel: layer of 3 -->
+  <rect class="panel" x="486" y="96" width="426" height="320" rx="14"/>
+  <circle class="badge-3" cx="516" cy="124" r="16"/>
+  <text class="badge-text" x="516" y="129" text-anchor="middle">3</text>
+  <text class="panel-head" x="544" y="124">A layer of three neurons</text>
+  <text class="panel-sub"  x="544" y="140">4 inputs · 12 weights · 3 biases  =  15 parameters</text>
+
+  <g>
+    <circle class="input-node" cx="538" cy="200" r="18"/><text class="input-label" x="538" y="204" text-anchor="middle">X₁</text>
+    <circle class="input-node" cx="538" cy="260" r="18"/><text class="input-label" x="538" y="264" text-anchor="middle">X₂</text>
+    <circle class="input-node" cx="538" cy="320" r="18"/><text class="input-label" x="538" y="324" text-anchor="middle">X₃</text>
+    <circle class="input-node" cx="538" cy="380" r="18"/><text class="input-label" x="538" y="384" text-anchor="middle">X₄</text>
+  </g>
+
+  <circle class="n1" cx="720" cy="218" r="30"/>
+  <text class="n-label" x="720" y="223" text-anchor="middle">Σ + b₁</text>
+  <circle class="n2" cx="720" cy="294" r="30"/>
+  <text class="n-label" x="720" y="299" text-anchor="middle">Σ + b₂</text>
+  <circle class="n3" cx="720" cy="370" r="30"/>
+  <text class="n-label" x="720" y="375" text-anchor="middle">Σ + b₃</text>
+
+  <!-- to neuron 1 -->
+  <line class="conn1" x1="556" y1="200" x2="690" y2="210"/>
+  <line class="conn1" x1="556" y1="260" x2="690" y2="220"/>
+  <line class="conn1" x1="556" y1="320" x2="690" y2="225"/>
+  <line class="conn1" x1="556" y1="380" x2="690" y2="232"/>
+  <!-- to neuron 2 -->
+  <line class="conn2" x1="556" y1="200" x2="690" y2="285"/>
+  <line class="conn2" x1="556" y1="260" x2="690" y2="292"/>
+  <line class="conn2" x1="556" y1="320" x2="690" y2="298"/>
+  <line class="conn2" x1="556" y1="380" x2="690" y2="305"/>
+  <!-- to neuron 3 -->
+  <line class="conn3" x1="556" y1="200" x2="690" y2="358"/>
+  <line class="conn3" x1="556" y1="260" x2="690" y2="365"/>
+  <line class="conn3" x1="556" y1="320" x2="690" y2="372"/>
+  <line class="conn3" x1="556" y1="380" x2="690" y2="380"/>
+
+  <line stroke="var(--ce-accent)"  stroke-width="1.8" x1="750" y1="218" x2="786" y2="218" marker-end="url(#aAcc)"/>
+  <line stroke="var(--ce-success)" stroke-width="1.8" x1="750" y1="294" x2="786" y2="294" marker-end="url(#aOk)"/>
+  <line stroke="var(--ce-primary)" stroke-width="1.8" x1="750" y1="370" x2="786" y2="370" marker-end="url(#aPrim)"/>
+
+  <rect class="out-acc"  x="788" y="200" width="80" height="36" rx="10"/>
+  <text class="out-label" x="828" y="223" text-anchor="middle">ŷ₁</text>
+  <rect class="out-ok"   x="788" y="276" width="80" height="36" rx="10"/>
+  <text class="out-label" x="828" y="299" text-anchor="middle">ŷ₂</text>
+  <rect class="out-prim" x="788" y="352" width="80" height="36" rx="10"/>
+  <text class="out-label" x="828" y="375" text-anchor="middle">ŷ₃</text>
+
+  <!-- Parameter-count band -->
+  <rect class="panel" x="48" y="436" width="864" height="40" rx="10"/>
+  <text class="count-head" x="68"  y="461">Parameter count:</text>
+  <text class="count-num-acc"   x="208" y="463">5</text>
+  <text class="count-body" x="230" y="461">(one neuron)</text>
+  <text class="count-body" x="332" y="461">→</text>
+  <text class="count-num-prim" x="358" y="463">15</text>
+  <text class="count-body" x="386" y="461">(three neurons)</text>
+  <text class="count-body" x="520" y="461">→</text>
+  <text class="count-head" x="544" y="461">general:</text>
+  <text class="mono" x="616" y="463" style="font-size:13px;fill:var(--ce-ink);">params = m × (n + 1)</text>
+  <text class="count-body" x="784" y="461">m neurons · n inputs each</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="496">Each neuron is a complete, independent copy: its own weights, its own bias, its own output.</text>
+  <text class="footer" x="912" y="496" text-anchor="end">Stacking layers, and learning the weights, is what the rest of the series builds.</text>
+</svg>

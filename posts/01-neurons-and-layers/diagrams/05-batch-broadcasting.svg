@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" role="img" aria-labelledby="t d">
+  <title id="t">Batched forward pass — three samples through three neurons in one call</title>
+  <desc id="d">A left-to-right data-flow diagram. A 3×4 input matrix on the left is matrix-multiplied with the transposed 4×3 weight matrix in the middle, producing a 3×3 raw output. A 3-element bias vector is then broadcast across all three rows of the raw output, adding the same bias to each sample's column. The final 3×3 output matrix is shown on the right, with each row labelled as one sample's three neuron activations and each column labelled with which neuron produced it. Shape badges accompany every intermediate array.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--ce-ink);}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .label-head{font-weight:700;font-size:12px;fill:var(--ce-ink);}
+    .label-sub {font-size:11px;fill:var(--ce-ink-muted);}
+    .cell-in {fill:var(--ce-primary);fill-opacity:0.12;stroke:var(--ce-primary);stroke-width:1;}
+    .cell-w  {fill:var(--ce-accent);fill-opacity:0.14;stroke:var(--ce-accent);stroke-width:1;}
+    .cell-b  {fill:var(--ce-success);fill-opacity:0.18;stroke:var(--ce-success);stroke-width:1.2;}
+    .cell-raw{fill:var(--ce-neutral-1);stroke:var(--ce-border);stroke-width:1;}
+    .cell-out{fill:var(--ce-accent);fill-opacity:0.18;stroke:var(--ce-accent);stroke-width:1.2;}
+    .cell-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--ce-ink);}
+    .arrow-line{stroke:var(--ce-ink-muted);stroke-width:1.5;fill:none;}
+    .arrow-head{fill:var(--ce-ink-muted);}
+    .arrow-bias{stroke:var(--ce-success);stroke-width:1.2;stroke-dasharray:4 3;fill:none;}
+    .arrow-bias-head{fill:var(--ce-success);}
+    .op-label{font-weight:700;font-size:13px;fill:var(--ce-ink);}
+    .shape-badge{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .shape-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--ce-ink);font-weight:600;}
+    .row-tag{font-size:10px;fill:var(--ce-ink-muted);}
+    .col-tag{font-size:10px;fill:var(--ce-ink-muted);}
+  ]]></style>
+
+  <defs>
+    <marker id="aMute" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arrow-head"/>
+    </marker>
+    <marker id="aBias" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arrow-bias-head"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="500"/>
+
+  <!-- Header -->
+  <text class="title"    x="48" y="48">Three samples, three neurons, one call</text>
+  <text class="subtitle" x="48" y="70">A batched forward pass: (N, n) inputs times (n, m) transposed weights, plus a broadcast (m,) bias, yields an (N, m) output.</text>
+
+  <!-- Inputs matrix (3 x 4) -->
+  <text class="label-head" x="116" y="120" text-anchor="middle">inputs  X</text>
+  <text class="label-sub"  x="116" y="136" text-anchor="middle">3 samples · 4 features</text>
+  <g>
+    <rect class="cell-in" x="60"  y="150" width="32" height="32"/>
+    <rect class="cell-in" x="92"  y="150" width="32" height="32"/>
+    <rect class="cell-in" x="124" y="150" width="32" height="32"/>
+    <rect class="cell-in" x="156" y="150" width="32" height="32"/>
+    <rect class="cell-in" x="60"  y="182" width="32" height="32"/>
+    <rect class="cell-in" x="92"  y="182" width="32" height="32"/>
+    <rect class="cell-in" x="124" y="182" width="32" height="32"/>
+    <rect class="cell-in" x="156" y="182" width="32" height="32"/>
+    <rect class="cell-in" x="60"  y="214" width="32" height="32"/>
+    <rect class="cell-in" x="92"  y="214" width="32" height="32"/>
+    <rect class="cell-in" x="124" y="214" width="32" height="32"/>
+    <rect class="cell-in" x="156" y="214" width="32" height="32"/>
+  </g>
+  <text class="row-tag" x="50" y="172" text-anchor="end">s₁</text>
+  <text class="row-tag" x="50" y="204" text-anchor="end">s₂</text>
+  <text class="row-tag" x="50" y="236" text-anchor="end">s₃</text>
+  <rect class="shape-badge" x="80" y="260" width="72" height="24" rx="6"/>
+  <text class="shape-text"  x="116" y="277" text-anchor="middle">(3, 4)</text>
+
+  <!-- "dot" operator -->
+  <text class="op-label" x="218" y="202" text-anchor="middle">·</text>
+
+  <!-- Weights^T matrix (4 x 3) -->
+  <text class="label-head" x="328" y="120" text-anchor="middle">weights  Wᵀ</text>
+  <text class="label-sub"  x="328" y="136" text-anchor="middle">4 features · 3 neurons</text>
+  <g>
+    <rect class="cell-w" x="280" y="150" width="32" height="32"/>
+    <rect class="cell-w" x="312" y="150" width="32" height="32"/>
+    <rect class="cell-w" x="344" y="150" width="32" height="32"/>
+    <rect class="cell-w" x="280" y="182" width="32" height="32"/>
+    <rect class="cell-w" x="312" y="182" width="32" height="32"/>
+    <rect class="cell-w" x="344" y="182" width="32" height="32"/>
+    <rect class="cell-w" x="280" y="214" width="32" height="32"/>
+    <rect class="cell-w" x="312" y="214" width="32" height="32"/>
+    <rect class="cell-w" x="344" y="214" width="32" height="32"/>
+    <rect class="cell-w" x="280" y="246" width="32" height="32"/>
+    <rect class="cell-w" x="312" y="246" width="32" height="32"/>
+    <rect class="cell-w" x="344" y="246" width="32" height="32"/>
+  </g>
+  <text class="col-tag" x="296" y="146" text-anchor="middle">n₁</text>
+  <text class="col-tag" x="328" y="146" text-anchor="middle">n₂</text>
+  <text class="col-tag" x="360" y="146" text-anchor="middle">n₃</text>
+  <rect class="shape-badge" x="292" y="292" width="72" height="24" rx="6"/>
+  <text class="shape-text"  x="328" y="309" text-anchor="middle">(4, 3)</text>
+
+  <!-- "=" -->
+  <text class="op-label" x="406" y="202" text-anchor="middle">=</text>
+
+  <!-- Raw output (before bias) (3 x 3) -->
+  <text class="label-head" x="498" y="120" text-anchor="middle">raw  X · Wᵀ</text>
+  <text class="label-sub"  x="498" y="136" text-anchor="middle">before bias</text>
+  <g>
+    <rect class="cell-raw" x="450" y="150" width="32" height="32"/>
+    <rect class="cell-raw" x="482" y="150" width="32" height="32"/>
+    <rect class="cell-raw" x="514" y="150" width="32" height="32"/>
+    <rect class="cell-raw" x="450" y="182" width="32" height="32"/>
+    <rect class="cell-raw" x="482" y="182" width="32" height="32"/>
+    <rect class="cell-raw" x="514" y="182" width="32" height="32"/>
+    <rect class="cell-raw" x="450" y="214" width="32" height="32"/>
+    <rect class="cell-raw" x="482" y="214" width="32" height="32"/>
+    <rect class="cell-raw" x="514" y="214" width="32" height="32"/>
+  </g>
+  <rect class="shape-badge" x="462" y="260" width="72" height="24" rx="6"/>
+  <text class="shape-text"  x="498" y="277" text-anchor="middle">(3, 3)</text>
+
+  <!-- "+ b" -->
+  <text class="op-label" x="588" y="202" text-anchor="middle">+ b</text>
+
+  <!-- Bias vector (3,) shown vertical for clarity, broadcast across rows -->
+  <text class="label-head" x="650" y="120" text-anchor="middle">bias  b</text>
+  <text class="label-sub"  x="650" y="136" text-anchor="middle">one per neuron</text>
+  <g>
+    <rect class="cell-b" x="634" y="150" width="32" height="32"/>
+    <rect class="cell-b" x="634" y="182" width="32" height="32"/>
+    <rect class="cell-b" x="634" y="214" width="32" height="32"/>
+  </g>
+  <text class="row-tag" x="624" y="172" text-anchor="end">n₁</text>
+  <text class="row-tag" x="624" y="204" text-anchor="end">n₂</text>
+  <text class="row-tag" x="624" y="236" text-anchor="end">n₃</text>
+  <rect class="shape-badge" x="612" y="260" width="72" height="24" rx="6"/>
+  <text class="shape-text"  x="648" y="277" text-anchor="middle">(3,)</text>
+
+  <!-- "=" -->
+  <text class="op-label" x="724" y="202" text-anchor="middle">=</text>
+
+  <!-- Final output (3 x 3) -->
+  <text class="label-head" x="836" y="120" text-anchor="middle">outputs  Y</text>
+  <text class="label-sub"  x="836" y="136" text-anchor="middle">3 samples · 3 neurons</text>
+  <g>
+    <rect class="cell-out" x="772" y="150" width="42" height="32"/>
+    <rect class="cell-out" x="814" y="150" width="42" height="32"/>
+    <rect class="cell-out" x="856" y="150" width="42" height="32"/>
+    <rect class="cell-out" x="772" y="182" width="42" height="32"/>
+    <rect class="cell-out" x="814" y="182" width="42" height="32"/>
+    <rect class="cell-out" x="856" y="182" width="42" height="32"/>
+    <rect class="cell-out" x="772" y="214" width="42" height="32"/>
+    <rect class="cell-out" x="814" y="214" width="42" height="32"/>
+    <rect class="cell-out" x="856" y="214" width="42" height="32"/>
+
+    <text class="cell-text" x="793" y="170" text-anchor="middle">4.80</text>
+    <text class="cell-text" x="835" y="170" text-anchor="middle">1.21</text>
+    <text class="cell-text" x="877" y="170" text-anchor="middle">2.39</text>
+    <text class="cell-text" x="793" y="202" text-anchor="middle">8.90</text>
+    <text class="cell-text" x="835" y="202" text-anchor="middle">-1.81</text>
+    <text class="cell-text" x="877" y="202" text-anchor="middle">0.20</text>
+    <text class="cell-text" x="793" y="234" text-anchor="middle">1.41</text>
+    <text class="cell-text" x="835" y="234" text-anchor="middle">1.05</text>
+    <text class="cell-text" x="877" y="234" text-anchor="middle">0.03</text>
+  </g>
+  <text class="row-tag" x="762" y="172" text-anchor="end">s₁</text>
+  <text class="row-tag" x="762" y="204" text-anchor="end">s₂</text>
+  <text class="row-tag" x="762" y="236" text-anchor="end">s₃</text>
+  <text class="col-tag" x="793" y="146" text-anchor="middle">n₁</text>
+  <text class="col-tag" x="835" y="146" text-anchor="middle">n₂</text>
+  <text class="col-tag" x="877" y="146" text-anchor="middle">n₃</text>
+  <rect class="shape-badge" x="798" y="260" width="72" height="24" rx="6"/>
+  <text class="shape-text"  x="834" y="277" text-anchor="middle">(3, 3)</text>
+
+  <!-- Broadcasting note: a single subtle line under the bias panel makes the point
+       without the arrow-clutter that collides with row tags. -->
+  <text class="label-sub" x="650" y="304" text-anchor="middle" style="fill:var(--ce-success);font-weight:600;">broadcast across all rows</text>
+
+  <!-- Code box -->
+  <rect class="panel" x="48" y="346" width="864" height="98" rx="12"/>
+  <text class="label-head" x="68" y="372">Code (NumPy)</text>
+  <text class="mono" x="68" y="396">Y = np.dot(X, W.T) + b      # X: (N, n)  ·  W: (m, n)  ·  b: (m,)  →  Y: (N, m)</text>
+  <text class="label-sub" x="68" y="420">Each row of Y is one sample's output across all neurons.  Each column belongs to one neuron.</text>
+  <text class="label-sub" x="68" y="436">Broadcasting adds the (m,) bias to every row of the (N, m) result; no explicit loop required.</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="478">N = batch size  ·  n = features per sample  ·  m = neurons per layer.</text>
+  <text class="footer" x="912" y="478" text-anchor="end">Broadcasting follows NumPy's rules; see the np.broadcast reference.</text>
+</svg>

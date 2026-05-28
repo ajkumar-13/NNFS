@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" role="img" aria-labelledby="t d">
+  <title id="t">Why activations matter: linear stacks stay linear; with a non-linearity, depth becomes power</title>
+  <desc id="d">Two side-by-side panels comparing what a two-layer network can represent. Left panel, no activation: a smooth diagonal straight line, the only kind of function a stack of linear layers can produce. Right panel, with ReLU between the layers: a piecewise-linear function with multiple bends, each kink corresponding to a hidden neuron crossing zero. The right panel can fit any continuous shape; the left panel can only fit a single line. A footer summarises the lesson.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel-bad{fill:var(--ce-alert);fill-opacity:0.06;stroke:var(--ce-alert);stroke-width:1.5;}
+    .panel-ok {fill:var(--ce-success);fill-opacity:0.07;stroke:var(--ce-success);stroke-width:1.5;}
+    .pill-bad{fill:var(--ce-alert);}
+    .pill-ok {fill:var(--ce-success);}
+    .head-bad{font-weight:700;font-size:15px;fill:var(--ce-alert);}
+    .head-ok {font-weight:700;font-size:15px;fill:var(--ce-success);}
+    .panel-sub{font-size:12px;fill:var(--ce-ink-muted);}
+    .chart{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .axis{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
+    .axis-label{font-size:11px;fill:var(--ce-ink-muted);}
+    .curve-bad{stroke:var(--ce-alert);stroke-width:2.5;fill:none;}
+    .curve-ok{stroke:var(--ce-success);stroke-width:2.5;fill:none;}
+    .target{stroke:var(--ce-ink-muted);stroke-width:1.2;fill:none;stroke-dasharray:4 3;}
+    .target-label{font-size:11px;fill:var(--ce-ink-muted);font-style:italic;}
+    .formula-pill{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .formula-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--ce-ink);}
+    .verdict-bad{font-size:13px;font-weight:700;fill:var(--ce-alert);}
+    .verdict-ok{font-size:13px;font-weight:700;fill:var(--ce-success);}
+    .bend-marker{fill:var(--ce-success);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="480"/>
+
+  <text class="title"    x="48" y="48">Why an activation matters</text>
+  <text class="subtitle" x="48" y="70">Two dense layers, same architecture, two different functions the network can represent.</text>
+
+  <!-- ============== LEFT PANEL: no activation ============== -->
+  <rect class="panel-bad" x="48" y="96" width="424" height="296" rx="12"/>
+  <rect class="pill-bad"  x="48" y="96" width="6"   height="296" rx="3"/>
+  <text class="head-bad" x="68" y="124">Without activation: F = (X·W₁ + b₁)·W₂ + b₂</text>
+  <text class="panel-sub" x="68" y="142">collapses to one linear map; only straight lines are reachable</text>
+
+  <!-- Mini chart -->
+  <rect class="chart" x="80" y="160" width="376" height="180" rx="8"/>
+  <line class="axis" x1="100" y1="320" x2="436" y2="320"/>
+  <line class="axis" x1="100" y1="320" x2="100" y2="180"/>
+  <text class="axis-label" x="442" y="324">x</text>
+  <text class="axis-label" x="96"  y="178" text-anchor="end">y</text>
+
+  <!-- Target curve (zigzag) shown as dashed grey hint -->
+  <path class="target" d="M 110 290 L 160 220 L 200 290 L 250 200 L 300 280 L 350 210 L 420 280"/>
+  <text class="target-label" x="430" y="220" text-anchor="end">target shape</text>
+
+  <!-- Single straight line approximation (the best the model can do) -->
+  <path class="curve-bad" d="M 110 295 L 420 220"/>
+
+  <rect class="formula-pill" x="80" y="350" width="376" height="32" rx="6"/>
+  <text class="formula-text" x="92" y="370">F = X · (W₁ W₂) + (b₁ W₂ + b₂)    one straight line</text>
+
+  <!-- ============== RIGHT PANEL: with ReLU ============== -->
+  <rect class="panel-ok" x="488" y="96" width="424" height="296" rx="12"/>
+  <rect class="pill-ok"  x="488" y="96" width="6"   height="296" rx="3"/>
+  <text class="head-ok" x="508" y="124">With ReLU: F = ReLU(X·W₁ + b₁)·W₂ + b₂</text>
+  <text class="panel-sub" x="508" y="142">one kink per hidden neuron; any continuous shape can be approximated</text>
+
+  <!-- Mini chart -->
+  <rect class="chart" x="520" y="160" width="376" height="180" rx="8"/>
+  <line class="axis" x1="540" y1="320" x2="876" y2="320"/>
+  <line class="axis" x1="540" y1="320" x2="540" y2="180"/>
+  <text class="axis-label" x="882" y="324">x</text>
+  <text class="axis-label" x="536" y="178" text-anchor="end">y</text>
+
+  <!-- Same target hint -->
+  <path class="target" d="M 550 290 L 600 220 L 640 290 L 690 200 L 740 280 L 790 210 L 860 280"/>
+
+  <!-- Piecewise linear approximation: bends at each ReLU "kink" -->
+  <path class="curve-ok" d="M 550 290 L 600 222 L 640 288 L 690 204 L 740 282 L 790 212 L 860 282"/>
+  <!-- Bend markers -->
+  <circle class="bend-marker" cx="600" cy="222" r="3.5"/>
+  <circle class="bend-marker" cx="640" cy="288" r="3.5"/>
+  <circle class="bend-marker" cx="690" cy="204" r="3.5"/>
+  <circle class="bend-marker" cx="740" cy="282" r="3.5"/>
+  <circle class="bend-marker" cx="790" cy="212" r="3.5"/>
+
+  <rect class="formula-pill" x="520" y="350" width="376" height="32" rx="6"/>
+  <text class="formula-text" x="532" y="370">F is piecewise linear; one kink per active hidden neuron</text>
+
+  <!-- ============== Footer ============== -->
+  <text class="verdict-bad" x="48"  y="430">Linear stack cannot fit a curve, no matter how deep.</text>
+  <text class="verdict-ok"  x="912" y="430" text-anchor="end">ReLU between layers makes depth pay off.</text>
+  <text class="footer"      x="48"  y="456">Glorot, Bordes &amp; Bengio (2011) made ReLU the default; AlexNet (Krizhevsky et al., 2012) made the result undeniable.</text>
+</svg>

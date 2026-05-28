@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" role="img" aria-labelledby="t d">
+  <title id="t">The negative-log curve: cross-entropy loss as a function of predicted probability</title>
+  <desc id="d">A line chart plotting -log(p) against the predicted probability p, for p between 0.01 and 1.0. The curve starts very high near p = 0 (loss above 4 at p = 0.01) and drops smoothly to zero at p = 1. Five reference dots mark the values at p = 0.1, 0.3, 0.5, 0.7, and 0.9, with the corresponding loss values labelled. A right-side panel summarises the two key properties of the curve: loss is non-negative everywhere, and loss is zero only at p = 1.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --ce-grid:rgba(26,26,26,0.06);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --ce-grid:rgba(241,238,232,0.08);
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .axis{stroke:var(--ce-ink-muted);stroke-width:1.25;fill:none;}
+    .grid{stroke:var(--ce-grid);stroke-width:0.75;fill:none;}
+    .axis-label{font-size:11px;fill:var(--ce-ink-muted);}
+    .axis-title{font-size:13px;font-weight:600;fill:var(--ce-ink);}
+    .curve{stroke:var(--ce-primary);stroke-width:3;fill:none;stroke-linecap:round;}
+    .ref-dot{fill:var(--ce-accent);}
+    .ref-label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-accent);}
+    .ref-leader{stroke:var(--ce-accent);stroke-width:1;fill:none;stroke-dasharray:2 2;}
+    .insight-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
+    .insight-body{font-size:12px;fill:var(--ce-ink);}
+    .insight-muted{font-size:11px;fill:var(--ce-ink-muted);}
+    .formula-pill{fill:var(--ce-primary);fill-opacity:0.10;stroke:var(--ce-primary);stroke-width:1.2;}
+    .formula-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;fill:var(--ce-ink);font-weight:600;}
+  ]]></style>
+
+  <rect class="bg" width="960" height="500"/>
+
+  <text class="title"    x="48" y="48">Cross-entropy: the −log(p) curve</text>
+  <text class="subtitle" x="48" y="70">Loss is the negative log of the probability the network assigned to the correct class.</text>
+
+  <!-- ============================ Chart panel ============================ -->
+  <rect class="panel" x="48" y="96" width="560" height="356" rx="12"/>
+
+  <!-- Plot area: x: p in [0, 1] maps to [80, 588]; y: loss in [0, 5] maps to [432, 120] (inverted) -->
+  <!-- Gridlines -->
+  <g class="grid">
+    <line x1="80" y1="120" x2="588" y2="120"/>
+    <line x1="80" y1="182" x2="588" y2="182"/>
+    <line x1="80" y1="245" x2="588" y2="245"/>
+    <line x1="80" y1="308" x2="588" y2="308"/>
+    <line x1="80" y1="370" x2="588" y2="370"/>
+  </g>
+
+  <!-- Axes -->
+  <line class="axis" x1="80" y1="432" x2="588" y2="432"/>
+  <line class="axis" x1="80" y1="432" x2="80"  y2="120"/>
+
+  <!-- Y-axis ticks (loss values 0, 1, 2, 3, 4) -->
+  <text class="axis-label" x="72" y="436" text-anchor="end">0</text>
+  <text class="axis-label" x="72" y="374" text-anchor="end">1</text>
+  <text class="axis-label" x="72" y="312" text-anchor="end">2</text>
+  <text class="axis-label" x="72" y="249" text-anchor="end">3</text>
+  <text class="axis-label" x="72" y="186" text-anchor="end">4</text>
+  <text class="axis-label" x="72" y="124" text-anchor="end">5</text>
+
+  <!-- X-axis ticks (p values 0.0, 0.2, 0.4, 0.6, 0.8, 1.0) -->
+  <text class="axis-label" x="80"  y="450" text-anchor="middle">0.0</text>
+  <text class="axis-label" x="182" y="450" text-anchor="middle">0.2</text>
+  <text class="axis-label" x="283" y="450" text-anchor="middle">0.4</text>
+  <text class="axis-label" x="385" y="450" text-anchor="middle">0.6</text>
+  <text class="axis-label" x="486" y="450" text-anchor="middle">0.8</text>
+  <text class="axis-label" x="588" y="450" text-anchor="middle">1.0</text>
+
+  <!-- Axis titles -->
+  <text class="axis-title" x="334" y="478" text-anchor="middle">predicted probability  p  for the correct class</text>
+  <g transform="translate(30, 276) rotate(-90)">
+    <text class="axis-title" text-anchor="middle">loss   −log(p)</text>
+  </g>
+
+  <!-- The curve: -log(p), sampled at many points -->
+  <!-- y_pix = 432 - (-log(p)) * 62.4  (where 62.4 px = 1 loss unit, since 1 unit = 62 px) -->
+  <!-- Sample points: p = 0.01, 0.05, 0.10, 0.15, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00 -->
+  <path class="curve"
+        d="M 85.1 144.5
+           L 105.5 245.3
+           L 131.0 288.6
+           L 156.5 314.3
+           L 182.0 332.6
+           L 233.0 357.9
+           L 283.0 375.6
+           L 334.0 388.7
+           L 385.0 399.5
+           L 436.0 409.0
+           L 486.0 417.5
+           L 537.0 425.4
+           L 588.0 432.0"/>
+
+  <!-- Reference dots and labels -->
+  <!-- (p=0.1, loss=2.303), x_pix=131, y_pix=432-2.303*62.4 ≈ 288.3 -->
+  <circle class="ref-dot" cx="131"  cy="288" r="4"/>
+  <text class="ref-label" x="148"  y="285">p=0.1  →  2.30</text>
+
+  <!-- (p=0.3, loss=1.204), x=232.6, y=432-75.1≈357 -->
+  <circle class="ref-dot" cx="232"  cy="357" r="4"/>
+  <text class="ref-label" x="248"  y="354">p=0.3  →  1.20</text>
+
+  <!-- (p=0.5, loss=0.693), x=334, y=388.8 -->
+  <circle class="ref-dot" cx="334"  cy="389" r="4"/>
+  <text class="ref-label" x="350"  y="386">p=0.5  →  0.69</text>
+
+  <!-- (p=0.7, loss=0.357), x=436, y=409.7 -->
+  <circle class="ref-dot" cx="436"  cy="410" r="4"/>
+  <text class="ref-label" x="452"  y="407">p=0.7  →  0.36</text>
+
+  <!-- (p=0.9, loss=0.105), x=537, y=425.4 -->
+  <circle class="ref-dot" cx="537"  cy="425" r="4"/>
+  <text class="ref-label" x="500"  y="420" text-anchor="end">p=0.9  →  0.11</text>
+
+  <!-- Origin marker at (1.0, 0) -->
+  <circle class="ref-dot" cx="588" cy="432" r="4" style="fill:var(--ce-success);"/>
+  <text class="ref-label" x="586" y="425" text-anchor="end" style="fill:var(--ce-success);">p=1.0  →  0  (perfect)</text>
+
+  <!-- ============================ Right info panel ============================ -->
+  <rect class="panel" x="624" y="96" width="288" height="356" rx="12"/>
+  <text class="insight-head" x="644" y="124">Two properties</text>
+
+  <text class="insight-body" x="644" y="156">1. Loss is non-negative.</text>
+  <text class="insight-muted" x="644" y="174">p ∈ (0, 1] → log(p) ≤ 0 → −log(p) ≥ 0</text>
+
+  <text class="insight-body" x="644" y="206">2. Loss is zero only at p = 1.</text>
+  <text class="insight-muted" x="644" y="224">log(1) = 0 → −log(1) = 0</text>
+
+  <text class="insight-head" x="644" y="258">Why this curve, not a linear one?</text>
+  <text class="insight-muted" x="644" y="278">A confident-and-wrong prediction</text>
+  <text class="insight-muted" x="644" y="294">(p = 0.01) costs 20× more than an</text>
+  <text class="insight-muted" x="644" y="310">uncertain one (p = 0.5). That</text>
+  <text class="insight-muted" x="644" y="326">non-linearity is the training signal.</text>
+
+  <rect class="formula-pill" x="644" y="346" width="248" height="56" rx="8"/>
+  <text class="formula-text" x="768" y="376" text-anchor="middle">L = −log(ŷ_correct)</text>
+  <text class="insight-muted" x="768" y="394" text-anchor="middle">per sample</text>
+
+  <text class="insight-muted" x="644" y="424">Mean across the batch gives the</text>
+  <text class="insight-muted" x="644" y="440">scalar that the optimiser minimises.</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="490">Pair with softmax on the output layer (Part 06). Maximum-likelihood estimator under a categorical distribution.</text>
+  <text class="footer" x="912" y="490" text-anchor="end">Origins: Bridle, 1990. Used in essentially every classifier.</text>
+</svg>

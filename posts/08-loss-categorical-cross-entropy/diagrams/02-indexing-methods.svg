@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" role="img" aria-labelledby="t d">
+  <title id="t">Two label formats, two ways to extract the correct-class probability</title>
+  <desc id="d">A side-by-side comparison showing the two ways to extract the correct-class probability from a softmax-output matrix. Left panel uses integer labels [0, 1, 1] and advanced indexing softmax[range(N), labels] to pick row 0 col 0 (0.7), row 1 col 1 (0.5), and row 2 col 1 (0.9). Right panel uses one-hot labels and an element-wise multiply that zeros out wrong-class columns, followed by a per-row sum. Both methods produce the identical result vector [0.7, 0.5, 0.9].</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel-prim{fill:var(--ce-primary);fill-opacity:0.06;stroke:var(--ce-primary);stroke-width:1.5;}
+    .panel-acc {fill:var(--ce-accent);fill-opacity:0.06;stroke:var(--ce-accent);stroke-width:1.5;}
+    .pill-prim{fill:var(--ce-primary);}
+    .pill-acc{fill:var(--ce-accent);}
+    .head-prim{font-weight:700;font-size:15px;fill:var(--ce-primary);}
+    .head-acc{font-weight:700;font-size:15px;fill:var(--ce-accent);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .code-pill{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .code-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--ce-ink);}
+    .cell-base{fill:var(--ce-neutral-1);stroke:var(--ce-border);stroke-width:1;}
+    .cell-hl{fill:var(--ce-success);fill-opacity:0.30;stroke:var(--ce-success);stroke-width:1.5;}
+    .cell-zero{fill:var(--ce-neutral-1);fill-opacity:0.3;stroke:var(--ce-border);stroke-width:1;}
+    .cell-num{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
+    .label-text{font-size:11px;fill:var(--ce-ink-muted);}
+    .result-pill{fill:var(--ce-success);fill-opacity:0.20;stroke:var(--ce-success);stroke-width:1.5;}
+  ]]></style>
+
+  <rect class="bg" width="960" height="460"/>
+
+  <text class="title"    x="48" y="48">Two label formats, two indexing tricks</text>
+  <text class="subtitle" x="48" y="70">Same softmax outputs, same correct-class probabilities. Pick the path that matches the label format.</text>
+
+  <!-- ============================ LEFT: integer labels ============================ -->
+  <rect class="panel-prim" x="48" y="96" width="424" height="312" rx="12"/>
+  <rect class="pill-prim"  x="48" y="96" width="6"   height="312" rx="3"/>
+  <text class="head-prim" x="68" y="124">Integer labels — advanced indexing</text>
+
+  <rect class="code-pill" x="68" y="138" width="384" height="44" rx="6"/>
+  <text class="code-text" x="80" y="156">labels = [0, 1, 1]</text>
+  <text class="code-text" x="80" y="174">correct = softmax[range(N), labels]</text>
+
+  <!-- softmax matrix -->
+  <text class="label-text" x="116" y="202" text-anchor="middle">softmax outputs</text>
+  <g transform="translate(80, 210)">
+    <!-- Row 0 -->
+    <rect class="cell-hl"   x="0"  y="0"  width="48" height="28"/>
+    <rect class="cell-base" x="48" y="0"  width="48" height="28"/>
+    <rect class="cell-base" x="96" y="0"  width="48" height="28"/>
+    <!-- Row 1 -->
+    <rect class="cell-base" x="0"  y="28" width="48" height="28"/>
+    <rect class="cell-hl"   x="48" y="28" width="48" height="28"/>
+    <rect class="cell-base" x="96" y="28" width="48" height="28"/>
+    <!-- Row 2 -->
+    <rect class="cell-base" x="0"  y="56" width="48" height="28"/>
+    <rect class="cell-hl"   x="48" y="56" width="48" height="28"/>
+    <rect class="cell-base" x="96" y="56" width="48" height="28"/>
+
+    <text class="cell-num" x="24" y="19" text-anchor="middle">0.70</text>
+    <text class="cell-num" x="72" y="19" text-anchor="middle">0.10</text>
+    <text class="cell-num" x="120" y="19" text-anchor="middle">0.20</text>
+    <text class="cell-num" x="24" y="47" text-anchor="middle">0.10</text>
+    <text class="cell-num" x="72" y="47" text-anchor="middle">0.50</text>
+    <text class="cell-num" x="120" y="47" text-anchor="middle">0.40</text>
+    <text class="cell-num" x="24" y="75" text-anchor="middle">0.02</text>
+    <text class="cell-num" x="72" y="75" text-anchor="middle">0.90</text>
+    <text class="cell-num" x="120" y="75" text-anchor="middle">0.08</text>
+  </g>
+  <!-- Row labels: r0, r1, r2 -->
+  <text class="label-text" x="70" y="232" text-anchor="end">r0</text>
+  <text class="label-text" x="70" y="260" text-anchor="end">r1</text>
+  <text class="label-text" x="70" y="288" text-anchor="end">r2</text>
+  <!-- Column labels: c0, c1, c2 -->
+  <text class="label-text" x="104" y="306" text-anchor="middle">c0</text>
+  <text class="label-text" x="152" y="306" text-anchor="middle">c1</text>
+  <text class="label-text" x="200" y="306" text-anchor="middle">c2</text>
+
+  <!-- Index walks: r0,c0  r1,c1  r2,c1 -->
+  <text class="label-text" x="248" y="232" style="fill:var(--ce-success);">(r0, c0) → 0.70</text>
+  <text class="label-text" x="248" y="260" style="fill:var(--ce-success);">(r1, c1) → 0.50</text>
+  <text class="label-text" x="248" y="288" style="fill:var(--ce-success);">(r2, c1) → 0.90</text>
+
+  <!-- Result -->
+  <rect class="result-pill" x="68" y="330" width="384" height="32" rx="8"/>
+  <text class="code-text" x="80" y="350">correct = array([0.7, 0.5, 0.9])</text>
+  <text class="label-text" x="68" y="386">Row indices come from range(N); column indices come from the label list.</text>
+
+  <!-- ============================ RIGHT: one-hot labels ============================ -->
+  <rect class="panel-acc" x="488" y="96" width="424" height="312" rx="12"/>
+  <rect class="pill-acc"  x="488" y="96" width="6"   height="312" rx="3"/>
+  <text class="head-acc" x="508" y="124">One-hot labels — element-wise multiply</text>
+
+  <rect class="code-pill" x="508" y="138" width="384" height="44" rx="6"/>
+  <text class="code-text" x="520" y="156">labels_onehot = [[1,0,0], [0,1,0], [0,1,0]]</text>
+  <text class="code-text" x="520" y="174">correct = sum(labels_onehot * softmax, axis=1)</text>
+
+  <!-- softmax * one-hot result -->
+  <text class="label-text" x="556" y="202" text-anchor="middle">element-wise product</text>
+  <g transform="translate(520, 210)">
+    <!-- Row 0: 1*0.7, 0*0.1, 0*0.2 -->
+    <rect class="cell-hl"   x="0"  y="0"  width="48" height="28"/>
+    <rect class="cell-zero" x="48" y="0"  width="48" height="28"/>
+    <rect class="cell-zero" x="96" y="0"  width="48" height="28"/>
+    <!-- Row 1: 0*0.1, 1*0.5, 0*0.4 -->
+    <rect class="cell-zero" x="0"  y="28" width="48" height="28"/>
+    <rect class="cell-hl"   x="48" y="28" width="48" height="28"/>
+    <rect class="cell-zero" x="96" y="28" width="48" height="28"/>
+    <!-- Row 2: 0*0.02, 1*0.9, 0*0.08 -->
+    <rect class="cell-zero" x="0"  y="56" width="48" height="28"/>
+    <rect class="cell-hl"   x="48" y="56" width="48" height="28"/>
+    <rect class="cell-zero" x="96" y="56" width="48" height="28"/>
+
+    <text class="cell-num" x="24" y="19" text-anchor="middle">0.70</text>
+    <text class="cell-num" x="72" y="19" text-anchor="middle">0.00</text>
+    <text class="cell-num" x="120" y="19" text-anchor="middle">0.00</text>
+    <text class="cell-num" x="24" y="47" text-anchor="middle">0.00</text>
+    <text class="cell-num" x="72" y="47" text-anchor="middle">0.50</text>
+    <text class="cell-num" x="120" y="47" text-anchor="middle">0.00</text>
+    <text class="cell-num" x="24" y="75" text-anchor="middle">0.00</text>
+    <text class="cell-num" x="72" y="75" text-anchor="middle">0.90</text>
+    <text class="cell-num" x="120" y="75" text-anchor="middle">0.00</text>
+  </g>
+
+  <text class="label-text" x="510" y="232" text-anchor="end">r0</text>
+  <text class="label-text" x="510" y="260" text-anchor="end">r1</text>
+  <text class="label-text" x="510" y="288" text-anchor="end">r2</text>
+
+  <!-- Per-row sum -->
+  <text class="label-text" x="690" y="232" style="fill:var(--ce-success);">sum row 0 → 0.70</text>
+  <text class="label-text" x="690" y="260" style="fill:var(--ce-success);">sum row 1 → 0.50</text>
+  <text class="label-text" x="690" y="288" style="fill:var(--ce-success);">sum row 2 → 0.90</text>
+
+  <!-- Result -->
+  <rect class="result-pill" x="508" y="330" width="384" height="32" rx="8"/>
+  <text class="code-text" x="520" y="350">correct = array([0.7, 0.5, 0.9])  ← identical</text>
+  <text class="label-text" x="508" y="386">Zeros in the one-hot rows kill the wrong-class probabilities; the sum recovers the right one.</text>
+
+  <!-- ============================ Footer ============================ -->
+  <text class="footer" x="48"  y="438">Both methods compute the same vector. The Loss class picks one based on len(y_true.shape).</text>
+</svg>

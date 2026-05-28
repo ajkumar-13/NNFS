@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">Train loss vs validation loss — divergence is the overfitting signal</title>
+  <desc id="d">A line chart with epochs on the x-axis and loss on the y-axis. The training loss, drawn as a smooth primary-blue curve, decreases monotonically across all epochs. The validation loss, drawn as an accent-orange curve, decreases at first roughly in step with the training loss, then plateaus around the middle of training, and finally turns upward and climbs in the second half. A vertical success-green dashed line marks the epoch of minimum validation loss — the recommended stopping point for early stopping. The chart is divided into three coloured background bands: an early "both decreasing — good generalisation" band, a middle "validation plateaus" band, and a late "validation rises — overfitting" band. Animated callouts in each band fade in and out to draw the reader's eye through the sequence.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --ce-grid:rgba(26,26,26,0.06);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --ce-grid:rgba(241,238,232,0.08);
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .band-ok {fill:var(--ce-success);fill-opacity:0.06;}
+    .band-mid{fill:var(--ce-warn);fill-opacity:0.06;}
+    .band-bad{fill:var(--ce-alert);fill-opacity:0.06;}
+    .axis{stroke:var(--ce-ink-muted);stroke-width:1.25;fill:none;}
+    .grid{stroke:var(--ce-grid);stroke-width:0.75;fill:none;}
+    .train{stroke:var(--ce-primary);stroke-width:3;stroke-linecap:round;fill:none;}
+    .val  {stroke:var(--ce-accent);stroke-width:3;stroke-linecap:round;fill:none;}
+    .stop-line{stroke:var(--ce-success);stroke-width:1.5;stroke-dasharray:6 4;fill:none;}
+    .stop-dot {fill:var(--ce-success);}
+    .stop-label{font-weight:700;font-size:12px;fill:var(--ce-success);}
+    .legend-train{font-weight:600;font-size:13px;fill:var(--ce-primary);}
+    .legend-val  {font-weight:600;font-size:13px;fill:var(--ce-accent);}
+    .axis-label{font-weight:500;font-size:13px;fill:var(--ce-ink);}
+    .tick{font-size:11px;fill:var(--ce-ink-muted);}
+    .band-head-ok {font-weight:700;font-size:12px;fill:var(--ce-success);text-transform:uppercase;letter-spacing:0.06em;}
+    .band-head-mid{font-weight:700;font-size:12px;fill:var(--ce-warn);text-transform:uppercase;letter-spacing:0.06em;}
+    .band-head-bad{font-weight:700;font-size:12px;fill:var(--ce-alert);text-transform:uppercase;letter-spacing:0.06em;}
+    .band-body-ok {font-size:11px;fill:var(--ce-success);}
+    .band-body-mid{font-size:11px;fill:var(--ce-warn);}
+    .band-body-bad{font-size:11px;fill:var(--ce-alert);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <!-- Header -->
+  <text class="title"    x="48" y="48">Training vs validation loss across epochs</text>
+  <text class="subtitle" x="48" y="70">Watching only training loss is a trap. Validation loss is what decides when to stop.</text>
+
+  <!-- Plot area: x 96..900, y 110..440 -->
+  <rect class="panel" x="80" y="100" width="832" height="360" rx="12"/>
+
+  <!-- Phase bands inside the plot -->
+  <rect class="band-ok"  x="96"  y="116" width="244" height="328" rx="8"/>
+  <rect class="band-mid" x="340" y="116" width="220" height="328" rx="8"/>
+  <rect class="band-bad" x="560" y="116" width="340" height="328" rx="8"/>
+
+  <!-- Band headers along the top -->
+  <text class="band-head-ok"  x="218" y="138" text-anchor="middle">both decreasing</text>
+  <text class="band-body-ok"  x="218" y="156" text-anchor="middle">good generalisation</text>
+  <text class="band-head-mid" x="450" y="138" text-anchor="middle">validation plateaus</text>
+  <text class="band-body-mid" x="450" y="156" text-anchor="middle">memorisation begins</text>
+  <text class="band-head-bad" x="730" y="138" text-anchor="middle">validation rises</text>
+  <text class="band-body-bad" x="730" y="156" text-anchor="middle">overfitting; stop training</text>
+
+  <!-- Gridlines (horizontal) -->
+  <g class="grid">
+    <line x1="96" y1="200" x2="900" y2="200"/>
+    <line x1="96" y1="280" x2="900" y2="280"/>
+    <line x1="96" y1="360" x2="900" y2="360"/>
+  </g>
+
+  <!-- Axes -->
+  <line class="axis" x1="96" y1="440" x2="900" y2="440"/>
+  <line class="axis" x1="96" y1="440" x2="96"  y2="180"/>
+
+  <!-- Y ticks -->
+  <text class="tick" x="88"  y="184" text-anchor="end">high</text>
+  <text class="tick" x="88"  y="284" text-anchor="end">med</text>
+  <text class="tick" x="88"  y="364" text-anchor="end">low</text>
+  <text class="tick" x="88"  y="444" text-anchor="end">0</text>
+
+  <!-- X ticks -->
+  <text class="tick" x="96"  y="458" text-anchor="middle">0</text>
+  <text class="tick" x="218" y="458" text-anchor="middle">early</text>
+  <text class="tick" x="450" y="458" text-anchor="middle">mid</text>
+  <text class="tick" x="730" y="458" text-anchor="middle">late</text>
+  <text class="tick" x="900" y="458" text-anchor="middle">end</text>
+
+  <!-- Training loss: monotonically decreasing, smooth (low y = high loss; high y = low loss).
+       Animates by drawing in left-to-right over 3.5 s, then freezes. -->
+  <path class="train"
+        d="M96,200 C 200,225 320,295 440,355 S 700,415 900,435"
+        pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000">
+    <animate attributeName="stroke-dashoffset" from="1000" to="0" dur="3.5s" begin="0s" fill="freeze"/>
+  </path>
+
+  <!-- Validation loss: drops in step with train, reaches a minimum near x=540, then rises.
+       Same animation cadence; the divergence reveals itself naturally as both curves draw in. -->
+  <path class="val"
+        d="M96,210 C 200,240 320,310 420,355 C 480,368 540,372 580,365 C 660,338 760,280 900,220"
+        pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000">
+    <animate attributeName="stroke-dashoffset" from="1000" to="0" dur="3.5s" begin="0s" fill="freeze"/>
+  </path>
+
+  <!-- Stop line + dot fade in AFTER the curves finish, so the reader's eye is drawn to
+       the conclusion only once the divergence has appeared. -->
+  <line class="stop-line" x1="540" y1="160" x2="540" y2="440" opacity="0">
+    <animate attributeName="opacity" from="0" to="1" dur="0.6s" begin="3.5s" fill="freeze"/>
+  </line>
+  <circle class="stop-dot" cx="540" cy="372" r="5" opacity="0">
+    <animate attributeName="opacity" from="0" to="1" dur="0.6s" begin="3.5s" fill="freeze"/>
+  </circle>
+  <text class="stop-label" x="540" y="478" text-anchor="middle" opacity="0">
+    ↑ stop here: minimum validation loss
+    <animate attributeName="opacity" from="0" to="1" dur="0.6s" begin="3.7s" fill="freeze"/>
+  </text>
+
+  <!-- Legend -->
+  <line x1="610" y1="92" x2="640" y2="92" stroke="var(--ce-primary)" stroke-width="3"/>
+  <text class="legend-train" x="648" y="96">training loss</text>
+  <line x1="770" y1="92" x2="800" y2="92" stroke="var(--ce-accent)" stroke-width="3"/>
+  <text class="legend-val"   x="808" y="96">validation loss</text>
+
+  <!-- Axis labels -->
+  <text class="axis-label" x="498" y="500" text-anchor="middle">epochs →</text>
+  <g transform="translate(46,300) rotate(-90)">
+    <text class="axis-label" text-anchor="middle">loss</text>
+  </g>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="528">Curve shapes are stylised; exact values depend on dataset, model, and seed.</text>
+  <text class="footer" x="912" y="528" text-anchor="end">Early stopping after Prechelt, 1998.</text>
+</svg>

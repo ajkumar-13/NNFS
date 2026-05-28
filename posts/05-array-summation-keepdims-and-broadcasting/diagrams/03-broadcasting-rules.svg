@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" role="img" aria-labelledby="t d">
+  <title id="t">NumPy broadcasting rules with four worked examples</title>
+  <desc id="d">A grid of four small worked examples illustrating the broadcasting rules. Top-left: a 3-by-3 array plus a 3-by-1 column stretches the column rightward into a 3-by-3 sum; succeeds. Top-right: a 3-by-3 array plus a 1-by-3 row stretches the row downward into a 3-by-3 sum; succeeds. Bottom-left: a 3-by-3 array plus a length-3 1-D array is left-padded to 1-by-3 and behaves identically to the row case; succeeds. Bottom-right: a 3-by-3 array plus a 2-by-3 array has incompatible inner dimensions and raises a ValueError; this case fails. A footer summarises the rule: align trailing dimensions, allow size-1 stretching, require the rest to be equal.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel-ok{fill:var(--ce-success);fill-opacity:0.06;stroke:var(--ce-success);stroke-width:1.5;}
+    .panel-bad{fill:var(--ce-alert);fill-opacity:0.06;stroke:var(--ce-alert);stroke-width:1.5;}
+    .pill-ok{fill:var(--ce-success);}
+    .pill-bad{fill:var(--ce-alert);}
+    .case-tag{font-weight:700;font-size:11px;fill:var(--ce-ink-muted);text-transform:uppercase;letter-spacing:0.06em;}
+    .case-shape{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;fill:var(--ce-ink);font-weight:700;}
+    .cell-base{fill:var(--ce-neutral-1);stroke:var(--ce-border);stroke-width:1;}
+    .cell-grow{fill:var(--ce-primary);fill-opacity:0.16;stroke:var(--ce-primary);stroke-width:1.2;}
+    .cell-grow-ghost{fill:var(--ce-primary);fill-opacity:0.06;stroke:var(--ce-primary);stroke-width:1;stroke-dasharray:3 2;}
+    .cell-fail{fill:var(--ce-alert);fill-opacity:0.16;stroke:var(--ce-alert);stroke-width:1.2;}
+    .op{font-weight:700;font-size:18px;fill:var(--ce-ink);}
+    .verdict-ok{font-size:11px;fill:var(--ce-success);font-weight:600;}
+    .verdict-bad{font-size:11px;fill:var(--ce-alert);font-weight:600;}
+    .note{font-size:10px;fill:var(--ce-ink-muted);}
+    .rule-band{fill:var(--ce-primary);fill-opacity:0.08;stroke:var(--ce-primary);stroke-width:1.5;}
+    .rule-head{font-weight:700;font-size:13px;fill:var(--ce-primary);}
+    .rule-body{font-size:11px;fill:var(--ce-ink);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="520"/>
+
+  <text class="title"    x="48" y="48">Broadcasting rules — four cases</text>
+  <text class="subtitle" x="48" y="70">Align trailing dimensions. Stretch any size-1 dim. Require the rest to be equal.</text>
+
+  <!-- ==================== Case 1: (3,3) + (3,1) ==================== -->
+  <rect class="panel-ok" x="48" y="96" width="424" height="156" rx="12"/>
+  <rect class="pill-ok"  x="48" y="96" width="6"   height="156" rx="3"/>
+  <text class="case-tag"   x="68" y="118">case 1 · column stretches rightward</text>
+  <text class="case-shape" x="68" y="140">(3, 3)  +  (3, 1)  →  (3, 3)</text>
+
+  <!-- LHS: 3x3 base -->
+  <g transform="translate(96, 160)">
+    <rect class="cell-base" x="0"  y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="20" y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="40" y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="0"  y="20" width="20" height="20"/>
+    <rect class="cell-base" x="20" y="20" width="20" height="20"/>
+    <rect class="cell-base" x="40" y="20" width="20" height="20"/>
+    <rect class="cell-base" x="0"  y="40" width="20" height="20"/>
+    <rect class="cell-base" x="20" y="40" width="20" height="20"/>
+    <rect class="cell-base" x="40" y="40" width="20" height="20"/>
+  </g>
+  <text class="op" x="180" y="194" text-anchor="middle">+</text>
+  <!-- RHS: 3x1 column then ghost stretches -->
+  <g transform="translate(204, 160)">
+    <rect class="cell-grow"       x="0"  y="0"  width="20" height="20"/>
+    <rect class="cell-grow-ghost" x="20" y="0"  width="20" height="20"/>
+    <rect class="cell-grow-ghost" x="40" y="0"  width="20" height="20"/>
+    <rect class="cell-grow"       x="0"  y="20" width="20" height="20"/>
+    <rect class="cell-grow-ghost" x="20" y="20" width="20" height="20"/>
+    <rect class="cell-grow-ghost" x="40" y="20" width="20" height="20"/>
+    <rect class="cell-grow"       x="0"  y="40" width="20" height="20"/>
+    <rect class="cell-grow-ghost" x="20" y="40" width="20" height="20"/>
+    <rect class="cell-grow-ghost" x="40" y="40" width="20" height="20"/>
+  </g>
+  <text class="op" x="288" y="194" text-anchor="middle">=</text>
+  <g transform="translate(312, 160)">
+    <rect class="cell-base" x="0"  y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="20" y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="40" y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="0"  y="20" width="20" height="20"/>
+    <rect class="cell-base" x="20" y="20" width="20" height="20"/>
+    <rect class="cell-base" x="40" y="20" width="20" height="20"/>
+    <rect class="cell-base" x="0"  y="40" width="20" height="20"/>
+    <rect class="cell-base" x="20" y="40" width="20" height="20"/>
+    <rect class="cell-base" x="40" y="40" width="20" height="20"/>
+  </g>
+  <text class="verdict-ok" x="68" y="240">column of 1 is stretched across all 3 columns ✓</text>
+
+  <!-- ==================== Case 2: (3,3) + (1,3) ==================== -->
+  <rect class="panel-ok" x="488" y="96" width="424" height="156" rx="12"/>
+  <rect class="pill-ok"  x="488" y="96" width="6"   height="156" rx="3"/>
+  <text class="case-tag"   x="508" y="118">case 2 · row stretches downward</text>
+  <text class="case-shape" x="508" y="140">(3, 3)  +  (1, 3)  →  (3, 3)</text>
+
+  <g transform="translate(536, 160)">
+    <rect class="cell-base" x="0"  y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="20" y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="40" y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="0"  y="20" width="20" height="20"/>
+    <rect class="cell-base" x="20" y="20" width="20" height="20"/>
+    <rect class="cell-base" x="40" y="20" width="20" height="20"/>
+    <rect class="cell-base" x="0"  y="40" width="20" height="20"/>
+    <rect class="cell-base" x="20" y="40" width="20" height="20"/>
+    <rect class="cell-base" x="40" y="40" width="20" height="20"/>
+  </g>
+  <text class="op" x="620" y="194" text-anchor="middle">+</text>
+  <g transform="translate(644, 160)">
+    <rect class="cell-grow"       x="0"  y="0"  width="20" height="20"/>
+    <rect class="cell-grow"       x="20" y="0"  width="20" height="20"/>
+    <rect class="cell-grow"       x="40" y="0"  width="20" height="20"/>
+    <rect class="cell-grow-ghost" x="0"  y="20" width="20" height="20"/>
+    <rect class="cell-grow-ghost" x="20" y="20" width="20" height="20"/>
+    <rect class="cell-grow-ghost" x="40" y="20" width="20" height="20"/>
+    <rect class="cell-grow-ghost" x="0"  y="40" width="20" height="20"/>
+    <rect class="cell-grow-ghost" x="20" y="40" width="20" height="20"/>
+    <rect class="cell-grow-ghost" x="40" y="40" width="20" height="20"/>
+  </g>
+  <text class="op" x="728" y="194" text-anchor="middle">=</text>
+  <g transform="translate(752, 160)">
+    <rect class="cell-base" x="0"  y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="20" y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="40" y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="0"  y="20" width="20" height="20"/>
+    <rect class="cell-base" x="20" y="20" width="20" height="20"/>
+    <rect class="cell-base" x="40" y="20" width="20" height="20"/>
+    <rect class="cell-base" x="0"  y="40" width="20" height="20"/>
+    <rect class="cell-base" x="20" y="40" width="20" height="20"/>
+    <rect class="cell-base" x="40" y="40" width="20" height="20"/>
+  </g>
+  <text class="verdict-ok" x="508" y="240">row of 1 is stretched across all 3 rows ✓</text>
+
+  <!-- ==================== Case 3: (3,3) + (3,) ==================== -->
+  <rect class="panel-ok" x="48" y="268" width="424" height="156" rx="12"/>
+  <rect class="pill-ok"  x="48" y="268" width="6"   height="156" rx="3"/>
+  <text class="case-tag"   x="68" y="290">case 3 · 1-D padded to (1, 3) then stretches</text>
+  <text class="case-shape" x="68" y="312">(3, 3)  +  (3,)  →  (3, 3)</text>
+
+  <g transform="translate(96, 332)">
+    <rect class="cell-base" x="0"  y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="20" y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="40" y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="0"  y="20" width="20" height="20"/>
+    <rect class="cell-base" x="20" y="20" width="20" height="20"/>
+    <rect class="cell-base" x="40" y="20" width="20" height="20"/>
+    <rect class="cell-base" x="0"  y="40" width="20" height="20"/>
+    <rect class="cell-base" x="20" y="40" width="20" height="20"/>
+    <rect class="cell-base" x="40" y="40" width="20" height="20"/>
+  </g>
+  <text class="op" x="180" y="366" text-anchor="middle">+</text>
+  <g transform="translate(204, 332)">
+    <!-- (3,) treated as (1,3) -->
+    <rect class="cell-grow"       x="0"  y="0"  width="20" height="20"/>
+    <rect class="cell-grow"       x="20" y="0"  width="20" height="20"/>
+    <rect class="cell-grow"       x="40" y="0"  width="20" height="20"/>
+    <rect class="cell-grow-ghost" x="0"  y="20" width="20" height="20"/>
+    <rect class="cell-grow-ghost" x="20" y="20" width="20" height="20"/>
+    <rect class="cell-grow-ghost" x="40" y="20" width="20" height="20"/>
+    <rect class="cell-grow-ghost" x="0"  y="40" width="20" height="20"/>
+    <rect class="cell-grow-ghost" x="20" y="40" width="20" height="20"/>
+    <rect class="cell-grow-ghost" x="40" y="40" width="20" height="20"/>
+  </g>
+  <text class="op" x="288" y="366" text-anchor="middle">=</text>
+  <g transform="translate(312, 332)">
+    <rect class="cell-base" x="0"  y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="20" y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="40" y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="0"  y="20" width="20" height="20"/>
+    <rect class="cell-base" x="20" y="20" width="20" height="20"/>
+    <rect class="cell-base" x="40" y="20" width="20" height="20"/>
+    <rect class="cell-base" x="0"  y="40" width="20" height="20"/>
+    <rect class="cell-base" x="20" y="40" width="20" height="20"/>
+    <rect class="cell-base" x="40" y="40" width="20" height="20"/>
+  </g>
+  <text class="verdict-ok" x="68" y="412">(3,) becomes (1, 3): a row, never a column ✓</text>
+
+  <!-- ==================== Case 4: (3,3) + (2,3) — FAIL ==================== -->
+  <rect class="panel-bad" x="488" y="268" width="424" height="156" rx="12"/>
+  <rect class="pill-bad"  x="488" y="268" width="6"   height="156" rx="3"/>
+  <text class="case-tag"   x="508" y="290">case 4 · incompatible dimensions</text>
+  <text class="case-shape" x="508" y="312">(3, 3)  +  (2, 3)  →  ValueError</text>
+
+  <g transform="translate(536, 332)">
+    <rect class="cell-base" x="0"  y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="20" y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="40" y="0"  width="20" height="20"/>
+    <rect class="cell-base" x="0"  y="20" width="20" height="20"/>
+    <rect class="cell-base" x="20" y="20" width="20" height="20"/>
+    <rect class="cell-base" x="40" y="20" width="20" height="20"/>
+    <rect class="cell-base" x="0"  y="40" width="20" height="20"/>
+    <rect class="cell-base" x="20" y="40" width="20" height="20"/>
+    <rect class="cell-base" x="40" y="40" width="20" height="20"/>
+  </g>
+  <text class="op" x="620" y="366" text-anchor="middle">+</text>
+  <g transform="translate(644, 340)">
+    <rect class="cell-fail" x="0"  y="0"  width="20" height="20"/>
+    <rect class="cell-fail" x="20" y="0"  width="20" height="20"/>
+    <rect class="cell-fail" x="40" y="0"  width="20" height="20"/>
+    <rect class="cell-fail" x="0"  y="20" width="20" height="20"/>
+    <rect class="cell-fail" x="20" y="20" width="20" height="20"/>
+    <rect class="cell-fail" x="40" y="20" width="20" height="20"/>
+  </g>
+  <text class="op" x="728" y="366" text-anchor="middle">=</text>
+  <text class="verdict-bad" x="752" y="362">ValueError</text>
+  <text class="note"        x="752" y="378">3 vs 2 in the row dim</text>
+  <text class="note"        x="752" y="392">neither is 1</text>
+  <text class="verdict-bad" x="508" y="412">leading dimension is 3 vs 2; broadcasting fails ✗</text>
+
+  <!-- ==================== Rule band ==================== -->
+  <rect class="rule-band" x="48" y="440" width="864" height="56" rx="12"/>
+  <text class="rule-head" x="68" y="466">The rules, in the order NumPy applies them:</text>
+  <text class="rule-body" x="68" y="486">1) left-pad the shorter shape with 1s    2) each aligned dim must be equal or one must be 1    3) stretch any size-1 dim    4) operate</text>
+</svg>

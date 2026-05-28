@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" role="img" aria-labelledby="t d">
+  <title id="t">The derivative is the slope of the tangent line</title>
+  <desc id="d">A line plot of f(x) = x^2 with three tangent lines drawn at x = -1.5, x = 0.5, and x = 2.0. The leftmost tangent has slope -3 (steep, downward); the middle one has slope 1 (gentle, upward); the rightmost has slope 4 (steep, upward). Each tangent is labelled with its slope value and a small marker dot at the point of contact. A side panel summarises the power rule and the three readings of a derivative: steep positive, near-zero, negative.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --ce-grid:rgba(26,26,26,0.06);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --ce-grid:rgba(241,238,232,0.08);
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .axis{stroke:var(--ce-ink-muted);stroke-width:1.25;fill:none;}
+    .grid{stroke:var(--ce-grid);stroke-width:0.75;fill:none;}
+    .axis-label{font-size:11px;fill:var(--ce-ink-muted);}
+    .axis-title{font-size:13px;font-weight:600;fill:var(--ce-ink);}
+    .curve{stroke:var(--ce-primary);stroke-width:2.5;fill:none;}
+    .tangent-bad{stroke:var(--ce-alert);stroke-width:2;fill:none;}
+    .tangent-mid{stroke:var(--ce-warn);stroke-width:2;fill:none;}
+    .tangent-ok {stroke:var(--ce-success);stroke-width:2;fill:none;}
+    .dot-bad{fill:var(--ce-alert);}
+    .dot-mid{fill:var(--ce-warn);}
+    .dot-ok {fill:var(--ce-success);}
+    .slope-label-bad{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:600;fill:var(--ce-alert);}
+    .slope-label-mid{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:600;fill:var(--ce-warn);}
+    .slope-label-ok {font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:600;fill:var(--ce-success);}
+    .info-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
+    .info-body{font-size:12px;fill:var(--ce-ink);}
+    .info-muted{font-size:11px;fill:var(--ce-ink-muted);}
+    .rule-pill{fill:var(--ce-primary);fill-opacity:0.10;stroke:var(--ce-primary);stroke-width:1.2;}
+    .rule-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;fill:var(--ce-ink);font-weight:600;}
+  ]]></style>
+
+  <rect class="bg" width="960" height="500"/>
+
+  <text class="title"    x="48" y="48">The derivative is the slope of the tangent</text>
+  <text class="subtitle" x="48" y="70">Three tangent lines on the same curve f(x) = x². Each one's slope is f'(x) = 2x at that point.</text>
+
+  <!-- ==================== Chart panel ==================== -->
+  <rect class="panel" x="48" y="96" width="560" height="356" rx="12"/>
+
+  <!-- Plot coords: x in [-3, 3] → [80, 580]; y in [0, 9] → [432, 120]
+       So 1 x-unit = ~83.33 px; 1 y-unit = ~34.67 px. Origin (0,0) at (330, 432). -->
+
+  <!-- Gridlines (horizontal every 2 y-units; vertical at every integer x) -->
+  <g class="grid">
+    <line x1="80" y1="158" x2="580" y2="158"/>
+    <line x1="80" y1="228" x2="580" y2="228"/>
+    <line x1="80" y1="297" x2="580" y2="297"/>
+    <line x1="80" y1="367" x2="580" y2="367"/>
+
+    <line x1="163" y1="120" x2="163" y2="432"/>
+    <line x1="247" y1="120" x2="247" y2="432"/>
+    <line x1="413" y1="120" x2="413" y2="432"/>
+    <line x1="497" y1="120" x2="497" y2="432"/>
+  </g>
+
+  <!-- Axes -->
+  <line class="axis" x1="80"  y1="432" x2="580" y2="432"/>
+  <line class="axis" x1="330" y1="432" x2="330" y2="120"/>
+
+  <!-- Y-axis ticks: 0, 2, 4, 6, 8 (every 2 y units = 69.33 px) -->
+  <text class="axis-label" x="324" y="436" text-anchor="end">0</text>
+  <text class="axis-label" x="324" y="367" text-anchor="end">2</text>
+  <text class="axis-label" x="324" y="297" text-anchor="end">4</text>
+  <text class="axis-label" x="324" y="228" text-anchor="end">6</text>
+  <text class="axis-label" x="324" y="158" text-anchor="end">8</text>
+
+  <!-- X-axis ticks: -3, -2, -1, 0, 1, 2, 3 -->
+  <text class="axis-label" x="80"  y="450" text-anchor="middle">−3</text>
+  <text class="axis-label" x="163" y="450" text-anchor="middle">−2</text>
+  <text class="axis-label" x="247" y="450" text-anchor="middle">−1</text>
+  <text class="axis-label" x="330" y="450" text-anchor="middle">0</text>
+  <text class="axis-label" x="413" y="450" text-anchor="middle">1</text>
+  <text class="axis-label" x="497" y="450" text-anchor="middle">2</text>
+  <text class="axis-label" x="580" y="450" text-anchor="middle">3</text>
+
+  <!-- Axis titles -->
+  <text class="axis-title" x="330" y="478" text-anchor="middle">x</text>
+  <g transform="translate(36, 276) rotate(-90)">
+    <text class="axis-title" text-anchor="middle">f(x) = x²</text>
+  </g>
+
+  <!-- The parabola f(x) = x²: pix_x = 330 + 83.33*x; pix_y = 432 - 34.67*x². -->
+  <path class="curve"
+        d="M 80,120
+           L 105.0,170.0
+           L 130.0,217.0
+           L 163.0,294.0
+           L 196.7,341.4
+           L 230.0,378.0
+           L 263.3,401.7
+           L 296.7,422.7
+           L 330,432
+           L 363.3,422.7
+           L 396.7,401.7
+           L 430.0,378.0
+           L 463.3,341.4
+           L 497.0,294.0
+           L 530.0,217.0
+           L 555.0,170.0
+           L 580,120"/>
+
+  <!-- ==================== Tangent 1: x = -1.5, f' = -3 (steep negative) ==================== -->
+  <!-- Pixel: x_pix = 330 + 83.33*(-1.5) = 205; y_pix = 432 - 34.67*2.25 = 354 -->
+  <!-- Tangent slope in graph units = -3, in pixel units = -3 * (34.67 / 83.33) = -1.248 -->
+  <!-- Draw from x=-2.5 to x=-0.5: pix x = 121.7 to 288.3 -->
+  <!-- y_pix at x=-2.5: 354 + (-2.5-(-1.5)) * (-1.248)*(-1) … let me just compute: y = -3*(x-(-1.5)) + 2.25 = -3x - 2.25
+       At x=-2.5: y = 7.5 - 2.25 = 5.25 → y_pix = 432-34.67*5.25 = 250.0
+       At x=-0.5: y = 1.5 - 2.25 = -0.75 → off chart, use x=-0.7: y = 2.1 - 2.25 = -0.15 → y_pix=437.2 (off-chart)
+       Use x=-0.8: y = 2.4 - 2.25 = 0.15 → y_pix = 426.8 -->
+  <line class="tangent-bad" x1="122" y1="250" x2="263" y2="427"/>
+  <circle class="dot-bad" cx="205" cy="354" r="5"/>
+  <text class="slope-label-bad" x="118" y="244" text-anchor="start">slope = −3</text>
+  <text class="info-muted"      x="118" y="258" text-anchor="start">at x = −1.5</text>
+
+  <!-- ==================== Tangent 2: x = 0.5, f' = 1 (gentle positive) ==================== -->
+  <!-- Pixel: x_pix = 330 + 83.33*0.5 = 371.7; y_pix = 432 - 34.67*0.25 = 423.3 -->
+  <!-- Slope: y = (x-0.5) + 0.25 = x - 0.25
+       At x=-0.5: y = -0.75 → off chart
+       Use x=0.0: y = -0.25 → y_pix = 440.7 (slightly off)
+       Use x=1.5: y = 1.25 → y_pix = 388.7
+       Draw from (-0.2, -0.45) → off-chart; better: from x=0.0 (y=-0.25 → off) to x=1.5 (y=1.25 → 388.7)
+       Use x=0.2: y=-0.05 → y_pix = 433.7
+       Use x=1.5: y = 1.25 → y_pix = 388.7 -->
+  <line class="tangent-mid" x1="347" y1="431" x2="455" y2="389"/>
+  <circle class="dot-mid" cx="372" cy="423" r="5"/>
+  <text class="slope-label-mid" x="467" y="394" text-anchor="start">slope = +1</text>
+  <text class="info-muted"      x="467" y="408" text-anchor="start">at x = 0.5</text>
+
+  <!-- ==================== Tangent 3: x = 2.0, f' = 4 (steep positive) ==================== -->
+  <!-- Pixel: x_pix = 330 + 83.33*2 = 497; y_pix = 432 - 34.67*4 = 293.3 -->
+  <!-- Slope: y = 4(x-2) + 4 = 4x - 4
+       At x=1.0: y = 0 → y_pix = 432
+       At x=2.7: y = 6.8 → y_pix = 196.2 -->
+  <line class="tangent-ok" x1="413" y1="432" x2="555" y2="197"/>
+  <circle class="dot-ok" cx="497" cy="293" r="5"/>
+  <text class="slope-label-ok" x="560" y="200" text-anchor="start">slope = +4</text>
+  <text class="info-muted"     x="560" y="214" text-anchor="start">at x = 2.0</text>
+
+  <!-- ==================== Right info panel ==================== -->
+  <rect class="panel" x="624" y="96" width="288" height="356" rx="12"/>
+
+  <text class="info-head" x="644" y="124">Rule of thumb</text>
+  <rect class="rule-pill" x="644" y="138" width="248" height="48" rx="8"/>
+  <text class="rule-text" x="768" y="168" text-anchor="middle">d/dx[a·xⁿ] = n·a·xⁿ⁻¹</text>
+
+  <text class="info-head" x="644" y="216">For f(x) = x²</text>
+  <text class="info-body" x="644" y="236">f'(x) = 2x</text>
+  <text class="info-muted" x="644" y="254">f'(−1.5) = −3</text>
+  <text class="info-muted" x="644" y="270">f'(0.5)  = +1</text>
+  <text class="info-muted" x="644" y="286">f'(2.0)  = +4</text>
+
+  <text class="info-head" x="644" y="320">Three readings of f'(x):</text>
+  <text class="info-muted" x="644" y="340">— large positive: f rises fast</text>
+  <text class="info-muted" x="644" y="356">— near zero: f is locally flat</text>
+  <text class="info-muted" x="644" y="372">— negative: f falls as x rises</text>
+
+  <text class="info-muted" x="644" y="406">For weights and loss: each weight's</text>
+  <text class="info-muted" x="644" y="422">slope on the loss surface decides</text>
+  <text class="info-muted" x="644" y="438">which way the optimiser nudges it.</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="490">The derivative is a function: input is x, output is the slope at that x. Tangents make that slope visible.</text>
+</svg>

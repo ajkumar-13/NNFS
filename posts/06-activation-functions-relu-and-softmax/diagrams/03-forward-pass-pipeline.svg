@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" role="img" aria-labelledby="t d">
+  <title id="t">End-to-end forward pass: spiral data through Dense, ReLU, Dense, Softmax</title>
+  <desc id="d">A left-to-right pipeline diagram for a two-layer classifier on the spiral dataset. The input X of shape N by 2 enters the first dense layer of shape 2 in, 3 out; its output passes through a ReLU activation; the activated output feeds the second dense layer of shape 3 in, 3 out; its output passes through Softmax, producing per-row probability distributions of shape N by 3. Shape badges accompany every intermediate array. A footer band reminds the reader that every object stores its result on self.output for the next object to read.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .data-pill{fill:var(--ce-primary);fill-opacity:0.18;stroke:var(--ce-primary);stroke-width:1.5;}
+    .data-pill-acc{fill:var(--ce-accent);fill-opacity:0.18;stroke:var(--ce-accent);stroke-width:1.5;}
+    .data-pill-ok{fill:var(--ce-success);fill-opacity:0.20;stroke:var(--ce-success);stroke-width:1.5;}
+    .data-name{font-weight:700;font-size:15px;fill:var(--ce-ink);}
+    .data-shape{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:600;fill:var(--ce-ink);}
+    .data-desc{font-size:11px;fill:var(--ce-ink-muted);}
+    .op-dense{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1.5;stroke-dasharray:5 3;}
+    .op-act-relu{fill:var(--ce-warn);fill-opacity:0.10;stroke:var(--ce-warn);stroke-width:1.5;stroke-dasharray:5 3;}
+    .op-act-soft{fill:var(--ce-success);fill-opacity:0.10;stroke:var(--ce-success);stroke-width:1.5;stroke-dasharray:5 3;}
+    .op-name{font-weight:700;font-size:13px;fill:var(--ce-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .op-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .arrow{stroke:var(--ce-ink-muted);stroke-width:1.5;fill:none;}
+    .arrow-head{fill:var(--ce-ink-muted);}
+  ]]></style>
+
+  <defs>
+    <marker id="aM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arrow-head"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="420"/>
+
+  <text class="title"    x="48" y="48">End-to-end forward pass</text>
+  <text class="subtitle" x="48" y="70">Spiral data → Dense → ReLU → Dense → Softmax → per-row probabilities.</text>
+
+  <!-- ============================ X ============================ -->
+  <rect class="data-pill" x="40"  y="150" width="100" height="110" rx="12"/>
+  <text class="data-name"  x="90" y="184" text-anchor="middle">X</text>
+  <text class="data-shape" x="90" y="212" text-anchor="middle">(N, 2)</text>
+  <text class="data-desc"  x="90" y="234" text-anchor="middle">spiral input</text>
+
+  <line class="arrow" x1="144" y1="205" x2="172" y2="205" marker-end="url(#aM)"/>
+
+  <!-- ============================ dense1 ============================ -->
+  <rect class="op-dense" x="176" y="138" width="140" height="134" rx="12"/>
+  <text class="op-name" x="246" y="166" text-anchor="middle">dense1</text>
+  <text class="op-sub"  x="246" y="186" text-anchor="middle">Layer_Dense(2, 3)</text>
+  <text class="op-sub"  x="246" y="208" text-anchor="middle">X · W₁ + b₁</text>
+  <text class="op-sub"  x="246" y="234" text-anchor="middle">linear</text>
+
+  <line class="arrow" x1="320" y1="205" x2="348" y2="205" marker-end="url(#aM)"/>
+
+  <!-- ============================ act1: ReLU ============================ -->
+  <rect class="op-act-relu" x="352" y="138" width="120" height="134" rx="12"/>
+  <text class="op-name" x="412" y="166" text-anchor="middle">act1</text>
+  <text class="op-sub"  x="412" y="186" text-anchor="middle">Activation_ReLU</text>
+  <text class="op-sub"  x="412" y="208" text-anchor="middle">max(0, ·)</text>
+  <text class="op-sub"  x="412" y="234" text-anchor="middle">non-linear</text>
+
+  <line class="arrow" x1="476" y1="205" x2="504" y2="205" marker-end="url(#aM)"/>
+
+  <!-- ============================ dense2 ============================ -->
+  <rect class="op-dense" x="508" y="138" width="140" height="134" rx="12"/>
+  <text class="op-name" x="578" y="166" text-anchor="middle">dense2</text>
+  <text class="op-sub"  x="578" y="186" text-anchor="middle">Layer_Dense(3, 3)</text>
+  <text class="op-sub"  x="578" y="208" text-anchor="middle">F₁ · W₂ + b₂</text>
+  <text class="op-sub"  x="578" y="234" text-anchor="middle">linear → logits</text>
+
+  <line class="arrow" x1="652" y1="205" x2="680" y2="205" marker-end="url(#aM)"/>
+
+  <!-- ============================ act2: Softmax ============================ -->
+  <rect class="op-act-soft" x="684" y="138" width="140" height="134" rx="12"/>
+  <text class="op-name" x="754" y="166" text-anchor="middle">act2</text>
+  <text class="op-sub"  x="754" y="186" text-anchor="middle">Activation_Softmax</text>
+  <text class="op-sub"  x="754" y="208" text-anchor="middle">e^x / Σ e^x</text>
+  <text class="op-sub"  x="754" y="234" text-anchor="middle">probabilities</text>
+
+  <line class="arrow" x1="828" y1="205" x2="856" y2="205" marker-end="url(#aM)"/>
+
+  <!-- ============================ output ============================ -->
+  <rect class="data-pill-ok" x="860" y="150" width="80" height="110" rx="12"/>
+  <text class="data-name"  x="900" y="184" text-anchor="middle">ŷ</text>
+  <text class="data-shape" x="900" y="212" text-anchor="middle">(N, 3)</text>
+  <text class="data-desc"  x="900" y="234" text-anchor="middle">probs</text>
+
+  <!-- ============================ Shape badges along the bottom ============================ -->
+  <text class="data-shape" x="90"  y="296" text-anchor="middle">(N, 2)</text>
+  <text class="data-shape" x="246" y="296" text-anchor="middle">(N, 3)</text>
+  <text class="data-shape" x="412" y="296" text-anchor="middle">(N, 3)</text>
+  <text class="data-shape" x="578" y="296" text-anchor="middle">(N, 3)</text>
+  <text class="data-shape" x="754" y="296" text-anchor="middle">(N, 3)</text>
+  <text class="data-shape" x="900" y="296" text-anchor="middle">(N, 3)</text>
+
+  <text class="data-desc" x="90"  y="314" text-anchor="middle">input</text>
+  <text class="data-desc" x="246" y="314" text-anchor="middle">linear out</text>
+  <text class="data-desc" x="412" y="314" text-anchor="middle">ReLU'd</text>
+  <text class="data-desc" x="578" y="314" text-anchor="middle">logits</text>
+  <text class="data-desc" x="754" y="314" text-anchor="middle">softmax</text>
+  <text class="data-desc" x="900" y="314" text-anchor="middle">final</text>
+
+  <!-- ============================ Footer band ============================ -->
+  <rect class="op-dense" x="48" y="340" width="864" height="48" rx="12"/>
+  <text class="op-sub" x="68" y="362" style="font-size:12px;fill:var(--ce-ink);">Each object stores its result on self.output. The next object reads from the previous one's self.output. No glue code, no orchestration framework.</text>
+  <text class="op-sub" x="68" y="378" style="font-size:12px;fill:var(--ce-ink);">For untrained random weights, the final probabilities are approximately [1/3, 1/3, 1/3] per row. Training (Parts 09 onward) sharpens them.</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="408">The same four-object pipeline scales unchanged: add more Dense / ReLU pairs to make the network deeper.</text>
+</svg>

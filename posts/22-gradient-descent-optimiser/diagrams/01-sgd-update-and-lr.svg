@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">SGD update and the learning-rate trade-off</title>
+  <desc id="d">Two-part diagram. Top: the SGD update rule shown as theta := theta - alpha times grad, with theta_new equal to theta_old minus a small subtraction. Bottom: three small loss-curve panels showing what happens at three learning rates. Left (too small): loss barely drops over many epochs. Middle (right-sized): loss drops smoothly then plateaus around 0.68 due to a local minimum. Right (too large): loss bounces and diverges. Each panel is colour-coded by outcome.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --ce-grid:rgba(26,26,26,0.06);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --ce-grid:rgba(241,238,232,0.08);
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .rule-band{fill:var(--ce-primary);fill-opacity:0.10;stroke:var(--ce-primary);stroke-width:1.5;}
+    .rule-head{font-weight:700;font-size:14px;fill:var(--ce-primary);}
+    .rule-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:18px;fill:var(--ce-ink);font-weight:700;}
+    .rule-note{font-size:12px;fill:var(--ce-ink-muted);}
+    .panel-mid{fill:var(--ce-warn);fill-opacity:0.07;stroke:var(--ce-warn);stroke-width:1.5;}
+    .panel-ok {fill:var(--ce-success);fill-opacity:0.07;stroke:var(--ce-success);stroke-width:1.5;}
+    .panel-bad{fill:var(--ce-alert);fill-opacity:0.07;stroke:var(--ce-alert);stroke-width:1.5;}
+    .pill-mid{fill:var(--ce-warn);}
+    .pill-ok {fill:var(--ce-success);}
+    .pill-bad{fill:var(--ce-alert);}
+    .head-mid{font-weight:700;font-size:13px;fill:var(--ce-warn);}
+    .head-ok {font-weight:700;font-size:13px;fill:var(--ce-success);}
+    .head-bad{font-weight:700;font-size:13px;fill:var(--ce-alert);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .chart{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .axis{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
+    .grid{stroke:var(--ce-grid);stroke-width:0.75;fill:none;}
+    .axis-label{font-size:10px;fill:var(--ce-ink-muted);}
+    .curve-mid{stroke:var(--ce-warn);stroke-width:2.2;fill:none;stroke-linecap:round;}
+    .curve-ok {stroke:var(--ce-success);stroke-width:2.2;fill:none;stroke-linecap:round;}
+    .curve-bad{stroke:var(--ce-alert);stroke-width:2.2;fill:none;stroke-linecap:round;}
+    .verdict{font-size:11px;font-weight:600;}
+  ]]></style>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="48">Vanilla SGD update and the learning-rate trade-off</text>
+  <text class="subtitle" x="48" y="70">One update rule. One knob. Three failure modes for the wrong knob setting.</text>
+
+  <!-- ============================ Rule band ============================ -->
+  <rect class="rule-band" x="48" y="96" width="864" height="92" rx="12"/>
+  <text class="rule-head" x="68" y="124">The update rule</text>
+  <text class="rule-text" x="480" y="156" text-anchor="middle">θ_new  =  θ_old  −  α · ∂L/∂θ</text>
+  <text class="rule-note" x="480" y="178" text-anchor="middle">applied to every weight and bias, once per training step. α is the learning rate.</text>
+
+  <!-- ============================ Three loss-curve panels ============================ -->
+  <!-- Panel sizes: 264 wide each, 280 tall. Spacing: 48 + 264 + 24 + 264 + 24 + 264 + 48 = 960. -->
+
+  <!-- LEFT: too small -->
+  <rect class="panel-ok" x="48" y="208" width="264" height="280" rx="12"/>
+  <rect class="pill-ok"  x="48" y="208" width="6"   height="280" rx="3"/>
+  <text class="head-ok"   x="68" y="234">α too small</text>
+  <text class="panel-sub" x="68" y="252">stable but barely moves</text>
+
+  <rect class="chart" x="72" y="270" width="216" height="160" rx="6"/>
+  <g class="grid">
+    <line x1="72" y1="310" x2="288" y2="310"/>
+    <line x1="72" y1="350" x2="288" y2="350"/>
+    <line x1="72" y1="390" x2="288" y2="390"/>
+  </g>
+  <line class="axis" x1="72" y1="430" x2="288" y2="430"/>
+  <line class="axis" x1="72" y1="270" x2="72"  y2="430"/>
+  <text class="axis-label" x="65" y="284" text-anchor="end">high</text>
+  <text class="axis-label" x="65" y="434" text-anchor="end">low</text>
+  <text class="axis-label" x="180" y="448" text-anchor="middle">epochs →</text>
+
+  <!-- Curve: gentle linear-ish drop -->
+  <path class="curve-ok" d="M 80 286 L 130 296 L 180 302 L 230 308 L 280 314"/>
+
+  <text class="verdict" x="68" y="464" style="fill:var(--ce-success);">verdict: works, but takes forever</text>
+  <text class="panel-sub" x="68" y="480">raise α to make progress</text>
+
+  <!-- MIDDLE: right-sized -->
+  <rect class="panel-mid" x="336" y="208" width="288" height="280" rx="12"/>
+  <rect class="pill-mid"  x="336" y="208" width="6"   height="280" rx="3"/>
+  <text class="head-mid"  x="356" y="234">α right-sized</text>
+  <text class="panel-sub" x="356" y="252">drops, then plateaus at ~0.68</text>
+
+  <rect class="chart" x="360" y="270" width="240" height="160" rx="6"/>
+  <g class="grid">
+    <line x1="360" y1="310" x2="600" y2="310"/>
+    <line x1="360" y1="350" x2="600" y2="350"/>
+    <line x1="360" y1="390" x2="600" y2="390"/>
+  </g>
+  <line class="axis" x1="360" y1="430" x2="600" y2="430"/>
+  <line class="axis" x1="360" y1="270" x2="360" y2="430"/>
+  <text class="axis-label" x="353" y="284" text-anchor="end">high</text>
+  <text class="axis-label" x="353" y="434" text-anchor="end">low</text>
+  <text class="axis-label" x="480" y="448" text-anchor="middle">epochs →</text>
+
+  <!-- Curve: smooth drop then plateau -->
+  <path class="curve-mid" d="M 368 282 C 400 296, 440 348, 480 372 C 520 388, 560 392, 596 392"/>
+
+  <text class="verdict" x="356" y="464" style="fill:var(--ce-warn);">verdict: stalls at local minimum (~67% acc)</text>
+  <text class="panel-sub" x="356" y="480">needs a smarter optimiser (Parts 23–27)</text>
+
+  <!-- RIGHT: too large -->
+  <rect class="panel-bad" x="648" y="208" width="264" height="280" rx="12"/>
+  <rect class="pill-bad"  x="648" y="208" width="6"   height="280" rx="3"/>
+  <text class="head-bad"  x="668" y="234">α too large</text>
+  <text class="panel-sub" x="668" y="252">oscillates or diverges</text>
+
+  <rect class="chart" x="672" y="270" width="216" height="160" rx="6"/>
+  <g class="grid">
+    <line x1="672" y1="310" x2="888" y2="310"/>
+    <line x1="672" y1="350" x2="888" y2="350"/>
+    <line x1="672" y1="390" x2="888" y2="390"/>
+  </g>
+  <line class="axis" x1="672" y1="430" x2="888" y2="430"/>
+  <line class="axis" x1="672" y1="270" x2="672" y2="430"/>
+  <text class="axis-label" x="665" y="284" text-anchor="end">high</text>
+  <text class="axis-label" x="665" y="434" text-anchor="end">low</text>
+  <text class="axis-label" x="780" y="448" text-anchor="middle">epochs →</text>
+
+  <!-- Curve: oscillating and rising -->
+  <path class="curve-bad" d="M 680 320 L 700 360 L 720 290 L 740 380 L 760 300 L 780 290 L 800 270 L 820 285 L 840 280 L 860 275 L 880 282"/>
+
+  <text class="verdict" x="668" y="464" style="fill:var(--ce-alert);">verdict: never settles</text>
+  <text class="panel-sub" x="668" y="480">lower α; or use adaptive optimiser</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="520">One constant α rarely fits both phases of training. Parts 23–27 introduce decaying, momentum, and adaptive variants.</text>
+</svg>

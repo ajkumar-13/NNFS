@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">The complete forward pass: four-object inference pipeline</title>
+  <desc id="d">An end-to-end inference pipeline diagram. The input X enters at the left and flows through four objects arranged left to right: dense1 (a Layer_Dense with 2 inputs and 3 outputs), activation1 (Activation_ReLU), dense2 (Layer_Dense with 3 inputs and 3 outputs), and activation2 (Activation_Softmax). The final output is a per-row probability distribution. The lower half of the diagram shows the code structure: a Classes section (the three class definitions reused unchanged from Parts 04 and 06), a Build section (instantiating the four objects), and a Forward section (calling .forward on each in order). A footer notes that this is the inference path; training comes in Part 09 onward.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .section-head{font-weight:700;font-size:12px;fill:var(--ce-ink-muted);text-transform:uppercase;letter-spacing:0.08em;}
+    .data-pill{fill:var(--ce-primary);fill-opacity:0.18;stroke:var(--ce-primary);stroke-width:1.5;}
+    .data-pill-ok{fill:var(--ce-success);fill-opacity:0.20;stroke:var(--ce-success);stroke-width:1.5;}
+    .data-name{font-weight:700;font-size:14px;fill:var(--ce-ink);}
+    .data-shape{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:600;fill:var(--ce-ink);}
+    .data-desc{font-size:11px;fill:var(--ce-ink-muted);}
+    .op-dense{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1.5;stroke-dasharray:5 3;}
+    .op-relu{fill:var(--ce-warn);fill-opacity:0.10;stroke:var(--ce-warn);stroke-width:1.5;stroke-dasharray:5 3;}
+    .op-soft{fill:var(--ce-success);fill-opacity:0.10;stroke:var(--ce-success);stroke-width:1.5;stroke-dasharray:5 3;}
+    .op-name{font-weight:700;font-size:13px;fill:var(--ce-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .op-sub{font-size:10px;fill:var(--ce-ink-muted);}
+    .arrow{stroke:var(--ce-ink-muted);stroke-width:1.5;fill:none;}
+    .arrow-head{fill:var(--ce-ink-muted);}
+    .code-panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .code-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--ce-ink);}
+  ]]></style>
+
+  <defs>
+    <marker id="aM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arrow-head"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="48">Complete forward pass</text>
+  <text class="subtitle" x="48" y="70">One script. Four objects. Spiral data in, per-row probabilities out.</text>
+
+  <!-- ============================ Pipeline row ============================ -->
+  <text class="section-head" x="48" y="100">Pipeline</text>
+
+  <!-- X -->
+  <rect class="data-pill" x="40" y="120" width="100" height="96" rx="12"/>
+  <text class="data-name"  x="90" y="148" text-anchor="middle">X</text>
+  <text class="data-shape" x="90" y="174" text-anchor="middle">(N, 2)</text>
+  <text class="data-desc"  x="90" y="194" text-anchor="middle">spiral input</text>
+
+  <line class="arrow" x1="144" y1="168" x2="172" y2="168" marker-end="url(#aM)"/>
+
+  <!-- dense1 -->
+  <rect class="op-dense" x="176" y="120" width="130" height="96" rx="12"/>
+  <text class="op-name" x="241" y="146" text-anchor="middle">dense1</text>
+  <text class="op-sub"  x="241" y="166" text-anchor="middle">Layer_Dense(2, 3)</text>
+  <text class="op-sub"  x="241" y="186" text-anchor="middle">X · W₁ + b₁</text>
+  <text class="op-sub"  x="241" y="204" text-anchor="middle">linear</text>
+
+  <line class="arrow" x1="310" y1="168" x2="338" y2="168" marker-end="url(#aM)"/>
+
+  <!-- act1 -->
+  <rect class="op-relu" x="342" y="120" width="116" height="96" rx="12"/>
+  <text class="op-name" x="400" y="146" text-anchor="middle">activation1</text>
+  <text class="op-sub"  x="400" y="166" text-anchor="middle">Activation_ReLU</text>
+  <text class="op-sub"  x="400" y="186" text-anchor="middle">max(0, ·)</text>
+  <text class="op-sub"  x="400" y="204" text-anchor="middle">non-linear</text>
+
+  <line class="arrow" x1="462" y1="168" x2="490" y2="168" marker-end="url(#aM)"/>
+
+  <!-- dense2 -->
+  <rect class="op-dense" x="494" y="120" width="130" height="96" rx="12"/>
+  <text class="op-name" x="559" y="146" text-anchor="middle">dense2</text>
+  <text class="op-sub"  x="559" y="166" text-anchor="middle">Layer_Dense(3, 3)</text>
+  <text class="op-sub"  x="559" y="186" text-anchor="middle">F₁ · W₂ + b₂</text>
+  <text class="op-sub"  x="559" y="204" text-anchor="middle">linear → logits</text>
+
+  <line class="arrow" x1="628" y1="168" x2="656" y2="168" marker-end="url(#aM)"/>
+
+  <!-- act2 -->
+  <rect class="op-soft" x="660" y="120" width="140" height="96" rx="12"/>
+  <text class="op-name" x="730" y="146" text-anchor="middle">activation2</text>
+  <text class="op-sub"  x="730" y="166" text-anchor="middle">Activation_Softmax</text>
+  <text class="op-sub"  x="730" y="186" text-anchor="middle">e^x / Σ e^x</text>
+  <text class="op-sub"  x="730" y="204" text-anchor="middle">probabilities</text>
+
+  <line class="arrow" x1="804" y1="168" x2="832" y2="168" marker-end="url(#aM)"/>
+
+  <!-- output -->
+  <rect class="data-pill-ok" x="836" y="120" width="100" height="96" rx="12"/>
+  <text class="data-name"  x="886" y="148" text-anchor="middle">ŷ</text>
+  <text class="data-shape" x="886" y="174" text-anchor="middle">(N, 3)</text>
+  <text class="data-desc"  x="886" y="194" text-anchor="middle">probabilities</text>
+
+  <!-- Shapes underneath -->
+  <text class="data-shape" x="90"  y="240" text-anchor="middle">(N, 2)</text>
+  <text class="data-shape" x="241" y="240" text-anchor="middle">(N, 3)</text>
+  <text class="data-shape" x="400" y="240" text-anchor="middle">(N, 3)</text>
+  <text class="data-shape" x="559" y="240" text-anchor="middle">(N, 3)</text>
+  <text class="data-shape" x="730" y="240" text-anchor="middle">(N, 3)</text>
+  <text class="data-shape" x="886" y="240" text-anchor="middle">(N, 3)</text>
+
+  <!-- ============================ Code panel ============================ -->
+  <text class="section-head" x="48" y="278">Code structure</text>
+
+  <rect class="code-panel" x="48" y="294" width="864" height="180" rx="12"/>
+
+  <text class="op-sub" x="68" y="318" style="font-weight:700;fill:var(--ce-ink);">1) Classes (reused from Parts 04 and 06)</text>
+  <text class="code-text" x="68" y="336">class Layer_Dense:  __init__ and forward     ·     class Activation_ReLU:  forward     ·     class Activation_Softmax:  forward</text>
+
+  <text class="op-sub" x="68" y="362" style="font-weight:700;fill:var(--ce-ink);">2) Build the network</text>
+  <text class="code-text" x="68" y="380">dense1 = Layer_Dense(2, 3)     activation1 = Activation_ReLU()</text>
+  <text class="code-text" x="68" y="396">dense2 = Layer_Dense(3, 3)     activation2 = Activation_Softmax()</text>
+
+  <text class="op-sub" x="68" y="422" style="font-weight:700;fill:var(--ce-ink);">3) Forward pass</text>
+  <text class="code-text" x="68" y="440">dense1.forward(X)                      activation1.forward(dense1.output)</text>
+  <text class="code-text" x="68" y="456">dense2.forward(activation1.output)     activation2.forward(dense2.output)</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="510">This is the inference path. Training (Part 09 onward) reuses this exact pass and adds gradients.</text>
+  <text class="footer" x="912" y="510" text-anchor="end">N = batch size; 3 = class count.</text>
+</svg>

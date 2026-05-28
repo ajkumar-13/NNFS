@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" role="img" aria-labelledby="t d">
+  <title id="t">Summing a 3-by-3 array along each axis</title>
+  <desc id="d">Three panels showing the same 3-by-3 array being summed in three ways. The leftmost panel shows axis equals None, which flattens the entire array and produces the scalar 45. The middle panel shows axis equals 0, which collapses each column and produces the row vector 12, 15, 18 of shape 3 comma. The rightmost panel shows axis equals 1, which collapses each row and produces the values 6, 15, 24 of shape 3 comma. A footer reminds the reader that the axis named in the call is the axis that disappears.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .pill-prim{fill:var(--ce-primary);}
+    .pill-acc{fill:var(--ce-accent);}
+    .pill-ok{fill:var(--ce-success);}
+    .panel-head{font-weight:700;font-size:14px;fill:var(--ce-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .cell{fill:var(--ce-neutral-1);stroke:var(--ce-border);stroke-width:1;}
+    .cell-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;fill:var(--ce-ink);font-weight:600;}
+    .col-hl{fill:var(--ce-accent);fill-opacity:0.20;stroke:var(--ce-accent);stroke-width:1.5;}
+    .row-hl{fill:var(--ce-success);fill-opacity:0.20;stroke:var(--ce-success);stroke-width:1.5;}
+    .all-hl{fill:var(--ce-primary);fill-opacity:0.16;stroke:var(--ce-primary);stroke-width:1.5;}
+    .arrow{stroke:var(--ce-ink-muted);stroke-width:1.5;fill:none;}
+    .arrow-head{fill:var(--ce-ink-muted);}
+    .result-pill-prim{fill:var(--ce-primary);fill-opacity:0.22;stroke:var(--ce-primary);stroke-width:1.5;}
+    .result-pill-acc{fill:var(--ce-accent);fill-opacity:0.22;stroke:var(--ce-accent);stroke-width:1.5;}
+    .result-pill-ok{fill:var(--ce-success);fill-opacity:0.22;stroke:var(--ce-success);stroke-width:1.5;}
+    .shape-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--ce-ink-muted);}
+  ]]></style>
+
+  <defs>
+    <marker id="aM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arrow-head"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="460"/>
+
+  <text class="title"    x="48" y="48">np.sum along different axes</text>
+  <text class="subtitle" x="48" y="70">The axis you name is the axis that disappears.</text>
+
+  <!-- ====================== Panel 1: axis=None ====================== -->
+  <rect class="panel"     x="48" y="96" width="280" height="304" rx="12"/>
+  <rect class="pill-prim" x="48" y="96" width="6"   height="304" rx="3"/>
+  <text class="panel-head" x="68" y="124">np.sum(a)</text>
+  <text class="panel-sub"  x="68" y="142">axis = None: sum everything</text>
+
+  <!-- 3x3 array (all highlighted) -->
+  <g transform="translate(92, 168)">
+    <rect class="all-hl" x="0"  y="0"  width="40" height="32"/>
+    <rect class="all-hl" x="40" y="0"  width="40" height="32"/>
+    <rect class="all-hl" x="80" y="0"  width="40" height="32"/>
+    <rect class="all-hl" x="0"  y="32" width="40" height="32"/>
+    <rect class="all-hl" x="40" y="32" width="40" height="32"/>
+    <rect class="all-hl" x="80" y="32" width="40" height="32"/>
+    <rect class="all-hl" x="0"  y="64" width="40" height="32"/>
+    <rect class="all-hl" x="40" y="64" width="40" height="32"/>
+    <rect class="all-hl" x="80" y="64" width="40" height="32"/>
+    <text class="cell-text" x="20"  y="20" text-anchor="middle">1</text>
+    <text class="cell-text" x="60"  y="20" text-anchor="middle">2</text>
+    <text class="cell-text" x="100" y="20" text-anchor="middle">3</text>
+    <text class="cell-text" x="20"  y="52" text-anchor="middle">4</text>
+    <text class="cell-text" x="60"  y="52" text-anchor="middle">5</text>
+    <text class="cell-text" x="100" y="52" text-anchor="middle">6</text>
+    <text class="cell-text" x="20"  y="84" text-anchor="middle">7</text>
+    <text class="cell-text" x="60"  y="84" text-anchor="middle">8</text>
+    <text class="cell-text" x="100" y="84" text-anchor="middle">9</text>
+  </g>
+
+  <line class="arrow" x1="152" y1="290" x2="152" y2="320" marker-end="url(#aM)"/>
+
+  <rect class="result-pill-prim" x="132" y="328" width="40" height="32" rx="6"/>
+  <text class="cell-text" x="152" y="349" text-anchor="middle">45</text>
+  <text class="shape-text" x="152" y="378" text-anchor="middle">scalar</text>
+
+  <!-- ====================== Panel 2: axis=0 ====================== -->
+  <rect class="panel"    x="344" y="96" width="280" height="304" rx="12"/>
+  <rect class="pill-acc" x="344" y="96" width="6"   height="304" rx="3"/>
+  <text class="panel-head" x="364" y="124">np.sum(a, axis=0)</text>
+  <text class="panel-sub"  x="364" y="142">collapse rows, sum each column</text>
+
+  <!-- 3x3 array with column highlights -->
+  <g transform="translate(388, 168)">
+    <rect class="col-hl" x="0"  y="0"  width="40" height="32"/>
+    <rect class="col-hl" x="40" y="0"  width="40" height="32"/>
+    <rect class="col-hl" x="80" y="0"  width="40" height="32"/>
+    <rect class="col-hl" x="0"  y="32" width="40" height="32"/>
+    <rect class="col-hl" x="40" y="32" width="40" height="32"/>
+    <rect class="col-hl" x="80" y="32" width="40" height="32"/>
+    <rect class="col-hl" x="0"  y="64" width="40" height="32"/>
+    <rect class="col-hl" x="40" y="64" width="40" height="32"/>
+    <rect class="col-hl" x="80" y="64" width="40" height="32"/>
+    <text class="cell-text" x="20"  y="20" text-anchor="middle">1</text>
+    <text class="cell-text" x="60"  y="20" text-anchor="middle">2</text>
+    <text class="cell-text" x="100" y="20" text-anchor="middle">3</text>
+    <text class="cell-text" x="20"  y="52" text-anchor="middle">4</text>
+    <text class="cell-text" x="60"  y="52" text-anchor="middle">5</text>
+    <text class="cell-text" x="100" y="52" text-anchor="middle">6</text>
+    <text class="cell-text" x="20"  y="84" text-anchor="middle">7</text>
+    <text class="cell-text" x="60"  y="84" text-anchor="middle">8</text>
+    <text class="cell-text" x="100" y="84" text-anchor="middle">9</text>
+  </g>
+
+  <!-- Down arrows for each column -->
+  <line class="arrow" x1="408" y1="270" x2="408" y2="320" marker-end="url(#aM)"/>
+  <line class="arrow" x1="448" y1="270" x2="448" y2="320" marker-end="url(#aM)"/>
+  <line class="arrow" x1="488" y1="270" x2="488" y2="320" marker-end="url(#aM)"/>
+
+  <!-- result row: (3,) -->
+  <g transform="translate(388, 328)">
+    <rect class="result-pill-acc" x="0"  y="0" width="40" height="32" rx="6"/>
+    <rect class="result-pill-acc" x="40" y="0" width="40" height="32" rx="6"/>
+    <rect class="result-pill-acc" x="80" y="0" width="40" height="32" rx="6"/>
+    <text class="cell-text" x="20"  y="21" text-anchor="middle">12</text>
+    <text class="cell-text" x="60"  y="21" text-anchor="middle">15</text>
+    <text class="cell-text" x="100" y="21" text-anchor="middle">18</text>
+  </g>
+  <text class="shape-text" x="448" y="378" text-anchor="middle">shape (3,)</text>
+
+  <!-- ====================== Panel 3: axis=1 ====================== -->
+  <rect class="panel"   x="640" y="96" width="272" height="304" rx="12"/>
+  <rect class="pill-ok" x="640" y="96" width="6"   height="304" rx="3"/>
+  <text class="panel-head" x="660" y="124">np.sum(a, axis=1)</text>
+  <text class="panel-sub"  x="660" y="142">collapse columns, sum each row</text>
+
+  <g transform="translate(684, 168)">
+    <rect class="row-hl" x="0"  y="0"  width="40" height="32"/>
+    <rect class="row-hl" x="40" y="0"  width="40" height="32"/>
+    <rect class="row-hl" x="80" y="0"  width="40" height="32"/>
+    <rect class="row-hl" x="0"  y="32" width="40" height="32"/>
+    <rect class="row-hl" x="40" y="32" width="40" height="32"/>
+    <rect class="row-hl" x="80" y="32" width="40" height="32"/>
+    <rect class="row-hl" x="0"  y="64" width="40" height="32"/>
+    <rect class="row-hl" x="40" y="64" width="40" height="32"/>
+    <rect class="row-hl" x="80" y="64" width="40" height="32"/>
+    <text class="cell-text" x="20"  y="20" text-anchor="middle">1</text>
+    <text class="cell-text" x="60"  y="20" text-anchor="middle">2</text>
+    <text class="cell-text" x="100" y="20" text-anchor="middle">3</text>
+    <text class="cell-text" x="20"  y="52" text-anchor="middle">4</text>
+    <text class="cell-text" x="60"  y="52" text-anchor="middle">5</text>
+    <text class="cell-text" x="100" y="52" text-anchor="middle">6</text>
+    <text class="cell-text" x="20"  y="84" text-anchor="middle">7</text>
+    <text class="cell-text" x="60"  y="84" text-anchor="middle">8</text>
+    <text class="cell-text" x="100" y="84" text-anchor="middle">9</text>
+  </g>
+
+  <!-- Right arrows for each row -->
+  <line class="arrow" x1="814" y1="184" x2="844" y2="184" marker-end="url(#aM)"/>
+  <line class="arrow" x1="814" y1="216" x2="844" y2="216" marker-end="url(#aM)"/>
+  <line class="arrow" x1="814" y1="248" x2="844" y2="248" marker-end="url(#aM)"/>
+
+  <!-- result column: (3,) shown as column for visual symmetry but the actual shape is 1-D -->
+  <g transform="translate(848, 168)">
+    <rect class="result-pill-ok" x="0" y="0"  width="44" height="32" rx="6"/>
+    <rect class="result-pill-ok" x="0" y="32" width="44" height="32" rx="6"/>
+    <rect class="result-pill-ok" x="0" y="64" width="44" height="32" rx="6"/>
+    <text class="cell-text" x="22" y="20" text-anchor="middle">6</text>
+    <text class="cell-text" x="22" y="52" text-anchor="middle">15</text>
+    <text class="cell-text" x="22" y="84" text-anchor="middle">24</text>
+  </g>
+  <text class="shape-text" x="870" y="282" text-anchor="middle">shape (3,)</text>
+
+  <!-- Note about the (3,) shape -->
+  <text class="shape-text" x="660" y="318" style="font-size:11px;fill:var(--ce-warn);">↑ a 1-D array, not a column.</text>
+  <text class="shape-text" x="660" y="334" style="font-size:11px;fill:var(--ce-warn);">  See keepdims (next figure).</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="436">Both axis=0 and axis=1 produce a 1-D array of shape (3,) when keepdims is left as False.</text>
+</svg>

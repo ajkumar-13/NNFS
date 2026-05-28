@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">The spiral dataset: three intertwined classes</title>
+  <desc id="d">A scatter plot showing 300 points in two dimensions, divided into three classes that form three intertwined spirals emanating from the origin. The three classes are coloured in primary blue, accent orange, and success green respectively. A dashed line illustrates the failure mode of any linear classifier: no straight line can separate even two of the three classes cleanly. A side panel summarises the dataset properties: 300 samples, 2 features, 3 classes, non-linear, not separable.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .axis{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
+    .grid{stroke:var(--ce-grid,rgba(26,26,26,0.06));stroke-width:0.75;fill:none;}
+    .axis-label{font-size:11px;fill:var(--ce-ink-muted);}
+    .axis-title{font-size:13px;font-weight:600;fill:var(--ce-ink);}
+    .pt-c0{fill:var(--ce-primary);}
+    .pt-c1{fill:var(--ce-accent);}
+    .pt-c2{fill:var(--ce-success);}
+    .bad-line{stroke:var(--ce-alert);stroke-width:1.5;stroke-dasharray:5 4;fill:none;}
+    .bad-label{font-size:11px;fill:var(--ce-alert);font-weight:600;}
+    .info-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
+    .info-body{font-size:12px;fill:var(--ce-ink);}
+    .info-muted{font-size:11px;fill:var(--ce-ink-muted);}
+    .pill-prim{fill:var(--ce-primary);}
+    .pill-acc{fill:var(--ce-accent);}
+    .pill-ok{fill:var(--ce-success);}
+    .legend-text{font-size:12px;fill:var(--ce-ink);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="48">The spiral dataset</text>
+  <text class="subtitle" x="48" y="70">300 points, 3 classes, 2 features. The series' standard benchmark for non-linear classification.</text>
+
+  <!-- ====================== Scatter plot panel ====================== -->
+  <rect class="panel" x="48" y="96" width="500" height="380" rx="12"/>
+  <!-- Axes centred -->
+  <line class="axis" x1="298" y1="120" x2="298" y2="456"/>
+  <line class="axis" x1="68"  y1="288" x2="528" y2="288"/>
+  <text class="axis-title" x="298" y="476" text-anchor="middle">X₁</text>
+  <text class="axis-title" x="68"  y="284" text-anchor="end">X₂</text>
+
+  <!-- Three spirals. Approximated with circle markers along parametric spirals.
+       Spiral i (i=0,1,2): r in [0..1], theta = 4*r + (2*pi*i/3). cx = 298 + 120r*cos(theta), cy = 288 - 120r*sin(theta).
+       For visual quality, scatter ~30 points per spiral at jittered radii. -->
+
+  <!-- Spiral 0 (blue) -->
+  <g class="pt-c0">
+    <circle cx="298" cy="288" r="2.5"/>
+    <circle cx="310" cy="280" r="2.5"/>
+    <circle cx="322" cy="270" r="2.5"/>
+    <circle cx="332" cy="256" r="2.5"/>
+    <circle cx="338" cy="240" r="2.5"/>
+    <circle cx="342" cy="222" r="2.5"/>
+    <circle cx="338" cy="204" r="2.5"/>
+    <circle cx="328" cy="190" r="2.5"/>
+    <circle cx="312" cy="180" r="2.5"/>
+    <circle cx="294" cy="178" r="2.5"/>
+    <circle cx="276" cy="184" r="2.5"/>
+    <circle cx="262" cy="196" r="2.5"/>
+    <circle cx="252" cy="214" r="2.5"/>
+    <circle cx="246" cy="234" r="2.5"/>
+    <circle cx="244" cy="256" r="2.5"/>
+    <circle cx="246" cy="278" r="2.5"/>
+    <circle cx="232" cy="290" r="2.5"/>
+    <circle cx="218" cy="282" r="2.5"/>
+    <circle cx="206" cy="266" r="2.5"/>
+    <circle cx="198" cy="246" r="2.5"/>
+    <circle cx="194" cy="222" r="2.5"/>
+    <circle cx="194" cy="198" r="2.5"/>
+    <circle cx="200" cy="174" r="2.5"/>
+    <circle cx="212" cy="154" r="2.5"/>
+    <circle cx="230" cy="138" r="2.5"/>
+    <circle cx="252" cy="128" r="2.5"/>
+    <circle cx="278" cy="124" r="2.5"/>
+    <circle cx="306" cy="126" r="2.5"/>
+    <circle cx="332" cy="134" r="2.5"/>
+    <circle cx="356" cy="148" r="2.5"/>
+  </g>
+
+  <!-- Spiral 1 (orange) -->
+  <g class="pt-c1">
+    <circle cx="298" cy="288" r="2.5"/>
+    <circle cx="288" cy="298" r="2.5"/>
+    <circle cx="276" cy="308" r="2.5"/>
+    <circle cx="262" cy="316" r="2.5"/>
+    <circle cx="246" cy="320" r="2.5"/>
+    <circle cx="228" cy="322" r="2.5"/>
+    <circle cx="210" cy="320" r="2.5"/>
+    <circle cx="194" cy="314" r="2.5"/>
+    <circle cx="180" cy="306" r="2.5"/>
+    <circle cx="168" cy="294" r="2.5"/>
+    <circle cx="160" cy="280" r="2.5"/>
+    <circle cx="154" cy="262" r="2.5"/>
+    <circle cx="152" cy="242" r="2.5"/>
+    <circle cx="154" cy="222" r="2.5"/>
+    <circle cx="160" cy="202" r="2.5"/>
+    <circle cx="170" cy="184" r="2.5"/>
+    <circle cx="186" cy="166" r="2.5"/>
+    <circle cx="206" cy="150" r="2.5"/>
+    <circle cx="170" cy="320" r="2.5"/>
+    <circle cx="148" cy="324" r="2.5"/>
+    <circle cx="128" cy="320" r="2.5"/>
+    <circle cx="112" cy="308" r="2.5"/>
+    <circle cx="100" cy="292" r="2.5"/>
+    <circle cx="90"  cy="272" r="2.5"/>
+    <circle cx="86"  cy="250" r="2.5"/>
+    <circle cx="86"  cy="226" r="2.5"/>
+    <circle cx="92"  cy="200" r="2.5"/>
+    <circle cx="104" cy="176" r="2.5"/>
+    <circle cx="124" cy="154" r="2.5"/>
+    <circle cx="150" cy="138" r="2.5"/>
+  </g>
+
+  <!-- Spiral 2 (green) -->
+  <g class="pt-c2">
+    <circle cx="298" cy="288" r="2.5"/>
+    <circle cx="296" cy="304" r="2.5"/>
+    <circle cx="290" cy="320" r="2.5"/>
+    <circle cx="280" cy="334" r="2.5"/>
+    <circle cx="266" cy="346" r="2.5"/>
+    <circle cx="248" cy="356" r="2.5"/>
+    <circle cx="228" cy="362" r="2.5"/>
+    <circle cx="206" cy="364" r="2.5"/>
+    <circle cx="184" cy="362" r="2.5"/>
+    <circle cx="318" cy="304" r="2.5"/>
+    <circle cx="334" cy="320" r="2.5"/>
+    <circle cx="346" cy="340" r="2.5"/>
+    <circle cx="354" cy="362" r="2.5"/>
+    <circle cx="358" cy="386" r="2.5"/>
+    <circle cx="354" cy="410" r="2.5"/>
+    <circle cx="346" cy="430" r="2.5"/>
+    <circle cx="332" cy="446" r="2.5"/>
+    <circle cx="314" cy="456" r="2.5"/>
+    <circle cx="294" cy="460" r="2.5"/>
+    <circle cx="274" cy="456" r="2.5"/>
+    <circle cx="254" cy="446" r="2.5"/>
+    <circle cx="238" cy="430" r="2.5"/>
+    <circle cx="226" cy="408" r="2.5"/>
+    <circle cx="220" cy="386" r="2.5"/>
+    <circle cx="222" cy="364" r="2.5"/>
+    <circle cx="232" cy="346" r="2.5"/>
+    <circle cx="248" cy="334" r="2.5"/>
+    <circle cx="380" cy="350" r="2.5"/>
+    <circle cx="392" cy="330" r="2.5"/>
+    <circle cx="402" cy="306" r="2.5"/>
+  </g>
+
+  <!-- A failing linear boundary (dashed) showing it can't separate the spirals -->
+  <line class="bad-line" x1="120" y1="380" x2="490" y2="200"/>
+  <text class="bad-label" x="118" y="396">no straight line separates the classes</text>
+
+  <!-- ====================== Right info panel ====================== -->
+  <rect class="panel" x="572" y="96" width="340" height="380" rx="12"/>
+  <text class="info-head" x="592" y="124">Dataset properties</text>
+
+  <!-- Properties list -->
+  <text class="info-body"  x="592" y="156">Samples:</text>
+  <text class="mono"       x="892" y="156" text-anchor="end" style="font-size:12px;fill:var(--ce-ink);">300</text>
+  <text class="info-muted" x="592" y="172">(100 per class × 3 classes)</text>
+
+  <text class="info-body"  x="592" y="200">Features:</text>
+  <text class="mono"       x="892" y="200" text-anchor="end" style="font-size:12px;fill:var(--ce-ink);">2</text>
+  <text class="info-muted" x="592" y="216">(X₁, X₂) coordinates in the plane</text>
+
+  <text class="info-body"  x="592" y="244">Classes:</text>
+  <text class="mono"       x="892" y="244" text-anchor="end" style="font-size:12px;fill:var(--ce-ink);">3</text>
+  <text class="info-muted" x="592" y="260">labelled 0, 1, 2 in y</text>
+
+  <text class="info-body"  x="592" y="288">Linearly separable?</text>
+  <text class="info-body"  x="892" y="288" text-anchor="end" style="fill:var(--ce-alert);font-weight:600;">no</text>
+
+  <text class="info-body"  x="592" y="316">Chance baseline:</text>
+  <text class="info-body"  x="892" y="316" text-anchor="end">33.3%</text>
+
+  <!-- Legend -->
+  <text class="info-head" x="592" y="356">Legend</text>
+  <circle class="pt-c0" cx="600" cy="378" r="4"/>
+  <text class="legend-text" x="612" y="382">class 0 (label y = 0)</text>
+  <circle class="pt-c1" cx="600" cy="400" r="4"/>
+  <text class="legend-text" x="612" y="404">class 1 (label y = 1)</text>
+  <circle class="pt-c2" cx="600" cy="422" r="4"/>
+  <text class="legend-text" x="612" y="426">class 2 (label y = 2)</text>
+
+  <!-- Source / code hint -->
+  <text class="info-muted" x="592" y="454">Generated with:</text>
+  <text class="mono"       x="592" y="470" style="font-size:11px;fill:var(--ce-ink);">spiral_data(samples=100, classes=3)</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="514">A linear model cannot solve this dataset. The series builds one that can, layer by layer.</text>
+  <text class="footer" x="912" y="514" text-anchor="end">Helper from nnfs (Kinsley &amp; Kukieła, 2020).</text>
+</svg>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" role="img" aria-labelledby="t d">
+  <title id="t">The shape rule for matrix multiplication: inner dimensions match, outer dimensions survive</title>
+  <desc id="d">A schematic of the shape rule for np.dot of two matrices. On the left, a generic shape diagram shows (m, n) times (n, p) producing (m, p), with the two n axes highlighted as inner dimensions that are contracted away, and m and p shown as outer dimensions that survive. On the right, a concrete worked example: A of shape (3, 4) times B of shape (4, 3) gives an output of shape (3, 3), with the inner-dimension 4s circled. A bottom band states the rule in one sentence.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .panel-head{font-weight:700;font-size:14px;fill:var(--ce-ink);}
+    .panel-sub{font-size:12px;fill:var(--ce-ink-muted);}
+    .formula-outer{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:24px;fill:var(--ce-ink);font-weight:700;}
+    .formula-inner{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:24px;font-weight:700;fill:var(--ce-alert);}
+    .formula-result{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:24px;font-weight:700;fill:var(--ce-success);}
+    .arrow-inner{stroke:var(--ce-alert);stroke-width:1.5;fill:none;}
+    .arrow-outer{stroke:var(--ce-success);stroke-width:1.5;fill:none;}
+    .label-inner{font-size:12px;font-weight:700;fill:var(--ce-alert);}
+    .label-outer{font-size:12px;font-weight:700;fill:var(--ce-success);}
+    .label-text{font-size:11px;fill:var(--ce-ink-muted);}
+    .circle-hl{fill:none;stroke:var(--ce-alert);stroke-width:1.5;stroke-dasharray:3 2;}
+    .rule-band{fill:var(--ce-primary);fill-opacity:0.08;stroke:var(--ce-primary);stroke-width:1.5;}
+    .rule-head{font-weight:700;font-size:14px;fill:var(--ce-primary);}
+    .rule-body{font-size:12px;fill:var(--ce-ink);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="420"/>
+
+  <text class="title"    x="48" y="48">The shape rule, in one image</text>
+  <text class="subtitle" x="48" y="70">Inner dimensions match and get contracted away. Outer dimensions survive into the result.</text>
+
+  <!-- ====================== LEFT: Generic form ====================== -->
+  <rect class="panel" x="48" y="96" width="424" height="220" rx="12"/>
+  <text class="panel-head" x="68" y="124">Generic shape</text>
+  <text class="panel-sub"  x="68" y="142">np.dot(A, B)</text>
+
+  <!-- Big formula in the middle -->
+  <text class="formula-outer"  x="80"  y="220">(m,</text>
+  <text class="formula-inner"  x="135" y="220">n</text>
+  <text class="formula-outer"  x="150" y="220">) · (</text>
+  <text class="formula-inner"  x="216" y="220">n</text>
+  <text class="formula-outer"  x="231" y="220">, p) = (m, p)</text>
+
+  <!-- arrow connecting the two inner ns -->
+  <path class="arrow-inner" d="M 140 196 C 150 184, 210 184, 220 196"/>
+  <text class="label-inner" x="180" y="178" text-anchor="middle">must match</text>
+  <text class="label-text"  x="180" y="192" text-anchor="middle">inner dimensions</text>
+
+  <!-- arrow showing outer m and p going to result -->
+  <path class="arrow-outer" d="M 96 232 C 96 268, 388 268, 388 232"/>
+  <text class="label-outer" x="242" y="284" text-anchor="middle">survive into the output</text>
+  <text class="label-text"  x="242" y="298" text-anchor="middle">outer dimensions</text>
+
+  <!-- ====================== RIGHT: Concrete worked example ====================== -->
+  <rect class="panel" x="488" y="96" width="424" height="220" rx="12"/>
+  <text class="panel-head" x="508" y="124">Concrete example</text>
+  <text class="panel-sub"  x="508" y="142">A is (3, 4)   ·   B is (4, 3)</text>
+
+  <text class="formula-outer"  x="520" y="220">(3,</text>
+  <text class="formula-inner"  x="568" y="220">4</text>
+  <text class="formula-outer"  x="583" y="220">) · (</text>
+  <text class="formula-inner"  x="648" y="220">4</text>
+  <text class="formula-outer"  x="663" y="220">, 3) = </text>
+  <text class="formula-result" x="754" y="220">(3, 3)</text>
+
+  <!-- Circles around the inner 4s -->
+  <circle class="circle-hl" cx="575" cy="212" r="12"/>
+  <circle class="circle-hl" cx="655" cy="212" r="12"/>
+  <path class="arrow-inner" d="M 575 196 C 580 184, 650 184, 655 196"/>
+  <text class="label-inner" x="615" y="178" text-anchor="middle">4 matches 4</text>
+
+  <text class="label-text"  x="528" y="280">If the inner numbers were 4 and 5, np.dot would raise</text>
+  <text class="label-text"  x="528" y="296">ValueError: shapes (3,4) and (5,3) not aligned.</text>
+
+  <!-- ====================== Rule band ====================== -->
+  <rect class="rule-band" x="48" y="340" width="864" height="56" rx="12"/>
+  <text class="rule-head" x="68" y="366">Inner dimensions match. Outer dimensions become the result shape.</text>
+  <text class="rule-body" x="68" y="384">Every np.dot, np.matmul, and @ call between two matrices follows this rule.</text>
+</svg>

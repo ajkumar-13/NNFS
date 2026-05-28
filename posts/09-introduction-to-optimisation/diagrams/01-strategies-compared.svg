@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">Three optimisation strategies compared: random search, random perturbation, gradient descent</title>
+  <desc id="d">A three-panel comparison of optimisation strategies on a stylised loss landscape. Left panel (random selection, alert red): scattered dots represent random teleports across the landscape, almost none of which land in the low-loss valley; the resulting loss curve stays flat near the chance baseline of 1.10. Middle panel (random perturbation, warn tan): connected dots show small random steps that succeed on a smooth landscape but stall in a shallow local pocket; the loss curve flattens at 1.04 on hard data. Right panel (gradient descent, success green): connected dots follow the steepest-descent direction down into the valley; the loss curve drops smoothly from 1.10 toward 0.3. A bottom band states the gradient-descent update rule.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --ce-grid:rgba(26,26,26,0.06);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --ce-grid:rgba(241,238,232,0.08);
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel-bad{fill:var(--ce-alert);fill-opacity:0.06;stroke:var(--ce-alert);stroke-width:1.5;}
+    .panel-mid{fill:var(--ce-warn);fill-opacity:0.06;stroke:var(--ce-warn);stroke-width:1.5;}
+    .panel-ok {fill:var(--ce-success);fill-opacity:0.07;stroke:var(--ce-success);stroke-width:1.5;}
+    .pill-bad{fill:var(--ce-alert);}
+    .pill-mid{fill:var(--ce-warn);}
+    .pill-ok {fill:var(--ce-success);}
+    .head-bad{font-weight:700;font-size:14px;fill:var(--ce-alert);}
+    .head-mid{font-weight:700;font-size:14px;fill:var(--ce-warn);}
+    .head-ok {font-weight:700;font-size:14px;fill:var(--ce-success);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .chart{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .axis{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
+    .grid{stroke:var(--ce-grid);stroke-width:0.75;fill:none;}
+    .axis-label{font-size:10px;fill:var(--ce-ink-muted);}
+    .axis-title{font-size:11px;fill:var(--ce-ink-muted);font-style:italic;}
+    .baseline{stroke:var(--ce-ink-subtle);stroke-width:1;fill:none;stroke-dasharray:3 3;}
+    .baseline-label{font-size:9px;fill:var(--ce-ink-subtle);}
+    .loss-bad{stroke:var(--ce-alert);stroke-width:2.2;fill:none;stroke-linecap:round;}
+    .loss-mid{stroke:var(--ce-warn);stroke-width:2.2;fill:none;stroke-linecap:round;}
+    .loss-ok {stroke:var(--ce-success);stroke-width:2.2;fill:none;stroke-linecap:round;}
+    .dot-bad{fill:var(--ce-alert);}
+    .dot-mid{fill:var(--ce-warn);}
+    .dot-ok {fill:var(--ce-success);}
+    .verdict-bad{font-size:11px;font-weight:700;fill:var(--ce-alert);}
+    .verdict-mid{font-size:11px;font-weight:700;fill:var(--ce-warn);}
+    .verdict-ok{font-size:11px;font-weight:700;fill:var(--ce-success);}
+    .verdict-body{font-size:10px;fill:var(--ce-ink-muted);}
+    .rule-band{fill:var(--ce-primary);fill-opacity:0.08;stroke:var(--ce-primary);stroke-width:1.5;}
+    .rule-head{font-weight:700;font-size:13px;fill:var(--ce-primary);}
+    .rule-body{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;fill:var(--ce-ink);font-weight:600;}
+    .rule-note{font-size:11px;fill:var(--ce-ink-muted);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="48">Three strategies, only one works at scale</text>
+  <text class="subtitle" x="48" y="70">Same loss landscape, same starting point. Each panel shows the loss across iterations; only gradient descent reaches the valley.</text>
+
+  <!-- ====================== Panel 1: random selection ====================== -->
+  <rect class="panel-bad" x="48" y="96" width="280" height="312" rx="12"/>
+  <rect class="pill-bad"  x="48" y="96" width="6"   height="312" rx="3"/>
+  <text class="head-bad"  x="68" y="124">Random selection</text>
+  <text class="panel-sub" x="68" y="142">weights = randn() every iteration</text>
+
+  <rect class="chart" x="68" y="160" width="240" height="160" rx="8"/>
+  <g class="grid">
+    <line x1="68" y1="200" x2="308" y2="200"/>
+    <line x1="68" y1="240" x2="308" y2="240"/>
+    <line x1="68" y1="280" x2="308" y2="280"/>
+  </g>
+  <line class="axis" x1="68" y1="320" x2="308" y2="320"/>
+  <line class="axis" x1="68" y1="160" x2="68"  y2="320"/>
+
+  <!-- Baseline at loss = 1.10 → y ≈ 200 -->
+  <line class="baseline" x1="68" y1="200" x2="308" y2="200"/>
+  <text class="baseline-label" x="306" y="196" text-anchor="end">chance baseline 1.10</text>
+
+  <!-- Random-search loss: scattered dots near 1.10, slight downward trend to 1.095 -->
+  <path class="loss-bad" d="M 76 198 L 100 200 L 130 199 L 162 196 L 196 202 L 232 198 L 268 200 L 302 197"/>
+  <circle class="dot-bad" cx="76"  cy="198" r="2.5"/>
+  <circle class="dot-bad" cx="100" cy="200" r="2.5"/>
+  <circle class="dot-bad" cx="130" cy="199" r="2.5"/>
+  <circle class="dot-bad" cx="162" cy="196" r="2.5"/>
+  <circle class="dot-bad" cx="196" cy="202" r="2.5"/>
+  <circle class="dot-bad" cx="232" cy="198" r="2.5"/>
+  <circle class="dot-bad" cx="268" cy="200" r="2.5"/>
+  <circle class="dot-bad" cx="302" cy="197" r="2.5"/>
+
+  <text class="axis-label" x="60" y="324" text-anchor="end">0</text>
+  <text class="axis-label" x="60" y="204" text-anchor="end">1.1</text>
+  <text class="axis-title" x="188" y="338" text-anchor="middle">iterations →</text>
+
+  <text class="verdict-bad" x="68" y="362">100 000 iters · loss 1.095 · acc 33%</text>
+  <text class="verdict-body" x="68" y="378">21-D parameter space is too large for blind</text>
+  <text class="verdict-body" x="68" y="392">sampling to ever land in a low-loss region.</text>
+
+  <!-- ====================== Panel 2: random perturbation ====================== -->
+  <rect class="panel-mid" x="344" y="96" width="280" height="312" rx="12"/>
+  <rect class="pill-mid"  x="344" y="96" width="6"   height="312" rx="3"/>
+  <text class="head-mid"  x="364" y="124">Random perturbation</text>
+  <text class="panel-sub" x="364" y="142">weights += randn() each iteration</text>
+
+  <rect class="chart" x="364" y="160" width="240" height="160" rx="8"/>
+  <g class="grid">
+    <line x1="364" y1="200" x2="604" y2="200"/>
+    <line x1="364" y1="240" x2="604" y2="240"/>
+    <line x1="364" y1="280" x2="604" y2="280"/>
+  </g>
+  <line class="axis" x1="364" y1="320" x2="604" y2="320"/>
+  <line class="axis" x1="364" y1="160" x2="364" y2="320"/>
+
+  <line class="baseline" x1="364" y1="200" x2="604" y2="200"/>
+  <text class="baseline-label" x="602" y="196" text-anchor="end">chance baseline 1.10</text>
+
+  <!-- Random perturbation loss: small monotonic decrease then flattens at ~1.04 (y ≈ 210) -->
+  <path class="loss-mid" d="M 372 198 L 400 202 L 432 205 L 466 208 L 500 210 L 540 211 L 580 212 L 600 212"/>
+  <circle class="dot-mid" cx="372" cy="198" r="2.5"/>
+  <circle class="dot-mid" cx="400" cy="202" r="2.5"/>
+  <circle class="dot-mid" cx="432" cy="205" r="2.5"/>
+  <circle class="dot-mid" cx="466" cy="208" r="2.5"/>
+  <circle class="dot-mid" cx="500" cy="210" r="2.5"/>
+  <circle class="dot-mid" cx="540" cy="211" r="2.5"/>
+  <circle class="dot-mid" cx="580" cy="212" r="2.5"/>
+  <circle class="dot-mid" cx="600" cy="212" r="2.5"/>
+
+  <text class="axis-label" x="356" y="324" text-anchor="end">0</text>
+  <text class="axis-label" x="356" y="204" text-anchor="end">1.1</text>
+  <text class="axis-title" x="484" y="338" text-anchor="middle">iterations →</text>
+
+  <text class="verdict-mid" x="364" y="362">10 000 iters · loss 1.04 · acc ~40%</text>
+  <text class="verdict-body" x="364" y="378">Works on easy data, stalls on hard data.</text>
+  <text class="verdict-body" x="364" y="392">Random direction means most steps go uphill.</text>
+
+  <!-- ====================== Panel 3: gradient descent ====================== -->
+  <rect class="panel-ok" x="640" y="96" width="272" height="312" rx="12"/>
+  <rect class="pill-ok"  x="640" y="96" width="6"   height="312" rx="3"/>
+  <text class="head-ok"   x="660" y="124">Gradient descent</text>
+  <text class="panel-sub" x="660" y="142">w := w − η · ∇L</text>
+
+  <rect class="chart" x="660" y="160" width="232" height="160" rx="8"/>
+  <g class="grid">
+    <line x1="660" y1="200" x2="892" y2="200"/>
+    <line x1="660" y1="240" x2="892" y2="240"/>
+    <line x1="660" y1="280" x2="892" y2="280"/>
+  </g>
+  <line class="axis" x1="660" y1="320" x2="892" y2="320"/>
+  <line class="axis" x1="660" y1="160" x2="660" y2="320"/>
+
+  <line class="baseline" x1="660" y1="200" x2="892" y2="200"/>
+  <text class="baseline-label" x="890" y="196" text-anchor="end">chance baseline 1.10</text>
+
+  <!-- Gradient descent loss: smooth drop from 1.10 (y=200) to ~0.3 (y=300) -->
+  <path class="loss-ok" d="M 668 198 C 690 200, 720 220, 750 248 C 780 270, 820 290, 884 302"/>
+  <circle class="dot-ok" cx="668" cy="198" r="2.5"/>
+  <circle class="dot-ok" cx="710" cy="216" r="2.5"/>
+  <circle class="dot-ok" cx="750" cy="248" r="2.5"/>
+  <circle class="dot-ok" cx="790" cy="272" r="2.5"/>
+  <circle class="dot-ok" cx="830" cy="288" r="2.5"/>
+  <circle class="dot-ok" cx="870" cy="298" r="2.5"/>
+
+  <text class="axis-label" x="652" y="324" text-anchor="end">0</text>
+  <text class="axis-label" x="652" y="204" text-anchor="end">1.1</text>
+  <text class="axis-label" x="652" y="304" text-anchor="end">0.3</text>
+  <text class="axis-title" x="776" y="338" text-anchor="middle">iterations →</text>
+
+  <text class="verdict-ok" x="660" y="362">~1 000 iters · loss 0.3 · acc 90%+</text>
+  <text class="verdict-body" x="660" y="378">Knows the steepest-descent direction</text>
+  <text class="verdict-body" x="660" y="392">before taking each step.</text>
+
+  <!-- ====================== Rule band ====================== -->
+  <rect class="rule-band" x="48" y="432" width="864" height="68" rx="12"/>
+  <text class="rule-head" x="68" y="458">The gradient-descent update rule:</text>
+  <text class="rule-body" x="68" y="484">w_new = w_old − η · ∇L</text>
+  <text class="rule-note" x="280" y="484">η is the learning rate (step size). The minus sign is what makes this a descent algorithm.</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="528">Cauchy described gradient descent in 1847; Rumelhart, Hinton &amp; Williams (1986) paired it with backpropagation for neural networks.</text>
+</svg>

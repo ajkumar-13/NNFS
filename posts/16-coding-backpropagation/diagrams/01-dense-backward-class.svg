@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" role="img" aria-labelledby="t d">
+  <title id="t">Layer_Dense with forward and backward methods, and what each one caches</title>
+  <desc id="d">A class blueprint diagram for Layer_Dense with two methods drawn side by side. Left column, forward(inputs): caches self.inputs, computes self.output = inputs @ weights + biases. Right column, backward(dvalues): computes self.dweights = self.inputs.T @ dvalues, self.dbiases = sum(dvalues axis=0 keepdims), and self.dinputs = dvalues @ weights.T. Three gradient cards on the right show what each one is used for: dweights feeds the optimiser, dbiases feeds the optimiser, dinputs flows to the previous layer.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .class-panel{fill:var(--ce-surface);stroke:var(--ce-ink);stroke-width:1.5;}
+    .pill-prim{fill:var(--ce-primary);}
+    .pill-acc{fill:var(--ce-accent);}
+    .class-head{font-weight:700;font-size:16px;fill:var(--ce-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .method-tag{font-weight:700;font-size:11px;fill:var(--ce-ink-muted);text-transform:uppercase;letter-spacing:0.08em;}
+    .method-name{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;fill:var(--ce-ink);}
+    .method-line{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--ce-ink);}
+    .cache-note{font-size:11px;fill:var(--ce-warn);font-style:italic;}
+    .grad-card{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .grad-pill-w{fill:var(--ce-primary);}
+    .grad-pill-b{fill:var(--ce-accent);}
+    .grad-pill-x{fill:var(--ce-success);}
+    .grad-name{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;fill:var(--ce-ink);}
+    .grad-shape{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--ce-ink-muted);}
+    .grad-use{font-size:11px;fill:var(--ce-ink-muted);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="500"/>
+
+  <text class="title"    x="48" y="48">Layer_Dense with forward and backward</text>
+  <text class="subtitle" x="48" y="70">Two methods, two patterns. Forward caches inputs; backward consumes them to produce three gradients.</text>
+
+  <!-- ============================ Class panel ============================ -->
+  <rect class="class-panel" x="48" y="96" width="560" height="356" rx="14"/>
+  <rect class="pill-prim"   x="48" y="96" width="6"   height="356" rx="3"/>
+  <text class="class-head" x="68" y="124">class Layer_Dense:</text>
+
+  <!-- forward method -->
+  <text class="method-tag"  x="68" y="158">forward (cache and compute)</text>
+  <text class="method-name" x="68" y="180">def forward(self, inputs):</text>
+  <text class="method-line" x="92" y="202">self.inputs = inputs</text>
+  <text class="cache-note"  x="276" y="202">← cached for backward</text>
+  <text class="method-line" x="92" y="222">self.output = inputs @ self.weights + self.biases</text>
+
+  <!-- divider -->
+  <line x1="68" y1="250" x2="588" y2="250" stroke="var(--ce-border)" stroke-width="1"/>
+
+  <!-- backward method -->
+  <text class="method-tag"  x="68" y="278">backward (consume dvalues, produce three gradients)</text>
+  <text class="method-name" x="68" y="300">def backward(self, dvalues):</text>
+  <text class="method-line" x="92" y="322">self.dweights = self.inputs.T @ dvalues</text>
+  <text class="method-line" x="92" y="342">self.dbiases  = np.sum(dvalues, axis=0, keepdims=True)</text>
+  <text class="method-line" x="92" y="362">self.dinputs  = dvalues @ self.weights.T</text>
+
+  <!-- Three gradient annotations -->
+  <text class="method-tag" x="68" y="394">three gradients out (stored on self)</text>
+  <text class="method-line" x="92" y="416">self.dweights · self.dbiases · self.dinputs</text>
+
+  <!-- ============================ Right-side gradient cards ============================ -->
+  <rect class="grad-card" x="624" y="96" width="288" height="108" rx="10"/>
+  <rect class="grad-pill-w" x="624" y="96" width="6" height="108" rx="3"/>
+  <text class="grad-name"  x="644" y="124">self.dweights</text>
+  <text class="grad-shape" x="644" y="144">shape (n_inputs, n_neurons)</text>
+  <text class="grad-shape" x="644" y="164">= self.inputs.T @ dvalues</text>
+  <text class="grad-use"   x="644" y="190">→ used by the optimiser to update weights</text>
+
+  <rect class="grad-card" x="624" y="216" width="288" height="108" rx="10"/>
+  <rect class="grad-pill-b" x="624" y="216" width="6" height="108" rx="3"/>
+  <text class="grad-name"  x="644" y="244">self.dbiases</text>
+  <text class="grad-shape" x="644" y="264">shape (1, n_neurons)</text>
+  <text class="grad-shape" x="644" y="284">= np.sum(dvalues, axis=0, keepdims=True)</text>
+  <text class="grad-use"   x="644" y="310">→ used by the optimiser to update biases</text>
+
+  <rect class="grad-card" x="624" y="336" width="288" height="108" rx="10"/>
+  <rect class="grad-pill-x" x="624" y="336" width="6" height="108" rx="3"/>
+  <text class="grad-name"  x="644" y="364">self.dinputs</text>
+  <text class="grad-shape" x="644" y="384">shape (N, n_inputs)</text>
+  <text class="grad-shape" x="644" y="404">= dvalues @ self.weights.T</text>
+  <text class="grad-use"   x="644" y="430">→ becomes the previous layer's dvalues</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="486">Activation_ReLU.backward is one extra line: a masked copy that zeros gradient wherever the cached input was ≤ 0.</text>
+</svg>

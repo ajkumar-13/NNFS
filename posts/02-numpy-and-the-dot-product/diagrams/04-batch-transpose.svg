@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" role="img" aria-labelledby="t d">
+  <title id="t">Why batching needs a transpose</title>
+  <desc id="d">A two-row diagram. The top row shows that without a transpose, np.dot of inputs of shape (N, n) and weights of shape (m, n) fails because the inner dimensions n and m do not match. The bottom row shows the fix: transposing the weights to shape (n, m) makes the inner dimensions align as n and n, so np.dot of (N, n) and (n, m) produces a clean (N, m) output. Each row is annotated with the resulting shape and a brief explanation.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--ce-ink);}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .row-bad{fill:var(--ce-alert);fill-opacity:0.06;stroke:var(--ce-alert);stroke-width:1.5;}
+    .row-ok {fill:var(--ce-success);fill-opacity:0.07;stroke:var(--ce-success);stroke-width:1.5;}
+    .pill-bad{fill:var(--ce-alert);}
+    .pill-ok {fill:var(--ce-success);}
+    .head-bad{font-weight:700;font-size:14px;fill:var(--ce-alert);}
+    .head-ok {font-weight:700;font-size:14px;fill:var(--ce-success);}
+    .row-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .input-cell{fill:var(--ce-primary);fill-opacity:0.14;stroke:var(--ce-primary);stroke-width:1;}
+    .w-cell{fill:var(--ce-accent);fill-opacity:0.16;stroke:var(--ce-accent);stroke-width:1;}
+    .out-cell{fill:var(--ce-success);fill-opacity:0.18;stroke:var(--ce-success);stroke-width:1.2;}
+    .fail-cell{fill:var(--ce-alert);fill-opacity:0.18;stroke:var(--ce-alert);stroke-width:1.5;stroke-dasharray:4 3;}
+    .op{font-weight:700;font-size:18px;fill:var(--ce-ink);}
+    .label-head{font-weight:600;font-size:12px;fill:var(--ce-ink);}
+    .shape-good{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-success);}
+    .shape-bad{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-alert);}
+    .shape-neutral{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink-muted);}
+    .err-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--ce-alert);font-weight:600;}
+    .ok-text{font-size:11px;fill:var(--ce-success);font-weight:600;}
+    .x-mark{stroke:var(--ce-alert);stroke-width:2.5;fill:none;stroke-linecap:round;}
+  ]]></style>
+
+  <rect class="bg" width="960" height="500"/>
+
+  <text class="title"    x="48" y="48">Why batching needs a transpose</text>
+  <text class="subtitle" x="48" y="70">With one sample at a time, shapes line up. With a batch, the convention "one row per neuron" collides with itself.</text>
+
+  <!-- =============== ROW 1: WITHOUT transpose (broken) =============== -->
+  <rect class="row-bad" x="48" y="96" width="864" height="172" rx="12"/>
+  <rect class="pill-bad" x="48" y="96" width="6"   height="172" rx="3"/>
+  <text class="head-bad" x="68" y="124">Without transpose: shape mismatch</text>
+  <text class="row-sub"  x="68" y="142">np.dot(inputs, weights)</text>
+
+  <!-- inputs (3x4) -->
+  <text class="label-head" x="120" y="170" text-anchor="middle">inputs</text>
+  <g transform="translate(80, 178)">
+    <rect class="input-cell" x="0"  y="0"  width="20" height="20"/>
+    <rect class="input-cell" x="20" y="0"  width="20" height="20"/>
+    <rect class="input-cell" x="40" y="0"  width="20" height="20"/>
+    <rect class="input-cell" x="60" y="0"  width="20" height="20"/>
+    <rect class="input-cell" x="0"  y="20" width="20" height="20"/>
+    <rect class="input-cell" x="20" y="20" width="20" height="20"/>
+    <rect class="input-cell" x="40" y="20" width="20" height="20"/>
+    <rect class="input-cell" x="60" y="20" width="20" height="20"/>
+    <rect class="input-cell" x="0"  y="40" width="20" height="20"/>
+    <rect class="input-cell" x="20" y="40" width="20" height="20"/>
+    <rect class="input-cell" x="40" y="40" width="20" height="20"/>
+    <rect class="input-cell" x="60" y="40" width="20" height="20"/>
+  </g>
+  <text class="shape-neutral" x="120" y="262" text-anchor="middle">(N=3, n=4)</text>
+
+  <text class="op" x="200" y="216" text-anchor="middle">·</text>
+
+  <!-- weights (3x4) — also (m=3, n=4) -->
+  <text class="label-head" x="260" y="170" text-anchor="middle">weights</text>
+  <g transform="translate(220, 178)">
+    <rect class="w-cell" x="0"  y="0"  width="20" height="20"/>
+    <rect class="w-cell" x="20" y="0"  width="20" height="20"/>
+    <rect class="w-cell" x="40" y="0"  width="20" height="20"/>
+    <rect class="w-cell" x="60" y="0"  width="20" height="20"/>
+    <rect class="w-cell" x="0"  y="20" width="20" height="20"/>
+    <rect class="w-cell" x="20" y="20" width="20" height="20"/>
+    <rect class="w-cell" x="40" y="20" width="20" height="20"/>
+    <rect class="w-cell" x="60" y="20" width="20" height="20"/>
+    <rect class="w-cell" x="0"  y="40" width="20" height="20"/>
+    <rect class="w-cell" x="20" y="40" width="20" height="20"/>
+    <rect class="w-cell" x="40" y="40" width="20" height="20"/>
+    <rect class="w-cell" x="60" y="40" width="20" height="20"/>
+  </g>
+  <text class="shape-neutral" x="260" y="262" text-anchor="middle">(m=3, n=4)</text>
+
+  <!-- inner-dim mismatch banner -->
+  <text class="shape-bad" x="170" y="240" text-anchor="middle">inner: 4</text>
+  <text class="shape-bad" x="232" y="240" text-anchor="middle">inner: 3</text>
+  <line class="x-mark" x1="174" y1="246" x2="234" y2="234"/>
+  <line class="x-mark" x1="174" y1="234" x2="234" y2="246"/>
+
+  <!-- result: ValueError -->
+  <text class="op" x="340" y="216" text-anchor="middle">→</text>
+  <rect class="fail-cell" x="376" y="178" width="240" height="60" rx="8"/>
+  <text class="err-text" x="496" y="206" text-anchor="middle">ValueError:</text>
+  <text class="err-text" x="496" y="224" text-anchor="middle">shapes (3,4) and (3,4) not aligned</text>
+
+  <text class="row-sub" x="660" y="184">Last axis of inputs is 4.</text>
+  <text class="row-sub" x="660" y="200">First axis of weights is 3.</text>
+  <text class="row-sub" x="660" y="216">4 ≠ 3 → call cannot proceed.</text>
+
+  <!-- =============== ROW 2: WITH transpose (fix) =============== -->
+  <rect class="row-ok" x="48" y="284" width="864" height="172" rx="12"/>
+  <rect class="pill-ok" x="48" y="284" width="6"   height="172" rx="3"/>
+  <text class="head-ok" x="68" y="312">With transpose: shapes align</text>
+  <text class="row-sub" x="68" y="330">np.dot(inputs, weights.T) + bias</text>
+
+  <!-- inputs (3x4) -->
+  <text class="label-head" x="120" y="358" text-anchor="middle">inputs</text>
+  <g transform="translate(80, 366)">
+    <rect class="input-cell" x="0"  y="0"  width="20" height="20"/>
+    <rect class="input-cell" x="20" y="0"  width="20" height="20"/>
+    <rect class="input-cell" x="40" y="0"  width="20" height="20"/>
+    <rect class="input-cell" x="60" y="0"  width="20" height="20"/>
+    <rect class="input-cell" x="0"  y="20" width="20" height="20"/>
+    <rect class="input-cell" x="20" y="20" width="20" height="20"/>
+    <rect class="input-cell" x="40" y="20" width="20" height="20"/>
+    <rect class="input-cell" x="60" y="20" width="20" height="20"/>
+    <rect class="input-cell" x="0"  y="40" width="20" height="20"/>
+    <rect class="input-cell" x="20" y="40" width="20" height="20"/>
+    <rect class="input-cell" x="40" y="40" width="20" height="20"/>
+    <rect class="input-cell" x="60" y="40" width="20" height="20"/>
+  </g>
+  <text class="shape-neutral" x="120" y="442" text-anchor="middle">(N=3, n=4)</text>
+
+  <text class="op" x="200" y="404" text-anchor="middle">·</text>
+
+  <!-- weights.T (4x3) — transposed -->
+  <text class="label-head" x="260" y="358" text-anchor="middle">weights.T</text>
+  <g transform="translate(230, 366)">
+    <rect class="w-cell" x="0"  y="0"  width="20" height="20"/>
+    <rect class="w-cell" x="20" y="0"  width="20" height="20"/>
+    <rect class="w-cell" x="40" y="0"  width="20" height="20"/>
+    <rect class="w-cell" x="0"  y="20" width="20" height="20"/>
+    <rect class="w-cell" x="20" y="20" width="20" height="20"/>
+    <rect class="w-cell" x="40" y="20" width="20" height="20"/>
+    <rect class="w-cell" x="0"  y="40" width="20" height="20"/>
+    <rect class="w-cell" x="20" y="40" width="20" height="20"/>
+    <rect class="w-cell" x="40" y="40" width="20" height="20"/>
+    <rect class="w-cell" x="0"  y="60" width="20" height="20"/>
+    <rect class="w-cell" x="20" y="60" width="20" height="20"/>
+    <rect class="w-cell" x="40" y="60" width="20" height="20"/>
+  </g>
+  <text class="shape-neutral" x="260" y="462" text-anchor="middle">(n=4, m=3)</text>
+
+  <!-- inner-dim match -->
+  <text class="shape-good" x="170" y="426" text-anchor="middle">inner: 4</text>
+  <text class="shape-good" x="232" y="426" text-anchor="middle">inner: 4</text>
+  <path d="M 174 432 C 188 442, 218 442, 232 432" stroke="var(--ce-success)" stroke-width="1.5" fill="none"/>
+  <text class="ok-text" x="203" y="450" text-anchor="middle">match</text>
+
+  <text class="op" x="340" y="404" text-anchor="middle">→</text>
+
+  <!-- output (3x3) with real values -->
+  <text class="label-head" x="430" y="358" text-anchor="middle">outputs (= np.dot(inputs, weights.T))</text>
+  <g transform="translate(376, 366)">
+    <rect class="out-cell" x="0"  y="0"  width="36" height="20"/>
+    <rect class="out-cell" x="36" y="0"  width="36" height="20"/>
+    <rect class="out-cell" x="72" y="0"  width="36" height="20"/>
+    <rect class="out-cell" x="0"  y="20" width="36" height="20"/>
+    <rect class="out-cell" x="36" y="20" width="36" height="20"/>
+    <rect class="out-cell" x="72" y="20" width="36" height="20"/>
+    <rect class="out-cell" x="0"  y="40" width="36" height="20"/>
+    <rect class="out-cell" x="36" y="40" width="36" height="20"/>
+    <rect class="out-cell" x="72" y="40" width="36" height="20"/>
+    <text class="mono" x="18" y="15" text-anchor="middle">4.80</text>
+    <text class="mono" x="54" y="15" text-anchor="middle">1.21</text>
+    <text class="mono" x="90" y="15" text-anchor="middle">2.39</text>
+    <text class="mono" x="18" y="35" text-anchor="middle">8.90</text>
+    <text class="mono" x="54" y="35" text-anchor="middle">-1.81</text>
+    <text class="mono" x="90" y="35" text-anchor="middle">0.20</text>
+    <text class="mono" x="18" y="55" text-anchor="middle">1.41</text>
+    <text class="mono" x="54" y="55" text-anchor="middle">1.05</text>
+    <text class="mono" x="90" y="55" text-anchor="middle">0.03</text>
+  </g>
+  <text class="shape-good" x="430" y="450" text-anchor="middle">(N=3, m=3)</text>
+
+  <text class="row-sub" x="540" y="378">Each row is one sample's predictions</text>
+  <text class="row-sub" x="540" y="394">across all m neurons.</text>
+  <text class="row-sub" x="540" y="416">Each column belongs to one neuron's</text>
+  <text class="row-sub" x="540" y="432">predictions across all N samples.</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="486">For one sample: np.dot(weights, x) needs no transpose. For a batch: np.dot(inputs, weights.T) does.</text>
+</svg>

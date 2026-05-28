@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">Full backpropagation pipeline: forward and backward through three classes</title>
+  <desc id="d">A two-row pipeline diagram. Top row (forward, primary blue arrows): inputs X flow into layer1 (Layer_Dense), then activation1 (ReLU), then layer2 (Layer_Dense), then loss_activation (Softmax + CrossEntropy), producing the loss scalar L. Bottom row (backward, alert red arrows): starting from L, each component's backward method runs in reverse, with each one's dinputs becoming the next one's dvalues. The arrows are labelled with the gradient quantities at each handoff. A footer band shows the four trainable parameter updates: layer1.weights and biases, layer2.weights and biases.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .row-label{font-weight:700;font-size:12px;fill:var(--ce-ink-muted);text-transform:uppercase;letter-spacing:0.06em;}
+    .data-pill{fill:var(--ce-primary);fill-opacity:0.18;stroke:var(--ce-primary);stroke-width:1.5;}
+    .data-pill-ok{fill:var(--ce-success);fill-opacity:0.20;stroke:var(--ce-success);stroke-width:1.5;}
+    .var-name{font-weight:700;font-size:13px;fill:var(--ce-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .op-dense{fill:var(--ce-surface);stroke:var(--ce-ink);stroke-width:1.5;}
+    .op-relu{fill:var(--ce-warn);fill-opacity:0.10;stroke:var(--ce-warn);stroke-width:1.5;}
+    .op-soft{fill:var(--ce-success);fill-opacity:0.10;stroke:var(--ce-success);stroke-width:1.5;}
+    .op-name{font-weight:700;font-size:13px;fill:var(--ce-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .op-sub{font-size:10px;fill:var(--ce-ink-muted);}
+    .fwd-arrow{stroke:var(--ce-primary);stroke-width:1.8;fill:none;}
+    .fwd-head{fill:var(--ce-primary);}
+    .bwd-arrow{stroke:var(--ce-alert);stroke-width:1.8;fill:none;}
+    .bwd-head{fill:var(--ce-alert);}
+    .grad-label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--ce-alert);}
+    .update-band{fill:var(--ce-primary);fill-opacity:0.08;stroke:var(--ce-primary);stroke-width:1.5;}
+    .update-head{font-weight:700;font-size:13px;fill:var(--ce-primary);}
+    .update-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--ce-ink);}
+  ]]></style>
+
+  <defs>
+    <marker id="aFwd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="fwd-head"/>
+    </marker>
+    <marker id="aBwd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="bwd-head"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="48">Full backpropagation pipeline</text>
+  <text class="subtitle" x="48" y="70">Forward walks left to right; backward walks right to left. Each backward call feeds the next via dinputs.</text>
+
+  <!-- ============================ FORWARD ROW ============================ -->
+  <text class="row-label" x="48" y="110">forward (left to right)</text>
+
+  <!-- X -->
+  <circle class="data-pill" cx="80" cy="160" r="24"/>
+  <text class="var-name" x="80" y="165" text-anchor="middle">X</text>
+
+  <line class="fwd-arrow" x1="108" y1="160" x2="140" y2="160" marker-end="url(#aFwd)"/>
+
+  <!-- layer1 -->
+  <rect class="op-dense" x="144" y="132" width="124" height="56" rx="10"/>
+  <text class="op-name" x="206" y="156" text-anchor="middle">layer1</text>
+  <text class="op-sub"  x="206" y="174" text-anchor="middle">Layer_Dense(2,3)</text>
+
+  <line class="fwd-arrow" x1="272" y1="160" x2="300" y2="160" marker-end="url(#aFwd)"/>
+
+  <!-- activation1 -->
+  <rect class="op-relu" x="304" y="132" width="124" height="56" rx="10"/>
+  <text class="op-name" x="366" y="156" text-anchor="middle">activation1</text>
+  <text class="op-sub"  x="366" y="174" text-anchor="middle">ReLU</text>
+
+  <line class="fwd-arrow" x1="432" y1="160" x2="460" y2="160" marker-end="url(#aFwd)"/>
+
+  <!-- layer2 -->
+  <rect class="op-dense" x="464" y="132" width="124" height="56" rx="10"/>
+  <text class="op-name" x="526" y="156" text-anchor="middle">layer2</text>
+  <text class="op-sub"  x="526" y="174" text-anchor="middle">Layer_Dense(3,3)</text>
+
+  <line class="fwd-arrow" x1="592" y1="160" x2="620" y2="160" marker-end="url(#aFwd)"/>
+
+  <!-- loss_activation -->
+  <rect class="op-soft" x="624" y="132" width="170" height="56" rx="10"/>
+  <text class="op-name" x="709" y="156" text-anchor="middle">loss_activation</text>
+  <text class="op-sub"  x="709" y="174" text-anchor="middle">Softmax + CE</text>
+
+  <line class="fwd-arrow" x1="798" y1="160" x2="828" y2="160" marker-end="url(#aFwd)"/>
+
+  <!-- L (scalar loss) -->
+  <circle class="data-pill-ok" cx="864" cy="160" r="28"/>
+  <text class="var-name" x="864" y="165" text-anchor="middle">L</text>
+
+  <!-- ============================ BACKWARD ROW ============================ -->
+  <text class="row-label" x="48" y="262">backward (right to left)  ·  each .dinputs becomes the next .dvalues</text>
+
+  <!-- Each backward arrow goes between the same box centers, in reverse -->
+  <line class="bwd-arrow" x1="828" y1="312" x2="798" y2="312" marker-end="url(#aBwd)"/>
+  <text class="grad-label" x="813" y="302" text-anchor="middle">(ŷ−y)/N</text>
+
+  <line class="bwd-arrow" x1="620" y1="312" x2="592" y2="312" marker-end="url(#aBwd)"/>
+  <text class="grad-label" x="606" y="302" text-anchor="middle">∂L/∂Z2</text>
+
+  <line class="bwd-arrow" x1="460" y1="312" x2="432" y2="312" marker-end="url(#aBwd)"/>
+  <text class="grad-label" x="446" y="302" text-anchor="middle">∂L/∂A1</text>
+
+  <line class="bwd-arrow" x1="300" y1="312" x2="272" y2="312" marker-end="url(#aBwd)"/>
+  <text class="grad-label" x="286" y="302" text-anchor="middle">∂L/∂Z1</text>
+
+  <line class="bwd-arrow" x1="140" y1="312" x2="108" y2="312" marker-end="url(#aBwd)"/>
+  <text class="grad-label" x="124" y="302" text-anchor="middle">∂L/∂X</text>
+
+  <!-- Labels on each backward call -->
+  <text class="op-sub" x="709" y="334" text-anchor="middle">loss_activation.backward(ŷ, y)</text>
+  <text class="op-sub" x="526" y="334" text-anchor="middle">layer2.backward(...)</text>
+  <text class="op-sub" x="366" y="334" text-anchor="middle">activation1.backward(...)</text>
+  <text class="op-sub" x="206" y="334" text-anchor="middle">layer1.backward(...)</text>
+
+  <!-- Per-class gradients produced -->
+  <text class="op-sub" x="206" y="354" text-anchor="middle" style="fill:var(--ce-alert);font-weight:600;">produces: dweights, dbiases, dinputs</text>
+  <text class="op-sub" x="366" y="354" text-anchor="middle" style="fill:var(--ce-alert);font-weight:600;">produces: dinputs (masked)</text>
+  <text class="op-sub" x="526" y="354" text-anchor="middle" style="fill:var(--ce-alert);font-weight:600;">produces: dweights, dbiases, dinputs</text>
+  <text class="op-sub" x="709" y="354" text-anchor="middle" style="fill:var(--ce-alert);font-weight:600;">produces: dinputs = (ŷ−y)/N</text>
+
+  <!-- ============================ Update band ============================ -->
+  <rect class="update-band" x="48" y="396" width="864" height="120" rx="12"/>
+  <text class="update-head" x="68" y="424">Update: four parameter subtractions (vanilla SGD)</text>
+  <text class="update-text" x="68" y="450">layer1.weights -= learning_rate * layer1.dweights</text>
+  <text class="update-text" x="68" y="468">layer1.biases  -= learning_rate * layer1.dbiases</text>
+  <text class="update-text" x="68" y="486">layer2.weights -= learning_rate * layer2.dweights</text>
+  <text class="update-text" x="68" y="504">layer2.biases  -= learning_rate * layer2.dbiases</text>
+</svg>

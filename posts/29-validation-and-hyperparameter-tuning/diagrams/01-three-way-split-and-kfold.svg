@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">Three-way split and 5-fold cross-validation, side by side</title>
+  <desc id="d">A two-panel diagram contrasting the two standard splitting patterns for evaluating a neural network honestly. The left panel shows the three-way split used when data is plentiful: a single horizontal bar coloured 60 percent green for training, 20 percent tan for validation, and 20 percent blue for the test set, with three role boxes underneath explaining that training data updates the weights every step, validation data is used freely to choose hyperparameters, and the test set is opened exactly once at the end for the final report. The right panel shows 5-fold cross-validation used when data is scarce: five rows representing five rotations of a held-out fold, each row split into five equal cells with one cell coloured tan as the validation slot and the other four green as training, plus an accuracy column on the right showing per-fold scores and a mean validation accuracy at the bottom. Below both panels a horizontal timeline reinforces that no matter which pattern is used, the test set is touched once and only at the end.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --ce-grid:rgba(26,26,26,0.06);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --ce-grid:rgba(241,238,232,0.08);
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .panel-head{font-weight:700;font-size:14px;fill:var(--ce-ink);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+
+    .cell-train{fill:var(--ce-success);fill-opacity:0.70;stroke:var(--ce-success);stroke-width:1;}
+    .cell-val  {fill:var(--ce-warn);fill-opacity:0.78;stroke:var(--ce-warn);stroke-width:1;}
+    .cell-test {fill:var(--ce-primary);fill-opacity:0.70;stroke:var(--ce-primary);stroke-width:1;}
+    .cell-muted{fill:var(--ce-success);fill-opacity:0.20;stroke:var(--ce-success);stroke-width:1;}
+
+    .cell-label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--ce-ink);}
+    .seg-pct{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10.5px;font-weight:600;fill:var(--ce-ink-muted);}
+
+    .role-box-train{fill:var(--ce-success);fill-opacity:0.06;stroke:var(--ce-success);stroke-width:1;}
+    .role-box-val  {fill:var(--ce-warn);fill-opacity:0.06;stroke:var(--ce-warn);stroke-width:1;}
+    .role-box-test {fill:var(--ce-primary);fill-opacity:0.06;stroke:var(--ce-primary);stroke-width:1;}
+    .role-head-train{font-weight:700;font-size:11px;fill:var(--ce-success);}
+    .role-head-val  {font-weight:700;font-size:11px;fill:var(--ce-warn);}
+    .role-head-test {font-weight:700;font-size:11px;fill:var(--ce-primary);}
+    .role-body{font-size:10.5px;fill:var(--ce-ink-muted);}
+
+    .fold-tag{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--ce-ink-muted);}
+    .acc-col-head{font-weight:700;font-size:10.5px;fill:var(--ce-ink-muted);}
+    .acc-val{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--ce-ink);}
+    .mean-box{fill:var(--ce-warn);fill-opacity:0.10;stroke:var(--ce-warn);stroke-width:1.5;}
+    .mean-head{font-weight:700;font-size:11px;fill:var(--ce-warn);}
+    .mean-val{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;font-weight:700;fill:var(--ce-warn);}
+
+    .timeline-line{stroke:var(--ce-ink-subtle);stroke-width:1.5;fill:none;}
+    .timeline-dot {fill:var(--ce-ink-subtle);}
+    .timeline-text{font-size:10.5px;font-style:italic;fill:var(--ce-ink-muted);}
+    .timeline-warn{font-size:10.5px;font-weight:700;font-style:italic;fill:var(--ce-primary);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="40">Two splitting patterns, one rule</text>
+  <text class="subtitle" x="48" y="60">Training data updates weights. Validation data picks hyperparameters. The test set is opened exactly once.</text>
+
+  <!-- ============================ LEFT panel: three-way split ============================ -->
+  <rect class="panel" x="24" y="80" width="432" height="380" rx="10"/>
+  <text class="panel-head" x="40" y="102">Three-way split  ·  for plentiful data</text>
+  <text class="panel-sub"  x="40" y="118">one dataset, three disjoint roles, fixed before training</text>
+
+  <!-- Split bar (width 384 inside panel, x=40 to 424). 60% train, 20% val, 20% test -->
+  <rect class="cell-train" x="40"  y="140" width="230" height="44"/>
+  <rect class="cell-val"   x="270" y="140" width="77"  height="44"/>
+  <rect class="cell-test"  x="347" y="140" width="77"  height="44"/>
+
+  <text class="cell-label" x="155" y="167" text-anchor="middle">Training</text>
+  <text class="cell-label" x="308" y="167" text-anchor="middle">Val</text>
+  <text class="cell-label" x="385" y="167" text-anchor="middle">Test</text>
+
+  <text class="seg-pct" x="155" y="200" text-anchor="middle">60%</text>
+  <text class="seg-pct" x="308" y="200" text-anchor="middle">20%</text>
+  <text class="seg-pct" x="385" y="200" text-anchor="middle">20%</text>
+
+  <!-- Role boxes -->
+  <rect class="role-box-train" x="40" y="218" width="384" height="56" rx="6"/>
+  <text class="role-head-train" x="52" y="236">Training data</text>
+  <text class="role-body"       x="52" y="252">updates weights and biases every forward/backward pass.</text>
+  <text class="role-body"       x="52" y="266">touched on every epoch; the largest slice for a reason.</text>
+
+  <rect class="role-box-val" x="40" y="282" width="384" height="56" rx="6"/>
+  <text class="role-head-val" x="52" y="300">Validation data</text>
+  <text class="role-body"     x="52" y="316">scores hyperparameter candidates: lr, layer width, decay, regularisation.</text>
+  <text class="role-body"     x="52" y="330">re-evaluated freely; never feeds the gradient.</text>
+
+  <rect class="role-box-test" x="40" y="346" width="384" height="76" rx="6"/>
+  <text class="role-head-test" x="52" y="364">Test data  ·  one chance, no take-backs</text>
+  <text class="role-body"      x="52" y="380">the final accuracy number reported in the paper / readme / report.</text>
+  <text class="role-body"      x="52" y="394">opened exactly ONCE after every design decision is frozen.</text>
+  <text class="role-body"      x="52" y="412" style="font-style:italic;fill:var(--ce-primary);font-weight:600;">re-tuning after seeing test = the most common bench-mark leak.</text>
+
+  <!-- ============================ RIGHT panel: 5-fold CV ============================ -->
+  <rect class="panel" x="480" y="80" width="456" height="380" rx="10"/>
+  <text class="panel-head" x="496" y="102">5-fold cross-validation  ·  for scarce data</text>
+  <text class="panel-sub"  x="496" y="118">rotate the validation slot through the training set</text>
+
+  <!-- Column headers -->
+  <text class="acc-col-head" x="500" y="142">fold</text>
+  <text class="acc-col-head" x="638" y="142" text-anchor="middle">A    B    C    D    E</text>
+  <text class="acc-col-head" x="886" y="142" text-anchor="end">val acc.</text>
+
+  <!-- 5 fold rows. Each row: tag on left, 5 cells in middle, accuracy on right. -->
+  <!-- Cells: 5 each, width 52, gap 4. Total 5*52+4*4=276. Start x=510. -->
+
+  <!-- Row 1: A is validation -->
+  <text class="fold-tag" x="500" y="172">1</text>
+  <rect class="cell-val"   x="510" y="158" width="52" height="22"/>
+  <rect class="cell-muted" x="566" y="158" width="52" height="22"/>
+  <rect class="cell-muted" x="622" y="158" width="52" height="22"/>
+  <rect class="cell-muted" x="678" y="158" width="52" height="22"/>
+  <rect class="cell-muted" x="734" y="158" width="52" height="22"/>
+  <text class="acc-val" x="886" y="172" text-anchor="end">0.883</text>
+
+  <!-- Row 2: B is validation -->
+  <text class="fold-tag" x="500" y="202">2</text>
+  <rect class="cell-muted" x="510" y="188" width="52" height="22"/>
+  <rect class="cell-val"   x="566" y="188" width="52" height="22"/>
+  <rect class="cell-muted" x="622" y="188" width="52" height="22"/>
+  <rect class="cell-muted" x="678" y="188" width="52" height="22"/>
+  <rect class="cell-muted" x="734" y="188" width="52" height="22"/>
+  <text class="acc-val" x="886" y="202" text-anchor="end">0.900</text>
+
+  <!-- Row 3: C is validation -->
+  <text class="fold-tag" x="500" y="232">3</text>
+  <rect class="cell-muted" x="510" y="218" width="52" height="22"/>
+  <rect class="cell-muted" x="566" y="218" width="52" height="22"/>
+  <rect class="cell-val"   x="622" y="218" width="52" height="22"/>
+  <rect class="cell-muted" x="678" y="218" width="52" height="22"/>
+  <rect class="cell-muted" x="734" y="218" width="52" height="22"/>
+  <text class="acc-val" x="886" y="232" text-anchor="end">0.917</text>
+
+  <!-- Row 4: D is validation -->
+  <text class="fold-tag" x="500" y="262">4</text>
+  <rect class="cell-muted" x="510" y="248" width="52" height="22"/>
+  <rect class="cell-muted" x="566" y="248" width="52" height="22"/>
+  <rect class="cell-muted" x="622" y="248" width="52" height="22"/>
+  <rect class="cell-val"   x="678" y="248" width="52" height="22"/>
+  <rect class="cell-muted" x="734" y="248" width="52" height="22"/>
+  <text class="acc-val" x="886" y="262" text-anchor="end">0.867</text>
+
+  <!-- Row 5: E is validation -->
+  <text class="fold-tag" x="500" y="292">5</text>
+  <rect class="cell-muted" x="510" y="278" width="52" height="22"/>
+  <rect class="cell-muted" x="566" y="278" width="52" height="22"/>
+  <rect class="cell-muted" x="622" y="278" width="52" height="22"/>
+  <rect class="cell-muted" x="678" y="278" width="52" height="22"/>
+  <rect class="cell-val"   x="734" y="278" width="52" height="22"/>
+  <text class="acc-val" x="886" y="292" text-anchor="end">0.900</text>
+
+  <!-- Cell-color legend below the rows -->
+  <g transform="translate(496, 314)">
+    <rect class="cell-val"   x="0" y="0" width="14" height="14"/>
+    <text class="role-body"  x="20" y="11">validation slot</text>
+    <rect class="cell-muted" x="124" y="0" width="14" height="14"/>
+    <text class="role-body"  x="144" y="11">training (other 4 folds)</text>
+  </g>
+
+  <!-- Mean accuracy callout -->
+  <rect class="mean-box" x="496" y="346" width="424" height="76" rx="8"/>
+  <text class="mean-head" x="512" y="368">mean validation accuracy = (E₁ + E₂ + E₃ + E₄ + E₅) / 5</text>
+  <text class="mean-val"  x="512" y="396">0.893</text>
+  <text class="role-body" x="568" y="396" style="fill:var(--ce-warn);">±0.018 std across folds  →  the score of this hyperparameter candidate</text>
+  <text class="role-body" x="512" y="414" style="font-style:italic;">every training example takes a turn validating; no data is wasted.</text>
+
+  <!-- ============================ Bottom timeline ============================ -->
+  <line class="timeline-line" x1="48" y1="490" x2="912" y2="490"/>
+
+  <circle class="timeline-dot" cx="120" cy="490" r="4" fill="var(--ce-success)"/>
+  <text class="timeline-text"  x="120" y="510" text-anchor="middle">train weights (every epoch)</text>
+
+  <circle class="timeline-dot" cx="450" cy="490" r="4" fill="var(--ce-warn)"/>
+  <text class="timeline-text"  x="450" y="510" text-anchor="middle">tune hyperparameters (many runs against validation)</text>
+
+  <circle class="timeline-dot" cx="840" cy="490" r="5" fill="var(--ce-primary)"/>
+  <text class="timeline-warn"  x="840" y="510" text-anchor="middle">open test set — once — report the number</text>
+</svg>

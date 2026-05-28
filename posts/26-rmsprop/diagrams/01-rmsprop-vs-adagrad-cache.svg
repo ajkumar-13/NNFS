@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">RMSProp vs AdaGrad: cache growth under a constant gradient</title>
+  <desc id="d">Two-panel diagram comparing the cache evolution of AdaGrad and RMSProp under a constant gradient magnitude of 0.5. The top of the figure shows the two cache update rules side by side: AdaGrad is G plus equals g squared, RMSProp is G equals rho times G plus one minus rho times g squared, with rho equal to 0.9. The main log-log chart shows cache value versus iteration for both algorithms. AdaGrad's cache rises along a straight diagonal from 0.25 at iteration 1 to 2500 at iteration 10 000, growing linearly with iteration. RMSProp's cache rises sharply in the first few iterations to a steady-state value of 0.25 and then stays flat for the rest of the run. A side panel shows the numerical cache values at iterations 1, 10, 100, 1000, and 10 000 plus the ratio between AdaGrad and RMSProp, which reaches 10 000 by the end of the run. The takeaway is that AdaGrad's cache grows without bound while RMSProp's converges, which is why RMSProp's per-parameter effective learning rate never dies.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --ce-grid:rgba(26,26,26,0.06);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --ce-grid:rgba(241,238,232,0.08);
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .rule-band-bad{fill:var(--ce-alert);fill-opacity:0.07;stroke:var(--ce-alert);stroke-width:1.5;}
+    .rule-band-ok {fill:var(--ce-success);fill-opacity:0.07;stroke:var(--ce-success);stroke-width:1.5;}
+    .rule-head-bad{font-weight:700;font-size:13px;fill:var(--ce-alert);}
+    .rule-head-ok {font-weight:700;font-size:13px;fill:var(--ce-success);}
+    .rule-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;fill:var(--ce-ink);font-weight:700;}
+    .rule-note{font-size:10.5px;fill:var(--ce-ink-muted);}
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .panel-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .axis{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
+    .grid{stroke:var(--ce-grid);stroke-width:0.75;fill:none;}
+    .axis-label{font-size:10px;fill:var(--ce-ink-muted);}
+    .axis-title{font-size:11px;fill:var(--ce-ink-muted);font-style:italic;}
+    .curve-bad {stroke:var(--ce-alert);stroke-width:2.6;fill:none;stroke-linecap:round;}
+    .curve-ok  {stroke:var(--ce-success);stroke-width:2.6;fill:none;stroke-linecap:round;}
+    .legend-text{font-size:11px;fill:var(--ce-ink);}
+    .legend-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
+    .anno-text{font-size:10.5px;font-style:italic;fill:var(--ce-ink-muted);}
+    .side-head{font-weight:700;font-size:12px;fill:var(--ce-ink);}
+    .side-sub{font-size:10.5px;fill:var(--ce-ink-muted);}
+    .side-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
+    .col-head{font-weight:700;font-size:10.5px;fill:var(--ce-ink-muted);}
+    .row-line{stroke:var(--ce-border);stroke-width:1;fill:none;}
+  ]]></style>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="40">RMSProp: AdaGrad's cache with a memory horizon</text>
+  <text class="subtitle" x="48" y="60">One change: replace the running sum with an exponential moving average. The cache stops growing.</text>
+
+  <!-- ============================ Rule bands (two side by side) ============================ -->
+  <rect class="rule-band-bad" x="24" y="76" width="456" height="60" rx="10"/>
+  <text class="rule-head-bad" x="40" y="98">AdaGrad cache (Part 25)</text>
+  <text class="rule-text"     x="252" y="118" text-anchor="middle">G ← G + g²</text>
+  <text class="rule-note"     x="252" y="132" text-anchor="middle">cumulative; grows without bound</text>
+
+  <rect class="rule-band-ok" x="480" y="76" width="456" height="60" rx="10"/>
+  <text class="rule-head-ok" x="496" y="98">RMSProp cache (this lecture)</text>
+  <text class="rule-text"    x="708" y="118" text-anchor="middle">G ← ρ · G + (1 − ρ) · g²</text>
+  <text class="rule-note"    x="708" y="132" text-anchor="middle">EMA over g²; converges to a steady state (ρ = 0.9)</text>
+
+  <!-- ============================ Main chart ============================ -->
+  <rect class="panel" x="24" y="152" width="620" height="320" rx="10"/>
+  <text class="panel-head" x="40" y="174">Cache value over 10 000 iterations · constant gradient |g| = 0.5</text>
+  <text class="panel-sub"  x="40" y="190">log–log; same gradient stream feeds both optimisers</text>
+
+  <!-- Plot frame -->
+  <line class="axis" x1="80" y1="432" x2="620" y2="432"/>
+  <line class="axis" x1="80" y1="192" x2="80"  y2="432"/>
+
+  <!-- Y log gridlines (6 decades, 0.01 at bottom to 10000 at top, 40 px/decade) -->
+  <g class="grid">
+    <line x1="80" y1="192" x2="620" y2="192"/>
+    <line x1="80" y1="232" x2="620" y2="232"/>
+    <line x1="80" y1="272" x2="620" y2="272"/>
+    <line x1="80" y1="312" x2="620" y2="312"/>
+    <line x1="80" y1="352" x2="620" y2="352"/>
+    <line x1="80" y1="392" x2="620" y2="392"/>
+  </g>
+  <text class="axis-label" x="74" y="196" text-anchor="end">10 000</text>
+  <text class="axis-label" x="74" y="236" text-anchor="end">1 000</text>
+  <text class="axis-label" x="74" y="276" text-anchor="end">100</text>
+  <text class="axis-label" x="74" y="316" text-anchor="end">10</text>
+  <text class="axis-label" x="74" y="356" text-anchor="end">1</text>
+  <text class="axis-label" x="74" y="396" text-anchor="end">0.1</text>
+  <text class="axis-label" x="74" y="436" text-anchor="end">0.01</text>
+  <text class="axis-title" x="40" y="312" transform="rotate(-90 40 312)" text-anchor="middle">cache G  (log)</text>
+
+  <!-- X log gridlines (4 decades, 1 to 10000) -->
+  <g class="grid">
+    <line x1="215" y1="192" x2="215" y2="432"/>
+    <line x1="350" y1="192" x2="350" y2="432"/>
+    <line x1="485" y1="192" x2="485" y2="432"/>
+    <line x1="620" y1="192" x2="620" y2="432"/>
+  </g>
+  <text class="axis-label" x="80"  y="448" text-anchor="middle">1</text>
+  <text class="axis-label" x="215" y="448" text-anchor="middle">10</text>
+  <text class="axis-label" x="350" y="448" text-anchor="middle">100</text>
+  <text class="axis-label" x="485" y="448" text-anchor="middle">1 000</text>
+  <text class="axis-label" x="620" y="448" text-anchor="middle">10 000</text>
+  <text class="axis-title" x="350" y="464" text-anchor="middle">iteration t  (log)</text>
+
+  <!-- AdaGrad cache: G = 0.25 * t  →  straight diagonal on log-log -->
+  <line class="curve-bad" x1="80" y1="376" x2="620" y2="216"/>
+  <circle cx="80"  cy="376" r="3" fill="var(--ce-alert)"/>
+  <circle cx="620" cy="216" r="3" fill="var(--ce-alert)"/>
+  <text class="legend-mono" x="610" y="212" text-anchor="end" style="fill:var(--ce-alert);">2 500</text>
+  <text class="legend-mono" x="92"  y="372" style="fill:var(--ce-alert);">0.25</text>
+
+  <!-- RMSProp cache (ρ=0.9): rises quickly then flat at 0.25 -->
+  <path class="curve-ok" d="M 80 416
+                            L 120 405
+                            L 174 392
+                            L 215 384
+                            L 280 378
+                            L 350 376
+                            L 485 376
+                            L 620 376" />
+  <circle cx="80"  cy="416" r="3" fill="var(--ce-success)"/>
+  <circle cx="620" cy="376" r="3" fill="var(--ce-success)"/>
+  <text class="legend-mono" x="610" y="392" text-anchor="end" style="fill:var(--ce-success);">0.25 (steady)</text>
+
+  <!-- Legend -->
+  <g transform="translate(384, 200)">
+    <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="0" y="0" width="226" height="50" rx="6"/>
+    <line class="curve-bad" x1="12" y1="18" x2="40" y2="18"/>
+    <text class="legend-mono" x="48" y="22">AdaGrad · G += g²</text>
+    <line class="curve-ok"  x1="12" y1="38" x2="40" y2="38"/>
+    <text class="legend-mono" x="48" y="42">RMSProp · ρ = 0.9</text>
+  </g>
+
+  <!-- Annotations -->
+  <text class="anno-text" x="350" y="244" text-anchor="middle" style="fill:var(--ce-alert);">grows linearly with t — no ceiling</text>
+  <text class="anno-text" x="500" y="370" text-anchor="middle" style="fill:var(--ce-success);">converges to g² steady state</text>
+
+  <!-- ============================ Sidebar: numerical comparison ============================ -->
+  <rect class="panel" x="664" y="152" width="272" height="320" rx="10"/>
+  <text class="side-head" x="680" y="174">Cache value by iteration</text>
+  <text class="side-sub"  x="680" y="190">same gradient stream |g| = 0.5</text>
+
+  <!-- Table header -->
+  <line class="row-line" x1="680" y1="206" x2="920" y2="206"/>
+  <text class="col-head" x="690"  y="222">t</text>
+  <text class="col-head" x="800"  y="222" text-anchor="end" style="fill:var(--ce-alert);">AdaGrad</text>
+  <text class="col-head" x="910"  y="222" text-anchor="end" style="fill:var(--ce-success);">RMSProp</text>
+  <line class="row-line" x1="680" y1="232" x2="920" y2="232"/>
+
+  <!-- Table rows -->
+  <text class="side-mono" x="690" y="252">1</text>
+  <text class="side-mono" x="800" y="252" text-anchor="end">0.250</text>
+  <text class="side-mono" x="910" y="252" text-anchor="end">0.025</text>
+
+  <text class="side-mono" x="690" y="276">10</text>
+  <text class="side-mono" x="800" y="276" text-anchor="end">2.500</text>
+  <text class="side-mono" x="910" y="276" text-anchor="end">0.163</text>
+
+  <text class="side-mono" x="690" y="300">100</text>
+  <text class="side-mono" x="800" y="300" text-anchor="end">25.0</text>
+  <text class="side-mono" x="910" y="300" text-anchor="end">0.249</text>
+
+  <text class="side-mono" x="690" y="324">1 000</text>
+  <text class="side-mono" x="800" y="324" text-anchor="end">250</text>
+  <text class="side-mono" x="910" y="324" text-anchor="end">0.250</text>
+
+  <text class="side-mono" x="690" y="348">10 000</text>
+  <text class="side-mono" x="800" y="348" text-anchor="end" style="fill:var(--ce-alert);font-weight:700;">2 500</text>
+  <text class="side-mono" x="910" y="348" text-anchor="end" style="fill:var(--ce-success);font-weight:700;">0.250</text>
+
+  <line class="row-line" x1="680" y1="362" x2="920" y2="362"/>
+
+  <!-- Ratio callout -->
+  <rect fill="var(--ce-neutral-1)" stroke="var(--ce-border)" stroke-width="1" x="680" y="378" width="240" height="80" rx="6"/>
+  <text class="side-head" x="800" y="398" text-anchor="middle">ratio at t = 10 000</text>
+  <text class="side-mono" x="800" y="424" text-anchor="middle" style="font-size:18px;">10 000 ×</text>
+  <text class="side-sub" x="800" y="446" text-anchor="middle" style="font-style:italic;">AdaGrad's cache vs RMSProp's</text>
+
+  <!-- ============================ Footer ============================ -->
+  <text class="footer" x="48"  y="510">Bounded cache → bounded denominator → effective rate α/√G stays useful. RMSProp's only change is the cache update; everything else is AdaGrad.</text>
+</svg>

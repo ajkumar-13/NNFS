@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" role="img" aria-labelledby="t d">
+  <title id="t">The same operation in three implementations: manual, loops, NumPy</title>
+  <desc id="d">Three vertical columns each contain a code snippet for computing the same three-neuron layer output. The leftmost column, in alert red, shows hand-written addition of each input-weight product for each neuron and is captioned "hardcoded — does not scale". The middle column, in warn tan, shows two nested for-loops over neurons and inputs and is captioned "scales — clean — still slow in Python". The rightmost column, in success green, shows the single line np.dot(weights, inputs) + biases and is captioned "scales — concise — vectorised C". A footer bar below summarises the trade-offs as "lines of code", "scales?", and "speed".</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--ce-ink);}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel-bad{fill:var(--ce-alert);fill-opacity:0.07;stroke:var(--ce-alert);stroke-width:1.5;}
+    .panel-mid{fill:var(--ce-warn);fill-opacity:0.08;stroke:var(--ce-warn);stroke-width:1.5;}
+    .panel-ok {fill:var(--ce-success);fill-opacity:0.08;stroke:var(--ce-success);stroke-width:1.5;}
+    .pill-bad{fill:var(--ce-alert);}
+    .pill-mid{fill:var(--ce-warn);}
+    .pill-ok {fill:var(--ce-success);}
+    .head-bad{font-weight:700;font-size:15px;fill:var(--ce-alert);}
+    .head-mid{font-weight:700;font-size:15px;fill:var(--ce-warn);}
+    .head-ok {font-weight:700;font-size:15px;fill:var(--ce-success);}
+    .caption{font-size:12px;fill:var(--ce-ink);}
+    .caption-muted{font-size:11px;fill:var(--ce-ink-muted);}
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .num-bad{font-weight:700;font-size:16px;fill:var(--ce-alert);}
+    .num-mid{font-weight:700;font-size:16px;fill:var(--ce-warn);}
+    .num-ok {font-weight:700;font-size:16px;fill:var(--ce-success);}
+    .row-label{font-weight:600;font-size:11px;fill:var(--ce-ink-muted);}
+    .bar-track{fill:var(--ce-neutral-1);}
+    .bar-bad{fill:var(--ce-alert);fill-opacity:0.8;}
+    .bar-mid{fill:var(--ce-warn);fill-opacity:0.8;}
+    .bar-ok {fill:var(--ce-success);fill-opacity:0.8;}
+  ]]></style>
+
+  <rect class="bg" width="960" height="520"/>
+
+  <!-- Header -->
+  <text class="title"    x="48" y="48">The same arithmetic, three implementations</text>
+  <text class="subtitle" x="48" y="70">Each column produces the identical output [4.8, 1.21, 2.385]. The math does not change; the representation does.</text>
+
+  <!-- Manual column -->
+  <rect class="panel-bad" x="48" y="96" width="280" height="296" rx="14"/>
+  <rect class="pill-bad"  x="48" y="96" width="6"   height="296" rx="3"/>
+  <text class="head-bad" x="68" y="124">Manual</text>
+  <text class="mono" x="68" y="156">out1 = ( i[0]*w1[0]</text>
+  <text class="mono" x="68" y="172">       + i[1]*w1[1]</text>
+  <text class="mono" x="68" y="188">       + i[2]*w1[2]</text>
+  <text class="mono" x="68" y="204">       + i[3]*w1[3]</text>
+  <text class="mono" x="68" y="220">       + b1 )</text>
+  <text class="mono" x="68" y="248">out2 = ( ... )</text>
+  <text class="mono" x="68" y="264">out3 = ( ... )</text>
+  <text class="caption-muted" x="68" y="304">· one branch per neuron</text>
+  <text class="caption-muted" x="68" y="322">· one term per weight</text>
+  <text class="caption-muted" x="68" y="340">· add a neuron, rewrite</text>
+  <text class="caption-muted" x="68" y="358">  the whole block</text>
+  <text class="caption" x="68" y="384" style="font-weight:600;fill:var(--ce-alert);">Does not scale.</text>
+
+  <!-- Loops column -->
+  <rect class="panel-mid" x="344" y="96" width="280" height="296" rx="14"/>
+  <rect class="pill-mid"  x="344" y="96" width="6"   height="296" rx="3"/>
+  <text class="head-mid" x="364" y="124">Loops</text>
+  <text class="mono" x="364" y="156">outs = []</text>
+  <text class="mono" x="364" y="172">for nw, nb in zip(weights,</text>
+  <text class="mono" x="396" y="188">biases):</text>
+  <text class="mono" x="380" y="208">s = 0</text>
+  <text class="mono" x="380" y="224">for x, w in zip(inputs, nw):</text>
+  <text class="mono" x="396" y="240">s += x * w</text>
+  <text class="mono" x="380" y="256">outs.append(s + nb)</text>
+  <text class="caption-muted" x="364" y="304">· works for any m, n</text>
+  <text class="caption-muted" x="364" y="322">· code is short</text>
+  <text class="caption-muted" x="364" y="340">· Python loops are slow</text>
+  <text class="caption-muted" x="364" y="358">  at scale</text>
+  <text class="caption" x="364" y="384" style="font-weight:600;fill:var(--ce-warn);">Scales, but slowly.</text>
+
+  <!-- NumPy column -->
+  <rect class="panel-ok" x="640" y="96" width="272" height="296" rx="14"/>
+  <rect class="pill-ok"  x="640" y="96" width="6"   height="296" rx="3"/>
+  <text class="head-ok" x="660" y="124">NumPy</text>
+  <text class="mono" x="660" y="172">import numpy as np</text>
+  <text class="mono" x="660" y="216">layer_out = (</text>
+  <text class="mono" x="660" y="232">    np.dot(weights, inputs)</text>
+  <text class="mono" x="660" y="248">    + biases)</text>
+  <text class="caption-muted" x="660" y="304">· works for any m, n</text>
+  <text class="caption-muted" x="660" y="322">· two lines</text>
+  <text class="caption-muted" x="660" y="340">· compiled C kernel</text>
+  <text class="caption-muted" x="660" y="358">  on the whole array</text>
+  <text class="caption" x="660" y="384" style="font-weight:600;fill:var(--ce-success);">Scales and is fast.</text>
+
+  <!-- Trade-off strip -->
+  <rect class="panel" x="48" y="412" width="864" height="76" rx="12"/>
+  <text class="row-label" x="68" y="436">lines of code</text>
+  <text class="row-label" x="68" y="460">scales?</text>
+  <text class="row-label" x="68" y="484">wall time at scale</text>
+
+  <!-- Manual row -->
+  <text class="num-bad" x="240" y="436" text-anchor="middle">~25</text>
+  <text class="caption" x="240" y="460" text-anchor="middle" style="fill:var(--ce-alert);">no</text>
+  <rect class="bar-track" x="186" y="474" width="108" height="8" rx="4"/>
+  <rect class="bar-bad"   x="186" y="474" width="108" height="8" rx="4"/>
+
+  <!-- Loops row -->
+  <text class="num-mid" x="496" y="436" text-anchor="middle">~10</text>
+  <text class="caption" x="496" y="460" text-anchor="middle" style="fill:var(--ce-warn);">yes</text>
+  <rect class="bar-track" x="442" y="474" width="108" height="8" rx="4"/>
+  <rect class="bar-mid"   x="442" y="474" width="32"  height="8" rx="4"/>
+
+  <!-- NumPy row -->
+  <text class="num-ok" x="776" y="436" text-anchor="middle">2</text>
+  <text class="caption" x="776" y="460" text-anchor="middle" style="fill:var(--ce-success);">yes</text>
+  <rect class="bar-track" x="722" y="474" width="108" height="8" rx="4"/>
+  <rect class="bar-ok"    x="722" y="474" width="6"   height="8" rx="4"/>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="510">Wall-time bars are illustrative; the gap typically widens 50&#8211;200&#215; as layer size grows.</text>
+  <text class="footer" x="912" y="510" text-anchor="end">NumPy docs: np.dot delegates to BLAS routines optimised in C and Fortran.</text>
+</svg>

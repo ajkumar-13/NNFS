@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 580" role="img" aria-labelledby="t d">
+  <title id="t">Good generalization vs overfitting: decision regions side by side</title>
+  <desc id="d">Two side-by-side panels show the same training data classified by two different models, with the model's predicted class shaded as a coloured background region. Left panel, in success-green: a smooth boundary divides the plane into a clean blue region (class A) on the upper-right and a clean orange region (class B) on the lower-left; a few training points fall on the wrong side and are misclassified, which is acceptable. Train accuracy 88%, test accuracy 85%, gap 3 points. Right panel, in alert-red: the same training points are classified by a high-capacity model whose decision boundary has carved peninsulas and islands so that every training point sits in its correct region, including a noisy point. Train accuracy 93%, test accuracy 83%, gap 10 points. A bottom band shows the four-regime diagnosis grid: overfitting, good fit, distribution shift, underfitting.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel-ok {fill:var(--ce-success);fill-opacity:0.08;stroke:var(--ce-success);stroke-width:1.5;}
+    .panel-bad{fill:var(--ce-alert);fill-opacity:0.08;stroke:var(--ce-alert);stroke-width:1.5;}
+    .pill-ok {fill:var(--ce-success);}
+    .pill-bad{fill:var(--ce-alert);}
+    .head-ok {font-weight:700;font-size:16px;fill:var(--ce-success);}
+    .head-bad{font-weight:700;font-size:16px;fill:var(--ce-alert);}
+    .body{font-size:12px;fill:var(--ce-ink);}
+    .body-muted{font-size:11px;fill:var(--ce-ink-muted);}
+    .num-ok {font-weight:700;font-size:14px;fill:var(--ce-success);}
+    .num-bad{font-weight:700;font-size:14px;fill:var(--ce-alert);}
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .canvas-frame{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .region-a{fill:var(--ce-primary);fill-opacity:0.16;}
+    .region-b{fill:var(--ce-accent);fill-opacity:0.18;}
+    .boundary-ok {fill:none;stroke:var(--ce-success);stroke-width:2.2;}
+    .boundary-bad{fill:none;stroke:var(--ce-alert);stroke-width:2.2;}
+    .pt-a{fill:var(--ce-primary);stroke:var(--ce-ink);stroke-width:0.6;}
+    .pt-b{fill:var(--ce-accent);stroke:var(--ce-ink);stroke-width:0.6;}
+    .miss-ring{fill:none;stroke:var(--ce-ink);stroke-width:1.2;stroke-dasharray:2 2;}
+    .noise-callout{fill:none;stroke:var(--ce-ink-muted);stroke-width:1;}
+    .noise-text{font-size:10px;fill:var(--ce-ink-muted);font-style:italic;}
+    .legend-text{font-size:10px;fill:var(--ce-ink-muted);}
+    .legend-pt-a{fill:var(--ce-primary);stroke:var(--ce-ink);stroke-width:0.6;}
+    .legend-pt-b{fill:var(--ce-accent);stroke:var(--ce-ink);stroke-width:0.6;}
+    .diag-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
+    .diag-cell{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .diag-cell-active-ok{fill:var(--ce-success);fill-opacity:0.18;stroke:var(--ce-success);stroke-width:1.2;}
+    .diag-cell-active-bad{fill:var(--ce-alert);fill-opacity:0.18;stroke:var(--ce-alert);stroke-width:1.2;}
+    .diag-label-head{font-weight:700;font-size:12px;fill:var(--ce-ink);}
+    .diag-label-sub{font-size:10px;fill:var(--ce-ink-muted);}
+    .axis-label{font-size:10px;fill:var(--ce-ink-muted);}
+  ]]></style>
+
+  <defs>
+    <!-- Clip both classification canvases so the region fills don't leak outside the chart frame. -->
+    <clipPath id="clipOk">
+      <rect x="72" y="160" width="200" height="200" rx="6"/>
+    </clipPath>
+    <clipPath id="clipBad">
+      <rect x="512" y="160" width="200" height="200" rx="6"/>
+    </clipPath>
+  </defs>
+
+  <rect class="bg" width="960" height="580"/>
+
+  <!-- Header -->
+  <text class="title"    x="48" y="48">Good generalization vs overfitting</text>
+  <text class="subtitle" x="48" y="70">Same training data, two classifiers. The shaded backgrounds show where each model would predict each class. Look at how the boundary behaves.</text>
+
+  <!-- ============================== LEFT PANEL: GOOD ============================== -->
+  <rect class="panel-ok" x="48" y="96" width="424" height="320" rx="14"/>
+  <rect class="pill-ok"  x="48" y="96" width="6"   height="320" rx="3"/>
+  <text class="head-ok"     x="68" y="124">Good generalization</text>
+  <text class="body-muted"  x="68" y="142">smooth boundary divides the plane into two clean regions</text>
+
+  <!-- Canvas -->
+  <rect class="canvas-frame" x="72" y="160" width="200" height="200" rx="6"/>
+
+  <!-- Region A (blue): top-right half. Closed path: boundary then along top + right edges. -->
+  <g clip-path="url(#clipOk)">
+    <path class="region-a"
+          d="M 72,310 C 130,260 200,210 272,170 L 272,160 L 72,160 Z"/>
+    <!-- Region B (orange): bottom-left half. Closed path: boundary then along bottom + left edges. -->
+    <path class="region-b"
+          d="M 72,310 C 130,260 200,210 272,170 L 272,360 L 72,360 Z"/>
+    <!-- Boundary line on top -->
+    <path class="boundary-ok"
+          d="M 72,310 C 130,260 200,210 272,170"/>
+  </g>
+
+  <!-- Training points. Class A (blue, should be top-right). Class B (orange, should be bottom-left). -->
+  <!-- Good classifier: most points on correct side; one orange point on wrong side (ringed). -->
+  <circle class="pt-a" cx="160" cy="195" r="5"/>
+  <circle class="pt-a" cx="195" cy="180" r="5"/>
+  <circle class="pt-a" cx="225" cy="200" r="5"/>
+  <circle class="pt-a" cx="248" cy="190" r="5"/>
+  <circle class="pt-a" cx="180" cy="225" r="5"/>
+  <circle class="pt-a" cx="240" cy="220" r="5"/>
+  <circle class="pt-b" cx="95"  cy="320" r="5"/>
+  <circle class="pt-b" cx="125" cy="290" r="5"/>
+  <circle class="pt-b" cx="155" cy="320" r="5"/>
+  <circle class="pt-b" cx="100" cy="265" r="5"/>
+  <circle class="pt-b" cx="180" cy="305" r="5"/>
+  <circle class="pt-b" cx="130" cy="250" r="5"/>
+  <!-- Misclassified orange point (sits in the BLUE region — the smooth boundary did not contort to catch it). -->
+  <circle class="pt-b" cx="210" cy="225" r="5"/>
+  <circle class="miss-ring" cx="210" cy="225" r="9"/>
+
+  <!-- Right-side body & stats -->
+  <text class="body" x="290" y="190">· smooth, low-curvature boundary</text>
+  <text class="body" x="290" y="212">· a few training points are on the</text>
+  <text class="body" x="290" y="228">  wrong side (the ringed one)</text>
+  <text class="body" x="290" y="250">· captures the pattern, ignores noise</text>
+
+  <rect class="panel" x="290" y="270" width="160" height="76" rx="8"/>
+  <text class="body"  x="304" y="292">train acc:</text>
+  <text class="num-ok" x="436" y="292" text-anchor="end">88%</text>
+  <text class="body"  x="304" y="312">test acc:</text>
+  <text class="num-ok" x="436" y="312" text-anchor="end">85%</text>
+  <text class="body"  x="304" y="334">gap:</text>
+  <text class="num-ok" x="436" y="334" text-anchor="end">3 pts</text>
+
+  <!-- Legend strip below the chart -->
+  <circle class="legend-pt-a" cx="82" y="0" cy="382" r="4"/>
+  <text class="legend-text" x="92" y="386">class A</text>
+  <circle class="legend-pt-b" cx="140" cy="382" r="4"/>
+  <text class="legend-text" x="150" y="386">class B</text>
+  <circle class="miss-ring" cx="208" cy="382" r="6"/>
+  <text class="legend-text" x="220" y="386">misclassified</text>
+
+  <!-- ============================== RIGHT PANEL: OVERFIT ============================== -->
+  <rect class="panel-bad" x="488" y="96" width="424" height="320" rx="14"/>
+  <rect class="pill-bad"  x="488" y="96" width="6"   height="320" rx="3"/>
+  <text class="head-bad"    x="508" y="124">Overfitting</text>
+  <text class="body-muted"  x="508" y="142">jagged boundary carves out pockets to catch every point, noise included</text>
+
+  <rect class="canvas-frame" x="512" y="160" width="200" height="200" rx="6"/>
+
+  <!-- Overfit boundary: visibly jagged. Carves dramatic upward dips around the orange points
+       that sit deep inside the blue region, so all of them end up classified as orange. -->
+  <g clip-path="url(#clipBad)">
+    <path class="region-a"
+          d="M 512,318
+             L 530,300 L 538,318 L 552,288
+             L 560,300 L 575,272
+             L 585,288 L 597,258 L 605,242 L 612,258
+             L 622,232 L 632,218 L 642,232 L 650,215 L 660,232
+             L 672,215 L 682,232 L 690,200 L 700,182 L 712,170
+             L 712,160 L 512,160 Z"/>
+    <path class="region-b"
+          d="M 512,318
+             L 530,300 L 538,318 L 552,288
+             L 560,300 L 575,272
+             L 585,288 L 597,258 L 605,242 L 612,258
+             L 622,232 L 632,218 L 642,232 L 650,215 L 660,232
+             L 672,215 L 682,232 L 690,200 L 700,182 L 712,170
+             L 712,360 L 512,360 Z"/>
+    <path class="boundary-bad"
+          d="M 512,318
+             L 530,300 L 538,318 L 552,288
+             L 560,300 L 575,272
+             L 585,288 L 597,258 L 605,242 L 612,258
+             L 622,232 L 632,218 L 642,232 L 650,215 L 660,232
+             L 672,215 L 682,232 L 690,200 L 700,182 L 712,170"/>
+  </g>
+
+  <!-- Training points (same x as good panel + 440 shift). The high-capacity boundary has
+       contorted itself so every single point sits in its correct colour region. -->
+  <circle class="pt-a" cx="600" cy="195" r="5"/>
+  <circle class="pt-a" cx="635" cy="180" r="5"/>
+  <circle class="pt-a" cx="665" cy="200" r="5"/>
+  <circle class="pt-a" cx="688" cy="190" r="5"/>
+  <circle class="pt-a" cx="620" cy="210" r="5"/>
+  <circle class="pt-a" cx="680" cy="218" r="5"/>
+  <circle class="pt-b" cx="535" cy="320" r="5"/>
+  <circle class="pt-b" cx="565" cy="290" r="5"/>
+  <circle class="pt-b" cx="595" cy="320" r="5"/>
+  <circle class="pt-b" cx="540" cy="265" r="5"/>
+  <circle class="pt-b" cx="618" cy="305" r="5"/>
+  <circle class="pt-b" cx="570" cy="250" r="5"/>
+  <!-- Three orange points sitting deep in what should be blue territory. The overfit
+       boundary has carved upward peninsulas to rescue each one. -->
+  <circle class="pt-b" cx="650" cy="235" r="5"/>
+  <circle class="pt-b" cx="608" cy="265" r="5"/>
+  <circle class="pt-b" cx="676" cy="245" r="5"/>
+  <!-- Noise callout: leader line points up-left from the noisy point to a label tucked into
+       the top-left of the chart frame. Left-anchored so the leading letter doesn't clip. -->
+  <line class="noise-callout" x1="648" y1="232" x2="620" y2="182"/>
+  <text class="noise-text" x="524" y="178" text-anchor="start">noise, memorised</text>
+
+  <!-- Right-side body & stats -->
+  <text class="body" x="730" y="190">· complex, high-curvature boundary</text>
+  <text class="body" x="730" y="212">· every training point captured,</text>
+  <text class="body" x="730" y="228">  including the noisy one</text>
+  <text class="body" x="730" y="250">· memorises instead of learning</text>
+
+  <rect class="panel" x="730" y="270" width="166" height="76" rx="8"/>
+  <text class="body"   x="744" y="292">train acc:</text>
+  <text class="num-bad" x="886" y="292" text-anchor="end">93%</text>
+  <text class="body"   x="744" y="312">test acc:</text>
+  <text class="num-bad" x="886" y="312" text-anchor="end">83%</text>
+  <text class="body"   x="744" y="334">gap:</text>
+  <text class="num-bad" x="886" y="334" text-anchor="end">10 pts</text>
+
+  <text class="body-muted" x="508" y="386">Higher training accuracy is not better when the test gap widens.</text>
+
+  <!-- ============================== BOTTOM: REGIMES GRID ============================== -->
+  <text class="diag-head" x="48" y="446">Four regimes: where do train and test accuracy land?</text>
+  <text class="axis-label" x="48"  y="466">low test ↓</text>
+  <text class="axis-label" x="912" y="466" text-anchor="end">high test ↑</text>
+
+  <rect class="diag-cell-active-bad" x="48" y="474" width="424" height="44" rx="8"/>
+  <text class="diag-label-head" x="68" y="494">Overfitting</text>
+  <text class="diag-label-sub"  x="68" y="510">high train · low test · large gap → this post</text>
+
+  <rect class="diag-cell-active-ok" x="488" y="474" width="424" height="44" rx="8"/>
+  <text class="diag-label-head" x="508" y="494">Good fit</text>
+  <text class="diag-label-sub"  x="508" y="510">high train · high test · small gap → ship it</text>
+
+  <rect class="diag-cell" x="48" y="524" width="424" height="44" rx="8"/>
+  <text class="diag-label-head" x="68" y="544">Distribution shift</text>
+  <text class="diag-label-sub"  x="68" y="560">high train · very low test → re-curate test set</text>
+
+  <rect class="diag-cell" x="488" y="524" width="424" height="44" rx="8"/>
+  <text class="diag-label-head" x="508" y="544">Underfitting</text>
+  <text class="diag-label-sub"  x="508" y="560">low train · low test → more capacity or more epochs</text>
+</svg>

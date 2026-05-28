@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">Dropout in training mode vs testing mode</title>
+  <desc id="d">A two-panel diagram showing how a Layer_Dropout class behaves differently during training and testing. On the left, training mode: a row of eight neurons with incoming activations all equal to one. Two of the eight neurons (positions 2 and 5) are crossed out and faded, representing the random subset zeroed by the binary mask. The remaining six neurons are highlighted green and labelled 1.33, the value after the inverted-dropout scaling by one divided by the keep probability of 0.75. A check at the bottom shows the expected sum equals six times 1.33 equals 8, matching the original sum. On the right, testing mode: the same eight neurons, all active, all carrying the input value 1.0 unchanged. The output sum equals 8 directly. A bottom strip contrasts the two modes in a small table and points out that this is the train-vs-test switch every framework manages automatically but a from-scratch implementation must wire by hand.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --ce-grid:rgba(26,26,26,0.06);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --ce-grid:rgba(241,238,232,0.08);
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+
+    .panel-train{fill:var(--ce-warn);fill-opacity:0.05;stroke:var(--ce-warn);stroke-width:1.5;}
+    .panel-test {fill:var(--ce-success);fill-opacity:0.05;stroke:var(--ce-success);stroke-width:1.5;}
+    .pill-train{fill:var(--ce-warn);}
+    .pill-test {fill:var(--ce-success);}
+    .head-train{font-weight:700;font-size:14px;fill:var(--ce-warn);}
+    .head-test {font-weight:700;font-size:14px;fill:var(--ce-success);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+
+    .row-label{font-size:11px;font-weight:600;fill:var(--ce-ink-muted);}
+    .val-box{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .val-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--ce-ink);}
+
+    .neuron-active-train{fill:var(--ce-warn);fill-opacity:0.30;stroke:var(--ce-warn);stroke-width:1.8;}
+    .neuron-dropped     {fill:var(--ce-neutral-1);stroke:var(--ce-ink-subtle);stroke-width:1.2;stroke-dasharray:3 2;}
+    .neuron-test        {fill:var(--ce-success);fill-opacity:0.30;stroke:var(--ce-success);stroke-width:1.8;}
+    .neuron-num         {font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--ce-ink);}
+    .neuron-num-dropped {font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--ce-ink-subtle);}
+    .drop-x             {stroke:var(--ce-ink-subtle);stroke-width:1.8;fill:none;}
+
+    .arrow-flow{stroke:var(--ce-ink-subtle);stroke-width:1;fill:none;}
+    .check-text{font-size:11px;font-style:italic;fill:var(--ce-ink-muted);}
+    .check-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--ce-ink);}
+
+    .compare-panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .compare-head{font-weight:700;font-size:12px;fill:var(--ce-ink);}
+    .col-head{font-weight:700;font-size:10.5px;fill:var(--ce-ink-muted);}
+    .compare-text{font-size:11px;fill:var(--ce-ink);}
+    .row-line{stroke:var(--ce-border);stroke-width:1;fill:none;}
+  ]]></style>
+
+  <defs>
+    <marker id="ar-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-ink-subtle)"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="40">Layer_Dropout: two modes, one mask, no test-time math</text>
+  <text class="subtitle" x="48" y="60">Same 8-neuron layer. Training drops 25% and scales survivors by 1/0.75. Testing fires everything unchanged.</text>
+
+  <!-- ============================ LEFT panel: TRAINING ============================ -->
+  <rect class="panel-train" x="24" y="80" width="444" height="332" rx="10"/>
+  <rect class="pill-train"  x="24" y="80" width="6"   height="332" rx="3"/>
+  <text class="head-train"  x="44" y="106">Training  ·  dropout(rate=0.25)  ·  training=True</text>
+  <text class="panel-sub"   x="44" y="122">fresh binary mask every step  ·  output = input × mask ÷ keep_prob (0.75)</text>
+
+  <!-- Incoming row -->
+  <text class="row-label" x="44" y="160">incoming activations  a</text>
+  <!-- 8 boxes at x: 60, 102, 144, 186, 228, 270, 312, 354 (width 36, spacing 42) -->
+  <g>
+    <rect class="val-box" x="60"  y="168" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="102" y="168" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="144" y="168" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="186" y="168" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="228" y="168" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="270" y="168" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="312" y="168" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="354" y="168" width="36" height="22" rx="3"/>
+    <text class="val-mono" x="78"  y="184" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="120" y="184" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="162" y="184" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="204" y="184" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="246" y="184" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="288" y="184" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="330" y="184" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="372" y="184" text-anchor="middle">1.0</text>
+  </g>
+
+  <!-- Down arrows from incoming to neurons -->
+  <line class="arrow-flow" x1="78"  y1="194" x2="78"  y2="218" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="120" y1="194" x2="120" y2="218" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="162" y1="194" x2="162" y2="218" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="204" y1="194" x2="204" y2="218" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="246" y1="194" x2="246" y2="218" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="288" y1="194" x2="288" y2="218" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="330" y1="194" x2="330" y2="218" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="372" y1="194" x2="372" y2="218" marker-end="url(#ar-flow)"/>
+
+  <!-- Neurons row (training): drop positions 2 and 5 (indices 1 and 4) -->
+  <g>
+    <!-- Neuron 1 (kept) -->
+    <circle class="neuron-active-train" cx="78"  cy="240" r="16"/>
+    <text class="neuron-num" x="78"  y="244" text-anchor="middle">1.33</text>
+    <!-- Neuron 2 (DROPPED) -->
+    <circle class="neuron-dropped" cx="120" cy="240" r="16"/>
+    <text class="neuron-num-dropped" x="120" y="244" text-anchor="middle">0</text>
+    <line class="drop-x" x1="108" y1="228" x2="132" y2="252"/>
+    <line class="drop-x" x1="132" y1="228" x2="108" y2="252"/>
+    <!-- Neuron 3 (kept) -->
+    <circle class="neuron-active-train" cx="162" cy="240" r="16"/>
+    <text class="neuron-num" x="162" y="244" text-anchor="middle">1.33</text>
+    <!-- Neuron 4 (kept) -->
+    <circle class="neuron-active-train" cx="204" cy="240" r="16"/>
+    <text class="neuron-num" x="204" y="244" text-anchor="middle">1.33</text>
+    <!-- Neuron 5 (DROPPED) -->
+    <circle class="neuron-dropped" cx="246" cy="240" r="16"/>
+    <text class="neuron-num-dropped" x="246" y="244" text-anchor="middle">0</text>
+    <line class="drop-x" x1="234" y1="228" x2="258" y2="252"/>
+    <line class="drop-x" x1="258" y1="228" x2="234" y2="252"/>
+    <!-- Neuron 6 (kept) -->
+    <circle class="neuron-active-train" cx="288" cy="240" r="16"/>
+    <text class="neuron-num" x="288" y="244" text-anchor="middle">1.33</text>
+    <!-- Neuron 7 (kept) -->
+    <circle class="neuron-active-train" cx="330" cy="240" r="16"/>
+    <text class="neuron-num" x="330" y="244" text-anchor="middle">1.33</text>
+    <!-- Neuron 8 (kept) -->
+    <circle class="neuron-active-train" cx="372" cy="240" r="16"/>
+    <text class="neuron-num" x="372" y="244" text-anchor="middle">1.33</text>
+  </g>
+
+  <!-- Down arrows from neurons to outgoing -->
+  <line class="arrow-flow" x1="78"  y1="258" x2="78"  y2="282" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="120" y1="258" x2="120" y2="282" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="162" y1="258" x2="162" y2="282" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="204" y1="258" x2="204" y2="282" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="246" y1="258" x2="246" y2="282" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="288" y1="258" x2="288" y2="282" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="330" y1="258" x2="330" y2="282" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="372" y1="258" x2="372" y2="282" marker-end="url(#ar-flow)"/>
+
+  <!-- Outgoing row -->
+  <text class="row-label" x="44" y="304">output to next layer</text>
+  <g>
+    <rect class="val-box" x="60"  y="312" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="102" y="312" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="144" y="312" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="186" y="312" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="228" y="312" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="270" y="312" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="312" y="312" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="354" y="312" width="36" height="22" rx="3"/>
+    <text class="val-mono" x="78"  y="328" text-anchor="middle">1.33</text>
+    <text class="val-mono" x="120" y="328" text-anchor="middle" style="fill:var(--ce-ink-subtle);">0</text>
+    <text class="val-mono" x="162" y="328" text-anchor="middle">1.33</text>
+    <text class="val-mono" x="204" y="328" text-anchor="middle">1.33</text>
+    <text class="val-mono" x="246" y="328" text-anchor="middle" style="fill:var(--ce-ink-subtle);">0</text>
+    <text class="val-mono" x="288" y="328" text-anchor="middle">1.33</text>
+    <text class="val-mono" x="330" y="328" text-anchor="middle">1.33</text>
+    <text class="val-mono" x="372" y="328" text-anchor="middle">1.33</text>
+  </g>
+
+  <!-- Magnitude check -->
+  <text class="check-text" x="44"  y="362">magnitude check:</text>
+  <text class="check-mono" x="44"  y="382" style="fill:var(--ce-warn);">expected sum  =  6 × 1.33  =  8.0</text>
+  <text class="check-text" x="44"  y="398">— equals the input sum; downstream layer sees the right scale</text>
+
+  <!-- ============================ RIGHT panel: TESTING ============================ -->
+  <rect class="panel-test" x="492" y="80" width="444" height="332" rx="10"/>
+  <rect class="pill-test"  x="492" y="80" width="6"   height="332" rx="3"/>
+  <text class="head-test"  x="512" y="106">Testing  ·  same layer  ·  training=False</text>
+  <text class="panel-sub"  x="512" y="122">identity pass: no mask, no scaling — the inverted-dropout payoff</text>
+
+  <!-- Incoming row -->
+  <text class="row-label" x="512" y="160">incoming activations  a</text>
+  <g>
+    <rect class="val-box" x="528" y="168" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="570" y="168" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="612" y="168" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="654" y="168" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="696" y="168" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="738" y="168" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="780" y="168" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="822" y="168" width="36" height="22" rx="3"/>
+    <text class="val-mono" x="546" y="184" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="588" y="184" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="630" y="184" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="672" y="184" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="714" y="184" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="756" y="184" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="798" y="184" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="840" y="184" text-anchor="middle">1.0</text>
+  </g>
+
+  <!-- Down arrows -->
+  <line class="arrow-flow" x1="546" y1="194" x2="546" y2="218" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="588" y1="194" x2="588" y2="218" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="630" y1="194" x2="630" y2="218" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="672" y1="194" x2="672" y2="218" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="714" y1="194" x2="714" y2="218" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="756" y1="194" x2="756" y2="218" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="798" y1="194" x2="798" y2="218" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="840" y1="194" x2="840" y2="218" marker-end="url(#ar-flow)"/>
+
+  <!-- Neurons row (testing): all active -->
+  <g>
+    <circle class="neuron-test" cx="546" cy="240" r="16"/><text class="neuron-num" x="546" y="244" text-anchor="middle">1.0</text>
+    <circle class="neuron-test" cx="588" cy="240" r="16"/><text class="neuron-num" x="588" y="244" text-anchor="middle">1.0</text>
+    <circle class="neuron-test" cx="630" cy="240" r="16"/><text class="neuron-num" x="630" y="244" text-anchor="middle">1.0</text>
+    <circle class="neuron-test" cx="672" cy="240" r="16"/><text class="neuron-num" x="672" y="244" text-anchor="middle">1.0</text>
+    <circle class="neuron-test" cx="714" cy="240" r="16"/><text class="neuron-num" x="714" y="244" text-anchor="middle">1.0</text>
+    <circle class="neuron-test" cx="756" cy="240" r="16"/><text class="neuron-num" x="756" y="244" text-anchor="middle">1.0</text>
+    <circle class="neuron-test" cx="798" cy="240" r="16"/><text class="neuron-num" x="798" y="244" text-anchor="middle">1.0</text>
+    <circle class="neuron-test" cx="840" cy="240" r="16"/><text class="neuron-num" x="840" y="244" text-anchor="middle">1.0</text>
+  </g>
+
+  <!-- Down arrows to outgoing -->
+  <line class="arrow-flow" x1="546" y1="258" x2="546" y2="282" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="588" y1="258" x2="588" y2="282" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="630" y1="258" x2="630" y2="282" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="672" y1="258" x2="672" y2="282" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="714" y1="258" x2="714" y2="282" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="756" y1="258" x2="756" y2="282" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="798" y1="258" x2="798" y2="282" marker-end="url(#ar-flow)"/>
+  <line class="arrow-flow" x1="840" y1="258" x2="840" y2="282" marker-end="url(#ar-flow)"/>
+
+  <!-- Outgoing -->
+  <text class="row-label" x="512" y="304">output to next layer</text>
+  <g>
+    <rect class="val-box" x="528" y="312" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="570" y="312" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="612" y="312" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="654" y="312" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="696" y="312" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="738" y="312" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="780" y="312" width="36" height="22" rx="3"/>
+    <rect class="val-box" x="822" y="312" width="36" height="22" rx="3"/>
+    <text class="val-mono" x="546" y="328" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="588" y="328" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="630" y="328" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="672" y="328" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="714" y="328" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="756" y="328" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="798" y="328" text-anchor="middle">1.0</text>
+    <text class="val-mono" x="840" y="328" text-anchor="middle">1.0</text>
+  </g>
+
+  <!-- Magnitude check -->
+  <text class="check-text" x="512" y="362">magnitude check:</text>
+  <text class="check-mono" x="512" y="382" style="fill:var(--ce-success);">sum  =  8 × 1.0  =  8.0</text>
+  <text class="check-text" x="512" y="398">— same scale as training in expectation; no extra math at inference</text>
+
+  <!-- ============================ Bottom strip ============================ -->
+  <rect class="compare-panel" x="24" y="428" width="912" height="84" rx="10"/>
+  <text class="compare-head" x="40" y="450">The train/test switch  ·  the most common dropout bug</text>
+
+  <line class="row-line" x1="40" y1="458" x2="920" y2="458"/>
+  <text class="col-head" x="60"  y="476">phase</text>
+  <text class="col-head" x="200" y="476">training=</text>
+  <text class="col-head" x="320" y="476">layer behaviour</text>
+  <text class="col-head" x="640" y="476">if you get it wrong</text>
+  <line class="row-line" x1="40" y1="482" x2="920" y2="482"/>
+
+  <text class="compare-text" x="60"  y="500" style="fill:var(--ce-warn);font-weight:700;">training</text>
+  <text class="compare-text" x="200" y="500" style="font-family:JetBrains Mono;">True</text>
+  <text class="compare-text" x="320" y="500">mask + scale by 1/(1−p), fresh each step</text>
+  <text class="compare-text" x="640" y="500">network never sees regularisation</text>
+
+  <text class="compare-text" x="60"  y="516" style="fill:var(--ce-success);font-weight:700;">val / test</text>
+  <text class="compare-text" x="200" y="516" style="font-family:JetBrains Mono;">False</text>
+  <text class="compare-text" x="320" y="516">identity pass, all neurons active</text>
+  <text class="compare-text" x="640" y="516">test = accuracy of a RANDOM subnetwork</text>
+</svg>

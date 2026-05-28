@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">A neuron is a weighted sum plus a bias</title>
+  <desc id="d">A single neuron is drawn at hero scale, with four input nodes X₁ through X₄ on the left, four weighted connections W₁ through W₄ entering a central summation node, a separate bias term b added from above, and a single scalar output on the right. Four annotation cards along the right margin label each part — inputs, weights, bias, output — and name their role. A footer cites Rosenblatt's 1958 perceptron as the historical origin.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;
+      --ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;
+        --ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .input-node{fill:var(--ce-primary);fill-opacity:0.16;stroke:var(--ce-primary);stroke-width:1.5;}
+    .input-label{font-weight:600;font-size:16px;fill:var(--ce-ink);}
+    .neuron-node{fill:var(--ce-accent);fill-opacity:0.16;stroke:var(--ce-accent);stroke-width:1.8;}
+    .neuron-label{font-weight:600;font-size:18px;fill:var(--ce-ink);}
+    .neuron-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .conn{stroke:var(--ce-primary);stroke-width:1.5;fill:none;}
+    .bias-line{stroke:var(--ce-success);stroke-width:1.5;stroke-dasharray:5 3;fill:none;}
+    .bias-label{font-weight:600;font-size:13px;fill:var(--ce-success);}
+    .out-line{stroke:var(--ce-accent);stroke-width:2;fill:none;}
+    .out-pill{fill:var(--ce-accent);fill-opacity:0.16;stroke:var(--ce-accent);stroke-width:1.5;}
+    .out-label{font-weight:600;font-size:14px;fill:var(--ce-ink);}
+    .w-label{font-weight:600;font-size:13px;fill:var(--ce-primary);}
+    .ann-pill-prim{fill:var(--ce-primary);}
+    .ann-pill-acc{fill:var(--ce-accent);}
+    .ann-pill-ok{fill:var(--ce-success);}
+    .ann-pill-out{fill:var(--ce-accent);}
+    .ann-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
+    .ann-body{font-size:11px;fill:var(--ce-ink-muted);}
+    .formula{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;fill:var(--ce-ink);}
+    .arr-prim{fill:var(--ce-primary);}
+    .arr-acc{fill:var(--ce-accent);}
+    .arr-ok{fill:var(--ce-success);}
+  ]]></style>
+
+  <defs>
+    <marker id="aPrim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arr-prim"/>
+    </marker>
+    <marker id="aAcc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arr-acc"/>
+    </marker>
+    <marker id="aOk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arr-ok"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <!-- Header bookend -->
+  <text class="title"    x="48" y="50">A neuron: a weighted sum plus a bias</text>
+  <text class="subtitle" x="48" y="72">Every learnable parameter in a feed-forward network is either a weight or a bias. Here is the simplest case: one neuron, four inputs, five parameters.</text>
+
+  <!-- Main canvas panel -->
+  <rect class="panel" x="48" y="100" width="600" height="380" rx="14"/>
+
+  <!-- Inputs column -->
+  <g>
+    <circle class="input-node" cx="118" cy="160" r="26"/>
+    <text class="input-label"  x="118" y="166" text-anchor="middle">X₁</text>
+    <circle class="input-node" cx="118" cy="240" r="26"/>
+    <text class="input-label"  x="118" y="246" text-anchor="middle">X₂</text>
+    <circle class="input-node" cx="118" cy="320" r="26"/>
+    <text class="input-label"  x="118" y="326" text-anchor="middle">X₃</text>
+    <circle class="input-node" cx="118" cy="400" r="26"/>
+    <text class="input-label"  x="118" y="406" text-anchor="middle">X₄</text>
+  </g>
+
+  <!-- Neuron -->
+  <circle class="neuron-node" cx="430" cy="280" r="56"/>
+  <text class="neuron-label" x="430" y="278" text-anchor="middle">Σ + b</text>
+  <text class="neuron-sub"   x="430" y="298" text-anchor="middle">weighted sum + bias</text>
+
+  <!-- Connections -->
+  <line class="conn" x1="144" y1="160" x2="378" y2="262" marker-end="url(#aPrim)"/>
+  <text class="w-label" x="240" y="195">W₁</text>
+  <line class="conn" x1="144" y1="240" x2="378" y2="272" marker-end="url(#aPrim)"/>
+  <text class="w-label" x="240" y="247">W₂</text>
+  <line class="conn" x1="144" y1="320" x2="378" y2="288" marker-end="url(#aPrim)"/>
+  <text class="w-label" x="240" y="320">W₃</text>
+  <line class="conn" x1="144" y1="400" x2="378" y2="298" marker-end="url(#aPrim)"/>
+  <text class="w-label" x="240" y="378">W₄</text>
+
+  <!-- Bias -->
+  <line class="bias-line" x1="430" y1="158" x2="430" y2="222" marker-end="url(#aOk)"/>
+  <text class="bias-label" x="448" y="180">b  (bias)</text>
+
+  <!-- Output -->
+  <line class="out-line" x1="486" y1="280" x2="572" y2="280" marker-end="url(#aAcc)"/>
+  <rect class="out-pill" x="572" y="258" width="64" height="44" rx="10"/>
+  <text class="out-label" x="604" y="285" text-anchor="middle">ŷ</text>
+
+  <!-- Formula band -->
+  <text class="formula" x="348" y="446" text-anchor="middle">ŷ  =  X₁·W₁ + X₂·W₂ + X₃·W₃ + X₄·W₄  +  b</text>
+
+  <!-- Right-side annotation cards -->
+  <g>
+    <!-- Inputs card -->
+    <rect class="panel"        x="676" y="100" width="236" height="84" rx="10"/>
+    <rect class="ann-pill-prim" x="676" y="100" width="6"   height="84" rx="3"/>
+    <text class="ann-head" x="696" y="124">01 · Inputs  Xᵢ</text>
+    <text class="ann-body" x="696" y="142">The data fed into the neuron.</text>
+    <text class="ann-body" x="696" y="158">Shape (n,). Changes every</text>
+    <text class="ann-body" x="696" y="174">forward pass.</text>
+
+    <!-- Weights card -->
+    <rect class="panel"        x="676" y="196" width="236" height="84" rx="10"/>
+    <rect class="ann-pill-prim" x="676" y="196" width="6"   height="84" rx="3" opacity="0.75"/>
+    <text class="ann-head" x="696" y="220">02 · Weights  Wᵢ</text>
+    <text class="ann-body" x="696" y="238">One per input. Shape (n,).</text>
+    <text class="ann-body" x="696" y="254">Learned during training,</text>
+    <text class="ann-body" x="696" y="270">frozen at inference.</text>
+
+    <!-- Bias card -->
+    <rect class="panel"       x="676" y="292" width="236" height="84" rx="10"/>
+    <rect class="ann-pill-ok" x="676" y="292" width="6"   height="84" rx="3"/>
+    <text class="ann-head" x="696" y="316">03 · Bias  b</text>
+    <text class="ann-body" x="696" y="334">A single scalar offset, one per</text>
+    <text class="ann-body" x="696" y="350">neuron. Lets the neuron fit</text>
+    <text class="ann-body" x="696" y="366">data not centred on zero.</text>
+  </g>
+
+  <!-- Output card -->
+  <rect class="panel"        x="676" y="388" width="236" height="84" rx="10"/>
+  <rect class="ann-pill-acc" x="676" y="388" width="6"   height="84" rx="3"/>
+  <text class="ann-head" x="696" y="412">04 · Output  ŷ</text>
+  <text class="ann-body" x="696" y="430">A single scalar. Recomputed</text>
+  <text class="ann-body" x="696" y="446">every forward pass. Becomes</text>
+  <text class="ann-body" x="696" y="462">input to the next layer.</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="514">Five parameters total: four weights and one bias. A network is many of these wired together.</text>
+  <text class="footer" x="912" y="514" text-anchor="end">Form due to Rosenblatt, 1958 (perceptron); activation function deferred to Part 06.</text>
+</svg>

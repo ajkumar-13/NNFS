@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" role="img" aria-labelledby="t d">
+  <title id="t">Shape diary — how the arrays change from a single neuron to a batched layer</title>
+  <desc id="d">A three-row table tracking the shapes of the input X, the weight matrix W, the bias b, and the output, across three settings. Row one: a single neuron with a single sample — X is shape (n,), W is shape (n,), b is a scalar, and np.dot(W, X) + b produces a scalar. Row two: a layer of m neurons with a single sample — X is shape (n,), W is shape (m, n), b is shape (m,), and np.dot(W, X) + b produces a vector of shape (m,). Row three: a layer of m neurons with a batch of N samples — X is shape (N, n), W is shape (m, n) but used transposed, b is shape (m,), and np.dot(X, W.T) + b produces a matrix of shape (N, m). A footer reminds the reader that printing shapes is the cheapest debugging tool in deep learning.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--ce-ink);}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .col-head{font-weight:700;font-size:12px;fill:var(--ce-ink-muted);text-transform:uppercase;letter-spacing:0.06em;}
+    .row{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .pill-1{fill:var(--ce-primary);}
+    .pill-2{fill:var(--ce-accent);}
+    .pill-3{fill:var(--ce-success);}
+    .row-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
+    .row-sub {font-size:11px;fill:var(--ce-ink-muted);}
+    .shape-badge{fill:var(--ce-neutral-1);stroke:var(--ce-border);stroke-width:1;}
+    .shape-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--ce-ink);font-weight:600;}
+  ]]></style>
+
+  <rect class="bg" width="960" height="440"/>
+
+  <!-- Header -->
+  <text class="title"    x="48" y="48">Shape diary: single neuron, layer, batch</text>
+  <text class="subtitle" x="48" y="70">Track shapes at every operation. Printing them after each call catches 90% of "shape mismatch" errors before they happen.</text>
+
+  <!-- Column headers -->
+  <text class="col-head" x="68"  y="118">setting</text>
+  <text class="col-head" x="320" y="118">X</text>
+  <text class="col-head" x="430" y="118">W</text>
+  <text class="col-head" x="540" y="118">b</text>
+  <text class="col-head" x="650" y="118">operation</text>
+  <text class="col-head" x="850" y="118">output</text>
+
+  <!-- Row 1: single neuron, single sample -->
+  <rect class="row"    x="48" y="130" width="864" height="76" rx="10"/>
+  <rect class="pill-1" x="48" y="130" width="6"   height="76" rx="3"/>
+  <text class="row-head" x="68" y="158">Single neuron · single sample</text>
+  <text class="row-sub"  x="68" y="178">one weighted sum, one scalar out</text>
+  <rect class="shape-badge" x="298" y="156" width="80" height="26" rx="6"/>
+  <text class="shape-text"  x="338" y="174" text-anchor="middle">(n,)</text>
+  <rect class="shape-badge" x="408" y="156" width="80" height="26" rx="6"/>
+  <text class="shape-text"  x="448" y="174" text-anchor="middle">(n,)</text>
+  <rect class="shape-badge" x="518" y="156" width="80" height="26" rx="6"/>
+  <text class="shape-text"  x="558" y="174" text-anchor="middle">scalar</text>
+  <text class="mono"  x="628" y="174">np.dot(W, X) + b</text>
+  <rect class="shape-badge" x="820" y="156" width="80" height="26" rx="6"/>
+  <text class="shape-text"  x="860" y="174" text-anchor="middle">scalar</text>
+
+  <!-- Row 2: layer, single sample -->
+  <rect class="row"    x="48" y="218" width="864" height="76" rx="10"/>
+  <rect class="pill-2" x="48" y="218" width="6"   height="76" rx="3"/>
+  <text class="row-head" x="68" y="246">Layer of m · single sample</text>
+  <text class="row-sub"  x="68" y="266">one weighted sum per neuron, vector out</text>
+  <rect class="shape-badge" x="298" y="244" width="80" height="26" rx="6"/>
+  <text class="shape-text"  x="338" y="262" text-anchor="middle">(n,)</text>
+  <rect class="shape-badge" x="408" y="244" width="80" height="26" rx="6"/>
+  <text class="shape-text"  x="448" y="262" text-anchor="middle">(m, n)</text>
+  <rect class="shape-badge" x="518" y="244" width="80" height="26" rx="6"/>
+  <text class="shape-text"  x="558" y="262" text-anchor="middle">(m,)</text>
+  <text class="mono"  x="628" y="262">np.dot(W, X) + b</text>
+  <rect class="shape-badge" x="820" y="244" width="80" height="26" rx="6"/>
+  <text class="shape-text"  x="860" y="262" text-anchor="middle">(m,)</text>
+
+  <!-- Row 3: layer, batch -->
+  <rect class="row"    x="48" y="306" width="864" height="76" rx="10"/>
+  <rect class="pill-3" x="48" y="306" width="6"   height="76" rx="3"/>
+  <text class="row-head" x="68" y="334">Layer of m · batch of N</text>
+  <text class="row-sub"  x="68" y="354">one sum per (sample, neuron)</text>
+  <rect class="shape-badge" x="298" y="332" width="80" height="26" rx="6"/>
+  <text class="shape-text"  x="338" y="350" text-anchor="middle">(N, n)</text>
+  <rect class="shape-badge" x="408" y="332" width="80" height="26" rx="6"/>
+  <text class="shape-text"  x="448" y="350" text-anchor="middle">(m, n)</text>
+  <rect class="shape-badge" x="518" y="332" width="80" height="26" rx="6"/>
+  <text class="shape-text"  x="558" y="350" text-anchor="middle">(m,)</text>
+  <text class="mono"  x="628" y="350">np.dot(X, W.T) + b</text>
+  <rect class="shape-badge" x="820" y="332" width="80" height="26" rx="6"/>
+  <text class="shape-text"  x="860" y="350" text-anchor="middle">(N, m)</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48"  y="414">When unsure, print X.shape and W.shape before the call. The transpose moves whenever m and n swap roles.</text>
+  <text class="footer" x="912" y="414" text-anchor="end">N = batch size  ·  n = inputs per neuron  ·  m = neurons per layer</text>
+</svg>

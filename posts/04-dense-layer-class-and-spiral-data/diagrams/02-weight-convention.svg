@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" role="img" aria-labelledby="t d">
+  <title id="t">Two weight conventions: rows per neuron versus columns per neuron</title>
+  <desc id="d">A side-by-side comparison of the two weight-matrix conventions for a dense layer. Left panel shows the old convention: W has shape m by n with one row per neuron, and the forward pass needs a transpose: np.dot of X (N by n) and W transposed (n by m) gives output (N by m). Right panel shows the new convention adopted from Part 4 onward: W has shape n by m with one column per neuron, and the forward pass is np.dot of X and W directly (no transpose) yielding output (N by m). The arithmetic and the output numbers are identical; only the layout of W in memory differs.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;fill:var(--ce-ink);}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel-old{fill:var(--ce-warn);fill-opacity:0.06;stroke:var(--ce-warn);stroke-width:1.5;}
+    .panel-new{fill:var(--ce-success);fill-opacity:0.07;stroke:var(--ce-success);stroke-width:1.5;}
+    .pill-old{fill:var(--ce-warn);}
+    .pill-new{fill:var(--ce-success);}
+    .head-old{font-weight:700;font-size:15px;fill:var(--ce-warn);}
+    .head-new{font-weight:700;font-size:15px;fill:var(--ce-success);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .label-head{font-weight:600;font-size:12px;fill:var(--ce-ink);}
+    .w-cell{fill:var(--ce-accent);fill-opacity:0.16;stroke:var(--ce-accent);stroke-width:1;}
+    .label-text{font-size:10px;fill:var(--ce-ink-muted);}
+    .label-arrow{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
+    .arrow-head{fill:var(--ce-ink-muted);}
+    .call-pill{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .takeaway{font-size:12px;fill:var(--ce-ink);}
+    .takeaway-good{font-size:12px;font-weight:600;fill:var(--ce-success);}
+    .takeaway-bad{font-size:12px;font-weight:600;fill:var(--ce-warn);}
+  ]]></style>
+
+  <defs>
+    <marker id="aM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arrow-head"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="460"/>
+
+  <text class="title"    x="48" y="48">Two weight conventions, same arithmetic</text>
+  <text class="subtitle" x="48" y="70">Storing W as rows-per-neuron requires a transpose at the call site. Storing W as columns-per-neuron removes it.</text>
+
+  <!-- =================== LEFT: OLD convention =================== -->
+  <rect class="panel-old" x="48" y="96" width="424" height="296" rx="12"/>
+  <rect class="pill-old"  x="48" y="96" width="6"   height="296" rx="3"/>
+  <text class="head-old" x="68" y="124">Old convention (Parts 01 – 03)</text>
+  <text class="panel-sub" x="68" y="142">one row of W = one neuron</text>
+
+  <!-- W matrix layout: 3 rows × 4 cols -->
+  <text class="label-head" x="170" y="174" text-anchor="middle">W : (m, n) = (3, 4)</text>
+  <g transform="translate(116, 184)">
+    <rect class="w-cell" x="0"  y="0"  width="28" height="24"/>
+    <rect class="w-cell" x="28" y="0"  width="28" height="24"/>
+    <rect class="w-cell" x="56" y="0"  width="28" height="24"/>
+    <rect class="w-cell" x="84" y="0"  width="28" height="24"/>
+    <rect class="w-cell" x="0"  y="24" width="28" height="24"/>
+    <rect class="w-cell" x="28" y="24" width="28" height="24"/>
+    <rect class="w-cell" x="56" y="24" width="28" height="24"/>
+    <rect class="w-cell" x="84" y="24" width="28" height="24"/>
+    <rect class="w-cell" x="0"  y="48" width="28" height="24"/>
+    <rect class="w-cell" x="28" y="48" width="28" height="24"/>
+    <rect class="w-cell" x="56" y="48" width="28" height="24"/>
+    <rect class="w-cell" x="84" y="48" width="28" height="24"/>
+  </g>
+  <!-- Row labels -->
+  <text class="label-text" x="108" y="200" text-anchor="end">neuron 1</text>
+  <text class="label-text" x="108" y="224" text-anchor="end">neuron 2</text>
+  <text class="label-text" x="108" y="248" text-anchor="end">neuron 3</text>
+
+  <!-- Call site -->
+  <rect class="call-pill" x="68" y="282" width="384" height="40" rx="8"/>
+  <text class="mono" x="84" y="307">layer_out = np.dot(X, W.T) + b</text>
+
+  <text class="takeaway-bad" x="68" y="350">Needs .T at every call site.</text>
+  <text class="takeaway"     x="68" y="370">A missing transpose breaks the call silently.</text>
+
+  <!-- =================== RIGHT: NEW convention =================== -->
+  <rect class="panel-new" x="488" y="96" width="424" height="296" rx="12"/>
+  <rect class="pill-new"  x="488" y="96" width="6"   height="296" rx="3"/>
+  <text class="head-new" x="508" y="124">New convention (Part 04 onward)</text>
+  <text class="panel-sub" x="508" y="142">one column of W = one neuron</text>
+
+  <!-- W matrix layout: 4 rows × 3 cols -->
+  <text class="label-head" x="610" y="174" text-anchor="middle">W : (n, m) = (4, 3)</text>
+  <g transform="translate(560, 184)">
+    <rect class="w-cell" x="0"  y="0"  width="32" height="20"/>
+    <rect class="w-cell" x="32" y="0"  width="32" height="20"/>
+    <rect class="w-cell" x="64" y="0"  width="32" height="20"/>
+    <rect class="w-cell" x="0"  y="20" width="32" height="20"/>
+    <rect class="w-cell" x="32" y="20" width="32" height="20"/>
+    <rect class="w-cell" x="64" y="20" width="32" height="20"/>
+    <rect class="w-cell" x="0"  y="40" width="32" height="20"/>
+    <rect class="w-cell" x="32" y="40" width="32" height="20"/>
+    <rect class="w-cell" x="64" y="40" width="32" height="20"/>
+    <rect class="w-cell" x="0"  y="60" width="32" height="20"/>
+    <rect class="w-cell" x="32" y="60" width="32" height="20"/>
+    <rect class="w-cell" x="64" y="60" width="32" height="20"/>
+  </g>
+  <!-- Column labels (short to avoid overlap; full names spelled out in text below) -->
+  <text class="label-text" x="576" y="278" text-anchor="middle">n₁</text>
+  <text class="label-text" x="608" y="278" text-anchor="middle">n₂</text>
+  <text class="label-text" x="640" y="278" text-anchor="middle">n₃</text>
+
+  <!-- Call site -->
+  <rect class="call-pill" x="508" y="292" width="384" height="40" rx="8"/>
+  <text class="mono" x="524" y="317">layer_out = np.dot(X, W) + b</text>
+
+  <text class="takeaway-good" x="508" y="360">No transpose. Cleaner code.</text>
+  <text class="takeaway"      x="508" y="380">np.random.randn(n_inputs, n_neurons) matches the call.</text>
+
+  <!-- =================== Footer ===================== -->
+  <text class="footer" x="48"  y="430">Both produce the same output numbers. The new convention saves a .T at every layer and matches the layout used by major frameworks.</text>
+</svg>

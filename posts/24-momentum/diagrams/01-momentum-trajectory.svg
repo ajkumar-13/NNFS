@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">Vanilla SGD vs SGD with momentum: trajectory through a narrow valley</title>
+  <desc id="d">Two side-by-side panels showing the same elongated elliptical loss landscape with the minimum at the centre. In the left panel, vanilla gradient descent zig-zags violently from a starting point in the upper right, bouncing across the valley many times before slowly creeping toward the minimum. In the right panel, the same starting point produces a smooth, almost direct trajectory because the momentum term cancels the lateral component of each step and reinforces the consistent leftward component. A formula band at the bottom contrasts the two update rules.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --ce-grid:rgba(26,26,26,0.06);
+      --ce-contour:rgba(91,127,191,0.10);
+      --ce-contour-line:rgba(91,127,191,0.35);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --ce-grid:rgba(241,238,232,0.08);
+        --ce-contour:rgba(139,168,224,0.10);
+        --ce-contour-line:rgba(139,168,224,0.35);
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel-bad{fill:var(--ce-alert);fill-opacity:0.05;stroke:var(--ce-alert);stroke-width:1.5;}
+    .panel-ok {fill:var(--ce-success);fill-opacity:0.05;stroke:var(--ce-success);stroke-width:1.5;}
+    .pill-bad{fill:var(--ce-alert);}
+    .pill-ok {fill:var(--ce-success);}
+    .head-bad{font-weight:700;font-size:14px;fill:var(--ce-alert);}
+    .head-ok {font-weight:700;font-size:14px;fill:var(--ce-success);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .contour-fill{fill:var(--ce-contour);stroke:var(--ce-contour-line);stroke-width:1;}
+    .contour-line{fill:none;stroke:var(--ce-contour-line);stroke-width:1;}
+    .min-dot{fill:var(--ce-ink);}
+    .min-label{font-size:10px;fill:var(--ce-ink-muted);font-style:italic;}
+    .start-dot{fill:var(--ce-ink-subtle);stroke:var(--ce-ink);stroke-width:1.5;}
+    .start-label{font-size:10px;fill:var(--ce-ink-muted);font-style:italic;}
+    .traj-bad{stroke:var(--ce-alert);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+    .traj-ok {stroke:var(--ce-success);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+    .step-bad{fill:var(--ce-alert);}
+    .step-ok {fill:var(--ce-success);}
+    .stat-num{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;fill:var(--ce-ink);}
+    .stat-lbl{font-size:10px;fill:var(--ce-ink-muted);}
+    .formula-band{fill:var(--ce-primary);fill-opacity:0.08;stroke:var(--ce-primary);stroke-width:1.5;}
+    .formula-head{font-weight:700;font-size:12px;fill:var(--ce-primary);}
+    .formula-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;fill:var(--ce-ink);}
+    .formula-note{font-size:11px;fill:var(--ce-ink-muted);}
+  ]]></style>
+
+  <defs>
+    <marker id="arrow-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-alert)"/>
+    </marker>
+    <marker id="arrow-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-success)"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="40">Why momentum: vector cancellation in a narrow valley</text>
+  <text class="subtitle" x="48" y="60">Same loss surface, same learning rate, same starting point. Memory of the past direction changes everything.</text>
+
+  <!-- ============================ LEFT panel: vanilla SGD ============================ -->
+  <rect class="panel-bad" x="24" y="80" width="444" height="368" rx="12"/>
+  <rect class="pill-bad"  x="24" y="80" width="6"   height="368" rx="3"/>
+  <text class="head-bad"  x="44" y="106">Vanilla SGD · zig-zags across the valley</text>
+  <text class="panel-sub" x="44" y="122">each step depends only on the current gradient</text>
+
+  <!-- Contour ellipses (LEFT) centred at (246, 300) -->
+  <g transform="translate(246, 300)">
+    <ellipse class="contour-fill" cx="0" cy="0" rx="200" ry="40"/>
+    <ellipse class="contour-fill" cx="0" cy="0" rx="160" ry="32"/>
+    <ellipse class="contour-fill" cx="0" cy="0" rx="120" ry="24"/>
+    <ellipse class="contour-fill" cx="0" cy="0" rx="80"  ry="16"/>
+    <ellipse class="contour-fill" cx="0" cy="0" rx="40"  ry="8"/>
+  </g>
+  <!-- Minimum marker (LEFT) -->
+  <circle class="min-dot" cx="246" cy="300" r="3.5"/>
+  <text class="min-label" x="246" y="285" text-anchor="middle">minimum</text>
+
+  <!-- Trajectory (LEFT) — zig-zag across narrow valley -->
+  <polyline class="traj-bad" points="
+    400,240
+    396,344
+    384,260
+    370,336
+    354,266
+    336,330
+    318,272
+    300,324
+    284,278
+    270,318
+    260,284
+    254,312
+    250,294
+    248,306" marker-end="url(#arrow-bad)"/>
+
+  <!-- Step dots (LEFT) -->
+  <g class="step-bad">
+    <circle cx="400" cy="240" r="2.5"/>
+    <circle cx="396" cy="344" r="2.5"/>
+    <circle cx="384" cy="260" r="2.5"/>
+    <circle cx="370" cy="336" r="2.5"/>
+    <circle cx="354" cy="266" r="2.5"/>
+    <circle cx="336" cy="330" r="2.5"/>
+    <circle cx="318" cy="272" r="2.5"/>
+    <circle cx="300" cy="324" r="2.5"/>
+    <circle cx="284" cy="278" r="2.5"/>
+    <circle cx="270" cy="318" r="2.5"/>
+    <circle cx="260" cy="284" r="2.5"/>
+    <circle cx="254" cy="312" r="2.5"/>
+    <circle cx="250" cy="294" r="2.5"/>
+  </g>
+
+  <!-- Start marker (LEFT) -->
+  <circle class="start-dot" cx="400" cy="240" r="4.5"/>
+  <text class="start-label" x="400" y="228" text-anchor="middle">start</text>
+
+  <!-- Stat block (LEFT) -->
+  <g transform="translate(44, 396)">
+    <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="0" y="0" width="380" height="44" rx="6"/>
+    <text class="stat-num" x="14"  y="26" style="fill:var(--ce-alert);">13 steps shown</text>
+    <text class="stat-lbl" x="120" y="26">~85% of motion is lateral, only ~15% reaches the minimum</text>
+  </g>
+
+  <!-- ============================ RIGHT panel: momentum ============================ -->
+  <rect class="panel-ok" x="492" y="80" width="444" height="368" rx="12"/>
+  <rect class="pill-ok"  x="492" y="80" width="6"   height="368" rx="3"/>
+  <text class="head-ok"  x="512" y="106">SGD + momentum · rolls toward the minimum</text>
+  <text class="panel-sub" x="512" y="122">velocity averages out lateral bounces, reinforces drift</text>
+
+  <!-- Contour ellipses (RIGHT) centred at (714, 300) -->
+  <g transform="translate(714, 300)">
+    <ellipse class="contour-fill" cx="0" cy="0" rx="200" ry="40"/>
+    <ellipse class="contour-fill" cx="0" cy="0" rx="160" ry="32"/>
+    <ellipse class="contour-fill" cx="0" cy="0" rx="120" ry="24"/>
+    <ellipse class="contour-fill" cx="0" cy="0" rx="80"  ry="16"/>
+    <ellipse class="contour-fill" cx="0" cy="0" rx="40"  ry="8"/>
+  </g>
+  <!-- Minimum marker (RIGHT) -->
+  <circle class="min-dot" cx="714" cy="300" r="3.5"/>
+  <text class="min-label" x="714" y="285" text-anchor="middle">minimum</text>
+
+  <!-- Trajectory (RIGHT) — smooth roll -->
+  <path class="traj-ok" d="M 868 240
+                            C 858 290, 838 304, 810 300
+                            C 770 296, 730 302, 720 300" marker-end="url(#arrow-ok)"/>
+
+  <!-- Step dots (RIGHT) -->
+  <g class="step-ok">
+    <circle cx="868" cy="240" r="3"/>
+    <circle cx="848" cy="282" r="3"/>
+    <circle cx="820" cy="302" r="3"/>
+    <circle cx="780" cy="302" r="3"/>
+    <circle cx="744" cy="300" r="3"/>
+  </g>
+
+  <!-- Start marker (RIGHT) -->
+  <circle class="start-dot" cx="868" cy="240" r="4.5"/>
+  <text class="start-label" x="868" y="228" text-anchor="middle">start</text>
+
+  <!-- Stat block (RIGHT) -->
+  <g transform="translate(512, 396)">
+    <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="0" y="0" width="380" height="44" rx="6"/>
+    <text class="stat-num" x="14"  y="26" style="fill:var(--ce-success);">5 steps shown</text>
+    <text class="stat-lbl" x="120" y="26">lateral bounces cancel, downhill drift reinforces — no oscillation</text>
+  </g>
+
+  <!-- ============================ Formula band ============================ -->
+  <rect class="formula-band" x="24" y="464" width="912" height="56" rx="10"/>
+  <text class="formula-head" x="40" y="484">Update rules</text>
+  <text class="formula-mono" x="40" y="506" style="fill:var(--ce-alert);">vanilla:</text>
+  <text class="formula-mono" x="106" y="506">θ ← θ − α · g</text>
+  <text class="formula-mono" x="320" y="506" style="fill:var(--ce-success);">momentum:</text>
+  <text class="formula-mono" x="408" y="506">v ← β·v − α·g,</text>
+  <text class="formula-mono" x="556" y="506">then  θ ← θ + v</text>
+  <text class="formula-note" x="720" y="506">β = 0.9 (default)</text>
+</svg>
