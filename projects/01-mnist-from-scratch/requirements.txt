@@ -1,0 +1,4 @@
+numpy>=1.23
+# Optional: sklearn is used by data.py's default backend.
+# Skip it and pass --backend manual if you don't want sklearn installed.
+scikit-learn>=1.2
