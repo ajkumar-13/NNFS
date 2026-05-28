@@ -1,0 +1,41 @@
+# Generated preview images
+.preview/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.Python
+
+# Virtual environments
+env/
+venv/
+.venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Dataset files (download separately)
+*.csv
+*.npy
+*.npz
+*.pkl
+*.gz
+data/
+
+# Logs and output
+*.log
+*.out
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VS Code
+.vscode/
