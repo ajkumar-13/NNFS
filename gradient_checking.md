@@ -341,4 +341,4 @@ print("If all PASS, your backprop is correct!")
 
 ---
 
-*See also: [Part 18 — Backprop Through the Loss](Lecture18/blog/Part18_Backprop_Through_Loss.md) | [Exercises](exercises.md) | [Back to Index](INDEX.md)*
+*See also: [Part 18 — Backprop Through the Loss](posts/18-backpropagation-through-the-loss-function/index.md) | [Exercises](exercises.md) | [Back to Index](INDEX.md)*

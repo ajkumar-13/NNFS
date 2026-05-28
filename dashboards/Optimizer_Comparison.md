@@ -8,12 +8,12 @@
 
 | # | Optimizer | Introduced In | Key Idea |
 |---|---|---|---|
-| 1 | SGD | [Part 22](../Lecture22/blog/Part22_Gradient_Descent_Optimizer.md) | Follow the negative gradient |
-| 2 | SGD + Decay | [Part 23](../Lecture23/blog/Part23_Learning_Rate_Decay.md) | Reduce step size over time |
-| 3 | SGD + Momentum | [Part 24](../Lecture24/blog/Part24_Momentum.md) | Accumulate velocity to smooth updates |
-| 4 | AdaGrad | [Part 25](../Lecture25/blog/Part25_AdaGrad.md) | Per-parameter adaptive learning rate |
-| 5 | RMSProp | [Part 26](../Lecture26/blog/Part26_RMSProp.md) | Fix AdaGrad's dying LR with EMA |
-| 6 | Adam | [Part 27](../Lecture27/blog/Part27_Adam_Optimizer.md) | Momentum + RMSProp + bias correction |
+| 1 | SGD | [Part 22](../posts/22-gradient-descent-optimiser/index.md) | Follow the negative gradient |
+| 2 | SGD + Decay | [Part 23](../posts/23-learning-rate-decay/index.md) | Reduce step size over time |
+| 3 | SGD + Momentum | [Part 24](../posts/24-momentum/index.md) | Accumulate velocity to smooth updates |
+| 4 | AdaGrad | [Part 25](../posts/25-adagrad/index.md) | Per-parameter adaptive learning rate |
+| 5 | RMSProp | [Part 26](../posts/26-rmsprop/index.md) | Fix AdaGrad's dying LR with EMA |
+| 6 | Adam | [Part 27](../posts/27-adam-optimizer/index.md) | Momentum + RMSProp + bias correction |
 
 ---
 

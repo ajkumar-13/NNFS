@@ -228,4 +228,4 @@ $$
 
 ---
 
-*Best companion reading:* [Part 19 — Softmax Derivatives](Lecture19/blog/Part19_Softmax_Derivatives.md) and [Gradient Checking](gradient_checking.md).
+*Best companion reading:* [Part 19 — Softmax Derivatives](posts/19-softmax-derivatives-and-the-combined-backward-pass/index.md) and [Gradient Checking](gradient_checking.md).

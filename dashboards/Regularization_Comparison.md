@@ -9,10 +9,10 @@
 | # | Method | Introduced In | Mechanism |
 |---|---|---|---|
 | 1 | No regularization | — | Baseline — unregularized model |
-| 2 | L1 Regularization | [Part 30](../Lecture30/blog/Part30_L1_L2_Regularization.md) | Adds $\lambda \sum |w|$ to loss |
-| 3 | L2 Regularization | [Part 30](../Lecture30/blog/Part30_L1_L2_Regularization.md) | Adds $\lambda \sum w^2$ to loss |
-| 4 | L1 + L2 | [Part 30](../Lecture30/blog/Part30_L1_L2_Regularization.md) | Both penalties combined |
-| 5 | Dropout | [Part 31](../Lecture31/blog/Part31_Dropout.md) | Randomly zero out neurons during training |
+| 2 | L1 Regularization | [Part 30](../posts/30-l1-and-l2-regularisation/index.md) | Adds $\lambda \sum |w|$ to loss |
+| 3 | L2 Regularization | [Part 30](../posts/30-l1-and-l2-regularisation/index.md) | Adds $\lambda \sum w^2$ to loss |
+| 4 | L1 + L2 | [Part 30](../posts/30-l1-and-l2-regularisation/index.md) | Both penalties combined |
+| 5 | Dropout | [Part 31](../posts/31-dropout/index.md) | Randomly zero out neurons during training |
 | 6 | L2 + Dropout | Parts 30–31 | Combined approach |
 
 ---
