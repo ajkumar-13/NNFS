@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">Activation variance through 10 ReLU layers under three weight-initialisation schemes</title>
+  <desc id="d">A line chart with layer depth on the x-axis (0 to 10) and the base-10 logarithm of activation variance on the y-axis (from minus 10 to plus 1). Three curves are drawn through the same network architecture, varying only the weight initialisation. The lectures' default of 0.01 times randn shrinks the activation variance by 150 times per layer and crashes through 10 to the minus 10 by layer 4, dropping out of the visible plot. Xavier or Glorot initialisation applied to ReLU activations shrinks variance by a factor of 2 per layer, descending steadily to about 10 to the minus 3 by layer 10. He or Kaiming initialisation matched to ReLU preserves variance perfectly — a flat horizontal line at variance equals 1 across all 10 layers. A shaded vanishing zone at the bottom marks the region where activations are too small to train. A side panel shows the three formulas and explains why He init wins for ReLU networks.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --ce-grid:rgba(26,26,26,0.06);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --ce-grid:rgba(241,238,232,0.08);
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .panel-head{font-weight:700;font-size:14px;fill:var(--ce-ink);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+
+    .axis{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
+    .grid{stroke:var(--ce-grid);stroke-width:0.75;fill:none;}
+    .axis-label{font-size:10px;fill:var(--ce-ink-muted);}
+    .axis-title{font-size:11px;fill:var(--ce-ink-muted);font-style:italic;}
+
+    .vanish-zone{fill:var(--ce-alert);fill-opacity:0.06;stroke:none;}
+    .vanish-label{font-size:10.5px;fill:var(--ce-alert);font-style:italic;font-weight:600;}
+
+    .curve-bad{stroke:var(--ce-alert);stroke-width:2.6;fill:none;stroke-linecap:round;}
+    .curve-warn{stroke:var(--ce-warn);stroke-width:2.6;fill:none;stroke-linecap:round;}
+    .curve-good{stroke:var(--ce-success);stroke-width:2.8;fill:none;stroke-linecap:round;}
+
+    .dot-bad {fill:var(--ce-alert);}
+    .dot-warn{fill:var(--ce-warn);}
+    .dot-good{fill:var(--ce-success);}
+
+    .anno-text{font-size:10.5px;font-style:italic;fill:var(--ce-ink-muted);}
+    .anno-bold{font-size:10.5px;font-weight:700;}
+
+    .side-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
+    .side-sub{font-size:10.5px;fill:var(--ce-ink-muted);}
+    .side-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--ce-ink);}
+
+    .init-card-bad{fill:var(--ce-alert);fill-opacity:0.08;stroke:var(--ce-alert);stroke-width:1.2;}
+    .init-card-warn{fill:var(--ce-warn);fill-opacity:0.08;stroke:var(--ce-warn);stroke-width:1.2;}
+    .init-card-good{fill:var(--ce-success);fill-opacity:0.08;stroke:var(--ce-success);stroke-width:1.2;}
+    .init-head-bad{font-weight:700;font-size:11px;fill:var(--ce-alert);}
+    .init-head-warn{font-weight:700;font-size:11px;fill:var(--ce-warn);}
+    .init-head-good{font-weight:700;font-size:11px;fill:var(--ce-success);}
+  ]]></style>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="40">Why initialisation matters: activation variance through 10 ReLU layers</text>
+  <text class="subtitle" x="48" y="60">Same architecture, same input. The weight scale alone decides whether the network can train.</text>
+
+  <!-- ============================ LEFT panel: line chart ============================ -->
+  <rect class="panel" x="24" y="80" width="620" height="420" rx="10"/>
+  <text class="panel-head" x="40" y="102">Activation variance vs depth · 64-unit hidden layers · ReLU</text>
+  <text class="panel-sub"  x="40" y="118">log scale on y · all three curves start at unit variance after the input layer</text>
+
+  <!-- Plot area: x in [80, 620], y in [130, 460]. Y range log10(var) in [-10, +1]. -->
+  <!-- y_pix = 130 + 30 * (1 - log_var) -->
+
+  <!-- Vanishing zone shading (log_var < -4, i.e. y > 280) -->
+  <rect class="vanish-zone" x="80" y="280" width="540" height="180"/>
+  <text class="vanish-label" x="610" y="450" text-anchor="end">vanishing zone — gradients ≈ 0</text>
+
+  <!-- Plot axes -->
+  <line class="axis" x1="80" y1="460" x2="620" y2="460"/>
+  <line class="axis" x1="80" y1="130" x2="80"  y2="460"/>
+
+  <!-- Y gridlines and labels at log_var = 1, 0, -2, -4, -6, -8, -10 -->
+  <g class="grid">
+    <line x1="80" y1="130" x2="620" y2="130"/>
+    <line x1="80" y1="160" x2="620" y2="160"/>
+    <line x1="80" y1="220" x2="620" y2="220"/>
+    <line x1="80" y1="280" x2="620" y2="280"/>
+    <line x1="80" y1="340" x2="620" y2="340"/>
+    <line x1="80" y1="400" x2="620" y2="400"/>
+  </g>
+  <text class="axis-label" x="74" y="134" text-anchor="end">10¹</text>
+  <text class="axis-label" x="74" y="164" text-anchor="end">10⁰</text>
+  <text class="axis-label" x="74" y="224" text-anchor="end">10⁻²</text>
+  <text class="axis-label" x="74" y="284" text-anchor="end">10⁻⁴</text>
+  <text class="axis-label" x="74" y="344" text-anchor="end">10⁻⁶</text>
+  <text class="axis-label" x="74" y="404" text-anchor="end">10⁻⁸</text>
+  <text class="axis-label" x="74" y="464" text-anchor="end">10⁻¹⁰</text>
+  <text class="axis-title" x="40" y="295" text-anchor="middle" transform="rotate(-90 40 295)">activation variance  (log scale)</text>
+
+  <!-- X gridlines and labels at L = 0, 2, 4, 6, 8, 10 -->
+  <g class="grid">
+    <line x1="188" y1="130" x2="188" y2="460"/>
+    <line x1="296" y1="130" x2="296" y2="460"/>
+    <line x1="404" y1="130" x2="404" y2="460"/>
+    <line x1="512" y1="130" x2="512" y2="460"/>
+    <line x1="620" y1="130" x2="620" y2="460"/>
+  </g>
+  <text class="axis-label" x="80"  y="476" text-anchor="middle">0</text>
+  <text class="axis-label" x="188" y="476" text-anchor="middle">2</text>
+  <text class="axis-label" x="296" y="476" text-anchor="middle">4</text>
+  <text class="axis-label" x="404" y="476" text-anchor="middle">6</text>
+  <text class="axis-label" x="512" y="476" text-anchor="middle">8</text>
+  <text class="axis-label" x="620" y="476" text-anchor="middle">10</text>
+  <text class="axis-title" x="350" y="492" text-anchor="middle">layer depth</text>
+
+  <!-- ====== Curve 1: 0.01 * randn (lectures' default) — vanishes hard ====== -->
+  <!-- Per-layer multiplier: n*var_W*0.5 = 64*0.0001*0.5 = 0.0032 → log10 = -2.495 -->
+  <!-- L=0: log_var=0, y=160 -->
+  <!-- L=1: log_var=-2.495, y=234.85 -->
+  <!-- L=2: log_var=-4.989, y=309.67 -->
+  <!-- L=3: log_var=-7.484, y=384.52 -->
+  <!-- L=4: log_var=-9.979, y=459.37 (essentially bottom) -->
+  <polyline class="curve-bad" points="80,160 134,234.85 188,309.67 242,384.52 296,459"/>
+  <g class="dot-bad">
+    <circle cx="80"  cy="160"    r="3.5"/>
+    <circle cx="134" cy="234.85" r="3.5"/>
+    <circle cx="188" cy="309.67" r="3.5"/>
+    <circle cx="242" cy="384.52" r="3.5"/>
+    <circle cx="296" cy="459"    r="3.5"/>
+  </g>
+  <!-- Annotation: "vanishes by layer 4" -->
+  <text class="anno-bold" x="305" y="455" style="fill:var(--ce-alert);">→ off-chart by layer 4</text>
+
+  <!-- ====== Curve 2: Xavier + ReLU — vanishes mildly ====== -->
+  <!-- Per-layer multiplier: 0.5 → log10 = -0.301 -->
+  <!-- L=0: y=160; L=k: y=160 + 30*0.301*k = 160 + 9.03*k -->
+  <polyline class="curve-warn" points="
+    80,160
+    134,169.03
+    188,178.06
+    242,187.09
+    296,196.12
+    350,205.15
+    404,214.18
+    458,223.21
+    512,232.24
+    566,241.27
+    620,250.3"/>
+  <g class="dot-warn">
+    <circle cx="80"  cy="160"    r="3"/>
+    <circle cx="134" cy="169.03" r="3"/>
+    <circle cx="188" cy="178.06" r="3"/>
+    <circle cx="242" cy="187.09" r="3"/>
+    <circle cx="296" cy="196.12" r="3"/>
+    <circle cx="350" cy="205.15" r="3"/>
+    <circle cx="404" cy="214.18" r="3"/>
+    <circle cx="458" cy="223.21" r="3"/>
+    <circle cx="512" cy="232.24" r="3"/>
+    <circle cx="566" cy="241.27" r="3"/>
+    <circle cx="620" cy="250.3"  r="3"/>
+  </g>
+
+  <!-- ====== Curve 3: He + ReLU — preserved ====== -->
+  <!-- Flat line at log_var=0 → y=160 -->
+  <polyline class="curve-good" points="80,160 134,160 188,160 242,160 296,160 350,160 404,160 458,160 512,160 566,160 620,160"/>
+  <g class="dot-good">
+    <circle cx="80"  cy="160" r="3"/>
+    <circle cx="134" cy="160" r="3"/>
+    <circle cx="188" cy="160" r="3"/>
+    <circle cx="242" cy="160" r="3"/>
+    <circle cx="296" cy="160" r="3"/>
+    <circle cx="350" cy="160" r="3"/>
+    <circle cx="404" cy="160" r="3"/>
+    <circle cx="458" cy="160" r="3"/>
+    <circle cx="512" cy="160" r="3"/>
+    <circle cx="566" cy="160" r="3"/>
+    <circle cx="620" cy="160" r="3"/>
+  </g>
+
+  <!-- Endpoint labels -->
+  <text class="anno-bold" x="616" y="155" text-anchor="end" style="fill:var(--ce-success);">He · preserved</text>
+  <text class="anno-bold" x="616" y="262" text-anchor="end" style="fill:var(--ce-warn);">Xavier+ReLU · 0.5× per layer</text>
+
+  <!-- Legend (top-left of plot) -->
+  <g transform="translate(96, 134)">
+    <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="0" y="0" width="218" height="74" rx="6" opacity="0.96"/>
+    <line class="curve-bad" x1="10" y1="18" x2="36" y2="18"/>
+    <text class="anno-text" x="44" y="22">0.01 × randn  (lectures' default)</text>
+    <line class="curve-warn" x1="10" y1="38" x2="36" y2="38"/>
+    <text class="anno-text" x="44" y="42">Xavier / Glorot  (built for tanh)</text>
+    <line class="curve-good" x1="10" y1="58" x2="36" y2="58"/>
+    <text class="anno-text" x="44" y="62">He / Kaiming  (built for ReLU)</text>
+  </g>
+
+  <!-- ============================ RIGHT panel: formulas + reasoning ============================ -->
+  <rect class="panel" x="664" y="80" width="272" height="420" rx="10"/>
+  <text class="panel-head" x="680" y="102">The three formulas</text>
+  <text class="panel-sub"  x="680" y="118">drawn from W ~ N(0, σ²)</text>
+
+  <!-- Card 1: lectures' default -->
+  <rect class="init-card-bad" x="680" y="132" width="240" height="64" rx="6"/>
+  <text class="init-head-bad" x="692" y="150">0.01 × randn</text>
+  <text class="side-mono" x="692" y="170">σ = 0.01</text>
+  <text class="side-sub"  x="692" y="186">tiny weights → activation collapses</text>
+
+  <!-- Card 2: Xavier -->
+  <rect class="init-card-warn" x="680" y="208" width="240" height="64" rx="6"/>
+  <text class="init-head-warn" x="692" y="226">Xavier / Glorot</text>
+  <text class="side-mono" x="692" y="246">σ = √(2 / (n_in + n_out))</text>
+  <text class="side-sub"  x="692" y="262">for tanh, sigmoid, linear</text>
+
+  <!-- Card 3: He -->
+  <rect class="init-card-good" x="680" y="284" width="240" height="64" rx="6"/>
+  <text class="init-head-good" x="692" y="302">He / Kaiming  ← use this</text>
+  <text class="side-mono" x="692" y="322">σ = √(2 / n_in)</text>
+  <text class="side-sub"  x="692" y="338">for ReLU (extra ×2 compensates</text>
+  <text class="side-sub"  x="692" y="350">                  for the killed half)</text>
+
+  <!-- Code snippet for the fix -->
+  <text class="side-head" x="680" y="380">The one-line fix in Layer_Dense</text>
+  <text class="side-sub"  x="680" y="396">replace this:</text>
+  <text class="side-mono" x="680" y="414" style="fill:var(--ce-alert);">  0.01 * np.random.randn(...)</text>
+  <text class="side-sub"  x="680" y="432">with this:</text>
+  <text class="side-mono" x="680" y="450" style="fill:var(--ce-success);">  np.sqrt(2/n_in) * np.random.randn(...)</text>
+  <text class="side-sub"  x="680" y="472" style="font-style:italic;">Biases stay at zero.</text>
+</svg>

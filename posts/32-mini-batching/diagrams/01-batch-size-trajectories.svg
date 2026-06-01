@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">Three batch-size regimes: full-batch, mini-batch, pure SGD trajectories through the same loss landscape</title>
+  <desc id="d">A two-panel diagram. The left panel shows the same elliptical loss landscape with three overlaid optimisation trajectories starting from the same point in the upper right and ending near the minimum at the centre. The grey dashed trajectory is full-batch gradient descent: a smooth curve with just four widely-spaced steps. The green trajectory is mini-batch SGD: a mildly noisy curve with about a dozen medium-sized steps. The red trajectory is pure SGD with batch size one: a very jagged path with about thirty tiny noisy steps. The right panel shows a comparison table of the three regimes (batch size, updates per epoch, gradient noise, typical use) plus a callout explaining that mini-batching is the production default because it gets the step count of SGD with the noise level of full-batch.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --ce-grid:rgba(26,26,26,0.06);
+      --ce-contour:rgba(91,127,191,0.10);
+      --ce-contour-line:rgba(91,127,191,0.32);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --ce-grid:rgba(241,238,232,0.08);
+        --ce-contour:rgba(139,168,224,0.10);
+        --ce-contour-line:rgba(139,168,224,0.32);
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .panel-head{font-weight:700;font-size:14px;fill:var(--ce-ink);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+
+    .contour-fill{fill:var(--ce-contour);stroke:var(--ce-contour-line);stroke-width:1;}
+    .min-dot{fill:var(--ce-ink);}
+    .min-label{font-size:10px;fill:var(--ce-ink-muted);font-style:italic;}
+    .start-dot{fill:var(--ce-ink-subtle);stroke:var(--ce-ink);stroke-width:1.5;}
+    .start-label{font-size:10px;fill:var(--ce-ink-muted);font-style:italic;}
+
+    .traj-full{stroke:var(--ce-ink-subtle);stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:6 4;}
+    .traj-mini{stroke:var(--ce-success);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+    .traj-sgd {stroke:var(--ce-alert);stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;fill-opacity:0;}
+
+    .dot-full{fill:var(--ce-ink-subtle);}
+    .dot-mini{fill:var(--ce-success);}
+    .dot-sgd {fill:var(--ce-alert);}
+
+    .legend-text{font-size:11px;fill:var(--ce-ink);}
+    .legend-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
+
+    .side-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
+    .side-sub{font-size:10.5px;fill:var(--ce-ink-muted);}
+    .row-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
+    .col-head{font-weight:700;font-size:10.5px;fill:var(--ce-ink-muted);}
+    .row-line{stroke:var(--ce-border);stroke-width:1;fill:none;}
+
+    .callout-box{fill:var(--ce-success);fill-opacity:0.06;stroke:var(--ce-success);stroke-width:1.2;}
+    .callout-head{font-weight:700;font-size:11px;fill:var(--ce-success);}
+  ]]></style>
+
+  <defs>
+    <marker id="ar-full" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-ink-subtle)"/>
+    </marker>
+    <marker id="ar-mini" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-success)"/>
+    </marker>
+    <marker id="ar-sgd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-alert)"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="40">Mini-batching: three regimes through one loss landscape</text>
+  <text class="subtitle" x="48" y="60">Full-batch takes few smooth steps. Pure SGD takes many noisy ones. Mini-batch keeps the step count high and the noise manageable.</text>
+
+  <!-- ============================ LEFT panel: loss landscape with 3 trajectories ============================ -->
+  <rect class="panel" x="24" y="80" width="620" height="420" rx="10"/>
+  <text class="panel-head" x="40" y="102">Same starting point, same minimum, three regimes</text>
+  <text class="panel-sub"  x="40" y="118">contour ellipses are the loss surface; lower = darker</text>
+
+  <!-- Contour ellipses centred at (390, 290) — circular-ish bowl. -->
+  <g transform="translate(390, 290)">
+    <ellipse class="contour-fill" cx="0" cy="0" rx="220" ry="170"/>
+    <ellipse class="contour-fill" cx="0" cy="0" rx="180" ry="140"/>
+    <ellipse class="contour-fill" cx="0" cy="0" rx="140" ry="110"/>
+    <ellipse class="contour-fill" cx="0" cy="0" rx="100" ry="80"/>
+    <ellipse class="contour-fill" cx="0" cy="0" rx="60"  ry="50"/>
+    <ellipse class="contour-fill" cx="0" cy="0" rx="25"  ry="22"/>
+  </g>
+
+  <!-- Minimum marker -->
+  <circle class="min-dot" cx="390" cy="290" r="3.5"/>
+  <text class="min-label" x="402" y="295">minimum</text>
+
+  <!-- ===== Trajectory 1: Full-batch (grey dashed, 4 long steps) ===== -->
+  <polyline class="traj-full" points="570,140 510,190 450,235 410,265 393,287" marker-end="url(#ar-full)"/>
+  <g class="dot-full">
+    <circle cx="570" cy="140" r="3.5"/>
+    <circle cx="510" cy="190" r="3.5"/>
+    <circle cx="450" cy="235" r="3.5"/>
+    <circle cx="410" cy="265" r="3.5"/>
+  </g>
+
+  <!-- ===== Trajectory 2: Mini-batch (green, ~12 medium steps with mild noise) ===== -->
+  <polyline class="traj-mini" points="570,140 542,160 522,178 498,202 472,222 458,243 438,258 422,272 410,280 400,287 395,289 392,290" marker-end="url(#ar-mini)"/>
+  <g class="dot-mini">
+    <circle cx="570" cy="140" r="3"/>
+    <circle cx="542" cy="160" r="3"/>
+    <circle cx="522" cy="178" r="3"/>
+    <circle cx="498" cy="202" r="3"/>
+    <circle cx="472" cy="222" r="3"/>
+    <circle cx="458" cy="243" r="3"/>
+    <circle cx="438" cy="258" r="3"/>
+    <circle cx="422" cy="272" r="3"/>
+    <circle cx="410" cy="280" r="3"/>
+    <circle cx="400" cy="287" r="3"/>
+  </g>
+
+  <!-- ===== Trajectory 3: Pure SGD (red, jagged ~30 tiny steps) ===== -->
+  <polyline class="traj-sgd" points="
+    570,140 558,154 552,138 540,158 528,148 520,170 505,158 498,182 488,170 482,194
+    470,180 462,202 452,190 444,214 432,200 428,224 418,210 412,232 402,222 396,242
+    388,228 384,250 376,238 372,260 380,250 384,272 392,260 388,282 395,272 392,290" marker-end="url(#ar-sgd)"/>
+
+  <!-- Start marker -->
+  <circle class="start-dot" cx="570" cy="140" r="5"/>
+  <text class="start-label" x="582" y="138">start</text>
+
+  <!-- Legend overlay (top-left, away from trajectories) -->
+  <g transform="translate(60, 144)">
+    <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="0" y="0" width="186" height="74" rx="6" opacity="0.96"/>
+    <line class="traj-full" x1="10" y1="18" x2="36" y2="18"/>
+    <text class="legend-text" x="44" y="22">full-batch · 4 steps</text>
+    <line class="traj-mini" x1="10" y1="38" x2="36" y2="38"/>
+    <text class="legend-text" x="44" y="42">mini-batch · 12 steps</text>
+    <line class="traj-sgd"  x1="10" y1="58" x2="36" y2="58"/>
+    <text class="legend-text" x="44" y="62">pure SGD · 30 steps</text>
+  </g>
+
+  <!-- ============================ RIGHT panel: comparison table ============================ -->
+  <rect class="panel" x="664" y="80" width="272" height="420" rx="10"/>
+  <text class="panel-head" x="680" y="102">The three regimes</text>
+  <text class="panel-sub"  x="680" y="118">numbers for MNIST (N = 60 000)</text>
+
+  <!-- Table header -->
+  <line class="row-line" x1="680" y1="132" x2="920" y2="132"/>
+  <text class="col-head" x="692" y="148">regime</text>
+  <text class="col-head" x="820" y="148" text-anchor="middle">batch B</text>
+  <text class="col-head" x="908" y="148" text-anchor="end">steps/epoch</text>
+  <line class="row-line" x1="680" y1="154" x2="920" y2="154"/>
+
+  <!-- Row 1: Full-batch -->
+  <g transform="translate(0, 170)">
+    <circle cx="688" cy="0" r="5" fill="var(--ce-ink-subtle)"/>
+    <text class="row-mono" x="700" y="4">full-batch</text>
+    <text class="row-mono" x="820" y="4" text-anchor="middle">60 000</text>
+    <text class="row-mono" x="908" y="4" text-anchor="end">1</text>
+  </g>
+  <text class="side-sub" x="700" y="188">smooth, exact gradient · slow</text>
+
+  <!-- Row 2: Mini-batch (highlighted) -->
+  <rect fill="var(--ce-success)" fill-opacity="0.06" stroke="var(--ce-success)" stroke-width="1" x="680" y="202" width="240" height="48" rx="6"/>
+  <g transform="translate(0, 222)">
+    <circle cx="688" cy="0" r="5" fill="var(--ce-success)"/>
+    <text class="row-mono" x="700" y="4" style="font-weight:700;">mini-batch</text>
+    <text class="row-mono" x="820" y="4" text-anchor="middle" style="font-weight:700;">128</text>
+    <text class="row-mono" x="908" y="4" text-anchor="end" style="font-weight:700;">469</text>
+  </g>
+  <text class="side-sub" x="700" y="240" style="fill:var(--ce-success);">production default · noise is mild</text>
+
+  <!-- Row 3: Pure SGD -->
+  <g transform="translate(0, 274)">
+    <circle cx="688" cy="0" r="5" fill="var(--ce-alert)"/>
+    <text class="row-mono" x="700" y="4">pure SGD</text>
+    <text class="row-mono" x="820" y="4" text-anchor="middle">1</text>
+    <text class="row-mono" x="908" y="4" text-anchor="end">60 000</text>
+  </g>
+  <text class="side-sub" x="700" y="292">very noisy · rare in practice</text>
+
+  <line class="row-line" x1="680" y1="308" x2="920" y2="308"/>
+
+  <!-- Callout -->
+  <rect class="callout-box" x="680" y="324" width="240" height="156" rx="8"/>
+  <text class="callout-head" x="692" y="346">Why mini-batch wins</text>
+  <text class="side-sub" x="692" y="364">·  hundreds of updates per epoch</text>
+  <text class="side-sub" x="692" y="378">   (vs 1 for full-batch)</text>
+  <text class="side-sub" x="692" y="396">·  gradient noise drops as 1/B,</text>
+  <text class="side-sub" x="692" y="410">   so B = 128 is much smoother</text>
+  <text class="side-sub" x="692" y="424">   than B = 1</text>
+  <text class="side-sub" x="692" y="442">·  fits in memory at any dataset</text>
+  <text class="side-sub" x="692" y="456">   scale</text>
+  <text class="side-sub" x="692" y="474" style="font-style:italic;">→ the production standard.</text>
+</svg>

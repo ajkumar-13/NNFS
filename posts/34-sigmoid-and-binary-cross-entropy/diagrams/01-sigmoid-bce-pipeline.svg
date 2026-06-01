@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">Sigmoid + binary cross-entropy pipeline with the combined backward shortcut</title>
+  <desc id="d">A two-panel diagram of the sigmoid plus binary cross-entropy classification head. On the left, a left-to-right pipeline: a scalar logit z enters from the left, passes through a sigmoid box (forward formula one over one plus exp minus z, output p in zero to one), then through a binary cross-entropy box (formula minus y log p plus one minus y log one minus p) along with the binary target y, producing a scalar loss. Below the forward pipeline a thick red dashed arrow runs backward from the BCE box directly to the logit, bypassing the sigmoid entirely, labelled with the simplified combined gradient: dL/dz equals (p minus y) divided by N. On the right, two stacked elements: a plot of the sigmoid function from minus 5 to plus 5 showing the S-shape that saturates at 0 and 1, and a derivation box showing the three lines of algebra that produce the combined-gradient cancellation: dL/dp equals (p minus y) over p times one minus p, dp/dz equals p times one minus p, multiplied gives dL/dz equals (p minus y) with the p one minus p factors cancelling exactly.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --ce-grid:rgba(26,26,26,0.06);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --ce-grid:rgba(241,238,232,0.08);
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .panel-head{font-weight:700;font-size:14px;fill:var(--ce-ink);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+
+    .node-input  {fill:var(--ce-primary);fill-opacity:0.12;stroke:var(--ce-primary);stroke-width:1.5;}
+    .node-sigmoid{fill:var(--ce-success);fill-opacity:0.10;stroke:var(--ce-success);stroke-width:1.5;}
+    .node-bce    {fill:var(--ce-warn);fill-opacity:0.10;stroke:var(--ce-warn);stroke-width:1.5;}
+    .node-target {fill:var(--ce-accent);fill-opacity:0.12;stroke:var(--ce-accent);stroke-width:1.5;}
+    .node-output {fill:var(--ce-ink);fill-opacity:0.05;stroke:var(--ce-ink);stroke-width:1.5;}
+
+    .node-head-input  {font-weight:700;font-size:12px;fill:var(--ce-primary);}
+    .node-head-sigmoid{font-weight:700;font-size:12px;fill:var(--ce-success);}
+    .node-head-bce    {font-weight:700;font-size:12px;fill:var(--ce-warn);}
+    .node-head-target {font-weight:700;font-size:12px;fill:var(--ce-accent);}
+    .node-head-output {font-weight:700;font-size:12px;fill:var(--ce-ink);}
+    .node-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--ce-ink);}
+    .node-sub {font-size:10px;fill:var(--ce-ink-muted);}
+
+    .arrow-fwd{stroke:var(--ce-ink-subtle);stroke-width:2;fill:none;}
+    .arrow-bwd{stroke:var(--ce-alert);stroke-width:2.6;fill:none;stroke-dasharray:6 4;}
+
+    .bwd-label-bg{fill:var(--ce-bg);}
+    .bwd-label   {font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;fill:var(--ce-alert);}
+    .bwd-note    {font-size:11px;font-style:italic;fill:var(--ce-alert);}
+
+    .axis{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
+    .grid{stroke:var(--ce-grid);stroke-width:0.75;fill:none;}
+    .axis-label{font-size:10px;fill:var(--ce-ink-muted);}
+    .curve-sigmoid{stroke:var(--ce-success);stroke-width:2.6;fill:none;stroke-linecap:round;}
+
+    .deriv-band{fill:var(--ce-primary);fill-opacity:0.06;stroke:var(--ce-primary);stroke-width:1.2;}
+    .deriv-head{font-weight:700;font-size:12px;fill:var(--ce-primary);}
+    .deriv-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:700;fill:var(--ce-ink);}
+    .deriv-note{font-size:10.5px;font-style:italic;fill:var(--ce-ink-muted);}
+  ]]></style>
+
+  <defs>
+    <marker id="ar-fwd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-ink-subtle)"/>
+    </marker>
+    <marker id="ar-bwd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-alert)"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="40">Sigmoid + binary cross-entropy: forward pipeline and the combined backward shortcut</text>
+  <text class="subtitle" x="48" y="60">The grey arrows are the forward path. The red dashed arrow is the combined gradient — it skips the sigmoid entirely.</text>
+
+  <!-- ============================ LEFT panel: pipeline ============================ -->
+  <rect class="panel" x="24" y="80" width="620" height="420" rx="10"/>
+  <text class="panel-head" x="40" y="102">Forward + combined backward</text>
+  <text class="panel-sub"  x="40" y="118">scalar logit z → probability p → loss L</text>
+
+  <!-- Node coords (centres):
+       Logit:  x=80,  y=240 (40 px box)
+       Sigmoid: x=200, y=240
+       BCE:    x=380, y=240
+       Target y: x=380, y=140 (above BCE)
+       Loss:   x=540, y=240
+       Sizes ~100x70 each
+  -->
+
+  <!-- Logit box -->
+  <rect class="node-input" x="50" y="210" width="100" height="60" rx="10"/>
+  <text class="node-head-input" x="100" y="232" text-anchor="middle">logit</text>
+  <text class="node-mono"  x="100" y="252" text-anchor="middle">z</text>
+  <text class="node-sub"   x="100" y="266" text-anchor="middle">raw score, ℝ</text>
+
+  <!-- Forward arrow -->
+  <line class="arrow-fwd" x1="152" y1="240" x2="186" y2="240" marker-end="url(#ar-fwd)"/>
+
+  <!-- Sigmoid box -->
+  <rect class="node-sigmoid" x="186" y="200" width="160" height="80" rx="10"/>
+  <text class="node-head-sigmoid" x="266" y="222" text-anchor="middle">sigmoid</text>
+  <text class="node-mono"  x="266" y="244" text-anchor="middle">p = σ(z)</text>
+  <text class="node-mono"  x="266" y="260" text-anchor="middle">= 1 / (1 + e⁻ᶻ)</text>
+  <text class="node-sub"   x="266" y="275" text-anchor="middle">p ∈ (0, 1)</text>
+
+  <!-- Forward arrow -->
+  <line class="arrow-fwd" x1="346" y1="240" x2="376" y2="240" marker-end="url(#ar-fwd)"/>
+
+  <!-- Target box (above BCE) -->
+  <rect class="node-target" x="346" y="120" width="100" height="50" rx="10"/>
+  <text class="node-head-target" x="396" y="140" text-anchor="middle">target</text>
+  <text class="node-mono" x="396" y="158" text-anchor="middle">y ∈ {0, 1}</text>
+
+  <!-- Target arrow into BCE -->
+  <line class="arrow-fwd" x1="396" y1="172" x2="396" y2="200" marker-end="url(#ar-fwd)"/>
+
+  <!-- BCE box -->
+  <rect class="node-bce" x="376" y="200" width="160" height="80" rx="10"/>
+  <text class="node-head-bce" x="456" y="222" text-anchor="middle">BCE</text>
+  <text class="node-mono" x="456" y="244" text-anchor="middle">L = −[ y log p</text>
+  <text class="node-mono" x="456" y="260" text-anchor="middle">    + (1−y) log(1−p) ]</text>
+  <text class="node-sub"  x="456" y="275" text-anchor="middle">scalar per sample</text>
+
+  <!-- Forward arrow -->
+  <line class="arrow-fwd" x1="536" y1="240" x2="568" y2="240" marker-end="url(#ar-fwd)"/>
+
+  <!-- Loss output box -->
+  <rect class="node-output" x="568" y="210" width="68" height="60" rx="10"/>
+  <text class="node-head-output" x="602" y="232" text-anchor="middle">loss</text>
+  <text class="node-mono" x="602" y="252" text-anchor="middle">ℒ</text>
+  <text class="node-sub"  x="602" y="266" text-anchor="middle">mean L</text>
+
+  <!-- ============================ Combined backward arrow ============================ -->
+  <!-- Goes from BCE box bottom (456, 280) down to y=380 then horizontally back to logit area (100, 380) then up to logit box bottom (100, 270) -->
+  <path class="arrow-bwd" d="M 456 282 V 380 H 100 V 274" marker-end="url(#ar-bwd)"/>
+
+  <!-- Background for the backward label so it sits cleanly on top of arrow -->
+  <rect class="bwd-label-bg" x="220" y="360" width="180" height="40" rx="6"/>
+  <text class="bwd-label" x="310" y="380" text-anchor="middle">∂ℒ/∂z = (p − y) / N</text>
+  <text class="bwd-note"  x="310" y="394" text-anchor="middle">no division anywhere</text>
+
+  <!-- Label for the bypass: small annotation pointing to the sigmoid -->
+  <text class="bwd-note" x="370" y="420" style="fill:var(--ce-alert);">backward bypasses the sigmoid →</text>
+  <line stroke="var(--ce-alert)" stroke-width="0.75" stroke-dasharray="2 2" x1="370" y1="423" x2="266" y2="290"/>
+
+  <!-- Bottom note inside the panel -->
+  <text class="bwd-note" x="40" y="466" style="font-style:italic;color:var(--ce-ink-muted);">Combined class does both forward and backward — same pattern as softmax + CCE (post 19).</text>
+
+  <!-- ============================ RIGHT panel: sigmoid curve + derivation ============================ -->
+  <rect class="panel" x="664" y="80" width="272" height="420" rx="10"/>
+
+  <!-- Sigmoid plot (top half) -->
+  <text class="panel-head" x="680" y="102">The sigmoid σ(z)</text>
+  <text class="panel-sub"  x="680" y="118">smooth S-curve, output in (0, 1)</text>
+
+  <!-- Plot area: x in [690, 920] = 230 wide, y in [140, 260] = 120 tall -->
+  <!-- Data x in [-5, 5], y in [0, 1]. -->
+  <line class="axis" x1="690" y1="260" x2="920" y2="260"/>
+  <line class="axis" x1="805" y1="140" x2="805" y2="260"/>
+
+  <g class="grid">
+    <line x1="690" y1="200" x2="920" y2="200"/>
+    <line x1="690" y1="170" x2="920" y2="170"/>
+    <line x1="690" y1="230" x2="920" y2="230"/>
+  </g>
+
+  <text class="axis-label" x="690" y="272" text-anchor="middle">−5</text>
+  <text class="axis-label" x="805" y="272" text-anchor="middle">0</text>
+  <text class="axis-label" x="920" y="272" text-anchor="middle">+5</text>
+  <text class="axis-label" x="800" y="143" text-anchor="end">1.0</text>
+  <text class="axis-label" x="800" y="203" text-anchor="end">0.5</text>
+  <text class="axis-label" x="800" y="263" text-anchor="end">0.0</text>
+
+  <!-- Sigmoid curve sampled. Plot mapping: x_pix = 805 + 23*z, y_pix = 260 - 120*p where p = sigmoid(z). -->
+  <!-- z= -5,-4,-3,-2,-1,0,1,2,3,4,5 → p ≈ 0.0067, 0.018, 0.047, 0.119, 0.269, 0.5, 0.731, 0.881, 0.953, 0.982, 0.9933 -->
+  <!-- y_pix: 259.2, 257.8, 254.4, 245.7, 227.7, 200, 172.3, 154.3, 202.6 NO let me redo -->
+  <!-- y_pix = 260 - 120 * p:
+       z=-5  p=0.0067 → y=259.2
+       z=-4  p=0.018  → y=257.8
+       z=-3  p=0.047  → y=254.4
+       z=-2  p=0.119  → y=245.7
+       z=-1  p=0.269  → y=227.7
+       z=0   p=0.5    → y=200
+       z=1   p=0.731  → y=172.3
+       z=2   p=0.881  → y=154.3
+       z=3   p=0.953  → y=145.6
+       z=4   p=0.982  → y=142.2
+       z=5   p=0.9933 → y=140.8
+  -->
+  <polyline class="curve-sigmoid" points="
+    690,259.2
+    713,257.8
+    736,254.4
+    759,245.7
+    782,227.7
+    805,200
+    828,172.3
+    851,154.3
+    874,145.6
+    897,142.2
+    920,140.8"/>
+
+  <!-- Derivation card (bottom half) -->
+  <rect class="deriv-band" x="680" y="296" width="240" height="186" rx="8"/>
+  <text class="deriv-head" x="692" y="316">Why the gradient simplifies</text>
+
+  <text class="deriv-mono" x="692" y="340">∂L/∂p =</text>
+  <text class="deriv-mono" x="780" y="340">(p − y)</text>
+  <text class="deriv-mono" x="780" y="354">─────────</text>
+  <text class="deriv-mono" x="780" y="368">p(1 − p)</text>
+
+  <text class="deriv-mono" x="692" y="394">∂p/∂z =</text>
+  <text class="deriv-mono" x="780" y="394">p(1 − p)</text>
+
+  <line stroke="var(--ce-primary)" stroke-width="0.75" x1="692" y1="404" x2="908" y2="404"/>
+
+  <text class="deriv-mono" x="692" y="426">∂L/∂z =</text>
+  <text class="deriv-mono" x="780" y="426" style="fill:var(--ce-success);">p − y</text>
+  <text class="deriv-note" x="692" y="446" style="fill:var(--ce-success);">  p(1−p) cancels exactly</text>
+
+  <text class="deriv-note" x="692" y="468" style="font-style:italic;">→ batch-averaged: (p − y) / N</text>
+</svg>

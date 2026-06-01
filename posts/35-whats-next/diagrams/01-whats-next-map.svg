@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">What to learn after this series: a map organised by what each addition adds to the from-scratch MLP</title>
+  <desc id="d">A four-column map of the modern deep-learning toolkit organised by what each addition contributes to the foundation built across posts 1 to 34. The leftmost column is a tall "You are here" box listing what the series covers: dense layers, ReLU and sigmoid and softmax, cross-entropy and binary cross-entropy and MSE losses, the full optimiser ladder from SGD to Adam, L1 and L2 regularisation, dropout, mini-batching, He initialisation, and four working projects. The next three columns are stacks of cards. Column 2 (green) lists new layer types: convolutional, recurrent (LSTM and GRU), and attention with transformers. Column 3 (blue) lists new training infrastructure: batch normalisation, residual connections, modern learning-rate schedulers, mixed-precision training, and distributed training. Column 4 (tan) lists new problem framings: self-supervised learning, transfer learning and fine-tuning, reinforcement learning, and diffusion-based generative models. Arrows from the central "You are here" box point outward to each column, emphasising that everything past the series is additive on the same foundation.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --ce-grid:rgba(26,26,26,0.06);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --ce-grid:rgba(241,238,232,0.08);
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+
+    .core-box{fill:var(--ce-ink);fill-opacity:0.04;stroke:var(--ce-ink);stroke-width:1.5;}
+    .core-head{font-weight:700;font-size:14px;fill:var(--ce-ink);}
+    .core-sub {font-size:11px;fill:var(--ce-ink-muted);}
+    .core-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10.5px;font-weight:600;fill:var(--ce-ink);}
+    .core-line-head{font-weight:700;font-size:10px;fill:var(--ce-ink-muted);}
+
+    .col-head-green{font-weight:700;font-size:13px;fill:var(--ce-success);}
+    .col-head-blue {font-weight:700;font-size:13px;fill:var(--ce-primary);}
+    .col-head-tan  {font-weight:700;font-size:13px;fill:var(--ce-warn);}
+
+    .card-green{fill:var(--ce-success);fill-opacity:0.07;stroke:var(--ce-success);stroke-width:1.2;}
+    .card-blue {fill:var(--ce-primary);fill-opacity:0.07;stroke:var(--ce-primary);stroke-width:1.2;}
+    .card-tan  {fill:var(--ce-warn);fill-opacity:0.07;stroke:var(--ce-warn);stroke-width:1.2;}
+
+    .card-head-green{font-weight:700;font-size:11px;fill:var(--ce-success);}
+    .card-head-blue {font-weight:700;font-size:11px;fill:var(--ce-primary);}
+    .card-head-tan  {font-weight:700;font-size:11px;fill:var(--ce-warn);}
+    .card-sub{font-size:10px;fill:var(--ce-ink-muted);}
+
+    .arrow-green{stroke:var(--ce-success);stroke-width:1.5;fill:none;stroke-opacity:0.5;}
+    .arrow-blue {stroke:var(--ce-primary);stroke-width:1.5;fill:none;stroke-opacity:0.5;}
+    .arrow-tan  {stroke:var(--ce-warn);stroke-width:1.5;fill:none;stroke-opacity:0.5;}
+  ]]></style>
+
+  <defs>
+    <marker id="ar-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-success)"/>
+    </marker>
+    <marker id="ar-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-primary)"/>
+    </marker>
+    <marker id="ar-tan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-warn)"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="40">What to read after this series</text>
+  <text class="subtitle" x="48" y="60">Everything past post 34 is additive: new layer types, new training infrastructure, or new problem framings — all on the same skeleton.</text>
+
+  <!-- ============================ Center: "You are here" core box ============================ -->
+  <rect class="core-box" x="24" y="88" width="204" height="412" rx="12"/>
+  <text class="core-head" x="126" y="110" text-anchor="middle">You are here</text>
+  <text class="core-sub"  x="126" y="126" text-anchor="middle">posts 1 – 34, 4 projects</text>
+
+  <line stroke="var(--ce-border)" stroke-width="1" x1="40" y1="138" x2="212" y2="138"/>
+
+  <text class="core-line-head" x="40" y="156">LAYERS</text>
+  <text class="core-mono"      x="40" y="172">Layer_Dense</text>
+  <text class="core-mono"      x="40" y="186">Activation_ReLU</text>
+  <text class="core-mono"      x="40" y="200">Activation_Sigmoid</text>
+  <text class="core-mono"      x="40" y="214">Activation_Softmax</text>
+  <text class="core-mono"      x="40" y="228">Layer_Dropout</text>
+
+  <text class="core-line-head" x="40" y="252">LOSSES</text>
+  <text class="core-mono"      x="40" y="268">CCE  ·  BCE  ·  MSE</text>
+
+  <text class="core-line-head" x="40" y="290">OPTIMISERS</text>
+  <text class="core-mono"      x="40" y="306">SGD → decay → momentum</text>
+  <text class="core-mono"      x="40" y="320">AdaGrad → RMSProp → Adam</text>
+
+  <text class="core-line-head" x="40" y="344">REGULARISATION</text>
+  <text class="core-mono"      x="40" y="360">L1  ·  L2  ·  Dropout</text>
+
+  <text class="core-line-head" x="40" y="384">TRAINING</text>
+  <text class="core-mono"      x="40" y="400">mini-batching</text>
+  <text class="core-mono"      x="40" y="414">He / Xavier init</text>
+  <text class="core-mono"      x="40" y="428">train / val / test  ·  k-fold</text>
+
+  <text class="core-line-head" x="40" y="452">PROJECTS</text>
+  <text class="core-mono"      x="40" y="468">01 MNIST   02 moons</text>
+  <text class="core-mono"      x="40" y="482">03 Fashion 04 housing</text>
+
+  <!-- ============================ Column 2: new layer types ============================ -->
+  <text class="col-head-green" x="356" y="110" text-anchor="middle">New layer types</text>
+
+  <!-- Arrows from core to column 2 -->
+  <line class="arrow-green" x1="228" y1="200" x2="244" y2="158" marker-end="url(#ar-green)"/>
+
+  <!-- Card 1 -->
+  <rect class="card-green" x="244" y="130" width="224" height="84" rx="8"/>
+  <text class="card-head-green" x="256" y="150">Convolutional layers</text>
+  <text class="card-sub" x="256" y="166">for images, audio, spatial data</text>
+  <text class="card-sub" x="256" y="180">filter weights shared across positions</text>
+  <text class="card-sub" x="256" y="194">→ huge parameter reduction</text>
+  <text class="card-sub" x="256" y="206" style="font-style:italic;">read: LeCun et al. (1998); cs231n</text>
+
+  <!-- Card 2 -->
+  <rect class="card-green" x="244" y="220" width="224" height="84" rx="8"/>
+  <text class="card-head-green" x="256" y="240">Recurrent layers (LSTM, GRU)</text>
+  <text class="card-sub" x="256" y="256">for sequences, time series, text</text>
+  <text class="card-sub" x="256" y="270">hidden state carried timestep-to-timestep</text>
+  <text class="card-sub" x="256" y="284">gates fix vanishing gradient over long seq</text>
+  <text class="card-sub" x="256" y="296" style="font-style:italic;">read: Hochreiter &amp; Schmidhuber (1997); Olah</text>
+
+  <!-- Card 3 -->
+  <rect class="card-green" x="244" y="310" width="224" height="84" rx="8"/>
+  <text class="card-head-green" x="256" y="330">Attention &amp; transformers</text>
+  <text class="card-sub" x="256" y="346">parallel, scales to long sequences</text>
+  <text class="card-sub" x="256" y="360">the foundation of every modern LLM</text>
+  <text class="card-sub" x="256" y="374">Q · Kᵀ → softmax → · V</text>
+  <text class="card-sub" x="256" y="386" style="font-style:italic;">read: Vaswani et al. (2017); Karpathy GPT</text>
+
+  <text class="card-sub" x="356" y="426" text-anchor="middle" style="font-style:italic;">all use the same forward/backward contract</text>
+
+  <!-- ============================ Column 3: new training infrastructure ============================ -->
+  <text class="col-head-blue" x="588" y="110" text-anchor="middle">New training infra</text>
+
+  <!-- Arrow from core -->
+  <line class="arrow-blue" x1="228" y1="306" x2="476" y2="146" marker-end="url(#ar-blue)"/>
+
+  <!-- Card 1 -->
+  <rect class="card-blue" x="476" y="130" width="224" height="66" rx="8"/>
+  <text class="card-head-blue" x="488" y="150">Batch / Layer normalisation</text>
+  <text class="card-sub" x="488" y="166">re-normalise activations per layer</text>
+  <text class="card-sub" x="488" y="180">→ much less sensitive to init / lr</text>
+  <text class="card-sub" x="488" y="192" style="font-style:italic;">read: Ioffe &amp; Szegedy (2015)</text>
+
+  <!-- Card 2 -->
+  <rect class="card-blue" x="476" y="202" width="224" height="66" rx="8"/>
+  <text class="card-head-blue" x="488" y="222">Residual connections</text>
+  <text class="card-sub" x="488" y="238">output = layer(x) + x  (skip path)</text>
+  <text class="card-sub" x="488" y="252">→ trains 50-, 100-layer networks</text>
+  <text class="card-sub" x="488" y="264" style="font-style:italic;">read: He et al. (2016) — ResNet</text>
+
+  <!-- Card 3 -->
+  <rect class="card-blue" x="476" y="274" width="224" height="58" rx="8"/>
+  <text class="card-head-blue" x="488" y="294">Modern LR schedulers</text>
+  <text class="card-sub" x="488" y="310">cosine · warmup · one-cycle</text>
+  <text class="card-sub" x="488" y="324" style="font-style:italic;">replaces post 23's 1/(1+dt)</text>
+
+  <!-- Card 4 -->
+  <rect class="card-blue" x="476" y="338" width="224" height="42" rx="8"/>
+  <text class="card-head-blue" x="488" y="358">Mixed precision  ·  AMP</text>
+  <text class="card-sub" x="488" y="374">fp16/bf16 forward, fp32 optimiser state</text>
+
+  <!-- Card 5 -->
+  <rect class="card-blue" x="476" y="386" width="224" height="42" rx="8"/>
+  <text class="card-head-blue" x="488" y="406">Distributed training</text>
+  <text class="card-sub" x="488" y="422">data-parallel, model-parallel, FSDP</text>
+
+  <!-- ============================ Column 4: new problem framings ============================ -->
+  <text class="col-head-tan" x="820" y="110" text-anchor="middle">New problem framings</text>
+
+  <!-- Arrow from core -->
+  <line class="arrow-tan" x1="228" y1="420" x2="708" y2="146" marker-end="url(#ar-tan)"/>
+
+  <!-- Card 1 -->
+  <rect class="card-tan" x="708" y="130" width="224" height="66" rx="8"/>
+  <text class="card-head-tan" x="720" y="150">Self-supervised learning</text>
+  <text class="card-sub" x="720" y="166">construct labels from input itself</text>
+  <text class="card-sub" x="720" y="180">→ unlimited training data</text>
+  <text class="card-sub" x="720" y="192" style="font-style:italic;">read: BERT, GPT-2, MAE</text>
+
+  <!-- Card 2 -->
+  <rect class="card-tan" x="708" y="202" width="224" height="66" rx="8"/>
+  <text class="card-head-tan" x="720" y="222">Transfer learning  ·  fine-tuning</text>
+  <text class="card-sub" x="720" y="238">pretrained model + small labelled set</text>
+  <text class="card-sub" x="720" y="252">LoRA / PEFT for efficient adapters</text>
+  <text class="card-sub" x="720" y="264" style="font-style:italic;">read: Hu et al. (2022) — LoRA</text>
+
+  <!-- Card 3 -->
+  <rect class="card-tan" x="708" y="274" width="224" height="66" rx="8"/>
+  <text class="card-head-tan" x="720" y="294">Reinforcement learning</text>
+  <text class="card-sub" x="720" y="310">agent takes actions, gets rewards</text>
+  <text class="card-sub" x="720" y="324">policy-gradient instead of supervised loss</text>
+  <text class="card-sub" x="720" y="336" style="font-style:italic;">read: Sutton &amp; Barto; OpenAI Spinning Up</text>
+
+  <!-- Card 4 -->
+  <rect class="card-tan" x="708" y="346" width="224" height="66" rx="8"/>
+  <text class="card-head-tan" x="720" y="366">Diffusion models</text>
+  <text class="card-sub" x="720" y="382">learn to reverse a noise-corruption</text>
+  <text class="card-sub" x="720" y="396">Stable Diffusion, DALL-E 3, Sora</text>
+  <text class="card-sub" x="720" y="408" style="font-style:italic;">read: Ho et al. (2020) — DDPM</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48" y="528">Everything in the three right columns plugs into the forward-pass / backward-pass / optimiser-step skeleton from post 21.</text>
+</svg>
