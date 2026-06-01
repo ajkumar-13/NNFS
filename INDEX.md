@@ -1,6 +1,6 @@
 # Neural Networks from Scratch — Series Index & Learning Pathway
 
-*31 posts that build a neural network from first principles. Use this page as your home base: the top half is a guided learning path with progress tracking; the bottom half is a reference index of every resource in the repo.*
+*35 posts that build a neural network from first principles, plus 4 hands-on projects that put it to work. Use this page as your home base: the top half is a guided learning path with progress tracking; the bottom half is a reference index of every resource in the repo.*
 
 ---
 
@@ -157,15 +157,36 @@
 
 ---
 
+## Phase 7: Practical training and extensions (Parts 32–35)
+
+> **Goal:** Fill in the topics the core series glossed over and chart what comes next.
+
+**Prerequisite check:** Phases 1–6 complete. These four posts polish the foundation and point past it.
+
+| # | Blog | Topic | Done |
+|---|---|---|:---:|
+| 32 | [Part 32 — Mini-batching](posts/32-mini-batching/index.md) | The two-loop training pattern: epoch × batch; why mini-batch beats full-batch and pure SGD | ☐ |
+| 33 | [Part 33 — Weight initialisation](posts/33-weight-initialisation/index.md) | The `0.01 * randn` trap; Xavier / Glorot; He / Kaiming for ReLU | ☐ |
+| 34 | [Part 34 — Sigmoid and binary cross-entropy](posts/34-sigmoid-and-binary-cross-entropy/index.md) | The binary counterpart to softmax + CCE; combined-derivative shortcut | ☐ |
+| 35 | [Part 35 — What to read after this series](posts/35-whats-next/index.md) | Structured reading list: conv, RNN, transformers, batchnorm, RL, diffusion | ☐ |
+
+**Phase 7 milestones:**
+
+- [ ] Re-implement [Project 03 — Fashion-MNIST](projects/03-fashion-mnist/README.md) with `init="he"` and compare convergence
+- [ ] Pick one item from Part 35's reading list and start it
+
+---
+
 ## Projects
 
-> **Goal:** Apply everything you've built to a real-world problem.
+> **Goal:** Apply everything you've built to real datasets. Each project is self-contained: `posts/NN-slug/index.md` for the theory, `projects/NN-slug/` for the runnable code + README. See [projects/README.md](projects/README.md) for the convention.
 
-| # | Task | Done |
-|---|---|:---:|
-| 1 | Complete the [MNIST from scratch project](projects/01-mnist-from-scratch/README.md) | ☐ |
-| 2 | Achieve ≥95% test accuracy | ☐ |
-| 3 | Experiment: try different architectures, optimisers, and regularisation strategies | ☐ |
+| # | Project | Task | Hero result | Done |
+|---|---|---|---|:---:|
+| 1 | [MNIST from scratch](projects/01-mnist-from-scratch/README.md) | 10-class classification | ~97% test accuracy with Adam + L2 + Dropout | ☐ |
+| 2 | [Binary classifier on two-moons](projects/02-binary-classifier/README.md) | binary classification | ~98.5% test accuracy with sigmoid + BCE | ☐ |
+| 3 | [Fashion-MNIST](projects/03-fashion-mnist/README.md) | 10-class classification | ~89% test accuracy; the "shirt cluster" confusion | ☐ |
+| 4 | [California housing regression](projects/04-california-housing-regression/README.md) | regression | R² ≈ 0.78, RMSE ~$58k with MSE loss | ☐ |
 
 ---
 
@@ -179,7 +200,8 @@
 | 4. Backpropagation | 12–21 | 1–2 weeks (the core) |
 | 5. Optimisers | 22–27 | 3–4 days |
 | 6. Regularisation | 28–31 | 2–3 days |
-| Projects | MNIST from scratch | 1–2 days |
+| 7. Practical training | 32–35 | 1–2 days |
+| Projects | 4 hands-on builds (MNIST, moons, Fashion-MNIST, regression) | 3–5 days |
 
 **Total:** ~3–4 weeks at a steady pace, or ~2 weeks intensive.
 
