@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">California housing regression: predicted vs actual house values</title>
+  <desc id="d">A two-panel diagram for the California housing regression project. The left panel is a scatter plot of predicted house value (y-axis) against actual house value (x-axis), both measured in thousands of dollars, with about 50 sample test points. A diagonal dashed line marks perfect predictions. Most points cluster close to the diagonal, with increasing scatter at higher prices. A visible vertical cluster sits at the right edge of the chart at actual = $500k showing where the dataset was top-coded; for those samples the model predicts lower values around $200k-$280k since it never saw uncapped truth above $500k. The right panel shows the architecture (8 inputs to 64 hidden to 64 hidden to 1 linear output) above a metrics card listing RMSE, MAE, and R-squared on both train and test sets, then a short note explaining that R-squared of 0.78 means the model explains roughly 78 percent of the variance in median house value across California census block groups.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --ce-grid:rgba(26,26,26,0.06);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --ce-grid:rgba(241,238,232,0.08);
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .panel-head{font-weight:700;font-size:14px;fill:var(--ce-ink);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+
+    .axis{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
+    .grid{stroke:var(--ce-grid);stroke-width:0.75;fill:none;}
+    .axis-label{font-size:10px;fill:var(--ce-ink-muted);}
+    .axis-title{font-size:11px;fill:var(--ce-ink-muted);font-style:italic;}
+
+    .diag-line{stroke:var(--ce-ink-subtle);stroke-width:1.2;fill:none;stroke-dasharray:5 4;}
+    .point{fill:var(--ce-primary);stroke:var(--ce-ink);stroke-width:0.5;fill-opacity:0.55;}
+    .point-cap{fill:var(--ce-alert);stroke:var(--ce-ink);stroke-width:0.6;fill-opacity:0.65;}
+
+    .anno-text{font-size:10.5px;font-style:italic;fill:var(--ce-ink-muted);}
+    .anno-line{stroke:var(--ce-ink-subtle);stroke-width:0.75;fill:none;stroke-dasharray:2 2;}
+
+    .side-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
+    .side-sub{font-size:10.5px;fill:var(--ce-ink-muted);}
+    .side-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
+
+    .arch-input  {fill:var(--ce-primary);fill-opacity:0.12;stroke:var(--ce-primary);stroke-width:1.2;}
+    .arch-hidden {fill:var(--ce-success);fill-opacity:0.12;stroke:var(--ce-success);stroke-width:1.2;}
+    .arch-output {fill:var(--ce-accent);fill-opacity:0.18;stroke:var(--ce-accent);stroke-width:1.2;}
+    .arch-text   {font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;font-weight:600;fill:var(--ce-ink);}
+    .arch-arrow  {stroke:var(--ce-ink-subtle);stroke-width:1;fill:none;}
+
+    .metrics-panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .metric-head{font-weight:700;font-size:10.5px;fill:var(--ce-ink-muted);}
+    .metric-num {font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;font-weight:700;fill:var(--ce-ink);}
+    .metric-lbl {font-size:10px;fill:var(--ce-ink-muted);}
+  ]]></style>
+
+  <defs>
+    <marker id="ar-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-ink-subtle)"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="40">Project 04 · California housing regression — predicted vs actual</text>
+  <text class="subtitle" x="48" y="60">8 features → 64 → ReLU → 64 → ReLU → 1, MSE loss. The dataset cap at $500k forces visible under-prediction at the high end.</text>
+
+  <!-- ============================ LEFT panel: scatter ============================ -->
+  <rect class="panel" x="24" y="80" width="540" height="412" rx="10"/>
+  <text class="panel-head" x="40" y="102">Test set · 4 128 samples</text>
+  <text class="panel-sub"  x="40" y="118">each point is one census block group · diagonal = perfect prediction</text>
+
+  <!-- Plot area: x in [80, 400], y in [140, 460] (square 320 x 320).
+       Data range: $0..$500k on both axes. -->
+  <!-- Axes -->
+  <line class="axis" x1="80" y1="460" x2="400" y2="460"/>
+  <line class="axis" x1="80" y1="140" x2="80"  y2="460"/>
+
+  <!-- Gridlines at $100, 200, 300, 400 -->
+  <g class="grid">
+    <line x1="144" y1="140" x2="144" y2="460"/>
+    <line x1="208" y1="140" x2="208" y2="460"/>
+    <line x1="272" y1="140" x2="272" y2="460"/>
+    <line x1="336" y1="140" x2="336" y2="460"/>
+    <line x1="80"  y1="396" x2="400" y2="396"/>
+    <line x1="80"  y1="332" x2="400" y2="332"/>
+    <line x1="80"  y1="268" x2="400" y2="268"/>
+    <line x1="80"  y1="204" x2="400" y2="204"/>
+  </g>
+
+  <!-- X tick labels -->
+  <text class="axis-label" x="80"  y="474" text-anchor="middle">0</text>
+  <text class="axis-label" x="144" y="474" text-anchor="middle">100</text>
+  <text class="axis-label" x="208" y="474" text-anchor="middle">200</text>
+  <text class="axis-label" x="272" y="474" text-anchor="middle">300</text>
+  <text class="axis-label" x="336" y="474" text-anchor="middle">400</text>
+  <text class="axis-label" x="400" y="474" text-anchor="middle">500</text>
+  <text class="axis-title" x="240" y="488" text-anchor="middle">actual house value ($k)</text>
+
+  <!-- Y tick labels -->
+  <text class="axis-label" x="74" y="464" text-anchor="end">0</text>
+  <text class="axis-label" x="74" y="400" text-anchor="end">100</text>
+  <text class="axis-label" x="74" y="336" text-anchor="end">200</text>
+  <text class="axis-label" x="74" y="272" text-anchor="end">300</text>
+  <text class="axis-label" x="74" y="208" text-anchor="end">400</text>
+  <text class="axis-label" x="74" y="144" text-anchor="end">500</text>
+  <text class="axis-title" x="44" y="300" text-anchor="middle" transform="rotate(-90 44 300)">predicted ($k)</text>
+
+  <!-- Diagonal y = x line -->
+  <line class="diag-line" x1="80" y1="460" x2="400" y2="140"/>
+  <text class="anno-text" x="395" y="135" text-anchor="end">y = x (perfect)</text>
+
+  <!-- Scatter points: ~50 points clustered around the diagonal with realistic noise. -->
+  <g>
+    <!-- Low-value cluster -->
+    <circle class="point" cx="95"  cy="450" r="3.5"/>
+    <circle class="point" cx="100" cy="440" r="3.5"/>
+    <circle class="point" cx="115" cy="430" r="3.5"/>
+    <circle class="point" cx="120" cy="445" r="3.5"/>
+    <circle class="point" cx="130" cy="420" r="3.5"/>
+    <circle class="point" cx="140" cy="425" r="3.5"/>
+    <circle class="point" cx="150" cy="410" r="3.5"/>
+    <circle class="point" cx="160" cy="400" r="3.5"/>
+    <circle class="point" cx="170" cy="415" r="3.5"/>
+    <circle class="point" cx="175" cy="395" r="3.5"/>
+
+    <!-- Mid-value cluster -->
+    <circle class="point" cx="185" cy="380" r="3.5"/>
+    <circle class="point" cx="200" cy="360" r="3.5"/>
+    <circle class="point" cx="210" cy="380" r="3.5"/>
+    <circle class="point" cx="220" cy="340" r="3.5"/>
+    <circle class="point" cx="230" cy="360" r="3.5"/>
+    <circle class="point" cx="240" cy="320" r="3.5"/>
+    <circle class="point" cx="245" cy="350" r="3.5"/>
+    <circle class="point" cx="255" cy="310" r="3.5"/>
+    <circle class="point" cx="265" cy="335" r="3.5"/>
+    <circle class="point" cx="275" cy="295" r="3.5"/>
+    <circle class="point" cx="285" cy="320" r="3.5"/>
+    <circle class="point" cx="290" cy="280" r="3.5"/>
+
+    <!-- Upper-mid (with mild under-prediction bias) -->
+    <circle class="point" cx="300" cy="290" r="3.5"/>
+    <circle class="point" cx="310" cy="270" r="3.5"/>
+    <circle class="point" cx="320" cy="260" r="3.5"/>
+    <circle class="point" cx="330" cy="280" r="3.5"/>
+    <circle class="point" cx="335" cy="245" r="3.5"/>
+    <circle class="point" cx="340" cy="290" r="3.5"/>
+    <circle class="point" cx="345" cy="230" r="3.5"/>
+    <circle class="point" cx="350" cy="270" r="3.5"/>
+    <circle class="point" cx="355" cy="220" r="3.5"/>
+    <circle class="point" cx="360" cy="255" r="3.5"/>
+
+    <!-- High-value range -->
+    <circle class="point" cx="370" cy="240" r="3.5"/>
+    <circle class="point" cx="375" cy="220" r="3.5"/>
+    <circle class="point" cx="380" cy="260" r="3.5"/>
+    <circle class="point" cx="385" cy="200" r="3.5"/>
+    <circle class="point" cx="390" cy="250" r="3.5"/>
+    <circle class="point" cx="395" cy="210" r="3.5"/>
+
+    <!-- Cap-effect cluster at x = 500 (top-coded actual values) -->
+    <circle class="point-cap" cx="400" cy="280" r="4"/>
+    <circle class="point-cap" cx="400" cy="250" r="4"/>
+    <circle class="point-cap" cx="400" cy="220" r="4"/>
+    <circle class="point-cap" cx="400" cy="200" r="4"/>
+    <circle class="point-cap" cx="400" cy="240" r="4"/>
+    <circle class="point-cap" cx="400" cy="195" r="4"/>
+    <circle class="point-cap" cx="400" cy="270" r="4"/>
+    <circle class="point-cap" cx="400" cy="230" r="4"/>
+    <circle class="point-cap" cx="400" cy="260" r="4"/>
+    <circle class="point-cap" cx="400" cy="215" r="4"/>
+    <circle class="point-cap" cx="400" cy="285" r="4"/>
+    <circle class="point-cap" cx="400" cy="245" r="4"/>
+  </g>
+
+  <!-- Cap-effect annotation -->
+  <line class="anno-line" x1="410" y1="240" x2="465" y2="180"/>
+  <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="430" y="155" width="120" height="46" rx="5"/>
+  <text class="anno-text" x="490" y="172" text-anchor="middle" style="fill:var(--ce-alert);font-weight:700;">cap-effect cluster</text>
+  <text class="anno-text" x="490" y="186" text-anchor="middle">actual was top-coded</text>
+  <text class="anno-text" x="490" y="198" text-anchor="middle">at $500k</text>
+
+  <!-- ============================ RIGHT panel: architecture + metrics ============================ -->
+  <rect class="panel" x="580" y="80" width="356" height="412" rx="10"/>
+
+  <!-- Architecture mini-diagram -->
+  <text class="side-head" x="596" y="102">Architecture</text>
+  <text class="side-sub"  x="596" y="118">8 → 64 → 64 → 1 (linear)</text>
+
+  <g transform="translate(596, 130)">
+    <rect class="arch-input"  x="0"   y="0"  width="50" height="36" rx="6"/>
+    <text class="arch-text"   x="25"  y="16" text-anchor="middle">input</text>
+    <text class="arch-text"   x="25"  y="28" text-anchor="middle">8</text>
+    <line class="arch-arrow"  x1="50" y1="18" x2="68" y2="18" marker-end="url(#ar-flow)"/>
+
+    <rect class="arch-hidden" x="68"  y="0"  width="60" height="36" rx="6"/>
+    <text class="arch-text"   x="98"  y="14" text-anchor="middle">Dense</text>
+    <text class="arch-text"   x="98"  y="26" text-anchor="middle">64</text>
+    <text class="arch-text"   x="98"  y="35" text-anchor="middle" style="font-size:9px;">+ReLU</text>
+    <line class="arch-arrow"  x1="128" y1="18" x2="146" y2="18" marker-end="url(#ar-flow)"/>
+
+    <rect class="arch-hidden" x="146" y="0"  width="60" height="36" rx="6"/>
+    <text class="arch-text"   x="176" y="14" text-anchor="middle">Dense</text>
+    <text class="arch-text"   x="176" y="26" text-anchor="middle">64</text>
+    <text class="arch-text"   x="176" y="35" text-anchor="middle" style="font-size:9px;">+ReLU</text>
+    <line class="arch-arrow"  x1="206" y1="18" x2="224" y2="18" marker-end="url(#ar-flow)"/>
+
+    <rect class="arch-output" x="224" y="0"  width="60" height="36" rx="6"/>
+    <text class="arch-text"   x="254" y="14" text-anchor="middle">Dense</text>
+    <text class="arch-text"   x="254" y="26" text-anchor="middle">1</text>
+    <text class="arch-text"   x="254" y="35" text-anchor="middle" style="font-size:9px;">linear</text>
+  </g>
+
+  <!-- Loss formula -->
+  <text class="side-head" x="596" y="194">Loss</text>
+  <text class="side-mono" x="596" y="214">L = mean((ŷ − y)²)</text>
+  <text class="side-sub"  x="596" y="230">dL/dŷ = 2(ŷ − y) / N</text>
+
+  <!-- Metrics card -->
+  <text class="side-head" x="596" y="258">Final metrics (200 epochs, batch 256)</text>
+  <text class="side-sub"  x="596" y="274">standardised inputs and targets, de-standardised at eval</text>
+
+  <rect class="metrics-panel" x="596" y="284" width="324" height="120" rx="8"/>
+
+  <!-- Header row -->
+  <text class="metric-head" x="612" y="304">metric</text>
+  <text class="metric-head" x="760" y="304" text-anchor="middle">train</text>
+  <text class="metric-head" x="880" y="304" text-anchor="middle">test</text>
+  <line stroke="var(--ce-border)" stroke-width="1" x1="612" y1="310" x2="904" y2="310"/>
+
+  <!-- RMSE row -->
+  <text class="side-sub" x="612" y="328">RMSE  ($)</text>
+  <text class="metric-num" x="760" y="328" text-anchor="middle" style="fill:var(--ce-success);">$52 100</text>
+  <text class="metric-num" x="880" y="328" text-anchor="middle">$58 400</text>
+
+  <!-- MAE row -->
+  <text class="side-sub" x="612" y="352">MAE  ($)</text>
+  <text class="metric-num" x="760" y="352" text-anchor="middle" style="fill:var(--ce-success);">$37 500</text>
+  <text class="metric-num" x="880" y="352" text-anchor="middle">$41 200</text>
+
+  <!-- R^2 row -->
+  <text class="side-sub" x="612" y="378">R²</text>
+  <text class="metric-num" x="760" y="378" text-anchor="middle" style="fill:var(--ce-success);">0.82</text>
+  <text class="metric-num" x="880" y="378" text-anchor="middle" style="font-weight:700;">0.78</text>
+
+  <!-- Reading the R^2 -->
+  <text class="side-sub" x="596" y="426" style="font-style:italic;">R² = 0.78 means the model explains 78% of the</text>
+  <text class="side-sub" x="596" y="440" style="font-style:italic;">variance in median house value across the test</text>
+  <text class="side-sub" x="596" y="454" style="font-style:italic;">block groups.</text>
+  <text class="side-sub" x="596" y="474" style="font-style:italic;">Baseline (always predict the mean) → R² = 0.</text>
+</svg>

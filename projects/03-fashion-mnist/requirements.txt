@@ -1,0 +1,5 @@
+numpy>=1.23
+# Optional: sklearn is used by data.py's default backend.
+# Skip it and pass --backend manual to download directly from the
+# Zalando S3 mirror with stdlib urllib.
+scikit-learn>=1.2

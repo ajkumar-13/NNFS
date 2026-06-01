@@ -1,0 +1,5 @@
+numpy>=1.23
+# Optional: sklearn provides fetch_california_housing for the default backend.
+# Skip it and pass --backend manual to download from the StatLib mirror with
+# stdlib urllib + tarfile.
+scikit-learn>=1.2

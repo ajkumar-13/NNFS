@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
+  <title id="t">Binary classifier decision boundary on the two-moons dataset</title>
+  <desc id="d">A two-panel diagram. The left panel shows a 2D scatter plot of the two-moons synthetic binary classification dataset. Class 0 (upper moon) is plotted in orange and forms an arch in the upper half of the plane; class 1 (lower moon) is plotted in blue and forms an inverted arch in the lower half. The two moons interlock in the middle. A smooth dark curve runs between the two moons representing the trained network's decision boundary where the sigmoid output equals 0.5; the regions above the curve are shaded light orange (predicted class 0) and the regions below are shaded light blue (predicted class 1). The right panel shows the network architecture (2 inputs to a 16-unit ReLU layer to another 16-unit ReLU layer to a 1-unit sigmoid output with BCE loss), the final training and test accuracies, and the sigmoid + binary cross-entropy formula.</desc>
+
+  <style><![CDATA[
+    :root{
+      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
+      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
+      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --ce-grid:rgba(26,26,26,0.06);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
+        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
+        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --ce-grid:rgba(241,238,232,0.08);
+      }
+    }
+    text{font-family:Inter,system-ui,sans-serif;}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
+    .bg{fill:var(--ce-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
+    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
+    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+
+    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .panel-head{font-weight:700;font-size:14px;fill:var(--ce-ink);}
+    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+
+    .axis{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
+    .grid{stroke:var(--ce-grid);stroke-width:0.75;fill:none;}
+    .axis-label{font-size:10px;fill:var(--ce-ink-muted);}
+    .axis-title{font-size:11px;fill:var(--ce-ink-muted);font-style:italic;}
+
+    .region-class0{fill:var(--ce-accent);fill-opacity:0.10;stroke:none;}
+    .region-class1{fill:var(--ce-primary);fill-opacity:0.10;stroke:none;}
+    .boundary{stroke:var(--ce-ink);stroke-width:2.2;fill:none;stroke-dasharray:0;}
+
+    .point-class0{fill:var(--ce-accent);stroke:var(--ce-ink);stroke-width:0.8;}
+    .point-class1{fill:var(--ce-primary);stroke:var(--ce-ink);stroke-width:0.8;}
+
+    .legend-text{font-size:11px;fill:var(--ce-ink);}
+    .legend-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
+
+    .side-head{font-weight:700;font-size:12px;fill:var(--ce-ink);}
+    .side-sub{font-size:10.5px;fill:var(--ce-ink-muted);}
+    .side-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
+
+    .stat-num{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:18px;font-weight:700;}
+    .stat-lbl{font-size:10.5px;fill:var(--ce-ink-muted);}
+
+    .arch-box{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
+    .arch-input  {fill:var(--ce-primary);fill-opacity:0.12;stroke:var(--ce-primary);stroke-width:1.2;}
+    .arch-hidden {fill:var(--ce-success);fill-opacity:0.12;stroke:var(--ce-success);stroke-width:1.2;}
+    .arch-output {fill:var(--ce-accent);fill-opacity:0.18;stroke:var(--ce-accent);stroke-width:1.2;}
+    .arch-text   {font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;font-weight:600;fill:var(--ce-ink);}
+    .arch-arrow  {stroke:var(--ce-ink-subtle);stroke-width:1;fill:none;}
+
+    .formula-band{fill:var(--ce-primary);fill-opacity:0.06;stroke:var(--ce-primary);stroke-width:1;}
+    .formula-head{font-weight:700;font-size:11px;fill:var(--ce-primary);}
+    .formula-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--ce-ink);}
+  ]]></style>
+
+  <defs>
+    <marker id="ar-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-ink-subtle)"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="960" height="540"/>
+
+  <text class="title"    x="48" y="40">Project 02 · Binary classifier on the two-moons dataset</text>
+  <text class="subtitle" x="48" y="60">2 → 16 → ReLU → 16 → ReLU → 1 → Sigmoid + BCE. The trained boundary snakes cleanly between the two interlocked moons.</text>
+
+  <!-- ============================ LEFT: scatter + decision boundary ============================ -->
+  <rect class="panel" x="24" y="80" width="620" height="412" rx="10"/>
+  <text class="panel-head" x="40" y="102">Decision boundary on the test set</text>
+  <text class="panel-sub"  x="40" y="118">two moons, 1000 samples, noise σ = 0.20</text>
+
+  <!-- Plot area: x in [72, 612], y in [132, 444]. Data range x∈[-1.5, 2.5], y∈[-1.0, 1.5]. -->
+  <!-- Class-region fills (clipped to plot rect; both regions follow the boundary curve). -->
+  <clipPath id="plot-clip">
+    <rect x="72" y="132" width="540" height="312"/>
+  </clipPath>
+
+  <g clip-path="url(#plot-clip)">
+    <!-- Class 0 region: everything above the boundary curve, fill light orange -->
+    <path class="region-class0" d="M 72 132 L 612 132 L 612 257.4
+                                    C 570 280, 510 320, 450 344.16
+                                    C 410 320, 370 295, 342 288
+                                    C 320 280, 290 250, 234 244.92
+                                    C 180 240, 130 280, 72 319.2 Z"/>
+    <!-- Class 1 region: everything below the boundary curve, fill light blue -->
+    <path class="region-class1" d="M 72 444 L 612 444 L 612 257.4
+                                    C 570 280, 510 320, 450 344.16
+                                    C 410 320, 370 295, 342 288
+                                    C 320 280, 290 250, 234 244.92
+                                    C 180 240, 130 280, 72 319.2 Z"/>
+  </g>
+
+  <!-- Plot axes -->
+  <line class="axis" x1="72" y1="444" x2="612" y2="444"/>
+  <line class="axis" x1="72" y1="132" x2="72"  y2="444"/>
+
+  <!-- Gridlines -->
+  <g class="grid">
+    <line x1="72" y1="319.2" x2="612" y2="319.2"/>
+    <line x1="274.5" y1="132" x2="274.5" y2="444"/>
+  </g>
+
+  <!-- X tick labels (data values -1, 0, 1, 2) -->
+  <text class="axis-label" x="207"   y="458" text-anchor="middle">−1</text>
+  <text class="axis-label" x="274.5" y="458" text-anchor="middle">0</text>
+  <text class="axis-label" x="409.5" y="458" text-anchor="middle">1</text>
+  <text class="axis-label" x="544.5" y="458" text-anchor="middle">2</text>
+  <text class="axis-title" x="342"   y="476" text-anchor="middle">feature x₁</text>
+
+  <!-- Y tick labels (data values -0.5, 0, 0.5, 1) -->
+  <text class="axis-label" x="66" y="386.4" text-anchor="end">−0.5</text>
+  <text class="axis-label" x="66" y="322.2" text-anchor="end">0</text>
+  <text class="axis-label" x="66" y="257.4" text-anchor="end">0.5</text>
+  <text class="axis-label" x="66" y="194.4" text-anchor="end">1.0</text>
+
+  <!-- Decision boundary curve -->
+  <path class="boundary" d="M 72 319.2
+                            C 130 280, 180 240, 234 244.92
+                            C 290 250, 320 280, 342 288
+                            C 370 295, 410 320, 450 344.16
+                            C 510 320, 570 280, 612 257.4"/>
+
+  <!-- Class 0 points (upper moon, orange) -->
+  <g>
+    <circle class="point-class0" cx="416.25" cy="312.96" r="4"/>
+    <circle class="point-class0" cx="409.5"  cy="269.28" r="4"/>
+    <circle class="point-class0" cx="389.25" cy="250.56" r="4"/>
+    <circle class="point-class0" cx="348.75" cy="213.12" r="4"/>
+    <circle class="point-class0" cx="308.25" cy="204.38" r="4"/>
+    <circle class="point-class0" cx="267.75" cy="188.16" r="4"/>
+    <circle class="point-class0" cx="234"    cy="204.38" r="4"/>
+    <circle class="point-class0" cx="190.8"  cy="221.86" r="4"/>
+    <circle class="point-class0" cx="159.75" cy="241.82" r="4"/>
+    <circle class="point-class0" cx="142.2"  cy="284.26" r="4"/>
+    <circle class="point-class0" cx="136.8"  cy="325.44" r="4"/>
+    <!-- a few more scattered for density -->
+    <circle class="point-class0" cx="370"    cy="290"    r="4"/>
+    <circle class="point-class0" cx="380"    cy="232"    r="4"/>
+    <circle class="point-class0" cx="320"    cy="226"    r="4"/>
+    <circle class="point-class0" cx="248"    cy="180"    r="4"/>
+    <circle class="point-class0" cx="180"    cy="208"    r="4"/>
+    <circle class="point-class0" cx="170"    cy="260"    r="4"/>
+    <circle class="point-class0" cx="158"    cy="300"    r="4"/>
+  </g>
+
+  <!-- Class 1 points (lower moon, blue) -->
+  <g>
+    <circle class="point-class1" cx="267.75" cy="259.30" r="4"/>
+    <circle class="point-class1" cx="288"    cy="300.48" r="4"/>
+    <circle class="point-class1" cx="304.2"  cy="325.44" r="4"/>
+    <circle class="point-class1" cx="335.25" cy="354.14" r="4"/>
+    <circle class="point-class1" cx="371.7"  cy="381.6"  r="4"/>
+    <circle class="point-class1" cx="412.2"  cy="387.84" r="4"/>
+    <circle class="point-class1" cx="450"    cy="381.6"  r="4"/>
+    <circle class="point-class1" cx="493.2"  cy="356.64" r="4"/>
+    <circle class="point-class1" cx="514.8"  cy="325.44" r="4"/>
+    <circle class="point-class1" cx="541.8"  cy="296.74" r="4"/>
+    <circle class="point-class1" cx="551.25" cy="256.80" r="4"/>
+    <!-- a few more scattered for density -->
+    <circle class="point-class1" cx="318"    cy="340"    r="4"/>
+    <circle class="point-class1" cx="396"    cy="396"    r="4"/>
+    <circle class="point-class1" cx="430"    cy="402"    r="4"/>
+    <circle class="point-class1" cx="475"    cy="372"    r="4"/>
+    <circle class="point-class1" cx="528"    cy="308"    r="4"/>
+    <circle class="point-class1" cx="295"    cy="312"    r="4"/>
+    <circle class="point-class1" cx="259"    cy="275"    r="4"/>
+  </g>
+
+  <!-- Legend overlay (top-right of plot) -->
+  <g transform="translate(444, 142)">
+    <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="0" y="0" width="158" height="76" rx="6" opacity="0.96"/>
+    <circle class="point-class0" cx="14" cy="18" r="5"/>
+    <text class="legend-text" x="26" y="22">class 0 · upper moon</text>
+    <circle class="point-class1" cx="14" cy="38" r="5"/>
+    <text class="legend-text" x="26" y="42">class 1 · lower moon</text>
+    <line stroke="var(--ce-ink)" stroke-width="2.2" x1="6" y1="60" x2="22" y2="60"/>
+    <text class="legend-text" x="26" y="64">sigmoid = 0.5</text>
+  </g>
+
+  <!-- ============================ RIGHT: sidebar ============================ -->
+  <rect class="panel" x="664" y="80" width="272" height="412" rx="10"/>
+
+  <!-- Section 1: architecture mini-diagram -->
+  <text class="side-head" x="680" y="102">Architecture</text>
+  <text class="side-sub"  x="680" y="118">2 → 16 → 16 → 1</text>
+
+  <g transform="translate(680, 130)">
+    <!-- Input -->
+    <rect class="arch-input"  x="0"   y="0"  width="46" height="36" rx="6"/>
+    <text class="arch-text"   x="23"  y="17" text-anchor="middle">input</text>
+    <text class="arch-text"   x="23"  y="29" text-anchor="middle">2</text>
+    <line class="arch-arrow"  x1="46" y1="18" x2="62" y2="18" marker-end="url(#ar-flow)"/>
+
+    <!-- Hidden 1 -->
+    <rect class="arch-hidden" x="62"  y="0"  width="56" height="36" rx="6"/>
+    <text class="arch-text"   x="90"  y="14" text-anchor="middle">Dense</text>
+    <text class="arch-text"   x="90"  y="26" text-anchor="middle">16</text>
+    <text class="arch-text"   x="90"  y="36" text-anchor="middle" style="font-size:9px;">+ReLU</text>
+    <line class="arch-arrow"  x1="118" y1="18" x2="134" y2="18" marker-end="url(#ar-flow)"/>
+
+    <!-- Hidden 2 -->
+    <rect class="arch-hidden" x="134" y="0"  width="56" height="36" rx="6"/>
+    <text class="arch-text"   x="162" y="14" text-anchor="middle">Dense</text>
+    <text class="arch-text"   x="162" y="26" text-anchor="middle">16</text>
+    <text class="arch-text"   x="162" y="36" text-anchor="middle" style="font-size:9px;">+ReLU</text>
+    <line class="arch-arrow"  x1="190" y1="18" x2="206" y2="18" marker-end="url(#ar-flow)"/>
+
+    <!-- Output -->
+    <rect class="arch-output" x="206" y="0"  width="50" height="36" rx="6"/>
+    <text class="arch-text"   x="231" y="14" text-anchor="middle">Dense</text>
+    <text class="arch-text"   x="231" y="26" text-anchor="middle">1</text>
+    <text class="arch-text"   x="231" y="36" text-anchor="middle" style="font-size:9px;">+σ</text>
+  </g>
+
+  <!-- Section 2: combined loss formula -->
+  <rect class="formula-band" x="680" y="190" width="240" height="60" rx="8"/>
+  <text class="formula-head" x="692" y="208">Combined output + loss</text>
+  <text class="formula-text" x="692" y="228">ŷ = σ(z)</text>
+  <text class="formula-text" x="692" y="244">L = −[y·log(ŷ) + (1−y)·log(1−ŷ)]</text>
+
+  <!-- Section 3: results metrics -->
+  <text class="side-head" x="680" y="278">Final accuracy</text>
+  <text class="side-sub"  x="680" y="294">2000 epochs, full batch</text>
+
+  <g transform="translate(680, 308)">
+    <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="0" y="0" width="115" height="60" rx="6"/>
+    <text class="stat-num" x="14" y="32" style="fill:var(--ce-success);">99.9%</text>
+    <text class="stat-lbl" x="14" y="50">training set (800)</text>
+
+    <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="125" y="0" width="115" height="60" rx="6"/>
+    <text class="stat-num" x="139" y="32" style="fill:var(--ce-success);">98.5%</text>
+    <text class="stat-lbl" x="139" y="50">test set (200)</text>
+  </g>
+
+  <!-- Section 4: takeaway notes -->
+  <text class="side-head" x="680" y="396">What this shows</text>
+  <text class="side-sub"  x="680" y="414">·  A 16-unit hidden layer is enough to bend</text>
+  <text class="side-sub"  x="680" y="428">   the boundary into a non-linear shape.</text>
+  <text class="side-sub"  x="680" y="446">·  Sigmoid + BCE replaces softmax + CCE</text>
+  <text class="side-sub"  x="680" y="460">   for the 2-class case (1 output, not 2).</text>
+  <text class="side-sub"  x="680" y="478">·  Same Adam optimiser as the lectures.</text>
+
+  <!-- Footer -->
+  <text class="footer" x="48" y="520">The boundary is the locus of points where the network's sigmoid output equals 0.5. Inside the orange region it predicts class 0; inside blue, class 1.</text>
+</svg>
