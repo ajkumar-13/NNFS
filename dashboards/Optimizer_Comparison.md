@@ -13,7 +13,7 @@
 | 3 | SGD + Momentum | [Part 24](../posts/24-momentum/index.md) | Accumulate velocity to smooth updates |
 | 4 | AdaGrad | [Part 25](../posts/25-adagrad/index.md) | Per-parameter adaptive learning rate |
 | 5 | RMSProp | [Part 26](../posts/26-rmsprop/index.md) | Fix AdaGrad's dying LR with EMA |
-| 6 | Adam | [Part 27](../posts/27-adam-optimizer/index.md) | Momentum + RMSProp + bias correction |
+| 6 | Adam | [Part 27](../posts/27-adam-optimiser/index.md) | Momentum + RMSProp + bias correction |
 
 ---
 

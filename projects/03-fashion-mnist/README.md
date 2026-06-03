@@ -152,7 +152,7 @@ This is why Fashion-MNIST is a useful benchmark: the failure mode points at the 
 | Lecture | Used here for |
 |---|---|
 | All of [posts/01-21](../../posts/) | The complete forward + backward stack |
-| [Part 27 — Adam](../../posts/27-adam-optimizer/) | `Optimizer_Adam` |
+| [Part 27 — Adam](../../posts/27-adam-optimiser/) | `Optimizer_Adam` |
 | [Part 28 — Generalisation](../../posts/28-generalization-and-testing/) | Train/test split discipline |
 | [Part 30 — L2 regularisation](../../posts/30-l1-and-l2-regularisation/) | `weight_regularizer_l2` |
 | [Part 31 — Dropout](../../posts/31-dropout/) | `Layer_Dropout`, train/test switch |

@@ -140,9 +140,8 @@
   <text class="bwd-label" x="310" y="380" text-anchor="middle">∂ℒ/∂z = (p − y) / N</text>
   <text class="bwd-note"  x="310" y="394" text-anchor="middle">no division anywhere</text>
 
-  <!-- Label for the bypass: small annotation pointing to the sigmoid -->
-  <text class="bwd-note" x="370" y="420" style="fill:var(--ce-alert);">backward bypasses the sigmoid →</text>
-  <line stroke="var(--ce-alert)" stroke-width="0.75" stroke-dasharray="2 2" x1="370" y1="423" x2="266" y2="290"/>
+  <!-- Label for the bypass annotation -->
+  <text class="bwd-note" x="370" y="420" style="fill:var(--ce-alert);">backward bypasses the sigmoid</text>
 
   <!-- Bottom note inside the panel -->
   <text class="bwd-note" x="40" y="466" style="font-style:italic;color:var(--ce-ink-muted);">Combined class does both forward and backward — same pattern as softmax + CCE (post 19).</text>

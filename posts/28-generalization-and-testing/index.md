@@ -54,7 +54,7 @@ The deep-learning specifics (the boundary geometry, the loss-curve divergence, t
 
 ## 3. Running the test
 
-The model from [Part 27](../27-adam-optimizer/index.md) reached **95.7%** training accuracy with the Adam optimiser. To test whether that number reflects genuine learning, a fresh batch of 100 samples is drawn from the same `spiral_data` distribution (same generating process, new random points), and the network is run **forward only**. No backward pass, no weight update.
+The model from [Part 27](../27-adam-optimiser/index.md) reached **95.7%** training accuracy with the Adam optimiser. To test whether that number reflects genuine learning, a fresh batch of 100 samples is drawn from the same `spiral_data` distribution (same generating process, new random points), and the network is run **forward only**. No backward pass, no weight update.
 
 ```python
 # Fresh test data: same distribution, new points
@@ -163,7 +163,7 @@ The remainder of this part of the series details four strategies, each fully cov
 |---|---|---|:---:|
 | **Reduce model capacity** | architecture | Fewer neurons or fewer layers → lower curvature in the decision boundary | [Part 29](../29-validation-and-hyperparameter-tuning/index.md) |
 | **Reduce epoch budget** | training schedule | Stop before the validation curve climbs; early stopping in its simplest form | [Part 29](../29-validation-and-hyperparameter-tuning/index.md) |
-| **L1 / L2 regularisation** | loss function | Add a penalty proportional to weight magnitudes; the optimiser then prefers small weights, which produce smoother boundaries | [Part 30](../30-l1-and-l2-regularization/index.md) |
+| **L1 / L2 regularisation** | loss function | Add a penalty proportional to weight magnitudes; the optimiser then prefers small weights, which produce smoother boundaries | [Part 30](../30-l1-and-l2-regularisation/index.md) |
 | **Dropout** | forward pass | Randomly disable neurons during training; the network is forced to spread its representation rather than rely on any single neuron | [Part 31](../31-dropout/index.md) |
 
 Each lever has its place and its cost. **Capacity reduction** is the cheapest move and should be tried first when the model is grossly over-parameterised. **Early stopping** is free; it costs zero engineering effort and almost always helps. **L1/L2 regularisation** is the standard treatment for moderate overfitting and is what most production models use by default. **Dropout** is most useful when capacity is genuinely needed (e.g. for representation power) but the network keeps memorising; it pays for itself in vision and language models, less so in small spiral classifiers.
@@ -229,7 +229,7 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 ## What to read next
 
 - **[Part 29 — Validation and hyperparameter tuning](../29-validation-and-hyperparameter-tuning/index.md)** — separating the validation set from the test set, formalising early stopping, and searching the hyperparameter space without leaking information.
-- **[Part 30 — L1 and L2 regularization](../30-l1-and-l2-regularization/index.md)** — penalising weight magnitudes inside the loss function so the optimiser prefers smaller weights and smoother boundaries.
+- **[Part 30 — L1 and L2 regularisation](../30-l1-and-l2-regularisation/index.md)** — penalising weight magnitudes inside the loss function so the optimiser prefers smaller weights and smoother boundaries.
 - **[Part 31 — Dropout](../31-dropout/index.md)** — disabling neurons at random during training to force the network to spread its representation.
 
 ---

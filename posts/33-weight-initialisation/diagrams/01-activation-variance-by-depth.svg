@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
   <title id="t">Activation variance through 10 ReLU layers under three weight-initialisation schemes</title>
-  <desc id="d">A line chart with layer depth on the x-axis (0 to 10) and the base-10 logarithm of activation variance on the y-axis (from minus 10 to plus 1). Three curves are drawn through the same network architecture, varying only the weight initialisation. The lectures' default of 0.01 times randn shrinks the activation variance by 150 times per layer and crashes through 10 to the minus 10 by layer 4, dropping out of the visible plot. Xavier or Glorot initialisation applied to ReLU activations shrinks variance by a factor of 2 per layer, descending steadily to about 10 to the minus 3 by layer 10. He or Kaiming initialisation matched to ReLU preserves variance perfectly — a flat horizontal line at variance equals 1 across all 10 layers. A shaded vanishing zone at the bottom marks the region where activations are too small to train. A side panel shows the three formulas and explains why He init wins for ReLU networks.</desc>
+  <desc id="d">A line chart with layer depth on the x-axis (0 to 10) and the base-10 logarithm of activation variance on the y-axis (from minus 10 to plus 1). Three curves are drawn through the same network architecture, varying only the weight initialisation. The lectures' default of 0.01 times randn shrinks the activation variance by 150 times per layer and crashes through 10 to the minus 10 by layer 4, dropping out of the visible plot. Xavier or Glorot initialisation applied to ReLU activations shrinks variance by a factor of 2 per layer, descending steadily to about 10 to the minus 3 by layer 10. He or Kaiming initialisation matched to ReLU preserves variance perfectly, a flat horizontal line at variance equals 1 across all 10 layers. A shaded vanishing zone at the bottom marks the region where activations are too small to train. A side panel shows the three formulas and explains why He init wins for ReLU networks.</desc>
 
   <style><![CDATA[
     :root{
@@ -74,7 +74,7 @@
 
   <!-- Vanishing zone shading (log_var < -4, i.e. y > 280) -->
   <rect class="vanish-zone" x="80" y="280" width="540" height="180"/>
-  <text class="vanish-label" x="610" y="450" text-anchor="end">vanishing zone — gradients ≈ 0</text>
+  <text class="vanish-label" x="610" y="450" text-anchor="end">vanishing zone · gradients ≈ 0</text>
 
   <!-- Plot axes -->
   <line class="axis" x1="80" y1="460" x2="620" y2="460"/>
@@ -114,7 +114,7 @@
   <text class="axis-label" x="620" y="476" text-anchor="middle">10</text>
   <text class="axis-title" x="350" y="492" text-anchor="middle">layer depth</text>
 
-  <!-- ====== Curve 1: 0.01 * randn (lectures' default) — vanishes hard ====== -->
+  <!-- ====== Curve 1: 0.01 * randn (lectures' default), vanishes hard ====== -->
   <!-- Per-layer multiplier: n*var_W*0.5 = 64*0.0001*0.5 = 0.0032 → log10 = -2.495 -->
   <!-- L=0: log_var=0, y=160 -->
   <!-- L=1: log_var=-2.495, y=234.85 -->
@@ -132,7 +132,7 @@
   <!-- Annotation: "vanishes by layer 4" -->
   <text class="anno-bold" x="305" y="455" style="fill:var(--ce-alert);">→ off-chart by layer 4</text>
 
-  <!-- ====== Curve 2: Xavier + ReLU — vanishes mildly ====== -->
+  <!-- ====== Curve 2: Xavier + ReLU, vanishes mildly ====== -->
   <!-- Per-layer multiplier: 0.5 → log10 = -0.301 -->
   <!-- L=0: y=160; L=k: y=160 + 30*0.301*k = 160 + 9.03*k -->
   <polyline class="curve-warn" points="
@@ -161,7 +161,7 @@
     <circle cx="620" cy="250.3"  r="3"/>
   </g>
 
-  <!-- ====== Curve 3: He + ReLU — preserved ====== -->
+  <!-- ====== Curve 3: He + ReLU, preserved ====== -->
   <!-- Flat line at log_var=0 → y=160 -->
   <polyline class="curve-good" points="80,160 134,160 188,160 242,160 296,160 350,160 404,160 458,160 512,160 566,160 620,160"/>
   <g class="dot-good">

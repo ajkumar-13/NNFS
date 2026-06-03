@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" role="img" aria-labelledby="t d">
   <title id="t">The same operation in three implementations: manual, loops, NumPy</title>
-  <desc id="d">Three vertical columns each contain a code snippet for computing the same three-neuron layer output. The leftmost column, in alert red, shows hand-written addition of each input-weight product for each neuron and is captioned "hardcoded — does not scale". The middle column, in warn tan, shows two nested for-loops over neurons and inputs and is captioned "scales — clean — still slow in Python". The rightmost column, in success green, shows the single line np.dot(weights, inputs) + biases and is captioned "scales — concise — vectorised C". A footer bar below summarises the trade-offs as "lines of code", "scales?", and "speed".</desc>
+  <desc id="d">Three vertical columns each contain a code snippet for computing the same three-neuron layer output. The leftmost column, in alert red, shows hand-written addition of each input-weight product for each neuron and is captioned "hardcoded · does not scale". The middle column, in warn tan, shows two nested for-loops over neurons and inputs and is captioned "scales · clean · still slow in Python". The rightmost column, in success green, shows the single line np.dot(weights, inputs) + biases and is captioned "scales · concise · vectorised C". A footer bar below summarises the trade-offs as "lines of code", "scales?", and "speed".</desc>
 
   <style><![CDATA[
     :root{

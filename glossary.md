@@ -13,7 +13,7 @@ The percentage of predictions the network gets right. Unlike loss, accuracy is a
 A function applied **after** the weighted sum + bias in a neuron. Without it, stacking layers is useless (the network stays linear). The two we build: **ReLU** (hidden layers) and **Softmax** (output layer). See [Part 6](posts/06-activation-functions-relu-and-softmax/index.md).
 
 ### Adam (Adaptive Moment Estimation)
-The most popular optimizer. Combines **momentum** (smoothed gradient direction) with **RMSProp** (per-parameter step sizes) plus **bias correction**. See [Part 27](posts/27-adam-optimizer/index.md).
+The most popular optimizer. Combines **momentum** (smoothed gradient direction) with **RMSProp** (per-parameter step sizes) plus **bias correction**. See [Part 27](posts/27-adam-optimiser/index.md).
 
 ### AdaGrad (Adaptive Gradient)
 An optimizer that automatically shrinks the learning rate for frequently-updated parameters. Problem: the learning rate can shrink to near-zero. See [Part 25](posts/25-adagrad/index.md).
@@ -32,7 +32,7 @@ A group of training samples processed together. Instead of feeding 1 sample at a
 A constant added to the weighted sum in a neuron. One bias per neuron. It allows the neuron to shift its activation threshold. Formula: $z = Xw + b$. See [Part 1](posts/01-neurons-and-layers/index.md).
 
 ### Bias Correction
-In Adam, the momentum and cache estimates start at zero and are biased toward zero early in training. Bias correction divides by $(1 - \beta^t)$ to compensate. See [Part 27](posts/27-adam-optimizer/index.md).
+In Adam, the momentum and cache estimates start at zero and are biased toward zero early in training. Bias correction divides by $(1 - \beta^t)$ to compensate. See [Part 27](posts/27-adam-optimiser/index.md).
 
 ### Broadcasting
 NumPy's automatic stretching of smaller arrays to match larger ones during arithmetic. Critical for adding biases (shape `(1, n)`) to batch outputs (shape `(batch, n)`). See [Part 5](posts/05-array-summation-keepdims-and-broadcasting/index.md).
@@ -119,7 +119,7 @@ The optimization algorithm: repeatedly update parameters by subtracting `learnin
 ## H
 
 ### Hidden Layer
-Any layer between the input and output layers. Called "hidden" because we don't directly observe its values — they're internal to the network.
+Any layer between the input and output layers. Called "hidden" because we don't directly observe its values, they're internal to the network.
 
 ### Hyperparameter
 A setting chosen **before** training, not learned from data. Examples: learning rate, number of neurons, number of layers, dropout rate. See [Part 29](posts/29-validation-and-hyperparameter-tuning/index.md).
@@ -214,7 +214,7 @@ When the network memorizes training data but fails on new data. Diagnostic: trai
 The derivative of a multi-variable function with respect to **one** variable, treating others as constants. $\frac{\partial f}{\partial w_1}$ tells us how changing $w_1$ alone affects $f$. See [Part 10](posts/10-derivatives-partial-derivatives-and-gradients/index.md).
 
 ### Probability
-A Softmax output — values between 0 and 1 that sum to 1 across all classes. Represents the network's confidence for each class.
+A Softmax output  values between 0 and 1 that sum to 1 across all classes. Represents the network's confidence for each class.
 
 ---
 

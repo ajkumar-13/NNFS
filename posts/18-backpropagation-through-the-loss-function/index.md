@@ -10,7 +10,7 @@ part: "Part V — Backpropagation"
 
 # Part 18 · Backpropagation through the loss function
 
-> **TL;DR.** Backpropagation has to start somewhere. That somewhere is the loss function: the gradient of $L$ with respect to the network's output is the first upstream gradient every other layer's `backward` will consume. For categorical cross-entropy, that gradient is the element-wise division $-y / \hat{y}$, with one non-zero entry per row (because the one-hot true label kills the rest). Dividing by the batch size keeps the gradient magnitude independent of `N`, so the learning rate stays meaningful across batch sizes. With this `backward` method on `Loss_CategoricalCrossentropy`, the only remaining piece is the softmax backward — Part 19.
+> **TL;DR.** Backpropagation has to start somewhere. That somewhere is the loss function: the gradient of $L$ with respect to the network's output is the first upstream gradient every other layer's `backward` will consume. For categorical cross-entropy, that gradient is the element-wise division $-y / \hat{y}$, with one non-zero entry per row (because the one-hot true label kills the rest). Dividing by the batch size keeps the gradient magnitude independent of `N`, so the learning rate stays meaningful across batch sizes. With this `backward` method on `Loss_CategoricalCrossentropy`, the only remaining piece is the softmax backward, covered in Part 19.
 >
 > **Reading time:** ~10 minutes.
 >
@@ -30,7 +30,7 @@ The classification pipeline from [Part 07](../07-coding-the-complete-forward-pas
 
 $$\text{inputs} \to (\text{Dense} + \text{ReLU})^{*} \to \text{Softmax} \to \hat{y} \to \text{Cross-Entropy} \to L.$$
 
-Backpropagation walks this pipeline right to left. The very first gradient is $\partial L / \partial \hat{y}$ — the loss's local derivative with respect to its own input. Every other class's `backward` method will receive this gradient (or something derived from it) as its `dvalues`. Without a correct gradient at the loss, nothing further downstream produces meaningful updates.
+Backpropagation walks this pipeline right to left. The very first gradient is $\partial L / \partial \hat{y}$: the loss's local derivative with respect to its own input. Every other class's `backward` method will receive this gradient (or something derived from it) as its `dvalues`. Without a correct gradient at the loss, nothing further downstream produces meaningful updates.
 
 This post derives that first gradient for categorical cross-entropy, implements it as `Loss_CategoricalCrossentropy.backward`, and prepares the upstream for softmax (Part 19).
 
@@ -103,7 +103,7 @@ print(dinputs)
 
 Each row has exactly one non-zero entry: $-1/(N \cdot \hat{y}_{ij^{\star}})$ at the correct class. The non-zero entries get larger (more negative) as the predicted correct-class probability gets smaller; sample 3 happens to predict $1.0$ for the correct class, so its gradient is the smallest in magnitude.
 
-Wait, sample 3's prediction has a `0.0` for two of the three classes, which would explode `-y_true / y_pred` to `-inf`. The `0.0`s are in the *wrong* positions, where `y_true` is also `0`, so the division is `0 / 0 = nan` in pure NumPy — not what the example shows. The lecture's snippet glosses over a real-world subtlety: production code clips the predictions before this division for exactly this reason. The full `backward` method in §5 handles it cleanly.
+Wait, sample 3's prediction has a `0.0` for two of the three classes, which would explode `-y_true / y_pred` to `-inf`. The `0.0`s are in the *wrong* positions, where `y_true` is also `0`, so the division is `0 / 0 = nan` in pure NumPy, not what the example shows. The lecture's snippet glosses over a real-world subtlety: production code clips the predictions before this division for exactly this reason. The full `backward` method in §5 handles it cleanly.
 
 ---
 

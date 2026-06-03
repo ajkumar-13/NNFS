@@ -190,7 +190,7 @@ The fix is **not** a different model architecture — it's a different *target*.
 | [Part 4 — Dense layer class](../../posts/04-dense-layer-class-and-spiral-data/) | `Layer_Dense` |
 | [Part 6 — Activations](../../posts/06-activation-functions-relu-and-softmax/) | `Activation_ReLU` |
 | [Part 21 — Coding full backpropagation](../../posts/21-coding-the-full-backpropagation/) | Forward + backward composition |
-| [Part 27 — Adam](../../posts/27-adam-optimizer/) | `Optimizer_Adam` |
+| [Part 27 — Adam](../../posts/27-adam-optimiser/) | `Optimizer_Adam` |
 | [Part 29 — Validation](../../posts/29-validation-and-hyperparameter-tuning/) | Train/test split discipline, no-leakage standardisation |
 | [Part 30 — L2 regularisation](../../posts/30-l1-and-l2-regularisation/) | `weight_regularizer_l2` |
 

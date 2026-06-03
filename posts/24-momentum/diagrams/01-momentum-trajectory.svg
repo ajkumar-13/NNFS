@@ -170,7 +170,7 @@
   <g transform="translate(512, 396)">
     <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="0" y="0" width="380" height="44" rx="6"/>
     <text class="stat-num" x="14"  y="26" style="fill:var(--ce-success);">5 steps shown</text>
-    <text class="stat-lbl" x="120" y="26">lateral bounces cancel, downhill drift reinforces — no oscillation</text>
+    <text class="stat-lbl" x="120" y="26">lateral bounces cancel, downhill drift reinforces, no oscillation</text>
   </g>
 
   <!-- ============================ Formula band ============================ -->

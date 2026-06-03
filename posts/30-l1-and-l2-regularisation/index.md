@@ -26,15 +26,15 @@ part: "Part VII — Generalisation and regularisation"
 
 ## 1. Why large weights overfit
 
-A neural network with arbitrarily large weights can express arbitrarily sharp decision boundaries. That is mathematically necessary — every kink in the output surface comes from one or more large weights flipping a ReLU somewhere — and it is the mechanism by which overfit models "memorise" training noise.
+A neural network with arbitrarily large weights can express arbitrarily sharp decision boundaries. That is mathematically necessary (every kink in the output surface comes from one or more large weights flipping a ReLU somewhere), and it is the mechanism by which overfit models "memorise" training noise.
 
 A small example, drawn from the spiral classifier:
 
 | Model behaviour | Weight magnitudes | Decision boundary | Generalisation |
 |---|---|---|---|
-| Underfit | Tiny ($|w| < 0.1$) | Almost linear; under-expressive | Poor — high bias |
+| Underfit | Tiny ($|w| < 0.1$) | Almost linear; under-expressive | Poor (high bias) |
 | Well fit | Moderate ($|w| \approx 1$) | Smooth curves following spiral arms | Good |
-| Overfit | Large ($|w| > 10$) | Jagged, with sharp islands carved around noisy points | Poor — high variance |
+| Overfit | Large ($|w| > 10$) | Jagged, with sharp islands carved around noisy points | Poor (high variance) |
 
 Two ways to attack the overfit case:
 
@@ -45,7 +45,7 @@ The constraint version is **regularisation**. The constraint takes the form of a
 
 $$\mathcal{L}_{\text{total}} = \underbrace{\mathcal{L}_{\text{data}}}_{\text{cross-entropy, MSE, …}} \;+\; \underbrace{\mathcal{L}_{\text{reg}}}_{\text{a function of the weights}}$$
 
-The optimiser still minimises $\mathcal{L}_{\text{total}}$ end-to-end. The presence of $\mathcal{L}_{\text{reg}}$ means that every weight increase has to "pay" by improving the data loss enough to offset the penalty. Bad weights — those that fit noise without improving the true signal — fail this cost-benefit test and are pushed back toward zero.
+The optimiser still minimises $\mathcal{L}_{\text{total}}$ end-to-end. The presence of $\mathcal{L}_{\text{reg}}$ means that every weight increase has to "pay" by improving the data loss enough to offset the penalty. Bad weights (those that fit noise without improving the true signal) fail this cost-benefit test and are pushed back toward zero.
 
 ---
 
@@ -71,7 +71,7 @@ The penalty grows *quadratically*. Tiny weights are barely penalised at all (a w
 
 $$\frac{\partial \mathcal{L}_{\text{reg}}^{\text{L2}}}{\partial w_m} = 2 \lambda \, w_m$$
 
-The gradient is *proportional* to the weight itself — large weights push hard against the penalty, small ones barely register.
+The gradient is *proportional* to the weight itself: large weights push hard against the penalty, small ones barely register.
 
 ### 2.3. The behavioural difference
 
@@ -100,7 +100,7 @@ This is the fundamental L1-vs-L2 distinction:
 | Solution shape | sparse (many zero weights) | dense (all small) |
 | Default for NNs | rare | standard |
 
-L2 wins in neural networks because most weights contribute *something* useful; the goal is to keep their magnitudes modest, not to delete them. L1 wins in classical statistics (linear regression, sparse coding) when the goal is feature selection — figuring out which inputs matter at all.
+L2 wins in neural networks because most weights contribute *something* useful; the goal is to keep their magnitudes modest, not to delete them. L1 wins in classical statistics (linear regression, sparse coding) when the goal is feature selection, figuring out which inputs matter at all.
 
 ---
 

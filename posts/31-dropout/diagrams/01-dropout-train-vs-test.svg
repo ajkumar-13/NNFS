@@ -170,13 +170,13 @@
   <!-- Magnitude check -->
   <text class="check-text" x="44"  y="362">magnitude check:</text>
   <text class="check-mono" x="44"  y="382" style="fill:var(--ce-warn);">expected sum  =  6 × 1.33  =  8.0</text>
-  <text class="check-text" x="44"  y="398">— equals the input sum; downstream layer sees the right scale</text>
+  <text class="check-text" x="44"  y="398">· equals the input sum; downstream layer sees the right scale</text>
 
   <!-- ============================ RIGHT panel: TESTING ============================ -->
   <rect class="panel-test" x="492" y="80" width="444" height="332" rx="10"/>
   <rect class="pill-test"  x="492" y="80" width="6"   height="332" rx="3"/>
   <text class="head-test"  x="512" y="106">Testing  ·  same layer  ·  training=False</text>
-  <text class="panel-sub"  x="512" y="122">identity pass: no mask, no scaling — the inverted-dropout payoff</text>
+  <text class="panel-sub"  x="512" y="122">identity pass: no mask, no scaling, the inverted-dropout payoff</text>
 
   <!-- Incoming row -->
   <text class="row-label" x="512" y="160">incoming activations  a</text>
@@ -255,7 +255,7 @@
   <!-- Magnitude check -->
   <text class="check-text" x="512" y="362">magnitude check:</text>
   <text class="check-mono" x="512" y="382" style="fill:var(--ce-success);">sum  =  8 × 1.0  =  8.0</text>
-  <text class="check-text" x="512" y="398">— same scale as training in expectation; no extra math at inference</text>
+  <text class="check-text" x="512" y="398">· same scale as training in expectation; no extra math at inference</text>
 
   <!-- ============================ Bottom strip ============================ -->
   <rect class="compare-panel" x="24" y="428" width="912" height="84" rx="10"/>

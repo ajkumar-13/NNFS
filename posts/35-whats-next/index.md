@@ -10,7 +10,7 @@ part: "Part VIII — Practical training and extensions"
 
 # Part 35 · What to read after this series
 
-> **TL;DR.** Posts 1–34 give you a fully working neural-network library and four projects' worth of evidence that it works. Everything past this point — convolutional layers, recurrent layers, transformers, batch normalisation, residual connections, modern training tricks — is *additional layer types* and *additional training tricks*, all bolted onto the same forward-pass / backward-pass / optimiser-step skeleton you already understand. This post is a structured reading list. Each section names a topic, explains what it adds to what you already know, and points to the canonical paper plus a from-scratch tutorial. The aim is to make the post-series learning path explicit instead of leaving you to figure out what comes next on your own.
+> **TL;DR.** Posts 1–34 give you a fully working neural-network library and four projects' worth of evidence that it works. Everything past this point (convolutional layers, recurrent layers, transformers, batch normalisation, residual connections, modern training tricks) is *additional layer types* and *additional training tricks*, all bolted onto the same forward-pass / backward-pass / optimiser-step skeleton you already understand. This post is a structured reading list. Each section names a topic, explains what it adds to what you already know, and points to the canonical paper plus a from-scratch tutorial. The aim is to make the post-series learning path explicit instead of leaving you to figure out what comes next on your own.
 >
 > **Reading time:** ~11 minutes.
 >
@@ -45,9 +45,9 @@ What changes past this series is the *content* slotted into that skeleton. The n
 
 ### 2.1. Convolutional layers (for images, audio, spatial data)
 
-A dense layer treats inputs as a flat vector. Pixels at positions (5, 5) and (5, 6) are *independent* features as far as `Layer_Dense` is concerned — there is no built-in notion that they sit next to each other.
+A dense layer treats inputs as a flat vector. Pixels at positions (5, 5) and (5, 6) are *independent* features as far as `Layer_Dense` is concerned: there is no built-in notion that they sit next to each other.
 
-A **convolutional layer** fixes this. It applies the same small set of weights — a *filter* — at every position of the input in a sliding-window pattern. The output of one filter at one position is a single weighted sum of a small patch of the input. The same filter is reused across the whole image, drastically reducing parameter count and exploiting the fact that the same pattern (an edge, a corner, a texture) can appear anywhere.
+A **convolutional layer** fixes this. It applies the same small set of weights (a *filter*) at every position of the input in a sliding-window pattern. The output of one filter at one position is a single weighted sum of a small patch of the input. The same filter is reused across the whole image, drastically reducing parameter count and exploiting the fact that the same pattern (an edge, a corner, a texture) can appear anywhere.
 
 What to read:
 
@@ -57,7 +57,7 @@ What to read:
 
 ### 2.2. Recurrent layers (for sequences, time series, text)
 
-A dense layer assumes inputs are independent samples. For a sequence — say, the words of a sentence — that's wrong: word $t$ depends on what came before.
+A dense layer assumes inputs are independent samples. For a sequence (say, the words of a sentence) that's wrong: word $t$ depends on what came before.
 
 A **recurrent layer** maintains an internal hidden state that gets updated at each timestep, blending the previous hidden state with the current input. The same weights are reused at every timestep, so a 100-word sentence and a 5-word sentence use the same parameters. **LSTM** and **GRU** are gated variants of the vanilla RNN that solve the vanishing-gradient problem for long sequences.
 
@@ -85,7 +85,7 @@ What to read:
 
 ### 3.1. Batch normalisation
 
-Post 33 showed that activation variance through a deep network is fragile — bad initialisation kills training. **Batch normalisation** (Ioffe & Szegedy, 2015) sidesteps the problem by re-normalising activations to zero mean and unit variance *during* the forward pass, at every layer. With batch norm, networks become much less sensitive to initialisation and learning rate.
+Post 33 showed that activation variance through a deep network is fragile: bad initialisation kills training. **Batch normalisation** (Ioffe & Szegedy, 2015) sidesteps the problem by re-normalising activations to zero mean and unit variance *during* the forward pass, at every layer. With batch norm, networks become much less sensitive to initialisation and learning rate.
 
 What to read:
 
@@ -220,7 +220,7 @@ The from-scratch foundation you built across posts 1–34 makes every item on th
 
 This is the last lecture in the series.
 
-Across 35 posts you've gone from "a neuron is a dot product plus a bias" (post 1) to "Adam is momentum's EMA over $g$ plus RMSProp's EMA over $g^2$ plus a bias-correction term" (post 27) to "here's what to read next" (this post). The four projects gave you working code at production scale. The series tries to leave nothing important hidden — every line in your final `Optimizer_Adam` class was derived from the chain rule the lectures derived from first principles.
+Across 35 posts you've gone from "a neuron is a dot product plus a bias" (post 1) to "Adam is momentum's EMA over $g$ plus RMSProp's EMA over $g^2$ plus a bias-correction term" (post 27) to "here's what to read next" (this post). The four projects gave you working code at production scale. The series tries to leave nothing important hidden: every line in your final `Optimizer_Adam` class was derived from the chain rule the lectures derived from first principles.
 
 If you build something with what you've learned, the project layout in [projects/README.md](../../projects/README.md) is happy to host a project 05.
 

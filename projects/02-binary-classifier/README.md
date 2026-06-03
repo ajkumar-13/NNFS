@@ -164,7 +164,7 @@ The qualitative shape (an S-curve between the moons) is in this project's hero d
 | [Part 4 — Dense layer class](../../posts/04-dense-layer-class-and-spiral-data/) | `Layer_Dense` |
 | [Part 6 — Activations](../../posts/06-activation-functions-relu-and-softmax/) | `Activation_ReLU` (sigmoid is the binary analogue of softmax) |
 | [Part 19 — Softmax + cross-entropy combined](../../posts/19-softmax-derivatives-and-the-combined-backward-pass/) | The combined-derivative trick, applied to sigmoid + BCE here |
-| [Part 27 — Adam](../../posts/27-adam-optimizer/) | `Optimizer_Adam` |
+| [Part 27 — Adam](../../posts/27-adam-optimiser/) | `Optimizer_Adam` |
 | [Part 30 — L1 / L2 regularisation](../../posts/30-l1-and-l2-regularisation/) | `weight_regularizer_l2` |
 
 ## 8. Common pitfalls

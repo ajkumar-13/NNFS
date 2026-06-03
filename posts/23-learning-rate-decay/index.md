@@ -279,7 +279,7 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 - **[Part 24 — Momentum](../24-momentum/index.md)** — add a velocity term that lets the optimiser carry inertia past shallow local minima.
 - **[Part 25 — AdaGrad](../25-adagrad/index.md)** — the first per-parameter adaptive rate; decay becomes implicit, per weight.
-- **[Part 27 — Adam](../27-adam-optimizer/index.md)** — the modern default, combining decay, momentum, and per-parameter scaling.
+- **[Part 27 — Adam](../27-adam-optimiser/index.md)** — the modern default, combining decay, momentum, and per-parameter scaling.
 
 ---
 

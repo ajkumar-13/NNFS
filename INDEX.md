@@ -124,7 +124,7 @@
 | 24 | [Part 24 — Momentum](posts/24-momentum/index.md) | Velocity, vector cancellation, $\beta = 0.9$ | ☐ |
 | 25 | [Part 25 — AdaGrad](posts/25-adagrad/index.md) | Per-parameter cache; the dying-rate problem | ☐ |
 | 26 | [Part 26 — RMSProp](posts/26-rmsprop/index.md) | EMA cache; bounded denominator | ☐ |
-| 27 | [Part 27 — Adam](posts/27-adam-optimizer/index.md) | Momentum + RMSProp + bias correction; the modern default | ☐ |
+| 27 | [Part 27 — Adam](posts/27-adam-optimiser/index.md) | Momentum + RMSProp + bias correction; the modern default | ☐ |
 | — | Review the [Optimiser Comparison Dashboard](dashboards/Optimizer_Comparison.md) | | ☐ |
 
 **Phase 5 milestones:**
@@ -234,13 +234,13 @@
                     ┌────────────────↓────────────────────────────────────────┐
                     │              PHASE 2: FORWARD PASS                      │
                     │                                                         │
-                    │   [Part 6: ReLU & Softmax] ←── Part 5 (keepdims)       │
+                    │   [Part 6: ReLU & Softmax] ←── Part 5 (keepdims)        │
                     │                │                                        │
                     │                ↓                                        │
                     │   [Part 7: Complete Forward Pass]                       │
                     │                │                                        │
                     │                ↓                                        │
-                    │   [Part 8: Cross-Entropy Loss] ←── Part 5 (axis, log)  │
+                    │   [Part 8: Cross-Entropy Loss] ←── Part 5 (axis, log)   │
                     │                │                                        │
                     │                ↓                                        │
                     │   [Part 9: Intro to Optimisation]                       │
@@ -255,17 +255,17 @@
                     │   [Part 11: Chain Rule]                                 │
                     └────────────────┼────────────────────────────────────────┘
                                      │
-          ┌──────────────────────────↓──────────────────────────────────────────────┐
+          ┌──────────────────────────↓───────────────────────────────────────────────┐
           │                    PHASE 4: BACKPROPAGATION                              │
           │                                                                          │
-          │   [Part 12: Backprop Single Neuron] ←── Parts 10-11 (chain rule)        │
+          │   [Part 12: Backprop Single Neuron] ←── Parts 10-11 (chain rule)         │
           │                │                                                         │
           │                ↓                                                         │
           │   [Part 13: Backprop Through a Layer]                                    │
           │                │                                                         │
           │         ┌──────┴──────┐                                                  │
           │         ↓             ↓                                                  │
-          │   [Part 14: dW]  [Part 15: dX]   ← Matrix forms of gradients            │
+          │   [Part 14: dW]  [Part 15: dX]   ← Matrix forms of gradients             │
           │         │             │                                                  │
           │         └──────┬──────┘                                                  │
           │                ↓                                                         │
@@ -277,7 +277,7 @@
           │         │                         │                                      │
           │         └─────────┬───────────────┘                                      │
           │                   ↓                                                      │
-          │   [Part 19: Softmax + CE Combined] ←── Part 6 (softmax forward)         │
+          │   [Part 19: Softmax + CE Combined] ←── Part 6 (softmax forward)          │
           │                   │                                                      │
           │                   ↓                                                      │
           │   [Part 20: Assembling Full Backprop]                                    │
@@ -286,10 +286,10 @@
           │   [Part 21: Coding Full Backprop]                                        │
           └───────────────────┼──────────────────────────────────────────────────────┘
                               │
-          ┌───────────────────↓──────────────────────────────────────────────────────┐
+          ┌───────────────────↓───────────────────────────────────────────────────────┐
           │                    PHASE 5: OPTIMISERS                                    │
           │                                                                           │
-          │   [Part 22: Gradient Descent] ←── Part 21 (full backprop code)           │
+          │   [Part 22: Gradient Descent] ←── Part 21 (full backprop code)            │
           │                │                                                          │
           │                ↓                                                          │
           │   [Part 23: Learning Rate Decay]                                          │
@@ -298,16 +298,16 @@
           │   [Part 24: Momentum]                                                     │
           │                │                                                          │
           │                ↓                                                          │
-          │   [Part 25: AdaGrad] ←── new idea (per-parameter rates)                  │
+          │   [Part 25: AdaGrad] ←── new idea (per-parameter rates)                   │
           │                │                                                          │
           │                ↓                                                          │
-          │   [Part 26: RMSProp] ←── fixes AdaGrad's problem                         │
+          │   [Part 26: RMSProp] ←── fixes AdaGrad's problem                          │
           │                │                                                          │
           │                ↓                                                          │
-          │   [Part 27: Adam] ←── combines Parts 24 + 26                             │
-          └───────────────────┼──────────────────────────────────────────────────────┘
+          │   [Part 27: Adam] ←── combines Parts 24 + 26                              │
+          └───────────────────┼───────────────────────────────────────────────────────┘
                               │
-          ┌───────────────────↓──────────────────────────────────────────────────────┐
+          ┌───────────────────↓───────────────────────────────────────────────────────┐
           │              PHASE 6: GENERALISATION & REGULARISATION                     │
           │                                                                           │
           │   [Part 28: Generalisation & Testing]                                     │
@@ -317,8 +317,8 @@
           │                │                                                          │
           │         ┌──────┴──────┐                                                   │
           │         ↓             ↓                                                   │
-          │   [Part 30: L1/L2]  [Part 31: Dropout]                                   │
-          └──────────────────────────────────────────────────────────────────────────┘
+          │   [Part 30: L1/L2]  [Part 31: Dropout]                                    │
+          └───────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Dependency lookup table
@@ -338,7 +338,7 @@ Find the part you're stuck on, then review what's listed.
 | [Part 19](posts/19-softmax-derivatives-and-the-combined-backward-pass/index.md) — Softmax backward | Part 6 (softmax forward), Part 11 (chain rule) |
 | [Part 22](posts/22-gradient-descent-optimiser/index.md) — Gradient descent | Part 21 (full backprop code) |
 | [Part 24](posts/24-momentum/index.md) — Momentum | Parts 22–23 (basic SGD, learning rate decay) |
-| [Part 27](posts/27-adam-optimizer/index.md) — Adam | Parts 24 (momentum) + 26 (RMSProp) |
+| [Part 27](posts/27-adam-optimiser/index.md) — Adam | Parts 24 (momentum) + 26 (RMSProp) |
 | [Part 30](posts/30-l1-and-l2-regularisation/index.md) — L1/L2 | Part 16 (backward method), Part 28 (overfitting) |
 | [Part 31](posts/31-dropout/index.md) — Dropout | Part 28 (overfitting), Part 5 (broadcasting) |
 

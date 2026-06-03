@@ -63,7 +63,7 @@
   <rect class="bg" width="960" height="540"/>
 
   <text class="title"    x="48" y="40">What to read after this series</text>
-  <text class="subtitle" x="48" y="60">Everything past post 34 is additive: new layer types, new training infrastructure, or new problem framings — all on the same skeleton.</text>
+  <text class="subtitle" x="48" y="60">Everything past post 34 is additive: new layer types, new training infrastructure, or new problem framings, all on the same skeleton.</text>
 
   <!-- ============================ Center: "You are here" core box ============================ -->
   <rect class="core-box" x="24" y="88" width="204" height="412" rx="12"/>
@@ -148,7 +148,7 @@
   <text class="card-head-blue" x="488" y="222">Residual connections</text>
   <text class="card-sub" x="488" y="238">output = layer(x) + x  (skip path)</text>
   <text class="card-sub" x="488" y="252">→ trains 50-, 100-layer networks</text>
-  <text class="card-sub" x="488" y="264" style="font-style:italic;">read: He et al. (2016) — ResNet</text>
+  <text class="card-sub" x="488" y="264" style="font-style:italic;">read: He et al. (2016), ResNet</text>
 
   <!-- Card 3 -->
   <rect class="card-blue" x="476" y="274" width="224" height="58" rx="8"/>
@@ -184,7 +184,7 @@
   <text class="card-head-tan" x="720" y="222">Transfer learning  ·  fine-tuning</text>
   <text class="card-sub" x="720" y="238">pretrained model + small labelled set</text>
   <text class="card-sub" x="720" y="252">LoRA / PEFT for efficient adapters</text>
-  <text class="card-sub" x="720" y="264" style="font-style:italic;">read: Hu et al. (2022) — LoRA</text>
+  <text class="card-sub" x="720" y="264" style="font-style:italic;">read: Hu et al. (2022), LoRA</text>
 
   <!-- Card 3 -->
   <rect class="card-tan" x="708" y="274" width="224" height="66" rx="8"/>
@@ -198,7 +198,7 @@
   <text class="card-head-tan" x="720" y="366">Diffusion models</text>
   <text class="card-sub" x="720" y="382">learn to reverse a noise-corruption</text>
   <text class="card-sub" x="720" y="396">Stable Diffusion, DALL-E 3, Sora</text>
-  <text class="card-sub" x="720" y="408" style="font-style:italic;">read: Ho et al. (2020) — DDPM</text>
+  <text class="card-sub" x="720" y="408" style="font-style:italic;">read: Ho et al. (2020), DDPM</text>
 
   <!-- Footer -->
   <text class="footer" x="48" y="528">Everything in the three right columns plugs into the forward-pass / backward-pass / optimiser-step skeleton from post 21.</text>

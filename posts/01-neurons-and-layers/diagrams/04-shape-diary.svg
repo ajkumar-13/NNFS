@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" role="img" aria-labelledby="t d">
-  <title id="t">Shape diary — how the arrays change from a single neuron to a batched layer</title>
-  <desc id="d">A three-row table tracking the shapes of the input X, the weight matrix W, the bias b, and the output, across three settings. Row one: a single neuron with a single sample — X is shape (n,), W is shape (n,), b is a scalar, and np.dot(W, X) + b produces a scalar. Row two: a layer of m neurons with a single sample — X is shape (n,), W is shape (m, n), b is shape (m,), and np.dot(W, X) + b produces a vector of shape (m,). Row three: a layer of m neurons with a batch of N samples — X is shape (N, n), W is shape (m, n) but used transposed, b is shape (m,), and np.dot(X, W.T) + b produces a matrix of shape (N, m). A footer reminds the reader that printing shapes is the cheapest debugging tool in deep learning.</desc>
+  <title id="t">Shape diary: how the arrays change from a single neuron to a batched layer</title>
+  <desc id="d">A three-row table tracking the shapes of the input X, the weight matrix W, the bias b, and the output, across three settings. Row one: a single neuron with a single sample, where X is shape (n,), W is shape (n,), b is a scalar, and np.dot(W, X) + b produces a scalar. Row two: a layer of m neurons with a single sample, where X is shape (n,), W is shape (m, n), b is shape (m,), and np.dot(W, X) + b produces a vector of shape (m,). Row three: a layer of m neurons with a batch of N samples, where X is shape (N, n), W is shape (m, n) but used transposed, b is shape (m,), and np.dot(X, W.T) + b produces a matrix of shape (N, m). A footer reminds the reader that printing shapes is the cheapest debugging tool in deep learning.</desc>
 
   <style><![CDATA[
     :root{

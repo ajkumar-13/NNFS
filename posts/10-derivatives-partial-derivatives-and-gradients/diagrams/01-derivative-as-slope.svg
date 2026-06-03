@@ -167,9 +167,9 @@
   <text class="info-muted" x="644" y="286">f'(2.0)  = +4</text>
 
   <text class="info-head" x="644" y="320">Three readings of f'(x):</text>
-  <text class="info-muted" x="644" y="340">— large positive: f rises fast</text>
-  <text class="info-muted" x="644" y="356">— near zero: f is locally flat</text>
-  <text class="info-muted" x="644" y="372">— negative: f falls as x rises</text>
+  <text class="info-muted" x="644" y="340">· large positive: f rises fast</text>
+  <text class="info-muted" x="644" y="356">· near zero: f is locally flat</text>
+  <text class="info-muted" x="644" y="372">· negative: f falls as x rises</text>
 
   <text class="info-muted" x="644" y="406">For weights and loss: each weight's</text>
   <text class="info-muted" x="644" y="422">slope on the loss surface decides</text>

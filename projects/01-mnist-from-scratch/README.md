@@ -144,7 +144,7 @@ Things deliberately out of scope so the project stays a faithful demonstration o
 - **No convolutional layers.** Convolutions are not in the series; using them here would obscure which improvement comes from the model and which from the architecture family.
 - **No batch normalisation.** Not in the series. Adam + dropout + L2 is enough to hit 97% on a small MLP.
 - **No GPU code.** NumPy on CPU. Training takes a few minutes; that is the point.
-- **No external optimiser libraries.** Adam in `nn.py` is the same class built in [post 27](../../posts/27-adam-optimizer/), to the line.
+- **No external optimiser libraries.** Adam in `nn.py` is the same class built in [post 27](../../posts/27-adam-optimiser/), to the line.
 
 ## 7. Related lectures
 
@@ -154,7 +154,7 @@ Things deliberately out of scope so the project stays a faithful demonstration o
 | [Part 6 — Activation functions](../../posts/06-activation-functions-relu-and-softmax/) | `Activation_ReLU` |
 | [Part 19 — Softmax + cross-entropy combined](../../posts/19-softmax-derivatives-and-the-combined-backward-pass/) | `Activation_Softmax_Loss_CategoricalCrossentropy` |
 | [Part 21 — Coding full backpropagation](../../posts/21-coding-the-full-backpropagation/) | The full forward/backward stack |
-| [Part 27 — Adam](../../posts/27-adam-optimizer/) | `Optimizer_Adam` |
+| [Part 27 — Adam](../../posts/27-adam-optimiser/) | `Optimizer_Adam` |
 | [Part 28 — Generalisation and testing](../../posts/28-generalization-and-testing/) | Train/test split discipline |
 | [Part 30 — L1 / L2 regularisation](../../posts/30-l1-and-l2-regularisation/) | `weight_regularizer_l2`, `regularization_loss` |
 | [Part 31 — Dropout](../../posts/31-dropout/) | `Layer_Dropout`, train-vs-test switch |

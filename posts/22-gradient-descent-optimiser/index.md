@@ -10,7 +10,7 @@ part: "Part VI — Optimisers"
 
 # Part 22 · Gradient-descent optimiser
 
-> **TL;DR.** The gradients from Part 21 are useless without a rule that turns them into new weights. The simplest such rule is **vanilla gradient descent**: subtract `learning_rate * gradient` from every parameter, once per step. Wrapping that rule in an `Optimizer_SGD` class makes it reusable, and a single training loop combining forward, backward, and update turns the spiral classifier from "random guessing at 33%" into "67% accuracy and stuck". The 67% ceiling is real — vanilla GD has no mechanism to escape local minima — and motivates every optimiser that follows in Parts 23 through 27.
+> **TL;DR.** The gradients from Part 21 are useless without a rule that turns them into new weights. The simplest such rule is **vanilla gradient descent**: subtract `learning_rate * gradient` from every parameter, once per step. Wrapping that rule in an `Optimizer_SGD` class makes it reusable, and a single training loop combining forward, backward, and update turns the spiral classifier from "random guessing at 33%" into "67% accuracy and stuck". The 67% ceiling is real (vanilla GD has no mechanism to escape local minima) and motivates every optimiser that follows in Parts 23 through 27.
 >
 > **Reading time:** ~11 minutes.
 >
@@ -153,7 +153,7 @@ Two phases are visible.
 
 **The first ~1000 epochs are clear learning.** Loss falls from 1.10 to about 0.72; accuracy climbs from chance to 60%. Gradient descent is doing the obvious job.
 
-**After ~5000 epochs the loss stalls.** It hovers around 0.68 forever; accuracy hovers around 67%. The optimiser is stuck — not in a global minimum (where loss would be much lower), but in a **local minimum** that the spiral dataset's non-convex loss landscape contains many of.
+**After ~5000 epochs the loss stalls.** It hovers around 0.68 forever; accuracy hovers around 67%. The optimiser is stuck, not in a global minimum (where loss would be much lower), but in a **local minimum** that the spiral dataset's non-convex loss landscape contains many of.
 
 Vanilla SGD has no mechanism to escape. Each step is proportional to the gradient; at a local minimum, the gradient is zero; the step is zero; the optimiser stops moving. Parts 23 through 27 add the missing mechanisms one at a time.
 
@@ -249,7 +249,7 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 - **[Part 23 — Learning-rate decay](../23-learning-rate-decay/index.md)** — the first refinement: shrink $\alpha$ over time so the optimiser explores early and converges later.
 - **[Part 24 — Momentum](../24-momentum/index.md)** — add an exponential moving average of past gradients to smooth the direction.
-- **[Part 27 — Adam](../27-adam-optimizer/index.md)** — the modern default, combining momentum with per-parameter adaptive rates.
+- **[Part 27 — Adam](../27-adam-optimiser/index.md)** — the modern default, combining momentum with per-parameter adaptive rates.
 
 ---
 

@@ -47,7 +47,7 @@
   <!-- ============================ Code panel ============================ -->
   <rect class="code-panel" x="48" y="96" width="560" height="396" rx="12"/>
 
-  <text class="block-tag-net" x="68" y="124">1 — Network</text>
+  <text class="block-tag-net" x="68" y="124">1 · Network</text>
   <text class="mono" x="68" y="146">dense1          = Layer_Dense(2, 3)</text>
   <text class="mono" x="68" y="162">activation1     = Activation_ReLU()</text>
   <text class="mono" x="68" y="178">dense2          = Layer_Dense(3, 3)</text>
@@ -55,7 +55,7 @@
 
   <line x1="68" y1="216" x2="588" y2="216" stroke="var(--ce-border)" stroke-width="1"/>
 
-  <text class="block-tag-fwd" x="68" y="240">2 — Forward pass</text>
+  <text class="block-tag-fwd" x="68" y="240">2 · Forward pass</text>
   <text class="mono" x="68" y="262">dense1.forward(X)</text>
   <text class="mono" x="68" y="278">activation1.forward(dense1.output)</text>
   <text class="mono" x="68" y="294">dense2.forward(activation1.output)</text>
@@ -63,7 +63,7 @@
 
   <line x1="68" y1="332" x2="588" y2="332" stroke="var(--ce-border)" stroke-width="1"/>
 
-  <text class="block-tag-bwd" x="68" y="356">3 — Backward pass</text>
+  <text class="block-tag-bwd" x="68" y="356">3 · Backward pass</text>
   <text class="mono" x="68" y="378">loss_activation.backward(loss_activation.output, y)</text>
   <text class="mono" x="68" y="394">dense2.backward(loss_activation.dinputs)</text>
   <text class="mono" x="68" y="410">activation1.backward(dense2.dinputs)</text>

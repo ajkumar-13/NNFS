@@ -50,7 +50,7 @@ For each neuron $k$, the local derivative $\partial Z_k / \partial X_j$ is the w
 
 ### 2.1. Why the weight gradient was not a sum
 
-The same multivariate chain rule technically applies to weight gradients too — but each $W_{kj}$ has exactly one path through the layer ($X_j \to Z_k$), so the sum has one term. With one term, the sum becomes a single product, which is what Part 13 derived without ever using the word "sum".
+The same multivariate chain rule technically applies to weight gradients too, but each $W_{kj}$ has exactly one path through the layer ($X_j \to Z_k$), so the sum has one term. With one term, the sum becomes a single product, which is what Part 13 derived without ever using the word "sum".
 
 For inputs, the same chain rule has $m$ terms instead of one. The matrix form below packages those $m$ terms into a dot product.
 
@@ -74,7 +74,7 @@ Shape check, using the same convention as Part 14 (`W` is `(m, n)` with one row 
 | $\mathbf{W}$ | $(m, n)$ | layer weights |
 | $\partial L / \partial \mathbf{X}$ | $(1, n)$ | gradient one entry per input feature |
 
-$(1, m) \cdot (m, n) = (1, n)$. The matching inner dimension $m$ is the one being summed over — exactly the $m$ neurons whose contributions the formula sums.
+$(1, m) \cdot (m, n) = (1, n)$. The matching inner dimension $m$ is the one being summed over: exactly the $m$ neurons whose contributions the formula sums.
 
 ---
 
@@ -125,10 +125,10 @@ The extension to batches is the same as for the weight gradient: the matrix prod
 | Quantity | Single sample | Batch of $N$ |
 |---|:---:|:---:|
 | $\partial L / \partial \mathbf{Z}$ | $(1, m)$ | $(N, m)$ |
-| $\mathbf{W}$ | $(m, n)$ | $(m, n)$ — unchanged |
+| $\mathbf{W}$ | $(m, n)$ | $(m, n)$ (unchanged) |
 | $\partial L / \partial \mathbf{X}$ | $(1, n)$ | $(N, n)$ |
 
-$(N, m) \cdot (m, n) = (N, n)$. Each *row* of the result is the input gradient for one sample; samples do not interact in this calculation. Unlike the weight gradient, the input gradient is **not** summed across the batch — it stays per-sample because the next-earlier layer's gradient for that sample needs it.
+$(N, m) \cdot (m, n) = (N, n)$. Each *row* of the result is the input gradient for one sample; samples do not interact in this calculation. Unlike the weight gradient, the input gradient is **not** summed across the batch: it stays per-sample because the next-earlier layer's gradient for that sample needs it.
 
 ```python
 dL_dX = dL_dZ @ weights         # shape (N, n)
@@ -179,7 +179,7 @@ A boundary section.
 | Sum-of-paths | Each input touches every neuron; its gradient sums over all of them |
 | Matrix form | $\partial L / \partial \mathbf{X} = (\partial L / \partial \mathbf{Z}) \cdot \mathbf{W}$ |
 | Batch behaviour | Per-sample, not summed (unlike biases) |
-| Three-line backward | Weights, biases, inputs — one matrix expression each |
+| Three-line backward | Weights, biases, inputs: one matrix expression each |
 
 ---
 

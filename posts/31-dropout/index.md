@@ -20,7 +20,7 @@ part: "Part VII — Generalisation and regularisation"
 > - Wire dropout into the full forward/backward pipeline, including the all-important train-vs-test switch.
 
 ![Dropout train vs test: during training a random subset of neurons is zeroed and the rest are scaled up by 1/(1-p); during evaluation every neuron is active and outputs pass through unchanged.](diagrams/01-dropout-train-vs-test.svg)
-*Same layer of eight neurons, two modes. Training: drop 25% at random, scale survivors by $\frac{1}{0.75}$. Testing: no drop, no scaling — the inverted-dropout trick.*
+*Same layer of eight neurons, two modes. Training: drop 25% at random, scale survivors by $\frac{1}{0.75}$. Testing: no drop, no scaling, the inverted-dropout trick.*
 
 ---
 
@@ -28,7 +28,7 @@ part: "Part VII — Generalisation and regularisation"
 
 A fully-connected hidden layer in a small network has more capacity than it strictly needs. Two failure modes follow from that excess capacity.
 
-**Co-adaptation.** Two neurons that learn similar features get reinforced together by gradient descent. After enough updates, neuron $B$ learns to do nothing on its own; it just rides on neuron $A$'s output, contributing a small correction. On training data this is invisible — the loss is fine. On test data, where $A$'s response distribution shifts slightly, $B$'s correction becomes wrong and the layer's output degrades.
+**Co-adaptation.** Two neurons that learn similar features get reinforced together by gradient descent. After enough updates, neuron $B$ learns to do nothing on its own; it just rides on neuron $A$'s output, contributing a small correction. On training data this is invisible: the loss is fine. On test data, where $A$'s response distribution shifts slightly, $B$'s correction becomes wrong and the layer's output degrades.
 
 **Memorisation.** A wide layer can dedicate specific neurons to specific training examples, like a lookup table. The neuron fires only for that example and stays silent for everything else. Training accuracy is excellent; test accuracy collapses because no test point hits any memorised neuron.
 
@@ -48,9 +48,9 @@ The first interpretation (from §1) is mechanistic: dropping random neurons brea
 
 ### 2.2. Implicit ensembling
 
-The second interpretation is statistical. A network with $n$ neurons and dropout rate $p$ defines $2^n$ possible **subnetworks** — one for every subset of neurons that could be kept active. Each training step samples one such subnetwork and updates its parameters by one step of SGD. Because all subnetworks share the same underlying weights, parameter updates from one subnetwork transfer to all others.
+The second interpretation is statistical. A network with $n$ neurons and dropout rate $p$ defines $2^n$ possible **subnetworks**, one for every subset of neurons that could be kept active. Each training step samples one such subnetwork and updates its parameters by one step of SGD. Because all subnetworks share the same underlying weights, parameter updates from one subnetwork transfer to all others.
 
-After training, the network is effectively an ensemble of $2^n$ subnetworks that have been jointly optimised. At test time, with dropout disabled, the output of the full network approximates the geometric-mean prediction of every subnetwork — a form of model averaging without the compute cost of actually training many models.
+After training, the network is effectively an ensemble of $2^n$ subnetworks that have been jointly optimised. At test time, with dropout disabled, the output of the full network approximates the geometric-mean prediction of every subnetwork, a form of model averaging without the compute cost of actually training many models.
 
 Ensembles are well known to generalise better than single models (random forests, bagged classifiers, etc.). Dropout is one of the cheapest ways to get an ensemble-like effect inside a single network: no extra training, no extra storage, no extra inference.
 
@@ -85,7 +85,7 @@ Two ways to handle this:
 
 **Vanilla dropout (the original).** Train with the mask. At test time, multiply every activation by $(1 - p)$ to match the training magnitude. Adds a per-layer scaling step to inference.
 
-**Inverted dropout (the modern default).** Train with the mask *and* divide the surviving activations by $(1 - p)$. The expected magnitude of the masked layer equals the unmasked magnitude, so at test time nothing needs to change — just use the layer as-is.
+**Inverted dropout (the modern default).** Train with the mask *and* divide the surviving activations by $(1 - p)$. The expected magnitude of the masked layer equals the unmasked magnitude, so at test time nothing needs to change: just use the layer as-is.
 
 Inverted dropout is what every framework (PyTorch, TensorFlow, JAX) implements. It keeps the train/test split cleaner: training has a forward-pass cost (the mask and the divide); testing has no extra work at all.
 
@@ -95,8 +95,8 @@ A worked example with five neurons and $p = 0.2$ (keep probability $1 - p = 0.8$
 |---|---|
 | Original activations | `[1, 1, 1, 1, 1]` (sum = 5) |
 | Binomial mask (sampled) | `[0, 1, 1, 1, 1]` (4 of 5 kept) |
-| Masked activations | `[0, 1, 1, 1, 1]` (sum = 4 — magnitude lost) |
-| Scaled by $1 / 0.8 = 1.25$ | `[0, 1.25, 1.25, 1.25, 1.25]` (sum = 5 — magnitude restored) |
+| Masked activations | `[0, 1, 1, 1, 1]` (sum = 4, magnitude lost) |
+| Scaled by $1 / 0.8 = 1.25$ | `[0, 1.25, 1.25, 1.25, 1.25]` (sum = 5, magnitude restored) |
 
 The scaled-up survivors compensate (in expectation) for the dropped ones. The expected sum is 5 in both training and test, so the downstream layers are insensitive to the mask.
 
@@ -230,7 +230,7 @@ A representative comparison with the full Part 30 + 31 stack (Adam, L2, and drop
 | L2 only (Part 30) | ~94% | ~82% | 12 points |
 | **L2 + Dropout(0.1) + 1000 samples/class** | **66.6%** | **> 66.6%** | **negative gap** |
 
-The headline number is the *negative train-val gap*: validation accuracy exceeds training accuracy. This sounds backwards but is exactly what dropout is designed to produce. At training time the network is handicapped — it has to make predictions with random neurons missing, so its training accuracy looks low. At test time the full network is available, so it does better than its handicapped self.
+The headline number is the *negative train-val gap*: validation accuracy exceeds training accuracy. This sounds backwards but is exactly what dropout is designed to produce. At training time the network is handicapped: it has to make predictions with random neurons missing, so its training accuracy looks low. At test time the full network is available, so it does better than its handicapped self.
 
 A negative train-val gap is the **strongest possible signature that the model is not overfitting**. The model is leaving capacity on the table during training; it is *under*-fitting the training data on purpose to generalise. This is the inverse of the failure mode every prior lecture in this group was trying to fix.
 
@@ -280,7 +280,7 @@ In modern practice, **dropout + L2 + data augmentation** is a strong default sta
 | Inverted dropout | Scale survivors by $1/(1-p)$ during training; identity at test time |
 | Default rates | 0.1–0.2 for small networks; up to 0.5 for large ones; never on input/output |
 | Train/test switch | `training=True` only during training; `False` everywhere else |
-| Result on spiral | Negative train-val gap — the inverse of overfitting |
+| Result on spiral | Negative train-val gap, the inverse of overfitting |
 | Production status | Standard tool; pairs naturally with L2 and (sometimes) BatchNorm |
 
 ---

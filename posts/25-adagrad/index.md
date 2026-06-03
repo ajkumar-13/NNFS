@@ -26,7 +26,7 @@ part: "Part VI — Optimisers"
 
 ## 1. The remaining failure mode
 
-Vanilla SGD treated every parameter identically. So did SGD + decay, and so did SGD + momentum. All three share a single hyperparameter — the learning rate $\alpha$ — and apply it uniformly to every weight in the network.
+Vanilla SGD treated every parameter identically. So did SGD + decay, and so did SGD + momentum. All three share a single hyperparameter (the learning rate $\alpha$) and apply it uniformly to every weight in the network.
 
 That uniformity has a hidden cost. Different parameters can have wildly different gradient magnitudes, and the optimum step size for each depends on its own magnitude, not on the global average.
 
@@ -72,7 +72,7 @@ Three things to notice.
 
 **The square root is what makes the scaling "right".** Without it, scaling by $1/G$ would over-correct: a parameter with cache 100 would have its step shrunk 100×. With $\sqrt{G}$, the scaling matches the *units* of the gradient (gradient magnitude grows as $\sqrt{\text{variance}}$), so the rescaling produces approximately unit-variance steps across parameters.
 
-**Squaring removes the sign.** Negative and positive gradients both contribute positively to the cache. Without the square, a parameter that oscillated back and forth with equal-magnitude gradients would build a zero cache and never get rescaled — which is the opposite of what we want.
+**Squaring removes the sign.** Negative and positive gradients both contribute positively to the cache. Without the square, a parameter that oscillated back and forth with equal-magnitude gradients would build a zero cache and never get rescaled, which is the opposite of what we want.
 
 ---
 
@@ -118,7 +118,7 @@ This is the AdaGrad analogue of "dead ReLU" neurons:
 | Failure mode | Cause | Recoverable? |
 |---|---|---|
 | Dead ReLU neuron | Input drifts to ≤ 0; output and gradient permanently zero | Sometimes (if other neurons shift the input distribution) |
-| Dead AdaGrad parameter | Cache grows; effective rate → 0 | **No** — cache can only grow |
+| Dead AdaGrad parameter | Cache grows; effective rate → 0 | **No** (cache can only grow) |
 
 For tasks with a fixed, modest number of iterations (the original AdaGrad paper was about convex problems and short training runs), this is acceptable. For neural networks trained for 10⁴ to 10⁶ iterations, it is a deal-breaker. **RMSProp (Part 26) is the direct fix:** replace the cumulative sum with an exponential moving average so the cache can grow *and* shrink.
 
@@ -181,7 +181,7 @@ Same skeleton as Part 24. The only line that changes is the optimiser constructi
 optimizer = Optimizer_Adagrad(learning_rate=1.0, decay=1e-4)
 
 for epoch in range(10001):
-    # Forward → accuracy → backward — unchanged.
+    # Forward, accuracy, backward: unchanged.
 
     optimizer.pre_update_params()
     optimizer.update_params(dense1)
@@ -277,7 +277,7 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 ## What to read next
 
 - **[Part 26 — RMSProp](../26-rmsprop/index.md)** — replace the cumulative sum with an exponential moving average so the cache can shrink. The dying-rate problem disappears.
-- **[Part 27 — Adam](../27-adam-optimizer/index.md)** — RMSProp's per-parameter scaling plus momentum's velocity, with bias correction. The modern default.
+- **[Part 27 — Adam](../27-adam-optimiser/index.md)** — RMSProp's per-parameter scaling plus momentum's velocity, with bias correction. The modern default.
 
 ---
 

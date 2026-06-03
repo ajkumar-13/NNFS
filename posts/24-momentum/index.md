@@ -32,7 +32,7 @@ Two failure modes follow directly.
 
 **Narrow valleys produce zig-zags.** Imagine the loss surface is shaped like a long, narrow ravine: steep walls on the left and right, gentle slope along the floor. The negative gradient at any point is dominated by the steep walls, not by the gentle floor slope. Each step moves mostly *across* the valley, only slightly *along* it. The next step's gradient points back toward the opposite wall. The optimiser bounces from side to side, making negligible progress toward the minimum at the bottom.
 
-**Shallow plateaus stall.** When the gradient is small (a flat region of the loss surface), the step is small. The optimiser inches forward at a pace determined entirely by the current gradient magnitude. If a plateau is wide enough, training looks like it has stopped — and with decay schedules (Part 23), it actually does.
+**Shallow plateaus stall.** When the gradient is small (a flat region of the loss surface), the step is small. The optimiser inches forward at a pace determined entirely by the current gradient magnitude. If a plateau is wide enough, training looks like it has stopped, and with decay schedules (Part 23), it actually does.
 
 Both failures share a root cause: the optimiser cannot use the *history* of recent gradients to decide where to go next. It only sees the snapshot directly under its feet.
 
@@ -103,7 +103,7 @@ layer.weight_momentums   # same shape as layer.weights
 layer.bias_momentums     # same shape as layer.biases
 ```
 
-The optimiser creates these arrays on first use (lazily — see §5) and reads/writes them on every subsequent call. Two reasons to put them on the layer instead of the optimiser:
+The optimiser creates these arrays on first use (lazily, see §5) and reads/writes them on every subsequent call. Two reasons to put them on the layer instead of the optimiser:
 
 - **Layer-local state stays with the layer.** Saving a checkpoint or transplanting a layer into a different model carries the momentum buffer with it.
 - **The optimiser stays stateless across layers.** A single `Optimizer_SGD` instance can drive ten layers without keeping ten dictionaries indexed by layer id.
@@ -178,7 +178,7 @@ The loop is identical to Part 23 except for one constructor argument:
 optimizer = Optimizer_SGD(learning_rate=1.0, decay=1e-3, momentum=0.9)
 
 for epoch in range(10001):
-    # Forward, accuracy, backward — unchanged from Part 23.
+    # Forward, accuracy, backward: unchanged from Part 23.
 
     # Update with momentum.
     optimizer.pre_update_params()
@@ -281,7 +281,7 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 - **[Part 25 — AdaGrad](../25-adagrad/index.md)** — instead of (or in addition to) momentum on the gradient, scale the learning rate per parameter using the history of squared gradients.
 - **[Part 26 — RMSProp](../26-rmsprop/index.md)** — AdaGrad's accumulator is replaced with a running average, fixing AdaGrad's diminishing-rate problem.
-- **[Part 27 — Adam](../27-adam-optimizer/index.md)** — combines momentum (this lecture) with per-parameter scaling (Parts 25 and 26) into the modern default.
+- **[Part 27 — Adam](../27-adam-optimiser/index.md)** — combines momentum (this lecture) with per-parameter scaling (Parts 25 and 26) into the modern default.
 
 ---
 

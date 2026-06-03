@@ -1,5 +1,5 @@
 ---
-slug: 27-adam-optimizer
+slug: 27-adam-optimiser
 title: "Part 27 · Adam"
 date: 2026-05-29
 tags: [neural-networks, from-scratch, optimisation, adam, default-optimizer]
@@ -15,7 +15,7 @@ part: "Part VI — Optimisers"
 > **Reading time:** ~13 minutes.
 >
 > **After reading this you will be able to:**
-> - Decompose the Adam update into its three constituent ideas — first-moment EMA, second-moment EMA, and bias correction — and explain what each one contributes.
+> - Decompose the Adam update into its three constituent ideas (first-moment EMA, second-moment EMA, and bias correction) and explain what each one contributes.
 > - Implement `Optimizer_Adam` with two per-layer buffers (`weight_momentums`, `weight_cache`) and reproduce the spiral result.
 > - Reason about when Adam is the wrong default (sharp-minima generalisation, sparse production training) and what the alternatives are.
 
@@ -63,7 +63,7 @@ Five lines, all elementwise. The first two come straight from Parts 24 and 26. T
 
 ### 2.1. Why bias correction is needed
 
-Both $m_0$ and $v_0$ are initialised to zero. On the first iteration, $m_1 = (1 - \beta_1) \, g_1$ — only 10% of the actual gradient when $\beta_1 = 0.9$, and only 0.1% when $\beta_2 = 0.999$. Without correction, the early steps are silently 10× to 1000× smaller than the gradient is asking for, and the optimiser wastes the first dozens of iterations crawling toward the warmed-up steady state.
+Both $m_0$ and $v_0$ are initialised to zero. On the first iteration, $m_1 = (1 - \beta_1) \, g_1$, only 10% of the actual gradient when $\beta_1 = 0.9$, and only 0.1% when $\beta_2 = 0.999$. Without correction, the early steps are silently 10× to 1000× smaller than the gradient is asking for, and the optimiser wastes the first dozens of iterations crawling toward the warmed-up steady state.
 
 The mathematical fix is exact. Take a constant gradient $g$ and trace the EMA:
 
@@ -173,7 +173,7 @@ Same as every other lecture in this group:
 optimizer = Optimizer_Adam(learning_rate=0.02, decay=1e-5)
 
 for epoch in range(10001):
-    # Forward → accuracy → backward — unchanged.
+    # Forward, accuracy, backward: unchanged.
 
     optimizer.pre_update_params()
     optimizer.update_params(dense1)
@@ -236,10 +236,10 @@ The standard practical advice: start with Adam, validate against SGD + momentum 
 
 Several refinements of Adam appear in production code. Brief pointers:
 
-- **AdamW** (Loshchilov & Hutter, 2017) — Decouples L2 weight decay from the gradient. In standard Adam, L2 regularisation gets folded into the gradient before the second-moment scaling, which subtly damps the regularisation strength. AdamW applies decay directly to the parameters, fixing the bug. Default for most modern training pipelines (transformers, large vision models).
-- **AMSGrad** (Reddi et al., 2018) — Replaces $\hat{v}_t$ with $\max(\hat{v}_t, \hat{v}_{t-1})$ to ensure the effective rate is monotone non-increasing. Useful for problems where Adam fails to converge; rarely needed in practice.
-- **NAdam** (Dozat, 2016) — Adds a Nesterov-momentum twist to the first-moment EMA. Modest improvement over Adam in some settings.
-- **Lion** (Chen et al., 2023) — Drops the second moment entirely; uses just the sign of the first moment. Memory cost halves; comparable performance reported on large language models.
+- **AdamW** (Loshchilov & Hutter, 2017). Decouples L2 weight decay from the gradient. In standard Adam, L2 regularisation gets folded into the gradient before the second-moment scaling, which subtly damps the regularisation strength. AdamW applies decay directly to the parameters, fixing the bug. Default for most modern training pipelines (transformers, large vision models).
+- **AMSGrad** (Reddi et al., 2018). Replaces $\hat{v}_t$ with $\max(\hat{v}_t, \hat{v}_{t-1})$ to ensure the effective rate is monotone non-increasing. Useful for problems where Adam fails to converge; rarely needed in practice.
+- **NAdam** (Dozat, 2016). Adds a Nesterov-momentum twist to the first-moment EMA. Modest improvement over Adam in some settings.
+- **Lion** (Chen et al., 2023). Drops the second moment entirely; uses just the sign of the first moment. Memory cost halves; comparable performance reported on large language models.
 
 For this series, plain Adam is what is built. The variants share the same skeleton; they differ in which line of the update changes.
 

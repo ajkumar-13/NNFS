@@ -62,7 +62,7 @@ The outer product produces a *matrix*; the dot product produces a *scalar*. For 
 - **Dot product**: $\mathbf{a} \cdot \mathbf{b} = \sum_i a_i b_i$, returns a scalar.
 - **Outer product**: $\mathbf{a} \otimes \mathbf{b} = \mathbf{a} \mathbf{b}^{\top}$, returns a matrix whose $(i, j)$ entry is $a_i b_j$.
 
-For the gradient, every $(k, j)$ pair needs its own number — the gradient of $W_{kj}$ — so the outer product is the right structure. NumPy computes it via `dL_dZ.T @ X` for row-vector operands, or `np.outer(dL_dZ, X)` more explicitly.
+For the gradient, every $(k, j)$ pair needs its own number (the gradient of $W_{kj}$), so the outer product is the right structure. NumPy computes it via `dL_dZ.T @ X` for row-vector operands, or `np.outer(dL_dZ, X)` more explicitly.
 
 ---
 
@@ -144,8 +144,8 @@ In real training, the input is a batch of $N$ samples, not a single one. The sha
 |---|:---:|:---:|
 | $\mathbf{X}$ | $(1, n)$ | $(N, n)$ |
 | $\partial L / \partial \mathbf{Z}$ | $(1, m)$ | $(N, m)$ |
-| $\partial L / \partial \mathbf{W}$ | $(m, n)$ | $(m, n)$ — unchanged |
-| $\partial L / \partial \mathbf{B}$ | $(m,)$ | $(m,)$ — unchanged |
+| $\partial L / \partial \mathbf{W}$ | $(m, n)$ | $(m, n)$ (unchanged) |
+| $\partial L / \partial \mathbf{B}$ | $(m,)$ | $(m,)$ (unchanged) |
 
 The crucial observation: **the gradient shapes do not depend on the batch size**. The weights and biases are the same regardless of how many samples were fed in; only the inputs and the per-sample upstream gradients grow.
 
@@ -196,7 +196,7 @@ Weight gradients:
 Bias gradients: [6 6 6]
 ```
 
-The weight-gradient matrix shape is $(3, 4)$ — the same as in the single-sample case. The values are different (they aggregate three samples' contributions), but the shape never changed. That stability is what makes the matrix form drop-in for any batch size.
+The weight-gradient matrix shape is $(3, 4)$, the same as in the single-sample case. The values are different (they aggregate three samples' contributions), but the shape never changed. That stability is what makes the matrix form drop-in for any batch size.
 
 ---
 

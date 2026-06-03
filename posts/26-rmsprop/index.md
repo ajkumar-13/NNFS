@@ -282,7 +282,7 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 27 — Adam](../27-adam-optimizer/index.md)** — add momentum's EMA-over-$g$ on top of RMSProp's EMA-over-$g^2$, plus bias correction. The modern default optimiser.
+- **[Part 27 — Adam](../27-adam-optimiser/index.md)** — add momentum's EMA-over-$g$ on top of RMSProp's EMA-over-$g^2$, plus bias correction. The modern default optimiser.
 
 ---
 

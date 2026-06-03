@@ -46,13 +46,13 @@
   <rect class="bg" width="960" height="460"/>
 
   <text class="title"    x="48" y="48">Input gradient = sum of contributions from every neuron</text>
-  <text class="subtitle" x="48" y="70">A weight has one path through the layer. An input has m paths — its gradient sums them all.</text>
+  <text class="subtitle" x="48" y="70">A weight has one path through the layer. An input has m paths, so its gradient sums them all.</text>
 
   <!-- ============================ LEFT PANEL: weight has 1 path ============================ -->
   <rect class="panel-bad" x="48" y="96" width="424" height="264" rx="12"/>
   <rect class="pill-bad"  x="48" y="96" width="6"   height="264" rx="3"/>
   <text class="head-bad" x="68" y="124">∂L/∂W₁₁: only one forward path</text>
-  <text class="panel-sub" x="68" y="142">W₁₁ connects X₁ to neuron Z₁ — and only neuron Z₁.</text>
+  <text class="panel-sub" x="68" y="142">W₁₁ connects X₁ to neuron Z₁, and only neuron Z₁.</text>
 
   <!-- Inputs -->
   <circle class="input-pill" cx="110" cy="178" r="18"/>
@@ -93,7 +93,7 @@
   <rect class="panel-ok" x="488" y="96" width="424" height="264" rx="12"/>
   <rect class="pill-ok"  x="488" y="96" width="6"   height="264" rx="3"/>
   <text class="head-ok" x="508" y="124">∂L/∂X₁: three forward paths</text>
-  <text class="panel-sub" x="508" y="142">X₁ connects to every neuron via W₁₁, W₂₁, W₃₁ — its gradient sums all three.</text>
+  <text class="panel-sub" x="508" y="142">X₁ connects to every neuron via W₁₁, W₂₁, W₃₁, so its gradient sums all three.</text>
 
   <!-- Inputs -->
   <circle class="input-pill" cx="550" cy="178" r="18"/>

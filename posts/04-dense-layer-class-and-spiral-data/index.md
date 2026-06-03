@@ -51,8 +51,8 @@ from nnfs.datasets import spiral_data
 nnfs.init()                                 # fix the RNG seed for reproducibility
 
 X, y = spiral_data(samples=100, classes=3)
-# X.shape = (300, 2)   — 100 samples per class × 3 classes
-# y.shape = (300,)     — class label (0, 1, or 2) for each row
+# X.shape = (300, 2)   : 100 samples per class × 3 classes
+# y.shape = (300,)     : class label (0, 1, or 2) for each row
 ```
 
 `X` is a `(300, 2)` matrix: each row is a single 2-D point in the plane. `y` is a 1-D array of class labels, one per row. The pair `(X, y)` is the universal supervised-learning format: inputs and the labels they should predict.
@@ -100,8 +100,8 @@ This post switches conventions. From now on, weights are stored with one **colum
 
 | Convention | $W$ shape | Forward pass |
 |---|---|---|
-| Old (Parts 01–03) | $(m, n)$ — rows are neurons | `np.dot(X, W.T) + b` |
-| New (Part 04 onward) | $(n, m)$ — columns are neurons | `np.dot(X, W) + b` |
+| Old (Parts 01–03) | $(m, n)$, rows are neurons | `np.dot(X, W.T) + b` |
+| New (Part 04 onward) | $(n, m)$, columns are neurons | `np.dot(X, W) + b` |
 
 The arithmetic is identical. The numbers come out the same. Only the layout of `W` in memory and the call site change. The new layout matches the standard adopted by `nnfs` (Kinsley & Kukieła, 2020) and is the one this series uses for all remaining parts.
 
