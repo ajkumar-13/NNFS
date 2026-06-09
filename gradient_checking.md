@@ -201,12 +201,15 @@ dW2 = np.dot(a1, dscores)       # ← wrong shape, or wrong values
 dW2 = np.dot(a1.T, dscores)     # ← correct
 ```
 
-### 3. ReLU Backward Bug
+### 3. ReLU Backward: Mask on the Pre-activation
 
 ```python
-# BUG: using output instead of input for the mask
+# SUBTLE: masking on the activation a1 instead of the pre-activation z1
 dz1 = da1.copy()
-dz1[a1 <= 0] = 0    # ← should use z1, not a1 (though for ReLU they're equivalent when a1 > 0)
+dz1[a1 <= 0] = 0    # for plain ReLU, a1 = max(0, z1), so a1 <= 0 and z1 <= 0 are the same
+                    # mask EVERYWHERE — harmless here, so gradient checking will not flag it.
+                    # But it is wrong for leaky/parametric ReLU, where a1 can be negative.
+                    # Mask on z1 to stay correct for any ReLU variant.
 ```
 
 ### 4. Not Zeroing Gradients for Negative ReLU

@@ -143,10 +143,10 @@ The diary in table form:
 | 0 | `X` | input data | `—` | `(300, 2)` | `spiral_data(samples=100, classes=3)` |
 | 1 | `dense1` | `X · W1 + b1` | `(300, 2)` | `(300, 3)` | `W1: (2, 3)`, `b1: (1, 3)` |
 | 2 | `activation1` | `max(0, ·)` | `(300, 3)` | `(300, 3)` | element-wise; shape unchanged |
-| 3 | `dense2` | `F1 · W2 + b2` | `(300, 3)` | `(300, 3)` | `W2: (3, 3)`, `b2: (1, 3)` |
+| 3 | `dense2` | `A1 · W2 + b2` | `(300, 3)` | `(300, 3)` | `W2: (3, 3)`, `b2: (1, 3)` |
 | 4 | `activation2` | softmax along axis=1 | `(300, 3)` | `(300, 3)` | per-row normalisation; shape unchanged |
 
-Here `F1` is the ReLU activation output from step 2 (`activation1.output`), the array fed forward into `dense2`.
+Here `A1` is the ReLU activation output from step 2 (`activation1.output`), the array fed forward into `dense2`.
 
 Two observations matter for the next several parts.
 

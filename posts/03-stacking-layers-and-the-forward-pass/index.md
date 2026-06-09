@@ -124,7 +124,7 @@ Concrete shapes for the batch case, with $N = 3$ samples flowing through the net
 ![A shape-flow chart for two layers: the input matrix becomes the layer-1 output, which becomes the layer-2 input, which becomes the final output.](diagrams/02-dimension-flow.svg)
 *Every layer enforces the same shape rule. A mismatch anywhere will surface here, not later.*
 
-The diary of intermediate shapes catches almost every "shape mismatch" error before it happens. Printing `F1.shape` after layer 1 and checking it against the expected $(N, m_1)$ is the fastest debugging move available.
+The diary of intermediate shapes catches almost every "shape mismatch" error before it happens. Printing the layer-1 output's shape ($\mathbf{Z}_1$) after layer 1 and checking it against the expected $(N, m_1)$ is the fastest debugging move available.
 
 ---
 
@@ -183,11 +183,11 @@ These layer-2 numbers could be reproduced by a single equivalent layer: collapse
 The pattern survives any depth without modification:
 
 ```python
-f1 = np.dot(X,  w1.T) + b1
-f2 = np.dot(f1, w2.T) + b2
-f3 = np.dot(f2, w3.T) + b3
-f4 = np.dot(f3, w4.T) + b4
-f5 = np.dot(f4, w5.T) + b5    # final output
+z1 = np.dot(X,  w1.T) + b1
+z2 = np.dot(z1, w2.T) + b2
+z3 = np.dot(z2, w3.T) + b3
+z4 = np.dot(z3, w4.T) + b4
+z5 = np.dot(z4, w5.T) + b5    # final output
 ```
 
 Each line is structurally identical. The only constraint is that each `wN` must have its inner dimension equal to the previous layer's output size.

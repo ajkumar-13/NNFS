@@ -104,6 +104,28 @@ elif len(y_true.shape) == 2:      # one-hot: [[1,0,0], ...]
 
 ---
 
+## Phase 3: Calculus foundations (Parts 10–11)
+
+### Pitfall: Stepping along the gradient instead of against it
+
+**Symptom:** Loss goes *up* every iteration, not down.
+
+**Cause:** The gradient points in the direction of steepest *increase*; adding it climbs the loss.
+
+**Fix:** Subtract it: `w -= learning_rate * grad`. Gradient descent moves *opposite* the gradient.
+
+---
+
+### Pitfall: Dropping a factor in the chain rule
+
+**Symptom:** A numerical gradient check fails by a constant factor (often an input value, or 2).
+
+**Cause:** One local derivative was left out of the product — e.g. the input `x` at a multiply node, or the `2` from a squared-error loss.
+
+**Fix:** Write the chain as an explicit product of every local derivative, one per operation, then multiply. Verify against a finite-difference check (see [gradient_checking.md](gradient_checking.md)).
+
+---
+
 ## Phase 4: Backpropagation (Parts 12–21)
 
 ### Pitfall: Gradients have wrong shape
@@ -201,7 +223,7 @@ Note: `step` starts at 0, so `step + 1` starts at 1.
 
 ---
 
-## Phase 6: Regularization (Parts 28–31)
+## Phase 6: Generalisation and regularisation (Parts 28–31)
 
 ### Pitfall: Dropout active during testing
 
@@ -227,6 +249,38 @@ layer_dropout.forward(dense.output, training=False)  # no dropout!
 **Cause:** The penalty term dominates the actual loss, so the optimizer only cares about making weights small.
 
 **Fix:** Reduce `lambda` by 10× or 100×. Typical range: `1e-4` to `5e-4`.
+
+---
+
+## Phase 7: Practical training and extensions (Parts 32–35)
+
+### Pitfall: Re-creating the optimiser inside the batch loop
+
+**Symptom:** Mini-batch training never converges, or Adam behaves like plain SGD.
+
+**Cause:** Constructing `Optimizer_Adam(...)` inside the per-batch loop resets its momentum and cache every step.
+
+**Fix:** Construct the optimiser once, outside both the epoch and batch loops. Only `pre_update_params` / `update_params` / `post_update_params` run per batch.
+
+---
+
+### Pitfall: Weights initialised at the wrong scale
+
+**Symptom:** Activations (or gradients) vanish toward zero, or explode to `NaN`, within a few layers.
+
+**Cause:** A fixed `0.01 * randn` does not scale with fan-in; deep stacks shrink or blow up the signal.
+
+**Fix:** Scale the initial standard deviation by the layer's input count — He for ReLU, Xavier/Glorot otherwise. See Part 33.
+
+---
+
+### Pitfall: Wrong label shape for sigmoid + binary cross-entropy
+
+**Symptom:** Broadcasting errors, or a loss that does not track accuracy.
+
+**Cause:** Sigmoid + BCE uses **one** output neuron, so labels must be shape `(N, 1)` — not one-hot `(N, 2)` or a flat `(N,)`.
+
+**Fix:** Reshape `y` to `(N, 1)`. Use sigmoid + BCE for 2 classes; softmax + CCE needs at least 2 output neurons. See Part 34.
 
 ---
 

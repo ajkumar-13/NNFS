@@ -1,6 +1,6 @@
 # Appendix — Why Softmax + Cross-Entropy Backward Simplifies to Predicted Minus True
 
-*This appendix fills the main mathematical gap in Part 19.*
+*This appendix expands Part 19's combined-backward derivation with extra algebraic steps, a class-index implementation, and a numerical check.*
 
 ---
 

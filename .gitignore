@@ -1,5 +1,6 @@
 # Generated preview images
 .preview/
+.claude/
 
 # Python
 __pycache__/

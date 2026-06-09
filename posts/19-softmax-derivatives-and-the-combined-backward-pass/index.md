@@ -75,7 +75,7 @@ Adding the two:
 
 $$\frac{\partial L}{\partial Z_k} = -y_k + \hat{y}_k = \hat{y}_k - y_k.$$
 
-The full algebra (with the quotient rule applied to softmax directly and then multiplied by the loss gradient) gives the same answer, but it is messier and easier to make mistakes in. The substitution-then-differentiate route shown here is the standard derivation; the [softmax backward appendix](../../appendix_softmax_combined_backward.md) walks through both versions side by side.
+The full algebra (with the quotient rule applied to softmax directly and then multiplied by the loss gradient) gives the same answer, but it is messier and easier to make mistakes in. The substitution-then-differentiate route shown here is the standard derivation; the [softmax backward appendix](../../appendix_softmax_combined_backward.md) works through it in full and explains why the explicit-Jacobian route lands on the same result.
 
 ### 2.2. Why every framework ships a combined version
 
@@ -246,7 +246,7 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 - **[Part 20 — Assembling full backpropagation](../20-assembling-full-backpropagation/index.md)** — every `backward` method snapping into the same script for the first time.
 - **[Part 21 — Coding the full backpropagation](../21-coding-the-full-backpropagation/index.md)** — the complete training loop running on the spiral dataset.
-- **[Softmax backward appendix](../../appendix_softmax_combined_backward.md)** — the full algebraic derivation, both via substitution and via the explicit Jacobian.
+- **[Softmax backward appendix](../../appendix_softmax_combined_backward.md)** — the full substitution derivation, a class-index implementation, and why the explicit-Jacobian route agrees.
 
 ---
 
