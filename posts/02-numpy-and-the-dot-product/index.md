@@ -10,7 +10,7 @@ part: "Part I — Foundations"
 
 # Part 02 · NumPy and the dot product
 
-> **TL;DR.** `np.dot()` is the single most-used operation in deep-learning code, and almost every "shape mismatch" error a beginner sees comes from misunderstanding it. The function silently takes one of three forms depending on what arrays are passed in: vector by vector (gives a scalar), matrix by vector (gives a vector), or matrix by matrix (gives a matrix). Knowing which form is in play, and which order the arguments must go in, is the difference between a one-line layer and an hour of debugging.
+> **TL;DR.** `np.dot()` is the single most-used operation in deep-learning code, and almost every "shape mismatch" error a beginner sees comes from misunderstanding it. This post lays out its three forms (vector by vector, matrix by vector, matrix by matrix) and the one shape rule and argument order that decide which form runs.
 >
 > **Reading time:** ~13 minutes.
 >
@@ -44,7 +44,7 @@ For two vectors $\vec{a}$ and $\vec{b}$ of equal length $n$, the dot product is 
 
 $$\vec{a} \cdot \vec{b} = \sum_{i=1}^{n} a_i b_i.$$
 
-The result is a single number, a scalar. The arithmetic was named in the 1880s by physicists working with vectors in three dimensions, where it has a geometric meaning: $\vec{a} \cdot \vec{b} = \|\vec{a}\| \|\vec{b}\| \cos\theta$. That geometric reading is useful in physics, less useful for neural networks. The arithmetic reading (multiply, then sum) is what matters here.
+The result is a single number, a scalar. The arithmetic was named in the 1880s by physicists working with vectors in three dimensions, where it has a geometric meaning: $\vec{a} \cdot \vec{b} = \|\vec{a}\| \|\vec{b}\| \cos\theta$. That geometric reading is useful in physics, less useful for neural networks, because a neuron cares about the raw weighted sum of its inputs, not the angle between two vectors. The arithmetic reading (multiply, then sum) is what matters here.
 
 Two consequences follow from that definition:
 
@@ -199,7 +199,7 @@ print(W.T)                          # (4, 3)
 
 For ordinary Python lists, `.T` does not exist; the matrix must first be promoted to an array with `np.array(W)`. Forgetting that wrapper is a common first-day error.
 
-The transpose enters neural-network code for one reason. The convention this series uses, and the convention every framework uses, is **weights with one row per neuron**: $\mathbf{W}$ has shape $(m, n)$ where $m$ is the number of neurons in the layer and $n$ is the number of inputs each neuron consumes. The convention for inputs is **one row per sample**: $\mathbf{X}$ has shape $(N, n)$ where $N$ is the batch size and $n$ is the feature count.
+The transpose enters neural-network code for one reason. The convention this series uses, and the convention every framework uses, is **weights with one row per neuron**: $\mathbf{W}$ has shape $(m, n)$ where $m$ is the number of neurons in the layer and $n$ is the number of inputs each neuron consumes. The convention for inputs is **one row per sample**: $\mathbf{X}$ has shape $(N, n)$ where $N$ is the batch size and $n$ is the feature count. The two are easy to conflate in running prose, so to be explicit: capital $N$ counts samples, lowercase $n$ counts features.
 
 Two layouts now exist, and they must be reconciled:
 
@@ -212,7 +212,7 @@ In both cases the answer comes out the same way: every output is a dot product o
 
 ## 8. Batching, end to end
 
-A batch of three samples through a layer of three neurons:
+The matrix by matrix form in §3 was framed neurons-first, as $(m, n) \cdot (n, p)$. A batch flips that around to samples-first, which is why the transpose appears: the inputs lead with the sample count, so the weights are transposed to bring the shared feature axis inward. A batch of three samples through a layer of three neurons:
 
 ![A batched layer call: (N, n) inputs times (n, m) transposed weights gives (N, m) outputs, with the bias broadcast across rows.](diagrams/04-batch-transpose.svg)
 *The transpose is what makes the shapes line up. Broadcasting handles the bias.*

@@ -10,7 +10,7 @@ part: "Part I — Foundations"
 
 # Part 03 · Stacking layers and the forward pass
 
-> **TL;DR.** A deep network is the same single-layer formula applied $L$ times, with each layer's output piped into the next layer's input. The mathematics introduced in Part 02 already covers it, and the only new thing to track is shape continuity: the number of weights per neuron in layer $\ell$ must equal the number of neurons in layer $\ell - 1$. This post chains two layers together, walks through the shapes for a batch of three samples, and explains why this version of the network, with no activation function between layers, is still a single linear function in disguise.
+> **TL;DR.** A deep network is the same single-layer formula applied $L$ times, with each layer's output piped into the next layer's input. This post chains two layers together, walks through the shapes for a batch of three samples, and explains why a stack with no activation function between layers is still a single linear function in disguise.
 >
 > **Reading time:** ~12 minutes.
 >
@@ -32,7 +32,7 @@ The mathematics of stacking does not introduce a new operation. Each layer appli
 
 $$\mathbf{Z}_\ell = \mathbf{X}_\ell \cdot \mathbf{W}_\ell^{\top} + \mathbf{b}_\ell,$$
 
-with $\mathbf{X}_\ell$ either the original input (for layer 1) or the previous layer's output $\mathbf{Z}_{\ell - 1}$. Chaining two of these calls is the entire forward pass of a two-layer network. Chaining fifty of them gives a fifty-layer network. No new arithmetic is invented along the way.
+with $\mathbf{X}_\ell$ either the original input (for layer 1) or the previous layer's output $\mathbf{Z}_{\ell - 1}$. Chaining two of these calls is the entire forward pass of a two-layer network. Chaining fifty of them gives a fifty-layer network. No new arithmetic is invented along the way; the only new thing to track is shape continuity, namely that the number of weights per neuron in layer $\ell$ must equal the number of neurons in layer $\ell - 1$.
 
 The historical version of this idea is older than backpropagation. Ivakhnenko and Lapa described multi-layer "group method of data handling" networks in 1965, twenty-one years before Rumelhart, Hinton, and Williams gave the modern training algorithm (Ivakhnenko & Lapa, 1965; Rumelhart, Hinton & Williams, 1986). The forward pass has been clear for sixty-one years. What was missing was a way to learn the weights, and that arrives in Parts 09 through 21.
 
@@ -75,8 +75,8 @@ The biases $\mathbf{b}_1$ and $\mathbf{b}_2$ have shape $(3,)$ each, one bias pe
 
 A boundary section, because the next post depends on it.
 
-- **Stacking does not add expressive power on its own.** A composition of linear maps is itself a linear map: $\mathbf{X} \mapsto \mathbf{X} \cdot \mathbf{W}_1^{\top} \mathbf{W}_2^{\top} + (\text{constants})$. The two layers can be collapsed into a single equivalent layer of the same input and output shape. Without a non-linearity between them, depth is decorative.
-- **Stacking does not create features automatically.** The intermediate vector $\mathbf{Z}_1$ is sometimes called a "representation", but for a stack of linear layers that representation is just another linear projection of the input. Real feature learning needs the activations introduced in [Part 06](../06-activation-functions-relu-and-softmax/index.md).
+- **Stacking does not add expressive power on its own.** A composition of linear maps is itself a linear map: $\mathbf{X} \mapsto \mathbf{X} \cdot \mathbf{W}_1^{\top} \mathbf{W}_2^{\top} + (\text{constants})$. The two layers can be collapsed into a single equivalent layer of the same input and output shape; §4 works the substitution out line by line and names that single equivalent weight and bias. Without a non-linearity between them, depth is decorative.
+- **Stacking does not create features automatically.** The intermediate vector $\mathbf{Z}_1$ is sometimes called a "representation" (the re-encoding of the input that a layer hands to the next layer), but for a stack of linear layers that representation is just another linear projection of the input. Real feature learning needs the activations introduced in [Part 06](../06-activation-functions-relu-and-softmax/index.md).
 - **Stacking does not change the cost of `np.dot`.** Each layer is one matrix multiplication; the total cost is the sum. Adding a layer costs FLOPs (floating-point operations) linearly: the total is the sum over layers. Widening a layer costs them quadratically, because a layer mapping $m$ inputs to $m$ neurons does about $m^2$ multiply-adds per sample, so doubling the width roughly quadruples the work.
 
 The universal-approximation result of Cybenko (1989) and Hornik (1991) explains why the next post matters: with a single hidden layer and a non-linearity, a network can approximate any continuous function. The non-linearity is doing the heavy lifting, not the depth.

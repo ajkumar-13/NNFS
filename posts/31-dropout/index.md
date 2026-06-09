@@ -10,7 +10,7 @@ part: "Part VII — Generalisation and regularisation"
 
 # Part 31 · Dropout
 
-> **TL;DR.** L1 and L2 regularisation (Part 30) constrain the *weights*. **Dropout** (Srivastava et al., 2014) constrains the *activations*: on every training forward pass, a random subset of neuron outputs is set to zero, forcing the network to spread its computation across many neurons rather than relying on any single one. The dropped neurons change every step, so the network effectively trains an exponentially large ensemble of subnetworks that share parameters. At test time, dropout is turned off and all neurons fire; the *inverted* implementation used here scales activations by $1/(1-p)$ during training so test-time outputs need no extra adjustment. Add a 30-line `Layer_Dropout` class, slot it after each hidden activation, and the spiral classifier closes its train/test gap to the point that **validation accuracy can exceed training accuracy**, the inverse of the overfitting signature.
+> **TL;DR.** Where L1 and L2 regularisation (Part 30) constrain the *weights*, **dropout** (Srivastava et al., 2014) constrains the *activations* by zeroing a random subset of neuron outputs on every training forward pass, forcing the network to spread its computation across many neurons rather than relying on any single one. This post implements a 30-line `Layer_Dropout` class with the *inverted* convention (scale survivors by $1/(1-p)$ during training, identity at test time) and slots it into the spiral classifier, closing the train/test gap to the point that **validation accuracy can exceed training accuracy**, the inverse of the overfitting signature.
 >
 > **Reading time:** ~12 minutes.
 >
@@ -48,9 +48,9 @@ The first interpretation (from §1) is mechanistic: dropping random neurons brea
 
 ### 2.2. Implicit ensembling
 
-The second interpretation is statistical. A network with $n$ neurons and dropout rate $p$ defines $2^n$ possible **subnetworks**, one for every subset of neurons that could be kept active. Each training step samples one such subnetwork and updates its parameters by one step of SGD. Because all subnetworks share the same underlying weights, parameter updates from one subnetwork transfer to all others.
+The second interpretation is statistical. A network with $n$ neurons defines $2^n$ possible **subnetworks**, one for every subset of neurons that could be kept active. That count comes purely from the number of on/off combinations and does not depend on the dropout rate $p$; the rate only sets how often each subnetwork is sampled. Each training step samples one such subnetwork and updates its parameters by one step of SGD. Because all subnetworks share the same underlying weights, parameter updates from one subnetwork transfer to all others.
 
-After training, the network is effectively an ensemble of $2^n$ subnetworks that have been jointly optimised. At test time, with dropout disabled, the output of the full network approximates the geometric-mean prediction of every subnetwork, a form of model averaging without the compute cost of actually training many models.
+After training, the network is effectively an ensemble of $2^n$ subnetworks that have been jointly optimised. At test time, with dropout disabled, the output of the full network approximates a weighted average over every subnetwork, a form of model averaging without the compute cost of actually training many models.
 
 Ensembles are well known to generalise better than single models (random forests, bagged classifiers, etc.). Dropout is one of the cheapest ways to get an ensemble-like effect inside a single network: no extra training, no extra storage, no extra inference.
 
@@ -265,11 +265,11 @@ In modern practice, **dropout + L2 + data augmentation** is a strong default sta
 ## 10. Anticipated questions
 
 - **What is the relationship between dropout and DropConnect?** DropConnect drops *weights* instead of *activations*. It is rarely used in practice because the bookkeeping is harder; standard dropout is the workhorse.
-- **Should I use dropout on every layer?** No. Dropout on input layers throws away data; dropout on the output layer adds noise to the loss. Use it on hidden layers only.
+- **Should dropout go on every layer?** No. Dropout on input layers throws away data; dropout on the output layer adds noise to the loss. Use it on hidden layers only.
 - **Does dropout work with BatchNorm?** Yes, but the interaction matters. BatchNorm computes statistics over the batch; dropout perturbs those statistics. The original paper (Li et al., 2019, "Understanding the Disharmony between Dropout and Batch Normalization") recommends placing dropout *after* BatchNorm, not before. In practice, most modern architectures use one or the other rather than both.
 - **What is the relationship between dropout rate and L2 strength?** Both are regularisation hyperparameters; they compose multiplicatively. Adding both at half their solo strength is often the right starting point.
 - **Why does dropout sometimes hurt very small networks?** With too few neurons, even modest dropout removes too much capacity. If validation loss goes *up* when dropout is added, the network is too small.
-- **Can I use dropout at inference time on purpose?** Yes, as a Monte Carlo sampling technique called **MC Dropout** (Gal & Ghahramani, 2016). Running multiple test-time forward passes with dropout active gives a distribution over predictions, useful for uncertainty estimation. This is a specialised use; default test-time behaviour is no dropout.
+- **Can dropout be used at inference time on purpose?** Yes, as a Monte Carlo sampling technique called **MC Dropout** (Gal & Ghahramani, 2016). Running multiple test-time forward passes with dropout active gives a distribution over predictions, useful for uncertainty estimation. This is a specialised use; default test-time behaviour is no dropout.
 
 ---
 
@@ -315,7 +315,7 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-The series is complete. The network you have built can:
+The series is complete. The network built across these parts can:
 
 - Forward and backpropagate through arbitrary stacks of dense layers (Parts 1–21).
 - Optimise with vanilla SGD, momentum, AdaGrad, RMSProp, or Adam (Parts 22–27).

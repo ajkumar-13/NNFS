@@ -10,7 +10,7 @@ part: "Part V — Backpropagation"
 
 # Part 15 · Gradients with respect to inputs
 
-> **TL;DR.** Part 14 derived the weight gradient. To stack layers, one more gradient is needed: $\partial L / \partial \mathbf{X}$, the gradient of the loss with respect to the layer's *inputs*. Because each input feeds every neuron in the layer, its gradient is a **sum of contributions** from every neuron it touches. The matrix form collapses that sum into one product: $\partial L / \partial \mathbf{X} = (\partial L / \partial \mathbf{Z}) \cdot \mathbf{W}$. With this third matrix product, the dense layer's backward pass is fully specified: three lines of NumPy, one for each gradient (weights, biases, inputs).
+> **TL;DR.** Stacking layers requires one more gradient beyond the weight gradient: $\partial L / \partial \mathbf{X}$, the gradient of the loss with respect to the layer's *inputs*, which is a sum of contributions because each input feeds every neuron. This post derives the matrix form $\partial L / \partial \mathbf{X} = (\partial L / \partial \mathbf{Z}) \cdot \mathbf{W}$ and shows how it completes the dense layer's backward pass as three lines of NumPy, one each for weights, biases, and inputs.
 >
 > **Reading time:** ~10 minutes.
 >
@@ -80,7 +80,7 @@ $(1, m) \cdot (m, n) = (1, n)$. The matching inner dimension $m$ is the one bein
 
 ## 4. Numerical verification
 
-Using Part 13's setup ($Y = 21.6$, every ReLU gate is $1$, so $\partial L / \partial \mathbf{Z} = [43.2, 43.2, 43.2]$):
+Using Part 13's setup ($Y = 21.6$, every ReLU gate is $1$ because all pre-activations were positive in that example, so $\partial L / \partial \mathbf{Z} = [43.2, 43.2, 43.2]$):
 
 ```python
 import numpy as np
@@ -148,6 +148,8 @@ Combining Parts 13, 14, and 15:
 | Biases | $\sum_{\text{batch}} \partial L / \partial \mathbf{Z}$ | `np.sum(dL_dZ, axis=0)` | `(m,)` |
 | Inputs | $(\partial L / \partial \mathbf{Z}) \cdot \mathbf{W}$ | `dL_dZ @ W` | `(N, n)` |
 
+Here `W` is the same array the runnable blocks above call `weights`. Note also that the weight and bias gradient shapes are batch-invariant (they aggregate the whole batch into one update), while only the input gradient carries the batch dimension $N$, because it stays per-sample.
+
 These three lines are the **entire backward pass** of a dense layer. Part 16 wraps them in a `backward` method on the `Layer_Dense` class. From that point on, every layer in every depth network has a forward and a backward method, and the optimiser only sees the resulting gradients.
 
 ### 6.1. What this version is *not*
@@ -191,7 +193,7 @@ A boundary section.
 - **Using the input gradient to update the weights.** It updates nothing in the current layer; it is passed to the previous layer. Confusing the two breaks the update direction.
 - **Discarding the input gradient at intermediate layers as an optimisation.** Only the very first layer's input gradient is unused. Intermediate layers' input gradients are essential.
 - **Assuming the input-gradient formula changes for different activations.** It does not. Only the upstream gradient changes; the formula above is the same.
-- **Mixing the two weight conventions.** As in Part 14: `(m, n)` versus `(n, m)` flips whether you need `weights` or `weights.T`. Decide once.
+- **Mixing the two weight conventions.** As in Part 14: `(m, n)` versus `(n, m)` flips whether the formula needs `weights` or `weights.T`. Pick one layout and keep it.
 
 ---
 

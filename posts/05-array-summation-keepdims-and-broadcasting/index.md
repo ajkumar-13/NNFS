@@ -10,7 +10,7 @@ part: "Part I — Foundations"
 
 # Part 05 · Array summation, keepdims, and broadcasting
 
-> **TL;DR.** Two NumPy features sit between every neural-network beginner and a working softmax: the `axis` parameter of reductions like `np.sum` and `np.max`, and the broadcasting rules that decide which array shapes can be combined element-wise. Both can produce wrong answers without raising errors, which makes them more dangerous than features that simply fail. This post nails down the meaning of `axis`, explains why `keepdims=True` is the default safe choice, and lays out the broadcasting rules in the order NumPy actually applies them.
+> **TL;DR.** Two NumPy features sit between every neural-network beginner and a working softmax: the `axis` parameter of reductions like `np.sum` and `np.max`, and the broadcasting rules that decide which array shapes can be combined element-wise, both of which can produce wrong answers without raising errors. This post nails down the meaning of `axis`, explains why `keepdims=True` is the default safe choice, and lays out the broadcasting rules in the order NumPy actually applies them.
 >
 > **Reading time:** ~12 minutes.
 >
@@ -77,7 +77,13 @@ Again shape `(3,)`. Each entry is one row's sum: `1+2+3=6`, `4+5+6=15`, `7+8+9=2
 
 > The axis you pass is the axis that disappears.
 
-For a 2-D array, `axis=0` collapses the row dimension and leaves the column dimension; `axis=1` does the opposite. For a 3-D batch of shape `(N, H, W)`, `axis=0` reduces across the batch, leaving a shape-`(H, W)` result. The rule does not change with rank.
+For a 2-D array, `axis=0` collapses the row dimension and leaves the column dimension; `axis=1` does the opposite. For a 3-D batch of shape `(N, H, W)`, `axis=0` reduces across the batch, leaving a shape-`(H, W)` result. The rule does not change with rank, as a quick check confirms:
+
+```python
+b = np.ones((4, 2, 3))               # shape (4, 2, 3)
+np.sum(b, axis=0).shape              # (2, 3)  — the named axis 0 is gone
+np.sum(b, axis=1).shape              # (4, 3)  — axis 1 is gone
+```
 
 ### 2.5. What is *not* obvious about the result
 
@@ -181,7 +187,7 @@ A boundary section, because the distinction matters in code.
 
 - **Broadcasting is not matrix multiplication.** `a + b` and `a * b` are element-wise after broadcasting; they are not `np.dot(a, b)`. Mixing them up is one of the most common errors in custom layer implementations.
 - **Broadcasting is not a reshape.** It does not copy data; it sets up a virtual replication that the underlying loop uses without ever materialising the larger array. This is fast, but it means the result's shape is determined by the rules, not by what was intended.
-- **Broadcasting is not interchangeable across operand order.** `a + b` and `b + a` always give the same numbers; their broadcast shape, however, is determined by both shapes and is symmetric.
+- **Broadcasting is commutative in shape and result.** `a + b` and `b + a` always give the same numbers, and the broadcast shape is determined symmetrically from both operands. The order only matters for in-place operations like `a += b`, where the left operand's shape must already accommodate the result.
 
 ---
 

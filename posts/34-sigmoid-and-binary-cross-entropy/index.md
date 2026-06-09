@@ -10,7 +10,7 @@ part: "Part VIII — Practical training and extensions"
 
 # Part 34 · Sigmoid and binary cross-entropy
 
-> **TL;DR.** Posts 6, 8, and 19 covered softmax + categorical cross-entropy, the standard $K$-class classifier setup. This post does the **binary** counterpart: a single output neuron, **sigmoid** activation, **binary cross-entropy** loss, and the same combined-derivative shortcut. The math is parallel to softmax + CCE but cleaner: a single scalar output instead of a $K$-element distribution, a single log term instead of $K$, and the simplified gradient $\sigma(z) - y$ that drops out of the algebra exactly the way $\hat{y} - y$ dropped out in post 19. For from-scratch implementations the takeaway is: when you have exactly two classes, prefer sigmoid + BCE over two-class softmax + CCE. The output is half the size, the math is one line shorter, and a numerically stable forward pass is half a page of code.
+> **TL;DR.** For a two-class problem a single output neuron with a **sigmoid** activation and **binary cross-entropy** loss is cleaner than two-class softmax + categorical cross-entropy, and it carries the same combined-derivative shortcut. This post derives the simplified gradient $\sigma(z) - y$ and implements a numerically stable `Activation_Sigmoid_Loss_BinaryCrossentropy` class.
 >
 > **Reading time:** ~10 minutes.
 >
@@ -32,14 +32,14 @@ The lectures' classification stack handles any number of classes:
 logits (N, K) → softmax → probabilities (N, K) → categorical cross-entropy → loss
 ```
 
-For binary problems ($K = 2$) you can mechanically use this exact pipeline:
+For binary problems ($K = 2$) this exact pipeline can be used mechanically:
 
 - output layer has 2 neurons
 - targets are one-hot pairs $[1, 0]$ or $[0, 1]$
 - softmax over 2 outputs produces $(p_0, p_1)$ with $p_0 + p_1 = 1$
 - categorical cross-entropy picks the log probability of the true class
 
-It works, but you are doing $2\times$ the work for no benefit. A single neuron with a sigmoid carries the same information: output $p \in (0, 1)$ is the probability of class 1, and $1 - p$ is the probability of class 0 implicitly. Targets become scalar $y \in \{0, 1\}$ instead of one-hot pairs.
+It works, but it is $2\times$ the work for no benefit. A single neuron with a sigmoid carries the same information: output $p \in (0, 1)$ is the probability of class 1, and $1 - p$ is the probability of class 0 implicitly. Targets become scalar $y \in \{0, 1\}$ instead of one-hot pairs. The math is parallel to softmax + CCE but cleaner: a single scalar output instead of a $K$-element distribution, a single log term instead of $K$, and the simplified gradient $\sigma(z) - y$ that drops out of the algebra exactly the way $\hat{y} - y$ dropped out in post 19. The practical payoff: the output is half the size, the math is one line shorter, and a numerically stable forward pass is half a page of code.
 
 This is the standard production pattern for binary classification, and what [project 02](../../projects/02-binary-classifier/README.md) uses. This lecture is the underlying theory.
 
@@ -95,7 +95,7 @@ def sigmoid_stable(z):
     return out
 ```
 
-The trick is that for $z \ge 0$ we compute $1 / (1 + e^{-z})$ (where $e^{-z}$ is bounded by 1) and for $z < 0$ we compute $e^z / (1 + e^z)$ (where $e^z$ is bounded by 1). Both forms are mathematically equivalent; only the floating-point behaviour differs.
+The trick is that for $z \ge 0$ the formula computes $1 / (1 + e^{-z})$ (where $e^{-z}$ is bounded by 1) and for $z < 0$ it computes $e^z / (1 + e^z)$ (where $e^z$ is bounded by 1). Both forms are mathematically equivalent; only the floating-point behaviour differs.
 
 This is the same numerical-stability pattern from post 6's softmax (subtract the max before exponentiating). Different formula, same principle: never let `exp` see a large positive argument.
 
@@ -117,13 +117,13 @@ Three things worth unpacking.
 
 **At $\hat{y} = y$, the loss is zero (perfect prediction).** Otherwise the loss grows without bound as the prediction approaches the wrong end of [0, 1]. A model that confidently predicts $\hat{y} = 0.99$ when the truth is $y = 0$ takes a loss of $-\log(0.01) \approx 4.6$.
 
-**It's equivalent to categorical cross-entropy at $K = 2$.** Plug $K = 2$, $\hat{y}_0 = 1 - p$, $\hat{y}_1 = p$, $y_0 = 1 - y$, $y_1 = y$ into the CCE formula $-\sum_k y_k \log \hat{y}_k$ and you get back the BCE expression above. Not coincidence: BCE is the $K = 2$ special case.
+**It's equivalent to categorical cross-entropy at $K = 2$.** Plugging $K = 2$, $\hat{y}_0 = 1 - p$, $\hat{y}_1 = p$, $y_0 = 1 - y$, $y_1 = y$ into the CCE formula $-\sum_k y_k \log \hat{y}_k$ expands to $-\bigl[(1 - y)\log(1 - p) + y \log p\bigr]$, which is exactly the BCE expression above. Not coincidence: BCE is the $K = 2$ special case.
 
 ---
 
 ## 4. The combined backward trick
 
-The derivative of the loss with respect to the *logit* $z$ (not the predicted probability $\hat{y}$) is the only one the optimiser needs. Computing it the naïve way involves $\partial L / \partial \hat{y}$ and $\partial \hat{y} / \partial z$ separately, then chaining; both intermediate derivatives have division-by-tiny-numbers risks. The combined form avoids them all.
+The derivative of the loss with respect to the *logit* $z$ (the pre-activation value, before the sigmoid), not the predicted probability $\hat{y}$, is the only one the optimiser needs. Computing it the naïve way involves $\partial L / \partial \hat{y}$ and $\partial \hat{y} / \partial z$ separately, then chaining; both intermediate derivatives have division-by-tiny-numbers risks. The combined form avoids them all.
 
 The chain rule gives:
 
@@ -220,10 +220,10 @@ Three implementation notes.
 
 - **Is sigmoid + BCE the same as 2-class softmax + CCE?** Mathematically identical at $K = 2$. The two parameterisations differ by a constant offset in the logits but give the same predictions and the same loss. Pick whichever is more convenient: sigmoid + BCE for fewer parameters, softmax + CCE for code uniformity with multi-class.
 - **Why is BCE "binary" and CCE "categorical"?** Convention. "Binary" emphasises the 2-class restriction; "categorical" emphasises the K-class generality. The loss formulas reduce to each other at $K = 2$.
-- **Does sigmoid + BCE have the same saturating-gradient problem as plain sigmoid?** No, because the combined class never computes the sigmoid gradient. The naïve sigmoid + separate-BCE pair does have it (you'd divide by the small $\hat{y}(1-\hat{y})$ factor); the combined class cancels it analytically.
+- **Does sigmoid + BCE have the same saturating-gradient problem as plain sigmoid?** No, because the combined class never computes the sigmoid gradient. The naïve sigmoid + separate-BCE pair does have it (it divides by the small $\hat{y}(1-\hat{y})$ factor); the combined class cancels it analytically.
 - **What about logistic regression?** Logistic regression is exactly the sigmoid + BCE setup with no hidden layers. The classical formula is identical to a single `Layer_Dense` followed by `Activation_Sigmoid_Loss_BinaryCrossentropy`.
-- **What if I use BCE with a softmax instead of a sigmoid?** Don't; the math breaks. BCE assumes its two arguments are $\hat{y}$ and $1 - \hat{y}$ where $\hat{y} \in (0, 1)$. A softmax output is a $K$-element distribution that does not factor that way.
-- **What about labels in $\{-1, +1\}$ instead of $\{0, 1\}$?** Some references use that convention (especially SVM literature). Either re-derive BCE for $\pm 1$ labels (you'd get the "logistic loss") or convert your labels to $\{0, 1\}$ before training. Most neural network code expects $\{0, 1\}$.
+- **What if BCE is used with a softmax instead of a sigmoid?** It doesn't work; the math breaks. BCE assumes its two arguments are $\hat{y}$ and $1 - \hat{y}$ where $\hat{y} \in (0, 1)$. A softmax output is a $K$-element distribution that does not factor that way.
+- **What about labels in $\{-1, +1\}$ instead of $\{0, 1\}$?** Some references use that convention (especially SVM literature). Either re-derive BCE for $\pm 1$ labels (the result is the "logistic loss") or convert the labels to $\{0, 1\}$ before training. Most neural network code expects $\{0, 1\}$.
 
 ---
 

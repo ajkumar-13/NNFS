@@ -10,7 +10,7 @@ part: "Part V — Backpropagation"
 
 # Part 16 · Coding backpropagation
 
-> **TL;DR.** Three lectures of theory (Parts 13, 14, 15) become three lines of code. This post adds a `backward` method to `Layer_Dense` and `Activation_ReLU`, caches the inputs each layer needs during the backward pass, and verifies the resulting gradients against the manual numbers from earlier posts. By the end of the post, every layer in the series carries its own forward and backward step, and the network is one missing piece (the loss-and-softmax backward, Parts 18–19) away from a complete training loop.
+> **TL;DR.** Three lectures of theory (Parts 13, 14, 15) become three lines of code. This post adds a `backward` method to `Layer_Dense` and `Activation_ReLU`, caches the inputs each layer needs during the backward pass, and verifies the resulting gradients against the manual numbers from earlier posts.
 >
 > **Reading time:** ~10 minutes.
 >
@@ -34,7 +34,7 @@ part: "Part V — Backpropagation"
 | `self.dbiases` | $\partial L / \partial \mathbf{b}$ | the optimiser, to update the biases |
 | `self.dinputs` | $\partial L / \partial \mathbf{X}$ | the previous layer, as *its* `dvalues` |
 
-The first two are what the optimiser consumes (Part 22 onward). The third is what flows upstream to the next layer in the backward walk. Together, they are the complete contract of a layer in any modern deep-learning framework.
+The first two are what the optimiser consumes (Part 22 onward). The third is what flows upstream to the next layer in the backward walk. Together, they are the complete contract of a layer in any modern deep-learning framework. Once these are in place, every layer in the series carries its own forward and backward step, and the network is one missing piece (the loss-and-softmax backward, Parts 18–19) away from a complete training loop.
 
 The three matrix expressions for these gradients were derived in Parts 13–15:
 
@@ -44,7 +44,7 @@ The three matrix expressions for these gradients were derived in Parts 13–15:
 | `dbiases` | $\sum_{\text{batch}} \text{dvalues}$ | `np.sum(dvalues, axis=0, keepdims=True)` |
 | `dinputs` | $\text{dvalues} \cdot \mathbf{W}^{\top}$ | `dvalues @ self.weights.T` |
 
-Three lines, plus one line in `forward` to cache the inputs.
+Read intuitively: `dweights` is large where an input and its upstream gradient are both large; `dbiases` sums the upstream gradient over the batch because a bias is added identically to every sample; `dinputs` routes the upstream gradient back through the weights to the previous layer. Three lines, plus one line in `forward` to cache the inputs.
 
 ---
 
@@ -142,7 +142,7 @@ ReLU's local derivative is $1$ when its input was positive and $0$ otherwise. Th
 
 $$\frac{\partial L}{\partial z_k} = \frac{\partial L}{\partial a_k} \cdot \mathbb{1}[z_k > 0].$$
 
-In code:
+Here the subscript $k$ indexes a single element, and $\mathbb{1}[\cdot]$ is the indicator: $1$ when the condition holds and $0$ otherwise. In code:
 
 ```python
 class Activation_ReLU:
@@ -230,8 +230,8 @@ A boundary section.
 ## 8. Anticipated questions
 
 - **Why does `dweights` come out as `(n_inputs, n_neurons)` and not `(n_neurons, n_inputs)`?** Because the production weight layout from Part 04 is `(n_inputs, n_neurons)`. The gradient has the same shape as the parameter so that `weights -= lr * dweights` is in-place safe.
-- **What if I forget the `keepdims=True`?** `dbiases` will come out shape `(n_neurons,)` instead of `(1, n_neurons)`. Subtracting from `self.biases` (shape `(1, n_neurons)`) still works because of broadcasting, but mixing 1-D and 2-D arrays is the kind of thing that explodes when a later refactor adds another axis. Always use `keepdims=True`.
-- **Can I implement `backward` without storing `self.inputs`?** Only by recomputing the forward pass inside `backward`, which doubles the cost. For tiny layers it might be fine; for production layers it is wasteful.
+- **What happens if `keepdims=True` is omitted?** `dbiases` will come out shape `(n_neurons,)` instead of `(1, n_neurons)`. Subtracting from `self.biases` (shape `(1, n_neurons)`) still works because of broadcasting, but mixing 1-D and 2-D arrays is the kind of thing that explodes when a later refactor adds another axis. Always use `keepdims=True`.
+- **Can `backward` be implemented without storing `self.inputs`?** Only by recomputing the forward pass inside `backward`, which doubles the cost. For tiny layers it might be fine; for production layers it is wasteful.
 - **What happens if `dvalues.shape` does not match `self.output.shape`?** `dvalues` should always have the same shape as `self.output` (it is the gradient with respect to the output). A mismatch is a bug in whichever upstream code produced `dvalues`.
 - **Does the `np.maximum(0, inputs)` line in ReLU need to cache the input or the output?** Either works; the input is more common because ReLU is the simplest case where both happen to be the same when the input is positive. For other activations (sigmoid, tanh) the output is typically more useful to cache, because the derivatives have clean expressions in terms of the output.
 

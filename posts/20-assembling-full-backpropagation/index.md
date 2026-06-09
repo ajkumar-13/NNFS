@@ -10,7 +10,7 @@ part: "Part V — Backpropagation"
 
 # Part 20 · Assembling full backpropagation
 
-> **TL;DR.** Seven posts of backprop theory and code reduce to one diagram: forward pass walks left-to-right calling `forward`; backward pass walks right-to-left calling `backward`; each component's `dinputs` feeds the next component's `dvalues`. With `Layer_Dense`, `Activation_ReLU`, and `Activation_Softmax_Loss_CategoricalCrossentropy` all carrying both methods, the spiral classifier has every gradient it needs and nothing else. The training loop is the topic of Part 21; this post is the architectural picture that makes that loop one screen of code.
+> **TL;DR.** Ten posts of backprop theory and code reduce to one diagram: the forward pass walks left-to-right calling `forward`, the backward pass walks right-to-left calling `backward`, and each component's `dinputs` feeds the next component's `dvalues`. This post wires `Layer_Dense`, `Activation_ReLU`, and `Activation_Softmax_Loss_CategoricalCrossentropy` into a complete forward-backward-update pass, the architectural picture that makes the Part 21 training loop one screen of code.
 >
 > **Reading time:** ~11 minutes.
 >
@@ -58,13 +58,23 @@ loss = loss_activation.forward(layer2.output, y) # Z2 → ŷ → scalar L
 
 Five lines, four method calls. Each call writes its result to `self.output` (or, for the combined loss/activation, both `self.output` and the returned scalar `loss`). Every call also stores the inputs it received, because the backward pass will need them.
 
+The shapes track exactly as in Part 07, where $N$ is the batch size (the number of spiral samples processed at once):
+
+| Array | Shape |
+|---|:---:|
+| `X` (input batch) | `(N, 2)` |
+| `layer1.output` ($\mathbf{Z}_1$) | `(N, 3)` |
+| `activation1.output` ($\mathbf{A}_1$) | `(N, 3)` |
+| `layer2.output` ($\mathbf{Z}_2$) | `(N, 3)` |
+| `loss_activation.output` ($\hat{\mathbf{y}}$) | `(N, 3)` |
+
 The flow is exactly the four-stage pipeline from Part 07; the only new thing here is that the last step now goes all the way to the loss scalar in a single call, because `loss_activation.forward` chains softmax and cross-entropy together.
 
 ---
 
 ## 3. The backward pass
 
-The backward pass mirrors the forward, walking the chain in reverse. Each component's `backward` receives the previous component's `dinputs` (which becomes its `dvalues`).
+The backward pass mirrors the forward, walking the chain in reverse. Each component's `backward` receives the previous component's `dinputs` (which becomes its `dvalues`). The first call looks unusual, since it passes `loss_activation.output` to `loss_activation.backward`; §7 explains why this is a convenience rather than a real upstream gradient.
 
 ```python
 # Backward pass: walk right to left.
@@ -107,7 +117,7 @@ layer2.biases  -= learning_rate * layer2.dbiases
 
 Four subtractions, four trainable arrays. After this block, the network is one step closer to a low-loss configuration. Repeating the whole **forward → backward → update** cycle for many iterations is what training is. [Part 21](../21-coding-the-full-backpropagation/index.md) wraps the cycle in a loop and watches the loss drop on the spiral dataset.
 
-This particular update rule is **vanilla gradient descent**. Parts 22 through 27 introduce smarter optimisers (learning-rate decay, momentum, AdaGrad, RMSProp, Adam) that wrap exactly the same gradient arrays with cleverer step rules. The gradients themselves come from this post's pipeline; the choice of optimiser is orthogonal.
+This particular update rule is **vanilla gradient descent**. Parts 23 through 27 introduce smarter optimisers (learning-rate decay, momentum, AdaGrad, RMSProp, Adam) that wrap exactly the same gradient arrays with cleverer step rules. The gradients themselves come from this post's pipeline; the choice of optimiser is orthogonal.
 
 ---
 
@@ -137,8 +147,8 @@ This is exactly how PyTorch's autograd works under the hood. Each operation know
 A boundary section.
 
 - **It is not yet a training loop.** This post runs one forward and one backward pass. The loop arrives in Part 21.
-- **It is not optimised.** The vanilla SGD update is the simplest possible step rule. Real models use Adam or one of the variants from Parts 24–27.
-- **It is not stochastic or batched.** The example uses the whole spiral dataset at once. Mini-batching (a randomly sampled subset per step) is the standard production approach; it is mechanical to add and covered in [Part 22](../22-gradient-descent-optimiser/index.md).
+- **It is not optimised.** The vanilla SGD update is the simplest possible step rule. Real models use Adam or one of the variants from Parts 23–27.
+- **It is not stochastic or batched.** The example uses the whole spiral dataset at once. Mini-batching (a randomly sampled subset per step) is the standard production approach; it is mechanical to add and covered in [Part 32](../32-mini-batching/index.md).
 - **It does not handle multiple datasets, validation, or early stopping.** Those concerns enter with the generalisation lectures (Parts 28–31).
 - **It is not the most efficient layout.** A `Model` class that owns a list of layers and walks them automatically is the standard refactor; this post leaves layers and activations as separate variables for clarity.
 
@@ -148,7 +158,7 @@ A boundary section.
 
 - **Why doesn't `loss_activation.backward` take `dvalues` from somewhere upstream?** Because the loss is the rightmost component in the chain. Its "upstream" is the loss scalar itself, whose derivative with respect to itself is $1$. The implementation skips the multiplication by $1$ and goes straight to the local gradient $(\hat{\mathbf{y}} - \mathbf{y})/N$.
 - **Why pass `loss_activation.output` as `dvalues` to `loss_activation.backward`?** Convenience. The combined class uses `dvalues` as the starting array for the copy-then-subtract trick from Part 19. The actual gradient comes from inside the class, not from `dvalues`.
-- **Can I add more hidden layers?** Yes. Insert `Layer_Dense(in, out) + Activation_ReLU()` pairs between layer 1's activation and layer 2. The chain in §3 grows by two calls per pair; the update in §4 grows by two parameter subtractions per layer.
+- **Can more hidden layers be added?** Yes. Insert `Layer_Dense(in, out) + Activation_ReLU()` pairs between layer 1's activation and layer 2. The chain in §3 grows by two calls per pair; the update in §4 grows by two parameter subtractions per layer.
 - **Why doesn't ReLU have a `dweights` or `dbiases`?** Because it has no trainable parameters. It only has `dinputs`, the gradient with respect to its input, which it passes back to the previous dense layer. Only `Layer_Dense` has trainable parameters.
 - **Does the order of `forward` calls matter?** Yes — strictly left to right. Each call reads from the previous one's `self.output`. Reordering them would read stale or uninitialised data.
 
@@ -174,7 +184,7 @@ A boundary section.
 - **Updating weights before computing all gradients.** The update for one layer changes the values the next backward call reads. Compute every gradient first, then update.
 - **Calling `loss_activation.backward(layer2.output, y)`.** It looks symmetric with the forward call but is wrong. The first argument should be `loss_activation.output` (the softmax output), not the layer's pre-softmax outputs.
 - **Forgetting that the combined class lives at the end.** Putting `Loss_CategoricalCrossentropy` after a regular `Activation_Softmax` (instead of using the combined class) costs both numerical stability and the clean shortcut.
-- **Storing per-batch results across iterations.** Each forward overwrites `self.output`; each backward overwrites `self.dinputs`. If you need a history, copy them out explicitly.
+- **Storing per-batch results across iterations.** Each forward overwrites `self.output`; each backward overwrites `self.dinputs`. If a history is needed, copy them out explicitly.
 - **Trying to run inference on a `loss_activation` instance without `y`.** `forward` requires the true labels. For pure inference, run `self.activation.forward(inputs)` and read `self.activation.output` directly.
 
 ---

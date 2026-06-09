@@ -10,7 +10,7 @@ part: "Part VIII — Practical training and extensions"
 
 # Part 33 · Weight initialisation
 
-> **TL;DR.** Every `Layer_Dense` in the lectures initialised its weights with `0.01 * np.random.randn(...)`. That worked fine for two-hidden-layer networks but **fails silently** in deeper ones: the activations either shrink to zero through the layers (vanishing) or blow up (exploding), and training stalls before the first useful gradient appears. **Glorot/Xavier** initialisation (Glorot & Bengio, 2010) scales the random weights by $\sqrt{1/n_\text{in}}$ to preserve activation variance across layers, designed for symmetric activations like tanh. **He initialisation** (He et al., 2015) scales by $\sqrt{2/n_\text{in}}$, designed for ReLU, which zeros half the activations and so needs the variance doubled to compensate. For a from-scratch series, He init is the right default for any network using ReLU; a one-line change to `Layer_Dense.__init__` is enough.
+> **TL;DR.** The lectures' `0.01 * np.random.randn(...)` weight init works for two-hidden-layer networks but **fails silently** in deeper ones, where activations either shrink to zero (vanishing) or blow up (exploding) and training stalls before the first useful gradient appears. This post derives the variance-preservation argument behind **Glorot/Xavier** and **He** initialisation and shows that for a ReLU-based from-scratch series, He init is the right default via a one-line change to `Layer_Dense.__init__`.
 >
 > **Reading time:** ~11 minutes.
 >
@@ -57,6 +57,8 @@ The same argument applies layer by layer. After $L$ identical layers:
 
 $$\text{Var}(\mathbf{z}^{(L)}) = \big(n_\text{in} \cdot \text{Var}(W)\big)^L \cdot \text{Var}(\mathbf{x}^{(0)})$$
 
+This recursion is for a linear stack, where the post-activation variance equals the pre-activation variance; a nonlinearity like ReLU changes the constant, as section 4 shows.
+
 If $n_\text{in} \cdot \text{Var}(W) > 1$, the variance grows exponentially with depth (**exploding activations**). If $n_\text{in} \cdot \text{Var}(W) < 1$, it shrinks exponentially (**vanishing activations**). Only at *exactly* $n_\text{in} \cdot \text{Var}(W) = 1$ does it stay roughly stable.
 
 That last equation is the entire initialisation story:
@@ -92,7 +94,7 @@ The Glorot-uniform variant draws from $\mathcal{U}(-a, a)$ with $a = \sqrt{6 / (
 
 **When to use Glorot.** When the activation function is roughly symmetric around zero with bounded slope: tanh, sigmoid, softsign. These activations preserve approximately the same variance as their input.
 
-**When NOT to use Glorot.** When the activation function is **ReLU**. That is the subject of the next section.
+**When NOT to use Glorot.** When the activation function is **ReLU** (the Rectified Linear Unit, $\max(0, z)$). That is the subject of the next section.
 
 ---
 
@@ -175,11 +177,11 @@ Three notes.
 
 Three failure modes worth recognising at sight.
 
-**Loss is exactly $\ln(C)$ on step 1 and never moves.** For a $C$-class classifier with cross-entropy loss, a uniform-prediction model has loss $\ln(C)$: about 2.30 for 10 classes, 1.10 for 3 classes, 0.69 for 2 classes. If your loss starts at exactly this value and stays flat for many epochs, the activations have vanished and the softmax output is uniform; no gradient flows.
+**Loss is exactly $\ln(C)$ on step 1 and never moves.** For a $C$-class classifier with cross-entropy loss, a uniform-prediction model has loss $\ln(C)$: about 2.30 for 10 classes, 1.10 for 3 classes, 0.69 for 2 classes. If the loss starts at exactly this value and stays flat for many epochs, the activations have vanished and the softmax output is uniform; no gradient flows.
 
-**Loss is `inf` or `NaN` immediately.** Activations have exploded: the variance grew large enough that `np.exp(z)` in the softmax overflowed. Symptom: print the first few activations; if any are `> 1e30`, you have exploding init.
+**Loss is `inf` or `NaN` immediately.** Activations have exploded: the variance grew large enough that `np.exp(z)` in the softmax overflowed (NaN, "not a number", is the floating-point result of such an invalid operation). Symptom: print the first few activations; if any are `> 1e30`, the init is exploding.
 
-**Loss decreases on the first few epochs and then stalls.** Often a sign that *some* layers are healthy and others are dead. Possible if you mixed init strategies, or if the input data isn't standardised (a feature with range $\pm 1000$ behaves like an exploding init even if the weights are sane).
+**Loss decreases on the first few epochs and then stalls.** Often a sign that *some* layers are healthy and others are dead. Possible if init strategies were mixed, or if the input data isn't standardised (a feature with range $\pm 1000$ behaves like an exploding init even if the weights are sane).
 
 **Diagnostic recipe.**
 
@@ -210,16 +212,16 @@ A few practical points where init effects compose with other design choices.
 
 **Transformers use slightly different defaults.** GPT-style transformer blocks initialise output projections to a smaller scale than He, on the grounds that residual additions accumulate variance and the output projections shouldn't amplify them. Specific value: `std = 0.02 / sqrt(2 * n_layers)`.
 
-For the from-scratch series (no residuals, no batchnorm, at most three hidden layers) **He init is the right and sufficient default**. The exotic variants matter when you're building specific deep architectures, not when you're learning the basics.
+For the from-scratch series (no residuals, no batchnorm, at most three hidden layers) **He init is the right and sufficient default**. The exotic variants matter when building specific deep architectures, not when learning the basics.
 
 ---
 
 ## 8. Anticipated questions
 
 - **Why did the lectures' `0.01 * randn` work for the spiral classifier?** Because the network was shallow. Two hidden layers means the activation variance only shrinks twice; the first layer's output is still well within float32 precision and the gradients still propagate. With five layers it would have failed.
-- **Should I re-initialise weights between runs?** Always. The whole point of random init is the symmetry-breaking it provides; reusing the same weights gives the same optimisation path.
+- **Should weights be re-initialised between runs?** Always. The whole point of random init is the symmetry-breaking it provides; reusing the same weights gives the same optimisation path.
 - **Does He init help when the dataset is already standardised?** Yes; they solve different problems. Standardising the *input* makes the first layer behave well; He init makes every layer behave well. Use both.
-- **What if my activation is a custom one, say Swish or GELU?** Use He init as a reasonable default. The exact correction factor for these activations exists in the literature (e.g. SELU has its own bespoke init in Klambauer et al., 2017) but the gain from getting it exactly right is small compared to getting it approximately right with He.
+- **What about a custom activation, say Swish or GELU?** Use He init as a reasonable default. The exact correction factor for these activations exists in the literature (e.g. SELU has its own bespoke init in Klambauer et al., 2017) but the gain from getting it exactly right is small compared to getting it approximately right with He.
 - **Is there a "best" init in absolute terms?** No; best init depends on architecture, activation, depth, and presence of normalisation. He for ReLU + dense, Glorot for tanh + dense, normal-with-truncation for transformers, and so on.
 - **Why is the bias initialised to zero and not something nonzero?** Biases break symmetry only weakly (every neuron in a layer with zero biases has different weights, which is enough). Some recipes add tiny positive bias for ReLU (e.g., 0.01) to push more neurons into the active region from the start; the benefit is marginal.
 
@@ -241,12 +243,12 @@ For the from-scratch series (no residuals, no batchnorm, at most three hidden la
 
 ## Common pitfalls
 
-- **Using `0.01 * randn` for a 6-layer ReLU network.** Activations shrink by ~32× per layer, so by layer 6 they are $\sim 10^{-9}$ of input scale. Training appears to do nothing.
+- **Using `0.01 * randn` for a 6-layer ReLU network.** Activation variance shrinks by ~150× per layer (the factor from section 3), so by layer 6 the activations are vanishingly small relative to the input scale. Training appears to do nothing.
 - **Using He init for a tanh network.** Activations grow because tanh doesn't kill half the values. Use Glorot for tanh.
 - **Initialising biases to nonzero random values.** Adds noise without breaking any symmetry (the weights already broke it). Stay at zero.
-- **Forgetting to re-seed the RNG between experiments.** Reproducibility breaks; comparing two init schemes becomes confounded by the random draw.
+- **Forgetting to re-seed the RNG (random number generator) between experiments.** Reproducibility breaks; comparing two init schemes becomes confounded by the random draw.
 - **Using a single init scheme for every layer when activations differ.** A network with a tanh hidden layer followed by a ReLU should use Glorot for the tanh's *input* layer and He for the ReLU's. In practice, just use He everywhere for ReLU-only networks.
-- **Forgetting to standardise the input.** Even perfect init does not save you if the input has a feature with variance $10^6$. Standardise inputs first.
+- **Forgetting to standardise the input.** Even perfect init does not help if the input has a feature with variance $10^6$. Standardise inputs first.
 
 ---
 

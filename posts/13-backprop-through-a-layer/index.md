@@ -10,7 +10,7 @@ part: "Part V — Backpropagation"
 
 # Part 13 · Backpropagation through a layer of neurons
 
-> **TL;DR.** The single-neuron recipe from Part 12 scales without modification to an entire layer. The same chain rule walks back through each neuron in parallel; the same upstream gradient is broadcast across every neuron; the same "upstream × input" pattern produces the gradient for every weight. The total number of partial derivatives grows from 4 (one neuron, 3 weights + 1 bias) to 15 (three neurons, 12 weights + 3 biases), but the structure is identical and a 200-iteration training loop drops the loss to essentially zero.
+> **TL;DR.** The single-neuron recipe from Part 12 scales without modification to an entire layer: the same chain rule walks back through each neuron in parallel, the same upstream gradient is broadcast across every neuron, and the same "upstream × input" pattern produces the gradient for every weight. This post makes that same-pattern-times-three structure explicit on a three-neuron layer and runs a 200-iteration training loop that drops the loss to essentially zero.
 >
 > **Reading time:** ~11 minutes.
 >
@@ -28,7 +28,7 @@ part: "Part V — Backpropagation"
 
 Part 12 derived the backward pass for a single neuron: four chain-rule factors, one upstream gradient, one input-vector multiplication. The result was four numbers (three weight gradients, one bias gradient) that the optimiser used to update the parameters.
 
-This post takes the next step. The architecture has **three neurons** sharing the same four-dimensional input. Each neuron has its own four weights and its own bias, for a total of 15 learnable parameters. Their outputs are summed and squared to produce a scalar loss.
+This post takes the next step. The architecture has **three neurons** sharing the same four-dimensional input. Each neuron has its own four weights and its own bias, for a total of 15 learnable parameters. The number of partial derivatives therefore grows from 4 in Part 12 (3 weights + 1 bias) to 15 here (12 weights + 3 biases), but the structure is identical. Their outputs are summed and squared to produce a scalar loss.
 
 Nothing new in the math is introduced. The single-neuron chain rule runs once per neuron, gets the same upstream signal from the loss, and produces the same "upstream × input" pattern for every weight. The point of the post is to make that **same-pattern-times-three** structure explicit, then formalise it as a matrix product in Part 14.
 
@@ -214,7 +214,7 @@ iter 100  loss = 0.000190
 iter 199  loss = 0.000000
 ```
 
-The loss converges to effectively zero. The network has learned a set of weights for which the three neurons' ReLU'd outputs sum to zero, which is the target. The geometry is uninteresting (with a target of zero and a single sample, many parameter configurations satisfy it); the mechanics of the backward pass are what this post is about.
+The loss converges to effectively zero. The network has learned a set of weights for which the three neurons' ReLU'd outputs sum to zero, which is the target. Because the updates only shrink the positive pre-activations toward zero, every $Z_k$ stays positive for the whole run, so all three ReLU gates remain $1$ throughout training and the per-neuron story above never changes. The geometry is uninteresting (with a target of zero and a single sample, many parameter configurations satisfy it); the mechanics of the backward pass are what this post is about.
 
 ### 7.1. Where the matrix product is hiding
 
@@ -241,7 +241,7 @@ A short comparison, to make the scaling explicit.
 | Weight gradient | vector × input | outer product of `dL_dZ` and `inputs` |
 | Bias gradient | scalar | vector, equals `dL_dZ` |
 
-The structural recipe is unchanged. The shape of each quantity grows by one dimension.
+The structural recipe is unchanged. The shape of each quantity grows by one dimension. The loss-derivative row renames the same quantity: $\hat{y}$ was Part 12's single-neuron output, and $Y$ is this layer's summed output, so $2\hat{y}$ and $2Y$ are the identical loss derivative applied to whichever scalar feeds the loss.
 
 ---
 

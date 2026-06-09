@@ -10,7 +10,7 @@ part: "Part II — Activations and forward pass"
 
 # Part 06 · Activation functions: ReLU and Softmax
 
-> **TL;DR.** Without a non-linear function between layers, a deep network is mathematically identical to a single linear layer; this post fixes that. Hidden layers get **ReLU**, the function `max(0, x)` that introduced the modern era of deep learning when Glorot, Bordes, and Bengio published it in 2011. Output layers for classification get **Softmax**, which turns raw layer outputs into a valid probability distribution that sums to one. Together they make the difference between a network that can only fit lines and a network that can fit anything.
+> **TL;DR.** Without a non-linear function between layers, a deep network is mathematically identical to a single linear layer. This post fixes that by adding two activations: **ReLU** (`max(0, x)`) for hidden layers and **Softmax** for classification output layers.
 >
 > **Reading time:** ~13 minutes.
 >
@@ -165,7 +165,7 @@ The `axis=1, keepdims=True` argument set is exactly what [Part 05](../05-array-s
 
 ## 5. The forward pass, end to end
 
-The pieces from Parts 04 and 05 plus the two activations from this post now form a complete (untrained) classifier:
+The pieces from Parts 04 and 05 plus the two activations from this post now form a complete (untrained) classifier. The block below assumes `Layer_Dense` from [Part 04](../04-dense-layer-class-and-spiral-data/index.md) and the two `Activation_` classes defined above are already in scope:
 
 ```python
 import numpy as np
@@ -251,7 +251,7 @@ A network that follows this default has its activations in the right places with
 - **Applying ReLU to the output layer of a classifier.** The output goes to softmax. Inserting ReLU first throws away any negative logits before they can be exponentiated, and the resulting probabilities are skewed.
 - **Applying softmax to the input data.** Softmax is for raw logits, not for raw inputs. Doing this turns the dataset into probabilities and breaks everything downstream.
 - **Forgetting that ReLU's derivative is discontinuous at zero.** It rarely matters in floating point, but it does mean some custom optimisers and analytic tools need a defensive choice (typically derivative = 0 at exactly zero).
-- **Using sigmoid for hidden layers in a deep network.** Sigmoid saturates and stalls training in deep networks. Use ReLU for hidden layers unless you have a specific reason not to.
+- **Using sigmoid for hidden layers in a deep network.** Sigmoid saturates and stalls training in deep networks. ReLU is the right choice for hidden layers unless there is a specific reason not to use it.
 
 ---
 

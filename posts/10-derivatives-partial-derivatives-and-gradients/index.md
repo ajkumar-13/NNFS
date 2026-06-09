@@ -10,7 +10,7 @@ part: "Part IV — Calculus for backpropagation"
 
 # Part 10 · Derivatives, partial derivatives, and gradients
 
-> **TL;DR.** Gradient descent (Part 09) needs gradients; gradients are vectors of partial derivatives; partial derivatives are ordinary derivatives that ignore every variable except one. This post builds the three concepts in order: the **derivative** is the slope of a single-variable function, the **partial derivative** generalises it to multi-variable functions by holding the others constant, and the **gradient** packs the partial derivatives into a vector that points in the direction of steepest ascent. The point of all of it is one piece of arithmetic that comes back in every later post: change a weight by a tiny amount and observe how the loss changes by `∂L/∂w` times that amount.
+> **TL;DR.** Gradient descent (Part 09) needs gradients, and a gradient is just a vector of partial derivatives, each one an ordinary derivative that ignores every variable except one. This post builds the three concepts in order: the **derivative** (slope of a single-variable function), the **partial derivative** (the same idea with the other variables held constant), and the **gradient** (the partial derivatives packed into a vector that points in the direction of steepest ascent).
 >
 > **Reading time:** ~12 minutes.
 >
@@ -20,7 +20,7 @@ part: "Part IV — Calculus for backpropagation"
 > - Read a gradient vector and say what each component means for a single weight in the network.
 
 ![A derivative is the slope of the tangent line. Steep tangent = big derivative = small input change has a big effect on the output.](diagrams/01-derivative-as-slope.svg)
-*Three points on the same curve, three tangent lines, three slopes. The derivative is the function that gives you the slope at any point.*
+*Three points on the same curve, three tangent lines, three slopes. The derivative is the function that gives the slope at any point.*
 
 ---
 
@@ -48,7 +48,7 @@ For a function of a single real variable $f(x)$, the **derivative** $f'(x)$ at a
 
 $$f'(x) = \frac{df}{dx} = \lim_{\Delta x \to 0} \frac{f(x + \Delta x) - f(x)}{\Delta x}.$$
 
-Intuitively, $f'(x)$ answers the question: "if I nudge $x$ by a very small amount, by how much does $f$ change, per unit of nudge?" The answer is a number: the local slope.
+Intuitively, $f'(x)$ answers the question: "if $x$ is nudged by a very small amount, by how much does $f$ change, per unit of nudge?" The answer is a number: the local slope.
 
 ### 2.1. The power rule
 
@@ -97,7 +97,7 @@ A boundary section, because the concept gets misused often.
 
 - **A derivative is not a delta.** It is a *rate*, not a difference. The actual change in $f$ for a finite step $\Delta x$ is approximately $f'(x) \cdot \Delta x$, not $f'(x)$ itself.
 - **A derivative is not always defined.** Functions with corners (like ReLU at $x=0$) are non-differentiable at the corner. Practical implementations pick one side and move on.
-- **A derivative is not a function value.** $f(x)$ tells you what the function equals at $x$; $f'(x)$ tells you how steeply it changes there. The two coincide only for the trivial function $f(x) = e^x$.
+- **A derivative is not a function value.** $f(x)$ is what the function equals at $x$; $f'(x)$ is how steeply it changes there. The two coincide for the special case $f(x) = e^x$.
 - **A derivative is not the same as a finite-difference approximation.** Numerical gradients (Part 09 §9 question) approximate $f'(x)$ by sampling $f(x + \epsilon) - f(x - \epsilon)$ over a small $\epsilon$. They are useful for verifying analytical derivatives but slow and noisy in production.
 
 ---
@@ -163,9 +163,9 @@ For a function of $n$ variables, the gradient is a vector of $n$ numbers, one pe
 
 ### 4.1. Two properties that matter for training
 
-**The gradient points in the direction of steepest ascent.** Moving in parameter space along $\nabla f$ increases $f$ as fast as possible per unit step. Therefore moving along $-\nabla f$ decreases $f$ as fast as possible per unit step. This is the geometric reason gradient descent uses the *negative* gradient.
+**The gradient points in the direction of steepest ascent.** Moving in parameter space (the space whose axes are the parameters $w_1, \dots, w_n$) along $\nabla f$ increases $f$ as fast as possible per unit step. The reason is that the rate of change in any direction is the directional derivative, which is largest exactly when the step lines up with $\nabla f$. Therefore moving along $-\nabla f$ decreases $f$ as fast as possible per unit step, which is the geometric reason gradient descent uses the *negative* gradient.
 
-**The magnitude of the gradient encodes the local steepness.** $\|\nabla f\|$ is small near a flat region of $f$ and large near a steep region. When the magnitude becomes very small, the optimiser is near a minimum (or a saddle point) and the steps it takes are small.
+**The magnitude of the gradient encodes the local steepness.** $\|\nabla f\|$ is small near a flat region of $f$ and large near a steep region. When the magnitude becomes very small, the optimiser is near a minimum (or a saddle point: a spot that slopes up in some directions and down in others) and the steps it takes are small.
 
 For neural networks, this is everything. The optimiser update becomes:
 
@@ -191,8 +191,8 @@ The whole training loop is the repeated application of those three rules across 
 
 A boundary section.
 
-- **It is not the function value.** Knowing $\nabla L$ does not tell you what $L$ is, only how it would change for small parameter moves.
-- **It is not unique to a parameterisation.** Choose to write $w' = w/2$ as a new parameter, and the gradient with respect to $w'$ is different (twice as big). The optimiser's behaviour follows whichever parameterisation you used.
+- **It is not the function value.** Knowing $\nabla L$ does not reveal what $L$ is, only how it would change for small parameter moves.
+- **It is not unique to a parameterisation.** Writing $w' = w/2$ as a new parameter makes the gradient with respect to $w'$ different (twice as big). The optimiser's behaviour follows whichever parameterisation is used.
 - **It is not the direction to the global minimum.** It is the direction of *local* steepest descent. Global minimisation is a separate problem; gradient descent walks downhill into whatever minimum is nearest.
 - **It is not free in cost.** Computing $\nabla L$ for a deep network requires a backward pass that costs roughly the same as a forward pass. Parts 12–21 derive the efficient algorithm (backpropagation); naively, the cost would scale with the number of parameters.
 
@@ -214,11 +214,11 @@ The chain rule, introduced in [Part 11](../11-the-chain-rule/index.md), is what 
 
 ## 6. Anticipated questions
 
-- **Do I need to memorise derivative rules beyond the power rule?** For this series, no. Activations like ReLU, sigmoid, and tanh have specific derivatives derived in Part 17. The softmax derivative is derived in Part 19. Everything else reduces to the power rule plus the chain rule.
+- **Is it necessary to memorise derivative rules beyond the power rule?** For this series, no. Activations like ReLU, sigmoid, and tanh have specific derivatives derived in Part 17. The softmax derivative is derived in Part 19. Everything else reduces to the power rule plus the chain rule.
 - **What happens to the derivative at a corner of a piecewise function?** Strictly, it does not exist there. In practice, both software and the formalism pick one side; for ReLU at $x = 0$ the standard choice is $0$.
 - **Are derivatives the same as differentials?** Closely related. A differential `dy = f'(x) dx` is the linear approximation to the change in $y$ for a small change in $x$. Derivatives are the slope; differentials use that slope to estimate a finite change.
 - **Why is the gradient a row vector in some textbooks and a column vector in others?** Pure convention. NumPy's flat arrays are agnostic; the optimiser only needs componentwise multiplication and subtraction.
-- **What if my function is not smooth (lots of corners)?** Subgradient methods extend gradient descent to non-smooth functions. They are out of scope for this series; the only non-smooth operator we use (ReLU) is handled by pretending the corner has slope zero.
+- **What if the function is not smooth (lots of corners)?** Subgradient methods extend gradient descent to non-smooth functions. They are out of scope for this series; the only non-smooth operator in use here (ReLU) is handled by pretending the corner has slope zero.
 
 ---
 
@@ -243,7 +243,7 @@ The chain rule, introduced in [Part 11](../11-the-chain-rule/index.md), is what 
 - **Treating the gradient as a scalar.** It is a vector. NumPy code multiplies it elementwise by the learning rate before subtracting, not as a single number.
 - **Differentiating with respect to a constant.** A constant has derivative zero, by definition. A term like $3y^2$ contributes nothing to $\partial f/\partial x$.
 - **Trusting that ReLU is differentiable at zero.** It is not. Almost every implementation picks $0$ there, but if a custom optimiser or analytical step depends on the choice, it is worth checking.
-- **Computing all partial derivatives by hand for a deep network.** This is what backpropagation automates. Manual derivation is useful for one layer; for a stack, you want the algorithm.
+- **Computing all partial derivatives by hand for a deep network.** This is what backpropagation automates. Manual derivation is useful for one layer; for a stack, the algorithm is what is wanted.
 - **Mixing up gradient ascent and descent.** $+\nabla L$ goes uphill (increases the loss); $-\nabla L$ goes downhill (decreases the loss). The optimiser always subtracts.
 
 ---

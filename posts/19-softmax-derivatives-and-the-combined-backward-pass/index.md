@@ -10,7 +10,7 @@ part: "Part V — Backpropagation"
 
 # Part 19 · Softmax derivatives and the combined backward pass
 
-> **TL;DR.** Softmax couples every output to every input, so its Jacobian is a full matrix and its backward step, taken alone, requires a per-sample matrix multiplication. Pairing it with cross-entropy reveals one of the cleanest results in deep learning: the gradient of the loss with respect to the softmax inputs is just $\hat{\mathbf{y}} - \mathbf{y}$, divided by the batch size. Every exponential, every logarithm, and every quotient-rule term cancels. This is why every framework ships a combined "softmax + cross-entropy" backward and not two separate ones; this post derives it, codes it in three lines, and verifies the numbers.
+> **TL;DR.** Softmax's Jacobian is a full matrix, but pairing it with cross-entropy makes the gradient of the loss with respect to the softmax inputs collapse to just $\hat{\mathbf{y}} - \mathbf{y}$ divided by the batch size, which is why every framework ships a fused "softmax + cross-entropy" backward. This post derives that cancellation, codes it in three lines, and verifies the numbers.
 >
 > **Reading time:** ~12 minutes.
 >
@@ -26,7 +26,7 @@ part: "Part V — Backpropagation"
 
 ## 1. Why softmax cannot be backpropagated element-wise
 
-[Part 17](../17-backpropagation-through-activation-functions/index.md) ended with the contrast: ReLU's Jacobian is diagonal, so its backward step is element-wise; softmax's Jacobian is full, so its backward step needs real matrix arithmetic.
+[Part 17](../17-backpropagation-through-activation-functions/index.md) ended with the contrast: ReLU's Jacobian (rectified linear unit) is diagonal, so its backward step is element-wise; softmax's Jacobian is full, so its backward step needs real matrix arithmetic.
 
 The softmax formula makes the coupling obvious:
 
@@ -167,7 +167,7 @@ Three things to flag.
 
 **`backward` ignores its `dvalues` for the upstream gradient.** The combined op's "upstream" is the loss itself (a scalar with derivative 1), so the formula is the local gradient with no upstream multiplication. The `dvalues` parameter holds the softmax output ($\hat{\mathbf{y}}$) and serves only as the starting array for the copy.
 
-**The class returns the gradient with respect to the softmax inputs.** The previous layer (`dense2` in a typical classifier) reads `self.dinputs` as its `dvalues`. From there backprop continues through the dense layer, the ReLU, the first dense layer, and finally produces gradients for all the weights.
+**The class returns the gradient with respect to the softmax inputs.** `self.dinputs` has shape `(N, C)` (one row per sample, one column per class), the same shape as the softmax output. The previous layer (`dense2` in a typical classifier) reads `self.dinputs` as its `dvalues`. From there backprop continues through the dense layer, the ReLU, the first dense layer, and finally produces gradients for all the weights.
 
 ---
 
@@ -197,11 +197,11 @@ A boundary section, because the speed-up is so attractive it tempts misuse.
 
 ## 7. Anticipated questions
 
-- **What if I have soft labels (not strictly one-hot)?** The combined formula still applies. $\hat{\mathbf{y}} - \mathbf{y}$ works for any label distribution $\mathbf{y}$ that sums to 1; the one-hot case is the special-case-friendliest version. Implementations that use `np.argmax` to extract a single index break for soft labels; the general implementation uses `np.sum(y_true * softmax_output, axis=1)` instead.
+- **What about soft labels (not strictly one-hot)?** The combined formula still applies. $\hat{\mathbf{y}} - \mathbf{y}$ works for any label distribution $\mathbf{y}$ that sums to 1; the one-hot case is the special-case-friendliest version. Implementations that use `np.argmax` to extract a single index break for soft labels; the general implementation uses `np.sum(y_true * softmax_output, axis=1)` instead.
 - **Does the shortcut help with the dying-ReLU problem upstream?** Indirectly. A cleaner gradient signal at the softmax inputs propagates more reliably through the network, so weights have a better chance of moving out of the dead region. The gradient itself is not different from what the separate ops would produce; only the numerics are cleaner.
 - **Why is the combined backward shape `(N, C)`, not `(N, 1)`?** Because every class's gradient contributes to updates of the dense layer's weights that feed that class. The full `(N, C)` matrix is what `dense2.backward(softmax_loss.dinputs)` expects.
 - **What if the softmax output has very small values (e.g. `1e-10`)?** The combined formula has no division by small numbers, so it is stable. The separate softmax-then-cross-entropy version divides by very small softmax outputs in the cross-entropy backward and can produce huge gradients or `inf`. The combined version skips that problem entirely.
-- **Should I always use the combined class?** Yes, for classification with categorical cross-entropy. Production code uses it by default; this series matches the pattern.
+- **Is the combined class always the right choice?** Yes, for classification with categorical cross-entropy. Production code uses it by default; this series matches the pattern.
 
 ---
 

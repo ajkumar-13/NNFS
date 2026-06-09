@@ -10,7 +10,7 @@ part: "Part IV — Calculus for backpropagation"
 
 # Part 11 · The chain rule
 
-> **TL;DR.** A neural network is a chain of functions: dense → activation → dense → softmax → loss. To update any weight, the optimiser needs the partial derivative of the *final* loss with respect to that weight, which is buried several functions deep. The **chain rule** turns that intimidating derivative into a product of small, local derivatives, one per function in the chain. Backpropagation, derived in Parts 12 through 21, is nothing more than the chain rule applied systematically from the loss back to the weights.
+> **TL;DR.** A neural network is a chain of functions, so the derivative of the loss with respect to any weight is buried several functions deep, and the **chain rule** turns that intimidating derivative into a product of small, local derivatives, one per function in the chain. This post states the rule, works through scalar and polynomial examples, and shows how applying it backwards through a network is exactly backpropagation, derived in Parts 12 through 21.
 >
 > **Reading time:** ~11 minutes.
 >
@@ -117,6 +117,14 @@ For four functions, four factors. For $L$ functions, $L$ factors. Every addition
 
 This is exactly the structure of a deep neural network. Each layer is a function; each function contributes one factor to the gradient with respect to the input. The depth of the network determines the depth of the chain, and the chain rule applies regardless.
 
+### 5.1. The same rule with partial derivatives
+
+The network in the next section uses partial derivatives instead of plain $d$, so it helps to see one small case first. Suppose a scalar loss $L = u + v$ depends on $x$ through two intermediates, $u = 2x$ and $v = x^2$. The chain rule reads off the same way, with $\partial$ replacing $d$:
+
+$$\frac{\partial L}{\partial x} = \frac{\partial L}{\partial u} \cdot \frac{\partial u}{\partial x} + \frac{\partial L}{\partial v} \cdot \frac{\partial v}{\partial x} = 1 \cdot 2 + 1 \cdot 2x = 2 + 2x.$$
+
+The only new ingredient versus the scalar examples above is that a variable feeding two paths sums its contributions (Part 15 returns to this). The product-of-local-derivatives structure is unchanged, which is why the network factors below look just like the scalar chain.
+
 ---
 
 ## 6. The chain rule, applied to a neural network
@@ -133,6 +141,8 @@ Read from the inside out, four operations stack between the input and the loss:
 | next | ReLU activation | $\mathbf{a}_1 = \text{ReLU}(\mathbf{z}_1)$ |
 | next | second dense layer | $\mathbf{z}_2 = \mathbf{W}_2 \mathbf{a}_1 + \mathbf{b}_2$ |
 | outermost | softmax + cross-entropy | $L = \text{CE}(\text{softmax}(\mathbf{z}_2),\ \mathbf{y})$ |
+
+Here $\mathbf{z}_1$, $\mathbf{a}_1$, and $\mathbf{z}_2$ are vectors (one entry per neuron in their layer), and $L$ is a single scalar, so every link in the chain below maps between vectors and that scalar.
 
 To compute $\partial L / \partial \mathbf{W}_1$, the chain rule produces one factor per function in the chain:
 
@@ -154,7 +164,7 @@ The backward pass walks through the chain in reverse, multiplying the running gr
 
 The chain rule does two things at once for a neural network. First, it makes the gradient *computable* even though the forward expression is deeply nested. Second, it makes the gradient *modular*: every class only needs to know its own local derivative; gluing them together is the chain rule's job.
 
-The same modularity is why PyTorch's `loss.backward()` works without you doing anything special. PyTorch builds a graph of the forward computation, then walks it backward applying the chain rule one node at a time. The series builds the same machinery by hand, layer by layer, starting with the smallest case (a single neuron) in Part 12.
+The same modularity is why PyTorch's `loss.backward()` works without any special intervention. PyTorch builds a graph of the forward computation, then walks it backward applying the chain rule one node at a time. The series builds the same machinery by hand, layer by layer, starting with the smallest case (a single neuron) in Part 12.
 
 ---
 

@@ -10,7 +10,7 @@ part: "Part VI — Optimisers"
 
 # Part 23 · Learning-rate decay
 
-> **TL;DR.** Vanilla SGD with a constant learning rate forces a single number to do two jobs: explore the loss landscape when the network is far from a minimum, and converge gently once close. Those goals pull in opposite directions, which is why Part 22's spiral classifier stalled in the mid-60s. The fix is a **decay schedule**: keep $\alpha$ large for the first few iterations, then shrink it smoothly. Adding a four-line decay term to `Optimizer_SGD` does not move the final accuracy much on the spiral (it stays around 65%), but it cuts the final loss from 0.87 to 0.76 and produces a much smoother, less oscillatory loss curve. It does not make training converge any faster (for that, momentum in Part 24 is the next step), but it is the simplest and most cost-free stabiliser in the optimiser series.
+> **TL;DR.** A constant learning rate forces one number to do two opposing jobs (explore early, settle late), which is why Part 22's spiral classifier stalled in the mid-60s, and a **decay schedule** that shrinks $\alpha$ over time resolves the conflict. This post derives the $\alpha(t) = \alpha_0 / (1 + d \cdot t)$ schedule, adds it to `Optimizer_SGD` in four lines, and shows that it cuts the final loss from 0.87 to 0.76 with a smoother curve while leaving accuracy near 65%.
 >
 > **Reading time:** ~11 minutes.
 >
@@ -220,7 +220,7 @@ The split of update into `pre_update_params → update_params → post_update_pa
 | SGD + decay (Part 23) | recompute $\alpha$ from $t$ | $\theta \mathrel{-}= \alpha \cdot g$ | $t \mathrel{+}{=} 1$ |
 | Momentum (Part 24) | recompute $\alpha$ | update velocity, then $\theta \mathrel{-}= \alpha \cdot v$ | $t \mathrel{+}{=} 1$ |
 | AdaGrad (Part 25) | recompute $\alpha$ | accumulate $g^2$, then $\theta \mathrel{-}= \alpha \cdot g / \sqrt{G+\epsilon}$ | $t \mathrel{+}{=} 1$ |
-| RMSProp (Part 26) | recompute $\alpha$ | EMA of $g^2$, then $\theta \mathrel{-}= \alpha \cdot g / \sqrt{E+\epsilon}$ | $t \mathrel{+}{=} 1$ |
+| RMSProp (Part 26) | recompute $\alpha$ | EMA (exponential moving average) of $g^2$, then $\theta \mathrel{-}= \alpha \cdot g / \sqrt{E+\epsilon}$ | $t \mathrel{+}{=} 1$ |
 | Adam (Part 27) | recompute $\alpha$ | EMA of $g$ and $g^2$, bias-correct, then update | $t \mathrel{+}{=} 1$ |
 
 Every optimiser in the series uses the same three-hook contract. Code that uses `optimizer.pre_update_params(); for layer: optimizer.update_params(layer); optimizer.post_update_params()` works unchanged across all six. Adding the contract here, while it is still trivial, means none of it has to be retrofitted later.
@@ -231,11 +231,11 @@ This pattern is also what every production framework (PyTorch, TensorFlow, JAX/O
 
 ## 9. Anticipated questions
 
-- **Should I tune `learning_rate` and `decay` together or one at a time?** Tune `learning_rate` first with `decay = 0`, find a value that does not diverge in the first 100 epochs, then add decay and tune `decay` to control the plateau. Coupling the two is a recipe for chasing your own tail.
-- **What if I want to keep $\alpha$ constant for the first $N$ epochs, then start decaying?** Replace `self.iterations` with `max(0, self.iterations - N)` in `pre_update_params`. That gives a "warmup" period of $N$ steps before decay kicks in.
+- **Should `learning_rate` and `decay` be tuned together or one at a time?** Tune `learning_rate` first with `decay = 0`, find a value that does not diverge in the first 100 epochs, then add decay and tune `decay` to control the plateau. Coupling the two is a recipe for chasing one's own tail.
+- **What if the rate should stay constant for the first $N$ epochs, then start decaying?** Replace `self.iterations` with `max(0, self.iterations - N)` in `pre_update_params`. That gives a "warmup" period of $N$ steps before decay kicks in.
 - **Does `decay = 0` cost any cycles compared to the Part 22 class?** Almost none. The `if self.decay:` guard short-circuits when `decay` is zero, and the rest of the loop is identical. The class is a drop-in replacement.
 - **Why is `current_learning_rate` an attribute and not a return value?** Because `update_params` needs to read it across multiple layers in the same step. Storing it on `self` means each layer's update sees the same value.
-- **Does this schedule guarantee convergence?** For convex losses, yes, in the sense of stochastic approximation theory: $\sum \alpha_t = \infty$ and $\sum \alpha_t^2 < \infty$ are both satisfied by $1/(1 + d \cdot t)$. For non-convex losses (every interesting neural network), no schedule guarantees finding the global minimum.
+- **Does this schedule guarantee convergence?** For convex losses, yes, in the sense of stochastic approximation theory: $\sum \alpha_t = \infty$ and $\sum \alpha_t^2 < \infty$ are both satisfied by $1/(1 + d \cdot t)$. In plain terms, the first sum guarantees the steps can still travel an unbounded distance (so the optimiser can reach any point), and the second guarantees the step sizes shrink fast enough that the noise eventually dies out (so it settles). For non-convex losses (every interesting neural network), no schedule guarantees finding the global minimum.
 
 ---
 

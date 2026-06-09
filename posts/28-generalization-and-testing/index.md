@@ -10,7 +10,7 @@ part: "Part VII — Generalization & Regularization"
 
 # Part 28 · Generalization and testing
 
-> **TL;DR.** Training a network has two acts: fitting the data, and generalising to data the network has never seen. A model that does the first without the second has memorised, not learned. The gap between training accuracy and test accuracy is the single most reliable signal of that failure. This post runs a forward-only test pass on fresh spiral data, reads the resulting gap, names the symptoms of overfitting in both decision boundaries and loss curves, and previews the four levers (capacity, epoch budget, regularisation, dropout) that the next three parts will use to fight it.
+> **TL;DR.** Training a network has two acts, fitting the data and generalising to data it has never seen, and the gap between training accuracy and test accuracy is the single most reliable signal of failure at the second. This post runs a forward-only test pass on fresh spiral data, reads the resulting gap, names the symptoms of overfitting in both decision boundaries and loss curves, and previews the four levers (capacity, epoch budget, regularisation, dropout) that the next three parts will use to fight it.
 >
 > **Reading time:** ~12 minutes.
 >
@@ -56,6 +56,8 @@ The deep-learning specifics (the boundary geometry, the loss-curve divergence, t
 
 Take the spiral classifier trained with Adam (the model built up through [Part 27](../27-adam-optimiser/index.md)); on this run it reaches about **93%** training accuracy. To test whether that number reflects genuine learning, a fresh batch of 100 samples is drawn from the same `spiral_data` distribution (same generating process, new random points), and the network is run **forward only**. No backward pass, no weight update.
 
+The terms "test" and "validation" are used loosely here; both name the same forward-only evaluation on held-out data. [Part 29](../29-validation-and-hyperparameter-tuning/index.md) draws the formal line between them.
+
 ```python
 # Fresh test data: same distribution, new points
 X_test, y_test = spiral_data(samples=100, classes=3)
@@ -78,7 +80,7 @@ print(f'Test accuracy: {accuracy:.3f}, loss: {loss:.3f}')
 Test accuracy: 0.830, loss: 0.810
 ```
 
-Training accuracy was 93%; test accuracy is 83%. The 10-percentage-point gap is the textbook signal of overfitting. (The exact figures shift with the random seed, since each `spiral_data` call draws fresh points; the gap, not the third decimal, is the point.)
+Training accuracy was 93%; test accuracy is 83%. The 10-percentage-point gap is the textbook signal of overfitting. (These figures are illustrative: unless `np.random.seed` is fixed, each `spiral_data` call draws fresh points and the printed numbers will differ. The gap, not the third decimal, is the point.)
 
 | Quantity | Symbol | Value | Meaning |
 |---|---|---|---|
@@ -92,7 +94,7 @@ Three reasons, all critical.
 
 - **Updating weights on the test set silently turns it into a second training set.** The numbers it reports stop being honest the moment they influence the parameters.
 - **The backward pass is the expensive half of training.** Skipping it makes evaluation roughly 2–3× faster, which matters when running many checkpoints.
-- **The test set's role is to estimate the true risk**, the expected loss on the data distribution. Allowing the model to adapt to it is statistical fraud.
+- **The test set's role is to estimate the true risk**, the expected loss on the data distribution: the average loss the model would incur over infinitely many fresh points from the same generator. Allowing the model to adapt to it is statistical fraud.
 
 The same forward-only protocol applies to the validation set ([Part 29](../29-validation-and-hyperparameter-tuning/index.md)), with the additional rule that the test set is touched exactly once at the very end of the project.
 

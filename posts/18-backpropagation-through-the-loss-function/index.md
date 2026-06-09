@@ -10,7 +10,7 @@ part: "Part V — Backpropagation"
 
 # Part 18 · Backpropagation through the loss function
 
-> **TL;DR.** Backpropagation has to start somewhere. That somewhere is the loss function: the gradient of $L$ with respect to the network's output is the first upstream gradient every other layer's `backward` will consume. For categorical cross-entropy, that gradient is the element-wise division $-\mathbf{y} / \hat{\mathbf{y}}$, with one non-zero entry per row (because the one-hot true label kills the rest). Dividing by the batch size keeps the gradient magnitude independent of `N`, so the learning rate stays meaningful across batch sizes. With this `backward` method on `Loss_CategoricalCrossentropy`, the only remaining piece is the softmax backward, covered in Part 19.
+> **TL;DR.** Backpropagation starts at the loss function, where the gradient of $L$ with respect to the network's output is the first upstream gradient every other layer's `backward` will consume. This post derives that gradient for categorical cross-entropy, the element-wise division $-\mathbf{y} / \hat{\mathbf{y}}$, and implements it as the `backward` method on `Loss_CategoricalCrossentropy`.
 >
 > **Reading time:** ~10 minutes.
 >
@@ -93,7 +93,7 @@ dinputs = (-y_true / y_pred) / N
 print(dinputs)
 ```
 
-**Output:**
+**Output (illustrative):**
 
 ```
 [[-0.476  0.     0.   ]
@@ -157,7 +157,7 @@ Three details deserve naming.
 
 **The label-format check is the same one `forward` uses.** Backward must support whichever format was passed in; the conversion is cheap.
 
-**`dvalues` is the prediction array.** In the loss's `backward`, the upstream gradient is the loss itself (a scalar), so the implementation skips the explicit upstream multiplication and goes straight to the local gradient $-\mathbf{y} / \hat{\mathbf{y}}$. The chain-rule "× upstream" step is implicit because the upstream is `1`.
+**`dvalues` is the prediction array.** This is the loss-layer special case: elsewhere in the series `dvalues` means the incoming gradient from the next layer, but the loss sits at the top of the chain, so the only thing flowing in is the predictions themselves. The upstream gradient is the loss with respect to itself (a scalar `1`), so the implementation skips the explicit upstream multiplication and goes straight to the local gradient $-\mathbf{y} / \hat{\mathbf{y}}$. The chain-rule "× upstream" step is implicit because the upstream is `1`.
 
 **Clipping appears in `forward`, not in `backward`.** The gradient formula has $\hat{y}$ in the denominator, so if any value in `dvalues` is zero, the result is `inf`. Two defences exist: clip inside `backward`, or trust that `forward` was called first and the clipped predictions are what reach `backward`. The class in [Part 16](../16-coding-backpropagation/index.md) uses the latter pattern; production code often does both for safety.
 
@@ -167,7 +167,7 @@ Three details deserve naming.
 
 A short subsection because the question comes up every time.
 
-If `forward` returned the per-sample losses individually (without averaging), then `backward` would need to differentiate through whatever post-processing reduced them to a scalar. For a mean-loss `forward`, that post-processing is `(1/N) * sum(per_sample_losses)`. Differentiating through the `(1/N)` factor produces the `(1/N)` in the gradient.
+The `forward` in §5 returns the per-sample loss vector `-np.log(correct)`; the averaging into a single scalar happens one level up, in the base `Loss.calculate` wrapper that applies `np.mean` to that vector (the pattern from [Part 08](../08-loss-categorical-cross-entropy/index.md)). So `backward` would in principle need to differentiate through whatever post-processing reduced the per-sample losses to a scalar. For a mean-loss pipeline, that post-processing is `(1/N) * sum(per_sample_losses)`. Differentiating through the `(1/N)` factor produces the `(1/N)` in the gradient.
 
 If the loss were instead summed (not averaged), the gradient would not be divided by `N`. The learning rate would then have to be `N` times smaller for the same training dynamics; matching one batch size to another would require manual rescaling. Averaging makes the loss and its gradient invariant to batch size, which is the conventional choice.
 
@@ -188,7 +188,7 @@ A boundary section.
 
 - **What if `y_pred` contains a literal zero at the correct-class position?** `forward`'s clipping (`np.clip(y_pred, 1e-7, 1 - 1e-7)`) makes this impossible *before* the log. By the time `backward` runs, the same clipped values should be passed in — provided the calling code does not re-feed the original unclipped predictions.
 - **Why does the backward formula not include a `log`?** Because the derivative of `-log(x)` is `-1/x`. The log is in the forward formula; its derivative shows up as the reciprocal in the backward formula.
-- **Can I skip the `if` and always one-hot-encode?** Yes, at a small cost. `np.eye(n_labels)[y_true]` allocates a temporary `(N, C)` matrix. For small `N` and `C` that is fine; for very large `C` (image classification with thousands of classes) it can be wasteful. The branch in §5 keeps both paths cheap.
+- **Can the `if` be skipped by always one-hot-encoding?** Yes, at a small cost. `np.eye(n_labels)[y_true]` allocates a temporary `(N, C)` matrix. For small `N` and `C` that is fine; for very large `C` (image classification with thousands of classes) it can be wasteful. The branch in §5 keeps both paths cheap.
 - **Is `(-y_true / dvalues) / samples` numerically identical to `-y_true / dvalues / samples`?** Yes, both produce the same array. Splitting the division across two lines is a readability choice; some people prefer to see the normalisation as a separate step.
 - **What is `dinputs` here, exactly?** The gradient of the loss with respect to the inputs of the loss function — which is the softmax output (`y_pred`). Softmax's `backward` will receive `self.dinputs` from this class as its own `dvalues`.
 

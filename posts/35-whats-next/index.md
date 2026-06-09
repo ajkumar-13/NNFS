@@ -10,7 +10,7 @@ part: "Part VIII — Practical training and extensions"
 
 # Part 35 · What to read after this series
 
-> **TL;DR.** Posts 1–34 give you a fully working neural-network library and four projects' worth of evidence that it works. Everything past this point (convolutional layers, recurrent layers, transformers, batch normalisation, residual connections, modern training tricks) is *additional layer types* and *additional training tricks*, all bolted onto the same forward-pass / backward-pass / optimiser-step skeleton you already understand. This post is a structured reading list. Each section names a topic, explains what it adds to what you already know, and points to the canonical paper plus a from-scratch tutorial. The aim is to make the post-series learning path explicit instead of leaving you to figure out what comes next on your own.
+> **TL;DR.** Everything past this series (convolutional layers, recurrent layers, transformers, batch normalisation, residual connections, modern training tricks) is *additional layer types* and *additional training tricks* bolted onto the same forward-pass / backward-pass / optimiser-step skeleton posts 1–34 already established. This post is a structured reading list that names each topic, explains what it adds, and points to the canonical paper plus a from-scratch tutorial.
 >
 > **Reading time:** ~11 minutes.
 >
@@ -26,7 +26,7 @@ part: "Part VIII — Practical training and extensions"
 
 ## 1. What you already have
 
-A short stocktake of the toolkit posts 1–34 leave you with:
+Posts 1–34 leave a fully working multi-layer perceptron (MLP, a stack of dense layers) library plus four projects' worth of evidence that it works. The aim of this reading list is to make the post-series learning path explicit, rather than leaving each reader to figure out what comes next alone. A short stocktake of the toolkit:
 
 - **Layer types:** dense (`Layer_Dense`), ReLU, sigmoid, softmax, dropout.
 - **Losses:** categorical cross-entropy, binary cross-entropy, mean squared error.
@@ -35,7 +35,7 @@ A short stocktake of the toolkit posts 1–34 leave you with:
 - **Training infrastructure:** mini-batching, train/test split, k-fold CV, He init.
 - **Worked projects:** MNIST, two-moons binary, Fashion-MNIST, California housing regression.
 
-The forward-pass / backward-pass / optimiser-step pattern from post 21 generalises: every new layer type you encounter, no matter how exotic, has a `.forward(...)` and a `.backward(...)` that fit into the same training loop. Every new optimiser has the same `pre_update_params → update_params → post_update_params` contract from post 23. The skeleton is fixed.
+The forward-pass / backward-pass / optimiser-step pattern from post 21 generalises: every new layer type, no matter how exotic, has a `.forward(...)` and a `.backward(...)` that fit into the same training loop. Every new optimiser has the same `pre_update_params → update_params → post_update_params` contract from post 23. The skeleton is fixed.
 
 What changes past this series is the *content* slotted into that skeleton. The next sections are organised by what the addition is.
 
@@ -53,7 +53,7 @@ What to read:
 
 - **LeCun, Y. et al.**, *"Gradient-Based Learning Applied to Document Recognition"* (Proceedings of the IEEE, 1998) — the LeNet paper. Still the canonical introduction.
 - **Stanford CS231n notes**, ["Convolutional Neural Networks"](http://cs231n.github.io/convolutional-networks/) — the best free explainer that goes from "what is convolution" to "modern architectures" without skipping steps.
-- **From-scratch tutorial:** Andrej Karpathy's [`micrograd`](https://github.com/karpathy/micrograd) and his "neural networks: zero to hero" YouTube series both build convolutions on top of a from-scratch autograd, which is the natural next step after this series.
+- **From-scratch tutorial:** Andrej Karpathy's [`micrograd`](https://github.com/karpathy/micrograd) and his "neural networks: zero to hero" YouTube series both build convolutions on top of a from-scratch autograd (an engine that records operations and computes their gradients automatically), which is the natural next step after this series.
 
 ### 2.2. Recurrent layers (for sequences, time series, text)
 
@@ -89,7 +89,7 @@ Post 33 showed that activation variance through a deep network is fragile: bad i
 
 What to read:
 
-- **Ioffe, S. and Szegedy, C.**, *"Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift"* (ICML, 2015).
+- **Ioffe, S. and Szegedy, C.**, *"Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift"* (ICML, 2015). "Internal covariate shift" is the paper's name for the way each layer's input distribution keeps shifting as the layers below it update.
 - **Santurkar, S. et al.**, *"How Does Batch Normalization Help Optimization?"* (NeurIPS, 2018) — the follow-up that argues the original "covariate shift" explanation was wrong and batch norm helps for a different reason. Required for understanding the modern view.
 
 **Layer normalisation** is the variant transformers use; it normalises over the feature dimension rather than the batch dimension. Same idea, slightly different reduction axis.
@@ -157,7 +157,7 @@ What to read:
 
 ### 4.3. Reinforcement learning
 
-So far you've been doing **supervised** learning: each input has a known correct output. **Reinforcement learning** is different: an agent takes actions in an environment, occasionally receives a reward, and learns a policy that maximises future reward. The math is different (no per-sample target, no cross-entropy); the gradient comes from a *policy gradient* derivation.
+So far the series has covered **supervised** learning: each input has a known correct output. **Reinforcement learning** is different: an agent takes actions in an environment, occasionally receives a reward, and learns a policy that maximises future reward. The math is different (no per-sample target, no cross-entropy); the gradient comes from a *policy gradient* derivation, which differentiates the expected reward with respect to the action probabilities rather than against a fixed label.
 
 What to read:
 
@@ -188,13 +188,13 @@ If you want a single book to sit alongside this series, pick one of:
 
 ## 6. Three frameworks to learn next
 
-After implementing the basics from scratch, the production frameworks become much easier to read because you know what each method is doing under the hood:
+After implementing the basics from scratch, the production frameworks become much easier to read because the reader already knows what each method is doing under the hood:
 
 - **PyTorch** — the dominant research framework. Most papers ship PyTorch code; most modern tutorials assume PyTorch. Start here.
 - **JAX** — Google's research framework. Functional, very fast on TPUs, becoming popular for RL and large-scale training. Worth learning second.
-- **TensorFlow / Keras** — still the dominant production framework in many industries. Worth knowing if you'll work in a TF shop.
+- **TensorFlow / Keras** — still the dominant production framework in many industries. Worth knowing for work in a TF shop.
 
-The from-scratch series prepared you for all three. You already know what a `Layer_Dense` does and what `backward` should return; the framework just spares you from writing it.
+The from-scratch series prepares the reader for all three. Knowing what a `Layer_Dense` does and what `backward` should return means the framework just spares the writing of it.
 
 ---
 
@@ -212,7 +212,7 @@ A condensed list, ranked by "biggest payoff per hour" for someone who just finis
 | 6 | Read Sutton & Barto chapters 1-6 for RL fundamentals | [incompleteideas.net/book](http://incompleteideas.net/book/the-book.html) |
 | 7 | Pick one of: image generation (diffusion), language fine-tuning (LoRA), or RL (PPO) and build something | various |
 
-The from-scratch foundation you built across posts 1–34 makes every item on this list easier. None of them are conceptually harder than backprop through a softmax + cross-entropy layer; they are just more layers, more tricks, and more compute.
+The from-scratch foundation built across posts 1–34 makes every item on this list easier. None of them are conceptually harder than backprop through a softmax + cross-entropy layer; they are just more layers, more tricks, and more compute.
 
 ---
 
@@ -220,11 +220,22 @@ The from-scratch foundation you built across posts 1–34 makes every item on th
 
 This is the last lecture in the series.
 
-Across 35 posts you've gone from "a neuron is a dot product plus a bias" (post 1) to "Adam is momentum's EMA over $g$ plus RMSProp's EMA over $g^2$ plus a bias-correction term" (post 27) to "here's what to read next" (this post). The four projects gave you working code at production scale. The series tries to leave nothing important hidden: every line in your final `Optimizer_Adam` class was derived from the chain rule the lectures derived from first principles.
+Across 35 posts the series went from "a neuron is a dot product plus a bias" (post 1) to "Adam is momentum's EMA over $g$ plus RMSProp's EMA over $g^2$ plus a bias-correction term" (post 27) to "here's what to read next" (this post). The four projects supplied working code at production scale. The series tries to leave nothing important hidden: every line in the final `Optimizer_Adam` class was derived from the chain rule the lectures derived from first principles.
 
 If you build something with what you've learned, the project layout in [projects/README.md](../../projects/README.md) is happy to host a project 05.
 
 ---
+
+## Common pitfalls
+
+A few traps that catch people working through a list like this:
+
+- **Reading the paper before the explainer.** The LSTM and transformer papers are notoriously dense; the Olah and Alammar explainers exist precisely to be read first.
+- **Jumping straight to transformers.** Attention is far easier to follow after understanding why recurrence struggles with long sequences, so resist skipping §2.2.
+- **Reaching for distributed training prematurely.** Multi-GPU and model-parallel setups add a lot of bookkeeping; a single GPU (or even CPU) is enough for everything on the reading checklist.
+- **Collecting frameworks instead of building.** Learning PyTorch, JAX, and TensorFlow at once teaches none of them; pick PyTorch, build one project, then branch out.
+- **Treating self-supervised, transfer, and reinforcement learning as interchangeable.** They solve different problems; the right one depends on whether labels exist and whether the task is interactive.
+- **Skipping the from-scratch reimplementation.** Re-coding a project in PyTorch is what makes the framework's abstractions click; reading tutorials alone rarely does.
 
 ## Further reading
 

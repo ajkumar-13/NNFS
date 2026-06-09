@@ -10,7 +10,7 @@ part: "Part VI — Optimisers"
 
 # Part 22 · Gradient-descent optimiser
 
-> **TL;DR.** The gradients from Part 21 are useless without a rule that turns them into new weights. The simplest such rule is **vanilla gradient descent**: subtract `learning_rate * gradient` from every parameter, once per step. Wrapping that rule in an `Optimizer_SGD` class makes it reusable, and a single training loop combining forward, backward, and update turns the spiral classifier from "random guessing at 33%" into a slow climb that reaches about 65% after 10 000 epochs. That sluggishness is the point: vanilla GD is not stuck (run for far more epochs it keeps improving, reaching ~91% by 50 000), it is simply **inefficient**, and the gap between its 65% and the 95%+ that later optimisers reach in the *same* budget motivates every optimiser that follows in Parts 23 through 27.
+> **TL;DR.** Gradients only become learning once a rule turns them into new weights, and the simplest such rule is **vanilla gradient descent**: subtract `learning_rate * gradient` from every parameter, once per step. This post wraps that rule in an `Optimizer_SGD` class, builds a complete training loop, and shows that vanilla SGD reaches only about 65% on the spiral after 10 000 epochs because it is inefficient rather than stuck, which is exactly what motivates the optimisers in Parts 23 through 27.
 >
 > **Reading time:** ~11 minutes.
 >
@@ -75,7 +75,7 @@ Two methods. Nothing else. The constructor stores the learning rate; the update 
 Three observations:
 
 - **The optimiser is stateless (almost).** It carries only the learning rate. Parts 24 onward add per-parameter state (velocity, accumulator, etc.); here there is none.
-- **It only knows the `layer` interface.** Any object with `weights`, `biases`, `dweights`, `dbiases` arrays works. `Layer_Dense` qualifies; `Activation_ReLU` does not (no trainable parameters), so we never call `update_params` on it.
+- **It only knows the `layer` interface.** Any object with `weights`, `biases`, `dweights`, `dbiases` arrays works. `Layer_Dense` qualifies; `Activation_ReLU` does not (no trainable parameters), so `update_params` is never called on it.
 - **The default learning rate is `1.0`.** That is unusually large by modern standards (Adam typically uses `1e-3`); SGD with full-batch updates on a small toy network can survive it. For larger networks, smaller values are the rule.
 
 ---
@@ -205,7 +205,7 @@ A boundary section.
 - **Why is the SGD class called `Optimizer_SGD` if it uses the whole dataset?** Historical convention. The "S" in SGD originally meant "single sample per step", but the term has expanded over time to cover mini-batch and full-batch variants of the same update rule. Production frameworks all call it SGD.
 - **Why update each layer separately with `optimizer.update_params(dense1)` and `optimizer.update_params(dense2)` instead of looping?** Clarity. A `Model` class that owns a list of layers and calls `update_params` on each would do the same thing in one line. Production code does that; the example here keeps the structure visible.
 - **What if the loss is `nan` after the first epoch?** Either the learning rate is too large (the update overshoots and produces extreme values that the next forward pass exponentiates), or a gradient computation is buggy. Halving the learning rate and re-running is the fastest first check.
-- **Can I skip the accuracy line if I do not care about it?** Yes. The accuracy is computed for human consumption only; the training loop does not use it.
+- **Can the accuracy line be skipped if it is not needed?** Yes. The accuracy is computed for human consumption only; the training loop does not use it.
 
 ---
 

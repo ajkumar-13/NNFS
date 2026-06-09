@@ -10,7 +10,7 @@ part: "Part VIII — Practical training and extensions"
 
 # Part 32 · Mini-batching
 
-> **TL;DR.** Posts 1–31 trained every example on every step: one **full-batch** gradient computed across the entire dataset, then one parameter update. That works on the spiral dataset because it has 300 points; it does not work on MNIST (60 000) or anything larger, because computing the gradient across all examples no longer fits in memory and produces a noisy training signal anyway. **Mini-batching** is the standard fix: shuffle the data, slice it into batches of, say, 128 examples, and run one forward + backward + update per batch. The training loop's outer "epoch" wraps an inner loop over batches. Mini-batching introduces a third regime alongside the textbook extremes, somewhere between full-batch GD (smooth and slow) and pure SGD (one example per step, noisy), and is the regime every production training pipeline runs in.
+> **TL;DR.** **Mini-batching** is the standard fix for the full-batch training loop used in posts 1–31, which fails at scale because the gradient over all examples no longer fits in memory: shuffle the data, slice it into batches of, say, 128 examples, and run one forward + backward + update per batch. This post derives the two-loop (epoch × batch) training structure, places mini-batch SGD between full-batch GD and pure SGD, and explains how to choose a batch size for a real dataset.
 >
 > **Reading time:** ~11 minutes.
 >
@@ -73,13 +73,13 @@ The choice is parameterised by a single number: how many samples contribute to e
 | **Mini-batch SGD** | $1 \ll B \ll N$ | $N / B$ | proportional to $B$ | noisy estimate of true gradient |
 | **Pure SGD** | $1$ | $N$ | tiny | very noisy single-sample gradient |
 
-The cost per epoch is identical across all three: every sample is touched exactly once in every epoch. The difference is how many *update steps* you get to take and how *noisy* each step is.
+The cost per epoch is identical across all three: every sample is touched exactly once in every epoch. The difference is how many *update steps* each regime takes and how *noisy* each step is.
 
-**Full-batch** is the textbook ideal: one true gradient, one parameter step, repeated for as many epochs as you can afford. The path through the loss landscape is smooth because no noise is introduced. It takes few steps and converges slowly in wall-clock time.
+**Full-batch** is the textbook ideal: one true gradient, one parameter step, repeated for as many epochs as the compute budget allows. The path through the loss landscape is smooth because no noise is introduced. It takes few steps and converges slowly in wall-clock time.
 
 **Pure SGD** is the other extreme: one sample → one gradient → one step. Lots of updates per epoch (60 000 for MNIST), but every gradient is computed from a single example and points in a very high-variance direction. The path is jagged; on average it follows the true gradient but each step is wild.
 
-**Mini-batch SGD** is the middle ground used in every production pipeline. A batch of, say, 128 samples produces a gradient that is a much better estimate of the true gradient (variance drops as $1/B$) but the per-step cost is still small enough that you get many steps per epoch (469 steps for MNIST with $B = 128$). The path is mildly noisy, exactly enough to escape shallow local minima without destabilising training.
+**Mini-batch SGD** is the middle ground used in every production pipeline. A batch of, say, 128 samples produces a gradient that is a much better estimate of the true gradient (because the batch gradient is an average of $B$ per-sample gradients, its variance drops as $1/B$ and so its noise magnitude drops as $1/\sqrt{B}$) but the per-step cost is still small enough to yield many steps per epoch (469 steps for MNIST with $B = 128$). The path is mildly noisy, exactly enough to escape shallow local minima without destabilising training.
 
 ---
 
@@ -172,7 +172,7 @@ for epoch in range(EPOCHS):
 
 Three observations.
 
-**The optimiser's `iterations` counter now counts mini-batch steps**, not epochs. With $B = 128$ and 20 epochs, `optimizer.iterations` reaches $\sim 9\,400$ by the end. If `decay` is set, the decayed learning rate is now decayed per *step*, not per epoch. Usually you want a smaller `decay` value with mini-batches than with full-batch.
+**The optimiser's `iterations` counter now counts mini-batch steps**, not epochs. With $B = 128$ and 20 epochs, `optimizer.iterations` reaches $\sim 9\,400$ by the end. If `decay` is set, the decayed learning rate is now decayed per *step*, not per epoch. A smaller `decay` value is usually appropriate with mini-batches than with full-batch.
 
 **Loss and accuracy are reported per epoch by averaging over batches.** Per-batch loss bounces around and is hard to read; the running tally smooths it out. Some pipelines also track per-step metrics for finer-grained debugging.
 
@@ -187,14 +187,14 @@ Batch size is a hyperparameter, but a relatively benign one: values within a 2×
 | Batch size | Per-step cost | Gradient noise | When to use |
 |:---:|---|---|---|
 | 1 | tiny | very high | rarely outside formal SGD analyses |
-| 8–32 | small | high | very small networks, online learning |
+| 8–32 | small | high | very small networks, online learning (updating on each new example as it arrives) |
 | **32–256** | moderate | moderate | the production default for most MLPs / CNNs |
 | 256–1024 | large | low | large GPU/TPU jobs; deeper networks |
 | 1024+ | large | very low | data-parallel training across many devices |
 
 Two rules of thumb that matter:
 
-**Powers of 2 are the convention.** 32, 64, 128, 256, 512 are typical. The reason is mostly historical (early GPU memory alignment preferred powers of 2 for vectorised operations) but has stuck because every framework's default sits on one of these values. There is no mathematical reason 100 is worse than 128; 100 just feels unusual.
+**Powers of 2 are the convention.** 32, 64, 128, 256, 512 are typical. The reason is mostly historical (early GPU memory alignment preferred powers of 2 for vectorised operations) but has stuck because every framework's default sits on one of these values. There is no mathematical reason 100 is worse than 128; 100 just feels unusual. For from-scratch CPU work like this series, the alignment effect is negligible, so a power of 2 is a convention to follow rather than a performance lever that matters.
 
 **Larger batches need larger learning rates.** A classical result: when batch size doubles, the optimal learning rate roughly doubles to compensate for the reduced gradient noise. Goyal et al. (2017) showed this scales empirically up to batch sizes around 8 192 on ImageNet. For from-scratch hobby projects, the rule is loose; for production, the linear-scaling rule is the standard recipe.
 
@@ -210,7 +210,7 @@ Counter-intuitively, this noise *helps* training.
 
 **Escape from shallow local minima.** A full-batch optimiser at a local minimum has gradient zero and stops. A mini-batch optimiser at the same point has gradient zero *in expectation* but a non-zero noisy estimate on any given batch. The noise kicks it out of shallow minima, exactly the mechanism momentum (post 24) achieves via velocity, but for free from the sampling alone.
 
-**Implicit regularisation.** Mini-batch SGD is empirically biased toward flatter minima: regions of the loss landscape where the loss is low across a wide neighbourhood, not just at a single point. Flat minima are believed to generalise better than sharp ones (the literature on this is unsettled but the empirical correlation is real). Larger batch sizes lose this benefit, which is part of why ultra-large batches sometimes generalise worse despite training faster.
+**Implicit regularisation.** Regularisation here means any pressure that nudges the model toward simpler solutions that generalise better, rather than memorising the training set; mini-batch noise supplies that pressure for free. Mini-batch SGD is empirically biased toward flatter minima: regions of the loss landscape where the loss is low across a wide neighbourhood, not just at a single point. Flat minima are believed to generalise better than sharp ones (the literature on this is unsettled but the empirical correlation is real). Larger batch sizes lose this benefit, which is part of why ultra-large batches sometimes generalise worse despite training faster.
 
 **Variance reduction over training.** Adam's running averages (momentum and the second moment) smooth out the per-batch noise over time. The first few batches are noisy; after ~10 steps the smoothed gradient is close to the true gradient. So mini-batching loses very little signal in practice.
 
@@ -224,7 +224,7 @@ A glossary of mini-batch-adjacent terms worth knowing:
 
 - **Stochastic Gradient Descent (SGD).** Originally meant batch size = 1. Modern usage is loose: any optimiser that takes gradient steps from a randomly-drawn batch (any size from 1 to a few thousand) is called SGD. The lectures' `Optimizer_SGD` works in either regime; only the training loop's batch size differs.
 - **Iteration / step / update.** Used interchangeably for "one forward + backward + parameter update on one batch." Distinct from **epoch** (one full pass over the training data).
-- **Batch size schedule.** Some pipelines start with a small batch and grow it over training (Smith et al., 2017, "Don't Decay the Learning Rate, Increase the Batch Size"). Equivalent to learning rate decay but easier on the optimiser state.
+- **Batch size schedule.** Some pipelines start with a small batch and grow it over training (Smith et al., 2018, "Don't Decay the Learning Rate, Increase the Batch Size"). Equivalent to learning rate decay but easier on the optimiser state.
 - **Gradient accumulation.** Run several small batches' forward+backward passes without updating, sum the gradients, then update. Simulates a larger batch size when memory cannot fit one. Standard for fine-tuning large models on consumer GPUs.
 - **Drop last partial batch.** When `N` is not divisible by `B`, the last batch is smaller. Some loaders drop it (`drop_last=True`) for stable shapes; the lectures' loop keeps it because NumPy handles the partial shape fine.
 
@@ -233,11 +233,11 @@ A glossary of mini-batch-adjacent terms worth knowing:
 ## 8. Anticipated questions
 
 - **Does the lectures' `Optimizer_SGD` need to be changed to support mini-batches?** No. Every class from post 22 onward already works on any batch size: they read `layer.dweights` and `layer.dbiases`, which the layer computes from whatever batch it most recently saw. Only the training loop changes.
-- **What if I want to use the same code for both full-batch and mini-batch?** Set `BATCH_SIZE = len(X_train)` and the two-loop structure degenerates to the lectures' single-loop pattern. The shuffle is harmless in that case.
-- **Should I shuffle the test set?** No. Shuffling exists to randomise the order of *training* batches; the test set is evaluated as one pass and ordering does not matter.
+- **Can the same code serve both full-batch and mini-batch?** Yes. Set `BATCH_SIZE = len(X_train)` and the two-loop structure degenerates to the lectures' single-loop pattern. The shuffle is harmless in that case.
+- **Should the test set be shuffled?** No. Shuffling exists to randomise the order of *training* batches; the test set is evaluated as one pass and ordering does not matter.
 - **Does Adam's `iterations` counter need to be reset between epochs?** No, never. The counter tracks the total update count across all batches and all epochs; that's what the bias correction in post 27 §2.1 needs.
-- **My loss is bouncing wildly within an epoch. Is mini-batching broken?** Probably not. Within-epoch loss curves are usually noisy because different batches contain different examples. The smoothed across-batches per-epoch average is the metric to watch.
-- **Can I have a different batch size for training and evaluation?** Yes, and you usually want a larger batch at evaluation (no gradients to compute, no memory for backward state). Loop the test set in chunks of, say, 1024 if it doesn't fit at once.
+- **The loss is bouncing wildly within an epoch. Is mini-batching broken?** Probably not. Within-epoch loss curves are usually noisy because different batches contain different examples. The smoothed across-batches per-epoch average is the metric to watch.
+- **Can the batch size differ between training and evaluation?** Yes, and a larger batch is usually preferable at evaluation (no gradients to compute, no memory for backward state). Loop the test set in chunks of, say, 1024 if it doesn't fit at once.
 
 ---
 
@@ -260,7 +260,7 @@ A glossary of mini-batch-adjacent terms worth knowing:
 
 - **Forgetting to shuffle each epoch.** The optimiser sees the data in the same order every epoch and may settle into a periodic rut where the same batches keep producing the same updates.
 - **Re-creating the optimiser inside the epoch loop.** Adam's momentum and cache buffers must persist across batches. Construct `Optimizer_Adam(...)` once, outside the loop.
-- **Setting `decay` too high once you switch to mini-batches.** The lectures' `decay = 1e-3` was applied once per epoch in full-batch mode; in mini-batch mode it is applied once per *step*, so the effective decay is hundreds of times stronger and the learning rate dies far too fast. Drop `decay` to `1e-5` or smaller.
+- **Setting `decay` too high once switching to mini-batches.** The lectures' `decay = 1e-3` was applied once per epoch in full-batch mode; in mini-batch mode it is applied once per *step*, so the effective decay is hundreds of times stronger and the learning rate dies far too fast. Drop `decay` to `1e-4` or smaller (the worked example in §4 uses `1e-4`).
 - **Reporting the per-batch loss as the epoch loss.** Per-batch loss is noisy. Average across all batches in the epoch.
 - **Setting batch size = 1 by accident.** Slow per epoch, very noisy. The lectures' code accepts it but Adam's running averages take much longer to stabilise.
 - **Mismatched batch sizes between training and evaluation.** Usually fine for forward-only evaluation, but make sure `Layer_Dropout.forward(..., training=False)` at test time. See post 31 §7.

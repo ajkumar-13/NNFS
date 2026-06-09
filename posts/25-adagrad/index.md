@@ -10,7 +10,7 @@ part: "Part VI — Optimisers"
 
 # Part 25 · AdaGrad
 
-> **TL;DR.** Momentum solved the *direction* problem; every parameter still shared a single global learning rate. **AdaGrad** (Duchi, Hazan, Singer, 2011) gives each parameter its own effective learning rate, scaled inversely by the square root of the running sum of its past squared gradients. Parameters that have seen big gradients take small steps; parameters that have seen small gradients keep their step size intact. On the spiral dataset this lifts accuracy from 72% (decay alone) to about 89%. The catch is structural: the running sum can only grow, so every parameter's effective rate eventually decays toward zero. AdaGrad is rarely used unchanged in production, but its per-parameter idea is what RMSProp (Part 26) and Adam (Part 27) are built on.
+> **TL;DR.** **AdaGrad** (Duchi, Hazan, Singer, 2011) gives each parameter its own effective learning rate, scaled inversely by the square root of the running sum of its past squared gradients, so big-gradient parameters take small steps and small-gradient parameters keep their step size. This post implements `Optimizer_Adagrad` from scratch, shows why it lifts spiral accuracy above plain SGD, and explains the structural flaw (the cache only grows, so every rate eventually decays toward zero) that RMSProp and Adam exist to fix.
 >
 > **Reading time:** ~12 minutes.
 >
@@ -72,7 +72,7 @@ Three things to notice.
 
 **The square root is what makes the scaling "right".** Without it, scaling by $1/G$ would over-correct: a parameter with cache 100 would have its step shrunk 100×. With $\sqrt{G}$, the scaling matches the *units* of the gradient (gradient magnitude grows as $\sqrt{\text{variance}}$), so the rescaling produces approximately unit-variance steps across parameters.
 
-**Squaring removes the sign.** Negative and positive gradients both contribute positively to the cache. Without the square, a parameter that oscillated back and forth with equal-magnitude gradients would build a zero cache and never get rescaled, which is the opposite of what we want.
+**Squaring removes the sign.** Negative and positive gradients both contribute positively to the cache. Without the square, a parameter that oscillated back and forth with equal-magnitude gradients would build a zero cache and never get rescaled, which is the opposite of the desired behaviour.
 
 ---
 
@@ -95,7 +95,7 @@ The cache grows linearly in $t$ (since $g^2$ is constant), so the effective lear
 - It is **per-parameter**, not global. Parameters with small historical gradients keep their effective rate; only the noisy ones get pinned down.
 - It is **implicit**. The decay arises from the optimiser's own bookkeeping; there is no separate `decay` knob to tune.
 
-In the favourable case this is exactly what we want. A parameter that has been bouncing around (large $|g|$) gets calmed down. A parameter that has barely moved (small $|g|$) keeps its full step size and gets a chance to catch up.
+In the favourable case this is exactly the desired effect. A parameter that has been bouncing around (large $|g|$) gets calmed down. A parameter that has barely moved (small $|g|$) keeps its full step size and gets a chance to catch up.
 
 ---
 
@@ -230,7 +230,7 @@ For the typical deep-network training regime (10⁴ to 10⁶ steps, non-convex l
 
 - **Why divide by $\sqrt{G}$ and not by $G$?** Variance-matching. The square root makes the rescaled gradient approximately unit-norm in expectation; dividing by $G$ would over-shrink the step for high-variance parameters.
 - **What is the right $\epsilon$?** Anywhere from $10^{-8}$ to $10^{-6}$. The value rarely matters in practice; the cache is dominated by $g^2$ within the first few steps.
-- **Can I reset the cache periodically to avoid the dying-rate problem?** Yes, and it is one of the early "fixes" historically tried. But every reset throws away the per-parameter adaptation that AdaGrad spent thousands of steps learning. The principled fix is RMSProp's EMA.
+- **Can the cache be reset periodically to avoid the dying-rate problem?** Yes, and it is one of the early "fixes" historically tried. But every reset throws away the per-parameter adaptation that AdaGrad spent thousands of steps learning. The principled fix is RMSProp's EMA.
 - **Does AdaGrad need decay at all?** Not really. The cache already provides implicit decay. The `decay` parameter is included for compatibility with the optimiser interface but is usually set to a small value or zero.
 - **Is AdaGrad ever called "adaptive gradient"?** Yes. "AdaGrad" is shorthand for "Adaptive Gradient", and the paper's title is *Adaptive Subgradient Methods for Online Learning and Stochastic Optimization*.
 

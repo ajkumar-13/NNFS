@@ -10,7 +10,7 @@ part: "Part VI — Optimisers"
 
 # Part 27 · Adam
 
-> **TL;DR.** Adam (Kingma & Ba, 2014) is the synthesis of everything in the optimiser series. It keeps **momentum** (an EMA of the gradient, from Part 24) and an **RMSProp cache** (an EMA of the squared gradient, from Part 26) side by side, applies a **bias correction** to both so the first few iterations are not silently warmed up to zero, and uses the corrected ratio to update each parameter. The result is the optimiser most production neural networks ship with: 95%+ accuracy on the spiral problem with no per-problem tuning, sensible defaults that work across model sizes, and a clear conceptual lineage from every prior lecture in this group. Adam is not magic; it is three small ideas stacked together, and Parts 22 through 26 are the reason the stack makes sense.
+> **TL;DR.** Adam (Kingma & Ba, 2014) combines momentum and an RMSProp cache with a bias correction, making it the optimiser most production neural networks ship with. This post builds `Optimizer_Adam` from those three ideas and reproduces the spiral result (~96% accuracy) with no per-problem tuning.
 >
 > **Reading time:** ~13 minutes.
 >
@@ -69,7 +69,7 @@ The mathematical fix is exact. Take a constant gradient $g$ and trace the EMA:
 
 $$m_t = (1 - \beta_1) \sum_{k=0}^{t-1} \beta_1^k \, g = (1 - \beta_1^t) \, g$$
 
-So $\mathbb{E}[m_t] = (1 - \beta_1^t) \, g$, biased low by the factor $(1 - \beta_1^t)$. Dividing by that factor recovers the unbiased estimate $\hat{m}_t = g$ exactly. Same logic for $\hat{v}_t$.
+So $\mathbb{E}[m_t] = (1 - \beta_1^t) \, g$, biased low by the factor $(1 - \beta_1^t)$. Dividing by that factor recovers the unbiased estimate $\hat{m}_t = g$ exactly. Same logic for $\hat{v}_t$. This derivation assumes a constant gradient for clarity, but the same factor is the right first-order correction when the gradient varies, which is why the correction is used unchanged in practice.
 
 In effect: $\hat{m}_t / (1 - \beta_1^t)$ amplifies early estimates so they are not stuck near zero, and the amplifier shrinks to 1 as $\beta_1^t \to 0$. For $\beta_1 = 0.9$:
 
@@ -200,7 +200,7 @@ The headline number, with $\alpha_0 = 0.02$, $d = 10^{-5}$, $\beta_1 = 0.9$, $\b
 
 Three observations.
 
-**Adam wins, but not by a lot.** On a small dense problem like the spiral, SGD + momentum is within striking distance. Adam's structural advantages (no need to tune the learning rate per parameter, no dying-rate problem) really shine at scale; on a 387-parameter toy network the gap to a well-tuned SGD+momentum is small.
+**Adam wins, but not by a lot.** On a small dense problem like the spiral, SGD + momentum is within striking distance. Adam's structural advantages (no need to tune the learning rate per parameter, no dying-rate problem) really shine at scale; on a 387-parameter toy network (dense1 maps 2 inputs to 64 units, dense2 maps 64 to 3, counting weights and biases) the gap to a well-tuned SGD+momentum is small.
 
 **Adam needs minimal tuning.** The combination of momentum, RMSProp scaling, and bias correction makes the optimiser robust to the choice of learning rate within roughly an order of magnitude. SGD + momentum collapses if $\alpha$ is off by 5×; Adam usually keeps training.
 
@@ -214,7 +214,7 @@ Three reasons it became the production standard around 2015–2018 and has staye
 
 **Sensible per-parameter rates without tuning.** AdaGrad showed that per-parameter rates were a real win; RMSProp removed the dying-rate side effect. Adam inherits both, so a user who knows nothing about gradient statistics gets a reasonable per-parameter rate for free.
 
-**Momentum without re-tuning the learning rate.** Adding plain momentum to vanilla SGD usually requires shrinking $\alpha$ to avoid divergence (Part 24, §9). Adam absorbs the momentum into the second-moment normalisation, so the effective step size stays bounded regardless of $\beta_1$. The learning rate stays in a narrow band (`1e-4` to `1e-2`) across very different problems.
+**Momentum without re-tuning the learning rate.** Adding plain momentum to vanilla SGD usually requires shrinking $\alpha$ to avoid divergence (Part 24, §9). Adam absorbs the momentum into the second-moment normalisation, so the effective step size stays bounded regardless of $\beta_1$. The reason is that $\hat{m}_t$ and $\sqrt{\hat{v}_t}$ both scale with the gradient, so their ratio is roughly order 1 and the step size is set mainly by $\alpha$ rather than by the momentum factor. The learning rate stays in a narrow band (`1e-4` to `1e-2`) across very different problems.
 
 **Bias correction makes hyperparameter scans interpretable.** Without it, an early evaluation of "is this learning rate too small?" is confounded by the cold-start damping. With it, the early loss curve reflects the chosen rate's true behaviour, so hyperparameter sweeps converge faster.
 

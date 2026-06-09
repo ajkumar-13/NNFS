@@ -10,7 +10,7 @@ part: "Part V — Backpropagation"
 
 # Part 17 · Backpropagation through activation functions
 
-> **TL;DR.** Activation functions need their own backward step, and the structure of that step depends entirely on whether the activation is **element-wise** (ReLU, sigmoid, tanh) or **coupled** (softmax). Element-wise activations have a diagonal Jacobian: each output depends on exactly one input, so the backward pass is one element-wise multiplication or, for ReLU, a single masking operation. Softmax is different — each output depends on every input, the Jacobian is dense, and the backward step needs real matrix arithmetic. This post derives the element-wise case in full and previews why softmax gets two whole posts (19 and 20) to itself.
+> **TL;DR.** Activation functions need their own backward step, and the structure of that step depends entirely on whether the activation is **element-wise** (ReLU, sigmoid, tanh), with a diagonal Jacobian that reduces to one multiply or mask, or **coupled** (softmax), with a dense Jacobian that needs real matrix arithmetic. This post derives the element-wise case in full and previews why softmax needs its own dedicated post (Part 19).
 >
 > **Reading time:** ~10 minutes.
 >
@@ -147,7 +147,7 @@ Two backward methods left. Part 18 covers the cross-entropy backward in isolatio
 A boundary section.
 
 - **It is not the softmax backward.** Only the contrast that motivates Part 19. The actual derivation is there.
-- **It is not a recommendation for sigmoid or tanh as hidden activations.** Both are listed for completeness; both saturate and suffer from vanishing gradients in deep networks. ReLU remains the default for hidden layers.
+- **It is not a recommendation for sigmoid or tanh as hidden activations.** Both are listed for completeness; both saturate and suffer from vanishing gradients in deep networks, where repeated multiplication by derivative factors below 1 shrinks the signal toward zero across layers. ReLU remains the default for hidden layers.
 - **It is not the only ReLU variant.** Leaky ReLU, parametric ReLU (PReLU), and GELU all relax the strict zero-derivative side. All of them are still element-wise; the backward is still a one-liner with a different derivative.
 - **It does not solve the dying ReLU problem.** Knowing the backward zeros the gradient at $z \le 0$ is a description, not a fix. The fix (better initialisation, leaky ReLU, batch normalisation) is covered in later posts and in the references.
 
@@ -159,7 +159,7 @@ A boundary section.
 - **Why mask using `self.inputs <= 0` rather than `self.output <= 0`?** Either works; the input version is the one this series uses because it matches the derivative formula directly. The output version misses the case where the input was exactly $0$ (which is mapped to $0$ either way), but both are fine in practice.
 - **Does the choice between `inputs <= 0` and `inputs < 0` matter?** Practically no. At $z = 0$ the derivative is technically undefined; almost every implementation picks $0$, and `<=` matches that choice.
 - **Why is ReLU's backward sometimes called "lossless" when its derivative is zero on one side?** It is lossless on the positive side: the gradient passes through unchanged, with no shrinking factor. Sigmoid and tanh shrink the gradient even on the side where they are active, so they lose signal through depth. ReLU's positive-side derivative is exactly 1.
-- **Do I need to write a `backward` for the input layer?** No. The input layer has no learnable parameters and no upstream activation. Its `dinputs` is the gradient with respect to the data, which is not used during training. Some frameworks skip the computation entirely.
+- **Does the input layer need a `backward` method?** No. The input layer has no learnable parameters and no upstream activation. Its `dinputs` is the gradient with respect to the data, which is not used during training. Some frameworks skip the computation entirely.
 
 ---
 

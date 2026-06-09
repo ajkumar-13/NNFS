@@ -10,7 +10,7 @@ part: "Part VII — Generalisation and regularisation"
 
 # Part 29 · Validation and hyperparameter tuning
 
-> **TL;DR.** Part 28 measured the generalisation gap; this lecture introduces the discipline required to *close* it without cheating. Two ideas do the work. First, the **three-way split**: training data trains the weights, **validation** data picks the hyperparameters, and **test** data is touched exactly once at the end. Mixing those roles is the most common source of inflated benchmarks in published ML. Second, **k-fold cross-validation**: when data is scarce, every example takes a turn in the validation slot, so the same dataset can serve both roles without throwing away signal. Together the two patterns let a practitioner search a large hyperparameter space and still report a number that is honest about the model's behaviour on truly unseen data.
+> **TL;DR.** Honest hyperparameter tuning requires a validation set distinct from the test set, so that searching a large hyperparameter space still yields a number that reflects behaviour on truly unseen data. This lecture delivers two patterns that enforce that discipline: the **three-way split** (train / validate / test) and **k-fold cross-validation** for when data is scarce.
 >
 > **Reading time:** ~11 minutes.
 >
@@ -78,6 +78,8 @@ The recipe with $k = 5$:
    - Train a *fresh* model from scratch, then record its validation accuracy $E_i$.
 3. The **mean validation accuracy** $\bar{E} = \frac{1}{5} \sum_i E_i$ is the score of the hyperparameter candidate.
 
+Here "score" means whichever validation metric is being optimised: validation accuracy and validation loss are used interchangeably throughout this lecture, and the selection logic is identical either way (maximise accuracy, or equivalently minimise loss).
+
 | Fold | Validation part | Training parts | Validation acc. |
 |:---:|:---:|:---:|:---:|
 | 1 | A | B, C, D, E | $E_1$ |
@@ -90,7 +92,7 @@ Two properties make this work.
 
 **Every example takes a turn in the validation slot.** Across the five runs, every training example is validated against exactly once. No data is wasted; nothing is reserved permanently.
 
-**The variance of $\bar{E}$ is much smaller than the variance of a single $E_i$.** Averaging five validation losses on disjoint subsets gives a more reliable estimate of the model's true validation behaviour than any one slice could. For two hyperparameter candidates whose single-fold accuracies differ by less than a per-fold standard deviation, the mean over 5 folds usually resolves the comparison.
+**The variance of $\bar{E}$ is much smaller than the variance of a single $E_i$.** Averaging $k$ estimates shrinks the standard error roughly like $1/\sqrt{k}$, so five folds give a more reliable estimate of the model's true validation behaviour than any one slice could. (The reduction is slightly weaker than that ideal in practice, because the folds share training data and so are not fully independent.) For two hyperparameter candidates whose single-fold accuracies differ by less than a per-fold standard deviation, the mean over 5 folds usually resolves the comparison.
 
 The most common choices are $k = 5$ and $k = 10$. Higher $k$ means more reliable estimates but proportionally more training runs; the original $k = 10$ recommendation comes from a 1995 study by Kohavi showing diminishing returns past that point.
 
@@ -203,6 +205,8 @@ A short table of working defaults:
 | Medium ($10^2$ to $10^4$) | 5-fold or 10-fold CV | Validation variance starts to matter |
 | Small ($< 100$) | Leave-one-out CV (extreme of k-fold with $k = n$) | Every example used as its own one-sample validation set |
 
+Leave-one-out CV is a last resort: with $k = n$ it requires $n$ separate trainings (expensive) and its estimate tends to have high variance, so it is reserved for genuinely tiny datasets.
+
 Stratification matters too. For classification, **stratified k-fold** ensures each fold has approximately the same class distribution as the full dataset; without it, a fold might happen to contain none of a rare class and the validation accuracy becomes meaningless. `sklearn.model_selection.StratifiedKFold` is the standard tool; a from-scratch version applies the same shuffle-then-split logic class by class.
 
 ---
@@ -229,10 +233,10 @@ For very large spaces, the modern default is **Bayesian optimisation** (librarie
 
 ## 8. Anticipated questions
 
-- **Should I shuffle before splitting?** Almost always yes. The only exception is genuinely sequential data (time series, ordered text), where shuffling destroys the time structure and creates lookahead leakage.
-- **Can I tune the number of epochs using the test set?** No. Use the validation set for early stopping; the test set's role is the final report only.
-- **What if my model is too slow to run k-fold?** Drop $k$ to 3, or use a held-out validation set instead. K-fold is a precision tool; if a single split gives a sharp enough signal, it is unnecessary.
-- **Does k-fold give an honest estimate of the *final* generalisation error?** Almost. The mean validation error from k-fold is unbiased for *a model with this hyperparameter choice*. It is slightly biased for the final model (which is typically trained on more data — the full training fold rather than $k-1$ slices) and so usually underestimates the final test performance by a small amount.
+- **Should the data be shuffled before splitting?** Almost always yes. The only exception is genuinely sequential data (time series, ordered text), where shuffling destroys the time structure and creates lookahead leakage.
+- **Can the number of epochs be tuned using the test set?** No. Use the validation set for early stopping; the test set's role is the final report only.
+- **What if a model is too slow to run k-fold?** Drop $k$ to 3, or use a held-out validation set instead. K-fold is a precision tool; if a single split gives a sharp enough signal, it is unnecessary.
+- **Does k-fold give an honest estimate of the *final* generalisation error?** Almost. The mean validation error from k-fold is unbiased for *a model with this hyperparameter choice*. It is slightly biased for the final model (which is typically trained on more data, the full training fold rather than $k-1$ slices) and so usually underestimates the final test performance by a small amount.
 - **What about nested cross-validation?** It is the most rigorous version: an outer k-fold for the test estimate, an inner k-fold inside each outer fold for hyperparameter selection. The compute cost is $k_\text{outer} \times k_\text{inner}$ trainings per candidate, so it is reserved for small datasets where every drop of precision matters.
 
 ---

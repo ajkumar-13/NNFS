@@ -10,7 +10,7 @@ part: "Part VI — Optimisers"
 
 # Part 24 · Momentum
 
-> **TL;DR.** Vanilla gradient descent is memoryless. Each step depends only on the current gradient, which is why narrow loss valleys produce zig-zag oscillations and shallow plateaus stall the optimiser. **Momentum** fixes both at once by keeping a running velocity vector: at every step, blend $\beta$ of the previous velocity with the new gradient and use that as the update. Oscillating components cancel; consistent components reinforce. Adding a single line of code (and one momentum buffer per layer) lifts spiral accuracy from 72% to over 95% and is the structural primitive every modern optimiser is built on.
+> **TL;DR.** Vanilla gradient descent is memoryless, so narrow loss valleys produce zig-zag oscillations and shallow plateaus stall the optimiser, whereas **momentum** keeps a running velocity vector so that oscillating components cancel and consistent components reinforce. This post derives the momentum update rule, implements it as a per-layer velocity buffer inside `Optimizer_SGD`, and shows the structural primitive every modern optimiser is built on.
 >
 > **Reading time:** ~12 minutes.
 >
@@ -66,9 +66,9 @@ $$v_t = \beta \cdot v_{t-1} - \alpha \cdot \frac{\partial L}{\partial \theta}$$
 
 $$\theta_t = \theta_{t-1} + v_t$$
 
-where:
+Here $\theta$ denotes any trainable parameter, a weight matrix or a bias vector, so the rule applies identically to both. The terms break down as:
 
-- $v_t$ is the **velocity** for the current step (one scalar per parameter, so $v$ has the same shape as the weight tensor).
+- $v_t$ is the **velocity** for the current step (one scalar per parameter, so $v$ has the same shape as the parameter it tracks: `(n_inputs, n_neurons)` for a weight tensor, `(1, n_neurons)` for a bias vector).
 - $\beta$ is the **momentum factor**, a scalar in $[0, 1)$. Typical values are between 0.5 and 0.99.
 - $v_{t-1}$ is the velocity from the previous step. On step 0, $v_{-1}$ is taken as zero.
 - $\alpha$ is the **current learning rate**, exactly as in Part 23 (so decay still applies if it is enabled).

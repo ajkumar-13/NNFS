@@ -10,7 +10,7 @@ part: "Part V — Backpropagation"
 
 # Part 12 · Backpropagation through a single neuron
 
-> **TL;DR.** Backpropagation is the chain rule applied to a single neuron in this post, and to bigger and bigger pieces in the nine posts after. This post takes the smallest interesting case (one neuron, three inputs, a ReLU, a squared-error loss) and walks the chain rule from the loss back to each weight. Four local derivatives multiply together at every step; the only one that differs between parameters is the local derivative of the multiplication node. The result is a small, mechanical recipe that scales unchanged to entire layers.
+> **TL;DR.** Backpropagation is just the chain rule, and the smallest case where that chain has more than one factor is a single neuron with three inputs, a ReLU, and a squared-error loss. This post walks the chain rule from the loss back to each weight, showing that four local derivatives multiply together at every step and yielding a small, mechanical recipe that scales unchanged to entire layers.
 >
 > **Reading time:** ~12 minutes.
 >
@@ -26,7 +26,7 @@ part: "Part V — Backpropagation"
 
 ## 1. The smallest interesting case
 
-[Part 11](../11-the-chain-rule/index.md) ended with a chain-rule formula for a two-layer classifier. This post starts at the other end: the smallest possible network where the chain rule still has more than one factor. The architecture has one neuron, three inputs, three weights, one bias, a ReLU activation, and a squared-error loss against a target.
+[Part 11](../11-the-chain-rule/index.md) ended with a chain-rule formula for a two-layer classifier. This post starts at the other end: the smallest possible network where the chain rule still has more than one factor. The architecture has one neuron, three inputs, three weights, one bias, a ReLU (Rectified Linear Unit) activation, and a squared-error loss against a target.
 
 The point is *not* to train a useful model. The point is to derive every step of the backward pass on something simple enough to walk through by hand, then verify the numbers in a 200-iteration training loop. Every later post extends this same recipe; nothing new is introduced until [Part 13](../13-backprop-through-a-layer/index.md).
 
@@ -111,12 +111,12 @@ That is the gradient of the loss with respect to the first weight. Three more we
 
 ### 4.1. The pattern is clearer than the formula
 
-A close look at the four factors shows that **only factor ④ depends on the parameter being differentiated**. Factors ①, ②, and ③ are the same regardless of whether we are computing the gradient for $w_0$, $w_1$, $w_2$, or $b$. Their product ($12 \cdot 1 \cdot 1 = 12$) is the **upstream gradient** that arrives at the multiplication node. From there:
+A close look at the four factors shows that **only factor ④ depends on the parameter being differentiated**. Factors ①, ②, and ③ are the same regardless of whether the gradient being computed is for $w_0$, $w_1$, $w_2$, or $b$. Their product ($12 \cdot 1 \cdot 1 = 12$) is the **upstream gradient** that arrives at the multiplication node. From there:
 
 - For $w_i$, factor ④ is the corresponding input $x_i$.
 - For $b$, the bias is just added (no multiplication), so factor ④ is $1$.
 
-This is the part that scales unchanged to bigger networks: every weight's gradient is **the upstream gradient times the input connected to that weight**. Memorising this one sentence is most of backpropagation.
+This is the part that scales unchanged to bigger networks: every weight's gradient is **the upstream gradient times the input connected to that weight**. Memorising this one sentence is most of backpropagation. Here all four factors are plain scalars because there is only one neuron; in the next posts the same sentence holds with the upstream gradient and the inputs promoted to vectors and matrices.
 
 ---
 

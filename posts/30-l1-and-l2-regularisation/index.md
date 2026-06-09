@@ -10,7 +10,7 @@ part: "Part VII — Generalisation and regularisation"
 
 # Part 30 · L1 and L2 regularisation
 
-> **TL;DR.** Overfitting tends to come with **large weights**: when the network can put unlimited magnitude on a single feature, it can fit training noise through sharp decision boundaries. Regularisation adds a term to the loss that grows with the weights' size, so the optimiser pays a tax for every extra unit of weight magnitude. **L1** uses the sum of absolute values $\lambda \sum |w|$, which pushes weights all the way to zero and produces sparse models. **L2** uses the sum of squares $\lambda \sum w^2$, which shrinks large weights aggressively but lets small ones live, producing smooth weight distributions. In practice L2 alone is the default for neural networks; L1 is reserved for problems where feature selection matters. Both add one line to the loss, one line to the gradient, and the training loop stays the same.
+> **TL;DR.** Overfitting tends to come with large weights, so adding a penalty on weight magnitude to the loss makes the optimiser pay a tax for every extra unit of magnitude and pushes the model toward weights that generalise. This post derives the L1 and L2 penalties and their gradients and extends `Layer_Dense` to support both, adding one line to the loss, one line to the gradient, and leaving the training loop unchanged.
 >
 > **Reading time:** ~12 minutes.
 >
@@ -41,9 +41,9 @@ Two ways to attack the overfit case:
 - **More data.** Add training examples until memorising them is harder than learning the underlying pattern. Effective but often impossible (data is what it is).
 - **Constrain the weights.** Add a term to the loss that the optimiser must balance against the data fit. Free to use whenever a model is being trained.
 
-The constraint version is **regularisation**. The constraint takes the form of an additive penalty:
+The constraint version is **regularisation**. Two standard penalties are used: **L1**, the sum of absolute values $\lambda \sum |w|$, which pushes weights all the way to zero and produces sparse models; and **L2**, the sum of squares $\lambda \sum w^2$, which shrinks large weights aggressively but lets small ones live, producing smooth weight distributions. In practice L2 alone is the default for neural networks, and L1 is reserved for problems where feature selection matters. The constraint takes the form of an additive penalty:
 
-$$L_{\text{total}} = \underbrace{L_{\text{data}}}_{\text{cross-entropy, MSE, …}} \;+\; \underbrace{L_{\text{reg}}}_{\text{a function of the weights}}$$
+$$L_{\text{total}} = \underbrace{L_{\text{data}}}_{\text{cross-entropy, mean squared error, …}} \;+\; \underbrace{L_{\text{reg}}}_{\text{a function of the weights}}$$
 
 The optimiser still minimises $L_{\text{total}}$ end-to-end. The presence of $L_{\text{reg}}$ means that every weight increase has to "pay" by improving the data loss enough to offset the penalty. Bad weights (those that fit noise without improving the true signal) fail this cost-benefit test and are pushed back toward zero.
 
@@ -85,7 +85,7 @@ The cleanest way to see what these two penalties actually do is to compare their
 | 10   | 0.01 | 0.2 |
 | 100  | 0.01 | 2.0 |
 
-L1 applies the same constant pressure to every weight, no matter how small. That constant pressure is what pushes weights *all the way to zero*: as long as $|w| < 1$, the L1 gradient term (of size $\lambda$) often exceeds the data-loss gradient term, and the next update pushes the weight further toward zero until it crosses and is clamped at zero.
+L1 applies the same constant pressure to every weight, no matter how small. That constant pressure is what pushes weights *all the way to zero*: once a weight is small enough that the L1 gradient term (of size $\lambda$) outweighs the data-loss gradient term, the next update pushes the weight further toward zero until it crosses and is clamped at zero. The exact crossover point depends on $\lambda$ and on the data-loss gradient; for the $\lambda = 0.01$ table above it sits near $|w| = 1$, but that is a $\lambda$-dependent illustration rather than a universal threshold.
 
 L2 applies pressure proportional to weight magnitude. A weight of 0.01 sees pressure of $0.0002$, which is dwarfed by the data-loss gradient. A weight of 100 sees pressure of $2.0$, which dominates. The result: L2 *shrinks* large weights but leaves small weights essentially alone, never quite driving them to zero.
 
@@ -264,7 +264,7 @@ Two equivalent ways of looking at L2 regularisation are worth knowing.
 
 **L2 ≡ weight decay (with one caveat).** "Weight decay" is the engineering term for "shrink every weight by a small multiplicative factor at every step": $w \leftarrow (1 - \alpha \cdot 2\lambda) \, w$. This is exactly what the L2 gradient term does in vanilla SGD. For Adam and other adaptive optimisers, however, applying L2 through the gradient is *not* the same as applying weight decay to the parameter directly (the second-moment scaling distorts it). That distinction is the entire reason **AdamW** exists; see Part 27, §8.
 
-**L2 ≡ Gaussian prior on weights.** In Bayesian terms, the L2 penalty corresponds to placing a Gaussian prior of mean zero and variance $1 / (2\lambda)$ on each weight, and finding the maximum-a-posteriori (MAP) estimate. L1 corresponds to a Laplacian prior. These dualities explain *why* the penalties have the shapes they do: the regularised optimum is the MAP under the corresponding prior belief that weights should be near zero.
+**L2 ≡ Gaussian prior on weights.** In Bayesian terms, the L2 penalty corresponds to placing a Gaussian prior of mean zero and variance $1 / (2\lambda)$ on each weight, and finding the maximum-a-posteriori (MAP) estimate. The variance falls out of matching terms: the negative log of a zero-mean Gaussian density contributes $w^2 / (2\sigma^2)$ per weight, and equating that with the penalty $\lambda w^2$ gives $\sigma^2 = 1 / (2\lambda)$. L1 corresponds to a Laplacian prior. These dualities explain *why* the penalties have the shapes they do: the regularised optimum is the MAP under the corresponding prior belief that weights should be near zero.
 
 Neither connection changes the implementation, but both help with intuition when $\lambda$ needs to be re-derived or compared across frameworks that use different conventions.
 
@@ -272,11 +272,11 @@ Neither connection changes the implementation, but both help with intuition when
 
 ## 9. Anticipated questions
 
-- **Should I use L1, L2, or both?** Default to L2 only. Add L1 if (a) you want feature selection (some inputs to be ignored entirely) or (b) L2 alone is not enough and increasing it starts to underfit.
+- **Should one use L1, L2, or both?** Default to L2 only. Add L1 if (a) feature selection is the goal (some inputs to be ignored entirely) or (b) L2 alone is not enough and increasing it starts to underfit.
 - **Why is the L2 gradient $2 \lambda w$ and not $\lambda w$?** Because $\frac{d}{dw} w^2 = 2w$. The factor of 2 can be absorbed into $\lambda$ by writing the penalty as $\frac{\lambda}{2} \sum w^2$; PyTorch's `weight_decay` does this. The math is identical; only the units of $\lambda$ differ.
-- **What about regularising activations or gradients?** Activations: yes, e.g. activity regularisation in autoencoders. Gradients: rare, but used in WGAN gradient-penalty training. Both follow the same "add a term to the loss" recipe; both are outside the scope of this series.
+- **What about regularising activations or gradients?** Activations: yes, e.g. activity regularisation in autoencoders. Gradients: rare, but used in WGAN (Wasserstein generative adversarial network) gradient-penalty training. Both follow the same "add a term to the loss" recipe; both are outside the scope of this series.
 - **Does regularisation slow down training?** A little. One extra elementwise multiplication and addition per layer per step. Negligible compared to the matrix multiplications of forward/backward.
-- **Can I regularise different layers differently?** Yes. The hyperparameters are per layer; pass different values to each `Layer_Dense`. This is occasionally used: stronger regularisation on the first layer (large fan-out) and weaker on the output (small fan-out).
+- **Can different layers be regularised differently?** Yes. The hyperparameters are per layer; pass different values to each `Layer_Dense`. This is occasionally used: stronger regularisation on the first layer (large fan-out) and weaker on the output (small fan-out).
 - **Does L2 hurt sparsity?** It actively prevents it. Every weight is nudged proportionally; none are driven to exact zero. If sparsity matters, use L1, or both together (Elastic Net).
 
 ---

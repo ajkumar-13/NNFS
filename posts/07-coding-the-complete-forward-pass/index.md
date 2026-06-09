@@ -10,7 +10,7 @@ part: "Part II — Activations and forward pass"
 
 # Part 07 · Coding the complete forward pass
 
-> **TL;DR.** Every class built so far (Layer_Dense, Activation_ReLU, Activation_Softmax) snaps together into a working two-layer classifier in fewer than a dozen lines. This post assembles the pipeline, runs it on the spiral dataset, audits the shapes at every step, and explains why the output is approximately `[1/3, 1/3, 1/3]` for every sample. The numbers are uninformative on purpose: nothing has been trained yet. What is now solid is the forward pass itself, ready to be paired with a loss function in Part 08 and a learning algorithm from Part 09 onward.
+> **TL;DR.** Every class built so far (Layer_Dense, Activation_ReLU, Activation_Softmax) snaps together into a working two-layer classifier in fewer than a dozen lines. This post assembles the pipeline, runs it on the spiral dataset, audits the shapes at every step, and explains why the untrained output is approximately `[1/3, 1/3, 1/3]` for every sample.
 >
 > **Reading time:** ~10 minutes.
 >
@@ -33,7 +33,7 @@ The last five posts each added one piece:
 - **Part 05** nailed down the `axis` and broadcasting rules needed for softmax.
 - **Part 06** added the `Activation_ReLU` and `Activation_Softmax` classes.
 
-This post is the first one where all of those classes appear in the same script. The output is not a trained classifier; it is a trained-classifier-shaped object that produces sensible-looking outputs at random. That shape is what training will later push into something useful.
+This post is the first one where all of those classes appear in the same script. The numbers it prints are uninformative on purpose: nothing has been trained yet. What is now solid is the forward pass itself, ready to be paired with a loss function in Part 08 and a learning algorithm from Part 09 onward. The output is not a trained classifier; it is a trained-classifier-shaped object that produces sensible-looking outputs at random. That shape is what training will later push into something useful.
 
 In production terms, this is the **inference path** of a classification network. Everything from Part 12 onward is the **training path** that adjusts the weights inside `dense1` and `dense2` so the same forward pass produces useful predictions.
 
@@ -146,6 +146,8 @@ The diary in table form:
 | 3 | `dense2` | `F1 · W2 + b2` | `(300, 3)` | `(300, 3)` | `W2: (3, 3)`, `b2: (1, 3)` |
 | 4 | `activation2` | softmax along axis=1 | `(300, 3)` | `(300, 3)` | per-row normalisation; shape unchanged |
 
+Here `F1` is the ReLU activation output from step 2 (`activation1.output`), the array fed forward into `dense2`.
+
 Two observations matter for the next several parts.
 
 First, **the batch dimension `300` never changes**. Every step preserves the per-sample row count. Confirming this in the debugger is the fastest way to catch a transposed array.
@@ -158,9 +160,9 @@ Second, **activation functions never change the shape**. They are pointwise (ReL
 
 A trained classifier on this dataset would output rows like `[0.95, 0.03, 0.02]` for a confident class-0 sample and `[0.10, 0.85, 0.05]` for a class-1 sample. The output here is `[0.333, 0.333, 0.333]` for every sample. Two reasons explain this.
 
-**The weights are random and small.** `0.01 * np.random.randn(n_in, n_out)` produces values that are normally distributed with standard deviation $0.01$. Their product with the input features (which are also small numbers in the spiral data) yields very small logits, near zero, with no class clearly dominating.
+**The weights are random and small.** `0.01 * np.random.randn(n_in, n_out)` produces values that are normally distributed with standard deviation $0.01$. Their product with the input features (which are also small numbers in the spiral data) yields very small logits, near zero, with no class clearly dominating. Concretely: a feature of magnitude $\approx 0.5$ times a weight of magnitude $\approx 0.01$, summed over two inputs, gives a logit on the order of $0.01$, a hundredth of a unit.
 
-**Softmax of near-zero logits is uniform.** When every logit is approximately the same number, $\text{softmax}(o)_i \approx 1/C$ for all $i$, where $C$ is the class count. With three classes, that is approximately $0.333$.
+**Softmax of near-zero logits is uniform.** When every logit is approximately the same number, $\text{softmax}(o)_i \approx 1/C$ for all $i$, where $o$ denotes those logits (the `dense2` output) and $C$ is the class count. With three classes, that is approximately $0.333$.
 
 Both facts are useful baselines.
 
@@ -212,7 +214,7 @@ The same four lines, repeated. The only constraint is the shape-continuity rule 
 
 ## 8. Anticipated questions
 
-- **Why does my output differ from the values printed here?** Because the weights are random. `nnfs.init()` seeds NumPy's RNG to a fixed value, so the same seed should reproduce the same numbers; if the values differ, check that `nnfs.init()` is the first call after the imports.
+- **Why might the output differ from the values printed here?** Because the weights are random. `nnfs.init()` seeds NumPy's RNG to a fixed value, so the same seed should reproduce the same numbers; if the values differ, check that `nnfs.init()` is the first call after the imports.
 - **Why does `print(activation2.output[:5])` only show five rows?** Slicing with `[:5]` keeps the output readable. The full result has 300 rows; printing all of them would scroll past most terminals.
 - **What if the rows do not sum exactly to 1.0?** Floating-point arithmetic can leave the sum at `0.99999999` or `1.00000001`. The difference is the last few bits of `float32` and is normal. Any difference larger than `1e-5` indicates a bug in the softmax.
 - **Can the network be used to make a prediction now?** Technically yes: take `np.argmax(activation2.output, axis=1)` to get a class index per row. The accuracy would be approximately 33%. A useful prediction requires training first.

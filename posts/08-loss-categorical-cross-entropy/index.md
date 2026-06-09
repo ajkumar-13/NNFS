@@ -10,7 +10,7 @@ part: "Part III — Loss and optimisation"
 
 # Part 08 · Loss: categorical cross-entropy
 
-> **TL;DR.** A forward pass produces probabilities; a loss function converts those probabilities into a single number that says how wrong they are. For multi-class classification the standard choice is **categorical cross-entropy**, which evaluates to the negative logarithm of the probability the network assigned to the *correct* class. This post derives the formula, explains why it pairs naturally with softmax, walks through both integer-label and one-hot-label implementations, and adds two new classes (`Loss` and `Loss_CategoricalCrossentropy`) to the growing toolkit. With this number in hand, Part 09 can finally start moving the weights.
+> **TL;DR.** For multi-class classification the standard loss is **categorical cross-entropy**, the negative logarithm of the probability the network assigned to the *correct* class. This post derives that formula, explains why it pairs naturally with softmax, walks through both integer-label and one-hot-label implementations, and adds two new classes (`Loss` and `Loss_CategoricalCrossentropy`) to the growing toolkit.
 >
 > **Reading time:** ~12 minutes.
 >
@@ -308,7 +308,7 @@ Accuracy is coarser. A prediction of `[0.51, 0.49]` for class 0 and a prediction
 - **Is the clip range `1e-7` magic?** It is conventional, not magic. Any value smaller than the smallest float that survives `log` without underflow would work; `1e-7` is far enough from zero to be safe, far enough from one to be precise, and it is what most production code uses.
 - **What happens if the wrong-class probabilities are very confident?** They do not enter the formula directly. They enter indirectly through softmax: a confident wrong prediction means the correct-class probability is small, which means a large `-log` loss. The math is consistent.
 - **Why use one-hot labels at all if integer labels are simpler?** One-hot labels generalise more cleanly: they support "soft labels" (e.g. `[0.9, 0.05, 0.05]` for a sample that is mostly class 0 but with some label noise), and they compose with mixup, label smoothing, and other regularisation tricks covered in later posts.
-- **Can I just use accuracy as the loss?** No. Accuracy is not differentiable: a tiny change in the weights either leaves the argmax alone (zero gradient) or flips it (infinite gradient). Gradient descent cannot make use of that signal. Cross-entropy is the smooth surrogate.
+- **Can accuracy just be used as the loss?** No. Accuracy is not differentiable: a tiny change in the weights either leaves the argmax alone (zero gradient) or flips it (infinite gradient). Gradient descent cannot make use of that signal. Cross-entropy is the smooth surrogate.
 
 ---
 

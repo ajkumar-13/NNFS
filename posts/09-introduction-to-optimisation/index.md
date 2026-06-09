@@ -10,7 +10,7 @@ part: "Part III — Loss and optimisation"
 
 # Part 09 · Introduction to optimisation
 
-> **TL;DR.** Now that a loss number exists, the next question is how to move the 21 parameters of this tiny network to make that number smaller. Two naive strategies make it clear why the answer cannot be random search: completely random weights barely beat chance, and even random perturbations stall on hard data. The right answer is **gradient descent**, the algorithm at the heart of every modern neural-network training loop, which uses calculus to compute the exact direction each parameter should move. Parts 10 through 27 build that algorithm piece by piece; this post motivates why it has to exist.
+> **TL;DR.** Once a loss number exists, the right way to move a network's parameters to shrink it is **gradient descent**, not random search. This post shows two naive strategies failing and motivates why gradient descent has to exist.
 >
 > **Reading time:** ~12 minutes.
 >
@@ -111,7 +111,7 @@ The only difference from Strategy 1 is one character: **`+=`** instead of `=`. T
 
 **Result on the spiral dataset (three intertwined classes):** loss stalls around 1.04; accuracy stays around 40%. The strategy fails.
 
-The geometric reason is the same one that doomed Strategy 1, but in disguise. On a simple landscape (vertical dataset) most random directions in 21-dimensional space point either downhill or sideways; the algorithm hill-walks to a reasonable local minimum. On a complex landscape (spiral dataset) most random directions point uphill, and the few that point downhill happen to lead into shallow local minima the algorithm cannot escape.
+The geometric reason is the same one that doomed Strategy 1, but in disguise. On a simple landscape (vertical dataset) most random directions in 21-dimensional space point either downhill or sideways; the algorithm hill-walks to a reasonable local minimum (a point lower than everything immediately around it, though not necessarily the lowest point overall). On a complex landscape (spiral dataset) most random directions point uphill, and the few that point downhill happen to lead into shallow local minima the algorithm cannot escape.
 
 The fundamental problem is that **random perturbation is direction-blind**. It is willing to keep good updates but it cannot tell *which* direction is "good" without trying. With 21 parameters, the chance that a random direction happens to point downhill is dominated by the curvature of the landscape, which on the spiral dataset is mostly bad.
 
@@ -144,7 +144,7 @@ This is the foundation of **gradient descent**. At every iteration the update ru
 
 $$w_{\text{new}} = w_{\text{old}} - \alpha \cdot \nabla L,$$
 
-where $\alpha$ is the **learning rate**, a small positive scalar that controls how big the step is. The minus sign is what makes the algorithm a *descent* algorithm.
+where $\alpha$ is the **learning rate**, a small positive scalar that controls how big the step is. The rule is applied to each parameter independently: every weight is moved against its own component of the gradient. The minus sign is what makes the algorithm a *descent* algorithm.
 
 The idea is older than neural networks. Cauchy described it in 1847 as the method for minimising a function of several variables (Cauchy, 1847). It became the engine of neural-network training when Rumelhart, Hinton, and Williams paired it with **backpropagation** (Rumelhart, Hinton, & Williams, 1986), an efficient algorithm for computing $\nabla L$ in a deep network. Parts 12 through 21 derive backpropagation from scratch; the present post only motivates it.
 
@@ -182,13 +182,13 @@ Everything in this list is in service of the one update rule from §5. The rule 
 
 ## 8. The hill-in-fog metaphor
 
-A useful visual: imagine standing on a hill in dense fog, holding a loss meter that reads your current height above sea level. Your job is to reach the lowest point.
+A useful visual: imagine a hiker standing on a hill in dense fog, holding a loss meter that reads the current height above sea level. The goal is to reach the lowest point.
 
-| Algorithm | What you do | Result |
+| Algorithm | What the hiker does | Result |
 |---|---|---|
 | Random selection | Teleport to a random coordinate, check the loss, repeat. | Almost never useful: the bottom is a small region; random teleports rarely land in it. |
 | Random perturbation | Take a small random step. If lower, keep. If higher, step back. | Works on gentle slopes; fails on rough terrain because most random directions are not downhill. |
-| Gradient descent | Feel the ground around your feet with your hand (the gradient). Step in the steepest downhill direction. | Reaches a low point reliably, though not necessarily the *global* lowest. |
+| Gradient descent | Feel the ground underfoot (the gradient). Step in the steepest downhill direction. | Reaches a low point reliably, though not necessarily the *global* lowest. |
 
 The metaphor breaks down in high dimensions (a 21-dimensional hill is hard to visualise), but the core intuition transfers. The reason gradient descent works is the same reason a hiker who can feel the slope under their boots gets down a mountain faster than one who teleports randomly: information about direction is what makes the difference.
 
@@ -199,7 +199,7 @@ The metaphor breaks down in high dimensions (a 21-dimensional hill is hard to vi
 - **Can the gradient ever be exactly zero away from a minimum?** Yes, at saddle points (where the loss increases in some directions and decreases in others). High-dimensional loss surfaces have many saddle points; modern optimisers spend more time escaping them than escaping bad local minima.
 - **Is `eta` (the learning rate) the only hyperparameter?** In vanilla gradient descent, yes. Variants like momentum and Adam introduce more, covered in Parts 22–27.
 - **Why is it called "stochastic" gradient descent in practice?** Because most real training uses **mini-batches**: a subset of the training data at each step rather than the full dataset. The gradient computed on a mini-batch is a noisy estimate of the true gradient; the noise helps escape saddle points. Mini-batching is covered when the training loop is built in Part 22.
-- **What if I cannot compute the gradient analytically?** Then numerical gradients (Part 10) approximate $\nabla L$ by perturbing each parameter and measuring the change. They are slow but provide a useful sanity check for analytical gradients computed by backpropagation. This series uses numerical gradients only as a debugging tool; backpropagation is the production algorithm.
+- **What if the gradient cannot be computed analytically?** Then numerical gradients (Part 10) approximate $\nabla L$ by perturbing each parameter and measuring the change. They are slow but provide a useful sanity check for analytical gradients computed by backpropagation. This series uses numerical gradients only as a debugging tool; backpropagation is the production algorithm.
 - **Why not use a second-order method (Newton's method, L-BFGS)?** Those use second derivatives (the Hessian) for faster convergence. They are excellent for small problems and impractical at scale: the Hessian for a million-parameter network would be a trillion-entry matrix. Gradient descent and its variants scale; second-order methods do not.
 
 ---

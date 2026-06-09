@@ -10,7 +10,7 @@ part: "Part V — Backpropagation"
 
 # Part 21 · Coding the full backpropagation
 
-> **TL;DR.** This post takes everything from Parts 12 through 20 and runs it: a single Python script that does one full forward pass and one full backward pass through a two-layer classifier on the spiral dataset, then prints the resulting gradients. The whole thing is fifteen lines of code, because every layer carries its own `forward` and `backward` and the chain rule has been pre-wired through `dinputs → dvalues`. The gradients computed here are exactly what an optimiser (Part 22 onward) will turn into weight updates. Backpropagation is done.
+> **TL;DR.** Everything from Parts 12 through 20 reduces to a single fifteen-line Python script that runs one full forward pass and one full backward pass through a two-layer spiral classifier, because every layer carries its own `forward` and `backward` and the chain rule is pre-wired through `dinputs → dvalues`. This post walks that script line by line and inspects the four gradient arrays it produces, which are exactly what an optimiser (Part 22 onward) will turn into weight updates.
 >
 > **Reading time:** ~11 minutes.
 >
@@ -269,9 +269,9 @@ A boundary section.
 
 - **Why does `loss_activation.backward` take `loss_activation.output` as its first argument?** The combined class uses the softmax output as the starting array for the copy-then-subtract trick. The "upstream gradient" for the loss is implicitly $1$ (the loss is the final scalar), so the actual gradient comes from the local formula inside the class, not from the first argument.
 - **What is the first thing to check if `dense1.dweights.shape` does not match `dense1.weights.shape`?** Either the forward pass shape is wrong (check `dense1.output.shape`), or the chain of `dinputs → dvalues` got reordered (read the four backward calls top to bottom and verify each one's input matches the previous one's output).
-- **How would I verify the gradients numerically?** Pick one weight, compute the loss at `w + epsilon` and at `w - epsilon`, take the difference, divide by `2 * epsilon`. Compare with `dense_layer.dweights[index]`. They should match to 5–6 decimal places. The [gradient-checking appendix](../../gradient_checking.md) does this for every parameter.
+- **How can the gradients be verified numerically?** Pick one weight, compute the loss at `w + epsilon` and at `w - epsilon`, take the difference, divide by `2 * epsilon`. Compare with `dense1.dweights[index]`. They should match to 5–6 decimal places. The [gradient-checking appendix](../../gradient_checking.md) does this for every parameter.
 - **Why doesn't the script print the per-layer ReLU mask?** It is implicit in `activation1.dinputs`: positions where the input was non-positive contribute zero. There is nothing wrong with printing `activation1.dinputs` to inspect it, but the post left it out to keep the output focused on the trainable gradients.
-- **Why are the dense2 gradients of similar magnitude to the dense1 gradients?** With small random weights everywhere and a uniform softmax output, the upstream signal is small and roughly the same scale at every layer. As training progresses and the weights grow, the gradients at the *first* layer typically shrink (vanishing gradient) faster than at the last. Both phenomena are visible in deeper networks; the two-layer case here is not deep enough to show the difference.
+- **Why are the dense2 gradients of similar magnitude to the dense1 gradients?** With small random weights everywhere and a uniform softmax output, the upstream signal is small and roughly the same scale at every layer. As training progresses and the weights grow, the gradients at the *first* layer typically shrink faster than at the last (the vanishing-gradient effect, where repeated multiplication by small factors during backprop attenuates the signal; covered in [Part 33](../33-weight-initialisation/index.md)). Both phenomena are visible in deeper networks; the two-layer case here is not deep enough to show the difference.
 
 ---
 
@@ -295,7 +295,7 @@ A boundary section.
 - **Asserting `dense1.dweights.shape == (3, 2)`.** It is `(2, 3)` — same shape as `dense1.weights`. Confusing the orientation breaks downstream optimisers.
 - **Running the backward pass before the forward pass.** Every backward call reads `self.inputs` (cached during forward). Without a prior forward, `AttributeError`.
 - **Treating non-zero gradients on first iteration as a bug.** They should be small (with small random init) but non-zero. A run that produces *zero* gradients on the very first step usually means the upstream is being killed by a dead-ReLU configuration.
-- **Skipping `nnfs.init()` and getting different numbers.** The values printed here assume a fixed seed. Without `nnfs.init()`, NumPy uses a different default and your numbers will differ.
+- **Skipping `nnfs.init()` and getting different numbers.** The values printed here assume a fixed seed. Without `nnfs.init()`, NumPy uses a different default and the numbers will differ.
 - **Stopping after this script.** This is one step. Train for many steps to see the loss drop; the script in §7 is the body of the loop, not the whole loop.
 
 ---

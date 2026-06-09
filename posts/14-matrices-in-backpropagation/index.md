@@ -10,7 +10,7 @@ part: "Part V — Backpropagation"
 
 # Part 14 · Matrices in backpropagation
 
-> **TL;DR.** Part 13 wrote out 15 per-weight gradients one by one. This post collapses all 15 into one matrix multiplication: $\partial L / \partial \mathbf{W} = (\partial L / \partial \mathbf{Z})^{\top} \cdot \mathbf{X}$. The result is the exact same numbers as the manual derivation, arranged in the same shape as the stored weight matrix, and the formula extends unchanged to batched inputs where it automatically sums per-sample contributions. The same two lines of NumPy replace every per-weight gradient the rest of the series will ever compute.
+> **TL;DR.** Part 13's twelve per-weight gradients collapse into a single matrix multiplication, $\partial L / \partial \mathbf{W} = (\partial L / \partial \mathbf{Z})^{\top} \cdot \mathbf{X}$, with the three bias gradients handled by one separate sum. This post derives that two-line backward pass, verifies it produces Part 13's exact numbers, and shows the formula extends unchanged to batched inputs.
 >
 > **Reading time:** ~11 minutes.
 >
@@ -46,7 +46,7 @@ This series stores the layer's weights with **one row per neuron, one column per
 |---|:---:|---|
 | $\mathbf{X}$ | $(1, n)$ | one sample, $n$ features |
 | $\mathbf{Z}$ | $(1, m)$ | pre-activation, one entry per neuron |
-| $\partial L / \partial \mathbf{Z}$ | $(1, m)$ | upstream gradient at the layer's pre-activations |
+| $\partial L / \partial \mathbf{Z}$ | $(1, m)$ | upstream gradient (the loss's sensitivity to each pre-activation, derived in Section 3) |
 | $\partial L / \partial \mathbf{W}$ | $(m, n)$ | one row per neuron, one column per input |
 
 The chain rule gave $\partial L / \partial W_{kj} = (\partial L / \partial Z_k) \cdot X_j$. That is the $(k, j)$ entry of the **outer product** of the column vector $(\partial L / \partial \mathbf{Z})^{\top}$ (shape $(m, 1)$) and the row vector $\mathbf{X}$ (shape $(1, n)$):
@@ -76,9 +76,9 @@ For the example in Part 13:
 
 | Factor | Value |
 |---|:---:|
-| $\partial L / \partial Y$ | $2Y = 43.2$ (shared scalar) |
+| $\partial L / \partial Y$ | $2Y = 43.2$ (shared scalar; Part 13's output was $Y = 21.6$) |
 | $\partial Y / \partial A_k$ | $1$ (sum's derivative) |
-| $\partial A_k / \partial Z_k$ | ReLU gate, here $1$ for every $k$ |
+| $\partial A_k / \partial Z_k$ | ReLU gate (the rectified linear unit passes positives and zeroes negatives), here $1$ for every $k$ |
 
 So $\partial L / \partial \mathbf{Z} = [43.2,\ 43.2,\ 43.2]$. This is the per-neuron upstream that the matrix product will broadcast into every weight gradient.
 
@@ -242,7 +242,7 @@ Mixing the two in a single codebase is a guaranteed bug. Decide once.
 
 - **Why does the matrix product automatically sum across the batch?** Because the transpose moves the batch axis to the contracted (inner) dimension of the multiplication. Whenever an axis appears as the contraction axis, the product sums over it. No explicit summation is needed.
 - **Why is the bias gradient summed but the weight gradient is not?** They are summed in the same way; for the weights, the sum is hidden inside the matrix product. For the bias, no input value scales each sample's contribution, so the sum collapses to a vector of per-neuron totals (`np.sum(dL_dZ, axis=0)`).
-- **What if I want the *mean* gradient instead of the *sum*?** Divide by $N$. Most modern losses already include a $1/N$ factor (Part 08 used `np.mean`), so the gradient pipeline does not need to repeat the division. Always check the loss to know whether the gradient is per-sample, per-batch-sum, or per-batch-mean.
+- **What if the *mean* gradient is wanted instead of the *sum*?** Divide by $N$. Most modern losses already include a $1/N$ factor (Part 08 used `np.mean`), so the gradient pipeline does not need to repeat the division. Always check the loss to know whether the gradient is per-sample, per-batch-sum, or per-batch-mean.
 - **Does `np.outer(dL_dZ, X)` work?** Only for 1-D inputs. For 2-D shapes (single-sample row vectors or batched matrices) use the matrix product `dL_dZ.T @ X`; `np.outer` flattens its inputs and may give the wrong shape.
 - **What happens if the upstream gradient is all zero?** The weight gradient is all zero. This is what "dead ReLU" looks like at the matrix level: an entire row of `dL_dZ` is zero, so the corresponding row of `dL_dW` is zero, so the neuron's weights do not change.
 

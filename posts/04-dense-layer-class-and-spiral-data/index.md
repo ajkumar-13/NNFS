@@ -10,7 +10,7 @@ part: "Part I — Foundations"
 
 # Part 04 · The Dense layer class and spiral data
 
-> **TL;DR.** Writing `np.dot` calls by hand for every layer was tractable for two layers and would be unmaintainable for fifty. This post packages the forward pass into a `Layer_Dense` class with two methods, `__init__` (which allocates weights and biases) and `forward` (which runs the dot product plus bias). The same post introduces the spiral dataset, a deliberately non-linear three-class classification problem that the series will use as its standard benchmark from now on.
+> **TL;DR.** Hand-writing `np.dot` calls for every layer is tractable for two layers and unmaintainable for fifty. This post packages the forward pass into a reusable `Layer_Dense` class and introduces the spiral dataset, a deliberately non-linear three-class benchmark the series uses from now on.
 >
 > **Reading time:** ~13 minutes.
 >
@@ -140,7 +140,7 @@ Each line does one thing, and each thing has a reason.
 
 The constructor takes two integers: how many inputs each neuron consumes (`n_inputs`) and how many neurons live in this layer (`n_neurons`). It uses those to allocate the two arrays the layer will own.
 
-**`self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)`** draws each weight independently from a standard normal distribution and scales the result by 0.01. The reason for the scaling is to keep early-training activations small. Pure $\mathcal{N}(0, 1)$ weights are too large: after a few layers, the outputs grow exponentially, and gradient-based training diverges in its first few steps. A multiplier of 0.01 is a deliberately conservative default that works for shallow networks. The deeper your network gets, the more important principled initialisation becomes; Xavier/Glorot (Glorot & Bengio, 2010) and He initialisation (He et al., 2015) are the standard upgrades, but neither is needed yet.
+**`self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)`** draws each weight independently from a standard normal distribution and scales the result by 0.01. The reason for the scaling is to keep early-training activations small. Pure $\mathcal{N}(0, 1)$ weights are too large: after a few layers, the outputs grow exponentially, and gradient-based training diverges in its first few steps. A multiplier of 0.01 is a deliberately conservative default that works for shallow networks. The deeper the network, the more important principled initialisation becomes; Xavier/Glorot (Glorot & Bengio, 2010) and He initialisation (He et al., 2015) are the standard upgrades, but neither is needed yet.
 
 **`self.biases = np.zeros((1, n_neurons))`** starts every bias at zero. Asymmetry between neurons comes from the random weights; adding random biases on top does not help and complicates debugging. The shape is `(1, n_neurons)` rather than `(n_neurons,)` so that broadcasting against a batch of shape `(N, n_neurons)` is unambiguous; either shape works in practice, but the explicit row-vector shape is clearer about intent.
 
@@ -178,7 +178,7 @@ dense1.forward(X)
 print(dense1.output[:5])
 ```
 
-**Output (yours will differ because of the RNG, but `nnfs.init()` should make it reproducible):**
+**Output (deterministic, because `nnfs.init()` fixes the RNG seed):**
 
 ```
 [[ 0.0000e+00  0.0000e+00  0.0000e+00]
