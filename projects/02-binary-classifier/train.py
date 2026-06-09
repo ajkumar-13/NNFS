@@ -38,7 +38,7 @@ def build_model():
     return dense1, activation1, dense2, activation2, dense3, loss_act
 
 
-def train(epochs=2000, noise=0.20, n_samples=1000,
+def train(epochs=2000, noise=0.10, n_samples=1000,
           checkpoint="moons_weights.pkl", seed=0, log_every=200):
     np.random.seed(seed)
 
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--epochs", type=int, default=2000)
-    p.add_argument("--noise", type=float, default=0.20)
+    p.add_argument("--noise", type=float, default=0.10)
     p.add_argument("--n-samples", type=int, default=1000)
     p.add_argument("--checkpoint", default="moons_weights.pkl")
     p.add_argument("--seed", type=int, default=0)

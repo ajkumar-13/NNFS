@@ -24,7 +24,10 @@ class Layer_Dense:
     def __init__(self, n_inputs, n_neurons,
                  weight_regularizer_l1=0.0, weight_regularizer_l2=0.0,
                  bias_regularizer_l1=0.0,   bias_regularizer_l2=0.0):
-        self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)
+        # He initialisation (Part 33): scale by sqrt(2 / fan_in). A flat
+        # 0.01*randn starves a low-fan-in net like this 2-input one (the
+        # pre-activations start near zero, ReLUs die, and the model underfits).
+        self.weights = np.sqrt(2.0 / n_inputs) * np.random.randn(n_inputs, n_neurons)
         self.biases  = np.zeros((1, n_neurons))
 
         self.weight_regularizer_l1 = weight_regularizer_l1

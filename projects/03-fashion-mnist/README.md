@@ -1,6 +1,6 @@
 # Project 03 · Fashion-MNIST
 
-> **TL;DR.** Drop the same 2-hidden-layer MLP from project 01 onto **Fashion-MNIST** — Zalando's grayscale clothing-image replacement for MNIST — and the test accuracy falls from ~97% to **~88-89%**. The 8-point drop is the whole point of the project: same code, same architecture, same hyperparameters, but the dataset is meaningfully harder. The confusion matrix concentrates almost all the errors in a single 4-class cluster (T-shirt / Pullover / Coat / Shirt — all the things that look like grey rectangular cloth from above) and a smaller shoe cluster (Sandal / Sneaker / Ankle boot). Fashion-MNIST is the standard benchmark for "MNIST is too easy, give me something that actually exercises my model" and this project shows why.
+> **TL;DR.** Drop the same 2-hidden-layer MLP from project 01 onto **Fashion-MNIST** — Zalando's grayscale clothing-image replacement for MNIST — and the test accuracy falls from ~97% to **~87%**. The ~10-point drop is the whole point of the project: same code, same architecture, same hyperparameters, but the dataset is meaningfully harder. The confusion matrix concentrates almost all the errors in a single 4-class cluster (T-shirt / Pullover / Coat / Shirt — all the things that look like grey rectangular cloth from above) and a smaller shoe cluster (Sandal / Sneaker / Ankle boot). Fashion-MNIST is the standard benchmark for "MNIST is too easy, give me something that actually exercises my model" and this project shows why.
 
 ---
 
@@ -99,9 +99,9 @@ The whole point of using the same hyperparameters is to make the comparison fair
 | Configuration | Test accuracy | Test loss |
 |---|:---:|:---:|
 | Project 01 (MNIST) | ~97% | ~0.09 |
-| **Project 03 (Fashion-MNIST)** | **~88.9%** | **~0.34** |
+| **Project 03 (Fashion-MNIST)** | **~87%** | **~0.34** |
 
-The ~8-point drop is the standard delta for plain MLPs. CNNs close most of it (a small conv net reaches ~92% on Fashion-MNIST out of the box), which is part of why Fashion-MNIST is often used as a "do I need convolutions yet" sanity check.
+The ~10-point drop is the standard delta for plain MLPs. CNNs close most of it (a small conv net reaches ~92% on Fashion-MNIST out of the box), which is part of why Fashion-MNIST is often used as a "do I need convolutions yet" sanity check.
 
 Per-class accuracies tell a sharper story:
 
@@ -162,7 +162,7 @@ This is why Fashion-MNIST is a useful benchmark: the failure mode points at the 
 - **Comparing test accuracy between MNIST and Fashion-MNIST and worrying.** The gap is supposed to be there. It is a property of the dataset, not a bug in your model.
 - **Spending time on hyperparameter tuning when the bottleneck is architecture.** No combination of lr/decay/dropout takes a 2-layer MLP much past 89% on Fashion-MNIST. The next ~3 points come from convolutions.
 - **Mixing up class indices when reading the confusion matrix.** Always print the class name alongside the index; `data.py` exports `CLASS_NAMES` for that.
-- **Reporting overall accuracy without per-class numbers.** Overall accuracy hides where the model fails. Fashion-MNIST's 88.9% looks much worse when you discover it is 71% on the Shirt class.
+- **Reporting overall accuracy without per-class numbers.** Overall accuracy hides where the model fails. Fashion-MNIST's 87% looks much worse when you discover it is ~75% on the Shirt class.
 
 ---
 

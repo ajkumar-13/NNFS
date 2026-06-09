@@ -1,6 +1,6 @@
 # Project 04 · California housing regression
 
-> **TL;DR.** The first three projects in this series were all *classification* — predict a discrete label from a probability distribution. This project is *regression*: predict a continuous target (the median house value of a California census block group) from 8 numerical features. The architectural and code changes from project 01 are small but precise: **no softmax**, **no sigmoid**, the last Dense layer's raw scalar output is the prediction; **mean squared error** replaces cross-entropy as the loss; and the target gets **standardised to zero mean and unit variance** before training (then de-standardised at evaluation so the reported error is in dollars). A 64-64 hidden network trained with Adam for 200 epochs hits an R² of ~0.78 on the test set with RMSE around $58 000 — roughly the standard "small MLP on California housing" result.
+> **TL;DR.** The first three projects in this series were all *classification* — predict a discrete label from a probability distribution. This project is *regression*: predict a continuous target (the median house value of a California census block group) from 8 numerical features. The architectural and code changes from project 01 are small but precise: **no softmax**, **no sigmoid**, the last Dense layer's raw scalar output is the prediction; **mean squared error** replaces cross-entropy as the loss; and the target gets **standardised to zero mean and unit variance** before training (then de-standardised at evaluation so the reported error is in dollars). A 64-64 hidden network trained with Adam for 200 epochs hits an R² of ~0.82 on the test set with RMSE around $49 000 — competitive with a tree-ensemble baseline on this dataset.
 
 ---
 
@@ -140,21 +140,21 @@ Representative final metrics from a typical 200-epoch run:
 
 | Metric | Train | Test |
 |---|:---:|:---:|
-| MSE (standardised units) | ~0.18 | ~0.22 |
-| RMSE ($) | ~$52 000 | ~$58 000 |
-| MAE ($) | ~$37 500 | ~$41 000 |
-| R² | ~0.82 | ~0.78 |
+| MSE (standardised units) | ~0.15 | ~0.18 |
+| RMSE ($) | ~$45 000 | ~$49 000 |
+| MAE ($) | ~$31 000 | ~$34 000 |
+| R² | ~0.85 | ~0.82 |
 
-The 4-point train/test R² gap is mild — barely overfit. The RMSE of $58k on a target with mean ~$207k is about a 28% relative error, which sounds high but is typical for "all of California" regression: the dataset bundles together expensive coastal block groups and cheap inland ones, and 8 numerical features cannot fully separate them.
+The ~2-point train/test R² gap is mild — barely overfit. The RMSE of $49k on a target with mean ~$207k is about a 24% relative error, which sounds high but is typical for "all of California" regression: the dataset bundles together expensive coastal block groups and cheap inland ones, and 8 numerical features cannot fully separate them.
 
 ### 6.1 Comparing to baselines
 
 | Model | Test R² | Notes |
 |---|:---:|---|
 | Predict the training mean | 0.000 | The zero-knowledge floor |
-| Ordinary least squares (linear regression) | ~0.61 | A linear model on the 8 features |
-| **2-layer MLP (this project)** | **~0.78** | What we built |
-| sklearn `GradientBoostingRegressor` (defaults) | ~0.80 | Modest tree-ensemble improvement |
+| Ordinary least squares (linear regression) | ~0.64 | A linear model on the 8 features |
+| **2-layer MLP (this project)** | **~0.82** | What we built |
+| sklearn `GradientBoostingRegressor` (defaults) | ~0.81 | A strong tree-ensemble baseline; the from-scratch MLP edges it here |
 | xgboost with tuning | ~0.85 | The competitive ML ceiling on this dataset |
 
 The MLP comfortably beats linear regression and gets within striking distance of well-tuned gradient boosting. For a single hidden-layer change, that's the right shape.
