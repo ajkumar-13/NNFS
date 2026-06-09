@@ -10,12 +10,12 @@ part: "Part V — Backpropagation"
 
 # Part 18 · Backpropagation through the loss function
 
-> **TL;DR.** Backpropagation has to start somewhere. That somewhere is the loss function: the gradient of $L$ with respect to the network's output is the first upstream gradient every other layer's `backward` will consume. For categorical cross-entropy, that gradient is the element-wise division $-y / \hat{y}$, with one non-zero entry per row (because the one-hot true label kills the rest). Dividing by the batch size keeps the gradient magnitude independent of `N`, so the learning rate stays meaningful across batch sizes. With this `backward` method on `Loss_CategoricalCrossentropy`, the only remaining piece is the softmax backward, covered in Part 19.
+> **TL;DR.** Backpropagation has to start somewhere. That somewhere is the loss function: the gradient of $L$ with respect to the network's output is the first upstream gradient every other layer's `backward` will consume. For categorical cross-entropy, that gradient is the element-wise division $-\mathbf{y} / \hat{\mathbf{y}}$, with one non-zero entry per row (because the one-hot true label kills the rest). Dividing by the batch size keeps the gradient magnitude independent of `N`, so the learning rate stays meaningful across batch sizes. With this `backward` method on `Loss_CategoricalCrossentropy`, the only remaining piece is the softmax backward, covered in Part 19.
 >
 > **Reading time:** ~10 minutes.
 >
 > **After reading this you will be able to:**
-> - Derive the cross-entropy gradient $-y / \hat{y}$ from the loss definition.
+> - Derive the cross-entropy gradient $-\mathbf{y} / \hat{\mathbf{y}}$ from the loss definition.
 > - Implement `Loss_CategoricalCrossentropy.backward` that handles both integer and one-hot labels.
 > - Explain why the gradient is divided by the batch size and what would go wrong without it.
 
@@ -28,9 +28,9 @@ part: "Part V — Backpropagation"
 
 The classification pipeline from [Part 07](../07-coding-the-complete-forward-pass/index.md) is:
 
-$$\text{inputs} \to (\text{Dense} + \text{ReLU})^{*} \to \text{Softmax} \to \hat{y} \to \text{Cross-Entropy} \to L.$$
+$$\text{inputs} \to (\text{Dense} + \text{ReLU})^{*} \to \text{Softmax} \to \hat{\mathbf{y}} \to \text{Cross-Entropy} \to L.$$
 
-Backpropagation walks this pipeline right to left. The very first gradient is $\partial L / \partial \hat{y}$: the loss's local derivative with respect to its own input. Every other class's `backward` method will receive this gradient (or something derived from it) as its `dvalues`. Without a correct gradient at the loss, nothing further downstream produces meaningful updates.
+Backpropagation walks this pipeline right to left. The very first gradient is $\partial L / \partial \hat{\mathbf{y}}$: the loss's local derivative with respect to its own input. Every other class's `backward` method will receive this gradient (or something derived from it) as its `dvalues`. Without a correct gradient at the loss, nothing further downstream produces meaningful updates.
 
 This post derives that first gradient for categorical cross-entropy, implements it as `Loss_CategoricalCrossentropy.backward`, and prepares the upstream for softmax (Part 19).
 
@@ -157,7 +157,7 @@ Three details deserve naming.
 
 **The label-format check is the same one `forward` uses.** Backward must support whichever format was passed in; the conversion is cheap.
 
-**`dvalues` is the prediction array.** In the loss's `backward`, the upstream gradient is the loss itself (a scalar), so the implementation skips the explicit upstream multiplication and goes straight to the local gradient $-y / \hat{y}$. The chain-rule "× upstream" step is implicit because the upstream is `1`.
+**`dvalues` is the prediction array.** In the loss's `backward`, the upstream gradient is the loss itself (a scalar), so the implementation skips the explicit upstream multiplication and goes straight to the local gradient $-\mathbf{y} / \hat{\mathbf{y}}$. The chain-rule "× upstream" step is implicit because the upstream is `1`.
 
 **Clipping appears in `forward`, not in `backward`.** The gradient formula has $\hat{y}$ in the denominator, so if any value in `dvalues` is zero, the result is `inf`. Two defences exist: clip inside `backward`, or trust that `forward` was called first and the clipped predictions are what reach `backward`. The class in [Part 16](../16-coding-backpropagation/index.md) uses the latter pattern; production code often does both for safety.
 
@@ -179,7 +179,7 @@ A boundary section.
 
 - **It is not the full softmax + cross-entropy backward.** The clean shortcut that pairs them together (the famous $\hat{y} - y$ formula) lives in [Part 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md). This post derives only the loss's contribution; Part 19 multiplies it by the softmax Jacobian and watches things cancel.
 - **It is not the only loss backward.** Squared-error backward is in Part 12; binary cross-entropy and mean absolute error have their own derivations not covered in this series.
-- **It does not handle label smoothing.** Soft labels (where `y_true` is not strictly one-hot) work with the same formula but with the additional gradient terms surviving. The implementation in §5 already handles that case because it uses the general $-y / \hat{y}$ form, not the correct-class shortcut.
+- **It does not handle label smoothing.** Soft labels (where `y_true` is not strictly one-hot) work with the same formula but with the additional gradient terms surviving. The implementation in §5 already handles that case because it uses the general $-\mathbf{y} / \hat{\mathbf{y}}$ form, not the correct-class shortcut.
 - **It is not where the learning rate is set.** The `1/N` normalisation is per-sample averaging, not learning-rate tuning. Both happen; both matter; they are different knobs.
 
 ---
@@ -198,7 +198,7 @@ A boundary section.
 
 | Concept | Takeaway |
 |---|---|
-| Backprop starts at the loss | $\partial L / \partial \hat{y}$ is the first gradient in the chain |
+| Backprop starts at the loss | $\partial L / \partial \hat{\mathbf{y}}$ is the first gradient in the chain |
 | Cross-entropy gradient | $\partial L_i / \partial \hat{y}_{ij} = -y_{ij} / \hat{y}_{ij}$; element-wise division |
 | One-hot collapse | Only the correct-class entry of each row is non-zero |
 | Batch normalisation | Divide by $N$ so the gradient magnitude is independent of batch size |

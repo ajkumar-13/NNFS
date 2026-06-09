@@ -20,7 +20,7 @@ part: "Part VI — Optimisers"
 > - Predict, before running training, when AdaGrad will help and when its dying-rate problem will dominate.
 
 ![AdaGrad per-parameter rates: parameters with large historical gradients take small effective steps, parameters with small historical gradients keep large steps, and the cache grows monotonically so every rate eventually decays.](diagrams/01-per-parameter-rates.svg)
-*The cache for each parameter is the running sum of squared gradients; the effective learning rate is the global $\alpha$ divided by $\sqrt{\text{cache} + \varepsilon}$. Two parameters with different gradient histories end up with very different effective step sizes.*
+*The cache for each parameter is the running sum of squared gradients; the effective learning rate is the global $\alpha$ divided by $\sqrt{\text{cache} + \epsilon}$. Two parameters with different gradient histories end up with very different effective step sizes.*
 
 ---
 
@@ -62,9 +62,9 @@ $$G_t = G_{t-1} + g_t^2 \quad \text{(elementwise)}$$
 
 then use $G_t$ to scale the update:
 
-$$\theta_t = \theta_{t-1} - \frac{\alpha}{\sqrt{G_t + \varepsilon}} \cdot g_t$$
+$$\theta_t = \theta_{t-1} - \frac{\alpha}{\sqrt{G_t + \epsilon}} \cdot g_t$$
 
-where $g_t = \partial L / \partial \theta$ is the current gradient, $\alpha$ is the global learning rate, and $\varepsilon$ is a tiny constant (typically $10^{-7}$) preventing division by zero on the first step.
+where $g_t = \partial L / \partial \theta$ is the current gradient, $\alpha$ is the global learning rate, and $\epsilon$ is a tiny constant (typically $10^{-7}$) preventing division by zero on the first step.
 
 Three things to notice.
 
@@ -169,7 +169,7 @@ Three implementation notes.
 
 **Buffers live on the layer.** Same convention as momentum's `weight_momentums`: lazy initialisation on first call, layer-local storage. A single optimiser instance can drive any number of layers.
 
-**`epsilon` is added *outside* the square root, not inside.** Both forms appear in the literature. Outside means $\alpha / (\sqrt{G} + \varepsilon)$; inside means $\alpha / \sqrt{G + \varepsilon}$. The "outside" form is the one in the original AdaGrad paper and is what NumPy implementations use. The two behave identically when $G \gg \varepsilon$, which is true after the very first iteration; the difference is only in the first-step boundary value.
+**`epsilon` is added *outside* the square root, not inside.** Both forms appear in the literature. Outside means $\alpha / (\sqrt{G} + \epsilon)$; inside means $\alpha / \sqrt{G + \epsilon}$. The "outside" form is the one in the original AdaGrad paper and is what NumPy implementations use. The two behave identically when $G \gg \epsilon$, which is true after the very first iteration; the difference is only in the first-step boundary value.
 
 ---
 
@@ -195,18 +195,18 @@ A small detail worth noting: the decay rate is `1e-4` here instead of `1e-3`. Ad
 
 ## 7. What happens when this is run
 
-With $\alpha = 1.0$, $d = 10^{-4}$, $\varepsilon = 10^{-7}$, and 10 000 epochs:
+With $\alpha = 1.0$, $d = 10^{-4}$, $\epsilon = 10^{-7}$, and 10 000 epochs:
 
 | Configuration | Final loss | Final accuracy |
 |---|:---:|:---:|
-| Vanilla SGD (Part 22) | 0.768 | 57.3% |
-| SGD + decay (Part 23) | 0.653 | 71.7% |
-| **AdaGrad** | **~0.35** | **~89.3%** |
-| SGD + decay + momentum, $\beta = 0.9$ (Part 24) | 0.128 | 95.3% |
+| Vanilla SGD (Part 22) | 0.87 | 64.7% |
+| SGD + decay (Part 23) | 0.76 | 64.7% |
+| **AdaGrad** | **~0.38** | **~84.0%** |
+| SGD + decay + momentum, $\beta = 0.9$ (Part 24) | 0.12 | 95.7% |
 
-Two observations.
+Two observations. (Figures from [`verify/optimizer_results.py`](../../verify/optimizer_results.py).)
 
-**AdaGrad clearly beats decay alone.** A 17-point lift in accuracy, with no momentum and no tuning beyond `learning_rate` and `decay`, demonstrates that per-parameter scaling captures something real.
+**AdaGrad clearly beats plain SGD and decay.** A roughly 19-point lift in accuracy over the ~65% of Parts 22–23, with no momentum and no tuning beyond `learning_rate` and `decay`, demonstrates that per-parameter scaling captures something real.
 
 **It loses to momentum.** Momentum's accuracy on the spiral is still higher. There are two reasons: (a) momentum directly attacks the oscillation problem, which is the dominant failure mode in narrow valleys; (b) AdaGrad's late-phase rate dying limits how close it can get to the minimum once the cache is large.
 
@@ -229,7 +229,7 @@ For the typical deep-network training regime (10⁴ to 10⁶ steps, non-convex l
 ## 9. Anticipated questions
 
 - **Why divide by $\sqrt{G}$ and not by $G$?** Variance-matching. The square root makes the rescaled gradient approximately unit-norm in expectation; dividing by $G$ would over-shrink the step for high-variance parameters.
-- **What is the right $\varepsilon$?** Anywhere from $10^{-8}$ to $10^{-6}$. The value rarely matters in practice; the cache is dominated by $g^2$ within the first few steps.
+- **What is the right $\epsilon$?** Anywhere from $10^{-8}$ to $10^{-6}$. The value rarely matters in practice; the cache is dominated by $g^2$ within the first few steps.
 - **Can I reset the cache periodically to avoid the dying-rate problem?** Yes, and it is one of the early "fixes" historically tried. But every reset throws away the per-parameter adaptation that AdaGrad spent thousands of steps learning. The principled fix is RMSProp's EMA.
 - **Does AdaGrad need decay at all?** Not really. The cache already provides implicit decay. The `decay` parameter is included for compatibility with the optimiser interface but is usually set to a small value or zero.
 - **Is AdaGrad ever called "adaptive gradient"?** Yes. "AdaGrad" is shorthand for "Adaptive Gradient", and the paper's title is *Adaptive Subgradient Methods for Online Learning and Stochastic Optimization*.
@@ -241,11 +241,11 @@ For the typical deep-network training regime (10⁴ to 10⁶ steps, non-convex l
 | Concept | Takeaway |
 |---|---|
 | Cache | $G_t = G_{t-1} + g_t^2$ (one scalar per parameter) |
-| Update | $\theta \mathrel{-}= \alpha \cdot g / (\sqrt{G_t} + \varepsilon)$ |
-| Per-parameter rate | Effective rate = $\alpha / \sqrt{G_t + \varepsilon}$, different for every weight |
+| Update | $\theta \mathrel{-}= \alpha \cdot g / (\sqrt{G_t} + \epsilon)$ |
+| Per-parameter rate | Effective rate = $\alpha / \sqrt{G_t + \epsilon}$, different for every weight |
 | Storage | Per-layer `weight_cache`, `bias_cache` buffers |
 | Fatal flaw | Cache grows monotonically; effective rate $\to 0$; learning stops |
-| Result on spiral | 71.7% (decay) → 89.3% (AdaGrad); still worse than momentum (95.3%) |
+| Result on spiral | ~65% (decay) → 84% (AdaGrad); still below momentum (95.7%) |
 | Best use case | Sparse features, short convex problems |
 | Legacy | Foundation for RMSProp (Part 26) and Adam (Part 27) |
 
@@ -254,7 +254,7 @@ For the typical deep-network training regime (10⁴ to 10⁶ steps, non-convex l
 ## Common pitfalls
 
 - **Re-initialising the cache every epoch.** Once initialised to zero, the cache must persist for the entire training run. Re-initialising defeats the entire point.
-- **Setting $\varepsilon = 0$.** First-step division by zero. Either always use a small positive $\varepsilon$ or add it inside the square root.
+- **Setting $\epsilon = 0$.** First-step division by zero. Either always use a small positive $\epsilon$ or add it inside the square root.
 - **Using a large `decay` alongside AdaGrad.** Two decays compose multiplicatively. The implicit AdaGrad decay alone is usually enough; an extra explicit decay larger than $10^{-4}$ kills the rate well before convergence.
 - **Treating cache size as a per-layer quantity.** It is per-*parameter*. Two weights in the same layer can have very different cache values.
 - **Assuming AdaGrad will outperform momentum.** It rarely does on dense, deep networks. AdaGrad shines on sparse problems; momentum shines on dense ones. Spiral data is dense.

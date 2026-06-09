@@ -56,10 +56,10 @@ m_t &= \beta_1 \, m_{t-1} + (1 - \beta_1) \, g_t \quad &\text{(first moment, mom
 v_t &= \beta_2 \, v_{t-1} + (1 - \beta_2) \, g_t^2 \quad &\text{(second moment, RMSProp cache)}\\[2pt]
 \hat{m}_t &= \frac{m_t}{1 - \beta_1^{\,t}} \quad &\text{(bias-corrected first moment)}\\[2pt]
 \hat{v}_t &= \frac{v_t}{1 - \beta_2^{\,t}} \quad &\text{(bias-corrected second moment)}\\[2pt]
-\theta_t &= \theta_{t-1} - \alpha \cdot \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \varepsilon} \quad &\text{(parameter update)}
+\theta_t &= \theta_{t-1} - \alpha \cdot \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon} \quad &\text{(parameter update)}
 \end{aligned}$$
 
-Five lines, all elementwise. The first two come straight from Parts 24 and 26. The middle two are new. The last is a fusion of momentum's update ($\theta \mathrel{+}= v$) with RMSProp's per-parameter scaling ($\alpha / \sqrt{v + \varepsilon}$).
+Five lines, all elementwise. The first two come straight from Parts 24 and 26. The middle two are new. The last is a fusion of momentum's update ($\theta \mathrel{+}= v$) with RMSProp's per-parameter scaling ($\alpha / \sqrt{v + \epsilon}$).
 
 ### 2.1. Why bias correction is needed
 
@@ -191,12 +191,12 @@ The headline number, with $\alpha_0 = 0.02$, $d = 10^{-5}$, $\beta_1 = 0.9$, $\b
 
 | Configuration | Final loss | Final accuracy |
 |---|:---:|:---:|
-| Vanilla SGD (Part 22) | 0.768 | 57.3% |
-| SGD + decay (Part 23) | 0.653 | 71.7% |
-| AdaGrad (Part 25) | ~0.35 | 89.3% |
-| RMSProp (Part 26) | ~0.40 | ~88.0% |
-| SGD + decay + momentum, $\beta = 0.9$ (Part 24) | 0.128 | 95.3% |
-| **Adam** | **~0.099** | **~95.7%** |
+| Vanilla SGD (Part 22) | 0.87 | 64.7% |
+| SGD + decay (Part 23) | 0.76 | 64.7% |
+| AdaGrad (Part 25) | ~0.38 | 84.0% |
+| RMSProp (Part 26) | ~0.24 | ~90.0% |
+| SGD + decay + momentum, $\beta = 0.9$ (Part 24) | 0.12 | 95.7% |
+| **Adam** | **~0.08** | **~96.3%** |
 
 Three observations.
 
@@ -262,9 +262,9 @@ For this series, plain Adam is what is built. The variants share the same skelet
 | First moment | $m_t = \beta_1 m_{t-1} + (1 - \beta_1) g_t$  (momentum's EMA over $g$) |
 | Second moment | $v_t = \beta_2 v_{t-1} + (1 - \beta_2) g_t^2$  (RMSProp's EMA over $g^2$) |
 | Bias correction | $\hat{m}_t = m_t / (1 - \beta_1^t)$, $\hat{v}_t = v_t / (1 - \beta_2^t)$ |
-| Update | $\theta \mathrel{-}= \alpha \cdot \hat{m}_t / (\sqrt{\hat{v}_t} + \varepsilon)$ |
-| Defaults | $\alpha = 0.001$ (or $0.02$ for toy data), $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\varepsilon = 10^{-7}$ |
-| Result on spiral | ~95.7% accuracy, ~0.099 loss; best of the series |
+| Update | $\theta \mathrel{-}= \alpha \cdot \hat{m}_t / (\sqrt{\hat{v}_t} + \epsilon)$ |
+| Defaults | $\alpha = 0.001$ (or $0.02$ for toy data), $\beta_1 = 0.9$, $\beta_2 = 0.999$, $\epsilon = 10^{-7}$ |
+| Result on spiral | ~96.3% accuracy, ~0.08 loss; best of the series |
 | Production status | Modern default; AdamW is the variant most widely used today |
 
 ---

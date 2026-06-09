@@ -16,7 +16,7 @@ part: "Part VI — Optimisers"
 >
 > **After reading this you will be able to:**
 > - Explain why an exponential moving average over $g^2$ produces a bounded cache, and how the decay factor $\rho$ controls its memory horizon.
-> - Implement `Optimizer_RMSprop` with per-layer caches and choose sensible defaults for $\alpha$, $\rho$, and $\varepsilon$.
+> - Implement `Optimizer_RMSprop` with per-layer caches and choose sensible defaults for $\alpha$, $\rho$, and $\epsilon$.
 > - Read RMSProp as the bridge optimiser between AdaGrad (per-parameter rates without memory limit) and Adam (RMSProp with momentum).
 
 ![RMSProp vs AdaGrad cache growth: AdaGrad's sum grows linearly with iterations, RMSProp's EMA converges to a stable value.](diagrams/01-rmsprop-vs-adagrad-cache.svg)
@@ -26,7 +26,7 @@ part: "Part VI — Optimisers"
 
 ## 1. What needs fixing
 
-AdaGrad (Part 25) ended with one fatal flaw: the cache $G_t = \sum_{s \le t} g_s^2$ can only grow. After enough iterations, the effective learning rate $\alpha / \sqrt{G_t + \varepsilon}$ becomes negligible regardless of what the gradient is saying. The parameter is "dead" not because its gradient is zero but because the denominator has grown so large that the update underflows in practice.
+AdaGrad (Part 25) ended with one fatal flaw: the cache $G_t = \sum_{s \le t} g_s^2$ can only grow. After enough iterations, the effective learning rate $\alpha / \sqrt{G_t + \epsilon}$ becomes negligible regardless of what the gradient is saying. The parameter is "dead" not because its gradient is zero but because the denominator has grown so large that the update underflows in practice.
 
 The structural cause is clear: **the cache has unbounded memory**. Every gradient ever seen still contributes to the sum, no matter how old. Even if the optimisation landscape changes (e.g. a parameter that was bouncing for the first thousand iterations and stabilised for the next ten thousand), the cache still remembers the early turbulence forever.
 
@@ -88,7 +88,7 @@ If the gradient magnitude *changes*, the cache tracks the change. A parameter th
 
 The update step itself is identical to AdaGrad:
 
-$$\theta_t = \theta_{t-1} - \frac{\alpha}{\sqrt{G_t + \varepsilon}} \cdot g_t$$
+$$\theta_t = \theta_{t-1} - \frac{\alpha}{\sqrt{G_t + \epsilon}} \cdot g_t$$
 
 Only the *definition* of $G_t$ changes. This is intentional: RMSProp inherits AdaGrad's per-parameter scaling unchanged and only fixes the part of the algorithm that was broken.
 
@@ -96,7 +96,7 @@ Reading RMSProp as a composition of two pieces:
 
 | Piece | Inherited from | What it does |
 |---|---|---|
-| Per-parameter rescaling $\alpha / \sqrt{G_t + \varepsilon}$ | AdaGrad | Larger gradients → smaller effective steps |
+| Per-parameter rescaling $\alpha / \sqrt{G_t + \epsilon}$ | AdaGrad | Larger gradients → smaller effective steps |
 | Bounded cache $G_t$ via EMA over $g^2$ | new in RMSProp | Cache reflects recent gradients only, never overflows |
 
 The conceptual heritage is also clear: RMSProp uses an EMA over $g^2$ in exactly the way momentum uses a weighted sum over $g$. Different statistics of the gradient stream, but the same "let the past inform the present, but not dominate it forever" idea.
@@ -182,14 +182,14 @@ Two implementation choices worth highlighting.
 
 | Configuration | Final loss | Final accuracy |
 |---|:---:|:---:|
-| SGD + decay (Part 23) | 0.653 | 71.7% |
-| AdaGrad (Part 25) | ~0.35 | ~89.3% |
-| **RMSProp** | **~0.40** | **~88.0%** |
-| SGD + momentum (Part 24) | 0.128 | 95.3% |
+| SGD + decay (Part 23) | 0.76 | 64.7% |
+| AdaGrad (Part 25) | ~0.38 | ~84.0% |
+| **RMSProp** | **~0.24** | **~90.0%** |
+| SGD + momentum (Part 24) | 0.12 | 95.7% |
 
-The numbers tell two stories at once.
+The numbers (from [`verify/optimizer_results.py`](../../verify/optimizer_results.py)) tell two stories at once.
 
-**Over 10 000 epochs, RMSProp matches AdaGrad.** Both adaptive optimisers settle around 88–89% accuracy on the spiral. The advantage of RMSProp's bounded cache is not visible at this iteration count; AdaGrad's dying-rate problem only becomes obvious past ~50k iterations, which the spiral run does not reach.
+**Over 10 000 epochs, RMSProp edges ahead of AdaGrad** (~90% vs ~84%). RMSProp's bounded cache keeps its effective learning rate from collapsing the way AdaGrad's $1/\sqrt{t}$ rate slowly does, so it stays a little more effective even at this iteration count. The gap widens further over very long runs, where AdaGrad's dying-rate problem becomes severe (past ~50k iterations).
 
 **Both still lose to momentum on this dense problem.** As discussed in §8 of Part 25, per-parameter scaling shines on sparse problems; for dense low-dimensional problems like the spiral, momentum's direction smoothing matters more than per-parameter scaling.
 
@@ -219,7 +219,7 @@ Two facts make RMSProp the natural last stop before Adam.
 
 **RMSProp uses an EMA of $g^2$ for the cache.** Adam keeps this idea unchanged (it calls the cache the "second moment" $v_t$ and uses an EMA factor $\beta_2$, typically 0.999).
 
-**RMSProp does not use momentum.** Adam adds momentum: a separate EMA of $g$ itself (the "first moment" $m_t$, factor $\beta_1$, typically 0.9). The Adam update then scales $m_t$ by the same $1 / \sqrt{v_t + \varepsilon}$ that RMSProp would apply to $g_t$ directly.
+**RMSProp does not use momentum.** Adam adds momentum: a separate EMA of $g$ itself (the "first moment" $m_t$, factor $\beta_1$, typically 0.9). The Adam update then scales $m_t$ by the same $1 / \sqrt{v_t + \epsilon}$ that RMSProp would apply to $g_t$ directly.
 
 So Adam = RMSProp's cache-with-EMA + momentum's direction-with-EMA + a small bias correction. Each of the three pieces was already introduced separately:
 
@@ -248,11 +248,11 @@ Part 27 will spell out the bias-correction term and show how the combined Adam u
 | Concept | Takeaway |
 |---|---|
 | Cache update | $G_t = \rho G_{t-1} + (1 - \rho) g_t^2$ (EMA over $g^2$) |
-| Parameter update | $\theta \mathrel{-}= \alpha \cdot g / (\sqrt{G_t} + \varepsilon)$, same as AdaGrad |
+| Parameter update | $\theta \mathrel{-}= \alpha \cdot g / (\sqrt{G_t} + \epsilon)$, same as AdaGrad |
 | Why it fixes AdaGrad | Cache converges instead of growing; effective rate never dies |
 | Default $\rho$ | 0.9 (short horizon) or 0.999 (long horizon); both common |
 | Default $\alpha$ | 0.001–0.02; much smaller than SGD's 1.0 |
-| Result on spiral | ~88% accuracy; similar to AdaGrad at 10k epochs, much better at 100k |
+| Result on spiral | ~90% accuracy; above AdaGrad's ~84% at 10k epochs, with a bounded cache that holds up far better over very long runs |
 | Position in the series | The bridge optimiser: AdaGrad → RMSProp → Adam |
 
 ---
@@ -260,11 +260,11 @@ Part 27 will spell out the bias-correction term and show how the combined Adam u
 ## Common pitfalls
 
 - **Using SGD's `learning_rate = 1.0` with RMSProp.** Divergence is almost guaranteed. Drop the base rate by one or two orders of magnitude when switching from SGD to any adaptive optimiser.
-- **Setting $\rho$ to 1.0 exactly.** The cache stops updating; the optimiser degenerates to vanilla SGD with the *initial* cache (which is zero — division by $\sqrt{\varepsilon}$ explodes). Always keep $\rho < 1$.
+- **Setting $\rho$ to 1.0 exactly.** The cache stops updating; the optimiser degenerates to vanilla SGD with the *initial* cache (which is zero — division by $\sqrt{\epsilon}$ explodes). Always keep $\rho < 1$.
 - **Choosing $\rho$ blindly.** A spiral-shaped toy run with full-batch updates wants a long horizon ($\rho = 0.999$); a stochastic mini-batch ImageNet run wants a shorter one ($\rho = 0.9$ or $0.99$). Match the horizon to the gradient noise scale.
 - **Comparing RMSProp to AdaGrad in 10k-epoch runs only.** They look nearly identical. The structural advantage of RMSProp only shows up in long-horizon training (50k+ iterations).
 - **Forgetting that the per-layer cache buffers are not reset between runs.** Calling `train()` twice on the same `layer` will continue the EMA from where it left off. That is sometimes the intent, but it can also produce subtle bugs.
-- **Setting $\varepsilon = 0$.** The first cache value is zero; the very first update divides by $\sqrt{\rho \cdot 0 + (1-\rho) g^2 + 0}$ which is well-defined, but later steps where $g \to 0$ can briefly trigger division by tiny numbers. Always keep $\varepsilon$ small but positive.
+- **Setting $\epsilon = 0$.** The first cache value is zero; the very first update divides by $\sqrt{\rho \cdot 0 + (1-\rho) g^2 + 0}$ which is well-defined, but later steps where $g \to 0$ can briefly trigger division by tiny numbers. Always keep $\epsilon$ small but positive.
 - **Treating RMSProp's `decay` as a substitute for `rho`.** They control completely different things: `decay` controls the *global* learning rate over time; `rho` controls the *cache horizon*. Both can be tuned independently.
 
 ---

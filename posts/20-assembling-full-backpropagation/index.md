@@ -30,9 +30,9 @@ After ten posts on backprop, every component the spiral classifier needs has bot
 
 | Class | `forward` | `backward` | Trainable |
 |---|:---:|:---:|:---:|
-| `Layer_Dense` | $Z = X \mathbf{W} + \mathbf{B}$ | `dweights`, `dbiases`, `dinputs` | yes |
-| `Activation_ReLU` | $\max(0, Z)$ | masked copy → `dinputs` | no |
-| `Activation_Softmax_Loss_CategoricalCrossentropy` | softmax then cross-entropy | $(\hat{y} - y)/N$ → `dinputs` | no |
+| `Layer_Dense` | $\mathbf{Z} = \mathbf{X} \mathbf{W} + \mathbf{b}$ | `dweights`, `dbiases`, `dinputs` | yes |
+| `Activation_ReLU` | $\max(0, \mathbf{Z})$ | masked copy → `dinputs` | no |
+| `Activation_Softmax_Loss_CategoricalCrossentropy` | softmax then cross-entropy | $(\hat{\mathbf{y}} - \mathbf{y})/N$ → `dinputs` | no |
 
 Three classes, eight methods. That is the entire computational toolkit a classification network needs.
 
@@ -78,7 +78,7 @@ Four calls, same components in reverse, same `dinputs` → `dvalues` glue at eve
 
 | # | Call | Input | Produces |
 |:---:|---|---|---|
-| 1 | `loss_activation.backward(ŷ, y)` | predicted, true | `dinputs` = $(\hat{y} - y)/N$ |
+| 1 | `loss_activation.backward(ŷ, y)` | predicted, true | `dinputs` = $(\hat{\mathbf{y}} - \mathbf{y})/N$ |
 | 2 | `layer2.backward(loss_activation.dinputs)` | upstream from loss/softmax | `dweights`, `dbiases`, `dinputs` |
 | 3 | `activation1.backward(layer2.dinputs)` | upstream from layer 2 | `dinputs` (gated by ReLU mask) |
 | 4 | `layer1.backward(activation1.dinputs)` | upstream from ReLU | `dweights`, `dbiases`, `dinputs` |
@@ -146,7 +146,7 @@ A boundary section.
 
 ## 7. Anticipated questions
 
-- **Why doesn't `loss_activation.backward` take `dvalues` from somewhere upstream?** Because the loss is the rightmost component in the chain. Its "upstream" is the loss scalar itself, whose derivative with respect to itself is $1$. The implementation skips the multiplication by $1$ and goes straight to the local gradient $(\hat{y} - y)/N$.
+- **Why doesn't `loss_activation.backward` take `dvalues` from somewhere upstream?** Because the loss is the rightmost component in the chain. Its "upstream" is the loss scalar itself, whose derivative with respect to itself is $1$. The implementation skips the multiplication by $1$ and goes straight to the local gradient $(\hat{\mathbf{y}} - \mathbf{y})/N$.
 - **Why pass `loss_activation.output` as `dvalues` to `loss_activation.backward`?** Convenience. The combined class uses `dvalues` as the starting array for the copy-then-subtract trick from Part 19. The actual gradient comes from inside the class, not from `dvalues`.
 - **Can I add more hidden layers?** Yes. Insert `Layer_Dense(in, out) + Activation_ReLU()` pairs between layer 1's activation and layer 2. The chain in §3 grows by two calls per pair; the update in §4 grows by two parameter subtractions per layer.
 - **Why doesn't ReLU have a `dweights` or `dbiases`?** Because it has no trainable parameters. It only has `dinputs`, the gradient with respect to its input, which it passes back to the previous dense layer. Only `Layer_Dense` has trainable parameters.

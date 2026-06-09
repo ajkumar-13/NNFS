@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
   <title id="t">Learning-rate decay schedule and the loss curves it produces</title>
-  <desc id="d">Two-panel diagram with a formula band on top. Top: the decay rule alpha(t) equals alpha_0 over 1 plus d times t, applied per iteration. Bottom-left panel: three learning-rate schedules over 10 000 iterations starting from alpha_0 = 1.0. The grey line is no decay and stays at 1.0; the green line is d = 1e-3 and tapers smoothly to 0.091; the red line is d = 1e-2 and crashes to near zero by iteration 1000. Bottom-right panel: the loss curves produced by those three schedules on the spiral dataset. The grey baseline (no decay) plateaus around 0.77 with mild oscillation; the green right-sized decay drops smoothly to 0.65; the red too-aggressive decay stalls high around 0.80 because the rate dies before the network has finished learning.</desc>
+  <desc id="d">Two-panel diagram with a formula band on top. Top: the decay rule alpha(t) equals alpha_0 over 1 plus d times t, applied per iteration. Bottom-left panel: three learning-rate schedules over 10 000 iterations starting from alpha_0 = 1.0. The grey line is no decay and stays at 1.0; the green line is d = 1e-3 and tapers smoothly to 0.091; the red line is d = 1e-2 and crashes to near zero by iteration 1000. Bottom-right panel: the loss curves produced by those three schedules on the spiral dataset. The grey baseline (no decay) oscillates and settles around 0.87; the green right-sized decay (d = 1e-3) drops smoothly and lower, to about 0.76; the red too-aggressive decay (d = 1e-2) stalls high near 1.07 because the rate dies before the network has finished learning.</desc>
 
   <style><![CDATA[
     :root{
@@ -47,7 +47,7 @@
   <rect class="bg" width="960" height="540"/>
 
   <text class="title"    x="48" y="40">Learning-rate decay: schedule and result</text>
-  <text class="subtitle" x="48" y="60">Start with a large step. Shrink it on a 1/(1 + d·t) curve. The right d turns a 57% plateau into 72%.</text>
+  <text class="subtitle" x="48" y="60">Start with a large step. Shrink it on a 1/(1 + d·t) curve. The right d lowers and smooths the loss; too large a d stalls learning.</text>
 
   <!-- ============================ Rule band ============================ -->
   <rect class="rule-band" x="48" y="76" width="864" height="60" rx="10"/>
@@ -166,52 +166,49 @@
   <text class="axis-label" x="888"   y="436" text-anchor="middle">10k</text>
   <text class="axis-title" x="717" y="452" text-anchor="middle">epoch</text>
 
-  <!-- Curve: d = 0 (baseline, plateaus around 0.77 with slight wiggle) -->
+  <!-- Curve: d = 0 (baseline, oscillates and settles around 0.87) -->
   <path class="curve-base" d="M 546 222.5
-                              L 556 250
-                              L 580 290
-                              L 600 310
-                              L 631.5 326
-                              L 660 330
-                              L 717 331.8
-                              L 760 333
-                              L 800 331
-                              L 840 332.5
-                              L 888 331.8" />
+                              L 560 252
+                              L 580 278
+                              L 610 292
+                              L 650 297
+                              L 700 295
+                              L 750 302
+                              L 800 297
+                              L 850 302
+                              L 888 300" />
 
-  <!-- Curve: d = 1e-3 (smooth drop to ~0.65) -->
+  <!-- Curve: d = 1e-3 (smooth, lower, settles ~0.76) -->
   <path class="curve-ok" d="M 546 222.5
-                            C 564 258, 584 304, 610 326
-                            C 640 345, 680 357, 717 364
-                            C 760 368, 820 369.5, 888 369.7" />
+                            C 580 265, 620 305, 680 326
+                            C 740 333, 820 335, 888 335" />
 
-  <!-- Curve: d = 1e-2 (crashes high, stalls) -->
+  <!-- Curve: d = 1e-2 (rate dies early, stalls high ~1.07) -->
   <path class="curve-bad" d="M 546 222.5
-                             C 556 244, 568 268, 580 285
-                             C 595 302, 615 314, 640 318
-                             C 680 322, 750 324, 888 324.5" />
+                             C 560 231, 580 235, 620 237
+                             C 700 238, 800 237, 888 237" />
 
   <!-- Endpoint markers + value labels -->
-  <circle cx="888" cy="331.8" r="3.5" fill="var(--ce-ink-subtle)"/>
-  <text class="legend-mono" x="883" y="346" text-anchor="end" style="fill:var(--ce-ink-muted);">0.77</text>
+  <circle cx="888" cy="300" r="3.5" fill="var(--ce-ink-subtle)"/>
+  <text class="legend-mono" x="883" y="294" text-anchor="end" style="fill:var(--ce-ink-muted);">0.87</text>
 
-  <circle cx="888" cy="369.7" r="3.5" fill="var(--ce-success)"/>
-  <text class="legend-mono" x="883" y="384" text-anchor="end" style="fill:var(--ce-success);">0.65</text>
+  <circle cx="888" cy="335" r="3.5" fill="var(--ce-success)"/>
+  <text class="legend-mono" x="883" y="350" text-anchor="end" style="fill:var(--ce-success);">0.76</text>
 
-  <circle cx="888" cy="324.5" r="3.5" fill="var(--ce-alert)"/>
-  <text class="legend-mono" x="883" y="316" text-anchor="end" style="fill:var(--ce-alert);">0.79</text>
+  <circle cx="888" cy="237" r="3.5" fill="var(--ce-alert)"/>
+  <text class="legend-mono" x="883" y="229" text-anchor="end" style="fill:var(--ce-alert);">1.07</text>
 
   <!-- Legend (right panel) -->
-  <g transform="translate(706, 218)">
+  <g transform="translate(560, 346)">
     <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="0" y="0" width="176" height="68" rx="6"/>
     <line class="curve-base" x1="10" y1="16" x2="36" y2="16"/>
-    <text class="legend-text" x="44" y="20" style="fill:var(--ce-ink-muted);">baseline · 57% acc</text>
+    <text class="legend-text" x="44" y="20" style="fill:var(--ce-ink-muted);">baseline · 65% acc</text>
     <line class="curve-ok" x1="10" y1="36" x2="36" y2="36"/>
-    <text class="legend-text" x="44" y="40" style="fill:var(--ce-success);font-weight:600;">decay 1e-3 · 72% acc</text>
+    <text class="legend-text" x="44" y="40" style="fill:var(--ce-success);font-weight:600;">decay 1e-3 · 65% acc</text>
     <line class="curve-bad" x1="10" y1="56" x2="36" y2="56"/>
-    <text class="legend-text" x="44" y="60" style="fill:var(--ce-alert);">decay 1e-2 · 55% acc</text>
+    <text class="legend-text" x="44" y="60" style="fill:var(--ce-alert);">decay 1e-2 · 40% acc</text>
   </g>
 
   <!-- ============================ Footer ============================ -->
-  <text class="footer" x="48"  y="510">Decay smooths the loss curve and lets the optimiser settle, but it cannot escape a local minimum once α has shrunk. Momentum (Part 24) does that.</text>
+  <text class="footer" x="48"  y="510">Decay smooths and lowers the loss, but a shrinking step cannot make training converge faster. Momentum (Part 24) does that.</text>
 </svg>

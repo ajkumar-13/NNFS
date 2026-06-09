@@ -47,7 +47,7 @@ Nothing new in the math is introduced. The single-neuron chain rule runs once pe
 
 Symbolic forward pass for neuron $k$ (where $k = 1, 2, 3$ and $j = 1, 2, 3, 4$):
 
-$$Z_k = \sum_{j=1}^{4} W_{kj} X_j + B_k, \qquad A_k = \text{ReLU}(Z_k).$$
+$$Z_k = \sum_{j=1}^{4} W_{kj} X_j + b_k, \qquad A_k = \text{ReLU}(Z_k).$$
 
 Layer output and loss:
 
@@ -86,7 +86,7 @@ Three things to read off:
 
 For the bias of neuron $k$:
 
-$$\frac{\partial L}{\partial B_k} = 2Y \cdot 1 \cdot \mathbb{1}[Z_k > 0] \cdot 1.$$
+$$\frac{\partial L}{\partial b_k} = 2Y \cdot 1 \cdot \mathbb{1}[Z_k > 0] \cdot 1.$$
 
 The bias's "input" is the constant $1$, so its gradient is just the upstream-times-ReLU-gate product.
 
@@ -105,16 +105,16 @@ weights = np.array([[0.1, 0.2, 0.3, 0.4],     # Neuron 1
 
 biases  = np.array([0.1, 0.2, 0.3])
 
-Z = weights @ inputs + biases       # [3.0, 7.2, 11.4]
-A = np.maximum(0, Z)                # [3.0, 7.2, 11.4]  (all > 0)
+Z = weights @ inputs + biases       # [3.1, 7.2, 11.3]
+A = np.maximum(0, Z)                # [3.1, 7.2, 11.3]  (all > 0)
 Y = np.sum(A)                       # 21.6
 L = Y ** 2                          # 466.56
 ```
 
 | Quantity | Value |
 |---|---|
-| $Z_1, Z_2, Z_3$ | $3.0,\ 7.2,\ 11.4$ |
-| $A_1, A_2, A_3$ | $3.0,\ 7.2,\ 11.4$ (every $Z_k > 0$, so ReLU is the identity here) |
+| $Z_1, Z_2, Z_3$ | $3.1,\ 7.2,\ 11.3$ |
+| $A_1, A_2, A_3$ | $3.1,\ 7.2,\ 11.3$ (every $Z_k > 0$, so ReLU is the identity here) |
 | $Y$ | $21.6$ |
 | $L$ | $\mathbf{466.56}$ |
 
@@ -139,7 +139,7 @@ The upstream gradient is $2Y = 43.2$, shared by all twelve weights and all three
 
 And the biases:
 
-$$\frac{\partial L}{\partial B_k} = 2Y \cdot 1 = 43.2 \qquad \text{for } k = 1, 2, 3.$$
+$$\frac{\partial L}{\partial b_k} = 2Y \cdot 1 = 43.2 \qquad \text{for } k = 1, 2, 3.$$
 
 Two observations explain the structure. **The gradient for every weight that multiplies the same input is identical** (because the rest of the chain is shared); this is why all weights in the column $j$ get the same gradient. **The gradient grows linearly with the input magnitude**, which is why $X_4 = 4$ produces the largest gradient and $X_1 = 1$ the smallest. Both observations carry over to the matrix form in Part 14.
 
@@ -147,9 +147,9 @@ Two observations explain the structure. **The gradient for every weight that mul
 
 ## 6. One gradient-descent step
 
-With $\eta = 0.001$:
+With $\alpha = 0.001$:
 
-$$W_{\text{new}} = W_{\text{old}} - \eta \cdot \frac{\partial L}{\partial W}.$$
+$$\mathbf{W}_{\text{new}} = \mathbf{W}_{\text{old}} - \alpha \cdot \frac{\partial L}{\partial \mathbf{W}}.$$
 
 After applying the rule to all 15 parameters once:
 
@@ -206,11 +206,11 @@ for i in range(200):
 
 ```
 iter   0  loss = 466.560000
-iter  20  loss = 9.843126
-iter  40  loss = 0.207618
-iter  60  loss = 0.004380
-iter  80  loss = 0.000092
-iter 100  loss = 0.000002
+iter  20  loss = 5.329596
+iter  40  loss = 0.411915
+iter  60  loss = 0.031836
+iter  80  loss = 0.002461
+iter 100  loss = 0.000190
 iter 199  loss = 0.000000
 ```
 
@@ -248,7 +248,7 @@ The structural recipe is unchanged. The shape of each quantity grows by one dime
 ## 9. What this version is *not*
 
 - **It is not the batched form.** This post uses a single input vector. Real training uses a batch of `N` samples; the batched form is in Part 14 and gets coded into the class in Part 16.
-- **It is not the gradient with respect to the inputs.** Backprop through a deeper network needs $\partial L / \partial X$ at every layer; Part 15 derives it.
+- **It is not the gradient with respect to the inputs.** Backprop through a deeper network needs $\partial L / \partial \mathbf{X}$ at every layer; Part 15 derives it.
 - **It does not store intermediate values in a class.** The forward pass here recomputes everything on the fly. The `Layer_Dense.backward` method in Part 16 stores `self.inputs` so the backward call can use them without recomputing.
 - **It does not handle multiple loss functions.** A squared-error layer-output loss is enough to demonstrate the mechanics; the cross-entropy backward is derived separately in Part 18.
 
@@ -258,7 +258,7 @@ The structural recipe is unchanged. The shape of each quantity grows by one dime
 
 - **Why are all three biases' gradients equal in this example?** Because the ReLU gates are all $1$ and `dY/dA` is also $1$ for every neuron. With different inputs (some negative, some positive) the ReLU gates would differ, and the bias gradients would differ accordingly.
 - **What changes if a neuron's $Z_k$ is negative?** That neuron's gate becomes $0$. All four of its weight gradients and its bias gradient drop to zero. The neuron does not learn from this sample.
-- **Why is `dL_dW` shape `(3, 4)` and not `(4, 3)`?** Because the convention from Part 04 stores `weights` as `(n_neurons, n_inputs)` here (revert to the original storage to make the gradient match it). The "columns are neurons" convention from Part 04 onward swaps the shape; either works, and Part 14 walks through both.
+- **Why is `dL_dW` shape `(3, 4)` and not `(4, 3)`?** Because this post stores `weights` as `(n_neurons, n_inputs)` = `(3, 4)`, matching Part 12's per-neuron layout, so the gradient comes out the same shape. From [Part 04](../04-dense-layer-class-and-spiral-data/index.md) onward the production class uses the transposed convention `(n_inputs, n_neurons)`, where the weight gradient is `(4, 3)` instead. Either works, as long as the gradient's shape mirrors the weight's; Part 14 walks through both.
 - **Why does the loss converge to zero on this example but not on the spiral dataset?** Because there is only one input vector and one scalar target. A network with 15 parameters can fit one sample exactly with many possible weight configurations. The spiral dataset has 300 samples that pull in different directions; the loss settles at a non-zero minimum.
 
 ---

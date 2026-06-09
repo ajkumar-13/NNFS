@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
   <title id="t">A two-layer network: forward pass with shapes labelled</title>
-  <desc id="d">A two-layer dense network drawn from left to right. The input X enters as a 4-feature vector and is fed into the first layer, which has 3 neurons with weight matrix W1 of shape 3 by 4 and bias b1 of shape 3. The first layer produces an intermediate output F1 of shape 3, which becomes the input to the second layer. The second layer has 3 neurons with weight matrix W2 of shape 3 by 3 and bias b2 of shape 3, producing the final output F2 of shape 3. Shape badges accompany every array; the per-layer formula F = dot(input, W transpose) + b is shown under each layer.</desc>
+  <desc id="d">A two-layer dense network drawn from left to right. The input X enters as a 4-feature vector and is fed into the first layer, which has 3 neurons with weight matrix W1 of shape 3 by 4 and bias b1 of shape 3. The first layer produces an intermediate output Z1 of shape 3, which becomes the input to the second layer. The second layer has 3 neurons with weight matrix W2 of shape 3 by 3 and bias b2 of shape 3, producing the final output Z2 of shape 3. Shape badges accompany every array; the per-layer formula Z = dot(input, W transpose) + b is shown under each layer.</desc>
 
   <style><![CDATA[
     :root{
@@ -105,11 +105,11 @@
   <line class="conn1" x1="108" y1="300" x2="282" y2="365"/>
   <line class="conn1" x1="108" y1="360" x2="282" y2="370"/>
 
-  <text class="layer-formula" x="310" y="428" text-anchor="middle">F₁ = X · W₁ᵀ + b₁</text>
+  <text class="layer-formula" x="310" y="428" text-anchor="middle">Z₁ = X · W₁ᵀ + b₁</text>
   <text class="data-sub"      x="310" y="446" text-anchor="middle">W₁: (3, 4)  ·  b₁: (3,)</text>
 
   <!-- ============= F1 between the layers ============= -->
-  <text class="data-label" x="510" y="120" text-anchor="middle">F₁</text>
+  <text class="data-label" x="510" y="120" text-anchor="middle">Z₁</text>
   <text class="data-sub"   x="510" y="138" text-anchor="middle">3 values per sample</text>
   <g>
     <line stroke="var(--ce-accent)" stroke-width="2" x1="340" y1="200" x2="486" y2="220" marker-end="url(#aA)"/>
@@ -118,11 +118,11 @@
   </g>
   <g>
     <rect class="input-node" x="492" y="208" width="32" height="24" rx="6" style="fill:var(--ce-accent);fill-opacity:0.18;stroke:var(--ce-accent);"/>
-    <text class="input-label" x="508" y="225" text-anchor="middle">F₁.1</text>
+    <text class="input-label" x="508" y="225" text-anchor="middle">Z₁.1</text>
     <rect class="input-node" x="492" y="268" width="32" height="24" rx="6" style="fill:var(--ce-accent);fill-opacity:0.18;stroke:var(--ce-accent);"/>
-    <text class="input-label" x="508" y="285" text-anchor="middle">F₁.2</text>
+    <text class="input-label" x="508" y="285" text-anchor="middle">Z₁.2</text>
     <rect class="input-node" x="492" y="328" width="32" height="24" rx="6" style="fill:var(--ce-accent);fill-opacity:0.18;stroke:var(--ce-accent);"/>
-    <text class="input-label" x="508" y="345" text-anchor="middle">F₁.3</text>
+    <text class="input-label" x="508" y="345" text-anchor="middle">Z₁.3</text>
   </g>
   <rect class="shape-badge" x="476" y="394" width="64" height="22" rx="6"/>
   <text class="shape-text"  x="508" y="410" text-anchor="middle">(N, 3)</text>
@@ -154,11 +154,11 @@
   <line class="conn2" x1="528" y1="280" x2="672" y2="360"/>
   <line class="conn2" x1="528" y1="340" x2="672" y2="365"/>
 
-  <text class="layer-formula" x="700" y="428" text-anchor="middle">F₂ = F₁ · W₂ᵀ + b₂</text>
+  <text class="layer-formula" x="700" y="428" text-anchor="middle">Z₂ = Z₁ · W₂ᵀ + b₂</text>
   <text class="data-sub"      x="700" y="446" text-anchor="middle">W₂: (3, 3)  ·  b₂: (3,)</text>
 
   <!-- ============= F2 output ============= -->
-  <text class="data-label" x="900" y="120" text-anchor="middle">F₂</text>
+  <text class="data-label" x="900" y="120" text-anchor="middle">Z₂</text>
   <text class="data-sub"   x="900" y="138" text-anchor="middle">final output</text>
   <g>
     <line stroke="var(--ce-success)" stroke-width="2" x1="730" y1="200" x2="876" y2="220" marker-end="url(#aO)"/>
@@ -166,11 +166,11 @@
     <line stroke="var(--ce-success)" stroke-width="2" x1="730" y1="360" x2="876" y2="340" marker-end="url(#aO)"/>
 
     <rect x="882" y="208" width="32" height="24" rx="6" style="fill:var(--ce-success);fill-opacity:0.18;stroke:var(--ce-success);stroke-width:1.5;"/>
-    <text class="input-label" x="898" y="225" text-anchor="middle">ŷ₁</text>
+    <text class="input-label" x="898" y="225" text-anchor="middle">Z₂.1</text>
     <rect x="882" y="268" width="32" height="24" rx="6" style="fill:var(--ce-success);fill-opacity:0.18;stroke:var(--ce-success);stroke-width:1.5;"/>
-    <text class="input-label" x="898" y="285" text-anchor="middle">ŷ₂</text>
+    <text class="input-label" x="898" y="285" text-anchor="middle">Z₂.2</text>
     <rect x="882" y="328" width="32" height="24" rx="6" style="fill:var(--ce-success);fill-opacity:0.18;stroke:var(--ce-success);stroke-width:1.5;"/>
-    <text class="input-label" x="898" y="345" text-anchor="middle">ŷ₃</text>
+    <text class="input-label" x="898" y="345" text-anchor="middle">Z₂.3</text>
   </g>
   <rect class="shape-badge" x="866" y="394" width="64" height="22" rx="6"/>
   <text class="shape-text"  x="898" y="410" text-anchor="middle">(N, 3)</text>

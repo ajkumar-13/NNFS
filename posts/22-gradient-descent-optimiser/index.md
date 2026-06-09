@@ -10,14 +10,14 @@ part: "Part VI — Optimisers"
 
 # Part 22 · Gradient-descent optimiser
 
-> **TL;DR.** The gradients from Part 21 are useless without a rule that turns them into new weights. The simplest such rule is **vanilla gradient descent**: subtract `learning_rate * gradient` from every parameter, once per step. Wrapping that rule in an `Optimizer_SGD` class makes it reusable, and a single training loop combining forward, backward, and update turns the spiral classifier from "random guessing at 33%" into "67% accuracy and stuck". The 67% ceiling is real (vanilla GD has no mechanism to escape local minima) and motivates every optimiser that follows in Parts 23 through 27.
+> **TL;DR.** The gradients from Part 21 are useless without a rule that turns them into new weights. The simplest such rule is **vanilla gradient descent**: subtract `learning_rate * gradient` from every parameter, once per step. Wrapping that rule in an `Optimizer_SGD` class makes it reusable, and a single training loop combining forward, backward, and update turns the spiral classifier from "random guessing at 33%" into a slow climb that reaches about 65% after 10 000 epochs. That sluggishness is the point: vanilla GD is not stuck (run for far more epochs it keeps improving, reaching ~91% by 50 000), it is simply **inefficient**, and the gap between its 65% and the 95%+ that later optimisers reach in the *same* budget motivates every optimiser that follows in Parts 23 through 27.
 >
 > **Reading time:** ~11 minutes.
 >
 > **After reading this you will be able to:**
 > - Implement `Optimizer_SGD` with two methods and use it to update any layer in the network.
 > - Write a complete training loop (forward + backward + update + log) for the spiral classifier.
-> - Diagnose whether a stalled loss curve is a learning-rate problem or a local-minimum problem.
+> - Explain why vanilla SGD converges slowly on the spiral, and why that is an optimiser-efficiency limit, not a dataset one.
 
 ![Vanilla SGD: subtract learning_rate * gradient per parameter. The learning rate is the only knob, and it controls a sharp trade-off between exploration and convergence.](diagrams/01-sgd-update-and-lr.svg)
 *Same update rule, three learning rates: tiny, right-sized, and too large. Each one fails in a different way.*
@@ -143,19 +143,19 @@ With `learning_rate = 1.0` and 10 000 epochs on the spiral dataset:
 
 | Epoch | Loss | Accuracy |
 |:---:|:---:|:---:|
-| 0 | ~1.10 | 0.33 (chance baseline) |
-| 100 | ~0.95 | ~0.45 |
-| 1000 | ~0.72 | ~0.60 |
-| 5000 | ~0.68 | ~0.67 |
-| 10000 | ~0.68 | ~0.67 |
+| 0 | ~1.10 | 0.36 (chance baseline) |
+| 1,000 | ~1.06 | ~0.40 |
+| 5,000 | ~0.97 | ~0.51 |
+| 10,000 | ~0.87 | ~0.65 |
+| 50,000 | ~0.29 | ~0.91 |
 
-Two phases are visible.
+One feature dominates: **progress is slow**. After 1000 epochs the loss has barely moved (1.10 → 1.06) and accuracy is still near chance. Real learning gathers pace only later: by 10 000 epochs the network reaches about 65% (loss 0.87), and it is still improving. Left to run for 50 000 epochs it climbs to about 91%.
 
-**The first ~1000 epochs are clear learning.** Loss falls from 1.10 to about 0.72; accuracy climbs from chance to 60%. Gradient descent is doing the obvious job.
+So vanilla SGD is not broken, and it is not stuck in a local minimum; it is **inefficient**. It reaches a good solution eventually, but only after a punishing number of epochs. The optimisers in Parts 23 through 27 reach the same accuracy in a fraction of the budget: Adam (Part 27) hits 96% in the same 10 000 epochs that leave plain SGD at 65%.
 
-**After ~5000 epochs the loss stalls.** It hovers around 0.68 forever; accuracy hovers around 67%. The optimiser is stuck, not in a global minimum (where loss would be much lower), but in a **local minimum** that the spiral dataset's non-convex loss landscape contains many of.
+The reason is the shape of the update. Each step is just the raw gradient, and across the spiral's loss surface the gradient is small in exactly the shallow regions where the network spends most of its time. Small gradient, small step, slow crawl. Parts 23 through 27 each add a mechanism that takes larger, better-aimed steps in those shallow regions.
 
-Vanilla SGD has no mechanism to escape. Each step is proportional to the gradient; at a local minimum, the gradient is zero; the step is zero; the optimiser stops moving. Parts 23 through 27 add the missing mechanisms one at a time.
+*(These figures come from [`verify/optimizer_results.py`](../../verify/optimizer_results.py); run it to reproduce them.)*
 
 ---
 
@@ -166,7 +166,7 @@ The single hyperparameter, $\alpha$, controls a sharp trade-off. Three regimes a
 | Learning rate | Symptom | Fix |
 |---|---|---|
 | **Too high** ($\alpha \gg$ ideal) | Loss bounces or grows; sometimes `inf` or `nan` | Lower $\alpha$ |
-| **Right-sized** | Loss decreases smoothly, plateaus, may overshoot | Add a smarter optimiser |
+| **Right-sized** | Loss decreases smoothly but convergence is slow | Add a smarter optimiser |
 | **Too low** ($\alpha \ll$ ideal) | Loss barely changes for many epochs | Raise $\alpha$ |
 
 Both extremes leave the network in a useless state, just by different mechanisms. The first wastes the steps it does take; the second takes too few useful steps to matter.
@@ -175,15 +175,15 @@ The "right" learning rate is dataset-dependent, network-dependent, and time-depe
 
 ---
 
-## 6. Why vanilla SGD plateaus
+## 6. Why vanilla SGD is slow
 
-Two structural reasons explain the 67% ceiling.
+Two structural reasons explain the slow convergence.
 
-**No momentum.** Each step is purely the current gradient. There is no notion of "this direction has been improving for a while, keep going". When the gradient flips sign across iterations (which it does in shallow valleys), the steps cancel rather than accumulate. Momentum, introduced in Part 24, fixes this by smoothing the gradient over time.
+**No momentum.** Each step is purely the current gradient. There is no notion of "this direction has been improving for a while, keep going". When the gradient flips sign across iterations (which it does in shallow valleys), the steps cancel rather than accumulate, and the optimiser inches forward. Momentum, introduced in Part 24, fixes this by smoothing the gradient over time so consistent directions build up speed.
 
-**No per-parameter scaling.** Every weight gets the same learning rate. Some weights might be in steep regions (where they should take small steps) while others sit in shallow regions (where they should take big steps). Vanilla SGD ignores this; AdaGrad, RMSProp, and Adam (Parts 25–27) each scale the rate per parameter using gradient statistics.
+**No per-parameter scaling.** Every weight gets the same learning rate. Some weights sit in steep regions (where they should take small steps) while others sit in shallow regions (where they should take big steps). Vanilla SGD ignores this and crawls along the shallow directions; AdaGrad, RMSProp, and Adam (Parts 25–27) each scale the rate per parameter using gradient statistics, so flat directions get larger steps.
 
-The deepest issue, though, is that gradient descent in any form is a **local** algorithm. It walks downhill from wherever it starts, and ends in whatever basin it stumbles into. No optimiser in this series, including Adam, guarantees a global minimum. They simply find better local minima faster.
+Gradient descent in any form is also a **local** algorithm: it walks downhill from wherever it starts, and no optimiser in this series, including Adam, guarantees a global minimum. But on this network the limiting factor is speed, not a trap. Vanilla SGD eventually reaches a good region (~91% by 50 000 epochs); Adam simply reaches one in 10 000 epochs instead of many times more.
 
 ---
 
@@ -216,7 +216,7 @@ A boundary section.
 | Update rule | $\theta \leftarrow \theta - \alpha \cdot \nabla_\theta L$, applied to every parameter once per step |
 | `Optimizer_SGD` | Two methods: `__init__` (stores $\alpha$) and `update_params(layer)` |
 | Training loop | Forward → backward → update, repeated for many epochs |
-| 67% ceiling | Vanilla SGD plateaus in local minima on the spiral dataset |
+| Slow convergence | Vanilla SGD reaches only ~65% in 10 000 epochs; it keeps improving (~91% by 50 000), just very slowly |
 | Learning-rate trade-off | Too high oscillates; too low stalls; one constant rarely fits both phases |
 | Why later optimisers exist | Each adds a piece vanilla SGD lacks: decay, momentum, per-parameter scaling |
 
@@ -229,8 +229,8 @@ A boundary section.
 - **Updating the layer used inside `backward` between calls.** All gradients must be computed first, then all updates applied. Interleaving causes the second layer's backward to see post-update weights of the first layer.
 - **Tuning learning rate without controlling for other variables.** A change in hidden-layer width, dataset size, or weight initialisation shifts the optimal learning rate. Always compare against a fixed baseline.
 - **Reporting loss without accuracy (or vice versa).** Each tells half the story. A loss that drops while accuracy stays flat usually means the model is becoming more confident in its wrong answers; an accuracy that climbs while loss drops slowly is healthy learning.
-- **Believing the 67% plateau is the dataset's fault.** It is not. Adam can push the same network to 95%+ on the same data; the plateau is the optimiser's, not the data's.
-- **Increasing the learning rate to escape a plateau.** That usually destabilises training. The right fix is a better optimiser, not a hotter one.
+- **Believing the ~65% result is the dataset's fault.** It is not. Adam reaches 95%+ on the same network and data in the same 10 000 epochs; vanilla SGD is just slow, not capped.
+- **Cranking the learning rate up to force faster progress.** That usually destabilises training (the loss bounces, or goes `nan`). The right fix is a better optimiser, not a hotter one.
 
 ---
 

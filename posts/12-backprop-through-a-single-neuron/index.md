@@ -137,9 +137,9 @@ The gradients have the right *signs*: $w_1$ is multiplied by a negative input, s
 
 ## 6. One gradient-descent step
 
-With a learning rate $\eta = 0.01$ and the update rule $w_{\text{new}} = w_{\text{old}} - \eta \cdot (\partial L / \partial w)$:
+With a learning rate $\alpha = 0.01$ and the update rule $w_{\text{new}} = w_{\text{old}} - \alpha \cdot (\partial L / \partial w)$:
 
-| Parameter | Old value | Gradient | $-\eta \cdot \nabla$ | New value |
+| Parameter | Old value | Gradient | $-\alpha \cdot \nabla$ | New value |
 |:---:|:---:|:---:|:---:|:---:|
 | $w_0$ | $-3$ | $12$ | $-0.12$ | $-3.12$ |
 | $w_1$ | $-1$ | $-24$ | $+0.24$ | $-0.76$ |
@@ -154,11 +154,11 @@ $$\hat{y}_{\text{new}} = \text{ReLU}(4.20) = 4.20.$$
 
 $$L_{\text{new}} = 4.20^2 \approx 17.64.$$
 
-The loss dropped from $36$ to about $17.6$ in a single step. After 200 iterations of the same update rule, the loss converges to about $0.20$. The network has learned to produce an output close to the target.
+The loss dropped from $36$ to about $17.6$ in a single step. That is not a coincidence: each step multiplies the pre-activation by a constant factor. Substituting the update into the next forward pass gives $z_{\text{new}} = z\,(1 - \alpha \cdot 2(\lVert x \rVert^2 + 1)) = z\,(1 - 0.01 \cdot 2 \cdot 15) = 0.7\,z$, so the squared loss shrinks by $0.7^2 = 0.49$ every iteration. The loss therefore collapses toward zero geometrically, reaching the floating-point floor within about 20 iterations.
 
-### 6.1. Why the loss does not converge to exactly zero
+### 6.1. Why the loss approaches zero but never exactly reaches it
 
-ReLU produces non-negative outputs. The target $y = 0$ is the boundary case: the loss is zero only when $\hat{y}$ is exactly zero, which means $z$ must be exactly zero or negative. Gradient descent steers $z$ toward that boundary asymptotically, but the gradient also shrinks to zero as the output approaches the target, so the steps become tiny. The 200th iteration is close, not exact.
+ReLU produces non-negative outputs, and the target $y = 0$ is the boundary case: the loss is zero only when $\hat{y}$, and hence $z$, is exactly zero. The update drives $z = 6 \cdot 0.7^{\,t}$, which shrinks geometrically toward that boundary but, in exact arithmetic, never crosses it. The gradient shrinks in lock-step with $z$, so the steps get exponentially smaller as the target is approached. In floating-point arithmetic the squared loss underflows to `0.0000` within about 20 iterations, which is why the printout in §7 bottoms out rather than showing ever-smaller positive numbers.
 
 ---
 
@@ -194,7 +194,7 @@ for i in range(200):
     weights -= lr * dweights
     bias    -= lr * dbias
 
-    if i % 50 == 0:
+    if i % 4 == 0 and i <= 24:
         print(f"iter {i:3d}  loss = {loss:.4f}")
 ```
 
@@ -202,12 +202,15 @@ for i in range(200):
 
 ```
 iter   0  loss = 36.0000
-iter  50  loss = 1.2543
-iter 100  loss = 0.4568
-iter 150  loss = 0.2762
+iter   4  loss = 2.0753
+iter   8  loss = 0.1196
+iter  12  loss = 0.0069
+iter  16  loss = 0.0004
+iter  20  loss = 0.0000
+iter  24  loss = 0.0000
 ```
 
-After 200 iterations, the loss is approximately $0.195$. The weights have moved away from their random initial values toward a configuration that brings the neuron's output close to the target.
+The loss falls by a constant factor every step (the §6 analysis explains why), so it collapses from 36 to the floating-point floor within about 20 iterations; the remaining iterations leave it at zero. The weights have moved from their initial values to a configuration whose output sits on the target.
 
 The structure of the code is the structure of the math: forward to compute, backward to differentiate, update to descend. Every later post in the series follows the same three-step shape.
 
@@ -256,7 +259,7 @@ A boundary section, because the recipe above is the simplest possible case.
 | Four factors | ① loss-vs-output, ② activation-vs-z, ③ z-vs-(xw), ④ (xw)-vs-w |
 | Upstream gradient | The product of factors ①, ②, ③: shared by every parameter |
 | Per-weight factor | The input value $x_i$ for that weight; for the bias it is $1$ |
-| One step | $w_{\text{new}} = w_{\text{old}} - \eta \cdot (\partial L / \partial w)$, applied parameter by parameter |
+| One step | $w_{\text{new}} = w_{\text{old}} - \alpha \cdot (\partial L / \partial w)$, applied parameter by parameter |
 
 ---
 
@@ -266,7 +269,7 @@ A boundary section, because the recipe above is the simplest possible case.
 - **Confusing "upstream gradient" with "the loss".** The upstream gradient is $\partial L / \partial \hat{y}$ scaled by the activation's local derivative; the loss is a scalar. They are different objects with different shapes.
 - **Applying ReLU's derivative naively at $z = 0$.** Most implementations return $0$ there; a few return $1$. Pick one and stay consistent across the forward and backward passes.
 - **Computing the backward pass on the wrong $z$.** ReLU's derivative depends on the value of $z$ from the *forward* pass, not on the current weight values. The forward pass has to store $z$ (or `inputs`, or both) for the backward pass to use.
-- **Using a learning rate that makes the gradient overshoot.** With $\eta = 1$ on this example, the first step would land at $z = 6 - 12 = -6$, the ReLU would kill the gradient, and training would freeze. Small learning rates exist for exactly this reason.
+- **Using a learning rate that makes the gradient overshoot.** With $\alpha = 1$ on this example, the first step overshoots far past the target: the new pre-activation is $z = 6 - 1 \cdot 12 \cdot (\lVert x \rVert^2 + 1) = 6 - 180 = -174$, not a small adjustment (the step scales with $\lVert x \rVert^2 + 1 = 15$, not just the upstream gradient of 12). The ReLU then kills the gradient and training freezes. Small learning rates exist for exactly this reason.
 - **Confusing $\partial L / \partial w$ with $\partial L / \partial x$.** The former updates the weight; the latter is passed to a previous layer during backprop. Different shapes, different meanings; both will be needed by Part 15.
 - **Skipping the forward pass and trying to backprop directly.** The backward pass needs intermediate values from the forward pass (the value of $z$ for the ReLU derivative, the value of $\hat{y}$ for the loss derivative). Skipping the forward pass leaves the gradients undefined.
 

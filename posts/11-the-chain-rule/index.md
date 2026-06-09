@@ -129,24 +129,24 @@ Read from the inside out, four operations stack between the input and the loss:
 
 | Position | Function | Symbol |
 |:---:|---|---|
-| innermost | first dense layer | $z_1 = \mathbf{W}_1 \mathbf{x} + \mathbf{b}_1$ |
-| next | ReLU activation | $a_1 = \text{ReLU}(z_1)$ |
-| next | second dense layer | $z_2 = \mathbf{W}_2 a_1 + \mathbf{b}_2$ |
-| outermost | softmax + cross-entropy | $L = \text{CE}(\text{softmax}(z_2),\ \mathbf{y})$ |
+| innermost | first dense layer | $\mathbf{z}_1 = \mathbf{W}_1 \mathbf{x} + \mathbf{b}_1$ |
+| next | ReLU activation | $\mathbf{a}_1 = \text{ReLU}(\mathbf{z}_1)$ |
+| next | second dense layer | $\mathbf{z}_2 = \mathbf{W}_2 \mathbf{a}_1 + \mathbf{b}_2$ |
+| outermost | softmax + cross-entropy | $L = \text{CE}(\text{softmax}(\mathbf{z}_2),\ \mathbf{y})$ |
 
 To compute $\partial L / \partial \mathbf{W}_1$, the chain rule produces one factor per function in the chain:
 
-$$\frac{\partial L}{\partial \mathbf{W}_1} = \frac{\partial L}{\partial z_2} \cdot \frac{\partial z_2}{\partial a_1} \cdot \frac{\partial a_1}{\partial z_1} \cdot \frac{\partial z_1}{\partial \mathbf{W}_1}.$$
+$$\frac{\partial L}{\partial \mathbf{W}_1} = \frac{\partial L}{\partial \mathbf{z}_2} \cdot \frac{\partial \mathbf{z}_2}{\partial \mathbf{a}_1} \cdot \frac{\partial \mathbf{a}_1}{\partial \mathbf{z}_1} \cdot \frac{\partial \mathbf{z}_1}{\partial \mathbf{W}_1}.$$
 
 ![Backpropagation as the chain rule unrolled across four layers, with local derivatives multiplied right-to-left from the loss back to the first weight.](diagrams/02-chain-in-a-network.svg)
 *Read right to left: the loss's local derivative, then softmax + cross-entropy, then the second dense layer, then ReLU, then the first dense layer. Four factors, one for each function.*
 
 Each factor is something a layer can compute on its own:
 
-- `Loss.backward()` computes $\partial L / \partial z_2$.
+- `Loss.backward()` computes $\partial L / \partial \mathbf{z}_2$.
 - `Activation_Softmax.backward()` is folded into the loss factor (Part 19's combined trick).
-- `Layer_Dense.backward()` computes $\partial z_2 / \partial a_1$ and $\partial z_1 / \partial \mathbf{W}_1$.
-- `Activation_ReLU.backward()` computes $\partial a_1 / \partial z_1$.
+- `Layer_Dense.backward()` computes $\partial \mathbf{z}_2 / \partial \mathbf{a}_1$ and $\partial \mathbf{z}_1 / \partial \mathbf{W}_1$.
+- `Activation_ReLU.backward()` computes $\partial \mathbf{a}_1 / \partial \mathbf{z}_1$.
 
 The backward pass walks through the chain in reverse, multiplying the running gradient by the current layer's local derivative at each step. That walk is **backpropagation**; the only piece this post has not yet supplied is the formula for each local derivative, which is what Parts 12 through 21 derive.
 

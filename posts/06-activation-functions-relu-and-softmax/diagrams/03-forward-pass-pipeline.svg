@@ -78,7 +78,7 @@
   <rect class="op-dense" x="508" y="138" width="140" height="134" rx="12"/>
   <text class="op-name" x="578" y="166" text-anchor="middle">dense2</text>
   <text class="op-sub"  x="578" y="186" text-anchor="middle">Layer_Dense(3, 3)</text>
-  <text class="op-sub"  x="578" y="208" text-anchor="middle">F₁ · W₂ + b₂</text>
+  <text class="op-sub"  x="578" y="208" text-anchor="middle">A₁ · W₂ + b₂</text>
   <text class="op-sub"  x="578" y="234" text-anchor="middle">linear → logits</text>
 
   <line class="arrow" x1="652" y1="205" x2="680" y2="205" marker-end="url(#aM)"/>

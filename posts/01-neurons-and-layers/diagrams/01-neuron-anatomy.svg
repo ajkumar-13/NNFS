@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
   <title id="t">A neuron is a weighted sum plus a bias</title>
-  <desc id="d">A single neuron is drawn at hero scale, with four input nodes X₁ through X₄ on the left, four weighted connections W₁ through W₄ entering a central summation node, a separate bias term b added from above, and a single scalar output on the right. Four annotation cards along the right margin label each part — inputs, weights, bias, output — and name their role. A footer cites Rosenblatt's 1958 perceptron as the historical origin.</desc>
+  <desc id="d">A single neuron is drawn at hero scale, with four input nodes x₁ through x₄ on the left, four weighted connections w₁ through w₄ entering a central summation node, a separate bias term b added from above, and a single scalar output on the right. Four annotation cards along the right margin label each part — inputs, weights, bias, output — and name their role. A footer cites Rosenblatt's 1958 perceptron as the historical origin.</desc>
 
   <style><![CDATA[
     :root{
@@ -73,13 +73,13 @@
   <!-- Inputs column -->
   <g>
     <circle class="input-node" cx="118" cy="160" r="26"/>
-    <text class="input-label"  x="118" y="166" text-anchor="middle">X₁</text>
+    <text class="input-label"  x="118" y="166" text-anchor="middle">x₁</text>
     <circle class="input-node" cx="118" cy="240" r="26"/>
-    <text class="input-label"  x="118" y="246" text-anchor="middle">X₂</text>
+    <text class="input-label"  x="118" y="246" text-anchor="middle">x₂</text>
     <circle class="input-node" cx="118" cy="320" r="26"/>
-    <text class="input-label"  x="118" y="326" text-anchor="middle">X₃</text>
+    <text class="input-label"  x="118" y="326" text-anchor="middle">x₃</text>
     <circle class="input-node" cx="118" cy="400" r="26"/>
-    <text class="input-label"  x="118" y="406" text-anchor="middle">X₄</text>
+    <text class="input-label"  x="118" y="406" text-anchor="middle">x₄</text>
   </g>
 
   <!-- Neuron -->
@@ -89,13 +89,13 @@
 
   <!-- Connections -->
   <line class="conn" x1="144" y1="160" x2="378" y2="262" marker-end="url(#aPrim)"/>
-  <text class="w-label" x="240" y="195">W₁</text>
+  <text class="w-label" x="240" y="195">w₁</text>
   <line class="conn" x1="144" y1="240" x2="378" y2="272" marker-end="url(#aPrim)"/>
-  <text class="w-label" x="240" y="247">W₂</text>
+  <text class="w-label" x="240" y="247">w₂</text>
   <line class="conn" x1="144" y1="320" x2="378" y2="288" marker-end="url(#aPrim)"/>
-  <text class="w-label" x="240" y="320">W₃</text>
+  <text class="w-label" x="240" y="320">w₃</text>
   <line class="conn" x1="144" y1="400" x2="378" y2="298" marker-end="url(#aPrim)"/>
-  <text class="w-label" x="240" y="378">W₄</text>
+  <text class="w-label" x="240" y="378">w₄</text>
 
   <!-- Bias -->
   <line class="bias-line" x1="430" y1="158" x2="430" y2="222" marker-end="url(#aOk)"/>
@@ -107,14 +107,14 @@
   <text class="out-label" x="604" y="285" text-anchor="middle">ŷ</text>
 
   <!-- Formula band -->
-  <text class="formula" x="348" y="446" text-anchor="middle">ŷ  =  X₁·W₁ + X₂·W₂ + X₃·W₃ + X₄·W₄  +  b</text>
+  <text class="formula" x="348" y="446" text-anchor="middle">ŷ  =  x₁·w₁ + x₂·w₂ + x₃·w₃ + x₄·w₄  +  b</text>
 
   <!-- Right-side annotation cards -->
   <g>
     <!-- Inputs card -->
     <rect class="panel"        x="676" y="100" width="236" height="84" rx="10"/>
     <rect class="ann-pill-prim" x="676" y="100" width="6"   height="84" rx="3"/>
-    <text class="ann-head" x="696" y="124">01 · Inputs  Xᵢ</text>
+    <text class="ann-head" x="696" y="124">01 · Inputs  xᵢ</text>
     <text class="ann-body" x="696" y="142">The data fed into the neuron.</text>
     <text class="ann-body" x="696" y="158">Shape (n,). Changes every</text>
     <text class="ann-body" x="696" y="174">forward pass.</text>
@@ -122,7 +122,7 @@
     <!-- Weights card -->
     <rect class="panel"        x="676" y="196" width="236" height="84" rx="10"/>
     <rect class="ann-pill-prim" x="676" y="196" width="6"   height="84" rx="3" opacity="0.75"/>
-    <text class="ann-head" x="696" y="220">02 · Weights  Wᵢ</text>
+    <text class="ann-head" x="696" y="220">02 · Weights  wᵢ</text>
     <text class="ann-body" x="696" y="238">One per input. Shape (n,).</text>
     <text class="ann-body" x="696" y="254">Learned during training,</text>
     <text class="ann-body" x="696" y="270">frozen at inference.</text>

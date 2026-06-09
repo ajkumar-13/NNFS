@@ -43,9 +43,9 @@ Two ways to attack the overfit case:
 
 The constraint version is **regularisation**. The constraint takes the form of an additive penalty:
 
-$$\mathcal{L}_{\text{total}} = \underbrace{\mathcal{L}_{\text{data}}}_{\text{cross-entropy, MSE, …}} \;+\; \underbrace{\mathcal{L}_{\text{reg}}}_{\text{a function of the weights}}$$
+$$L_{\text{total}} = \underbrace{L_{\text{data}}}_{\text{cross-entropy, MSE, …}} \;+\; \underbrace{L_{\text{reg}}}_{\text{a function of the weights}}$$
 
-The optimiser still minimises $\mathcal{L}_{\text{total}}$ end-to-end. The presence of $\mathcal{L}_{\text{reg}}$ means that every weight increase has to "pay" by improving the data loss enough to offset the penalty. Bad weights (those that fit noise without improving the true signal) fail this cost-benefit test and are pushed back toward zero.
+The optimiser still minimises $L_{\text{total}}$ end-to-end. The presence of $L_{\text{reg}}$ means that every weight increase has to "pay" by improving the data loss enough to offset the penalty. Bad weights (those that fit noise without improving the true signal) fail this cost-benefit test and are pushed back toward zero.
 
 ---
 
@@ -55,21 +55,21 @@ The two universally used forms are L1 and L2, named after the corresponding vect
 
 ### 2.1. L1 (absolute-value penalty)
 
-$$\mathcal{L}_{\text{reg}}^{\text{L1}} = \lambda \sum_m |w_m|$$
+$$L_{\text{reg}}^{\text{L1}} = \lambda \sum_m |w_m|$$
 
 The penalty grows *linearly* with the magnitude of each weight. Tiny weights are penalised in proportion to their size; large weights take the same proportional hit. The gradient is constant:
 
-$$\frac{\partial \mathcal{L}_{\text{reg}}^{\text{L1}}}{\partial w_m} = \lambda \cdot \text{sign}(w_m)$$
+$$\frac{\partial L_{\text{reg}}^{\text{L1}}}{\partial w_m} = \lambda \cdot \text{sign}(w_m)$$
 
 (undefined at $w_m = 0$; convention is to set it to zero there).
 
 ### 2.2. L2 (squared penalty)
 
-$$\mathcal{L}_{\text{reg}}^{\text{L2}} = \lambda \sum_m w_m^2$$
+$$L_{\text{reg}}^{\text{L2}} = \lambda \sum_m w_m^2$$
 
 The penalty grows *quadratically*. Tiny weights are barely penalised at all (a weight of 0.01 contributes $10^{-4}$ to the sum); large weights are penalised harshly. The gradient grows linearly with the weight:
 
-$$\frac{\partial \mathcal{L}_{\text{reg}}^{\text{L2}}}{\partial w_m} = 2 \lambda \, w_m$$
+$$\frac{\partial L_{\text{reg}}^{\text{L2}}}{\partial w_m} = 2 \lambda \, w_m$$
 
 The gradient is *proportional* to the weight itself: large weights push hard against the penalty, small ones barely register.
 
@@ -242,19 +242,19 @@ A safer practice than tuning a single $\lambda$ blindly is to **sweep**: try $\l
 
 ## 7. Results on the spiral dataset
 
-A representative comparison using the Part 27 Adam optimiser on 100-sample-per-class spiral data:
+A comparison using the Adam optimiser (lr = 0.05, decay = 1e-5) on spiral data; the test set is a fresh draw from the same distribution. (Verified by [`verify/regularization_results.py`](../../verify/regularization_results.py).)
 
-| Configuration | Training acc. | Validation acc. | Train-val gap |
+| Configuration | Training acc. | Test acc. | Train-test gap |
 |---|:---:|:---:|:---:|
-| No regularisation, 100 samples/class | ~93% | ~80% | 13 points (overfit) |
-| **L2 ($\lambda = 5 \times 10^{-4}$), 100 samples/class** | **94.7%** | **82%** | 12.7 points (slightly better) |
-| L2 ($\lambda = 5 \times 10^{-4}$), 1000 samples/class | ~94% | ~89% | 5 points (much healthier) |
+| No regularisation, 100 samples/class | 95.3% | 78.7% | 16.6 points (overfit) |
+| **L2 ($\lambda = 5 \times 10^{-4}$), 100 samples/class** | **95.3%** | **84.0%** | 11.3 points (better) |
+| L2 ($\lambda = 5 \times 10^{-4}$), 1000 samples/class | 90.1% | 88.5% | 1.6 points (much healthier) |
 
 Two conclusions.
 
-**Regularisation alone helps modestly.** The 2-point validation lift from adding L2 is real but small. On its own, regularisation is not a cure for overfitting; it is a tool that nudges the model in the right direction.
+**Regularisation helps without harming training.** Adding L2 lifts test accuracy from 78.7% to 84.0% (a ~5-point gain) while training accuracy holds at ~95%, and the gap shrinks. The penalty nudges the model toward weights that generalise, at no cost to the fit.
 
-**Regularisation + more data is the killer combination.** With L2 and 10× the training data, the train-val gap collapses from 13 points to 5 points. Each tool fixes part of the problem; together they fix most of it.
+**Regularisation + more data is the killer combination.** With L2 and 10× the training data, the train-test gap collapses from ~17 points (no reg, 100 samples) to under 2 points. Each tool fixes part of the problem; together they fix most of it.
 
 ---
 
@@ -262,7 +262,7 @@ Two conclusions.
 
 Two equivalent ways of looking at L2 regularisation are worth knowing.
 
-**L2 ≡ weight decay (with one caveat).** "Weight decay" is the engineering term for "shrink every weight by a small multiplicative factor at every step": $w \leftarrow (1 - \eta \cdot 2\lambda) \, w$. This is exactly what the L2 gradient term does in vanilla SGD. For Adam and other adaptive optimisers, however, applying L2 through the gradient is *not* the same as applying weight decay to the parameter directly (the second-moment scaling distorts it). That distinction is the entire reason **AdamW** exists; see Part 27, §8.
+**L2 ≡ weight decay (with one caveat).** "Weight decay" is the engineering term for "shrink every weight by a small multiplicative factor at every step": $w \leftarrow (1 - \alpha \cdot 2\lambda) \, w$. This is exactly what the L2 gradient term does in vanilla SGD. For Adam and other adaptive optimisers, however, applying L2 through the gradient is *not* the same as applying weight decay to the parameter directly (the second-moment scaling distorts it). That distinction is the entire reason **AdamW** exists; see Part 27, §8.
 
 **L2 ≡ Gaussian prior on weights.** In Bayesian terms, the L2 penalty corresponds to placing a Gaussian prior of mean zero and variance $1 / (2\lambda)$ on each weight, and finding the maximum-a-posteriori (MAP) estimate. L1 corresponds to a Laplacian prior. These dualities explain *why* the penalties have the shapes they do: the regularised optimum is the MAP under the corresponding prior belief that weights should be near zero.
 
@@ -285,7 +285,7 @@ Neither connection changes the implementation, but both help with intuition when
 
 | Concept | Takeaway |
 |---|---|
-| Regularisation | $\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{data}} + \mathcal{L}_{\text{reg}}$ |
+| Regularisation | $L_{\text{total}} = L_{\text{data}} + L_{\text{reg}}$ |
 | L1 penalty | $\lambda \sum |w|$; gradient $\lambda \cdot \text{sign}(w)$; pushes weights to zero |
 | L2 penalty | $\lambda \sum w^2$; gradient $2 \lambda w$; shrinks large weights |
 | Default | L2 only; L1 for feature selection |

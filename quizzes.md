@@ -1,6 +1,6 @@
-# Conceptual Quizzes — All 31 Parts
+# Conceptual Quizzes — Parts 1–31
 
-*3–5 multiple-choice questions per lecture. Each targets a common misconception or tests a key concept. Answers with explanations are in the collapsible section after each quiz.*
+*3–5 multiple-choice questions per lecture. Each targets a common misconception or tests a key concept. Answers with explanations are in the collapsible section after each quiz. (Quizzes for Parts 32–35 are forthcoming.)*
 
 ---
 

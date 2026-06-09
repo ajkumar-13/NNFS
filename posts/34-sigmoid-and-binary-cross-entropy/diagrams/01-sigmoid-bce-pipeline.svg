@@ -128,7 +128,7 @@
   <!-- Loss output box -->
   <rect class="node-output" x="568" y="210" width="68" height="60" rx="10"/>
   <text class="node-head-output" x="602" y="232" text-anchor="middle">loss</text>
-  <text class="node-mono" x="602" y="252" text-anchor="middle">ℒ</text>
+  <text class="node-mono" x="602" y="252" text-anchor="middle">L</text>
   <text class="node-sub"  x="602" y="266" text-anchor="middle">mean L</text>
 
   <!-- ============================ Combined backward arrow ============================ -->
@@ -137,7 +137,7 @@
 
   <!-- Background for the backward label so it sits cleanly on top of arrow -->
   <rect class="bwd-label-bg" x="220" y="360" width="180" height="40" rx="6"/>
-  <text class="bwd-label" x="310" y="380" text-anchor="middle">∂ℒ/∂z = (p − y) / N</text>
+  <text class="bwd-label" x="310" y="380" text-anchor="middle">∂L/∂z = (p − y) / N</text>
   <text class="bwd-note"  x="310" y="394" text-anchor="middle">no division anywhere</text>
 
   <!-- Label for the bypass annotation -->

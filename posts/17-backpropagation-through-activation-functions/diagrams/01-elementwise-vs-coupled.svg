@@ -51,7 +51,7 @@
   <rect class="panel-ok" x="48" y="96" width="424" height="288" rx="12"/>
   <rect class="pill-ok"  x="48" y="96" width="6"   height="288" rx="3"/>
   <text class="head-ok" x="68" y="124">Element-wise: ReLU, sigmoid, tanh</text>
-  <text class="panel-sub" x="68" y="142">A_k depends only on Z_k. Jacobian is diagonal.</text>
+  <text class="panel-sub" x="68" y="142">a_k depends only on z_k. Jacobian is diagonal.</text>
 
   <!-- Diagonal Jacobian: 3x3 grid, only diagonal cells active -->
   <text class="label-head" x="180" y="170" text-anchor="middle">∂A / ∂Z   (3 × 3)</text>
@@ -66,19 +66,19 @@
     <rect class="cell-zero" x="40" y="64" width="40" height="32"/>
     <rect class="cell-ok"   x="80" y="64" width="40" height="32"/>
 
-    <text class="cell-text" x="20"  y="21" text-anchor="middle">f'(Z₁)</text>
+    <text class="cell-text" x="20"  y="21" text-anchor="middle">f'(z₁)</text>
     <text class="cell-text" x="60"  y="21" text-anchor="middle">0</text>
     <text class="cell-text" x="100" y="21" text-anchor="middle">0</text>
     <text class="cell-text" x="20"  y="53" text-anchor="middle">0</text>
-    <text class="cell-text" x="60"  y="53" text-anchor="middle">f'(Z₂)</text>
+    <text class="cell-text" x="60"  y="53" text-anchor="middle">f'(z₂)</text>
     <text class="cell-text" x="100" y="53" text-anchor="middle">0</text>
     <text class="cell-text" x="20"  y="85" text-anchor="middle">0</text>
     <text class="cell-text" x="60"  y="85" text-anchor="middle">0</text>
-    <text class="cell-text" x="100" y="85" text-anchor="middle">f'(Z₃)</text>
+    <text class="cell-text" x="100" y="85" text-anchor="middle">f'(z₃)</text>
   </g>
 
   <text class="label-sub" x="300" y="200">Only diagonal entries are non-zero.</text>
-  <text class="label-sub" x="300" y="218">f'(Z_k) is one scalar per neuron.</text>
+  <text class="label-sub" x="300" y="218">f'(z_k) is one scalar per neuron.</text>
   <text class="label-sub" x="300" y="252">"Multiply by the Jacobian"</text>
   <text class="label-sub" x="300" y="270">reduces to scalar-per-element</text>
   <text class="label-sub" x="300" y="288">multiplication.</text>
@@ -91,7 +91,7 @@
   <rect class="panel-bad" x="488" y="96" width="424" height="288" rx="12"/>
   <rect class="pill-bad"  x="488" y="96" width="6"   height="288" rx="3"/>
   <text class="head-bad" x="508" y="124">Coupled: softmax</text>
-  <text class="panel-sub" x="508" y="142">Each A_k depends on every Z_j. Jacobian is full.</text>
+  <text class="panel-sub" x="508" y="142">Each a_k depends on every z_j. Jacobian is full.</text>
 
   <text class="label-head" x="620" y="170" text-anchor="middle">∂A / ∂Z   (3 × 3)</text>
   <g transform="translate(556, 184)">
@@ -105,15 +105,15 @@
     <rect class="cell-bad" x="40" y="64" width="40" height="32"/>
     <rect class="cell-bad" x="80" y="64" width="40" height="32"/>
 
-    <text class="cell-text" x="20"  y="21" text-anchor="middle">A₁(1−A₁)</text>
-    <text class="cell-text" x="60"  y="21" text-anchor="middle">−A₁A₂</text>
-    <text class="cell-text" x="100" y="21" text-anchor="middle">−A₁A₃</text>
-    <text class="cell-text" x="20"  y="53" text-anchor="middle">−A₂A₁</text>
-    <text class="cell-text" x="60"  y="53" text-anchor="middle">A₂(1−A₂)</text>
-    <text class="cell-text" x="100" y="53" text-anchor="middle">−A₂A₃</text>
-    <text class="cell-text" x="20"  y="85" text-anchor="middle">−A₃A₁</text>
-    <text class="cell-text" x="60"  y="85" text-anchor="middle">−A₃A₂</text>
-    <text class="cell-text" x="100" y="85" text-anchor="middle">A₃(1−A₃)</text>
+    <text class="cell-text" x="20"  y="21" text-anchor="middle">a₁(1−a₁)</text>
+    <text class="cell-text" x="60"  y="21" text-anchor="middle">−a₁a₂</text>
+    <text class="cell-text" x="100" y="21" text-anchor="middle">−a₁a₃</text>
+    <text class="cell-text" x="20"  y="53" text-anchor="middle">−a₂a₁</text>
+    <text class="cell-text" x="60"  y="53" text-anchor="middle">a₂(1−a₂)</text>
+    <text class="cell-text" x="100" y="53" text-anchor="middle">−a₂a₃</text>
+    <text class="cell-text" x="20"  y="85" text-anchor="middle">−a₃a₁</text>
+    <text class="cell-text" x="60"  y="85" text-anchor="middle">−a₃a₂</text>
+    <text class="cell-text" x="100" y="85" text-anchor="middle">a₃(1−a₃)</text>
   </g>
 
   <text class="label-sub" x="740" y="200">Every cell is non-zero.</text>
@@ -129,5 +129,5 @@
   <!-- ============================ Bottom band ============================ -->
   <rect class="insight-band" x="48" y="400" width="864" height="56" rx="12"/>
   <text class="insight-head" x="68" y="426">Rule of thumb</text>
-  <text class="insight-body" x="68" y="446">If A_k depends only on Z_k → diagonal Jacobian → element-wise backward. Otherwise → full Jacobian → matrix product per sample.</text>
+  <text class="insight-body" x="68" y="446">If a_k depends only on z_k → diagonal Jacobian → element-wise backward. Otherwise → full Jacobian → matrix product per sample.</text>
 </svg>

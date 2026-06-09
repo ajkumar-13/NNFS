@@ -118,11 +118,11 @@ The match is not approximate. The matrix product *is* the chain-rule formula, ju
 
 The bias's "input" is always $1$, so the chain rule gives:
 
-$$\frac{\partial L}{\partial B_k} = \frac{\partial L}{\partial Z_k}.$$
+$$\frac{\partial L}{\partial b_k} = \frac{\partial L}{\partial Z_k}.$$
 
 For the entire layer, the bias-gradient vector is just the upstream-gradient vector:
 
-$$\frac{\partial L}{\partial \mathbf{B}} = \frac{\partial L}{\partial \mathbf{Z}}.$$
+$$\frac{\partial L}{\partial \mathbf{b}} = \frac{\partial L}{\partial \mathbf{Z}}.$$
 
 No matrix product needed. In code:
 
@@ -145,7 +145,7 @@ In real training, the input is a batch of $N$ samples, not a single one. The sha
 | $\mathbf{X}$ | $(1, n)$ | $(N, n)$ |
 | $\partial L / \partial \mathbf{Z}$ | $(1, m)$ | $(N, m)$ |
 | $\partial L / \partial \mathbf{W}$ | $(m, n)$ | $(m, n)$ (unchanged) |
-| $\partial L / \partial \mathbf{B}$ | $(m,)$ | $(m,)$ (unchanged) |
+| $\partial L / \partial \mathbf{b}$ | $(m,)$ | $(m,)$ (unchanged) |
 
 The crucial observation: **the gradient shapes do not depend on the batch size**. The weights and biases are the same regardless of how many samples were fed in; only the inputs and the per-sample upstream gradients grow.
 
@@ -157,7 +157,7 @@ The shapes now multiply as $(m, N) \cdot (N, n) = (m, n)$. The transpose moves t
 
 For biases, the per-neuron upstream has to be summed across the batch axis explicitly:
 
-$$\frac{\partial L}{\partial \mathbf{B}} = \sum_{i=1}^{N} \frac{\partial L}{\partial \mathbf{Z}}\bigl|_{\text{row } i}.$$
+$$\frac{\partial L}{\partial \mathbf{b}} = \sum_{i=1}^{N} \frac{\partial L}{\partial \mathbf{Z}}\bigl|_{\text{row } i}.$$
 
 In NumPy:
 
@@ -255,7 +255,7 @@ Mixing the two in a single codebase is a guaranteed bug. Decide once.
 | Outer product structure | $\partial L / \partial W_{kj} = (\partial L / \partial Z_k) \cdot X_j$ is the $(k, j)$ entry of an outer product |
 | Matrix form | $\partial L / \partial \mathbf{W} = (\partial L / \partial \mathbf{Z})^{\top} \cdot \mathbf{X}$ |
 | Shape invariance | The gradient matrix has the same shape as the stored weights, regardless of batch size |
-| Bias gradient | $\partial L / \partial \mathbf{B} = \sum_{\text{batch}} \partial L / \partial \mathbf{Z}$ |
+| Bias gradient | $\partial L / \partial \mathbf{b} = \sum_{\text{batch}} \partial L / \partial \mathbf{Z}$ |
 | Batches | The matrix product sums across samples automatically; no extra loop |
 | Two-line backward | `dL_dW = dL_dZ.T @ X; dL_dB = np.sum(dL_dZ, axis=0)` |
 

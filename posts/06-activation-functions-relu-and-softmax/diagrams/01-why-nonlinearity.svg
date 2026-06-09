@@ -51,7 +51,7 @@
   <!-- ============== LEFT PANEL: no activation ============== -->
   <rect class="panel-bad" x="48" y="96" width="424" height="296" rx="12"/>
   <rect class="pill-bad"  x="48" y="96" width="6"   height="296" rx="3"/>
-  <text class="head-bad" x="68" y="124">Without activation: F = (X·W₁ + b₁)·W₂ + b₂</text>
+  <text class="head-bad" x="68" y="124">Without activation: Z = (X·W₁ + b₁)·W₂ + b₂</text>
   <text class="panel-sub" x="68" y="142">collapses to one linear map; only straight lines are reachable</text>
 
   <!-- Mini chart -->
@@ -69,12 +69,12 @@
   <path class="curve-bad" d="M 110 295 L 420 220"/>
 
   <rect class="formula-pill" x="80" y="350" width="376" height="32" rx="6"/>
-  <text class="formula-text" x="92" y="370">F = X · (W₁ W₂) + (b₁ W₂ + b₂)    one straight line</text>
+  <text class="formula-text" x="92" y="370">Z = X · (W₁ W₂) + (b₁ W₂ + b₂)    one straight line</text>
 
   <!-- ============== RIGHT PANEL: with ReLU ============== -->
   <rect class="panel-ok" x="488" y="96" width="424" height="296" rx="12"/>
   <rect class="pill-ok"  x="488" y="96" width="6"   height="296" rx="3"/>
-  <text class="head-ok" x="508" y="124">With ReLU: F = ReLU(X·W₁ + b₁)·W₂ + b₂</text>
+  <text class="head-ok" x="508" y="124">With ReLU: A = ReLU(X·W₁ + b₁)·W₂ + b₂</text>
   <text class="panel-sub" x="508" y="142">one kink per hidden neuron; any continuous shape can be approximated</text>
 
   <!-- Mini chart -->
@@ -97,7 +97,7 @@
   <circle class="bend-marker" cx="790" cy="212" r="3.5"/>
 
   <rect class="formula-pill" x="520" y="350" width="376" height="32" rx="6"/>
-  <text class="formula-text" x="532" y="370">F is piecewise linear; one kink per active hidden neuron</text>
+  <text class="formula-text" x="532" y="370">A is piecewise linear; one kink per active hidden neuron</text>
 
   <!-- ============== Footer ============== -->
   <text class="verdict-bad" x="48"  y="430">Linear stack cannot fit a curve, no matter how deep.</text>

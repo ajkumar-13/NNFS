@@ -27,14 +27,15 @@ By the end of the series you will have a working multi-layer perceptron trained 
 
 | Phase | Parts | Topic |
 |---|:---:|---|
-| I — Foundations | 1–5 | Neurons, NumPy, dot products, batches, broadcasting |
-| II — Activations & forward pass | 6–7 | ReLU, Softmax, the complete forward pass |
-| III — Loss & optimisation | 8–9 | Categorical cross-entropy, optimisation intro |
-| IV — Calculus | 10–11 | Derivatives, partial derivatives, the chain rule |
-| V — Backpropagation | 12–21 | Full backward pass, all gradients, end-to-end pipeline |
-| VI — Optimisers | 22–27 | SGD → Decay → Momentum → AdaGrad → RMSProp → Adam |
-| VII — Generalisation & regularisation | 28–31 | Train/test split, validation, L1/L2, Dropout |
-| VIII — Practical training & extensions | 32–35 | Mini-batching, weight init, sigmoid + BCE, what's next |
+| 1 — Foundations | 1–5 | Neurons, NumPy, dot products, batches, broadcasting |
+| 2 — Forward pass complete | 6–9 | ReLU, Softmax, the forward pass, cross-entropy, optimisation intro |
+| 3 — Calculus | 10–11 | Derivatives, partial derivatives, the chain rule |
+| 4 — Backpropagation | 12–21 | Full backward pass, all gradients, end-to-end pipeline |
+| 5 — Optimisers | 22–27 | SGD → Decay → Momentum → AdaGrad → RMSProp → Adam |
+| 6 — Generalisation & regularisation | 28–31 | Train/test split, validation, L1/L2, Dropout |
+| 7 — Practical training & extensions | 32–35 | Mini-batching, weight init, sigmoid + BCE, what's next |
+
+*(Phase numbering matches [INDEX.md](INDEX.md).)*
 
 The complete annotated series listing with a guided learning path lives in [INDEX.md](INDEX.md).
 
@@ -73,7 +74,6 @@ INDEX.md                     → series index and guided learning path
 REFERENCES.md                → master bibliography for every post
 glossary.md                  → plain-English definitions for every term
 notation_guide.md            → symbols, tensor shapes, and optimiser variables decoded
-concept_dependency_map.md    → prerequisite map; trace back when stuck
 exercises.md                 → hands-on experiments for every lecture
 quizzes.md                   → multiple-choice comprehension checks
 gradient_checking.md         → numerically verify your backprop implementation
@@ -89,7 +89,7 @@ appendix_softmax_combined_backward.md  → full derivation of the combined backw
 2. Start at [Part 1 — Neurons and layers](posts/01-neurons-and-layers/index.md).
 3. Work through each phase in order. Every post ends with a **What to read next** pointer.
 4. Use the [cumulative notebook](cumulative_notebook.ipynb) to run any lecture's code interactively.
-5. When something is unclear, consult the [Concept Dependency Map](concept_dependency_map.md) to find which earlier concept to revisit.
+5. When something is unclear, consult the [concept dependency map](INDEX.md#concept-dependency-map) to find which earlier concept to revisit.
 
 ---
 

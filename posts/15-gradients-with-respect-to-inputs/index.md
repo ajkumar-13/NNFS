@@ -46,7 +46,7 @@ The multivariate chain rule handles this exactly by **summing the contributions 
 
 $$\frac{\partial L}{\partial X_j} = \sum_{k=1}^{m} \frac{\partial L}{\partial Z_k} \cdot \frac{\partial Z_k}{\partial X_j} = \sum_{k=1}^{m} \frac{\partial L}{\partial Z_k} \cdot W_{kj}.$$
 
-For each neuron $k$, the local derivative $\partial Z_k / \partial X_j$ is the weight $W_{kj}$ (because $Z_k = \sum_j W_{kj} X_j + B_k$, and $X_j$ appears once, multiplied by $W_{kj}$). Summing across $k$ gives the input gradient.
+For each neuron $k$, the local derivative $\partial Z_k / \partial X_j$ is the weight $W_{kj}$ (because $Z_k = \sum_j W_{kj} X_j + b_k$, and $X_j$ appears once, multiplied by $W_{kj}$). Summing across $k$ gives the input gradient.
 
 ### 2.1. Why the weight gradient was not a sum
 

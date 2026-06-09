@@ -30,9 +30,9 @@ Parts 01 and 02 built the smallest interesting object in deep learning: a single
 
 The mathematics of stacking does not introduce a new operation. Each layer applies the same call:
 
-$$F_\ell = X_\ell \cdot W_\ell^{\top} + b_\ell,$$
+$$\mathbf{Z}_\ell = \mathbf{X}_\ell \cdot \mathbf{W}_\ell^{\top} + \mathbf{b}_\ell,$$
 
-with $X_\ell$ either the original input (for layer 1) or the previous layer's output $F_{\ell - 1}$. Chaining two of these calls is the entire forward pass of a two-layer network. Chaining fifty of them gives a fifty-layer network. No new arithmetic is invented along the way.
+with $\mathbf{X}_\ell$ either the original input (for layer 1) or the previous layer's output $\mathbf{Z}_{\ell - 1}$. Chaining two of these calls is the entire forward pass of a two-layer network. Chaining fifty of them gives a fifty-layer network. No new arithmetic is invented along the way.
 
 The historical version of this idea is older than backpropagation. Ivakhnenko and Lapa described multi-layer "group method of data handling" networks in 1965, twenty-one years before Rumelhart, Hinton, and Williams gave the modern training algorithm (Ivakhnenko & Lapa, 1965; Rumelhart, Hinton & Williams, 1986). The forward pass has been clear for sixty-one years. What was missing was a way to learn the weights, and that arrives in Parts 09 through 21.
 
@@ -44,15 +44,15 @@ A single dense layer is fully specified by three things:
 
 | Symbol | Shape | What it is |
 |---|---|---|
-| $X$ | $(N, n)$ | a batch of $N$ samples, each with $n$ features |
-| $W$ | $(m, n)$ | weights for $m$ neurons, each consuming $n$ inputs |
-| $b$ | $(m,)$ | one bias per neuron |
+| $\mathbf{X}$ | $(N, n)$ | a batch of $N$ samples, each with $n$ features |
+| $\mathbf{W}$ | $(m, n)$ | weights for $m$ neurons, each consuming $n$ inputs |
+| $\mathbf{b}$ | $(m,)$ | one bias per neuron |
 
 The output is:
 
-$$F = X \cdot W^{\top} + b,$$
+$$\mathbf{Z} = \mathbf{X} \cdot \mathbf{W}^{\top} + \mathbf{b},$$
 
-and has shape $(N, m)$. The transpose is bookkeeping, as discussed in [Part 02](../02-numpy-and-the-dot-product/index.md), and exists because the convention this series uses is "one row of $W$ per neuron". Every framework keeps that convention; this post inherits it.
+and has shape $(N, m)$. The transpose is bookkeeping, as discussed in [Part 02](../02-numpy-and-the-dot-product/index.md), and exists because the convention this series uses is "one row of $\mathbf{W}$ per neuron". Every framework keeps that convention; this post inherits it.
 
 ---
 
@@ -66,18 +66,18 @@ The weight matrices follow from one rule:
 
 Reading that off the architecture:
 
-- Layer 1 has $m_1 = 3$ neurons, each receiving $n = 4$ inputs. $W_1$ has shape $(3, 4)$.
-- Layer 2 has $m_2 = 3$ neurons, each receiving $m_1 = 3$ inputs. $W_2$ has shape $(3, 3)$.
+- Layer 1 has $m_1 = 3$ neurons, each receiving $n = 4$ inputs. $\mathbf{W}_1$ has shape $(3, 4)$.
+- Layer 2 has $m_2 = 3$ neurons, each receiving $m_1 = 3$ inputs. $\mathbf{W}_2$ has shape $(3, 3)$.
 
-The biases $b_1$ and $b_2$ have shape $(3,)$ each, one bias per neuron in their layer.
+The biases $\mathbf{b}_1$ and $\mathbf{b}_2$ have shape $(3,)$ each, one bias per neuron in their layer.
 
 ### 3.1. What stacking does *not* do
 
 A boundary section, because the next post depends on it.
 
-- **Stacking does not add expressive power on its own.** A composition of linear maps is itself a linear map: $X \mapsto X \cdot W_1^{\top} W_2^{\top} + (\text{constants})$. The two layers can be collapsed into a single equivalent layer of the same input and output shape. Without a non-linearity between them, depth is decorative.
-- **Stacking does not create features automatically.** The intermediate vector $F_1$ is sometimes called a "representation", but for a stack of linear layers that representation is just another linear projection of the input. Real feature learning needs the activations introduced in [Part 06](../06-activation-functions-relu-and-softmax/index.md).
-- **Stacking does not change the cost of `np.dot`.** Each layer is one matrix multiplication; the total cost is the sum. Depth costs FLOPs linearly; width costs them quadratically (in `m`).
+- **Stacking does not add expressive power on its own.** A composition of linear maps is itself a linear map: $\mathbf{X} \mapsto \mathbf{X} \cdot \mathbf{W}_1^{\top} \mathbf{W}_2^{\top} + (\text{constants})$. The two layers can be collapsed into a single equivalent layer of the same input and output shape. Without a non-linearity between them, depth is decorative.
+- **Stacking does not create features automatically.** The intermediate vector $\mathbf{Z}_1$ is sometimes called a "representation", but for a stack of linear layers that representation is just another linear projection of the input. Real feature learning needs the activations introduced in [Part 06](../06-activation-functions-relu-and-softmax/index.md).
+- **Stacking does not change the cost of `np.dot`.** Each layer is one matrix multiplication; the total cost is the sum. Adding a layer costs FLOPs (floating-point operations) linearly: the total is the sum over layers. Widening a layer costs them quadratically, because a layer mapping $m$ inputs to $m$ neurons does about $m^2$ multiply-adds per sample, so doubling the width roughly quadruples the work.
 
 The universal-approximation result of Cybenko (1989) and Hornik (1991) explains why the next post matters: with a single hidden layer and a non-linearity, a network can approximate any continuous function. The non-linearity is doing the heavy lifting, not the depth.
 
@@ -87,19 +87,23 @@ The universal-approximation result of Cybenko (1989) and Hornik (1991) explains 
 
 For the two-layer network above, the forward pass is two calls:
 
-$$F_1 = X \cdot W_1^{\top} + b_1$$
+$$\mathbf{Z}_1 = \mathbf{X} \cdot \mathbf{W}_1^{\top} + \mathbf{b}_1$$
 
-$$F_2 = F_1 \cdot W_2^{\top} + b_2$$
+$$\mathbf{Z}_2 = \mathbf{Z}_1 \cdot \mathbf{W}_2^{\top} + \mathbf{b}_2$$
 
-Step 1 produces a shape $(N, 3)$ array. Step 2 takes that as its input and produces another shape $(N, 3)$ array. Replacing $F_1$ in the second line with the right-hand side of the first gives:
+Step 1 produces a shape $(N, 3)$ array. Step 2 takes that as its input and produces another shape $(N, 3)$ array. Replacing $\mathbf{Z}_1$ in the second line with the right-hand side of the first gives:
 
-$$F_2 = (X \cdot W_1^{\top} + b_1) \cdot W_2^{\top} + b_2.$$
+$$\mathbf{Z}_2 = (\mathbf{X} \cdot \mathbf{W}_1^{\top} + \mathbf{b}_1) \cdot \mathbf{W}_2^{\top} + \mathbf{b}_2.$$
 
-The expression on the right is a single closed-form expression in $X$. It is still linear in $X$, which is the point §3.1 made. The next post breaks that linearity by inserting an activation function between $F_1$ and the call to $W_2$.
+Multiplying out and grouping the constant pieces shows the collapse explicitly:
+
+$$\mathbf{Z}_2 = \mathbf{X} \cdot \underbrace{(\mathbf{W}_1^{\top} \mathbf{W}_2^{\top})}_{\mathbf{W}_\ast} + \underbrace{(\mathbf{b}_1 \mathbf{W}_2^{\top} + \mathbf{b}_2)}_{\mathbf{b}_\ast} = \mathbf{X} \cdot \mathbf{W}_\ast + \mathbf{b}_\ast.$$
+
+The right-hand side is a single dense layer with weight $\mathbf{W}_\ast$ and bias $\mathbf{b}_\ast$. The two layers are mathematically one, which is the point §3.1 made. The next post breaks that linearity by inserting an activation function between $\mathbf{Z}_1$ and the call to $\mathbf{W}_2$, so $\mathbf{Z}_1$ can no longer be substituted away.
 
 For an arbitrary depth $L$, the pattern reads:
 
-$$F_\ell = F_{\ell - 1} \cdot W_\ell^{\top} + b_\ell, \qquad F_0 = X.$$
+$$\mathbf{Z}_\ell = \mathbf{Z}_{\ell - 1} \cdot \mathbf{W}_\ell^{\top} + \mathbf{b}_\ell, \qquad \mathbf{Z}_0 = \mathbf{X}.$$
 
 Every layer is the same line of code; only the indices change.
 
@@ -111,11 +115,11 @@ Concrete shapes for the batch case, with $N = 3$ samples flowing through the net
 
 | Step | Operation | Input shape | Output shape | Why |
 |---|---|---|---|---|
-| Input | $X$ | — | $(3, 4)$ | 3 samples, 4 features each |
-| Layer 1 | $X \cdot W_1^{\top}$ | $(3, 4) \cdot (4, 3)$ | $(3, 3)$ | inner dim 4 = 4 |
-| Layer 1 | $+\ b_1$ | $(3, 3) + (3,)$ | $(3, 3)$ | broadcast bias across rows |
-| Layer 2 | $F_1 \cdot W_2^{\top}$ | $(3, 3) \cdot (3, 3)$ | $(3, 3)$ | inner dim 3 = 3 |
-| Layer 2 | $+\ b_2$ | $(3, 3) + (3,)$ | $(3, 3)$ | broadcast bias across rows |
+| Input | $\mathbf{X}$ | — | $(3, 4)$ | 3 samples, 4 features each |
+| Layer 1 | $\mathbf{X} \cdot \mathbf{W}_1^{\top}$ | $(3, 4) \cdot (4, 3)$ | $(3, 3)$ | inner dim 4 = 4 |
+| Layer 1 | $+\ \mathbf{b}_1$ | $(3, 3) + (3,)$ | $(3, 3)$ | broadcast bias across rows |
+| Layer 2 | $\mathbf{Z}_1 \cdot \mathbf{W}_2^{\top}$ | $(3, 3) \cdot (3, 3)$ | $(3, 3)$ | inner dim 3 = 3 |
+| Layer 2 | $+\ \mathbf{b}_2$ | $(3, 3) + (3,)$ | $(3, 3)$ | broadcast bias across rows |
 
 ![A shape-flow chart for two layers: the input matrix becomes the layer-1 output, which becomes the layer-2 input, which becomes the final output.](diagrams/02-dimension-flow.svg)
 *Every layer enforces the same shape rule. A mismatch anywhere will surface here, not later.*
@@ -167,12 +171,12 @@ Layer 1 outputs:
  [ 1.41   1.051  0.026]]
 
 Layer 2 outputs:
-[[ 0.5031  -0.04959 -0.13366]
- [ 0.2434  -6.4711  -2.7696 ]
- [-0.9931   1.0108   0.24831]]
+[[ 0.5031  -1.04185 -2.03875]
+ [ 0.2434  -2.7332  -5.7633 ]
+ [-0.99314  1.41254 -0.35655]]
 ```
 
-The first three lines of layer-2 output are identical regardless of how the network was wired internally: any reorganisation of the weights that produces the same linear map will give the same numbers. That is exactly the property §3.1 warned about. Until the activation function arrives in Part 06, $F_2$ is just a linear function of $X$ wearing a slightly more complicated outfit.
+These layer-2 numbers could be reproduced by a single equivalent layer: collapse the two weight matrices into one $\mathbf{W}_\ast$ and the two biases into one $\mathbf{b}_\ast$ (the substitution in §4), and that one layer maps $\mathbf{X}$ to exactly the same output. That is the property §3.1 warned about. Until the activation function arrives in Part 06, $\mathbf{Z}_2$ is just a linear function of $\mathbf{X}$ wearing a slightly more complicated outfit.
 
 ### 6.1. Extending to more layers
 
@@ -201,7 +205,7 @@ A useful table to read whenever a new layer is added.
 | 3 | layer 2 (length $m_2$) | $m_3$ | $(m_3, m_2)$ |
 | $\ell$ | layer $\ell - 1$ (length $m_{\ell - 1}$) | $m_\ell$ | $(m_\ell,\ m_{\ell - 1})$ |
 
-Bias vectors follow trivially: $b_\ell$ has shape $(m_\ell,)$.
+Bias vectors follow trivially: $\mathbf{b}_\ell$ has shape $(m_\ell,)$.
 
 ---
 
@@ -229,9 +233,9 @@ The forward pass is also where most "the model trains but learns nothing" bugs l
 | Concept | Takeaway |
 |---|---|
 | Forward pass | Apply the dense-layer formula once per layer, left to right |
-| Chaining | $F_\ell = F_{\ell-1} \cdot W_\ell^{\top} + b_\ell$, $F_0 = X$ |
+| Chaining | $\mathbf{Z}_\ell = \mathbf{Z}_{\ell-1} \cdot \mathbf{W}_\ell^{\top} + \mathbf{b}_\ell$, $\mathbf{Z}_0 = \mathbf{X}$ |
 | Output to input | Layer $\ell$'s output is layer $\ell+1$'s input |
-| Shape rule | $W_\ell$ has shape $(m_\ell,\ m_{\ell-1})$; $b_\ell$ has shape $(m_\ell,)$ |
+| Shape rule | $\mathbf{W}_\ell$ has shape $(m_\ell,\ m_{\ell-1})$; $\mathbf{b}_\ell$ has shape $(m_\ell,)$ |
 | Linear stack | Without an activation, depth adds nothing the next post does not |
 | Any depth | Same call repeated $L$ times for $L$ layers |
 
@@ -240,7 +244,7 @@ The forward pass is also where most "the model trains but learns nothing" bugs l
 ## Common pitfalls
 
 - **Forgetting that a stack of linear layers is itself linear.** Until Part 06 introduces ReLU or sigmoid between the layers, the network is one matrix in disguise. Stacking pre-activation does not make a problem harder.
-- **Mis-sizing $W_2$ to match $W_1$'s input shape instead of $W_1$'s output shape.** $W_2$ consumes the layer-1 output (length $m_1$), not the original input (length $n$).
+- **Mis-sizing $\mathbf{W}_2$ to match $\mathbf{W}_1$'s input shape instead of $\mathbf{W}_1$'s output shape.** $\mathbf{W}_2$ consumes the layer-1 output (length $m_1$), not the original input (length $n$).
 - **Forgetting the transpose on every layer.** Each `np.dot(F, W.T)` needs `.T`, not just the first one.
 - **Storing biases as a column vector instead of a 1-D array.** Broadcasting works correctly only when the bias has shape $(m,)$; a $(m, 1)$ bias will broadcast across columns in unexpected ways.
 - **Allocating the wrong-sized weight matrix.** A weight matrix of shape $(m_{\ell-1}, m_\ell)$ instead of $(m_\ell, m_{\ell-1})$ silently swaps the roles of neurons and inputs.

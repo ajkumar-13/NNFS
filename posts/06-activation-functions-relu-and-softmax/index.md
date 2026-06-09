@@ -28,13 +28,13 @@ part: "Part II — Activations and forward pass"
 
 [Part 03](../03-stacking-layers-and-the-forward-pass/index.md) ended with a quiet warning: a stack of dense layers without an activation between them is itself a dense layer. The forward pass
 
-$$F_2 = (X \cdot W_1 + b_1) \cdot W_2 + b_2$$
+$$\mathbf{Z}_2 = (\mathbf{X} \cdot \mathbf{W}_1 + \mathbf{b}_1) \cdot \mathbf{W}_2 + \mathbf{b}_2$$
 
-expands to a single linear map $X \cdot (W_1 W_2) + (b_1 W_2 + b_2)$. Two layers, one effective layer. Fifty layers, still one effective layer. Depth without a non-linearity is a mirage.
+expands to a single linear map $\mathbf{X} \cdot (\mathbf{W}_1 \mathbf{W}_2) + (\mathbf{b}_1 \mathbf{W}_2 + \mathbf{b}_2)$. Two layers, one effective layer. Fifty layers, still one effective layer. Depth without a non-linearity is a mirage.
 
 The fix is small and decisive. Insert a non-linear function $f$ between each pair of dense layers:
 
-$$F_2 = f_2(f_1(X \cdot W_1 + b_1) \cdot W_2 + b_2).$$
+$$\mathbf{A}_2 = f_2(f_1(\mathbf{X} \cdot \mathbf{W}_1 + \mathbf{b}_1) \cdot \mathbf{W}_2 + \mathbf{b}_2).$$
 
 With $f_1$ and $f_2$ non-linear, the composition is no longer collapsible. Cybenko's universal-approximation theorem (1989) and Hornik (1991) made the formal claim: a single hidden layer with a non-linear activation can approximate any continuous function. The activation is the source of that power. Without it, the depth does nothing.
 

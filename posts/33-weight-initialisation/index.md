@@ -43,7 +43,7 @@ The structural problem is that initialisation is the only thing standing between
 
 ## 2. Variance through one linear layer
 
-Consider one layer's pre-activation $z = \mathbf{W} \mathbf{x}$ (ignoring the bias for the moment). Each component of $z$ is a sum:
+Consider one layer's pre-activation $\mathbf{z} = \mathbf{W} \mathbf{x}$ (ignoring the bias for the moment). Each component of $\mathbf{z}$ is a sum:
 
 $$z_j = \sum_{i=1}^{n_\text{in}} W_{ij} \, x_i$$
 
@@ -55,7 +55,7 @@ assuming all weights and inputs share the same per-element variance. So one forw
 
 The same argument applies layer by layer. After $L$ identical layers:
 
-$$\text{Var}(z^{(L)}) = \big(n_\text{in} \cdot \text{Var}(W)\big)^L \cdot \text{Var}(\mathbf{x}^{(0)})$$
+$$\text{Var}(\mathbf{z}^{(L)}) = \big(n_\text{in} \cdot \text{Var}(W)\big)^L \cdot \text{Var}(\mathbf{x}^{(0)})$$
 
 If $n_\text{in} \cdot \text{Var}(W) > 1$, the variance grows exponentially with depth (**exploding activations**). If $n_\text{in} \cdot \text{Var}(W) < 1$, it shrinks exponentially (**vanishing activations**). Only at *exactly* $n_\text{in} \cdot \text{Var}(W) = 1$ does it stay roughly stable.
 

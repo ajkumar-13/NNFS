@@ -199,12 +199,12 @@ print(W.T)                          # (4, 3)
 
 For ordinary Python lists, `.T` does not exist; the matrix must first be promoted to an array with `np.array(W)`. Forgetting that wrapper is a common first-day error.
 
-The transpose enters neural-network code for one reason. The convention this series uses, and the convention every framework uses, is **weights with one row per neuron**: $W$ has shape $(m, n)$ where $m$ is the number of neurons in the layer and $n$ is the number of inputs each neuron consumes. The convention for inputs is **one row per sample**: $X$ has shape $(N, n)$ where $N$ is the batch size and $n$ is the feature count.
+The transpose enters neural-network code for one reason. The convention this series uses, and the convention every framework uses, is **weights with one row per neuron**: $\mathbf{W}$ has shape $(m, n)$ where $m$ is the number of neurons in the layer and $n$ is the number of inputs each neuron consumes. The convention for inputs is **one row per sample**: $\mathbf{X}$ has shape $(N, n)$ where $N$ is the batch size and $n$ is the feature count.
 
 Two layouts now exist, and they must be reconciled:
 
-- **One sample at a time.** $X$ is a 1-D vector of shape $(n,)$. The call `np.dot(W, X)` is $(m, n) \cdot (n,) \to (m,)$, which lines up; no transpose needed.
-- **A batch of $N$ samples.** $X$ is a 2-D matrix of shape $(N, n)$. The call `np.dot(X, W)` is $(N, n) \cdot (m, n)$, whose inner dimensions are $n$ and $m$. They do not match. The fix is to transpose `W` to $(n, m)$: `np.dot(X, W.T)` is $(N, n) \cdot (n, m) \to (N, m)$.
+- **One sample at a time.** $\mathbf{X}$ is a 1-D vector of shape $(n,)$. The call `np.dot(W, X)` is $(m, n) \cdot (n,) \to (m,)$, which lines up; no transpose needed.
+- **A batch of $N$ samples.** $\mathbf{X}$ is a 2-D matrix of shape $(N, n)$. The call `np.dot(X, W)` is $(N, n) \cdot (m, n)$, whose inner dimensions are $n$ and $m$. They do not match. The fix is to transpose `W` to $(n, m)$: `np.dot(X, W.T)` is $(N, n) \cdot (n, m) \to (N, m)$.
 
 In both cases the answer comes out the same way: every output is a dot product of one input row with one weight row. The transpose is bookkeeping, not arithmetic.
 
@@ -246,7 +246,7 @@ Each row of the output is one sample's predictions across every neuron. Each col
 
 The two equivalent ways to phrase the layer call:
 
-$$\text{single sample:} \quad W \cdot \vec{x} + \vec{b} \qquad \text{batch:} \quad X \cdot W^{\top} + \vec{b}$$
+$$\text{single sample:} \quad \mathbf{W} \cdot \vec{x} + \mathbf{b} \qquad \text{batch:} \quad \mathbf{X} \cdot \mathbf{W}^{\top} + \mathbf{b}$$
 
 This series will use the batch form everywhere from Part 04 onward, because every real training step is a batch step.
 

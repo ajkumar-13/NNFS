@@ -222,23 +222,25 @@ Frameworks that handle this automatically (PyTorch's `model.eval()`, Keras's tra
 
 ## 8. Results on the spiral dataset
 
-A representative comparison with the full Part 30 + 31 stack (Adam, L2, and dropout) on 1000-sample-per-class spiral data:
+A comparison of the full Part 30 + 31 stack (Adam, L2, and dropout) on **1000-sample-per-class** spiral data, so every row uses the same dataset size. The training accuracy of the dropout row is measured *with dropout active* (the handicapped network); test accuracy always uses the full network. (Verified by [`verify/regularization_results.py`](../../verify/regularization_results.py).)
 
-| Configuration | Training acc. | Validation acc. | Train-val gap |
+| Configuration (1000 samples/class) | Training acc. | Test acc. | Train-test gap |
 |---|:---:|:---:|:---:|
-| No regularisation (Part 27 baseline) | ~93% | ~80% | 13 points (overfit) |
-| L2 only (Part 30) | ~94% | ~82% | 12 points |
-| **L2 + Dropout(0.1) + 1000 samples/class** | **66.6%** | **> 66.6%** | **negative gap** |
+| No regularisation | 90.7% | 87.7% | +3.0 points |
+| L2 only ($\lambda = 5\times10^{-4}$) | 90.1% | 88.5% | +1.6 points |
+| **L2 + Dropout(0.1)** | **68.8%**\* | **72.5%** | **−3.7 points (negative)** |
 
-The headline number is the *negative train-val gap*: validation accuracy exceeds training accuracy. This sounds backwards but is exactly what dropout is designed to produce. At training time the network is handicapped: it has to make predictions with random neurons missing, so its training accuracy looks low. At test time the full network is available, so it does better than its handicapped self.
+\*measured with dropout active — the network is handicapped at training time.
+
+The headline number is the *negative train-test gap*: test accuracy (72.5%) exceeds the handicapped training accuracy (68.8%). This sounds backwards but is exactly what dropout produces. At training time the network has to make predictions with random neurons missing, so its training accuracy looks low. At test time the full network is available, so it does better than its handicapped self.
 
 A negative train-val gap is the **strongest possible signature that the model is not overfitting**. The model is leaving capacity on the table during training; it is *under*-fitting the training data on purpose to generalise. This is the inverse of the failure mode every prior lecture in this group was trying to fix.
 
 Two side observations.
 
-**The absolute accuracy is lower (~66.6%) than the Adam-only baseline (~95%)**. That is the cost of the heavy regularisation. For this particular dataset and dropout rate, the model has been over-regularised; in practice one would tune the dropout rate down (say to 0.05) to recover some accuracy.
+**The absolute test accuracy (~72%) is lower than the no-regularisation baseline (~88%).** That is the cost of heavy regularisation. At 1000 samples the network barely overfits (the no-reg gap is only ~3 points), so dropping 10% of neurons over-regularises it; in practice one would tune the dropout rate down (say to 0.05) to recover accuracy. Dropout earns its keep on models that genuinely overfit, not on a nearly-balanced one like this.
 
-**The training accuracy is the more honest comparison.** The Part 27 Adam baseline got 95% training accuracy but only ~80% test; dropout gets 66.6% training accuracy and 66.6%+ test. On unseen data, the dropout-regularised model is competitive with or better than the unregularised one.
+**The training accuracy is the more honest comparison.** With dropout off, the regularised model still fits the training set to ~75%, versus the no-reg baseline's ~91%. The point is the *direction* of the gap: the dropout model's test accuracy exceeds its handicapped training accuracy, the signature of a model that is not memorising — even though, on this easy dataset, the trade costs more accuracy than it returns.
 
 The lesson: regularisation trades training accuracy for test accuracy. The trade is almost always worth it when overfitting is the bottleneck.
 
@@ -264,7 +266,7 @@ In modern practice, **dropout + L2 + data augmentation** is a strong default sta
 
 - **What is the relationship between dropout and DropConnect?** DropConnect drops *weights* instead of *activations*. It is rarely used in practice because the bookkeeping is harder; standard dropout is the workhorse.
 - **Should I use dropout on every layer?** No. Dropout on input layers throws away data; dropout on the output layer adds noise to the loss. Use it on hidden layers only.
-- **Does dropout work with BatchNorm?** Yes, but the interaction matters. BatchNorm computes statistics over the batch; dropout perturbs those statistics. The original paper (Li et al., 2018, "Understanding the Disharmony between Dropout and Batch Normalization") recommends placing dropout *after* BatchNorm, not before. In practice, most modern architectures use one or the other rather than both.
+- **Does dropout work with BatchNorm?** Yes, but the interaction matters. BatchNorm computes statistics over the batch; dropout perturbs those statistics. The original paper (Li et al., 2019, "Understanding the Disharmony between Dropout and Batch Normalization") recommends placing dropout *after* BatchNorm, not before. In practice, most modern architectures use one or the other rather than both.
 - **What is the relationship between dropout rate and L2 strength?** Both are regularisation hyperparameters; they compose multiplicatively. Adding both at half their solo strength is often the right starting point.
 - **Why does dropout sometimes hurt very small networks?** With too few neurons, even modest dropout removes too much capacity. If validation loss goes *up* when dropout is added, the network is too small.
 - **Can I use dropout at inference time on purpose?** Yes, as a Monte Carlo sampling technique called **MC Dropout** (Gal & Ghahramani, 2016). Running multiple test-time forward passes with dropout active gives a distribution over predictions, useful for uncertainty estimation. This is a specialised use; default test-time behaviour is no dropout.

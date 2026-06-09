@@ -94,11 +94,11 @@ For a deeper Python refresher the standard reference is Ramalho's *Fluent Python
 
 ## 4. The weight-matrix convention, revisited
 
-Parts 01 through 03 stored weights with one row per neuron: $W$ of shape $(m, n)$ for $m$ neurons of $n$ inputs each. Every batch forward pass needed a transpose: `np.dot(X, W.T) + b`.
+Parts 01 through 03 stored weights with one row per neuron: $\mathbf{W}$ of shape $(m, n)$ for $m$ neurons of $n$ inputs each. Every batch forward pass needed a transpose: `np.dot(X, W.T) + b`.
 
-This post switches conventions. From now on, weights are stored with one **column** per neuron: $W$ of shape $(n, m)$. The transpose disappears.
+This post switches conventions. From now on, weights are stored with one **column** per neuron: $\mathbf{W}$ of shape $(n, m)$. The transpose disappears.
 
-| Convention | $W$ shape | Forward pass |
+| Convention | $\mathbf{W}$ shape | Forward pass |
 |---|---|---|
 | Old (Parts 01–03) | $(m, n)$, rows are neurons | `np.dot(X, W.T) + b` |
 | New (Part 04 onward) | $(n, m)$, columns are neurons | `np.dot(X, W) + b` |
@@ -112,7 +112,7 @@ Two reasons, both practical.
 - **No transpose in the call site.** `np.dot(X, W) + b` reads more naturally than `np.dot(X, W.T) + b`, and there is one fewer place for a missing `.T` to break the code.
 - **Weight initialisation matches the call shape.** When the new layer is created, the weights are allocated as `np.random.randn(n_inputs, n_neurons)`. This is the same shape that will be passed to `np.dot`. The two operations stay consistent.
 
-The cost is a one-time mental adjustment: the row count of $W$ is now the input size, not the neuron count.
+The cost is a one-time mental adjustment: the row count of $\mathbf{W}$ is now the input size, not the neuron count.
 
 ---
 
@@ -238,7 +238,7 @@ The two instances do not share weights. `dense1.weights` is a different array, w
 | `self` | A reference to "this particular instance" inside a method |
 | `__init__` | Runs automatically when an instance is created; allocates weights and biases |
 | `forward` | Runs the dot product, adds the bias, stores the output on `self` |
-| Weight convention | This post switches to $W$ of shape $(n, m)$; the transpose disappears from the forward call |
+| Weight convention | This post switches to $\mathbf{W}$ of shape $(n, m)$; the transpose disappears from the forward call |
 
 ---
 

@@ -139,7 +139,7 @@
 
   <text class="insight-head" x="644" y="258">Why this curve, not a linear one?</text>
   <text class="insight-muted" x="644" y="278">A confident-and-wrong prediction</text>
-  <text class="insight-muted" x="644" y="294">(p = 0.01) costs 20× more than an</text>
+  <text class="insight-muted" x="644" y="294">(p = 0.01) costs ~6.6× more than an</text>
   <text class="insight-muted" x="644" y="310">uncertain one (p = 0.5). That</text>
   <text class="insight-muted" x="644" y="326">non-linearity is the training signal.</text>
 

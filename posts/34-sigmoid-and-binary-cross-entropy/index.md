@@ -109,7 +109,7 @@ $$L = -\bigl[\, y \log \hat{y} + (1 - y) \log(1 - \hat{y}) \,\bigr]$$
 
 Averaging over the batch:
 
-$$\mathcal{L} = \frac{1}{N} \sum_{i=1}^{N} L_i$$
+$$L = \frac{1}{N} \sum_{i=1}^{N} L_i$$
 
 Three things worth unpacking.
 
@@ -141,7 +141,7 @@ $$\frac{\partial L}{\partial z} = \frac{\hat{y} - y}{\hat{y}(1 - \hat{y})} \cdot
 
 The $\hat{y}(1 - \hat{y})$ factors cancel exactly. After averaging over $N$ samples:
 
-$$\boxed{\;\frac{\partial \mathcal{L}}{\partial z_i} = \frac{\hat{y}_i - y_i}{N}\;}$$
+$$\boxed{\;\frac{\partial L}{\partial z_i} = \frac{\hat{y}_i - y_i}{N}\;}$$
 
 This is the **combined sigmoid + BCE shortcut**, the binary cousin of post 19's $\hat{y} - y$ for softmax + CCE. The derivation is even cleaner than the softmax case because everything is scalar.
 

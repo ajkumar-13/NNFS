@@ -54,7 +54,7 @@ The deep-learning specifics (the boundary geometry, the loss-curve divergence, t
 
 ## 3. Running the test
 
-The model from [Part 27](../27-adam-optimiser/index.md) reached **95.7%** training accuracy with the Adam optimiser. To test whether that number reflects genuine learning, a fresh batch of 100 samples is drawn from the same `spiral_data` distribution (same generating process, new random points), and the network is run **forward only**. No backward pass, no weight update.
+Take the spiral classifier trained with Adam (the model built up through [Part 27](../27-adam-optimiser/index.md)); on this run it reaches about **93%** training accuracy. To test whether that number reflects genuine learning, a fresh batch of 100 samples is drawn from the same `spiral_data` distribution (same generating process, new random points), and the network is run **forward only**. No backward pass, no weight update.
 
 ```python
 # Fresh test data: same distribution, new points
@@ -69,16 +69,16 @@ loss = loss_activation.forward(dense2.output, y_test)
 predictions = np.argmax(loss_activation.output, axis=1)
 accuracy = np.mean(predictions == y_test)
 
-print(f'Validation accuracy: {accuracy:.3f}, loss: {loss:.3f}')
+print(f'Test accuracy: {accuracy:.3f}, loss: {loss:.3f}')
 ```
 
 **Output:**
 
 ```
-Validation accuracy: 0.830, loss: 0.810
+Test accuracy: 0.830, loss: 0.810
 ```
 
-Training accuracy was 93%; test accuracy is 83%. The 10-percentage-point gap is the textbook signal of overfitting.
+Training accuracy was 93%; test accuracy is 83%. The 10-percentage-point gap is the textbook signal of overfitting. (The exact figures shift with the random seed, since each `spiral_data` call draws fresh points; the gap, not the third decimal, is the point.)
 
 | Quantity | Symbol | Value | Meaning |
 |---|---|---|---|

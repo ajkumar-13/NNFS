@@ -15,7 +15,7 @@
 | $\mathbf{A}$ | Activation output | `(batch, neurons)` | `output`, activation output |
 | $\hat{\mathbf{y}}$ | Predicted probabilities | `(batch, classes)` | `y_pred`, `output`, `probs` |
 | $\mathbf{y}$ | Ground-truth labels | `(batch,)` or `(batch, classes)` | `y_true`, `y` |
-| $L$ or $\mathcal{L}$ | Loss | scalar | `loss` |
+| $L$ | Loss | scalar | `loss` |
 
 ### Core forward equation
 

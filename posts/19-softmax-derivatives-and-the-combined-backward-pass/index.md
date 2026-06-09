@@ -10,13 +10,13 @@ part: "Part V — Backpropagation"
 
 # Part 19 · Softmax derivatives and the combined backward pass
 
-> **TL;DR.** Softmax couples every output to every input, so its Jacobian is a full matrix and its backward step, taken alone, requires a per-sample matrix multiplication. Pairing it with cross-entropy reveals one of the cleanest results in deep learning: the gradient of the loss with respect to the softmax inputs is just $\hat{y} - y$, divided by the batch size. Every exponential, every logarithm, and every quotient-rule term cancels. This is why every framework ships a combined "softmax + cross-entropy" backward and not two separate ones; this post derives it, codes it in three lines, and verifies the numbers.
+> **TL;DR.** Softmax couples every output to every input, so its Jacobian is a full matrix and its backward step, taken alone, requires a per-sample matrix multiplication. Pairing it with cross-entropy reveals one of the cleanest results in deep learning: the gradient of the loss with respect to the softmax inputs is just $\hat{\mathbf{y}} - \mathbf{y}$, divided by the batch size. Every exponential, every logarithm, and every quotient-rule term cancels. This is why every framework ships a combined "softmax + cross-entropy" backward and not two separate ones; this post derives it, codes it in three lines, and verifies the numbers.
 >
 > **Reading time:** ~12 minutes.
 >
 > **After reading this you will be able to:**
 > - Explain why softmax's Jacobian is full and not diagonal.
-> - Apply the combined formula $\partial L / \partial \mathbf{Z} = (\hat{y} - y)/N$ and recognise the cancellation that produces it.
+> - Apply the combined formula $\partial L / \partial \mathbf{Z} = (\hat{\mathbf{y}} - \mathbf{y})/N$ and recognise the cancellation that produces it.
 > - Implement `Activation_Softmax_Loss_CategoricalCrossentropy` in three lines and run it on the spiral example.
 
 ![The full softmax Jacobian on the left vs the clean combined shortcut on the right. Pair softmax with cross-entropy and the math collapses.](diagrams/01-combined-shortcut.svg)
@@ -58,7 +58,7 @@ No exponentials. No logarithms. No quotient rule. The formula is so clean that e
 
 ### 2.1. Why this is not magic
 
-The cancellation has a clean reason. For a single sample with one-hot label $y$ where the true class is $t$, the cross-entropy loss is:
+The cancellation has a clean reason. For a single sample with one-hot label $\mathbf{y}$ where the true class is $t$, the cross-entropy loss is:
 
 $$L = -\log(\hat{y}_t).$$
 
@@ -93,7 +93,7 @@ PyTorch's `nn.CrossEntropyLoss` is exactly this fused op. TensorFlow's `tf.nn.so
 
 Three samples, three classes:
 
-| Sample | Softmax output $\hat{y}$ | True class | $y$ (one-hot) | $\hat{y} - y$ |
+| Sample | Softmax output $\hat{\mathbf{y}}$ | True class | $\mathbf{y}$ (one-hot) | $\hat{\mathbf{y}} - \mathbf{y}$ |
 |:---:|:---:|:---:|:---:|:---:|
 | 1 | $[0.7, 0.1, 0.2]$ | 0 | $[1, 0, 0]$ | $[-0.3, 0.1, 0.2]$ |
 | 2 | $[0.1, 0.5, 0.4]$ | 1 | $[0, 1, 0]$ | $[0.1, -0.5, 0.4]$ |
@@ -165,7 +165,7 @@ Three things to flag.
 
 **`forward` is just a thin wrapper.** It runs the softmax forward, then the cross-entropy forward. Nothing exciting happens until backward.
 
-**`backward` ignores its `dvalues` for the upstream gradient.** The combined op's "upstream" is the loss itself (a scalar with derivative 1), so the formula is the local gradient with no upstream multiplication. The `dvalues` parameter holds the softmax output ($\hat{y}$) and serves only as the starting array for the copy.
+**`backward` ignores its `dvalues` for the upstream gradient.** The combined op's "upstream" is the loss itself (a scalar with derivative 1), so the formula is the local gradient with no upstream multiplication. The `dvalues` parameter holds the softmax output ($\hat{\mathbf{y}}$) and serves only as the starting array for the copy.
 
 **The class returns the gradient with respect to the softmax inputs.** The previous layer (`dense2` in a typical classifier) reads `self.dinputs` as its `dvalues`. From there backprop continues through the dense layer, the ReLU, the first dense layer, and finally produces gradients for all the weights.
 
@@ -197,7 +197,7 @@ A boundary section, because the speed-up is so attractive it tempts misuse.
 
 ## 7. Anticipated questions
 
-- **What if I have soft labels (not strictly one-hot)?** The combined formula still applies. $\hat{y} - y$ works for any label distribution $y$ that sums to 1; the one-hot case is the special-case-friendliest version. Implementations that use `np.argmax` to extract a single index break for soft labels; the general implementation uses `np.sum(y_true * softmax_output, axis=1)` instead.
+- **What if I have soft labels (not strictly one-hot)?** The combined formula still applies. $\hat{\mathbf{y}} - \mathbf{y}$ works for any label distribution $\mathbf{y}$ that sums to 1; the one-hot case is the special-case-friendliest version. Implementations that use `np.argmax` to extract a single index break for soft labels; the general implementation uses `np.sum(y_true * softmax_output, axis=1)` instead.
 - **Does the shortcut help with the dying-ReLU problem upstream?** Indirectly. A cleaner gradient signal at the softmax inputs propagates more reliably through the network, so weights have a better chance of moving out of the dead region. The gradient itself is not different from what the separate ops would produce; only the numerics are cleaner.
 - **Why is the combined backward shape `(N, C)`, not `(N, 1)`?** Because every class's gradient contributes to updates of the dense layer's weights that feed that class. The full `(N, C)` matrix is what `dense2.backward(softmax_loss.dinputs)` expects.
 - **What if the softmax output has very small values (e.g. `1e-10`)?** The combined formula has no division by small numbers, so it is stable. The separate softmax-then-cross-entropy version divides by very small softmax outputs in the cross-entropy backward and can produce huge gradients or `inf`. The combined version skips that problem entirely.
@@ -211,7 +211,7 @@ A boundary section, because the speed-up is so attractive it tempts misuse.
 |---|---|
 | Softmax Jacobian | Full $C \times C$ matrix per sample; $A_k$ depends on every $Z_j$ |
 | Naive backward | Compute the Jacobian, multiply by upstream; $O(N C^2)$, slow and memory-hungry |
-| Combined shortcut | $\partial L / \partial \mathbf{Z} = (\hat{y} - y)/N$; one subtraction per class, per sample |
+| Combined shortcut | $\partial L / \partial \mathbf{Z} = (\hat{\mathbf{y}} - \mathbf{y})/N$; one subtraction per class, per sample |
 | Derivation | Substitute softmax into cross-entropy, then differentiate — exponentials and logs cancel |
 | Numerical stability | The combined formula has no small denominators; the separate version can blow up |
 | Framework practice | Every modern framework fuses these two ops; this series does too |

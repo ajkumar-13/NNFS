@@ -28,9 +28,9 @@ part: "Part IV — Calculus for backpropagation"
 
 Part 09 ended with the gradient descent update rule:
 
-$$\theta_{\text{new}} = \theta_{\text{old}} - \eta \cdot \nabla L.$$
+$$\theta_{\text{new}} = \theta_{\text{old}} - \alpha \cdot \nabla L.$$
 
-Three symbols carry weight in that line. The learning rate $\eta$ is a scalar covered in Part 22 onward. The parameters $\theta$ are familiar from the `Layer_Dense` class. The third symbol, $\nabla L$, is the **gradient** of the loss with respect to the parameters. Computing $\nabla L$ is what backpropagation does (Parts 12–21), but understanding what it *is* requires three building blocks of calculus:
+Three symbols carry weight in that line. The learning rate $\alpha$ is a scalar covered in Part 22 onward. The parameters $\theta$ are familiar from the `Layer_Dense` class. The third symbol, $\nabla L$, is the **gradient** of the loss with respect to the parameters. Computing $\nabla L$ is what backpropagation does (Parts 12–21), but understanding what it *is* requires three building blocks of calculus:
 
 | Building block | Question it answers | Where it appears next |
 |---|---|---|
@@ -169,7 +169,7 @@ For a function of $n$ variables, the gradient is a vector of $n$ numbers, one pe
 
 For neural networks, this is everything. The optimiser update becomes:
 
-$$\theta_{\text{new}} = \theta_{\text{old}} - \eta \cdot \nabla L,$$
+$$\theta_{\text{new}} = \theta_{\text{old}} - \alpha \cdot \nabla L,$$
 
 where $\theta$ is the flat vector of all parameters and $\nabla L$ is the same-shaped vector of all partial derivatives of the loss.
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
   <title id="t">SGD update and the learning-rate trade-off</title>
-  <desc id="d">Two-part diagram. Top: the SGD update rule shown as theta := theta - alpha times grad, with theta_new equal to theta_old minus a small subtraction. Bottom: three small loss-curve panels showing what happens at three learning rates. Left (too small): loss barely drops over many epochs. Middle (right-sized): loss drops smoothly then plateaus around 0.68 due to a local minimum. Right (too large): loss bounces and diverges. Each panel is colour-coded by outcome.</desc>
+  <desc id="d">Two-part diagram. Top: the SGD update rule shown as theta := theta - alpha times grad, with theta_new equal to theta_old minus a small subtraction. Bottom: three small loss-curve panels showing what happens at three learning rates. Left (too small): loss barely drops over many epochs. Middle (right-sized): loss drops smoothly but slowly, still descending around 0.87 at 10k epochs because plain SGD converges slowly. Right (too large): loss bounces and diverges. Each panel is colour-coded by outcome.</desc>
 
   <style><![CDATA[
     :root{
@@ -90,7 +90,7 @@
   <rect class="panel-mid" x="336" y="208" width="288" height="280" rx="12"/>
   <rect class="pill-mid"  x="336" y="208" width="6"   height="280" rx="3"/>
   <text class="head-mid"  x="356" y="234">α right-sized</text>
-  <text class="panel-sub" x="356" y="252">drops, then plateaus at ~0.68</text>
+  <text class="panel-sub" x="356" y="252">drops slowly; ~0.87 at 10k epochs</text>
 
   <rect class="chart" x="360" y="270" width="240" height="160" rx="6"/>
   <g class="grid">
@@ -104,10 +104,10 @@
   <text class="axis-label" x="353" y="434" text-anchor="end">low</text>
   <text class="axis-label" x="480" y="448" text-anchor="middle">epochs →</text>
 
-  <!-- Curve: smooth drop then plateau -->
-  <path class="curve-mid" d="M 368 282 C 400 296, 440 348, 480 372 C 520 388, 560 392, 596 392"/>
+  <!-- Curve: slow, steady descent that is still going at the right edge -->
+  <path class="curve-mid" d="M 368 286 C 410 300, 450 322, 490 340 C 530 356, 565 366, 596 374"/>
 
-  <text class="verdict" x="356" y="464" style="fill:var(--ce-warn);">verdict: stalls at local minimum (~67% acc)</text>
+  <text class="verdict" x="356" y="464" style="fill:var(--ce-warn);">verdict: slow; ~65% acc at 10k (still improving)</text>
   <text class="panel-sub" x="356" y="480">needs a smarter optimiser (Parts 23–27)</text>
 
   <!-- RIGHT: too large -->

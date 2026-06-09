@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" role="img" aria-labelledby="t d">
   <title id="t">Dimension flow across two stacked layers</title>
-  <desc id="d">A left-to-right shape-flow chart for a batch of N samples passing through two dense layers. The input X has shape N by 4. After layer 1, with weights of shape 3 by 4 and bias of shape 3, the output F1 has shape N by 3. After layer 2, with weights of shape 3 by 3 and bias of shape 3, the final output F2 has shape N by 3. Inner-dimension checks are annotated at each step: 4 matches 4 between X and W1 transpose, 3 matches 3 between F1 and W2 transpose. A footer says that shape continuity must hold from layer to layer.</desc>
+  <desc id="d">A left-to-right shape-flow chart for a batch of N samples passing through two dense layers. The input X has shape N by 4. After layer 1, with weights of shape 3 by 4 and bias of shape 3, the output Z1 has shape N by 3. After layer 2, with weights of shape 3 by 3 and bias of shape 3, the final output Z2 has shape N by 3. Inner-dimension checks are annotated at each step: 4 matches 4 between X and W1 transpose, 3 matches 3 between Z1 and W2 transpose. A footer says that shape continuity must hold from layer to layer.</desc>
 
   <style><![CDATA[
     :root{
@@ -70,7 +70,7 @@
 
   <!-- =================== F1 =================== -->
   <rect class="data-pill-int" x="472" y="160" width="120" height="100" rx="12"/>
-  <text class="data-name"  x="532" y="194" text-anchor="middle">F₁</text>
+  <text class="data-name"  x="532" y="194" text-anchor="middle">Z₁</text>
   <text class="data-shape" x="532" y="222" text-anchor="middle">(N, 3)</text>
   <text class="data-desc"  x="532" y="244" text-anchor="middle">layer 1 output</text>
 
@@ -80,7 +80,7 @@
   <!-- =================== Op 2 =================== -->
   <rect class="op-box" x="644" y="148" width="180" height="124" rx="12"/>
   <text class="op-head"   x="734" y="172" text-anchor="middle">Layer 2</text>
-  <text class="op-body"   x="734" y="198" text-anchor="middle">F₁ · W₂ᵀ + b₂</text>
+  <text class="op-body"   x="734" y="198" text-anchor="middle">Z₁ · W₂ᵀ + b₂</text>
   <text class="op-weight" x="734" y="222" text-anchor="middle">W₂: (3, 3)</text>
   <text class="op-weight" x="734" y="240" text-anchor="middle">b₂: (3,)</text>
   <text class="match-ok"  x="734" y="262" text-anchor="middle">inner: 3 matches 3</text>
@@ -90,14 +90,14 @@
 
   <!-- =================== F2 (final) =================== -->
   <rect class="data-pill-out" x="864" y="160" width="80" height="100" rx="12"/>
-  <text class="data-name"  x="904" y="194" text-anchor="middle">F₂</text>
+  <text class="data-name"  x="904" y="194" text-anchor="middle">Z₂</text>
   <text class="data-shape" x="904" y="222" text-anchor="middle">(N, 3)</text>
   <text class="data-desc"  x="904" y="244" text-anchor="middle">final</text>
 
   <!-- =================== Bottom band: rule =================== -->
   <rect class="op-box" x="48" y="312" width="864" height="76" rx="12"/>
   <text class="op-head"  x="68" y="338">Rule</text>
-  <text class="data-desc" x="68" y="358" style="font-size:12px;fill:var(--ce-ink);">The inner dimension of np.dot(F_{ℓ-1}, W_ℓᵀ) must match at every layer.</text>
+  <text class="data-desc" x="68" y="358" style="font-size:12px;fill:var(--ce-ink);">The inner dimension of np.dot(Z_{ℓ-1}, W_ℓᵀ) must match at every layer.</text>
   <text class="data-desc" x="68" y="378" style="font-size:12px;fill:var(--ce-ink);">Equivalent: weights per neuron in layer ℓ = neurons in layer ℓ-1.</text>
 
   <!-- Footer -->

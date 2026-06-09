@@ -170,7 +170,7 @@ What each call produces:
 
 | Call | Stores |
 |---|---|
-| `loss_activation.backward(...)` | `self.dinputs` = $(\hat{y} - y)/N$, shape `(300, 3)` |
+| `loss_activation.backward(...)` | `self.dinputs` = $(\hat{\mathbf{y}} - \mathbf{y})/N$, shape `(300, 3)` |
 | `dense2.backward(...)` | `self.dweights` `(3, 3)`, `self.dbiases` `(1, 3)`, `self.dinputs` `(300, 3)` |
 | `activation1.backward(...)` | `self.dinputs` (gated copy), shape `(300, 3)` |
 | `dense1.backward(...)` | `self.dweights` `(2, 3)`, `self.dbiases` `(1, 3)`, `self.dinputs` `(300, 2)` |

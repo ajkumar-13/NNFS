@@ -41,11 +41,11 @@ For multi-class classification with softmax outputs, the standard loss is **cate
 
 ## 2. Categorical cross-entropy, formally
 
-For a single sample with $C$ classes, true label $y$ (one-hot vector with a 1 in the correct position), and predicted probabilities $\hat{y}$ (the softmax output):
+For a single sample with $C$ classes, true label $\mathbf{y}$ (one-hot vector with a 1 in the correct position), and predicted probabilities $\hat{\mathbf{y}}$ (the softmax output):
 
 $$L = -\sum_{i=1}^{C} y_i \log(\hat{y}_i).$$
 
-Because $y$ is one-hot, every term in the sum where $y_i = 0$ vanishes. Only the term for the correct class survives:
+Because $\mathbf{y}$ is one-hot, every term in the sum where $y_i = 0$ vanishes. Only the term for the correct class survives:
 
 $$L = -\log(\hat{y}_{\text{correct}}).$$
 
@@ -53,7 +53,7 @@ This is the entire formula. The loss is the negative logarithm of the probabilit
 
 ### 2.1. Where the formula comes from
 
-The shape is not arbitrary. Categorical cross-entropy is the **negative log-likelihood** of the data under the model: if the network's output is interpreted as a probability distribution over classes, then $-\log(\hat{y}_{\text{correct}})$ is the log-likelihood of having observed the correct label, with a sign flip so the optimiser can minimise rather than maximise.
+The shape is not arbitrary. Categorical cross-entropy is the **negative log-likelihood** of the data under the model: if the network's output is interpreted as a probability distribution over classes, then $-\log(\hat{y}_{\text{correct}})$ is the log-likelihood of having observed the correct label, with a sign flip so the optimiser can minimise rather than maximise. Concretely, the likelihood the model assigns to one observed label *is* $\hat{y}_{\text{correct}}$; maximising that probability is the same as minimising $-\log(\hat{y}_{\text{correct}})$, and the log turns a product of per-sample likelihoods over a batch into a sum that is cheaper and more stable to compute.
 
 The pairing with softmax is not a coincidence either. Bridle (1990) showed that softmax + cross-entropy together constitute the maximum-likelihood estimator under a categorical (multinomial) distribution. Goodfellow, Bengio, and Courville (*Deep Learning*, chapter 5) give the full derivation. For this series the practical takeaway is that **softmax on the output layer and cross-entropy as the loss are the default classification pair**, used by essentially every classification network in production.
 
@@ -64,7 +64,7 @@ A second pairing is also worth flagging: the combined softmax + cross-entropy de
 A boundary section, because the function gets misapplied often.
 
 - **It is not for regression.** Cross-entropy expects probabilities and labels, not arbitrary real numbers. Regression uses mean-squared error or related losses, covered in a later post.
-- **It is not for binary classification.** With two classes one uses *binary* cross-entropy, the one-output equivalent. Categorical cross-entropy expects at least one row per class; the binary case has a simpler formula.
+- **It is not the usual choice for binary classification.** With two classes one typically uses *binary* cross-entropy ([Part 34](../34-sigmoid-and-binary-cross-entropy/index.md)), the single-output equivalent with a simpler formula. Categorical cross-entropy still works for two classes (with two softmax outputs), but binary cross-entropy is the more economical pairing.
 - **It does not produce a gradient on its own.** The number it returns is a measurement; the optimiser (Part 22 onward) is what actually updates the weights based on its derivative.
 - **It is not the same as accuracy.** Two networks can have the same accuracy (same top-1 prediction count) but very different losses, because the loss also cares about confidence. §10 returns to this.
 
@@ -88,7 +88,7 @@ Two properties hold for every point on the curve:
 - **Loss is non-negative.** The probability lives in $(0, 1]$, so $\log(p) \le 0$, so $-\log(p) \ge 0$.
 - **Loss is zero only at perfect confidence.** $\log(1) = 0$, so the only way to score zero loss on a sample is to predict the correct class with probability exactly 1.
 
-The slope grows steeply as $p$ approaches zero. A prediction of 0.01 on the correct class is twenty times more costly than a prediction of 0.5. This non-linear penalty is the source of the loss's training signal: a confident-and-wrong prediction generates a much larger gradient than an uncertain prediction, which pulls the weights more strongly toward correcting it.
+The slope grows steeply as $p$ approaches zero. A prediction of 0.01 on the correct class scores $4.605$, about six and a half times the $0.693$ of a 0.5 prediction (read straight off the table above). This non-linear penalty is the source of the loss's training signal: a confident-and-wrong prediction generates a much larger gradient than an uncertain prediction, which pulls the weights more strongly toward correcting it.
 
 ---
 
@@ -176,7 +176,7 @@ The two paths produce identical results. The implementation in §7 checks the ra
 
 ## 6. Clipping: never take `log(0)`
 
-If a softmax output for the correct class is exactly zero (which can happen if the network is extremely confident in the wrong direction), $\log(0) = -\infty$, and the loss becomes infinite. If the output is exactly one, the loss is zero but some gradient-related quantities downstream go to zero in unhelpful ways.
+If a softmax output for the correct class is exactly zero (which can happen if the network is extremely confident in the wrong direction), $\log(0) = -\infty$, and the loss becomes infinite. Clipping the upper end to $1 - 10^{-7}$ is the symmetric counterpart: a prediction of exactly 1 would record exactly zero loss for that sample and, in the combined softmax + cross-entropy backward pass ([Part 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)), exactly zero gradient, removing its training signal. Keeping it just below 1 keeps the clip balanced and every sample slightly informative.
 
 The standard fix is to **clip** predictions into a safe range before taking the log:
 

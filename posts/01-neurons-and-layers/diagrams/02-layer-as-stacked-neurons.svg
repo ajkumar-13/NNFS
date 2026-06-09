@@ -76,10 +76,10 @@
   <text class="panel-sub"  x="106" y="140">4 inputs · 4 weights · 1 bias  =  5 parameters</text>
 
   <g>
-    <circle class="input-node" cx="100" cy="200" r="18"/><text class="input-label" x="100" y="204" text-anchor="middle">X₁</text>
-    <circle class="input-node" cx="100" cy="260" r="18"/><text class="input-label" x="100" y="264" text-anchor="middle">X₂</text>
-    <circle class="input-node" cx="100" cy="320" r="18"/><text class="input-label" x="100" y="324" text-anchor="middle">X₃</text>
-    <circle class="input-node" cx="100" cy="380" r="18"/><text class="input-label" x="100" y="384" text-anchor="middle">X₄</text>
+    <circle class="input-node" cx="100" cy="200" r="18"/><text class="input-label" x="100" y="204" text-anchor="middle">x₁</text>
+    <circle class="input-node" cx="100" cy="260" r="18"/><text class="input-label" x="100" y="264" text-anchor="middle">x₂</text>
+    <circle class="input-node" cx="100" cy="320" r="18"/><text class="input-label" x="100" y="324" text-anchor="middle">x₃</text>
+    <circle class="input-node" cx="100" cy="380" r="18"/><text class="input-label" x="100" y="384" text-anchor="middle">x₄</text>
   </g>
 
   <circle class="n1" cx="280" cy="290" r="38"/>
@@ -103,10 +103,10 @@
   <text class="panel-sub"  x="544" y="140">4 inputs · 12 weights · 3 biases  =  15 parameters</text>
 
   <g>
-    <circle class="input-node" cx="538" cy="200" r="18"/><text class="input-label" x="538" y="204" text-anchor="middle">X₁</text>
-    <circle class="input-node" cx="538" cy="260" r="18"/><text class="input-label" x="538" y="264" text-anchor="middle">X₂</text>
-    <circle class="input-node" cx="538" cy="320" r="18"/><text class="input-label" x="538" y="324" text-anchor="middle">X₃</text>
-    <circle class="input-node" cx="538" cy="380" r="18"/><text class="input-label" x="538" y="384" text-anchor="middle">X₄</text>
+    <circle class="input-node" cx="538" cy="200" r="18"/><text class="input-label" x="538" y="204" text-anchor="middle">x₁</text>
+    <circle class="input-node" cx="538" cy="260" r="18"/><text class="input-label" x="538" y="264" text-anchor="middle">x₂</text>
+    <circle class="input-node" cx="538" cy="320" r="18"/><text class="input-label" x="538" y="324" text-anchor="middle">x₃</text>
+    <circle class="input-node" cx="538" cy="380" r="18"/><text class="input-label" x="538" y="384" text-anchor="middle">x₄</text>
   </g>
 
   <circle class="n1" cx="720" cy="218" r="30"/>

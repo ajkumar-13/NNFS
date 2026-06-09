@@ -52,7 +52,7 @@ The network is the smallest one that can solve a non-linear classification probl
 
 The mathematics, in one line:
 
-$$\hat{y} = \text{softmax}\bigl( \text{ReLU}(X \cdot W_1 + b_1) \cdot W_2 + b_2 \bigr).$$
+$$\hat{\mathbf{y}} = \text{softmax}\bigl( \text{ReLU}(\mathbf{X} \cdot \mathbf{W}_1 + \mathbf{b}_1) \cdot \mathbf{W}_2 + \mathbf{b}_2 \bigr).$$
 
 Every component is something the previous posts already built. This post calls them in order.
 

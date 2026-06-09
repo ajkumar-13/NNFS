@@ -31,7 +31,7 @@ part: "Part V — Backpropagation"
 | Gradient stored on the layer | Meaning | Used by |
 |---|---|---|
 | `self.dweights` | $\partial L / \partial \mathbf{W}$ | the optimiser, to update the weights |
-| `self.dbiases` | $\partial L / \partial \mathbf{B}$ | the optimiser, to update the biases |
+| `self.dbiases` | $\partial L / \partial \mathbf{b}$ | the optimiser, to update the biases |
 | `self.dinputs` | $\partial L / \partial \mathbf{X}$ | the previous layer, as *its* `dvalues` |
 
 The first two are what the optimiser consumes (Part 22 onward). The third is what flows upstream to the next layer in the backward walk. Together, they are the complete contract of a layer in any modern deep-learning framework.
@@ -140,7 +140,7 @@ Every number matches the manual derivations from Parts 13–15. The matrix form 
 
 ReLU's local derivative is $1$ when its input was positive and $0$ otherwise. The backward step is therefore:
 
-$$\frac{\partial L}{\partial Z_k} = \frac{\partial L}{\partial A_k} \cdot \mathbb{1}[Z_k > 0].$$
+$$\frac{\partial L}{\partial z_k} = \frac{\partial L}{\partial a_k} \cdot \mathbb{1}[z_k > 0].$$
 
 In code:
 

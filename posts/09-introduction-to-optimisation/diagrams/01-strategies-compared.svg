@@ -141,7 +141,7 @@
   <rect class="panel-ok" x="640" y="96" width="272" height="312" rx="12"/>
   <rect class="pill-ok"  x="640" y="96" width="6"   height="312" rx="3"/>
   <text class="head-ok"   x="660" y="124">Gradient descent</text>
-  <text class="panel-sub" x="660" y="142">w := w − η · ∇L</text>
+  <text class="panel-sub" x="660" y="142">w := w − α · ∇L</text>
 
   <rect class="chart" x="660" y="160" width="232" height="160" rx="8"/>
   <g class="grid">
@@ -176,8 +176,8 @@
   <!-- ====================== Rule band ====================== -->
   <rect class="rule-band" x="48" y="432" width="864" height="68" rx="12"/>
   <text class="rule-head" x="68" y="458">The gradient-descent update rule:</text>
-  <text class="rule-body" x="68" y="484">w_new = w_old − η · ∇L</text>
-  <text class="rule-note" x="280" y="484">η is the learning rate (step size). The minus sign is what makes this a descent algorithm.</text>
+  <text class="rule-body" x="68" y="484">w_new = w_old − α · ∇L</text>
+  <text class="rule-note" x="280" y="484">α is the learning rate (step size). The minus sign is what makes this a descent algorithm.</text>
 
   <!-- Footer -->
   <text class="footer" x="48"  y="528">Cauchy described gradient descent in 1847; Rumelhart, Hinton &amp; Williams (1986) paired it with backpropagation for neural networks.</text>

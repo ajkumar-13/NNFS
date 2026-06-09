@@ -10,7 +10,7 @@ part: "Part VI — Optimisers"
 
 # Part 23 · Learning-rate decay
 
-> **TL;DR.** Vanilla SGD with a constant learning rate forces a single number to do two jobs: explore the loss landscape when the network is far from a minimum, and converge gently once close. Those goals pull in opposite directions, which is why Part 22 plateaued at 67% accuracy. The fix is a **decay schedule**: keep $\alpha$ large for the first few iterations, then shrink it smoothly. Adding a four-line decay term to `Optimizer_SGD` lifts spiral accuracy from 57% to 72% on the harder configuration of the loop. It does not solve every problem (local minima still trap the optimiser once $\alpha$ shrinks), but it is the simplest and most cost-free improvement in the optimiser series.
+> **TL;DR.** Vanilla SGD with a constant learning rate forces a single number to do two jobs: explore the loss landscape when the network is far from a minimum, and converge gently once close. Those goals pull in opposite directions, which is why Part 22's spiral classifier stalled in the mid-60s. The fix is a **decay schedule**: keep $\alpha$ large for the first few iterations, then shrink it smoothly. Adding a four-line decay term to `Optimizer_SGD` does not move the final accuracy much on the spiral (it stays around 65%), but it cuts the final loss from 0.87 to 0.76 and produces a much smoother, less oscillatory loss curve. It does not make training converge any faster (for that, momentum in Part 24 is the next step), but it is the simplest and most cost-free stabiliser in the optimiser series.
 >
 > **Reading time:** ~11 minutes.
 >
@@ -26,7 +26,7 @@ part: "Part VI — Optimisers"
 
 ## 1. The problem decay is trying to fix
 
-Part 22 ended on a flat note. With `learning_rate = 1.0` held constant for 10 000 epochs, the spiral classifier climbed from 33% (chance) to about 67% and then refused to improve. Two failure modes were sitting under that single number:
+Part 22 ended on a flat note. With `learning_rate = 1.0` held constant for 10 000 epochs, the spiral classifier climbed from 33% (chance) to roughly 65% and then refused to improve. Two failure modes were sitting under that single number:
 
 - Early in training, the network is far from any minimum. A small learning rate would crawl; the loop needs a *large* step size to make any visible progress in the first few hundred epochs.
 - Late in training, the optimiser is close to a minimum (often a poor one) and the loss surface is shallow. Now a large step *overshoots*: the gradient flips sign and the next step undoes the last one.
@@ -179,34 +179,34 @@ The forward and backward passes are identical to Part 22. The only structural ch
 
 ## 6. What happens when this is run
 
-With `learning_rate = 1.0`, `decay = 1e-3`, and 10 000 epochs on the spiral dataset, the trajectory is qualitatively different from Part 22.
+With `learning_rate = 1.0`, `decay = 1e-3`, and 10 000 epochs on the spiral dataset, the trajectory is qualitatively different from Part 22. (These figures are produced by [`verify/optimizer_results.py`](../../verify/optimizer_results.py); run it to reproduce them.)
 
 | Configuration | Final loss | Final accuracy | $\alpha$ at end |
 |---|:---:|:---:|:---:|
-| Part 22 baseline (fixed $\alpha = 1.0$) | 0.768 | 57.3% | 1.000 |
-| **Part 23 with decay $= 10^{-3}$** | **0.653** | **71.7%** | **~0.091** |
-| Decay $= 10^{-2}$ (too aggressive) | 0.79 | 55% | 0.010 |
-| Decay $= 10^{-4}$ (too gentle) | 0.74 | 60% | 0.500 |
+| Part 22 baseline (fixed $\alpha = 1.0$) | 0.87 | 64.7% | 1.000 |
+| **Part 23 with decay $= 10^{-3}$** | **0.76** | **64.7%** | **~0.091** |
+| Decay $= 10^{-2}$ (too aggressive) | 1.07 | 39.7% | 0.010 |
+| Decay $= 10^{-4}$ (too gentle) | 0.97 | 59.0% | 0.500 |
 
 Three observations.
 
-**The loss curve is smoother.** Where Part 22 showed oscillations around the plateau, the decay run drops cleanly and continues to inch lower. No bouncing.
+**The loss is lower and the curve is smoother.** Where Part 22's loss bounced around 0.87, the decay run settles near 0.76 with far less oscillation; the late-training steps stop overshooting.
 
-**The accuracy lift is roughly +14 percentage points.** That is a large improvement for a four-line change. It comes from the second half of training: by epoch 5000, $\alpha$ has shrunk to about 0.17, small enough that the optimiser can settle into a basin without overshooting.
+**The final accuracy barely moves.** It stays around 65%. Decay lowers the loss and stabilises training, but it does not make training converge faster: shrinking $\alpha$ over time makes the late steps *smaller*, so within the 10 000-epoch budget the decayed run reaches the same ~65% as fixed SGD (see §7). Reaching higher accuracy in the same budget needs bigger, better-aimed steps, which is what momentum (Part 24) adds, reaching 95.7% on the same network. Decay's contribution is a cleaner, lower, more reliable descent, not a higher peak.
 
-**Too-aggressive decay is worse than no decay.** With $d = 10^{-2}$, $\alpha$ falls to 0.5 by epoch 100 and below 0.1 by epoch 1000. The network barely gets to explore before the rate is too small to move. The result is *worse* than the constant-rate baseline.
+**Too-aggressive decay is worse than no decay.** With $d = 10^{-2}$, $\alpha$ falls to 0.5 by epoch 100 and below 0.1 by epoch 1000. The network barely gets to explore before the rate is too small to move, and accuracy collapses to 39.7%, far *worse* than the constant-rate baseline.
 
 ---
 
 ## 7. What decay solves, and what it does not
 
-Decay solves the **oscillation** problem cleanly. Once $\alpha$ is small enough, the optimiser stops bouncing across narrow valleys and can settle into one. That accounts for the smoother loss curve and most of the accuracy gain.
+Decay solves the **oscillation** problem cleanly. Once $\alpha$ is small enough, the optimiser stops bouncing across narrow valleys and settles, which accounts for the smoother, lower loss curve.
 
-It partly solves the **insufficient-exploration** problem. Starting with a large $\alpha$ gives the optimiser a chance to find a better basin than it would have starting small.
+It partly solves the **insufficient-exploration** problem. Starting with a large $\alpha$ gives the optimiser a chance to reach a better region than it would have starting small.
 
-It does **not** solve the **local-minimum** problem. Once the rate has decayed and the optimiser has settled in a basin, there is no mechanism to leave. If that basin is a poor local minimum, decay leaves the network stuck there forever; the only difference is that the optimiser stops moving instead of oscillating. The 71.7% ceiling in §6 is real: every additional epoch of training shaves only a tiny fraction off the loss.
+It does **not** make training converge **faster**. Shrinking $\alpha$ over time means the late steps get smaller, so the decayed run reaches the same ~65% accuracy as fixed SGD within the 10 000-epoch budget; it simply arrives with a lower, smoother loss (0.87 → 0.76). Pushing the accuracy higher in the same budget needs bigger, better-aimed steps, not smaller ones.
 
-The fix for *that* is a fundamentally different mechanism. Momentum (Part 24) lets the optimiser carry inertia through shallow plateaus and over small barriers. Decay and momentum are complementary, not competing, which is why later optimisers (RMSProp, Adam) use both at once.
+The fix for *that* is a different mechanism. Momentum (Part 24) carries inertia through the shallow regions where plain SGD crawls, reaching 95.7% in the same budget. Decay and momentum are complementary, not competing, which is why later optimisers (RMSProp, Adam) use both at once.
 
 ---
 
@@ -219,8 +219,8 @@ The split of update into `pre_update_params → update_params → post_update_pa
 | Vanilla SGD (Part 22) | nothing | $\theta \mathrel{-}= \alpha \cdot g$ | nothing |
 | SGD + decay (Part 23) | recompute $\alpha$ from $t$ | $\theta \mathrel{-}= \alpha \cdot g$ | $t \mathrel{+}{=} 1$ |
 | Momentum (Part 24) | recompute $\alpha$ | update velocity, then $\theta \mathrel{-}= \alpha \cdot v$ | $t \mathrel{+}{=} 1$ |
-| AdaGrad (Part 25) | recompute $\alpha$ | accumulate $g^2$, then $\theta \mathrel{-}= \alpha \cdot g / \sqrt{G+\varepsilon}$ | $t \mathrel{+}{=} 1$ |
-| RMSProp (Part 26) | recompute $\alpha$ | EMA of $g^2$, then $\theta \mathrel{-}= \alpha \cdot g / \sqrt{E+\varepsilon}$ | $t \mathrel{+}{=} 1$ |
+| AdaGrad (Part 25) | recompute $\alpha$ | accumulate $g^2$, then $\theta \mathrel{-}= \alpha \cdot g / \sqrt{G+\epsilon}$ | $t \mathrel{+}{=} 1$ |
+| RMSProp (Part 26) | recompute $\alpha$ | EMA of $g^2$, then $\theta \mathrel{-}= \alpha \cdot g / \sqrt{E+\epsilon}$ | $t \mathrel{+}{=} 1$ |
 | Adam (Part 27) | recompute $\alpha$ | EMA of $g$ and $g^2$, bias-correct, then update | $t \mathrel{+}{=} 1$ |
 
 Every optimiser in the series uses the same three-hook contract. Code that uses `optimizer.pre_update_params(); for layer: optimizer.update_params(layer); optimizer.post_update_params()` works unchanged across all six. Adding the contract here, while it is still trivial, means none of it has to be retrofitted later.
@@ -247,8 +247,8 @@ This pattern is also what every production framework (PyTorch, TensorFlow, JAX/O
 | Practical $d$ | $\sim 10^{-3}$ for $\alpha_0 = 1.0$ over $10^4$ epochs |
 | Three optimiser methods | `pre_update_params`, `update_params`, `post_update_params` |
 | Counter location | `post_update_params` (once per step, not per layer) |
-| Result on spiral | 57.3% (fixed) → 71.7% (decay), with smoother loss |
-| What decay does not fix | Local minima; for that, see Part 24 (momentum) |
+| Result on spiral | Loss 0.87 → 0.76 and a smoother curve; final accuracy ≈ unchanged (~65%) |
+| What decay does not fix | Slow convergence; for faster training, see Part 24 (momentum) |
 
 ---
 

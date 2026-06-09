@@ -1,13 +1,13 @@
 # Project 01 · MNIST from scratch
 
-> **TL;DR.** Train the from-scratch classes built across [posts 1–31](../../posts/) on real handwritten digits. A two-hidden-layer network (784 → 128 → 128 → 10) with Adam, L2 weight decay, and dropout reaches roughly **97% test accuracy** on the standard MNIST split using only NumPy. No PyTorch, no TensorFlow, no SciPy beyond `np.random`. The project is split into four runnable files (`data.py`, `nn.py`, `train.py`, `evaluate.py`) plus this writeup, so the training loop, the network definition, and the evaluation are each in their own place rather than wedged into one notebook.
+> **TL;DR.** Train the from-scratch classes built across [the series](../../posts/) on real handwritten digits. A two-hidden-layer network (784 → 128 → 128 → 10) with Adam, L2 weight decay, and dropout reaches roughly **97% test accuracy** on the standard MNIST split using only NumPy. No PyTorch, no TensorFlow, no SciPy beyond `np.random`. The project is split into four runnable files (`data.py`, `nn.py`, `train.py`, `evaluate.py`) plus this writeup, so the training loop, the network definition, and the evaluation are each in their own place rather than wedged into one notebook.
 
 ---
 
 ## What this project demonstrates
 
-- The 31-lecture stack composes into a single working model: Dense layers + ReLU + Softmax + cross-entropy + Adam + L2 + Dropout, all imported from `nn.py`.
-- Mini-batch training is the only piece the lectures skipped: a 64-line outer loop in `train.py` shuffles, slices, and iterates the dataset in batches of 128.
+- The from-scratch stack composes into a single working model: Dense layers + ReLU + Softmax + cross-entropy + Adam + L2 + Dropout, all imported from `nn.py`.
+- Mini-batch training (introduced in [post 32](../../posts/32-mini-batching/)) is applied here to a real dataset: a compact outer loop in `train.py` shuffles, slices, and iterates the dataset in batches of 128.
 - The train/test discipline from [post 28](../../posts/28-generalization-and-testing/) and the train-vs-test dropout switch from [post 31](../../posts/31-dropout/) carry over directly to a real dataset.
 
 ## File layout
@@ -16,7 +16,7 @@
 01-mnist-from-scratch/
 ├── README.md          ← this file
 ├── requirements.txt   ← numpy + (optional) scikit-learn
-├── nn.py              ← every class lifted from posts 1–31
+├── nn.py              ← every class lifted from the series (posts 1–32)
 ├── data.py            ← MNIST loading (sklearn or manual download)
 ├── train.py           ← training loop + checkpoint
 └── evaluate.py        ← test loss, accuracy, confusion matrix
@@ -139,7 +139,7 @@ Per-class accuracy almost always reveals that 8 and 5 are the hardest digits (th
 
 ## 6. What this project does *not* do
 
-Things deliberately out of scope so the project stays a faithful demonstration of what posts 1–31 cover, rather than a from-scratch reproduction of all of deep learning:
+Things deliberately out of scope so the project stays a faithful demonstration of what the series covers, rather than a from-scratch reproduction of all of deep learning:
 
 - **No convolutional layers.** Convolutions are not in the series; using them here would obscure which improvement comes from the model and which from the architecture family.
 - **No batch normalisation.** Not in the series. Adam + dropout + L2 is enough to hit 97% on a small MLP.
@@ -158,6 +158,7 @@ Things deliberately out of scope so the project stays a faithful demonstration o
 | [Part 28 — Generalisation and testing](../../posts/28-generalization-and-testing/) | Train/test split discipline |
 | [Part 30 — L1 / L2 regularisation](../../posts/30-l1-and-l2-regularisation/) | `weight_regularizer_l2`, `regularization_loss` |
 | [Part 31 — Dropout](../../posts/31-dropout/) | `Layer_Dropout`, train-vs-test switch |
+| [Part 32 — Mini-batching](../../posts/32-mini-batching/) | The epoch × batch training loop in `train.py` |
 
 ## 8. Common pitfalls
 
@@ -170,4 +171,4 @@ Things deliberately out of scope so the project stays a faithful demonstration o
 
 ---
 
-> *Built on the foundation of posts 1–31. Source: [INDEX.md](../../INDEX.md).*
+> *Built on the foundation of the series. Source: [INDEX.md](../../INDEX.md).*

@@ -10,7 +10,7 @@
 2. **Check off each row** as you complete it: blog → quiz → exercise.
 3. **Don't skip the exercises** — reading alone won't build the intuition.
 4. **Use the prerequisite check** at the start of each phase before diving in.
-5. **Revisit earlier phases** if a later concept feels unclear — the [Concept Dependency Map](concept_dependency_map.md) shows exactly what to review.
+5. **Revisit earlier phases** if a later concept feels unclear — the [Concept dependency map](#concept-dependency-map) below shows exactly what to review.
 
 ---
 
@@ -341,14 +341,18 @@ Find the part you're stuck on, then review what's listed.
 | [Part 27](posts/27-adam-optimiser/index.md) — Adam | Parts 24 (momentum) + 26 (RMSProp) |
 | [Part 30](posts/30-l1-and-l2-regularisation/index.md) — L1/L2 | Part 16 (backward method), Part 28 (overfitting) |
 | [Part 31](posts/31-dropout/index.md) — Dropout | Part 28 (overfitting), Part 5 (broadcasting) |
+| [Part 32](posts/32-mini-batching/index.md) — Mini-batching | Part 22 (SGD), Part 28 (train/test split) |
+| [Part 33](posts/33-weight-initialisation/index.md) — Weight initialisation | Parts 5–6 (variance, activations), Part 4 (init) |
+| [Part 34](posts/34-sigmoid-and-binary-cross-entropy/index.md) — Sigmoid + BCE | Part 6 (activations), Part 19 (softmax + CCE shortcut) |
+| [Part 35](posts/35-whats-next/index.md) — What's next | the whole series |
 
 ### Three pillars
 
-The 31 parts teach three pillars that converge into a working network:
+The 35 parts teach three pillars that converge into a working network:
 
 ```
-   FORWARD PASS          BACKWARD PASS           TRAINING
-   (Parts 1–8)           (Parts 10–21)          (Parts 22–31)
+   FORWARD PASS          BACKWARD PASS         TRAINING & EXTENSIONS
+   (Parts 1–8)           (Parts 10–21)          (Parts 22–35)
         │                      │                      │
    Build the              Understand how         Make weights
    computation            to compute              better over

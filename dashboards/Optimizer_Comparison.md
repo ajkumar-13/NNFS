@@ -41,57 +41,62 @@ X, y = spiral_data(samples=100, classes=3)
 | SGD + Momentum | 1.0 | 1e-3 | 0.9 | — | — |
 | AdaGrad | 1.0 | 1e-4 | — | — | 1e-7 |
 | RMSProp | 0.02 | 1e-5 | — | 0.999 | 1e-7 |
-| Adam | 0.02 | 5e-7 | 0.9 | 0.999 | 1e-7 |
+| Adam | 0.02 | 1e-5 | 0.9 | 0.999 | 1e-7 |
+
+*Final numbers below are produced by [`verify/optimizer_results.py`](../verify/optimizer_results.py) (see [verify/RESULTS.md](../verify/RESULTS.md)); run it to reproduce them.*
 
 ---
 
-## Expected Results Summary
+## Verified Results Summary
+
+| Optimizer | Final accuracy | Final loss | Rank |
+|---|:---:|:---:|:---:|
+| **Adam** | **96.3%** | **0.08** | 1 |
+| SGD + Momentum | 95.7% | 0.12 | 2 |
+| RMSProp | 90.0% | 0.24 | 3 |
+| AdaGrad | 84.0% | 0.38 | 4 |
+| SGD + Decay | 64.7% | 0.76 | 5 |
+| SGD | 64.7% | 0.87 | 6 |
+
+Two clear tiers. The **fast-converging** optimisers (Adam, momentum, RMSProp, AdaGrad) reach 84–96% within the 10,000-epoch budget, while **plain SGD and decay** sit at only ~65% — not stuck, just slow: SGD climbs to ~91% if left to run for 50,000 epochs.
 
 ### Accuracy Over Training
 
 ```
 Accuracy (%)
 100 ┤
- 95 ┤                          ╭──── Adam ≈ 97%
- 90 ┤                     ╭────╯──── RMSProp ≈ 95%
- 85 ┤               ╭─────╯───────── SGD+Mom ≈ 93%
- 80 ┤          ╭────╯──────────────── SGD+Decay ≈ 88%
- 75 ┤     ╭────╯
- 70 ┤╭────╯
- 65 ┤│
- 60 ┤│
- 55 ┤│──────────────────────────────── AdaGrad ≈ 86% (stalls)
- 50 ┤│
- 45 ┤│
- 40 ┤│
- 33 ┤├──── random baseline
+ 96 ┤        ╭───────────────────────────── Adam / SGD+Mom ≈ 96%
+ 90 ┤      ╭─╯───────────────────────────── RMSProp ≈ 90%
+ 84 ┤    ╭─╯─────────────────────────────── AdaGrad ≈ 84%
+ 70 ┤   ╱                      ╭──────────── SGD+Decay ≈ 65%
+ 65 ┤  ╱             ╭─────────╯──────────── SGD ≈ 65%
+ 55 ┤ ╱       ╭──────╯
+ 45 ┤╱ ╭──────╯
+ 33 ┤├─╯ random baseline
     └┼────┼────┼────┼────┼────┼────┼────┼────┼────┼─
      0   1k   2k   3k   4k   5k   6k   7k   8k  10k
                           Epoch
 ```
+*The four adaptive/velocity optimisers converge within a few thousand epochs; plain SGD and decay grind slowly upward and are still near 65% at 10k.*
 
 ### Loss Over Training
 
 ```
 Loss
-1.10 ┤├──── random baseline ≈ −ln(1/3) ≈ 1.099
-1.00 ┤╲
-0.90 ┤ ╲
-0.80 ┤  ╲
-0.70 ┤   ╲
-0.60 ┤    ╲
-0.50 ┤     ╲
-0.40 ┤      ╲───── SGD (plateau ~0.4)
-0.30 ┤       ╲──── SGD+Decay
-0.20 ┤        ╲─── SGD+Momentum
-0.15 ┤         ╲── AdaGrad (stalls ~0.25)
-0.10 ┤          ╲─ RMSProp
-0.05 ┤           ╲ Adam ≈ 0.05
+1.10 ┤├ random baseline ≈ −ln(1/3) ≈ 1.099
+0.90 ┤╲▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ SGD ≈ 0.87 (slow)
+0.76 ┤╲╲▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ SGD+Decay ≈ 0.76 (slow)
+0.50 ┤ ╲╲
+0.38 ┤  ╲╲▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ AdaGrad ≈ 0.38
+0.24 ┤   ╲▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ RMSProp ≈ 0.24
+0.12 ┤    ╲▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ SGD+Momentum ≈ 0.12
+0.08 ┤     ╲▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁ Adam ≈ 0.08
 0.00 ┤
      └┼────┼────┼────┼────┼────┼────┼────┼────┼────┼─
       0   1k   2k   3k   4k   5k   6k   7k   8k  10k
                           Epoch
 ```
+*SGD and decay barely move off the random baseline within 10k epochs; the adaptive/velocity optimisers plunge to 0.08–0.38.*
 
 ---
 
@@ -101,33 +106,33 @@ Loss
 - **Pros:** Simple, no extra memory, easy to debug
 - **Cons:** Sensitive to learning rate; oscillates in narrow valleys
 - **When to use:** First baseline; educational clarity
-- **Typical final accuracy:** ~85-88% at 10K epochs
+- **Typical final accuracy:** ~65% at 10K epochs (slow to converge, not stuck — reaches ~91% by 50K epochs)
 
 ### 2. SGD + Learning Rate Decay
 - **Improvement over SGD:** Allows a high initial LR for fast early progress, then reduces oscillation
 - **Sweet spot:** `decay=1e-3` halves the LR around epoch 1,000
-- **Typical final accuracy:** ~88-90%
+- **Typical final accuracy:** ~65% (decay mainly lowers and smooths the loss, 0.87 → 0.76; it does not raise accuracy much in this budget)
 
 ### 3. SGD + Momentum
-- **Improvement over Decay:** Velocity accumulation smooths the path and helps escape shallow local minima
+- **Improvement over Decay:** Velocity accumulation smooths the path and carries the optimiser through the shallow regions where plain SGD crawls — the first big speed-up in the series (~65% → ~96%)
 - **$\beta = 0.9$** is nearly universal — rarely needs tuning
-- **Typical final accuracy:** ~91-94%
+- **Typical final accuracy:** ~95.7%
 
 ### 4. AdaGrad
 - **Unique strength:** Per-parameter rates — frequent features get smaller updates, rare features get larger
-- **Fatal flaw:** Cache monotonically grows → effective LR → 0 → learning stops
-- **Typical behavior:** Fast early progress, then stalls around epoch 5-8K
-- **Typical final accuracy:** ~85-88% (stalls before fully converging)
+- **Fatal flaw:** Cache monotonically grows → effective LR → 0 → learning slows
+- **Typical behavior:** Fast early progress; the dying-rate problem only becomes severe over much longer runs (past ~50K iterations), not within the 10K-epoch spiral run
+- **Typical final accuracy:** ~84%
 
 ### 5. RMSProp
 - **Fix over AdaGrad:** Exponential moving average prevents cache from growing without bound
-- **Typical final accuracy:** ~93-96%
+- **Typical final accuracy:** ~90%
 - **$\rho = 0.999$** provides a good balance of responsiveness and stability
 
 ### 6. Adam
 - **Best of all worlds:** Combines momentum (direction) + RMSProp (magnitude) + bias correction (cold start)
 - **Most forgiving:** Works well across a wide range of learning rates
-- **Typical final accuracy:** ~95-97%
+- **Typical final accuracy:** ~96.3%
 - **Go-to choice** for most practitioners when starting a new problem
 
 ---
@@ -136,7 +141,7 @@ Loss
 
 | Criterion | Winner | Runner-up |
 |---|---|---|
-| **Final accuracy** | Adam | RMSProp |
+| **Final accuracy** | Adam (~96%) | SGD+Momentum (~96%) |
 | **Convergence speed** | Adam | SGD+Momentum |
 | **Simplicity** | SGD | SGD+Decay |
 | **Robustness to LR** | Adam | RMSProp |
@@ -173,7 +178,7 @@ optimizers = {
     "SGD+Momentum": Optimizer_SGD(learning_rate=1.0, decay=1e-3, momentum=0.9),
     "AdaGrad":      Optimizer_Adagrad(learning_rate=1.0, decay=1e-4),
     "RMSProp":      Optimizer_RMSprop(learning_rate=0.02, decay=1e-5, rho=0.999),
-    "Adam":         Optimizer_Adam(learning_rate=0.02, decay=5e-7),
+    "Adam":         Optimizer_Adam(learning_rate=0.02, decay=1e-5),
 }
 
 results = {}

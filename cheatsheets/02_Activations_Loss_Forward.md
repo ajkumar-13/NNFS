@@ -32,10 +32,10 @@ class Activation_ReLU:
 
 | Property | Value |
 |---|---|
-| Formula | $S_i = \dfrac{e^{z_i}}{\sum_j e^{z_j}}$ |
+| Formula | $\hat{y}_i = \dfrac{e^{Z_i}}{\sum_j e^{Z_j}}$ |
 | Output range | $(0, 1)$ per element; sums to 1 |
 | Use case | Final layer for multi-class classification |
-| Trick | Subtract $\max(z)$ before exponentiation for numerical stability |
+| Trick | Subtract $\max(\mathbf{Z})$ before exponentiation for numerical stability |
 
 ```python
 class Activation_Softmax:

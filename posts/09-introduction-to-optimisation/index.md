@@ -142,9 +142,9 @@ Two facts about this vector matter.
 
 This is the foundation of **gradient descent**. At every iteration the update rule is:
 
-$$w_{\text{new}} = w_{\text{old}} - \eta \cdot \nabla L,$$
+$$w_{\text{new}} = w_{\text{old}} - \alpha \cdot \nabla L,$$
 
-where $\eta$ is the **learning rate**, a small positive scalar that controls how big the step is. The minus sign is what makes the algorithm a *descent* algorithm.
+where $\alpha$ is the **learning rate**, a small positive scalar that controls how big the step is. The minus sign is what makes the algorithm a *descent* algorithm.
 
 The idea is older than neural networks. Cauchy described it in 1847 as the method for minimising a function of several variables (Cauchy, 1847). It became the engine of neural-network training when Rumelhart, Hinton, and Williams paired it with **backpropagation** (Rumelhart, Hinton, & Williams, 1986), an efficient algorithm for computing $\nabla L$ in a deep network. Parts 12 through 21 derive backpropagation from scratch; the present post only motivates it.
 
@@ -212,8 +212,8 @@ The metaphor breaks down in high dimensions (a 21-dimensional hill is hard to vi
 | Random selection | Fails: parameter space is too large for blind sampling |
 | Random perturbation | Works on easy data, fails on hard data; direction-blind |
 | Gradient | The vector of partial derivatives; its negative is the steepest-descent direction |
-| Update rule | $w_{\text{new}} = w_{\text{old}} - \eta \cdot \nabla L$ |
-| Learning rate $\eta$ | Step size; too small means crawl, too large means diverge |
+| Update rule | $w_{\text{new}} = w_{\text{old}} - \alpha \cdot \nabla L$ |
+| Learning rate $\alpha$ | Step size; too small means crawl, too large means diverge |
 | What's coming | Calculus (10–11), backpropagation (12–21), optimisers (22–27) |
 
 ---

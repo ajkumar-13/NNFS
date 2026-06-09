@@ -66,7 +66,7 @@ The implication for this series is small and useful. **The forward pass of a 202
 
 A neuron receives a vector of inputs, multiplies each input by a corresponding weight, sums the results, and adds a single bias. In symbols:
 
-$$\text{output} = \sum_{i=1}^{n} W_i X_i + b.$$
+$$\text{output} = \sum_{i=1}^{n} w_i x_i + b.$$
 
 There is no activation function yet; activations are the subject of Part 06. For now the neuron stops at the weighted sum plus bias.
 
@@ -74,8 +74,8 @@ Each symbol carries a specific role. Reading the table left-to-right gives the e
 
 | Component | Symbol | Shape (single neuron) | Role | Lifetime | What fails when it is wrong |
 |---|---|---|---|---|---|
-| Inputs | $X_i$ | $(n,)$ | The data fed in | changes every forward pass | bad inputs → bad outputs (garbage in, garbage out) |
-| Weights | $W_i$ | $(n,)$ | Importance of each input | learned during training, frozen at inference | wrong weights → wrong prediction |
+| Inputs | $x_i$ | $(n,)$ | The data fed in | changes every forward pass | bad inputs → bad outputs (garbage in, garbage out) |
+| Weights | $w_i$ | $(n,)$ | Importance of each input | learned during training, frozen at inference | wrong weights → wrong prediction |
 | Bias | $b$ | scalar | A constant offset, one per neuron | learned during training, frozen at inference | missing bias → the neuron cannot fit data not centred on zero |
 | Output | $\hat{y}$ | scalar | The weighted sum plus the bias | recomputed every forward pass | downstream layers receive the wrong signal |
 
@@ -118,9 +118,9 @@ The arithmetic, broken out term by term:
 
 | Step | Calculation | Value |
 |---|---|---|
-| $X_1 W_1$ | $1 \times 0.2$ | $0.2$ |
-| $X_2 W_2$ | $2 \times 0.8$ | $1.6$ |
-| $X_3 W_3$ | $3 \times (-0.5)$ | $-1.5$ |
+| $x_1 w_1$ | $1 \times 0.2$ | $0.2$ |
+| $x_2 w_2$ | $2 \times 0.8$ | $1.6$ |
+| $x_3 w_3$ | $3 \times (-0.5)$ | $-1.5$ |
 | Sum | $0.2 + 1.6 - 1.5$ | $0.3$ |
 | Plus bias | $0.3 + 2$ | $2.3$ |
 
@@ -154,10 +154,10 @@ print(output)
 
 | Step | Calculation | Value |
 |---|---|---|
-| $X_1 W_1$ | $1.0 \times 0.2$ | $0.2$ |
-| $X_2 W_2$ | $2.0 \times 0.8$ | $1.6$ |
-| $X_3 W_3$ | $3.0 \times (-0.5)$ | $-1.5$ |
-| $X_4 W_4$ | $2.5 \times 1.0$ | $2.5$ |
+| $x_1 w_1$ | $1.0 \times 0.2$ | $0.2$ |
+| $x_2 w_2$ | $2.0 \times 0.8$ | $1.6$ |
+| $x_3 w_3$ | $3.0 \times (-0.5)$ | $-1.5$ |
+| $x_4 w_4$ | $2.5 \times 1.0$ | $2.5$ |
 | Sum | $0.2 + 1.6 - 1.5 + 2.5$ | $2.8$ |
 | Plus bias | $2.8 + 2.0$ | $4.8$ |
 
@@ -182,17 +182,17 @@ For a layer of three neurons fed by four inputs:
 
 Per-neuron arithmetic:
 
-$$y_1 = w_{11} X_1 + w_{12} X_2 + w_{13} X_3 + w_{14} X_4 + b_1$$
+$$y_1 = w_{11} x_1 + w_{12} x_2 + w_{13} x_3 + w_{14} x_4 + b_1$$
 
-$$y_2 = w_{21} X_1 + w_{22} X_2 + w_{23} X_3 + w_{24} X_4 + b_2$$
+$$y_2 = w_{21} x_1 + w_{22} x_2 + w_{23} x_3 + w_{24} x_4 + b_2$$
 
-$$y_3 = w_{31} X_1 + w_{32} X_2 + w_{33} X_3 + w_{34} X_4 + b_3$$
+$$y_3 = w_{31} x_1 + w_{32} x_2 + w_{33} x_3 + w_{34} x_4 + b_3$$
 
 The same three lines, written compactly:
 
-$$\vec{y} = W \vec{x} + \vec{b}.$$
+$$\mathbf{y} = \mathbf{W} \mathbf{x} + \mathbf{b}.$$
 
-The matrix $W$ has shape $(m, n)$ where $m$ is the number of neurons and $n$ the number of inputs; $\vec{x}$ has shape $(n,)$; $\vec{b}$ has shape $(m,)$; and the output $\vec{y}$ has shape $(m,)$. The shape diary in §10 tracks all of this through a batch.
+The matrix $\mathbf{W}$ has shape $(m, n)$ where $m$ is the number of neurons and $n$ the number of inputs; $\mathbf{x}$ has shape $(n,)$; $\mathbf{b}$ has shape $(m,)$; and the output $\mathbf{y}$ has shape $(m,)$. The shape diary in §10 tracks all of this through a batch.
 
 ---
 
@@ -290,7 +290,7 @@ Python loops execute one bytecode instruction per iteration. NumPy hands the sam
 
 The relevant operation is the **dot product**. The dot product of two vectors of equal length is the sum of their element-wise products, which is precisely the weighted sum a neuron computes:
 
-$$\vec{w} \cdot \vec{x} = w_1 x_1 + w_2 x_2 + \dots + w_n x_n.$$
+$$\mathbf{w} \cdot \mathbf{x} = w_1 x_1 + w_2 x_2 + \dots + w_n x_n.$$
 
 A single neuron, in NumPy:
 
@@ -346,7 +346,7 @@ inputs = [[1.0, 2.0, 3.0, 2.5],     # Sample 1
 
 With `inputs` of shape $(3, 4)$ and `weights` of shape $(3, 4)$, the inner dimensions do not match for matrix multiplication. Transposing the weights to $(4, 3)$ realigns them:
 
-$$\text{outputs} = \text{inputs} \cdot W^{\top} + \text{biases}.$$
+$$\text{outputs} = \text{inputs} \cdot \mathbf{W}^{\top} + \text{biases}.$$
 
 ![A shape diary: the same operation at three sizes, with every intermediate array's shape labelled.](diagrams/04-shape-diary.svg)
 *Tracking shapes is the cheapest debugging tool in deep learning. Print them after every operation; surprises here are 90% of "shape mismatch" errors.*
@@ -396,7 +396,7 @@ Each row is the layer's output for one input sample; each column belongs to one 
 
 Every neuron in every feed-forward network computes:
 
-$$\text{output} = \sum_{i=1}^{n} W_i X_i + b.$$
+$$\text{output} = \sum_{i=1}^{n} w_i x_i + b.$$
 
 The next twenty-six posts add only three things to this core:
 
@@ -404,7 +404,7 @@ The next twenty-six posts add only three things to this core:
 |---|---|---|
 | Activation functions (ReLU, Softmax) | Part 06 | Without them, stacking layers collapses to a single linear layer. |
 | Loss functions (cross-entropy) | Part 08 | A way to score the predicted outputs against the truth. |
-| Backpropagation + an optimiser | Parts 09–27 | A way to adjust $W$ and $b$ so the loss goes down. |
+| Backpropagation + an optimiser | Parts 09–27 | A way to adjust $\mathbf{W}$ and $\mathbf{b}$ so the loss goes down. |
 
 Once each is in place, the same forward pass that produced `[4.8, 1.21, 2.385]` becomes the inner loop of a network that can classify spirals, recognise digits, or sort sentiment.
 

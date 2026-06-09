@@ -10,7 +10,7 @@
 |---|---|---|---|---|
 | **SGD** | $w \leftarrow w - \alpha \nabla L$ | $\alpha$ | Simple, interpretable | Slow, oscillates in ravines |
 | **SGD + Decay** | $\alpha_t = \frac{\alpha_0}{1 + d \cdot t}$ | $\alpha_0$, $d$ | Fine-tunes late training | Need to tune decay rate |
-| **SGD + Momentum** | $v \leftarrow \beta v + (1-\beta)\nabla L$; $w \leftarrow w - \alpha v$ | $\alpha$, $\beta$ | Smooths oscillations, escapes plateaus | Extra memory (velocity) |
+| **SGD + Momentum** | $v \leftarrow \beta v - \alpha \nabla L$; $w \leftarrow w + v$ | $\alpha$, $\beta$ | Smooths oscillations, powers through shallow regions | Extra memory (velocity) |
 | **AdaGrad** | $G \leftarrow G + (\nabla L)^2$; $w \leftarrow w - \frac{\alpha}{\sqrt{G + \epsilon}} \nabla L$ | $\alpha$, $\epsilon$ | Per-parameter adaptive rates | Cache grows forever → LR dies |
 | **RMSProp** | $G \leftarrow \rho G + (1-\rho)(\nabla L)^2$ | $\alpha$, $\rho$, $\epsilon$ | Fixes AdaGrad's dying LR | One more hyperparameter |
 | **Adam** | Momentum + RMSProp + bias correction | $\alpha$, $\beta_1$, $\beta_2$, $\epsilon$ | Best general-purpose | Most hyperparameters |
@@ -51,8 +51,10 @@ if self.decay:
 
 ## 🌀 Momentum
 
-$$v_t = \beta \cdot v_{t-1} + (1 - \beta) \cdot \nabla L$$
-$$w \leftarrow w - \alpha \cdot v_t$$
+$$v_t = \beta \cdot v_{t-1} - \alpha \cdot \nabla L$$
+$$w \leftarrow w + v_t$$
+
+*(Classical momentum has no $(1-\beta)$ factor — that belongs to Adam's $\beta_1$. This matches the code below and Part 24.)*
 
 ```python
 if self.momentum:
@@ -71,7 +73,7 @@ layer.weights += weight_updates
 | `0.9` | **Typical default** — strong smoothing |
 | `0.99` | Very heavy — may overshoot |
 
-**Analogy:** A ball rolling downhill accumulates speed. Momentum helps push through small bumps (local minima) and reduces zig-zagging.
+**Analogy:** A ball rolling downhill accumulates speed. Momentum helps push through small bumps and flat stretches, and reduces zig-zagging.
 
 ---
 

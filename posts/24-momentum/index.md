@@ -197,16 +197,16 @@ With $\alpha_0 = 1.0$, $d = 10^{-3}$, $\beta = 0.9$, and 10 000 epochs on the sp
 
 | Configuration | Final loss | Final accuracy |
 |---|:---:|:---:|
-| Vanilla SGD (Part 22) | 0.768 | 57.3% |
-| SGD + decay (Part 23) | 0.653 | 71.7% |
-| SGD + decay + momentum $\beta = 0.5$ | ~0.465 | ~83.0% |
-| **SGD + decay + momentum $\beta = 0.9$** | **0.128** | **95.3%** |
+| Vanilla SGD (Part 22) | 0.87 | 64.7% |
+| SGD + decay (Part 23) | 0.76 | 64.7% |
+| SGD + decay + momentum $\beta = 0.5$ | ~0.55 | ~78.0% |
+| **SGD + decay + momentum $\beta = 0.9$** | **0.12** | **95.7%** |
 
-Three observations.
+Three observations. (These figures come from [`verify/optimizer_results.py`](../../verify/optimizer_results.py).)
 
-**The accuracy lift is dramatic.** Decay alone bought 14 percentage points; momentum on top of decay buys another 24. The total improvement from Part 22's baseline is +38 points, for the cost of one new hyperparameter and one velocity buffer per layer.
+**The accuracy lift is dramatic.** Decay alone barely moved the accuracy (its job was to lower and smooth the loss); momentum on top of it jumps from ~65% to **95.7%**, a +31-point gain over Part 22's baseline, for the cost of one new hyperparameter and one velocity buffer per layer. This is the speed-up the earlier optimisers could not deliver.
 
-**The loss drops to a fundamentally different scale.** Where decay alone plateaued around 0.65 (the spiral dataset's "vanilla floor"), momentum drives the loss below 0.15. The optimiser has escaped the local minimum that trapped Parts 22 and 23.
+**The loss drops to a fundamentally different scale.** Where decay alone settles around 0.76, momentum drives the loss below 0.15. In the same 10 000-epoch budget that left plain SGD and decay near 65%, momentum reaches a result they would need many times more epochs to approach.
 
 **The decision regions form clean spirals.** With $\beta = 0.9$, the trained network's predicted-class regions actually follow the three arms of the spiral. Vanilla SGD and decay-only produced regions that looked like rough pie slices; momentum produces curves.
 
@@ -249,7 +249,7 @@ $\beta = 0.9$ is the production default for a reason: it is large enough that th
 | Vector cancellation | Oscillating components cancel; consistent components reinforce |
 | Storage | Per-layer `weight_momentums`, `bias_momentums` buffers |
 | Default $\beta$ | $0.9$; averages over roughly the last 10 gradients |
-| Result on spiral | 71.7% (decay only) → 95.3% (decay + momentum $\beta = 0.9$) |
+| Result on spiral | ~65% (decay only) → 95.7% (decay + momentum $\beta = 0.9$) |
 | Why it matters | Every modern optimiser uses momentum as a building block |
 
 ---

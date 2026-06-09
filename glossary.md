@@ -29,7 +29,7 @@ The algorithm to compute **how much each weight contributed to the error**. It a
 A group of training samples processed together. Instead of feeding 1 sample at a time, we feed a **matrix** of samples. This is faster and produces more stable gradients. Shape: `(batch_size, features)`.
 
 ### Bias
-A constant added to the weighted sum in a neuron. One bias per neuron. It allows the neuron to shift its activation threshold. Formula: $z = Xw + b$. See [Part 1](posts/01-neurons-and-layers/index.md).
+A constant added to the weighted sum in a neuron. One bias per neuron. It allows the neuron to shift its activation threshold. Formula: $\mathbf{Z} = \mathbf{X}\mathbf{W} + \mathbf{b}$. See [Part 1](posts/01-neurons-and-layers/index.md).
 
 ### Bias Correction
 In Adam, the momentum and cache estimates start at zero and are biased toward zero early in training. Bias correction divides by $(1 - \beta^t)$ to compensate. See [Part 27](posts/27-adam-optimiser/index.md).
@@ -67,7 +67,7 @@ When information from the test set accidentally influences training — for exam
 A neuron whose ReLU input is always ≤ 0 across all training samples, so it never activates and its weights never update. Can be caused by a learning rate that's too high.
 
 ### Dense Layer (Fully Connected Layer)
-A layer where **every** input is connected to **every** neuron. Computes $\text{output} = X \cdot W + b$. See [Part 4](posts/04-dense-layer-class-and-spiral-data/index.md).
+A layer where **every** input is connected to **every** neuron. Computes $\mathbf{Z} = \mathbf{X} \cdot \mathbf{W} + \mathbf{b}$. See [Part 4](posts/04-dense-layer-class-and-spiral-data/index.md).
 
 ### Derivative
 The rate of change of a function. For $f(x) = x^2$, the derivative is $f'(x) = 2x$. Tells us which direction to adjust a parameter to reduce loss. See [Part 10](posts/10-derivatives-partial-derivatives-and-gradients/index.md).
@@ -99,7 +99,7 @@ A tiny constant (typically $10^{-7}$) added to denominators in optimizers to pre
 One dimension (column) of the input data. For spiral data with shape `(300, 2)`, there are 2 features: X₁ and X₂.
 
 ### Forward Pass
-Computing outputs layer-by-layer from input to the final prediction. Each layer applies: $F_n = f(F_{n-1} \cdot W_n + b_n)$. See [Part 7](posts/07-coding-the-complete-forward-pass/index.md).
+Computing outputs layer-by-layer from input to the final prediction. Each layer applies: $\mathbf{Z} = \mathbf{X}\mathbf{W} + \mathbf{b}$, then $\mathbf{A} = f(\mathbf{Z})$. See [Part 7](posts/07-coding-the-complete-forward-pass/index.md).
 
 ---
 
@@ -250,7 +250,7 @@ The non-linear classification dataset used throughout this series. Three intertw
 The repeated cycle: forward pass → compute loss → backward pass → update weights. One iteration = one loop. One epoch = one pass through all data.
 
 ### Transpose
-Flipping a matrix's rows and columns: shape `(m, n)` becomes `(n, m)`. Written as $W^T$ or `W.T` in NumPy. Essential for making dot product shapes match. See [Part 2](posts/02-numpy-and-the-dot-product/index.md).
+Flipping a matrix's rows and columns: shape `(m, n)` becomes `(n, m)`. Written as $\mathbf{W}^T$ or `W.T` in NumPy. Essential for making dot product shapes match. See [Part 2](posts/02-numpy-and-the-dot-product/index.md).
 
 ---
 
@@ -275,19 +275,20 @@ The core computation before activation: $z = x_1 w_1 + x_2 w_2 + ... + x_n w_n +
 
 | Symbol | Meaning | First Appears |
 |--------|---------|:---:|
-| $X$ | Input data / features | Part 1 |
-| $W$ | Weight matrix | Part 1 |
-| $b$ | Bias vector | Part 1 |
-| $z$ | Pre-activation (weighted sum) | Part 6 |
-| $a$ or $\hat{y}$ | Post-activation / prediction | Part 6 |
-| $y$ | True label | Part 8 |
+| $\mathbf{X}$ | Input data / features | Part 1 |
+| $\mathbf{W}$ | Weight matrix | Part 1 |
+| $\mathbf{b}$ | Bias vector | Part 1 |
+| $\mathbf{Z}$ | Pre-activation (weighted sum) | Part 6 |
+| $\mathbf{A}$ | Post-activation output | Part 6 |
+| $\hat{\mathbf{y}}$ | Predicted probabilities | Part 6 |
+| $\mathbf{y}$ | True label | Part 8 |
 | $L$ | Loss value | Part 8 |
 | $\alpha$ | Learning rate | Part 22 |
 | $\beta$ | Momentum coefficient | Part 24 |
 | $\rho$ | RMSProp decay rate | Part 26 |
 | $\lambda$ | Regularization strength | Part 30 |
 | $\epsilon$ | Small constant to prevent ÷0 | Part 25 |
-| $\frac{\partial L}{\partial W}$ | Gradient of loss w.r.t. weights | Part 12 |
+| $\frac{\partial L}{\partial \mathbf{W}}$ | Gradient of loss w.r.t. weights | Part 12 |
 
 ---
 

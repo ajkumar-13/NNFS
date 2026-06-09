@@ -1,6 +1,6 @@
 # Project 02 · Binary classifier on the two-moons dataset
 
-> **TL;DR.** The series only covered multi-class classification (softmax + categorical cross-entropy). This project shows the **binary** counterpart: **sigmoid + binary cross-entropy** on a synthetic 2-D dataset (`make_moons`) that can be plotted on a single chart. A two-hidden-layer 16-unit network trained with Adam learns the decision boundary in ~2000 epochs, reaching > 98% test accuracy with a clean curve between the moons. The math change from softmax+CCE is mostly cosmetic — same chain-rule shortcut, same combined-class trick from [post 19](../../posts/19-softmax-derivatives-and-the-combined-backward-pass/) — but the geometry is dead obvious because the input space is 2-D.
+> **TL;DR.** [Post 34](../../posts/34-sigmoid-and-binary-cross-entropy/) introduces **sigmoid + binary cross-entropy**, the binary counterpart to the softmax + categorical cross-entropy used through most of the series. This project applies it to a synthetic 2-D dataset (`make_moons`) that can be plotted on a single chart. A two-hidden-layer 16-unit network trained with Adam learns the decision boundary in ~2000 epochs, reaching > 98% test accuracy with a clean curve between the moons. The math change from softmax+CCE is mostly cosmetic — same chain-rule shortcut, same combined-class trick from [post 19](../../posts/19-softmax-derivatives-and-the-combined-backward-pass/) — but the geometry is dead obvious because the input space is 2-D.
 
 ---
 
@@ -164,6 +164,7 @@ The qualitative shape (an S-curve between the moons) is in this project's hero d
 | [Part 4 — Dense layer class](../../posts/04-dense-layer-class-and-spiral-data/) | `Layer_Dense` |
 | [Part 6 — Activations](../../posts/06-activation-functions-relu-and-softmax/) | `Activation_ReLU` (sigmoid is the binary analogue of softmax) |
 | [Part 19 — Softmax + cross-entropy combined](../../posts/19-softmax-derivatives-and-the-combined-backward-pass/) | The combined-derivative trick, applied to sigmoid + BCE here |
+| [Part 34 — Sigmoid and binary cross-entropy](../../posts/34-sigmoid-and-binary-cross-entropy/) | `Activation_Sigmoid` and the combined sigmoid + BCE backward — the core technique of this project |
 | [Part 27 — Adam](../../posts/27-adam-optimiser/) | `Optimizer_Adam` |
 | [Part 30 — L1 / L2 regularisation](../../posts/30-l1-and-l2-regularisation/) | `weight_regularizer_l2` |
 

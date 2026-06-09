@@ -116,7 +116,7 @@ class Layer_Dense:
 <summary>Answers</summary>
 
 1. `(32, 8)` — batch of 32, each with 8 neuron outputs
-2. We need them for the backward pass to compute weight gradients: $\partial L / \partial W = X^T \cdot \text{dvalues}$
+2. We need them for the backward pass to compute weight gradients: $\partial L / \partial \mathbf{W} = \mathbf{X}^{T} \cdot \text{dvalues}$
 3. Outputs can be very large, causing softmax to produce extreme (near-0 or near-1) probabilities, leading to high loss and unstable training
 
 </details>

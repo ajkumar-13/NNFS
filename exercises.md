@@ -1,6 +1,6 @@
-# Try It Yourself — Exercises for Every Lecture
+# Try It Yourself — Exercises for Parts 1–31
 
-*Hands-on experiments to deepen your understanding. Each exercise is tied to a specific lecture — complete it after reading the corresponding blog post.*
+*Hands-on experiments to deepen your understanding. Each exercise is tied to a specific lecture — complete it after reading the corresponding blog post. (Exercises for Parts 32–35 are forthcoming.)*
 
 ---
 

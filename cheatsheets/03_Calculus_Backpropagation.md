@@ -28,7 +28,7 @@ $$\frac{dL}{dx} = \frac{dL}{dg} \cdot \frac{dg}{df} \cdot \frac{df}{dh} \cdot \f
 
 **In neural networks:** Each layer receives $\frac{\partial L}{\partial \text{output}}$ (the upstream gradient) and computes:
 - $\frac{\partial L}{\partial \text{input}}$ — passed to the previous layer
-- $\frac{\partial L}{\partial W}$, $\frac{\partial L}{\partial b}$ — used to update parameters
+- $\frac{\partial L}{\partial \mathbf{W}}$, $\frac{\partial L}{\partial \mathbf{b}}$ — used to update parameters
 
 ---
 
@@ -59,9 +59,9 @@ def backward(self, dvalues):
 
 | Gradient | Shape | Formula |
 |---|---|---|
-| `dweights` | `(n_in, n_out)` | $X^T \cdot \text{dvalues}$ |
+| `dweights` | `(n_in, n_out)` | $\mathbf{X}^{T} \cdot \text{dvalues}$ |
 | `dbiases` | `(1, n_out)` | $\sum_{\text{batch}} \text{dvalues}$ |
-| `dinputs` | `(batch, n_in)` | $\text{dvalues} \cdot W^T$ |
+| `dinputs` | `(batch, n_in)` | $\text{dvalues} \cdot \mathbf{W}^{T}$ |
 
 **Why transpose?** The transpose "reverses" the matrix multiply from the forward pass.
 
