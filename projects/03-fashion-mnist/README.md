@@ -98,7 +98,7 @@ The whole point of using the same hyperparameters is to make the comparison fair
 
 | Configuration | Test accuracy | Test loss |
 |---|:---:|:---:|
-| Project 01 (MNIST) | ~96.7% | ~0.10 |
+| Project 01 (MNIST) | ~97% | ~0.09 |
 | **Project 03 (Fashion-MNIST)** | **~88.9%** | **~0.34** |
 
 The ~8-point drop is the standard delta for plain MLPs. CNNs close most of it (a small conv net reaches ~92% on Fashion-MNIST out of the box), which is part of why Fashion-MNIST is often used as a "do I need convolutions yet" sanity check.

@@ -115,7 +115,7 @@ Parameter count:
 | Dense(16, 1)  | 16  | 1  |
 | **Total** |  | **337** |
 
-337 parameters is tiny — about a 350× smaller than project 01's MNIST model. The moons dataset is correspondingly simpler; a 16-unit hidden layer is enough to bend the decision boundary into the right shape.
+337 parameters is tiny — roughly 350× smaller than project 01's MNIST model. The moons dataset is correspondingly simpler; a 16-unit hidden layer is enough to bend the decision boundary into the right shape.
 
 ## 4. Training and result
 

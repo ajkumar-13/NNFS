@@ -135,7 +135,7 @@ Per-class accuracy almost always reveals that 8 and 5 are the hardest digits (th
 | Switch optimisers and compare | medium | Swap `Optimizer_Adam` for SGD+momentum or RMSProp; compare convergence curves |
 | Plot the loss curve | easy | Append `(epoch, train_loss, train_acc)` to a list each epoch and `matplotlib.pyplot.plot` them |
 | Data augmentation (random shifts) | hard | Shift each image by ±2 pixels in x/y at random; expect ~+0.5% test accuracy |
-| Train on Fashion-MNIST | easy | Same code, swap the OpenML name; a harder dataset that exposes overfitting better |
+| Compare with Fashion-MNIST | easy | Already built as [Project 03](../03-fashion-mnist/) — the same code on a harder dataset, ~8 points lower |
 
 ## 6. What this project does *not* do
 
