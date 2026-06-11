@@ -202,7 +202,7 @@ With $\alpha_0 = 1.0$, $d = 10^{-3}$, $\beta = 0.9$, and 10 000 epochs on the sp
 | SGD + decay + momentum $\beta = 0.5$ | ~0.55 | ~78.0% |
 | **SGD + decay + momentum $\beta = 0.9$** | **0.12** | **95.7%** |
 
-Three observations. (These figures come from [`verify/optimizer_results.py`](../../verify/optimizer_results.py).)
+Three observations. (These figures come from real runs of the optimiser classes on the spiral dataset (seed 0, 10k epochs).)
 
 **The accuracy lift is dramatic.** Decay alone barely moved the accuracy (its job was to lower and smooth the loss); momentum on top of it jumps from ~65% to **95.7%**, a +31-point gain over Part 22's baseline, for the cost of one new hyperparameter and one velocity buffer per layer. This is the speed-up the earlier optimisers could not deliver.
 

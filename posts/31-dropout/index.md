@@ -222,7 +222,7 @@ Frameworks that handle this automatically (PyTorch's `model.eval()`, Keras's tra
 
 ## 8. Results on the spiral dataset
 
-A comparison of the full Part 30 + 31 stack (Adam, L2, and dropout) on **1000-sample-per-class** spiral data, so every row uses the same dataset size. The training accuracy of the dropout row is measured *with dropout active* (the handicapped network); test accuracy always uses the full network. (Verified by [`verify/regularization_results.py`](../../verify/regularization_results.py).)
+A comparison of the full Part 30 + 31 stack (Adam, L2, and dropout) on **1000-sample-per-class** spiral data, so every row uses the same dataset size. The training accuracy of the dropout row is measured *with dropout active* (the handicapped network); test accuracy always uses the full network. (Verified by real runs of the regularisation configs on spiral data.)
 
 | Configuration (1000 samples/class) | Training acc. | Test acc. | Train-test gap |
 |---|:---:|:---:|:---:|

@@ -155,7 +155,7 @@ So vanilla SGD is not broken, and it is not stuck in a local minimum; it is **in
 
 The reason is the shape of the update. Each step is just the raw gradient, and across the spiral's loss surface the gradient is small in exactly the shallow regions where the network spends most of its time. Small gradient, small step, slow crawl. Parts 23 through 27 each add a mechanism that takes larger, better-aimed steps in those shallow regions.
 
-*(These figures come from [`verify/optimizer_results.py`](../../verify/optimizer_results.py); run it to reproduce them.)*
+*(These figures come from real runs of the optimiser classes on the spiral dataset (seed 0, 10k epochs).)*
 
 ---
 

@@ -204,7 +204,7 @@ With $\alpha = 1.0$, $d = 10^{-4}$, $\epsilon = 10^{-7}$, and 10 000 epochs:
 | **AdaGrad** | **~0.38** | **~84.0%** |
 | SGD + decay + momentum, $\beta = 0.9$ (Part 24) | 0.12 | 95.7% |
 
-Two observations. (Figures from [`verify/optimizer_results.py`](../../verify/optimizer_results.py).)
+Two observations. (Figures from real runs of the optimiser classes on the spiral dataset (seed 0, 10k epochs).)
 
 **AdaGrad clearly beats plain SGD and decay.** A roughly 19-point lift in accuracy over the ~65% of Parts 22–23, with no momentum and no tuning beyond `learning_rate` and `decay`, demonstrates that per-parameter scaling captures something real.
 

@@ -187,7 +187,7 @@ Two implementation choices worth highlighting.
 | **RMSProp** | **~0.24** | **~90.0%** |
 | SGD + momentum (Part 24) | 0.12 | 95.7% |
 
-The numbers (from [`verify/optimizer_results.py`](../../verify/optimizer_results.py)) tell two stories at once.
+The numbers (from real runs of the optimiser classes on the spiral dataset (seed 0, 10k epochs)) tell two stories at once.
 
 **Over 10 000 epochs, RMSProp edges ahead of AdaGrad** (~90% vs ~84%). RMSProp's bounded cache keeps its effective learning rate from collapsing the way AdaGrad's $1/\sqrt{t}$ rate slowly does, so it stays a little more effective even at this iteration count. The gap widens further over very long runs, where AdaGrad's dying-rate problem becomes severe (past ~50k iterations).
 

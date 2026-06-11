@@ -242,7 +242,7 @@ A safer practice than tuning a single $\lambda$ blindly is to **sweep**: try $\l
 
 ## 7. Results on the spiral dataset
 
-A comparison using the Adam optimiser (lr = 0.05, decay = 1e-5) on spiral data; the test set is a fresh draw from the same distribution. (Verified by [`verify/regularization_results.py`](../../verify/regularization_results.py).)
+A comparison using the Adam optimiser (lr = 0.05, decay = 1e-5) on spiral data; the test set is a fresh draw from the same distribution. (Verified by real runs of the regularisation configs on spiral data.)
 
 | Configuration | Training acc. | Test acc. | Train-test gap |
 |---|:---:|:---:|:---:|

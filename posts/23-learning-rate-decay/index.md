@@ -179,7 +179,7 @@ The forward and backward passes are identical to Part 22. The only structural ch
 
 ## 6. What happens when this is run
 
-With `learning_rate = 1.0`, `decay = 1e-3`, and 10 000 epochs on the spiral dataset, the trajectory is qualitatively different from Part 22. (These figures are produced by [`verify/optimizer_results.py`](../../verify/optimizer_results.py); run it to reproduce them.)
+With `learning_rate = 1.0`, `decay = 1e-3`, and 10 000 epochs on the spiral dataset, the trajectory is qualitatively different from Part 22. (These figures are produced by real runs of the optimiser classes on the spiral dataset (seed 0, 10k epochs).)
 
 | Configuration | Final loss | Final accuracy | $\alpha$ at end |
 |---|:---:|:---:|:---:|
