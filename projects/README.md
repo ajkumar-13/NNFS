@@ -32,4 +32,4 @@ Numbering matches the order projects were added; the slug describes the project.
 2. Copy the five-file skeleton above. Replace `nn.py` only if the project needs classes that don't already exist in `01-mnist-from-scratch/nn.py` — otherwise import from there.
 3. Write `README.md` in the textbook voice used by the [lecture posts](../posts/): TL;DR, capability bullets, numbered sections, common pitfalls, further reading.
 4. Add a row to the index table above.
-5. Optional: add a `diagrams/` subfolder with hero SVGs in the [Standard visual language](../Standard/).
+5. Optional: add a `diagrams/` subfolder with hero SVGs matching the visual style of the existing project diagrams (e.g. [02-binary-classifier/diagrams/](02-binary-classifier/diagrams/)).
