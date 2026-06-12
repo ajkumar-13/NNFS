@@ -265,10 +265,10 @@ For the typical deep-network training regime (10⁴ to 10⁶ steps, non-convex l
 
 ## Further reading
 
-- Duchi, J., Hazan, E., and Singer, Y., *"Adaptive Subgradient Methods for Online Learning and Stochastic Optimization"* (Journal of Machine Learning Research, 2011) — the original AdaGrad paper.
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 8.5.1 (AdaGrad) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 25 (2020).
-- Ruder, S., *"An overview of gradient descent optimization algorithms"* (arXiv:1609.04747, 2016) — §4.3 (AdaGrad).
+- Duchi, J., Hazan, E., and Singer, Y., *"Adaptive Subgradient Methods for Online Learning and Stochastic Optimization"* (Journal of Machine Learning Research, 2011). The original AdaGrad paper.
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 8.5.1 (AdaGrad) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 25 (2020).
+- Ruder, S., *"An overview of gradient descent optimization algorithms"* (arXiv:1609.04747, 2016). §4.3 (AdaGrad).
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
 
@@ -276,8 +276,8 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 26 — RMSProp](../26-rmsprop/index.md)** — replace the cumulative sum with an exponential moving average so the cache can shrink. The dying-rate problem disappears.
-- **[Part 27 — Adam](../27-adam-optimiser/index.md)** — RMSProp's per-parameter scaling plus momentum's velocity, with bias correction. The modern default.
+- **[Part 26 — RMSProp](../26-rmsprop/index.md)**: replace the cumulative sum with an exponential moving average so the cache can shrink. The dying-rate problem disappears.
+- **[Part 27 — Adam](../27-adam-optimiser/index.md)**: RMSProp's per-parameter scaling plus momentum's velocity, with bias correction. The modern default.
 
 ---
 

@@ -247,8 +247,8 @@ The same four lines, repeated. The only constraint is the shape-continuity rule 
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 6, "Deep Feedforward Networks" (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 7 (2020).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6, "Deep Feedforward Networks" (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 7 (2020).
 - NumPy, *"`numpy.argmax` and per-row reductions"* (latest documentation).
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
@@ -257,9 +257,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 08 — Loss: categorical cross-entropy](../08-loss-categorical-cross-entropy/index.md)** — the loss function that turns the uniform output into a number to minimise.
-- **[Part 09 — Introduction to optimisation](../09-introduction-to-optimisation/index.md)** — why random search fails and why gradients are the right way to update weights.
-- **[Part 16 — Coding backpropagation](../16-coding-backpropagation/index.md)** — the extended version of `Layer_Dense` that stores its inputs for the backward pass.
+- **[Part 08 — Loss: categorical cross-entropy](../08-loss-categorical-cross-entropy/index.md)**: the loss function that turns the uniform output into a number to minimise.
+- **[Part 09 — Introduction to optimisation](../09-introduction-to-optimisation/index.md)**: why random search fails and why gradients are the right way to update weights.
+- **[Part 16 — Coding backpropagation](../16-coding-backpropagation/index.md)**: the extended version of `Layer_Dense` that stores its inputs for the backward pass.
 
 ---
 

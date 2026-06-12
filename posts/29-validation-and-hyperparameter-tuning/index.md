@@ -269,12 +269,12 @@ For very large spaces, the modern default is **Bayesian optimisation** (librarie
 
 ## Further reading
 
-- Bergstra, J. and Bengio, Y., *"Random Search for Hyper-Parameter Optimization"* (Journal of Machine Learning Research, 2012) — why random search is often better than grid.
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 5 (Machine Learning Basics) (MIT Press, 2016).
-- Hastie, T., Tibshirani, R., and Friedman, J., *The Elements of Statistical Learning* — chapter 7 (Model Assessment and Selection) (Springer, 2009).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 29 (2020).
-- Kohavi, R., *"A Study of Cross-Validation and Bootstrap for Accuracy Estimation and Model Selection"* (IJCAI, 1995) — the 10-fold recommendation.
-- Snoek, J., Larochelle, H., and Adams, R. P., *"Practical Bayesian Optimization of Machine Learning Algorithms"* (NeurIPS, 2012) — modern hyperparameter search.
+- Bergstra, J. and Bengio, Y., *"Random Search for Hyper-Parameter Optimization"* (Journal of Machine Learning Research, 2012). Why random search is often better than grid.
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 5 (Machine Learning Basics) (MIT Press, 2016).
+- Hastie, T., Tibshirani, R., and Friedman, J., *The Elements of Statistical Learning*, chapter 7 (Model Assessment and Selection) (Springer, 2009).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 29 (2020).
+- Kohavi, R., *"A Study of Cross-Validation and Bootstrap for Accuracy Estimation and Model Selection"* (IJCAI, 1995). The 10-fold recommendation.
+- Snoek, J., Larochelle, H., and Adams, R. P., *"Practical Bayesian Optimization of Machine Learning Algorithms"* (NeurIPS, 2012). Modern hyperparameter search.
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
 
@@ -284,8 +284,8 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 Tuning hyperparameters tells you *which* model to ship; the next two lectures show *how* to make that model less prone to overfit in the first place.
 
-- **[Part 30 — L1 and L2 regularisation](../30-l1-and-l2-regularisation/index.md)** — add a weight-magnitude penalty to the loss; force the optimiser to prefer simpler hypotheses.
-- **[Part 31 — Dropout](../31-dropout/index.md)** — randomly mask neurons during training so the network cannot rely on any single one.
+- **[Part 30 — L1 and L2 regularisation](../30-l1-and-l2-regularisation/index.md)**: add a weight-magnitude penalty to the loss; force the optimiser to prefer simpler hypotheses.
+- **[Part 31 — Dropout](../31-dropout/index.md)**: randomly mask neurons during training so the network cannot rely on any single one.
 
 ---
 

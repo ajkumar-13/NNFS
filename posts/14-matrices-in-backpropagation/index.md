@@ -275,8 +275,8 @@ Mixing the two in a single codebase is a guaranteed bug. Decide once.
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 6.5.2 (Computational Graphs) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 14 (2020).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6.5.2 (Computational Graphs) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 14 (2020).
 - Magnus, J. R. and Neudecker, H., *Matrix Differential Calculus with Applications in Statistics and Econometrics* (Wiley, 3rd edition, 2019).
 - Petersen, K. B. and Pedersen, M. S., *The Matrix Cookbook* (2012).
 
@@ -286,9 +286,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 15 — Gradients with respect to inputs](../15-gradients-with-respect-to-inputs/index.md)** — the other matrix product needed for backprop in a stacked network.
-- **[Part 16 — Coding backpropagation](../16-coding-backpropagation/index.md)** — the `Layer_Dense.backward` method that uses both matrix gradients from this post and the next.
-- **[Part 21 — Coding the full backpropagation](../21-coding-the-full-backpropagation/index.md)** — the complete training loop with all `backward` methods working together.
+- **[Part 15 — Gradients with respect to inputs](../15-gradients-with-respect-to-inputs/index.md)**: the other matrix product needed for backprop in a stacked network.
+- **[Part 16 — Coding backpropagation](../16-coding-backpropagation/index.md)**: the `Layer_Dense.backward` method that uses both matrix gradients from this post and the next.
+- **[Part 21 — Coding the full backpropagation](../21-coding-the-full-backpropagation/index.md)**: the complete training loop with all `backward` methods working together.
 
 ---
 

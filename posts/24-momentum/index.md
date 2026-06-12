@@ -267,11 +267,11 @@ $\beta = 0.9$ is the production default for a reason: it is large enough that th
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 8.3.2 (Momentum) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 24 (2020).
-- Polyak, B. T., *"Some methods of speeding up the convergence of iteration methods"* (USSR Computational Mathematics and Mathematical Physics, 1964) — the original "heavy ball" paper.
-- Qian, N., *"On the momentum term in gradient descent learning algorithms"* (Neural Networks, 1999) — readable modern derivation.
-- Sutskever, I., Martens, J., Dahl, G., and Hinton, G., *"On the importance of initialization and momentum in deep learning"* (ICML, 2013) — the paper that re-popularised momentum for deep networks.
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 8.3.2 (Momentum) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 24 (2020).
+- Polyak, B. T., *"Some methods of speeding up the convergence of iteration methods"* (USSR Computational Mathematics and Mathematical Physics, 1964). The original "heavy ball" paper.
+- Qian, N., *"On the momentum term in gradient descent learning algorithms"* (Neural Networks, 1999). Readable modern derivation.
+- Sutskever, I., Martens, J., Dahl, G., and Hinton, G., *"On the importance of initialization and momentum in deep learning"* (ICML, 2013). The paper that re-popularised momentum for deep networks.
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
 
@@ -279,9 +279,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 25 — AdaGrad](../25-adagrad/index.md)** — instead of (or in addition to) momentum on the gradient, scale the learning rate per parameter using the history of squared gradients.
-- **[Part 26 — RMSProp](../26-rmsprop/index.md)** — AdaGrad's accumulator is replaced with a running average, fixing AdaGrad's diminishing-rate problem.
-- **[Part 27 — Adam](../27-adam-optimiser/index.md)** — combines momentum (this lecture) with per-parameter scaling (Parts 25 and 26) into the modern default.
+- **[Part 25 — AdaGrad](../25-adagrad/index.md)**: instead of (or in addition to) momentum on the gradient, scale the learning rate per parameter using the history of squared gradients.
+- **[Part 26 — RMSProp](../26-rmsprop/index.md)**: AdaGrad's accumulator is replaced with a running average, fixing AdaGrad's diminishing-rate problem.
+- **[Part 27 — Adam](../27-adam-optimiser/index.md)**: combines momentum (this lecture) with per-parameter scaling (Parts 25 and 26) into the modern default.
 
 ---
 

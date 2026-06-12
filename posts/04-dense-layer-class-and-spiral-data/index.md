@@ -258,7 +258,7 @@ The two instances do not share weights. `dense1.weights` is a different array, w
 
 - Glorot, X. and Bengio, Y., *"Understanding the Difficulty of Training Deep Feedforward Neural Networks"* (AISTATS, 2010).
 - He, K., Zhang, X., Ren, S., and Sun, J., *"Delving Deep into Rectifiers"* (ICCV, 2015).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 4 (2020).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 4 (2020).
 - Paszke, A., et al., *"PyTorch: An Imperative Style, High-Performance Deep Learning Library"* (NeurIPS, 2019).
 - Ramalho, L., *Fluent Python* — chapters on classes and protocols (O'Reilly, 2nd edition, 2022).
 
@@ -268,9 +268,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 05 — Array summation, keepdims, and broadcasting](../05-array-summation-keepdims-and-broadcasting/index.md)** — the shape rules that make the bias addition above work, and the patterns that come up again in loss and softmax.
-- **[Part 06 — Activation functions: ReLU and Softmax](../06-activation-functions-relu-and-softmax/index.md)** — the non-linearity that finally lets stacked layers learn things a single linear layer cannot.
-- **[Part 16 — Coding backpropagation](../16-coding-backpropagation/index.md)** — the version of `Layer_Dense` that also stores its inputs, ready to run the backward pass.
+- **[Part 05 — Array summation, keepdims, and broadcasting](../05-array-summation-keepdims-and-broadcasting/index.md)**: the shape rules that make the bias addition above work, and the patterns that come up again in loss and softmax.
+- **[Part 06 — Activation functions: ReLU and Softmax](../06-activation-functions-relu-and-softmax/index.md)**: the non-linearity that finally lets stacked layers learn things a single linear layer cannot.
+- **[Part 16 — Coding backpropagation](../16-coding-backpropagation/index.md)**: the version of `Layer_Dense` that also stores its inputs, ready to run the backward pass.
 
 ---
 

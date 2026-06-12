@@ -250,8 +250,8 @@ The chain rule, introduced in [Part 11](../11-the-chain-rule/index.md), is what 
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 4 (Numerical Computation) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 10 (2020).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 4 (Numerical Computation) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 10 (2020).
 - Leibniz, G. W., *"Nova Methodus pro Maximis et Minimis"* (Acta Eruditorum, 1684).
 - Newton, I., *Method of Fluxions* (1671; published 1736).
 - Strang, G., *Calculus* — chapters 1–4 (Wellesley-Cambridge, 2010).
@@ -262,9 +262,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 11 — The chain rule](../11-the-chain-rule/index.md)** — the rule that composes derivatives through a stack of layers; the engine behind backpropagation.
-- **[Part 12 — Backpropagation through a single neuron](../12-backprop-through-a-single-neuron/index.md)** — the first concrete application of the calculus, on the smallest possible network.
-- **[Part 17 — Backpropagation through activation functions](../17-backpropagation-through-activation-functions/index.md)** — ReLU's piecewise derivative used in code.
+- **[Part 11 — The chain rule](../11-the-chain-rule/index.md)**: the rule that composes derivatives through a stack of layers; the engine behind backpropagation.
+- **[Part 12 — Backpropagation through a single neuron](../12-backprop-through-a-single-neuron/index.md)**: the first concrete application of the calculus, on the smallest possible network.
+- **[Part 17 — Backpropagation through activation functions](../17-backpropagation-through-activation-functions/index.md)**: ReLU's piecewise derivative used in code.
 
 ---
 

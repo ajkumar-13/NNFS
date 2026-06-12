@@ -265,11 +265,11 @@ This pattern is also what every production framework (PyTorch, TensorFlow, JAX/O
 
 ## Further reading
 
-- Bottou, L., Curtis, F. E., and Nocedal, J., *"Optimization methods for large-scale machine learning"* (SIAM Review, 2018) — formal treatment of decay schedules and convergence rates.
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 8.3 (Basic Algorithms) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 23 (2020).
-- Loshchilov, I. and Hutter, F., *"SGDR: Stochastic Gradient Descent with Warm Restarts"* (ICLR, 2017) — the cosine-decay variant.
-- Robbins, H. and Monro, S., *"A Stochastic Approximation Method"* (Annals of Mathematical Statistics, 1951) — the original convergence proof requiring $\sum \alpha_t = \infty$, $\sum \alpha_t^2 < \infty$.
+- Bottou, L., Curtis, F. E., and Nocedal, J., *"Optimization methods for large-scale machine learning"* (SIAM Review, 2018). Formal treatment of decay schedules and convergence rates.
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 8.3 (Basic Algorithms) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 23 (2020).
+- Loshchilov, I. and Hutter, F., *"SGDR: Stochastic Gradient Descent with Warm Restarts"* (ICLR, 2017). The cosine-decay variant.
+- Robbins, H. and Monro, S., *"A Stochastic Approximation Method"* (Annals of Mathematical Statistics, 1951). The original convergence proof requiring $\sum \alpha_t = \infty$, $\sum \alpha_t^2 < \infty$.
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
 
@@ -277,9 +277,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 24 — Momentum](../24-momentum/index.md)** — add a velocity term that lets the optimiser carry inertia past shallow local minima.
-- **[Part 25 — AdaGrad](../25-adagrad/index.md)** — the first per-parameter adaptive rate; decay becomes implicit, per weight.
-- **[Part 27 — Adam](../27-adam-optimiser/index.md)** — the modern default, combining decay, momentum, and per-parameter scaling.
+- **[Part 24 — Momentum](../24-momentum/index.md)**: add a velocity term that lets the optimiser carry inertia past shallow local minima.
+- **[Part 25 — AdaGrad](../25-adagrad/index.md)**: the first per-parameter adaptive rate; decay becomes implicit, per weight.
+- **[Part 27 — Adam](../27-adam-optimiser/index.md)**: the modern default, combining decay, momentum, and per-parameter scaling.
 
 ---
 

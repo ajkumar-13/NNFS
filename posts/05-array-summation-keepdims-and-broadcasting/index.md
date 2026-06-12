@@ -260,7 +260,7 @@ A 1-D array of shape `(F,)` and a row-vector of shape `(1, F)` print identically
 
 - Harris, C. R., et al., *"Array programming with NumPy"* (Nature, 2020).
 - Iverson, K. E., *A Programming Language* (Wiley, 1962).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 5 (2020).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 5 (2020).
 - NumPy, *"Broadcasting"* (latest documentation).
 - NumPy, *"`numpy.sum`, `numpy.max`, `numpy.mean` reductions"* (latest).
 
@@ -270,9 +270,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 06 — Activation functions: ReLU and Softmax](../06-activation-functions-relu-and-softmax/index.md)** — the first real consumers of `keepdims=True`, in softmax's per-row normalisation.
-- **[Part 08 — Loss: categorical cross-entropy](../08-loss-categorical-cross-entropy/index.md)** — broadcasting against one-hot label vectors and per-sample log-likelihoods.
-- **[Part 16 — Coding backpropagation](../16-coding-backpropagation/index.md)** — gradient reductions across the batch dimension follow the same `axis=0` pattern.
+- **[Part 06 — Activation functions: ReLU and Softmax](../06-activation-functions-relu-and-softmax/index.md)**: the first real consumers of `keepdims=True`, in softmax's per-row normalisation.
+- **[Part 08 — Loss: categorical cross-entropy](../08-loss-categorical-cross-entropy/index.md)**: broadcasting against one-hot label vectors and per-sample log-likelihoods.
+- **[Part 16 — Coding backpropagation](../16-coding-backpropagation/index.md)**: gradient reductions across the batch dimension follow the same `axis=0` pattern.
 
 ---
 

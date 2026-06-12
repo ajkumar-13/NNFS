@@ -190,11 +190,11 @@ A boundary section.
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 6.3 (Hidden Units) (MIT Press, 2016).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6.3 (Hidden Units) (MIT Press, 2016).
 - Glorot, X., Bordes, A., and Bengio, Y., *"Deep Sparse Rectifier Neural Networks"* (AISTATS, 2011).
 - He, K., Zhang, X., Ren, S., and Sun, J., *"Delving Deep into Rectifiers"* (ICCV, 2015).
 - Hendrycks, D. and Gimpel, K., *"Gaussian Error Linear Units (GELUs)"* (arXiv:1606.08415, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 17 (2020).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 17 (2020).
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
 
@@ -202,9 +202,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 18 — Backpropagation through the loss function](../18-backpropagation-through-the-loss-function/index.md)** — the first `backward` in the chain: from the loss back to softmax's input.
-- **[Part 19 — Softmax derivatives and the combined backward pass](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)** — the full softmax Jacobian and the clean cancellation when paired with cross-entropy.
-- **[Part 20 — Assembling full backpropagation](../20-assembling-full-backpropagation/index.md)** — how every backward method snaps together in the training loop.
+- **[Part 18 — Backpropagation through the loss function](../18-backpropagation-through-the-loss-function/index.md)**: the first `backward` in the chain: from the loss back to softmax's input.
+- **[Part 19 — Softmax derivatives and the combined backward pass](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)**: the full softmax Jacobian and the clean cancellation when paired with cross-entropy.
+- **[Part 20 — Assembling full backpropagation](../20-assembling-full-backpropagation/index.md)**: how every backward method snaps together in the training loop.
 
 ---
 

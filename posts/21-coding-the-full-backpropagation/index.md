@@ -302,8 +302,8 @@ A boundary section.
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 6.5 (Back-Propagation) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 21 (2020).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6.5 (Back-Propagation) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 21 (2020).
 - The series' own [gradient-checking appendix](../../gradient_checking.md) for verifying gradients numerically.
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
@@ -312,9 +312,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 22 — Gradient-descent optimiser](../22-gradient-descent-optimiser/index.md)** — wrapping the update rule into a reusable class and running the first real training loop.
-- **[Part 23 — Learning-rate decay](../23-learning-rate-decay/index.md)** — shrinking the step size over time so the optimiser does not overshoot.
-- **[Part 24 — Momentum](../24-momentum/index.md)** — smoothing the gradient with an exponential moving average so noisy steps cancel.
+- **[Part 22 — Gradient-descent optimiser](../22-gradient-descent-optimiser/index.md)**: wrapping the update rule into a reusable class and running the first real training loop.
+- **[Part 23 — Learning-rate decay](../23-learning-rate-decay/index.md)**: shrinking the step size over time so the optimiser does not overshoot.
+- **[Part 24 — Momentum](../24-momentum/index.md)**: smoothing the gradient with an exponential moving average so noisy steps cancel.
 
 ---
 

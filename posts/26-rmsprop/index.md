@@ -271,10 +271,10 @@ Part 27 will spell out the bias-correction term and show how the combined Adam u
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 8.5.2 (RMSProp) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 26 (2020).
-- Ruder, S., *"An overview of gradient descent optimization algorithms"* (arXiv:1609.04747, 2016) — §4.5 (RMSProp).
-- Tieleman, T. and Hinton, G., *Lecture 6.5 — RMSProp: Divide the gradient by a running average of its recent magnitude* (Coursera: Neural Networks for Machine Learning, 2012) — the original (unpublished) source.
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 8.5.2 (RMSProp) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 26 (2020).
+- Ruder, S., *"An overview of gradient descent optimization algorithms"* (arXiv:1609.04747, 2016). §4.5 (RMSProp).
+- Tieleman, T. and Hinton, G., *Lecture 6.5 — RMSProp: Divide the gradient by a running average of its recent magnitude* (Coursera: Neural Networks for Machine Learning, 2012). The original (unpublished) source.
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
 
@@ -282,7 +282,7 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 27 — Adam](../27-adam-optimiser/index.md)** — add momentum's EMA-over-$g$ on top of RMSProp's EMA-over-$g^2$, plus bias correction. The modern default optimiser.
+- **[Part 27 — Adam](../27-adam-optimiser/index.md)**: add momentum's EMA-over-$g$ on top of RMSProp's EMA-over-$g^2$, plus bias correction. The modern default optimiser.
 
 ---
 

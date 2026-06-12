@@ -51,8 +51,8 @@ A **convolutional layer** fixes this. It applies the same small set of weights (
 
 What to read:
 
-- **LeCun, Y. et al.**, *"Gradient-Based Learning Applied to Document Recognition"* (Proceedings of the IEEE, 1998) — the LeNet paper. Still the canonical introduction.
-- **Stanford CS231n notes**, ["Convolutional Neural Networks"](http://cs231n.github.io/convolutional-networks/) — the best free explainer that goes from "what is convolution" to "modern architectures" without skipping steps.
+- **LeCun, Y. et al.**, *"Gradient-Based Learning Applied to Document Recognition"* (Proceedings of the IEEE, 1998). The LeNet paper. Still the canonical introduction.
+- **Stanford CS231n notes**, ["Convolutional Neural Networks"](http://cs231n.github.io/convolutional-networks/). The best free explainer that goes from "what is convolution" to "modern architectures" without skipping steps.
 - **From-scratch tutorial:** Andrej Karpathy's [`micrograd`](https://github.com/karpathy/micrograd) and his "neural networks: zero to hero" YouTube series both build convolutions on top of a from-scratch autograd (an engine that records operations and computes their gradients automatically), which is the natural next step after this series.
 
 ### 2.2. Recurrent layers (for sequences, time series, text)
@@ -63,9 +63,9 @@ A **recurrent layer** maintains an internal hidden state that gets updated at ea
 
 What to read:
 
-- **Hochreiter, S. and Schmidhuber, J.**, *"Long Short-Term Memory"* (Neural Computation, 1997) — the LSTM paper. Notoriously dense; pair it with the Olah blog post below.
-- **Christopher Olah**, ["Understanding LSTM Networks"](http://colah.github.io/posts/2015-08-Understanding-LSTMs/) — the universally-recommended intuitive explainer.
-- **From-scratch tutorial:** Karpathy's [char-rnn](https://karpathy.github.io/2015/05/21/rnn-effectiveness/) — a 110-line numpy implementation of a character-level RNN that learns to generate Shakespeare. The same skeleton you have, just with a hidden state passed forward through time.
+- **Hochreiter, S. and Schmidhuber, J.**, *"Long Short-Term Memory"* (Neural Computation, 1997). The LSTM paper. Notoriously dense; pair it with the Olah blog post below.
+- **Christopher Olah**, ["Understanding LSTM Networks"](http://colah.github.io/posts/2015-08-Understanding-LSTMs/). The universally-recommended intuitive explainer.
+- **From-scratch tutorial:** Karpathy's [char-rnn](https://karpathy.github.io/2015/05/21/rnn-effectiveness/), a 110-line numpy implementation of a character-level RNN that learns to generate Shakespeare. The same skeleton you have, just with a hidden state passed forward through time.
 
 ### 2.3. Attention and transformers (the modern default)
 
@@ -75,9 +75,9 @@ The **transformer** architecture (Vaswani et al., 2017) builds the entire model 
 
 What to read:
 
-- **Vaswani, A. et al.**, *"Attention Is All You Need"* (NeurIPS, 2017) — the original transformer paper. Read it after the explainers below.
-- **Jay Alammar**, ["The Illustrated Transformer"](http://jalammar.github.io/illustrated-transformer/) — the standard visual introduction.
-- **Andrej Karpathy**, ["Let's build GPT: from scratch, in code, spelled out"](https://www.youtube.com/watch?v=kCc8FmEb1nY) — 2-hour video building a working GPT in ~300 lines of PyTorch. The from-scratch version of "what does a transformer actually do".
+- **Vaswani, A. et al.**, *"Attention Is All You Need"* (NeurIPS, 2017). The original transformer paper. Read it after the explainers below.
+- **Jay Alammar**, ["The Illustrated Transformer"](http://jalammar.github.io/illustrated-transformer/). The standard visual introduction.
+- **Andrej Karpathy**, ["Let's build GPT: from scratch, in code, spelled out"](https://www.youtube.com/watch?v=kCc8FmEb1nY). A 2-hour video building a working GPT in ~300 lines of PyTorch. The from-scratch version of "what does a transformer actually do".
 
 ---
 
@@ -90,7 +90,7 @@ Post 33 showed that activation variance through a deep network is fragile: bad i
 What to read:
 
 - **Ioffe, S. and Szegedy, C.**, *"Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift"* (ICML, 2015). "Internal covariate shift" is the paper's name for the way each layer's input distribution keeps shifting as the layers below it update.
-- **Santurkar, S. et al.**, *"How Does Batch Normalization Help Optimization?"* (NeurIPS, 2018) — the follow-up that argues the original "covariate shift" explanation was wrong and batch norm helps for a different reason. Required for understanding the modern view.
+- **Santurkar, S. et al.**, *"How Does Batch Normalization Help Optimization?"* (NeurIPS, 2018). The follow-up that argues the original "covariate shift" explanation was wrong and batch norm helps for a different reason. Required for understanding the modern view.
 
 **Layer normalisation** is the variant transformers use; it normalises over the feature dimension rather than the batch dimension. Same idea, slightly different reduction axis.
 
@@ -100,7 +100,7 @@ Past a certain depth (~20 layers), even well-initialised networks stop training.
 
 What to read:
 
-- **He, K. et al.**, *"Deep Residual Learning for Image Recognition"* (CVPR, 2016) — the ResNet paper.
+- **He, K. et al.**, *"Deep Residual Learning for Image Recognition"* (CVPR, 2016). The ResNet paper.
 
 Residuals are now standard in every modern architecture, from CNNs to transformers.
 
@@ -108,10 +108,10 @@ Residuals are now standard in every modern architecture, from CNNs to transforme
 
 Post 23 introduced one decay schedule. Production training uses fancier ones:
 
-- **Cosine decay** — smooth half-cosine from $\alpha_0$ to a small floor.
-- **Cosine with warm restarts** — cosine that periodically resets to $\alpha_0$ (Loshchilov & Hutter, 2017).
-- **One-cycle policy** — ramp up to a peak, then ramp down (Smith, 2018). Used in fast.ai's training recipes.
-- **Linear warmup** — start near zero, ramp up over the first few thousand steps. Standard for transformers.
+- **Cosine decay:** smooth half-cosine from $\alpha_0$ to a small floor.
+- **Cosine with warm restarts:** cosine that periodically resets to $\alpha_0$ (Loshchilov & Hutter, 2017).
+- **One-cycle policy:** ramp up to a peak, then ramp down (Smith, 2018). Used in fast.ai's training recipes.
+- **Linear warmup:** start near zero, ramp up over the first few thousand steps. Standard for transformers.
 
 Pick one for the problem; the differences are real but second-order compared to the choice of optimiser.
 
@@ -123,8 +123,8 @@ Modern GPUs run float16 / bfloat16 math 4-8× faster than float32. **Mixed preci
 
 For models that don't fit on one GPU or datasets that take days on a single device, distributed training spreads the work across many devices. The two main paradigms:
 
-- **Data parallel** — every device has the same model, processes different batches, gradients synchronised at the end of each step. The easy case; works for anything that fits on one device.
-- **Model parallel** — split the model itself across devices. Required for very large models (GPT-scale).
+- **Data parallel:** every device has the same model, processes different batches, gradients synchronised at the end of each step. The easy case; works for anything that fits on one device.
+- **Model parallel:** split the model itself across devices. Required for very large models (GPT-scale).
 
 Production frameworks (PyTorch's `DistributedDataParallel`, JAX's `jax.pmap`) handle most of the bookkeeping.
 
@@ -138,9 +138,9 @@ Supervised learning (this series) needs labelled data. **Self-supervised** learn
 
 What to read:
 
-- **Devlin, J. et al.**, *"BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding"* (NAACL, 2019) — masked-language-modelling.
-- **Radford, A. et al.**, *"Language Models are Unsupervised Multitask Learners"* (GPT-2, 2019) — next-token prediction at scale.
-- **He, K. et al.**, *"Masked Autoencoders Are Scalable Vision Learners"* (CVPR, 2022) — the vision analogue.
+- **Devlin, J. et al.**, *"BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding"* (NAACL, 2019). Masked-language-modelling.
+- **Radford, A. et al.**, *"Language Models are Unsupervised Multitask Learners"* (GPT-2, 2019). Next-token prediction at scale.
+- **He, K. et al.**, *"Masked Autoencoders Are Scalable Vision Learners"* (CVPR, 2022). The vision analogue.
 
 Self-supervised pretraining followed by supervised fine-tuning is now the dominant paradigm for both vision and language.
 
@@ -153,7 +153,7 @@ For language: **LoRA** and **parameter-efficient fine-tuning** (PEFT) techniques
 What to read:
 
 - **Hu, E. J. et al.**, *"LoRA: Low-Rank Adaptation of Large Language Models"* (ICLR, 2022).
-- **Hugging Face PEFT library docs** — the practical entry point.
+- **Hugging Face PEFT library docs:** the practical entry point.
 
 ### 4.3. Reinforcement learning
 
@@ -161,9 +161,9 @@ So far the series has covered **supervised** learning: each input has a known co
 
 What to read:
 
-- **Sutton, R. S. and Barto, A. G.**, *Reinforcement Learning: An Introduction*, 2nd edition (MIT Press, 2018) — the canonical textbook. Free PDF at [incompleteideas.net](http://incompleteideas.net/book/the-book.html).
-- **Mnih, V. et al.**, *"Playing Atari with Deep Reinforcement Learning"* (NeurIPS Workshop, 2013) — the paper that connected RL to deep networks.
-- **OpenAI Spinning Up** — [spinningup.openai.com](https://spinningup.openai.com/) — a structured curriculum for going from "what is RL" to "implementing PPO from scratch".
+- **Sutton, R. S. and Barto, A. G.**, *Reinforcement Learning: An Introduction*, 2nd edition (MIT Press, 2018). The canonical textbook. Free PDF at [incompleteideas.net](http://incompleteideas.net/book/the-book.html).
+- **Mnih, V. et al.**, *"Playing Atari with Deep Reinforcement Learning"* (NeurIPS Workshop, 2013). The paper that connected RL to deep networks.
+- **OpenAI Spinning Up** ([spinningup.openai.com](https://spinningup.openai.com/)): a structured curriculum for going from "what is RL" to "implementing PPO from scratch".
 
 ### 4.4. Diffusion models (for generation)
 
@@ -171,8 +171,8 @@ For image / audio / video *generation*, the dominant modern technique is **diffu
 
 What to read:
 
-- **Ho, J., Jain, A., and Abbeel, P.**, *"Denoising Diffusion Probabilistic Models"* (NeurIPS, 2020) — the modern DDPM paper.
-- **Lilian Weng's blog**, ["What are Diffusion Models?"](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/) — the standard expository explainer.
+- **Ho, J., Jain, A., and Abbeel, P.**, *"Denoising Diffusion Probabilistic Models"* (NeurIPS, 2020). The modern DDPM paper.
+- **Lilian Weng's blog**, ["What are Diffusion Models?"](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/). The standard expository explainer.
 
 ---
 
@@ -180,9 +180,9 @@ What to read:
 
 If you want a single book to sit alongside this series, pick one of:
 
-- **Goodfellow, Bengio, Courville**, *Deep Learning* (MIT Press, 2016) — the canonical textbook. Free at [deeplearningbook.org](https://www.deeplearningbook.org/). Read the second half (chapters 6 onward); the first half overlaps with this series.
-- **Howard, J. and Gugger, S.**, *Deep Learning for Coders with fastai and PyTorch* (O'Reilly, 2020) — the most-practical-modern alternative. PyTorch-first; the from-scratch ethic of this series ported to a real production framework.
-- **Bishop, C. M.**, *Deep Learning: Foundations and Concepts* (Springer, 2024) — the modern successor to Bishop's classic *PRML*. The most mathematically rigorous of the three.
+- **Goodfellow, Bengio, Courville**, *Deep Learning* (MIT Press, 2016). The canonical textbook. Free at [deeplearningbook.org](https://www.deeplearningbook.org/). Read the second half (chapters 6 onward); the first half overlaps with this series.
+- **Howard, J. and Gugger, S.**, *Deep Learning for Coders with fastai and PyTorch* (O'Reilly, 2020). The most-practical-modern alternative. PyTorch-first; the from-scratch ethic of this series ported to a real production framework.
+- **Bishop, C. M.**, *Deep Learning: Foundations and Concepts* (Springer, 2024). The modern successor to Bishop's classic *PRML*. The most mathematically rigorous of the three.
 
 ---
 
@@ -190,9 +190,9 @@ If you want a single book to sit alongside this series, pick one of:
 
 After implementing the basics from scratch, the production frameworks become much easier to read because the reader already knows what each method is doing under the hood:
 
-- **PyTorch** — the dominant research framework. Most papers ship PyTorch code; most modern tutorials assume PyTorch. Start here.
-- **JAX** — Google's research framework. Functional, very fast on TPUs, becoming popular for RL and large-scale training. Worth learning second.
-- **TensorFlow / Keras** — still the dominant production framework in many industries. Worth knowing for work in a TF shop.
+- **PyTorch:** the dominant research framework. Most papers ship PyTorch code; most modern tutorials assume PyTorch. Start here.
+- **JAX:** Google's research framework. Functional, very fast on TPUs, becoming popular for RL and large-scale training. Worth learning second.
+- **TensorFlow / Keras:** still the dominant production framework in many industries. Worth knowing for work in a TF shop.
 
 The from-scratch series prepares the reader for all three. Knowing what a `Layer_Dense` does and what `backward` should return means the framework just spares the writing of it.
 
@@ -241,10 +241,10 @@ A few traps that catch people working through a list like this:
 
 The links in §§2–4 above are the primary sources. A few extra organisational resources:
 
-- **Distill.pub** — [distill.pub](https://distill.pub/) — beautiful interactive explainers for selected papers. The "Visualizing Neural Networks" and "Building Blocks of Interpretability" articles are particularly good.
-- **Papers With Code** — [paperswithcode.com](https://paperswithcode.com/) — every paper with its open-source implementation linked. The standard place to find recent SOTA.
-- **arXiv-sanity-lite** — [arxiv-sanity-lite.com](https://arxiv-sanity-lite.com/) — Andrej Karpathy's filtered arXiv reader. Personalised paper recommendations based on what you read.
-- **The Stanford / MIT / Berkeley public course archives** — CS231n (Stanford, vision), CS224n (Stanford, NLP), 6.S191 (MIT, deep learning) are all freely available with lecture videos and assignments.
+- **Distill.pub** ([distill.pub](https://distill.pub/)): beautiful interactive explainers for selected papers. The "Visualizing Neural Networks" and "Building Blocks of Interpretability" articles are particularly good.
+- **Papers With Code** ([paperswithcode.com](https://paperswithcode.com/)): every paper with its open-source implementation linked. The standard place to find recent SOTA.
+- **arXiv-sanity-lite** ([arxiv-sanity-lite.com](https://arxiv-sanity-lite.com/)): Andrej Karpathy's filtered arXiv reader. Personalised paper recommendations based on what you read.
+- **The Stanford / MIT / Berkeley public course archives:** CS231n (Stanford, vision), CS224n (Stanford, NLP), 6.S191 (MIT, deep learning) are all freely available with lecture videos and assignments.
 
 Full citations for everything in this post live in [REFERENCES.md](../../REFERENCES.md).
 

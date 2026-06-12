@@ -221,9 +221,9 @@ A boundary section.
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 6.2.2 (Maximum Likelihood) and chapter 6.5 (Back-Propagation) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 18 (2020).
-- Murphy, K. P., *Probabilistic Machine Learning: An Introduction* — chapter 10 (Classification) (MIT Press, 2022).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6.2.2 (Maximum Likelihood) and chapter 6.5 (Back-Propagation) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 18 (2020).
+- Murphy, K. P., *Probabilistic Machine Learning: An Introduction*, chapter 10 (Classification) (MIT Press, 2022).
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
 
@@ -231,9 +231,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 19 — Softmax derivatives and the combined backward pass](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)** — the softmax Jacobian, and the clean cancellation that turns `softmax + cross-entropy` into `(ŷ − y)/N`.
-- **[Part 20 — Assembling full backpropagation](../20-assembling-full-backpropagation/index.md)** — every `backward` method snapping together for the first time.
-- **[Part 21 — Coding the full backpropagation](../21-coding-the-full-backpropagation/index.md)** — the complete training loop that actually moves the spiral classifier off the chance baseline.
+- **[Part 19 — Softmax derivatives and the combined backward pass](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)**: the softmax Jacobian, and the clean cancellation that turns `softmax + cross-entropy` into `(ŷ − y)/N`.
+- **[Part 20 — Assembling full backpropagation](../20-assembling-full-backpropagation/index.md)**: every `backward` method snapping together for the first time.
+- **[Part 21 — Coding the full backpropagation](../21-coding-the-full-backpropagation/index.md)**: the complete training loop that actually moves the spiral classifier off the chance baseline.
 
 ---
 

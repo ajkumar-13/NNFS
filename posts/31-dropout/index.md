@@ -301,13 +301,13 @@ In modern practice, **dropout + L2 + data augmentation** is a strong default sta
 
 ## Further reading
 
-- Gal, Y. and Ghahramani, Z., *"Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning"* (ICML, 2016) — MC Dropout for uncertainty estimation.
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 7.12 (Dropout) (MIT Press, 2016).
-- Hinton, G., Srivastava, N., Krizhevsky, A., Sutskever, I., and Salakhutdinov, R., *"Improving neural networks by preventing co-adaptation of feature detectors"* (arXiv:1207.0580, 2012) — the original technical-report announcement.
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 31 (2020).
+- Gal, Y. and Ghahramani, Z., *"Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning"* (ICML, 2016). MC Dropout for uncertainty estimation.
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 7.12 (Dropout) (MIT Press, 2016).
+- Hinton, G., Srivastava, N., Krizhevsky, A., Sutskever, I., and Salakhutdinov, R., *"Improving neural networks by preventing co-adaptation of feature detectors"* (arXiv:1207.0580, 2012). The original technical-report announcement.
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 31 (2020).
 - Li, X., Chen, S., Hu, X., and Yang, J., *"Understanding the Disharmony between Dropout and Batch Normalization by Variance Shift"* (CVPR, 2019).
-- Srivastava, N., Hinton, G., Krizhevsky, A., Sutskever, I., and Salakhutdinov, R., *"Dropout: A Simple Way to Prevent Neural Networks from Overfitting"* (Journal of Machine Learning Research, 2014) — the canonical reference.
-- Wager, S., Wang, S., and Liang, P., *"Dropout Training as Adaptive Regularization"* (NeurIPS, 2013) — the formal connection between dropout and L2 regularisation.
+- Srivastava, N., Hinton, G., Krizhevsky, A., Sutskever, I., and Salakhutdinov, R., *"Dropout: A Simple Way to Prevent Neural Networks from Overfitting"* (Journal of Machine Learning Research, 2014). The canonical reference.
+- Wager, S., Wang, S., and Liang, P., *"Dropout Training as Adaptive Regularization"* (NeurIPS, 2013). The formal connection between dropout and L2 regularisation.
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
 

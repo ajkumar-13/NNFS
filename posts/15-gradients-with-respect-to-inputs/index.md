@@ -199,9 +199,9 @@ A boundary section.
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 6.5 (Back-Propagation) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 15 (2020).
-- Nielsen, M., *Neural Networks and Deep Learning* — chapter 2, "How the backpropagation algorithm works" (online, 2015).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6.5 (Back-Propagation) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 15 (2020).
+- Nielsen, M., *Neural Networks and Deep Learning*, chapter 2, "How the backpropagation algorithm works" (online, 2015).
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
 
@@ -209,9 +209,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 16 — Coding backpropagation](../16-coding-backpropagation/index.md)** — `Layer_Dense.backward` with all three formulas wired into the production class.
-- **[Part 17 — Backpropagation through activation functions](../17-backpropagation-through-activation-functions/index.md)** — the activation gate that produces the upstream gradient.
-- **[Part 18 — Backpropagation through the loss function](../18-backpropagation-through-the-loss-function/index.md)** — where the first upstream gradient comes from in the chain.
+- **[Part 16 — Coding backpropagation](../16-coding-backpropagation/index.md)**: `Layer_Dense.backward` with all three formulas wired into the production class.
+- **[Part 17 — Backpropagation through activation functions](../17-backpropagation-through-activation-functions/index.md)**: the activation gate that produces the upstream gradient.
+- **[Part 18 — Backpropagation through the loss function](../18-backpropagation-through-the-loss-function/index.md)**: where the first upstream gradient comes from in the chain.
 
 ---
 

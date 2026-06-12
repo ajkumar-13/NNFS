@@ -283,14 +283,14 @@ For this series, plain Adam is what is built. The variants share the same skelet
 
 ## Further reading
 
-- Chen, X. et al., *"Symbolic Discovery of Optimization Algorithms"* (NeurIPS, 2023) — the paper that introduced Lion.
-- Dozat, T., *"Incorporating Nesterov Momentum into Adam"* (ICLR Workshop, 2016) — NAdam.
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 8.5.3 (Adam) (MIT Press, 2016).
-- Kingma, D. P. and Ba, J., *"Adam: A Method for Stochastic Optimization"* (ICLR, 2015) — the original paper.
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 27 (2020).
-- Loshchilov, I. and Hutter, F., *"Decoupled Weight Decay Regularization"* (ICLR, 2019) — AdamW.
-- Reddi, S. J., Kale, S., and Kumar, S., *"On the Convergence of Adam and Beyond"* (ICLR, 2018) — AMSGrad and the convergence failure cases.
-- Wilson, A. C., Roelofs, R., Stern, M., Srebro, N., and Recht, B., *"The Marginal Value of Adaptive Gradient Methods in Machine Learning"* (NeurIPS, 2017) — the generalisation comparison vs SGD.
+- Chen, X. et al., *"Symbolic Discovery of Optimization Algorithms"* (NeurIPS, 2023). The paper that introduced Lion.
+- Dozat, T., *"Incorporating Nesterov Momentum into Adam"* (ICLR Workshop, 2016). NAdam.
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 8.5.3 (Adam) (MIT Press, 2016).
+- Kingma, D. P. and Ba, J., *"Adam: A Method for Stochastic Optimization"* (ICLR, 2015). The original paper.
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 27 (2020).
+- Loshchilov, I. and Hutter, F., *"Decoupled Weight Decay Regularization"* (ICLR, 2019). AdamW.
+- Reddi, S. J., Kale, S., and Kumar, S., *"On the Convergence of Adam and Beyond"* (ICLR, 2018). AMSGrad and the convergence failure cases.
+- Wilson, A. C., Roelofs, R., Stern, M., Srebro, N., and Recht, B., *"The Marginal Value of Adaptive Gradient Methods in Machine Learning"* (NeurIPS, 2017). The generalisation comparison vs SGD.
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
 
@@ -300,7 +300,7 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 The optimiser group is done. The model can now reach 95%+ on the training data. The natural follow-up question is whether it actually *generalises* to data it has never seen.
 
-- **[Part 28 — Generalisation and testing](../28-generalization-and-testing/index.md)** — splits train and test sets, measures the generalisation gap, and shows that high training accuracy alone is not the whole story.
+- **[Part 28 — Generalisation and testing](../28-generalization-and-testing/index.md)**: splits train and test sets, measures the generalisation gap, and shows that high training accuracy alone is not the whole story.
 
 ---
 

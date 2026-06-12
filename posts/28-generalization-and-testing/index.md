@@ -219,9 +219,9 @@ The hyperparameters that can be tuned underneath all four levers include:
 ## Further reading
 
 - Geman, S., Bienenstock, E., and Doursat, R., *"Neural Networks and the Bias / Variance Dilemma"* (Neural Computation, 1992).
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 7, "Regularization for Deep Learning" (MIT Press, 2016).
-- Hastie, T., Tibshirani, R., and Friedman, J., *The Elements of Statistical Learning* — chapter 7, "Model Assessment and Selection" (Springer, 2009).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter on generalization (2020).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 7, "Regularization for Deep Learning" (MIT Press, 2016).
+- Hastie, T., Tibshirani, R., and Friedman, J., *The Elements of Statistical Learning*, chapter 7, "Model Assessment and Selection" (Springer, 2009).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter on generalization (2020).
 - Prechelt, L., *"Early Stopping — But When?"* (Neural Networks: Tricks of the Trade, 1998).
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
@@ -230,9 +230,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 29 — Validation and hyperparameter tuning](../29-validation-and-hyperparameter-tuning/index.md)** — separating the validation set from the test set, formalising early stopping, and searching the hyperparameter space without leaking information.
-- **[Part 30 — L1 and L2 regularisation](../30-l1-and-l2-regularisation/index.md)** — penalising weight magnitudes inside the loss function so the optimiser prefers smaller weights and smoother boundaries.
-- **[Part 31 — Dropout](../31-dropout/index.md)** — disabling neurons at random during training to force the network to spread its representation.
+- **[Part 29 — Validation and hyperparameter tuning](../29-validation-and-hyperparameter-tuning/index.md)**: separating the validation set from the test set, formalising early stopping, and searching the hyperparameter space without leaking information.
+- **[Part 30 — L1 and L2 regularisation](../30-l1-and-l2-regularisation/index.md)**: penalising weight magnitudes inside the loss function so the optimiser prefers smaller weights and smoother boundaries.
+- **[Part 31 — Dropout](../31-dropout/index.md)**: disabling neurons at random during training to force the network to spread its representation.
 
 ---
 

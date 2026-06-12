@@ -254,11 +254,11 @@ For the from-scratch series (no residuals, no batchnorm, at most three hidden la
 
 ## Further reading
 
-- Glorot, X. and Bengio, Y., *"Understanding the difficulty of training deep feedforward neural networks"* (AISTATS, 2010) — the original Xavier paper.
-- He, K. et al., *"Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification"* (ICCV, 2015) — the He / Kaiming init paper.
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 8.4 (Parameter Initialisation Strategies) (MIT Press, 2016).
-- Klambauer, G. et al., *"Self-Normalizing Neural Networks"* (NeurIPS, 2017) — SELU and its bespoke init.
-- Saxe, A. M., McClelland, J. L., and Ganguli, S., *"Exact solutions to the nonlinear dynamics of learning in deep linear neural networks"* (ICLR, 2014) — orthogonal initialisation, a related family worth knowing.
+- Glorot, X. and Bengio, Y., *"Understanding the difficulty of training deep feedforward neural networks"* (AISTATS, 2010). The original Xavier paper.
+- He, K. et al., *"Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification"* (ICCV, 2015). The He / Kaiming init paper.
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 8.4 (Parameter Initialisation Strategies) (MIT Press, 2016).
+- Klambauer, G. et al., *"Self-Normalizing Neural Networks"* (NeurIPS, 2017). SELU and its bespoke init.
+- Saxe, A. M., McClelland, J. L., and Ganguli, S., *"Exact solutions to the nonlinear dynamics of learning in deep linear neural networks"* (ICLR, 2014). Orthogonal initialisation, a related family worth knowing.
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
 
@@ -266,8 +266,8 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 34 — Sigmoid and binary cross-entropy](../34-sigmoid-and-binary-cross-entropy/index.md)** — the binary counterpart to softmax + categorical cross-entropy, with the same combined-derivative trick.
-- **[Part 35 — What to read after this series](../35-whats-next/index.md)** — pointers to convolution, recurrence, attention, batchnorm, and the rest of the modern deep-learning toolkit.
+- **[Part 34 — Sigmoid and binary cross-entropy](../34-sigmoid-and-binary-cross-entropy/index.md)**: the binary counterpart to softmax + categorical cross-entropy, with the same combined-derivative trick.
+- **[Part 35 — What to read after this series](../35-whats-next/index.md)**: pointers to convolution, recurrence, attention, batchnorm, and the rest of the modern deep-learning toolkit.
 
 ---
 

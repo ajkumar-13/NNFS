@@ -233,8 +233,8 @@ A boundary section, because the speed-up is so attractive it tempts misuse.
 ## Further reading
 
 - Bridle, J. S., *"Probabilistic Interpretation of Feedforward Classification Network Outputs"* (Neurocomputing, NATO ASI Series, 1990).
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 6.2 (Gradient-Based Learning) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 19 (2020).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6.2 (Gradient-Based Learning) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 19 (2020).
 - PyTorch documentation, *"`torch.nn.CrossEntropyLoss`"* (latest).
 - TensorFlow documentation, *"`tf.nn.softmax_cross_entropy_with_logits`"* (latest).
 
@@ -244,9 +244,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 20 — Assembling full backpropagation](../20-assembling-full-backpropagation/index.md)** — every `backward` method snapping into the same script for the first time.
-- **[Part 21 — Coding the full backpropagation](../21-coding-the-full-backpropagation/index.md)** — the complete training loop running on the spiral dataset.
-- **[Softmax backward appendix](../../appendix_softmax_combined_backward.md)** — the full substitution derivation, a class-index implementation, and why the explicit-Jacobian route agrees.
+- **[Part 20 — Assembling full backpropagation](../20-assembling-full-backpropagation/index.md)**: every `backward` method snapping into the same script for the first time.
+- **[Part 21 — Coding the full backpropagation](../21-coding-the-full-backpropagation/index.md)**: the complete training loop running on the spiral dataset.
+- **[Softmax backward appendix](../../appendix_softmax_combined_backward.md)**: the full substitution derivation, a class-index implementation, and why the explicit-Jacobian route agrees.
 
 ---
 

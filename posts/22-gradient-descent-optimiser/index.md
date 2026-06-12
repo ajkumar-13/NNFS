@@ -237,8 +237,8 @@ A boundary section.
 ## Further reading
 
 - Cauchy, A.-L., *"Méthode générale pour la résolution des systèmes d'équations simultanées"* (Comptes rendus de l'Académie des sciences, 1847).
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 8 (Optimization for Training Deep Models) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 22 (2020).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 8 (Optimization for Training Deep Models) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 22 (2020).
 - Ruder, S., *"An overview of gradient descent optimization algorithms"* (arXiv:1609.04747, 2016).
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
@@ -247,9 +247,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 23 — Learning-rate decay](../23-learning-rate-decay/index.md)** — the first refinement: shrink $\alpha$ over time so the optimiser explores early and converges later.
-- **[Part 24 — Momentum](../24-momentum/index.md)** — add an exponential moving average of past gradients to smooth the direction.
-- **[Part 27 — Adam](../27-adam-optimiser/index.md)** — the modern default, combining momentum with per-parameter adaptive rates.
+- **[Part 23 — Learning-rate decay](../23-learning-rate-decay/index.md)**: the first refinement: shrink $\alpha$ over time so the optimiser explores early and converges later.
+- **[Part 24 — Momentum](../24-momentum/index.md)**: add an exponential moving average of past gradients to smooth the direction.
+- **[Part 27 — Adam](../27-adam-optimiser/index.md)**: the modern default, combining momentum with per-parameter adaptive rates.
 
 ---
 

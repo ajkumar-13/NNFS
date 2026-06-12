@@ -264,8 +264,8 @@ A boundary section.
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 6.5 (Back-Propagation) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 16 (2020).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6.5 (Back-Propagation) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 16 (2020).
 - Paszke, A., et al., *"PyTorch: An Imperative Style, High-Performance Deep Learning Library"* (NeurIPS, 2019).
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
@@ -274,9 +274,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 17 — Backpropagation through activation functions](../17-backpropagation-through-activation-functions/index.md)** — a deeper look at ReLU's backward and the setup for softmax.
-- **[Part 18 — Backpropagation through the loss function](../18-backpropagation-through-the-loss-function/index.md)** — the first `backward` in the chain: from the loss back to softmax's input.
-- **[Part 19 — Softmax derivatives and the combined backward pass](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)** — the clean shortcut that pairs softmax with cross-entropy.
+- **[Part 17 — Backpropagation through activation functions](../17-backpropagation-through-activation-functions/index.md)**: a deeper look at ReLU's backward and the setup for softmax.
+- **[Part 18 — Backpropagation through the loss function](../18-backpropagation-through-the-loss-function/index.md)**: the first `backward` in the chain: from the loss back to softmax's input.
+- **[Part 19 — Softmax derivatives and the combined backward pass](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)**: the clean shortcut that pairs softmax with cross-entropy.
 
 ---
 

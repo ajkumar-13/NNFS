@@ -233,8 +233,8 @@ The metaphor breaks down in high dimensions (a 21-dimensional hill is hard to vi
 ## Further reading
 
 - Cauchy, A.-L., *"Méthode générale pour la résolution des systèmes d'équations simultanées"* (Comptes rendus de l'Académie des sciences, 1847).
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 4 (Numerical Computation) and chapter 8 (Optimization for Training Deep Models) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 9 (2020).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 4 (Numerical Computation) and chapter 8 (Optimization for Training Deep Models) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 9 (2020).
 - Rumelhart, D., Hinton, G., and Williams, R., *"Learning representations by back-propagating errors"* (Nature, 1986).
 - Ruder, S., *"An overview of gradient descent optimization algorithms"* (arXiv:1609.04747, 2016).
 
@@ -244,9 +244,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 10 — Derivatives, partial derivatives, and gradients](../10-derivatives-partial-derivatives-and-gradients/index.md)** — the calculus toolkit needed before backpropagation can be derived.
-- **[Part 11 — The chain rule](../11-the-chain-rule/index.md)** — the rule that lets gradients propagate through a stack of layers.
-- **[Part 22 — Gradient-descent optimiser](../22-gradient-descent-optimiser/index.md)** — the simplest update rule, applied to the spiral classifier with real gradients (from Parts 12–21).
+- **[Part 10 — Derivatives, partial derivatives, and gradients](../10-derivatives-partial-derivatives-and-gradients/index.md)**: the calculus toolkit needed before backpropagation can be derived.
+- **[Part 11 — The chain rule](../11-the-chain-rule/index.md)**: the rule that lets gradients propagate through a stack of layers.
+- **[Part 22 — Gradient-descent optimiser](../22-gradient-descent-optimiser/index.md)**: the simplest update rule, applied to the spiral classifier with real gradients (from Parts 12–21).
 
 ---
 

@@ -433,7 +433,7 @@ Once each is in place, the same forward pass that produced `[4.8, 1.21, 2.385]` 
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., Courville, A., *Deep Learning* — chapter 6, "Deep Feedforward Networks" (MIT Press, 2016).
+- Goodfellow, I., Bengio, Y., Courville, A., *Deep Learning*, chapter 6, "Deep Feedforward Networks" (MIT Press, 2016).
 - Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* (2020).
 - McCulloch, W. S. and Pitts, W., *"A logical calculus of the ideas immanent in nervous activity"* (Bulletin of Mathematical Biophysics, 1943).
 - NumPy, *"`numpy.dot` reference"* (latest).
@@ -445,9 +445,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 02 — NumPy and the dot product](../02-numpy-and-the-dot-product/index.md)** — the three forms of `np.dot()` (vector·vector, matrix·vector, matrix·matrix) and which one matches a neuron, a layer, and a batch.
-- **[Part 04 — The Dense layer class and spiral data](../04-dense-layer-class-and-spiral-data/index.md)** — wrapping the layer in an object-oriented class and introducing the non-linear dataset used for classification throughout the series.
-- **[Part 06 — Activation functions: ReLU and Softmax](../06-activation-functions-relu-and-softmax/index.md)** — the missing non-linearity that lets stacked layers express something a single layer cannot.
+- **[Part 02 — NumPy and the dot product](../02-numpy-and-the-dot-product/index.md)**: the three forms of `np.dot()` (vector·vector, matrix·vector, matrix·matrix) and which one matches a neuron, a layer, and a batch.
+- **[Part 04 — The Dense layer class and spiral data](../04-dense-layer-class-and-spiral-data/index.md)**: wrapping the layer in an object-oriented class and introducing the non-linear dataset used for classification throughout the series.
+- **[Part 06 — Activation functions: ReLU and Softmax](../06-activation-functions-relu-and-softmax/index.md)**: the missing non-linearity that lets stacked layers express something a single layer cannot.
 
 ---
 

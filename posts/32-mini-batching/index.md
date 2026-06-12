@@ -270,11 +270,11 @@ A glossary of mini-batch-adjacent terms worth knowing:
 
 ## Further reading
 
-- Bottou, L., Curtis, F. E., and Nocedal, J., *"Optimization methods for large-scale machine learning"* (SIAM Review, 2018) — Section 4 on mini-batch SGD's theoretical properties.
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 8.1 (How learning differs from pure optimisation) (MIT Press, 2016).
-- Goyal, P. et al., *"Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour"* (arXiv:1706.02677, 2017) — the linear-scaling rule for large batch sizes.
-- Keskar, N. S. et al., *"On Large-Batch Training for Deep Learning: Generalization Gap and Sharp Minima"* (ICLR, 2017) — the flat-vs-sharp minima argument for why small batches generalise better.
-- Smith, S. L. et al., *"Don't Decay the Learning Rate, Increase the Batch Size"* (ICLR, 2018) — batch-size scheduling as an equivalent of learning-rate decay.
+- Bottou, L., Curtis, F. E., and Nocedal, J., *"Optimization methods for large-scale machine learning"* (SIAM Review, 2018). Section 4 on mini-batch SGD's theoretical properties.
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 8.1 (How learning differs from pure optimisation) (MIT Press, 2016).
+- Goyal, P. et al., *"Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour"* (arXiv:1706.02677, 2017). The linear-scaling rule for large batch sizes.
+- Keskar, N. S. et al., *"On Large-Batch Training for Deep Learning: Generalization Gap and Sharp Minima"* (ICLR, 2017). The flat-vs-sharp minima argument for why small batches generalise better.
+- Smith, S. L. et al., *"Don't Decay the Learning Rate, Increase the Batch Size"* (ICLR, 2018). Batch-size scheduling as an equivalent of learning-rate decay.
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
 
@@ -282,9 +282,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 33 — Weight initialisation](../33-weight-initialisation/index.md)** — the lectures used `0.01 * np.random.randn` for every weight matrix. He / Xavier / Glorot are the principled alternatives and matter at depth.
-- **[Part 34 — Sigmoid and binary cross-entropy](../34-sigmoid-and-binary-cross-entropy/index.md)** — the binary counterpart to softmax + categorical cross-entropy from posts 6, 8, 19.
-- **[Part 35 — What to read after this series](../35-whats-next/index.md)** — pointers to convolutional, recurrent, and attention-based architectures the series did not cover.
+- **[Part 33 — Weight initialisation](../33-weight-initialisation/index.md)**: the lectures used `0.01 * np.random.randn` for every weight matrix. He / Xavier / Glorot are the principled alternatives and matter at depth.
+- **[Part 34 — Sigmoid and binary cross-entropy](../34-sigmoid-and-binary-cross-entropy/index.md)**: the binary counterpart to softmax + categorical cross-entropy from posts 6, 8, 19.
+- **[Part 35 — What to read after this series](../35-whats-next/index.md)**: pointers to convolutional, recurrent, and attention-based architectures the series did not cover.
 
 ---
 

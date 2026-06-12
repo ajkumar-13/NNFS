@@ -191,8 +191,8 @@ A boundary section.
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 6.5 (Back-Propagation and Other Differentiation Algorithms) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 20 (2020).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6.5 (Back-Propagation and Other Differentiation Algorithms) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 20 (2020).
 - Paszke, A., et al., *"PyTorch: An Imperative Style, High-Performance Deep Learning Library"* (NeurIPS, 2019).
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
@@ -201,9 +201,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 21 — Coding the full backpropagation](../21-coding-the-full-backpropagation/index.md)** — turning this assembly into a 200-iteration training loop and watching the spiral classifier converge.
-- **[Part 22 — Gradient-descent optimiser](../22-gradient-descent-optimiser/index.md)** — packaging the update rule into a reusable class that the next four optimisers all extend.
-- **[Part 23 — Learning-rate decay](../23-learning-rate-decay/index.md)** — the first smarter step rule, shrinking the learning rate over time so training does not overshoot.
+- **[Part 21 — Coding the full backpropagation](../21-coding-the-full-backpropagation/index.md)**: turning this assembly into a 200-iteration training loop and watching the spiral classifier converge.
+- **[Part 22 — Gradient-descent optimiser](../22-gradient-descent-optimiser/index.md)**: packaging the update rule into a reusable class that the next four optimisers all extend.
+- **[Part 23 — Learning-rate decay](../23-learning-rate-decay/index.md)**: the first smarter step rule, shrinking the learning rate over time so training does not overshoot.
 
 ---
 

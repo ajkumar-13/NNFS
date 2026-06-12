@@ -288,11 +288,11 @@ The fastest debugging move when a shape error is raised is to print the `.shape`
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 2, "Linear Algebra" (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 3 (2020).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 2, "Linear Algebra" (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 3 (2020).
 - Lawson, C., Hanson, R., Kincaid, D., and Krogh, F., *"Basic Linear Algebra Subprograms for FORTRAN Usage"* (ACM Transactions on Mathematical Software, 1979).
 - NumPy, *"`numpy.dot`, `numpy.matmul`, and the `@` operator"* (latest).
-- Strang, G., *Introduction to Linear Algebra* — chapter 2 (Wellesley-Cambridge, 6th edition, 2023).
+- Strang, G., *Introduction to Linear Algebra*, chapter 2 (Wellesley-Cambridge, 6th edition, 2023).
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
 
@@ -300,9 +300,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 03 — Stacking layers and the forward pass](../03-stacking-layers-and-the-forward-pass/index.md)** — chaining two `np.dot` calls together so a network has more than one layer.
-- **[Part 04 — The Dense layer class and spiral data](../04-dense-layer-class-and-spiral-data/index.md)** — wrapping the call in an OOP class and introducing the non-linear dataset for classification.
-- **[Part 05 — Array summation, keepdims, and broadcasting](../05-array-summation-keepdims-and-broadcasting/index.md)** — the shape-shifting rules that let the bias vector merge cleanly into a batched output.
+- **[Part 03 — Stacking layers and the forward pass](../03-stacking-layers-and-the-forward-pass/index.md)**: chaining two `np.dot` calls together so a network has more than one layer.
+- **[Part 04 — The Dense layer class and spiral data](../04-dense-layer-class-and-spiral-data/index.md)**: wrapping the call in an OOP class and introducing the non-linear dataset for classification.
+- **[Part 05 — Array summation, keepdims, and broadcasting](../05-array-summation-keepdims-and-broadcasting/index.md)**: the shape-shifting rules that let the bias vector merge cleanly into a batched output.
 
 ---
 

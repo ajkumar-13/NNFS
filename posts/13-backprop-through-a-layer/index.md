@@ -290,9 +290,9 @@ The structural recipe is unchanged. The shape of each quantity grows by one dime
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 6.5 (Back-Propagation) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 13 (2020).
-- Nielsen, M., *Neural Networks and Deep Learning* — chapter 2 (online, 2015).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6.5 (Back-Propagation) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 13 (2020).
+- Nielsen, M., *Neural Networks and Deep Learning*, chapter 2 (online, 2015).
 - Rumelhart, D., Hinton, G., and Williams, R., *"Learning representations by back-propagating errors"* (Nature, 1986).
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
@@ -301,9 +301,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 14 — Matrices in backpropagation](../14-matrices-in-backpropagation/index.md)** — turning the per-neuron loop above into a single `np.dot` call that handles a whole batch.
-- **[Part 15 — Gradients with respect to inputs](../15-gradients-with-respect-to-inputs/index.md)** — what to pass back to the previous layer when there is one.
-- **[Part 16 — Coding backpropagation](../16-coding-backpropagation/index.md)** — adding the `backward` method to `Layer_Dense`, the production version of what this post does by hand.
+- **[Part 14 — Matrices in backpropagation](../14-matrices-in-backpropagation/index.md)**: turning the per-neuron loop above into a single `np.dot` call that handles a whole batch.
+- **[Part 15 — Gradients with respect to inputs](../15-gradients-with-respect-to-inputs/index.md)**: what to pass back to the previous layer when there is one.
+- **[Part 16 — Coding backpropagation](../16-coding-backpropagation/index.md)**: adding the `backward` method to `Layer_Dense`, the production version of what this post does by hand.
 
 ---
 

@@ -341,8 +341,8 @@ Accuracy is coarser. A prediction of `[0.51, 0.49]` for class 0 and a prediction
 ## Further reading
 
 - Bridle, J. S., *"Probabilistic Interpretation of Feedforward Classification Network Outputs"* (Neurocomputing, NATO ASI Series, 1990).
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 5 (Machine Learning Basics) and chapter 6 (Deep Feedforward Networks) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 8 (2020).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 5 (Machine Learning Basics) and chapter 6 (Deep Feedforward Networks) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 8 (2020).
 - Shannon, C. E., *"A Mathematical Theory of Communication"* (Bell System Technical Journal, 1948).
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
@@ -351,9 +351,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 09 — Introduction to optimisation](../09-introduction-to-optimisation/index.md)** — the algorithm that uses this loss to actually move the weights, starting from why random search fails.
-- **[Part 18 — Backpropagation through the loss function](../18-backpropagation-through-the-loss-function/index.md)** — the gradient of categorical cross-entropy with respect to softmax inputs.
-- **[Part 19 — Softmax derivatives and the combined backward pass](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)** — the elegant cancellation that makes softmax + cross-entropy faster backward than apart.
+- **[Part 09 — Introduction to optimisation](../09-introduction-to-optimisation/index.md)**: the algorithm that uses this loss to actually move the weights, starting from why random search fails.
+- **[Part 18 — Backpropagation through the loss function](../18-backpropagation-through-the-loss-function/index.md)**: the gradient of categorical cross-entropy with respect to softmax inputs.
+- **[Part 19 — Softmax derivatives and the combined backward pass](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)**: the elegant cancellation that makes softmax + cross-entropy faster backward than apart.
 
 ---
 

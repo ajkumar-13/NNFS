@@ -254,8 +254,8 @@ Three implementation notes.
 
 ## Further reading
 
-- Bishop, C. M., *Pattern Recognition and Machine Learning* — chapter 4 (Linear Models for Classification) (Springer, 2006) — the canonical treatment of logistic regression.
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 6.2 (Output Units) (MIT Press, 2016) — the case for the combined sigmoid + BCE class.
+- Bishop, C. M., *Pattern Recognition and Machine Learning* — chapter 4 (Linear Models for Classification) (Springer, 2006). The canonical treatment of logistic regression.
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 6.2 (Output Units) (MIT Press, 2016). The case for the combined sigmoid + BCE class.
 - Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapters 15 and 16 (the post 19 softmax + CCE derivation transfers directly).
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
@@ -264,7 +264,7 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 35 — What to read after this series](../35-whats-next/index.md)** — pointers to architectures, optimisers, and tasks the series did not cover.
+- **[Part 35 — What to read after this series](../35-whats-next/index.md)**: pointers to architectures, optimisers, and tasks the series did not cover.
 
 ---
 

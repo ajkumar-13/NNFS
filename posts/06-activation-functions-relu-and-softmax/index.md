@@ -262,7 +262,7 @@ A network that follows this default has its activations in the right places with
 - Glorot, X., Bordes, A., and Bengio, Y., *"Deep Sparse Rectifier Neural Networks"* (AISTATS, 2011).
 - Hochreiter, S., *"Untersuchungen zu dynamischen neuronalen Netzen"* (Diploma thesis, TU München, 1991).
 - Krizhevsky, A., Sutskever, I., and Hinton, G., *"ImageNet Classification with Deep Convolutional Neural Networks"* (NeurIPS, 2012).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 6 (2020).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 6 (2020).
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
 
@@ -270,9 +270,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 07 — Coding the complete forward pass](../07-coding-the-complete-forward-pass/index.md)** — wiring the four objects (Dense, ReLU, Dense, Softmax) into a single end-to-end script and inspecting the intermediate shapes.
-- **[Part 08 — Loss: categorical cross-entropy](../08-loss-categorical-cross-entropy/index.md)** — the loss function that pairs with softmax and tells the network how wrong its probabilities are.
-- **[Part 19 — Softmax derivatives and the combined backward pass](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)** — the elegant cancellation that makes softmax + cross-entropy faster to backprop together than separately.
+- **[Part 07 — Coding the complete forward pass](../07-coding-the-complete-forward-pass/index.md)**: wiring the four objects (Dense, ReLU, Dense, Softmax) into a single end-to-end script and inspecting the intermediate shapes.
+- **[Part 08 — Loss: categorical cross-entropy](../08-loss-categorical-cross-entropy/index.md)**: the loss function that pairs with softmax and tells the network how wrong its probabilities are.
+- **[Part 19 — Softmax derivatives and the combined backward pass](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)**: the elegant cancellation that makes softmax + cross-entropy faster to backprop together than separately.
 
 ---
 

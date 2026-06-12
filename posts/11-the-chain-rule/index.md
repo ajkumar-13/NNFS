@@ -218,9 +218,9 @@ The actual work in the next nine posts is **Step 2**: deriving the local derivat
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 6, "Deep Feedforward Networks" (MIT Press, 2016).
-- Griewank, A. and Walther, A., *Evaluating Derivatives: Principles and Techniques of Algorithmic Differentiation* — chapter 3 (SIAM, 2008).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 11 (2020).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6, "Deep Feedforward Networks" (MIT Press, 2016).
+- Griewank, A. and Walther, A., *Evaluating Derivatives: Principles and Techniques of Algorithmic Differentiation*, chapter 3 (SIAM, 2008).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 11 (2020).
 - Linnainmaa, S., *"The representation of the cumulative rounding error of an algorithm as a Taylor expansion of the local rounding errors"* (Master's thesis, University of Helsinki, 1970).
 - Rumelhart, D., Hinton, G., and Williams, R., *"Learning representations by back-propagating errors"* (Nature, 1986).
 
@@ -230,9 +230,9 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ## What to read next
 
-- **[Part 12 — Backpropagation through a single neuron](../12-backprop-through-a-single-neuron/index.md)** — the first concrete application of the chain rule, on the smallest possible network.
-- **[Part 13 — Backpropagation through a layer of neurons](../13-backprop-through-a-layer/index.md)** — extending the calculation from one neuron to a full dense layer.
-- **[Part 14 — Matrices in backpropagation](../14-matrices-in-backpropagation/index.md)** — the matrix-form chain rule that Parts 16–21 implement in code.
+- **[Part 12 — Backpropagation through a single neuron](../12-backprop-through-a-single-neuron/index.md)**: the first concrete application of the chain rule, on the smallest possible network.
+- **[Part 13 — Backpropagation through a layer of neurons](../13-backprop-through-a-layer/index.md)**: extending the calculation from one neuron to a full dense layer.
+- **[Part 14 — Matrices in backpropagation](../14-matrices-in-backpropagation/index.md)**: the matrix-form chain rule that Parts 16–21 implement in code.
 
 ---
 

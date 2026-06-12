@@ -309,12 +309,12 @@ Neither connection changes the implementation, but both help with intuition when
 
 ## Further reading
 
-- Bishop, C. M., *Pattern Recognition and Machine Learning* — chapter 3 (Linear Models for Regression) (Springer, 2006) — the Bayesian-prior view of L1 and L2.
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* — chapter 7 (Regularization for Deep Learning) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python* — chapter 30 (2020).
-- Krogh, A. and Hertz, J. A., *"A Simple Weight Decay Can Improve Generalization"* (NeurIPS, 1992) — the classic paper that established weight decay for neural networks.
-- Loshchilov, I. and Hutter, F., *"Decoupled Weight Decay Regularization"* (ICLR, 2019) — why L2 and weight decay differ for adaptive optimisers; the AdamW fix.
-- Tibshirani, R., *"Regression Shrinkage and Selection via the Lasso"* (Journal of the Royal Statistical Society, 1996) — the original L1 / Lasso paper.
+- Bishop, C. M., *Pattern Recognition and Machine Learning* — chapter 3 (Linear Models for Regression) (Springer, 2006). The Bayesian-prior view of L1 and L2.
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 7 (Regularization for Deep Learning) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 30 (2020).
+- Krogh, A. and Hertz, J. A., *"A Simple Weight Decay Can Improve Generalization"* (NeurIPS, 1992). The classic paper that established weight decay for neural networks.
+- Loshchilov, I. and Hutter, F., *"Decoupled Weight Decay Regularization"* (ICLR, 2019). Why L2 and weight decay differ for adaptive optimisers; the AdamW fix.
+- Tibshirani, R., *"Regression Shrinkage and Selection via the Lasso"* (Journal of the Royal Statistical Society, 1996). The original L1 / Lasso paper.
 
 Full citations in [REFERENCES.md](../../REFERENCES.md).
 
@@ -324,7 +324,7 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 L1 and L2 constrain *weights*. The next lecture constrains *activations* by randomly turning neurons off during training.
 
-- **[Part 31 — Dropout](../31-dropout/index.md)** — randomly mask units in the forward pass so the network cannot rely on any single neuron; the most widely used regularisation technique in deep learning.
+- **[Part 31 — Dropout](../31-dropout/index.md)**: randomly mask units in the forward pass so the network cannot rely on any single neuron; the most widely used regularisation technique in deep learning.
 
 ---
 
