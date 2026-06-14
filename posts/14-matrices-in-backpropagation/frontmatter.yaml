@@ -1,0 +1,7 @@
+slug: 14-matrices-in-backpropagation
+title: "Part 14 · Matrices in backpropagation"
+date: 2026-05-28
+tags: [neural-networks, from-scratch, backpropagation, matrices, vectorisation]
+hero: diagrams/01-matrix-weight-gradient.svg
+reading_time: 11
+part: "Part V — Backpropagation"

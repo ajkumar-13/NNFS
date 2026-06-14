@@ -1,0 +1,7 @@
+slug: 06-activation-functions-relu-and-softmax
+title: "Part 06 · Activation functions: ReLU and Softmax"
+date: 2026-05-27
+tags: [neural-networks, from-scratch, relu, softmax, activations]
+hero: diagrams/01-why-nonlinearity.svg
+reading_time: 13
+part: "Part II — Activations and forward pass"

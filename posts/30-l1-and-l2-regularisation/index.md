@@ -1,18 +1,6 @@
----
-slug: 30-l1-and-l2-regularisation
-title: "Part 30 · L1 and L2 regularisation"
-date: 2026-05-29
-tags: [neural-networks, from-scratch, regularisation, l1, l2, generalisation, weight-decay]
-hero: diagrams/01-l1-vs-l2-penalty.svg
-reading_time: 12
-part: "Part VII — Generalisation and regularisation"
----
-
 # Part 30 · L1 and L2 regularisation
 
 > **TL;DR.** Overfitting tends to come with large weights, so adding a penalty on weight magnitude to the loss makes the optimiser pay a tax for every extra unit of magnitude and pushes the model toward weights that generalise. This post derives the L1 and L2 penalties and their gradients and extends `Layer_Dense` to support both, adding one line to the loss, one line to the gradient, and leaving the training loop unchanged.
->
-> **Reading time:** ~12 minutes.
 >
 > **After reading this you will be able to:**
 > - Write the L1 and L2 penalty terms, derive their gradients, and explain why L1 is sparsity-inducing while L2 is shrinkage-inducing.

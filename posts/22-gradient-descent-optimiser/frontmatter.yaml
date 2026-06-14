@@ -1,0 +1,7 @@
+slug: 22-gradient-descent-optimiser
+title: "Part 22 · Gradient-descent optimiser"
+date: 2026-05-29
+tags: [neural-networks, from-scratch, optimisation, gradient-descent, sgd]
+hero: diagrams/01-sgd-update-and-lr.svg
+reading_time: 11
+part: "Part VI — Optimisers"

@@ -1,0 +1,7 @@
+slug: 25-adagrad
+title: "Part 25 · AdaGrad"
+date: 2026-05-29
+tags: [neural-networks, from-scratch, optimisation, adagrad, adaptive-rates]
+hero: diagrams/01-per-parameter-rates.svg
+reading_time: 12
+part: "Part VI — Optimisers"

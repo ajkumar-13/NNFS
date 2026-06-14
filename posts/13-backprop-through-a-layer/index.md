@@ -1,18 +1,6 @@
----
-slug: 13-backprop-through-a-layer
-title: "Part 13 · Backpropagation through a layer of neurons"
-date: 2026-05-28
-tags: [neural-networks, from-scratch, backpropagation, gradients]
-hero: diagrams/01-layer-backprop.svg
-reading_time: 11
-part: "Part V — Backpropagation"
----
-
 # Part 13 · Backpropagation through a layer of neurons
 
 > **TL;DR.** The single-neuron recipe from Part 12 scales without modification to an entire layer: the same chain rule walks back through each neuron in parallel, the same upstream gradient is broadcast across every neuron, and the same "upstream × input" pattern produces the gradient for every weight. This post makes that same-pattern-times-three structure explicit on a three-neuron layer and runs a 200-iteration training loop that drops the loss to essentially zero.
->
-> **Reading time:** ~11 minutes.
 >
 > **After reading this you will be able to:**
 > - Apply the chain rule across all 15 parameters of a layer with one upstream gradient and per-weight inputs.

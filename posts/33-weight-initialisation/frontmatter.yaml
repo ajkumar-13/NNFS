@@ -1,0 +1,7 @@
+slug: 33-weight-initialisation
+title: "Part 33 · Weight initialisation"
+date: 2026-05-30
+tags: [neural-networks, from-scratch, training, initialisation, he-init, xavier-init, glorot]
+hero: diagrams/01-activation-variance-by-depth.svg
+reading_time: 11
+part: "Part VIII — Practical training and extensions"

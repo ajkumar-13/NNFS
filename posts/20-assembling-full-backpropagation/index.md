@@ -1,18 +1,6 @@
----
-slug: 20-assembling-full-backpropagation
-title: "Part 20 · Assembling full backpropagation"
-date: 2026-05-28
-tags: [neural-networks, from-scratch, backpropagation, integration]
-hero: diagrams/01-full-backprop-pipeline.svg
-reading_time: 11
-part: "Part V — Backpropagation"
----
-
 # Part 20 · Assembling full backpropagation
 
 > **TL;DR.** Ten posts of backprop theory and code reduce to one diagram: the forward pass walks left-to-right calling `forward`, the backward pass walks right-to-left calling `backward`, and each component's `dinputs` feeds the next component's `dvalues`. This post wires `Layer_Dense`, `Activation_ReLU`, and `Activation_Softmax_Loss_CategoricalCrossentropy` into a complete forward-backward-update pass, the architectural picture that makes the Part 21 training loop one screen of code.
->
-> **Reading time:** ~11 minutes.
 >
 > **After reading this you will be able to:**
 > - Wire the three building blocks together into a complete forward and backward pass.

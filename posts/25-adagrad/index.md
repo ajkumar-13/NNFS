@@ -1,18 +1,6 @@
----
-slug: 25-adagrad
-title: "Part 25 · AdaGrad"
-date: 2026-05-29
-tags: [neural-networks, from-scratch, optimisation, adagrad, adaptive-rates]
-hero: diagrams/01-per-parameter-rates.svg
-reading_time: 12
-part: "Part VI — Optimisers"
----
-
 # Part 25 · AdaGrad
 
 > **TL;DR.** **AdaGrad** (Duchi, Hazan, Singer, 2011) gives each parameter its own effective learning rate, scaled inversely by the square root of the running sum of its past squared gradients, so big-gradient parameters take small steps and small-gradient parameters keep their step size. This post implements `Optimizer_Adagrad` from scratch, shows why it lifts spiral accuracy above plain SGD, and explains the structural flaw (the cache only grows, so every rate eventually decays toward zero) that RMSProp and Adam exist to fix.
->
-> **Reading time:** ~12 minutes.
 >
 > **After reading this you will be able to:**
 > - Explain why a single global learning rate is fundamentally inadequate for parameters with different gradient scales.

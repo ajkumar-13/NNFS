@@ -1,0 +1,7 @@
+slug: 10-derivatives-partial-derivatives-and-gradients
+title: "Part 10 · Derivatives, partial derivatives, and gradients"
+date: 2026-05-28
+tags: [neural-networks, from-scratch, calculus, gradients]
+hero: diagrams/01-derivative-as-slope.svg
+reading_time: 12
+part: "Part IV — Calculus for backpropagation"

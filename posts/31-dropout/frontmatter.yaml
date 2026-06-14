@@ -1,0 +1,7 @@
+slug: 31-dropout
+title: "Part 31 · Dropout"
+date: 2026-05-29
+tags: [neural-networks, from-scratch, regularisation, dropout, generalisation]
+hero: diagrams/01-dropout-train-vs-test.svg
+reading_time: 12
+part: "Part VII — Generalisation and regularisation"

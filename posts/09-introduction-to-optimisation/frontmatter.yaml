@@ -1,0 +1,7 @@
+slug: 09-introduction-to-optimisation
+title: "Part 09 · Introduction to optimisation"
+date: 2026-05-28
+tags: [neural-networks, from-scratch, optimisation, gradient-descent]
+hero: diagrams/01-strategies-compared.svg
+reading_time: 12
+part: "Part III — Loss and optimisation"

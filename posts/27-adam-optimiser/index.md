@@ -1,18 +1,6 @@
----
-slug: 27-adam-optimiser
-title: "Part 27 · Adam"
-date: 2026-05-29
-tags: [neural-networks, from-scratch, optimisation, adam, default-optimizer]
-hero: diagrams/01-adam-pipeline.svg
-reading_time: 13
-part: "Part VI — Optimisers"
----
-
 # Part 27 · Adam
 
 > **TL;DR.** Adam (Kingma & Ba, 2014) combines momentum and an RMSProp cache with a bias correction, making it the optimiser most production neural networks ship with. This post builds `Optimizer_Adam` from those three ideas and reproduces the spiral result (~96% accuracy) with no per-problem tuning.
->
-> **Reading time:** ~13 minutes.
 >
 > **After reading this you will be able to:**
 > - Decompose the Adam update into its three constituent ideas (first-moment EMA, second-moment EMA, and bias correction) and explain what each one contributes.

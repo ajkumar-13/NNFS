@@ -1,0 +1,7 @@
+slug: 08-loss-categorical-cross-entropy
+title: "Part 08 · Loss: categorical cross-entropy"
+date: 2026-05-28
+tags: [neural-networks, from-scratch, loss, cross-entropy, classification]
+hero: diagrams/01-cross-entropy-curve.svg
+reading_time: 12
+part: "Part III — Loss and optimisation"

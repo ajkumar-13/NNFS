@@ -1,18 +1,6 @@
----
-slug: 26-rmsprop
-title: "Part 26 · RMSProp"
-date: 2026-05-29
-tags: [neural-networks, from-scratch, optimisation, rmsprop, adaptive-rates, ema]
-hero: diagrams/01-rmsprop-vs-adagrad-cache.svg
-reading_time: 11
-part: "Part VI — Optimisers"
----
-
 # Part 26 · RMSProp
 
 > **TL;DR.** RMSProp fixes AdaGrad's ever-growing cache with a one-line change: replace the cumulative sum of squared gradients with an exponential moving average, so the cache reflects recent gradients only and effective rates never drift to zero. This post derives that fix, implements `Optimizer_RMSprop` as a one-line patch to AdaGrad, and shows it holding ~90% accuracy on the spiral where AdaGrad would eventually stall.
->
-> **Reading time:** ~11 minutes.
 >
 > **After reading this you will be able to:**
 > - Explain why an exponential moving average over $g^2$ produces a bounded cache, and how the decay factor $\rho$ controls its memory horizon.

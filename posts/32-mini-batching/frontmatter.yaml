@@ -1,0 +1,7 @@
+slug: 32-mini-batching
+title: "Part 32 · Mini-batching"
+date: 2026-05-30
+tags: [neural-networks, from-scratch, training, mini-batch, sgd, practical-training]
+hero: diagrams/01-batch-size-trajectories.svg
+reading_time: 11
+part: "Part VIII — Practical training and extensions"

@@ -1,0 +1,7 @@
+slug: 29-validation-and-hyperparameter-tuning
+title: "Part 29 · Validation and hyperparameter tuning"
+date: 2026-05-29
+tags: [neural-networks, from-scratch, validation, hyperparameters, cross-validation, generalisation]
+hero: diagrams/01-three-way-split-and-kfold.svg
+reading_time: 11
+part: "Part VII — Generalisation and regularisation"

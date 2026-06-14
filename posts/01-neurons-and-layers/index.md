@@ -1,18 +1,6 @@
----
-slug: 01-neurons-and-layers
-title: "Part 01 · Neurons and layers"
-date: 2026-05-23
-tags: [neural-networks, from-scratch, numpy, perceptron, foundations]
-hero: diagrams/01-neuron-anatomy.svg
-reading_time: 14
-part: "Part I — Foundations"
----
-
 # Part 01 · Neurons and layers
 
 > **TL;DR.** A neuron is a weighted sum plus a bias; a layer is several neurons sharing the same inputs, each with their own weights and bias. Once that single sentence is implemented in code, first by hand and then in two lines of NumPy that scale to entire batches, every learnable parameter in a feed-forward network has been touched.
->
-> **Reading time:** ~14 minutes.
 >
 > **After reading this you will be able to:**
 > - State, in one sentence, what a neuron and a layer compute.

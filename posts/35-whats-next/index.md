@@ -1,18 +1,6 @@
----
-slug: 35-whats-next
-title: "Part 35 · What to read after this series"
-date: 2026-05-30
-tags: [reading-list, conv-nets, rnn, transformers, batch-norm, deep-learning]
-hero: diagrams/01-whats-next-map.svg
-reading_time: 11
-part: "Part VIII — Practical training and extensions"
----
-
 # Part 35 · What to read after this series
 
 > **TL;DR.** Everything past this series (convolutional layers, recurrent layers, transformers, batch normalisation, residual connections, modern training tricks) is *additional layer types* and *additional training tricks* bolted onto the same forward-pass / backward-pass / optimiser-step skeleton posts 1–34 already established. This post is a structured reading list that names each topic, explains what it adds, and points to the canonical paper plus a from-scratch tutorial.
->
-> **Reading time:** ~11 minutes.
 >
 > **After reading this you will be able to:**
 > - Place each major architectural family (CNN, RNN, transformer) on a "what does it add to a vanilla MLP" map.

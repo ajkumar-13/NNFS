@@ -1,18 +1,6 @@
----
-slug: 22-gradient-descent-optimiser
-title: "Part 22 · Gradient-descent optimiser"
-date: 2026-05-29
-tags: [neural-networks, from-scratch, optimisation, gradient-descent, sgd]
-hero: diagrams/01-sgd-update-and-lr.svg
-reading_time: 11
-part: "Part VI — Optimisers"
----
-
 # Part 22 · Gradient-descent optimiser
 
 > **TL;DR.** Gradients only become learning once a rule turns them into new weights, and the simplest such rule is **vanilla gradient descent**: subtract `learning_rate * gradient` from every parameter, once per step. This post wraps that rule in an `Optimizer_SGD` class, builds a complete training loop, and shows that vanilla SGD reaches only about 65% on the spiral after 10 000 epochs because it is inefficient rather than stuck, which is exactly what motivates the optimisers in Parts 23 through 27.
->
-> **Reading time:** ~11 minutes.
 >
 > **After reading this you will be able to:**
 > - Implement `Optimizer_SGD` with two methods and use it to update any layer in the network.

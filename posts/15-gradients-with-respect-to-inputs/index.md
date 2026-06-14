@@ -1,18 +1,6 @@
----
-slug: 15-gradients-with-respect-to-inputs
-title: "Part 15 · Gradients with respect to inputs"
-date: 2026-05-28
-tags: [neural-networks, from-scratch, backpropagation, gradients]
-hero: diagrams/01-input-gradients.svg
-reading_time: 10
-part: "Part V — Backpropagation"
----
-
 # Part 15 · Gradients with respect to inputs
 
 > **TL;DR.** Stacking layers requires one more gradient beyond the weight gradient: $\partial L / \partial \mathbf{X}$, the gradient of the loss with respect to the layer's *inputs*, which is a sum of contributions because each input feeds every neuron. This post derives the matrix form $\partial L / \partial \mathbf{X} = (\partial L / \partial \mathbf{Z}) \cdot \mathbf{W}$ and shows how it completes the dense layer's backward pass as three lines of NumPy, one each for weights, biases, and inputs.
->
-> **Reading time:** ~10 minutes.
 >
 > **After reading this you will be able to:**
 > - State why the input gradient is a sum, while the weight gradient is not.

@@ -1,18 +1,6 @@
----
-slug: 16-coding-backpropagation
-title: "Part 16 · Coding backpropagation"
-date: 2026-05-28
-tags: [neural-networks, from-scratch, backpropagation, code]
-hero: diagrams/01-dense-backward-class.svg
-reading_time: 10
-part: "Part V — Backpropagation"
----
-
 # Part 16 · Coding backpropagation
 
 > **TL;DR.** Three lectures of theory (Parts 13, 14, 15) become three lines of code. This post adds a `backward` method to `Layer_Dense` and `Activation_ReLU`, caches the inputs each layer needs during the backward pass, and verifies the resulting gradients against the manual numbers from earlier posts.
->
-> **Reading time:** ~10 minutes.
 >
 > **After reading this you will be able to:**
 > - Implement `Layer_Dense.backward(dvalues)` in three NumPy lines and explain what each one does.

@@ -1,0 +1,7 @@
+slug: 34-sigmoid-and-binary-cross-entropy
+title: "Part 34 · Sigmoid and binary cross-entropy"
+date: 2026-05-30
+tags: [neural-networks, from-scratch, binary-classification, sigmoid, bce, combined-derivative]
+hero: diagrams/01-sigmoid-bce-pipeline.svg
+reading_time: 10
+part: "Part VIII — Practical training and extensions"

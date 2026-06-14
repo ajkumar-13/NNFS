@@ -1,0 +1,7 @@
+slug: 21-coding-the-full-backpropagation
+title: "Part 21 · Coding the full backpropagation"
+date: 2026-05-28
+tags: [neural-networks, from-scratch, backpropagation, code, integration]
+hero: diagrams/01-forward-backward-script.svg
+reading_time: 11
+part: "Part V — Backpropagation"

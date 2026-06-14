@@ -1,18 +1,6 @@
----
-slug: 11-the-chain-rule
-title: "Part 11 · The chain rule"
-date: 2026-05-28
-tags: [neural-networks, from-scratch, calculus, chain-rule, backpropagation]
-hero: diagrams/01-chain-rule.svg
-reading_time: 11
-part: "Part IV — Calculus for backpropagation"
----
-
 # Part 11 · The chain rule
 
 > **TL;DR.** A neural network is a chain of functions, so the derivative of the loss with respect to any weight is buried several functions deep, and the **chain rule** turns that intimidating derivative into a product of small, local derivatives, one per function in the chain. This post states the rule, works through scalar and polynomial examples, and shows how applying it backwards through a network is exactly backpropagation, derived in Parts 12 through 21.
->
-> **Reading time:** ~11 minutes.
 >
 > **After reading this you will be able to:**
 > - State the chain rule in one sentence and apply it to a polynomial composition.

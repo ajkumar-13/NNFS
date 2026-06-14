@@ -1,18 +1,6 @@
----
-slug: 19-softmax-derivatives-and-the-combined-backward-pass
-title: "Part 19 · Softmax derivatives and the combined backward pass"
-date: 2026-05-28
-tags: [neural-networks, from-scratch, backpropagation, softmax, cross-entropy]
-hero: diagrams/01-combined-shortcut.svg
-reading_time: 12
-part: "Part V — Backpropagation"
----
-
 # Part 19 · Softmax derivatives and the combined backward pass
 
 > **TL;DR.** Softmax's Jacobian is a full matrix, but pairing it with cross-entropy makes the gradient of the loss with respect to the softmax inputs collapse to just $\hat{\mathbf{y}} - \mathbf{y}$ divided by the batch size, which is why every framework ships a fused "softmax + cross-entropy" backward. This post derives that cancellation, codes it in three lines, and verifies the numbers.
->
-> **Reading time:** ~12 minutes.
 >
 > **After reading this you will be able to:**
 > - Explain why softmax's Jacobian is full and not diagonal.

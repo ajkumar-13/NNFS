@@ -1,0 +1,7 @@
+slug: 12-backprop-through-a-single-neuron
+title: "Part 12 · Backpropagation through a single neuron"
+date: 2026-05-28
+tags: [neural-networks, from-scratch, backpropagation, gradients]
+hero: diagrams/01-single-neuron-backprop.svg
+reading_time: 12
+part: "Part V — Backpropagation"

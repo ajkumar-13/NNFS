@@ -1,0 +1,7 @@
+slug: 01-neurons-and-layers
+title: "Part 01 · Neurons and layers"
+date: 2026-05-23
+tags: [neural-networks, from-scratch, numpy, perceptron, foundations]
+hero: diagrams/01-neuron-anatomy.svg
+reading_time: 14
+part: "Part I — Foundations"

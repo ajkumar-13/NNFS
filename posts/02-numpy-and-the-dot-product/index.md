@@ -1,18 +1,6 @@
----
-slug: 02-numpy-and-the-dot-product
-title: "Part 02 · NumPy and the dot product"
-date: 2026-05-24
-tags: [neural-networks, from-scratch, numpy, linear-algebra, foundations]
-hero: diagrams/01-three-forms.svg
-reading_time: 13
-part: "Part I — Foundations"
----
-
 # Part 02 · NumPy and the dot product
 
 > **TL;DR.** `np.dot()` is the single most-used operation in deep-learning code, and almost every "shape mismatch" error a beginner sees comes from misunderstanding it. This post lays out its three forms (vector by vector, matrix by vector, matrix by matrix) and the one shape rule and argument order that decide which form runs.
->
-> **Reading time:** ~13 minutes.
 >
 > **After reading this you will be able to:**
 > - Name the three forms of `np.dot()` and match each one to a neuron, a layer, or a batch.
