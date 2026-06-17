@@ -58,8 +58,8 @@
 
   <!-- arrow connecting the two inner ns -->
   <path class="arrow-inner" d="M 140 196 C 150 184, 210 184, 220 196"/>
-  <text class="label-inner" x="180" y="178" text-anchor="middle">must match</text>
-  <text class="label-text"  x="180" y="192" text-anchor="middle">inner dimensions</text>
+  <text class="label-inner" x="180" y="168" text-anchor="middle">must match</text>
+  <text class="label-text"  x="180" y="182" text-anchor="middle">inner dimensions</text>
 
   <!-- arrow showing outer m and p going to result -->
   <path class="arrow-outer" d="M 96 232 C 96 268, 388 268, 388 232"/>
