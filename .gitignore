@@ -47,3 +47,4 @@ desktop.ini
 # Internal: verification scripts + audit backlog (kept local, not published)
 verify/
 AUDIT_REPORT.md
+.claude/
