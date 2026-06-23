@@ -1,0 +1,7 @@
+slug: 17-backpropagation-through-activation-functions
+title: "Part 17 · Backpropagation through activation functions"
+date: 2026-05-28
+tags: [neural-networks, from-scratch, backpropagation, relu, activations]
+hero: diagrams/01-elementwise-vs-coupled.svg
+reading_time: 10
+part: "Part V — Backpropagation"

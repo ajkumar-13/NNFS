@@ -95,8 +95,8 @@
   <!-- inner-dim mismatch banner -->
   <text class="shape-bad" x="170" y="240" text-anchor="middle">inner: 4</text>
   <text class="shape-bad" x="232" y="240" text-anchor="middle">inner: 3</text>
-  <line class="x-mark" x1="174" y1="246" x2="234" y2="234"/>
-  <line class="x-mark" x1="174" y1="234" x2="234" y2="246"/>
+  <line class="x-mark" x1="182" y1="250" x2="222" y2="260"/>
+  <line class="x-mark" x1="182" y1="260" x2="222" y2="250"/>
 
   <!-- result: ValueError -->
   <text class="op" x="340" y="216" text-anchor="middle">→</text>
@@ -115,8 +115,8 @@
   <text class="row-sub" x="68" y="330">np.dot(inputs, weights.T) + bias</text>
 
   <!-- inputs (3x4) -->
-  <text class="label-head" x="120" y="358" text-anchor="middle">inputs</text>
-  <g transform="translate(80, 366)">
+  <text class="label-head" x="120" y="350" text-anchor="middle">inputs</text>
+  <g transform="translate(80, 358)">
     <rect class="input-cell" x="0"  y="0"  width="20" height="20"/>
     <rect class="input-cell" x="20" y="0"  width="20" height="20"/>
     <rect class="input-cell" x="40" y="0"  width="20" height="20"/>
@@ -130,13 +130,13 @@
     <rect class="input-cell" x="40" y="40" width="20" height="20"/>
     <rect class="input-cell" x="60" y="40" width="20" height="20"/>
   </g>
-  <text class="shape-neutral" x="120" y="442" text-anchor="middle">(N=3, n=4)</text>
+  <text class="shape-neutral" x="120" y="434" text-anchor="middle">(N=3, n=4)</text>
 
-  <text class="op" x="200" y="404" text-anchor="middle">·</text>
+  <text class="op" x="200" y="396" text-anchor="middle">·</text>
 
   <!-- weights.T (4x3) — transposed -->
-  <text class="label-head" x="260" y="358" text-anchor="middle">weights.T</text>
-  <g transform="translate(230, 366)">
+  <text class="label-head" x="260" y="350" text-anchor="middle">weights.T</text>
+  <g transform="translate(230, 358)">
     <rect class="w-cell" x="0"  y="0"  width="20" height="20"/>
     <rect class="w-cell" x="20" y="0"  width="20" height="20"/>
     <rect class="w-cell" x="40" y="0"  width="20" height="20"/>
@@ -150,19 +150,19 @@
     <rect class="w-cell" x="20" y="60" width="20" height="20"/>
     <rect class="w-cell" x="40" y="60" width="20" height="20"/>
   </g>
-  <text class="shape-neutral" x="260" y="462" text-anchor="middle">(n=4, m=3)</text>
+  <text class="shape-neutral" x="260" y="452" text-anchor="middle">(n=4, m=3)</text>
 
   <!-- inner-dim match -->
-  <text class="shape-good" x="170" y="426" text-anchor="middle">inner: 4</text>
-  <text class="shape-good" x="232" y="426" text-anchor="middle">inner: 4</text>
-  <path d="M 174 432 C 188 442, 218 442, 232 432" stroke="var(--ce-success)" stroke-width="1.5" fill="none"/>
-  <text class="ok-text" x="203" y="450" text-anchor="middle">match</text>
+  <text class="shape-good" x="170" y="418" text-anchor="middle">inner: 4</text>
+  <text class="shape-good" x="232" y="418" text-anchor="middle">inner: 4</text>
+  <path d="M 174 424 C 188 434, 218 434, 232 424" stroke="var(--ce-success)" stroke-width="1.5" fill="none"/>
+  <text class="ok-text" x="203" y="442" text-anchor="middle">match</text>
 
-  <text class="op" x="340" y="404" text-anchor="middle">→</text>
+  <text class="op" x="340" y="396" text-anchor="middle">→</text>
 
   <!-- output (3x3) with real values -->
-  <text class="label-head" x="430" y="358" text-anchor="middle">outputs (= np.dot(inputs, weights.T))</text>
-  <g transform="translate(376, 366)">
+  <text class="label-head" x="430" y="350" text-anchor="middle">outputs (= np.dot(inputs, weights.T))</text>
+  <g transform="translate(376, 358)">
     <rect class="out-cell" x="0"  y="0"  width="36" height="20"/>
     <rect class="out-cell" x="36" y="0"  width="36" height="20"/>
     <rect class="out-cell" x="72" y="0"  width="36" height="20"/>
@@ -182,12 +182,12 @@
     <text class="mono" x="54" y="55" text-anchor="middle">1.05</text>
     <text class="mono" x="90" y="55" text-anchor="middle">0.03</text>
   </g>
-  <text class="shape-good" x="430" y="450" text-anchor="middle">(N=3, m=3)</text>
+  <text class="shape-good" x="430" y="442" text-anchor="middle">(N=3, m=3)</text>
 
-  <text class="row-sub" x="540" y="378">Each row is one sample's predictions</text>
-  <text class="row-sub" x="540" y="394">across all m neurons.</text>
-  <text class="row-sub" x="540" y="416">Each column belongs to one neuron's</text>
-  <text class="row-sub" x="540" y="432">predictions across all N samples.</text>
+  <text class="row-sub" x="540" y="370">Each row is one sample's predictions</text>
+  <text class="row-sub" x="540" y="386">across all m neurons.</text>
+  <text class="row-sub" x="540" y="408">Each column belongs to one neuron's</text>
+  <text class="row-sub" x="540" y="424">predictions across all N samples.</text>
 
   <!-- Footer -->
   <text class="footer" x="48"  y="486">For one sample: np.dot(weights, x) needs no transpose. For a batch: np.dot(inputs, weights.T) does.</text>

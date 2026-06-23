@@ -1,18 +1,6 @@
----
-slug: 31-dropout
-title: "Part 31 · Dropout"
-date: 2026-05-29
-tags: [neural-networks, from-scratch, regularisation, dropout, generalisation]
-hero: diagrams/01-dropout-train-vs-test.svg
-reading_time: 12
-part: "Part VII — Generalisation and regularisation"
----
-
 # Part 31 · Dropout
 
 > **TL;DR.** Where L1 and L2 regularisation (Part 30) constrain the *weights*, **dropout** (Srivastava et al., 2014) constrains the *activations* by zeroing a random subset of neuron outputs on every training forward pass, forcing the network to spread its computation across many neurons rather than relying on any single one. This post implements a 30-line `Layer_Dropout` class with the *inverted* convention (scale survivors by $1/(1-p)$ during training, identity at test time) and slots it into the spiral classifier, closing the train/test gap to the point that **validation accuracy can exceed training accuracy**, the inverse of the overfitting signature.
->
-> **Reading time:** ~12 minutes.
 >
 > **After reading this you will be able to:**
 > - Explain why random masking attacks co-adaptation and why an ensemble interpretation of dropout makes the generalisation gain unsurprising.

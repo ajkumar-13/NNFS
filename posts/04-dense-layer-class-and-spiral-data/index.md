@@ -1,18 +1,6 @@
----
-slug: 04-dense-layer-class-and-spiral-data
-title: "Part 04 · The Dense layer class and spiral data"
-date: 2026-05-24
-tags: [neural-networks, from-scratch, oop, dense-layer, spiral-data, foundations]
-hero: diagrams/01-spiral-data.svg
-reading_time: 13
-part: "Part I — Foundations"
----
-
 # Part 04 · The Dense layer class and spiral data
 
 > **TL;DR.** Hand-writing `np.dot` calls for every layer is tractable for two layers and unmaintainable for fifty. This post packages the forward pass into a reusable `Layer_Dense` class and introduces the spiral dataset, a deliberately non-linear three-class benchmark the series uses from now on.
->
-> **Reading time:** ~13 minutes.
 >
 > **After reading this you will be able to:**
 > - Implement a reusable `Layer_Dense` class that handles weight initialisation and the forward pass.

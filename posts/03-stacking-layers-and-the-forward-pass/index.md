@@ -1,18 +1,6 @@
----
-slug: 03-stacking-layers-and-the-forward-pass
-title: "Part 03 · Stacking layers and the forward pass"
-date: 2026-05-24
-tags: [neural-networks, from-scratch, forward-pass, foundations]
-hero: diagrams/01-multi-layer-anatomy.svg
-reading_time: 12
-part: "Part I — Foundations"
----
-
 # Part 03 · Stacking layers and the forward pass
 
 > **TL;DR.** A deep network is the same single-layer formula applied $L$ times, with each layer's output piped into the next layer's input. This post chains two layers together, walks through the shapes for a batch of three samples, and explains why a stack with no activation function between layers is still a single linear function in disguise.
->
-> **Reading time:** ~12 minutes.
 >
 > **After reading this you will be able to:**
 > - Implement a two-layer forward pass in NumPy and predict every intermediate shape.

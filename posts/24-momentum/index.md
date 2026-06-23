@@ -1,18 +1,6 @@
----
-slug: 24-momentum
-title: "Part 24 · Momentum"
-date: 2026-05-29
-tags: [neural-networks, from-scratch, optimisation, momentum, sgd]
-hero: diagrams/01-momentum-trajectory.svg
-reading_time: 12
-part: "Part VI — Optimisers"
----
-
 # Part 24 · Momentum
 
 > **TL;DR.** Vanilla gradient descent is memoryless, so narrow loss valleys produce zig-zag oscillations and shallow plateaus stall the optimiser, whereas **momentum** keeps a running velocity vector so that oscillating components cancel and consistent components reinforce. This post derives the momentum update rule, implements it as a per-layer velocity buffer inside `Optimizer_SGD`, and shows the structural primitive every modern optimiser is built on.
->
-> **Reading time:** ~12 minutes.
 >
 > **After reading this you will be able to:**
 > - Explain why momentum smooths oscillations through vector cancellation, and why it accelerates along consistent directions.

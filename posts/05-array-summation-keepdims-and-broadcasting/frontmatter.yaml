@@ -1,0 +1,7 @@
+slug: 05-array-summation-keepdims-and-broadcasting
+title: "Part 05 · Array summation, keepdims, and broadcasting"
+date: 2026-05-26
+tags: [neural-networks, from-scratch, numpy, broadcasting, foundations]
+hero: diagrams/01-axis-summation.svg
+reading_time: 12
+part: "Part I — Foundations"

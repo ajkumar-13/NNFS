@@ -1,18 +1,6 @@
----
-slug: 34-sigmoid-and-binary-cross-entropy
-title: "Part 34 · Sigmoid and binary cross-entropy"
-date: 2026-05-30
-tags: [neural-networks, from-scratch, binary-classification, sigmoid, bce, combined-derivative]
-hero: diagrams/01-sigmoid-bce-pipeline.svg
-reading_time: 10
-part: "Part VIII — Practical training and extensions"
----
-
 # Part 34 · Sigmoid and binary cross-entropy
 
 > **TL;DR.** For a two-class problem a single output neuron with a **sigmoid** activation and **binary cross-entropy** loss is cleaner than two-class softmax + categorical cross-entropy, and it carries the same combined-derivative shortcut. This post derives the simplified gradient $\sigma(z) - y$ and implements a numerically stable `Activation_Sigmoid_Loss_BinaryCrossentropy` class.
->
-> **Reading time:** ~10 minutes.
 >
 > **After reading this you will be able to:**
 > - Derive the sigmoid + BCE combined gradient $\partial L / \partial z = (\sigma(z) - y) / N$ from first principles.

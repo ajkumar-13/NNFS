@@ -138,37 +138,37 @@
   <text class="result-sub"  x="40" y="392">Adam tops the optimiser group; SGD + momentum is the next-best, +0.6 points behind</text>
 
   <!-- Bars. 0% at x=200, 100% at x=720 (width 520 → 5.2 px per percent). Each row ~16 px tall, spacing 4. -->
-  <!-- Row 1: Vanilla SGD 57.3% -->
+  <!-- Row 1: Vanilla SGD 64.7% -->
   <text class="bar-label" x="190" y="416" text-anchor="end">Vanilla SGD</text>
   <rect class="bar-bg" x="200" y="406" width="520" height="12" rx="3"/>
   <rect class="bar-vanilla" x="200" y="406" width="336" height="12" rx="3"/>
   <text class="bar-pct" x="726" y="416">64.7%</text>
 
-  <!-- Row 2: SGD + decay 71.7% -->
+  <!-- Row 2: SGD + decay 64.7% -->
   <text class="bar-label" x="190" y="434" text-anchor="end">SGD + decay</text>
   <rect class="bar-bg" x="200" y="424" width="520" height="12" rx="3"/>
   <rect class="bar-decay" x="200" y="424" width="336" height="12" rx="3"/>
   <text class="bar-pct" x="726" y="434">64.7%</text>
 
-  <!-- Row 3: AdaGrad 89.3% -->
+  <!-- Row 3: AdaGrad 84.0% -->
   <text class="bar-label" x="190" y="452" text-anchor="end">AdaGrad</text>
   <rect class="bar-bg" x="200" y="442" width="520" height="12" rx="3"/>
   <rect class="bar-adagrad" x="200" y="442" width="437" height="12" rx="3"/>
   <text class="bar-pct" x="726" y="452">84.0%</text>
 
-  <!-- Row 4: RMSProp 88.0% -->
+  <!-- Row 4: RMSProp 90.0% -->
   <text class="bar-label" x="190" y="470" text-anchor="end">RMSProp</text>
   <rect class="bar-bg" x="200" y="460" width="520" height="12" rx="3"/>
   <rect class="bar-rmsprop" x="200" y="460" width="468" height="12" rx="3"/>
   <text class="bar-pct" x="726" y="470">90.0%</text>
 
-  <!-- Row 5: SGD + momentum 95.3% -->
+  <!-- Row 5: SGD + momentum 95.7% -->
   <text class="bar-label" x="190" y="488" text-anchor="end">SGD + momentum</text>
   <rect class="bar-bg" x="200" y="478" width="520" height="12" rx="3"/>
   <rect class="bar-momentum" x="200" y="478" width="498" height="12" rx="3"/>
   <text class="bar-pct" x="726" y="488">95.7%</text>
 
-  <!-- Row 6: Adam 95.7% (highlighted) -->
+  <!-- Row 6: Adam 96.3% (highlighted) -->
   <text class="bar-label" x="190" y="506" text-anchor="end" style="font-weight:700;fill:var(--ce-primary);">Adam (this lecture)</text>
   <rect class="bar-bg" x="200" y="496" width="520" height="12" rx="3"/>
   <rect class="bar-adam" x="200" y="496" width="501" height="12" rx="3"/>

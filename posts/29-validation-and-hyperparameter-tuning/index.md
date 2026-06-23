@@ -1,18 +1,6 @@
----
-slug: 29-validation-and-hyperparameter-tuning
-title: "Part 29 · Validation and hyperparameter tuning"
-date: 2026-05-29
-tags: [neural-networks, from-scratch, validation, hyperparameters, cross-validation, generalisation]
-hero: diagrams/01-three-way-split-and-kfold.svg
-reading_time: 11
-part: "Part VII — Generalisation and regularisation"
----
-
 # Part 29 · Validation and hyperparameter tuning
 
 > **TL;DR.** Honest hyperparameter tuning requires a validation set distinct from the test set, so that searching a large hyperparameter space still yields a number that reflects behaviour on truly unseen data. This lecture delivers two patterns that enforce that discipline: the **three-way split** (train / validate / test) and **k-fold cross-validation** for when data is scarce.
->
-> **Reading time:** ~11 minutes.
 >
 > **After reading this you will be able to:**
 > - State why the test set must be touched exactly once, and explain the failure mode when it is reused for tuning.

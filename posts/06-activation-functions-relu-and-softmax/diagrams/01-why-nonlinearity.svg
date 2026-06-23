@@ -63,7 +63,7 @@
 
   <!-- Target curve (zigzag) shown as dashed grey hint -->
   <path class="target" d="M 110 290 L 160 220 L 200 290 L 250 200 L 300 280 L 350 210 L 420 280"/>
-  <text class="target-label" x="430" y="220" text-anchor="end">target shape</text>
+  <text class="target-label" x="420" y="210" text-anchor="end">target shape</text>
 
   <!-- Single straight line approximation (the best the model can do) -->
   <path class="curve-bad" d="M 110 295 L 420 220"/>
@@ -97,7 +97,7 @@
   <circle class="bend-marker" cx="790" cy="212" r="3.5"/>
 
   <rect class="formula-pill" x="520" y="350" width="376" height="32" rx="6"/>
-  <text class="formula-text" x="532" y="370">A is piecewise linear; one kink per active hidden neuron</text>
+  <text class="formula-text" x="524" y="370">A is piecewise linear; one kink per active hidden neuron</text>
 
   <!-- ============== Footer ============== -->
   <text class="verdict-bad" x="48"  y="430">Linear stack cannot fit a curve, no matter how deep.</text>

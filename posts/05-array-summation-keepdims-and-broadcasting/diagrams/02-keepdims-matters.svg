@@ -92,10 +92,10 @@
   <text class="shape-text" x="288" y="244" text-anchor="middle">shape (3,)</text>
   <text class="shape-text" x="288" y="260" text-anchor="middle" style="fill:var(--ce-alert);">broadcasts as a row!</text>
 
-  <text class="op-text" x="368" y="234" text-anchor="middle">=</text>
+  <text class="op-text" x="360" y="234" text-anchor="middle">=</text>
 
   <!-- result (wrong) -->
-  <g transform="translate(390, 192)">
+  <g transform="translate(370, 192)">
     <rect class="cell-bad" x="0"  y="0"  width="32" height="28"/>
     <rect class="cell-bad" x="32" y="0"  width="32" height="28"/>
     <rect class="cell-bad" x="64" y="0"  width="32" height="28"/>

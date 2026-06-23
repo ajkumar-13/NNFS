@@ -1,0 +1,7 @@
+slug: 19-softmax-derivatives-and-the-combined-backward-pass
+title: "Part 19 · Softmax derivatives and the combined backward pass"
+date: 2026-05-28
+tags: [neural-networks, from-scratch, backpropagation, softmax, cross-entropy]
+hero: diagrams/01-combined-shortcut.svg
+reading_time: 12
+part: "Part V — Backpropagation"

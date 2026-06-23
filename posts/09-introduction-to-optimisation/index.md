@@ -1,18 +1,6 @@
----
-slug: 09-introduction-to-optimisation
-title: "Part 09 · Introduction to optimisation"
-date: 2026-05-28
-tags: [neural-networks, from-scratch, optimisation, gradient-descent]
-hero: diagrams/01-strategies-compared.svg
-reading_time: 12
-part: "Part III — Loss and optimisation"
----
-
 # Part 09 · Introduction to optimisation
 
 > **TL;DR.** Once a loss number exists, the right way to move a network's parameters to shrink it is **gradient descent**, not random search. This post shows two naive strategies failing and motivates why gradient descent has to exist.
->
-> **Reading time:** ~12 minutes.
 >
 > **After reading this you will be able to:**
 > - Explain why random search fails to optimise a 21-parameter classifier and why random perturbation fails on non-trivial data.

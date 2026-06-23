@@ -1,18 +1,6 @@
----
-slug: 21-coding-the-full-backpropagation
-title: "Part 21 · Coding the full backpropagation"
-date: 2026-05-28
-tags: [neural-networks, from-scratch, backpropagation, code, integration]
-hero: diagrams/01-forward-backward-script.svg
-reading_time: 11
-part: "Part V — Backpropagation"
----
-
 # Part 21 · Coding the full backpropagation
 
 > **TL;DR.** Everything from Parts 12 through 20 reduces to a single fifteen-line Python script that runs one full forward pass and one full backward pass through a two-layer spiral classifier, because every layer carries its own `forward` and `backward` and the chain rule is pre-wired through `dinputs → dvalues`. This post walks that script line by line and inspects the four gradient arrays it produces, which are exactly what an optimiser (Part 22 onward) will turn into weight updates.
->
-> **Reading time:** ~11 minutes.
 >
 > **After reading this you will be able to:**
 > - Read a fifteen-line script that runs the full forward + backward pass on the spiral dataset.

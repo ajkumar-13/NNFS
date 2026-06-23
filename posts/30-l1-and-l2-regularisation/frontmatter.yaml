@@ -1,0 +1,7 @@
+slug: 30-l1-and-l2-regularisation
+title: "Part 30 · L1 and L2 regularisation"
+date: 2026-05-29
+tags: [neural-networks, from-scratch, regularisation, l1, l2, generalisation, weight-decay]
+hero: diagrams/01-l1-vs-l2-penalty.svg
+reading_time: 12
+part: "Part VII — Generalisation and regularisation"

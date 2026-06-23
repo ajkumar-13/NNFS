@@ -1,0 +1,7 @@
+slug: 27-adam-optimiser
+title: "Part 27 · Adam"
+date: 2026-05-29
+tags: [neural-networks, from-scratch, optimisation, adam, default-optimizer]
+hero: diagrams/01-adam-pipeline.svg
+reading_time: 13
+part: "Part VI — Optimisers"

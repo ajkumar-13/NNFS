@@ -1,18 +1,6 @@
----
-slug: 14-matrices-in-backpropagation
-title: "Part 14 · Matrices in backpropagation"
-date: 2026-05-28
-tags: [neural-networks, from-scratch, backpropagation, matrices, vectorisation]
-hero: diagrams/01-matrix-weight-gradient.svg
-reading_time: 11
-part: "Part V — Backpropagation"
----
-
 # Part 14 · Matrices in backpropagation
 
 > **TL;DR.** Part 13's twelve per-weight gradients collapse into a single matrix multiplication, $\partial L / \partial \mathbf{W} = (\partial L / \partial \mathbf{Z})^{\top} \cdot \mathbf{X}$, with the three bias gradients handled by one separate sum. This post derives that two-line backward pass, verifies it produces Part 13's exact numbers, and shows the formula extends unchanged to batched inputs.
->
-> **Reading time:** ~11 minutes.
 >
 > **After reading this you will be able to:**
 > - Compute weight and bias gradients for a dense layer with two NumPy lines.

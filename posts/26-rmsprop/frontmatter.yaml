@@ -1,0 +1,7 @@
+slug: 26-rmsprop
+title: "Part 26 · RMSProp"
+date: 2026-05-29
+tags: [neural-networks, from-scratch, optimisation, rmsprop, adaptive-rates, ema]
+hero: diagrams/01-rmsprop-vs-adagrad-cache.svg
+reading_time: 11
+part: "Part VI — Optimisers"

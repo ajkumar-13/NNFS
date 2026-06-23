@@ -1,0 +1,7 @@
+slug: 11-the-chain-rule
+title: "Part 11 · The chain rule"
+date: 2026-05-28
+tags: [neural-networks, from-scratch, calculus, chain-rule, backpropagation]
+hero: diagrams/01-chain-rule.svg
+reading_time: 11
+part: "Part IV — Calculus for backpropagation"

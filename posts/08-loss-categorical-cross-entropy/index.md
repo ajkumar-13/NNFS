@@ -1,18 +1,6 @@
----
-slug: 08-loss-categorical-cross-entropy
-title: "Part 08 · Loss: categorical cross-entropy"
-date: 2026-05-28
-tags: [neural-networks, from-scratch, loss, cross-entropy, classification]
-hero: diagrams/01-cross-entropy-curve.svg
-reading_time: 12
-part: "Part III — Loss and optimisation"
----
-
 # Part 08 · Loss: categorical cross-entropy
 
 > **TL;DR.** For multi-class classification the standard loss is **categorical cross-entropy**, the negative logarithm of the probability the network assigned to the *correct* class. This post derives that formula, explains why it pairs naturally with softmax, walks through both integer-label and one-hot-label implementations, and adds two new classes (`Loss` and `Loss_CategoricalCrossentropy`) to the growing toolkit.
->
-> **Reading time:** ~12 minutes.
 >
 > **After reading this you will be able to:**
 > - Compute the categorical cross-entropy loss for a batch of softmax outputs against integer or one-hot labels.

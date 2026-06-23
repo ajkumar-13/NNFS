@@ -1,18 +1,6 @@
----
-slug: 33-weight-initialisation
-title: "Part 33 · Weight initialisation"
-date: 2026-05-30
-tags: [neural-networks, from-scratch, training, initialisation, he-init, xavier-init, glorot]
-hero: diagrams/01-activation-variance-by-depth.svg
-reading_time: 11
-part: "Part VIII — Practical training and extensions"
----
-
 # Part 33 · Weight initialisation
 
 > **TL;DR.** The lectures' `0.01 * np.random.randn(...)` weight init works for two-hidden-layer networks but **fails silently** in deeper ones, where activations either shrink to zero (vanishing) or blow up (exploding) and training stalls before the first useful gradient appears. This post derives the variance-preservation argument behind **Glorot/Xavier** and **He** initialisation and shows that for a ReLU-based from-scratch series, He init is the right default via a one-line change to `Layer_Dense.__init__`.
->
-> **Reading time:** ~11 minutes.
 >
 > **After reading this you will be able to:**
 > - Derive the variance-preservation argument that motivates Glorot and He initialisation.

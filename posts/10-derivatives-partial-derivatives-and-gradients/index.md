@@ -1,18 +1,6 @@
----
-slug: 10-derivatives-partial-derivatives-and-gradients
-title: "Part 10 · Derivatives, partial derivatives, and gradients"
-date: 2026-05-28
-tags: [neural-networks, from-scratch, calculus, gradients]
-hero: diagrams/01-derivative-as-slope.svg
-reading_time: 12
-part: "Part IV — Calculus for backpropagation"
----
-
 # Part 10 · Derivatives, partial derivatives, and gradients
 
 > **TL;DR.** Gradient descent (Part 09) needs gradients, and a gradient is just a vector of partial derivatives, each one an ordinary derivative that ignores every variable except one. This post builds the three concepts in order: the **derivative** (slope of a single-variable function), the **partial derivative** (the same idea with the other variables held constant), and the **gradient** (the partial derivatives packed into a vector that points in the direction of steepest ascent).
->
-> **Reading time:** ~12 minutes.
 >
 > **After reading this you will be able to:**
 > - Differentiate any polynomial using the power and sum rules.

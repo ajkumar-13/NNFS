@@ -1,0 +1,7 @@
+slug: 15-gradients-with-respect-to-inputs
+title: "Part 15 · Gradients with respect to inputs"
+date: 2026-05-28
+tags: [neural-networks, from-scratch, backpropagation, gradients]
+hero: diagrams/01-input-gradients.svg
+reading_time: 10
+part: "Part V — Backpropagation"

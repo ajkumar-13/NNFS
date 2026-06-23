@@ -1,7 +1,7 @@
 # Generated preview images
 .preview/
 
-# Claude Code: local settings stay out; skills are committed
+
 .claude/*
 !.claude/skills/
 

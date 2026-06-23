@@ -1,18 +1,6 @@
----
-slug: 32-mini-batching
-title: "Part 32 · Mini-batching"
-date: 2026-05-30
-tags: [neural-networks, from-scratch, training, mini-batch, sgd, practical-training]
-hero: diagrams/01-batch-size-trajectories.svg
-reading_time: 11
-part: "Part VIII — Practical training and extensions"
----
-
 # Part 32 · Mini-batching
 
 > **TL;DR.** **Mini-batching** is the standard fix for the full-batch training loop used in posts 1–31, which fails at scale because the gradient over all examples no longer fits in memory: shuffle the data, slice it into batches of, say, 128 examples, and run one forward + backward + update per batch. This post derives the two-loop (epoch × batch) training structure, places mini-batch SGD between full-batch GD and pure SGD, and explains how to choose a batch size for a real dataset.
->
-> **Reading time:** ~11 minutes.
 >
 > **After reading this you will be able to:**
 > - Distinguish full-batch GD, true SGD, and mini-batch SGD by what each step consumes and the gradient noise that results.

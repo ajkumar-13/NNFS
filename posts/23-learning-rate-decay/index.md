@@ -1,18 +1,6 @@
----
-slug: 23-learning-rate-decay
-title: "Part 23 · Learning-rate decay"
-date: 2026-05-29
-tags: [neural-networks, from-scratch, optimisation, learning-rate, scheduling]
-hero: diagrams/01-decay-schedule-and-result.svg
-reading_time: 11
-part: "Part VI — Optimisers"
----
-
 # Part 23 · Learning-rate decay
 
 > **TL;DR.** A constant learning rate forces one number to do two opposing jobs (explore early, settle late), which is why Part 22's spiral classifier stalled in the mid-60s, and a **decay schedule** that shrinks $\alpha$ over time resolves the conflict. This post derives the $\alpha(t) = \alpha_0 / (1 + d \cdot t)$ schedule, adds it to `Optimizer_SGD` in four lines, and shows that it cuts the final loss from 0.87 to 0.76 with a smoother curve while leaving accuracy near 65%.
->
-> **Reading time:** ~11 minutes.
 >
 > **After reading this you will be able to:**
 > - Derive and explain the $\alpha(t) = \alpha_0 / (1 + d \cdot t)$ decay formula and choose a sensible $d$.

@@ -1,0 +1,7 @@
+slug: 13-backprop-through-a-layer
+title: "Part 13 · Backpropagation through a layer of neurons"
+date: 2026-05-28
+tags: [neural-networks, from-scratch, backpropagation, gradients]
+hero: diagrams/01-layer-backprop.svg
+reading_time: 11
+part: "Part V — Backpropagation"

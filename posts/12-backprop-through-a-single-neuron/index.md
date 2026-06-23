@@ -1,18 +1,6 @@
----
-slug: 12-backprop-through-a-single-neuron
-title: "Part 12 · Backpropagation through a single neuron"
-date: 2026-05-28
-tags: [neural-networks, from-scratch, backpropagation, gradients]
-hero: diagrams/01-single-neuron-backprop.svg
-reading_time: 12
-part: "Part V — Backpropagation"
----
-
 # Part 12 · Backpropagation through a single neuron
 
 > **TL;DR.** Backpropagation is just the chain rule, and the smallest case where that chain has more than one factor is a single neuron with three inputs, a ReLU, and a squared-error loss. This post walks the chain rule from the loss back to each weight, showing that four local derivatives multiply together at every step and yielding a small, mechanical recipe that scales unchanged to entire layers.
->
-> **Reading time:** ~12 minutes.
 >
 > **After reading this you will be able to:**
 > - Identify the four chain-rule factors in a single-neuron backward pass.

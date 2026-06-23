@@ -152,9 +152,9 @@
   <text class="count-num-prim" x="358" y="463">15</text>
   <text class="count-body" x="386" y="461">(three neurons)</text>
   <text class="count-body" x="520" y="461">→</text>
-  <text class="count-head" x="544" y="461">general:</text>
-  <text class="mono" x="616" y="463" style="font-size:13px;fill:var(--ce-ink);">params = m × (n + 1)</text>
-  <text class="count-body" x="784" y="461">m neurons · n inputs each</text>
+  <text class="count-head" x="540" y="461">general:</text>
+  <text class="mono" x="610" y="463" style="font-size:13px;fill:var(--ce-ink);">params = m × (n + 1)</text>
+  <text class="count-body" x="770" y="461">m neurons · n inputs each</text>
 
   <!-- Footer -->
   <text class="footer" x="48"  y="496">Each neuron is a complete, independent copy: its own weights, its own bias, its own output.</text>

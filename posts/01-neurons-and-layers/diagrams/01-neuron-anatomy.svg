@@ -146,5 +146,5 @@
 
   <!-- Footer -->
   <text class="footer" x="48"  y="514">Five parameters total: four weights and one bias. A network is many of these wired together.</text>
-  <text class="footer" x="912" y="514" text-anchor="end">Form due to Rosenblatt, 1958 (perceptron); activation function deferred to Part 06.</text>
+  <text class="footer" x="912" y="514" text-anchor="end">Rosenblatt, 1958 (perceptron); activation function deferred to Part 06.</text>
 </svg>

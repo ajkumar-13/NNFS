@@ -1,18 +1,6 @@
----
-slug: 06-activation-functions-relu-and-softmax
-title: "Part 06 · Activation functions: ReLU and Softmax"
-date: 2026-05-27
-tags: [neural-networks, from-scratch, relu, softmax, activations]
-hero: diagrams/01-why-nonlinearity.svg
-reading_time: 13
-part: "Part II — Activations and forward pass"
----
-
 # Part 06 · Activation functions: ReLU and Softmax
 
 > **TL;DR.** Without a non-linear function between layers, a deep network is mathematically identical to a single linear layer. This post fixes that by adding two activations: **ReLU** (`max(0, x)`) for hidden layers and **Softmax** for classification output layers.
->
-> **Reading time:** ~13 minutes.
 >
 > **After reading this you will be able to:**
 > - State, in one sentence, why a stack of linear layers needs a non-linear activation between them.

@@ -1,0 +1,7 @@
+slug: 16-coding-backpropagation
+title: "Part 16 · Coding backpropagation"
+date: 2026-05-28
+tags: [neural-networks, from-scratch, backpropagation, code]
+hero: diagrams/01-dense-backward-class.svg
+reading_time: 10
+part: "Part V — Backpropagation"

@@ -1,0 +1,7 @@
+slug: 24-momentum
+title: "Part 24 · Momentum"
+date: 2026-05-29
+tags: [neural-networks, from-scratch, optimisation, momentum, sgd]
+hero: diagrams/01-momentum-trajectory.svg
+reading_time: 12
+part: "Part VI — Optimisers"

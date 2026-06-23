@@ -1,18 +1,6 @@
----
-slug: 05-array-summation-keepdims-and-broadcasting
-title: "Part 05 · Array summation, keepdims, and broadcasting"
-date: 2026-05-26
-tags: [neural-networks, from-scratch, numpy, broadcasting, foundations]
-hero: diagrams/01-axis-summation.svg
-reading_time: 12
-part: "Part I — Foundations"
----
-
 # Part 05 · Array summation, keepdims, and broadcasting
 
 > **TL;DR.** Two NumPy features sit between every neural-network beginner and a working softmax: the `axis` parameter of reductions like `np.sum` and `np.max`, and the broadcasting rules that decide which array shapes can be combined element-wise, both of which can produce wrong answers without raising errors. This post nails down the meaning of `axis`, explains why `keepdims=True` is the default safe choice, and lays out the broadcasting rules in the order NumPy actually applies them.
->
-> **Reading time:** ~12 minutes.
 >
 > **After reading this you will be able to:**
 > - Predict the shape of `np.sum(a, axis=k, keepdims=...)` for any 2-D `a`.

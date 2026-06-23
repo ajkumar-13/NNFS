@@ -1,18 +1,6 @@
----
-slug: 07-coding-the-complete-forward-pass
-title: "Part 07 · Coding the complete forward pass"
-date: 2026-05-27
-tags: [neural-networks, from-scratch, forward-pass, integration]
-hero: diagrams/01-pipeline-anatomy.svg
-reading_time: 10
-part: "Part II — Activations and forward pass"
----
-
 # Part 07 · Coding the complete forward pass
 
 > **TL;DR.** Every class built so far (Layer_Dense, Activation_ReLU, Activation_Softmax) snaps together into a working two-layer classifier in fewer than a dozen lines. This post assembles the pipeline, runs it on the spiral dataset, audits the shapes at every step, and explains why the untrained output is approximately `[1/3, 1/3, 1/3]` for every sample.
->
-> **Reading time:** ~10 minutes.
 >
 > **After reading this you will be able to:**
 > - Assemble a complete forward-pass script using the four classes from Parts 04 and 06.

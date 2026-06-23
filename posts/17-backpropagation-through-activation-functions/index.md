@@ -1,18 +1,6 @@
----
-slug: 17-backpropagation-through-activation-functions
-title: "Part 17 · Backpropagation through activation functions"
-date: 2026-05-28
-tags: [neural-networks, from-scratch, backpropagation, relu, activations]
-hero: diagrams/01-elementwise-vs-coupled.svg
-reading_time: 10
-part: "Part V — Backpropagation"
----
-
 # Part 17 · Backpropagation through activation functions
 
 > **TL;DR.** Activation functions need their own backward step, and the structure of that step depends entirely on whether the activation is **element-wise** (ReLU, sigmoid, tanh), with a diagonal Jacobian that reduces to one multiply or mask, or **coupled** (softmax), with a dense Jacobian that needs real matrix arithmetic. This post derives the element-wise case in full and previews why softmax needs its own dedicated post (Part 19).
->
-> **Reading time:** ~10 minutes.
 >
 > **After reading this you will be able to:**
 > - Apply the element-wise activation backward in one line for ReLU, sigmoid, or tanh.

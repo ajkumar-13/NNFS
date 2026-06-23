@@ -1,18 +1,6 @@
----
-slug: 28-generalization-and-testing
-title: "Part 28 · Generalization and testing"
-date: 2026-05-23
-tags: [neural-networks, from-scratch, generalization, overfitting, bias-variance]
-hero: diagrams/01-train-vs-test.svg
-reading_time: 12
-part: "Part VII — Generalization & Regularization"
----
-
 # Part 28 · Generalization and testing
 
 > **TL;DR.** Training a network has two acts, fitting the data and generalising to data it has never seen, and the gap between training accuracy and test accuracy is the single most reliable signal of failure at the second. This post runs a forward-only test pass on fresh spiral data, reads the resulting gap, names the symptoms of overfitting in both decision boundaries and loss curves, and previews the four levers (capacity, epoch budget, regularisation, dropout) that the next three parts will use to fight it.
->
-> **Reading time:** ~12 minutes.
 >
 > **After reading this you will be able to:**
 > - Run a forward-only validation pass and read its accuracy and loss against the training numbers.

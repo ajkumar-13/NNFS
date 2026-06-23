@@ -1,18 +1,6 @@
----
-slug: 18-backpropagation-through-the-loss-function
-title: "Part 18 · Backpropagation through the loss function"
-date: 2026-05-28
-tags: [neural-networks, from-scratch, backpropagation, cross-entropy]
-hero: diagrams/01-cross-entropy-backward.svg
-reading_time: 10
-part: "Part V — Backpropagation"
----
-
 # Part 18 · Backpropagation through the loss function
 
 > **TL;DR.** Backpropagation starts at the loss function, where the gradient of $L$ with respect to the network's output is the first upstream gradient every other layer's `backward` will consume. This post derives that gradient for categorical cross-entropy, the element-wise division $-\mathbf{y} / \hat{\mathbf{y}}$, and implements it as the `backward` method on `Loss_CategoricalCrossentropy`.
->
-> **Reading time:** ~10 minutes.
 >
 > **After reading this you will be able to:**
 > - Derive the cross-entropy gradient $-\mathbf{y} / \hat{\mathbf{y}}$ from the loss definition.
