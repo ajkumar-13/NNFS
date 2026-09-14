@@ -1,7 +1,10 @@
 # Generated preview images
 .preview/
 
+# Diagram generator dependencies (npm install restores them)
+node_modules/
 
+# Claude Code: local settings stay out; skills are committed
 .claude/*
 !.claude/skills/
 
@@ -47,4 +50,5 @@ desktop.ini
 # Internal: verification scripts + audit backlog (kept local, not published)
 verify/
 AUDIT_REPORT.md
+assets/diagrams/excalidraw-generator/PORT-PROGRESS.md
 .claude/
