@@ -286,6 +286,9 @@ print(f"Accuracy: {accuracy:.3f}")
 | Categorical cross-entropy | how confident the correct prediction is | yes | optimisation (training) |
 | Accuracy | whether the top prediction matches the truth | no | human-readable reporting |
 
+![Two batches with identical 3-of-3 accuracy and mean losses of 0.385 and 0.041, showing that accuracy cannot separate them.](diagrams/03-loss-vs-accuracy.svg)
+*Both batches are right on every sample, so accuracy reports 100% for each. The whole difference between them lands in the loss.*
+
 Accuracy is coarser. A prediction of `[0.51, 0.49]` for class 0 and a prediction of `[0.99, 0.01]` for class 0 are both "correct" by accuracy. The loss treats them very differently. Networks are optimised on loss and reported on accuracy because the two metrics answer two different questions.
 
 ---

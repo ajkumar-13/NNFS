@@ -18,6 +18,9 @@
 
 For a network with **two or more layers**, that is not enough. The backward pass needs to walk all the way to the first layer, and to get there it has to cross every intermediate layer. Each crossing requires the upstream gradient of the *previous* layer, which is the same thing as the input gradient of the *current* layer.
 
+![A dense layer's backward call emitting three gradients: the weight and bias gradients stay, the input gradient travels to the previous layer.](diagrams/02-gradient-handoff.svg)
+*Two of the three are consumed by the optimiser and gone. The third leaves the layer, and is the only reason the layers before it can learn anything.*
+
 In one sentence: **a layer's input gradient is the next-earlier layer's upstream gradient**. Without it, backprop stops at the boundary between layers and the network cannot learn its earlier weights.
 
 The structure of the calculation is the same as for the weight gradient (a matrix product), but the formula is different because inputs play a different role in the forward pass than weights do.

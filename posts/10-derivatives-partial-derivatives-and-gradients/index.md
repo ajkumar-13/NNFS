@@ -77,6 +77,9 @@ The numerical value of $f'(x)$ at a point has three readings, all useful for neu
 - **Near-zero slope.** A small change in $x$ causes almost no change in $f$. Sensitivity is low; the input barely matters near this point.
 - **Negative slope.** A small increase in $x$ causes a *decrease* in $f$. The input still matters, but the direction is reversed.
 
+![The same loss curve at three points: a positive slope pushes the weight down, a near-zero slope leaves it, a negative slope pushes it up.](diagrams/03-slope-to-update.svg)
+*One line of code at three points. The sign of the derivative decides which way the weight moves, and its size decides how far.*
+
 When $f$ is the loss and $x$ is a weight, all three readings turn into update decisions: increase weights with a large negative $\frac{\partial L}{\partial w}$ (loss drops), decrease weights with a large positive one, leave near-zero weights alone for now.
 
 ### 2.4. What a derivative is *not*

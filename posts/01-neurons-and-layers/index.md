@@ -56,7 +56,7 @@ A neuron receives a vector of inputs, multiplies each input by a corresponding w
 
 $$\text{output} = \sum_{i=1}^{n} w_i x_i + b.$$
 
-There is no activation function yet; activations are the subject of Part 06. For now the neuron stops at the weighted sum plus bias.
+There is no activation function yet; activations are the subject of [Part 06](../06-activation-functions-relu-and-softmax/index.md). For now the neuron stops at the weighted sum plus bias.
 
 Each symbol carries a specific role. Reading the table left-to-right gives the entire surface area of the neuron:
 
@@ -67,15 +67,15 @@ Each symbol carries a specific role. Reading the table left-to-right gives the e
 | Bias | $b$ | scalar | A constant offset, one per neuron | learned during training, frozen at inference | missing bias → the neuron cannot fit data not centred on zero |
 | Output | $\hat{y}$ | scalar | The weighted sum plus the bias | recomputed every forward pass | downstream layers receive the wrong signal |
 
-A large weight magnifies its input's contribution; a near-zero weight ignores it. The bias shifts every output by the same amount, regardless of the inputs. The bias is what allows a neuron to fit data whose target is offset from the origin. That detail becomes important in Part 03 when stacking layers.
+A large weight magnifies its input's contribution; a near-zero weight ignores it. The bias shifts every output by the same amount, regardless of the inputs. The bias is what allows a neuron to fit data whose target is offset from the origin. That detail becomes important in [Part 03](../03-stacking-layers-and-the-forward-pass/index.md) when stacking layers.
 
 ### 3.1. What a neuron is *not*
 
 The boundary helps as much as the definition.
 
-- **A neuron is not a classifier on its own.** It produces a single number, not a class label. Turning that number into a class requires an activation function (Part 06) and a loss function (Part 08).
+- **A neuron is not a classifier on its own.** It produces a single number, not a class label. Turning that number into a class requires an activation function ([Part 06](../06-activation-functions-relu-and-softmax/index.md)) and a loss function ([Part 08](../08-loss-categorical-cross-entropy/index.md)).
 - **A neuron is not non-linear.** The weighted-sum-plus-bias is a linear function of its inputs. Stacking linear neurons without activations between them gives back another linear function, no more expressive than a single layer.
-- **A neuron is not learned in this post.** The weights and bias are *given*, not optimised. Learning enters the series in Part 09 (gradient descent) and Part 12 (backpropagation).
+- **A neuron is not learned in this post.** The weights and bias are *given*, not optimised. Learning enters the series in [Part 09](../09-introduction-to-optimisation/index.md) (gradient descent) and [Part 12](../12-backprop-through-a-single-neuron/index.md) (backpropagation).
 
 ---
 
@@ -385,6 +385,9 @@ Each row is the layer's output for one input sample; each column belongs to one 
 Every neuron in every feed-forward network computes:
 
 $$\text{output} = \sum_{i=1}^{n} w_i x_i + b.$$
+
+![The Part 01 core formula beside the three things the rest of the series adds to it: activations, a loss, and backpropagation with an optimiser.](diagrams/06-what-gets-added.svg)
+*The forward pass built here is never replaced. Three things are added around it, and everything after that is detail on those three.*
 
 The next twenty-six posts add only three things to this core:
 

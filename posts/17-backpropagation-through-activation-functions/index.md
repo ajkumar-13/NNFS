@@ -79,6 +79,9 @@ $$\frac{\partial L}{\partial z_k} = \frac{\partial L}{\partial a_k} \cdot f'(z_k
 
 For the whole vector (or batch), this is one **element-wise multiplication** in NumPy: `dinputs = dvalues * f_prime(Z)`. No matrix arithmetic; no reshape; no transpose.
 
+![ReLU, sigmoid and tanh plotted above their derivatives, all sharing the same backward line.](diagrams/02-elementwise-family.svg)
+*The code is identical for all three. Only what `f_prime` returns changes, which is why swapping an activation costs one function.*
+
 Three common cases:
 
 | Activation | $f(z)$ | $f'(z)$ | Backward formula |

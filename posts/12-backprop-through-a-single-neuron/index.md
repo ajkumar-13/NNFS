@@ -134,6 +134,9 @@ With a learning rate $\alpha = 0.01$ and the update rule $w_{\text{new}} = w_{\t
 | $w_2$ | $2$ | $36$ | $-0.36$ | $1.64$ |
 | $b$ | $1$ | $12$ | $-0.12$ | $0.88$ |
 
+![One update of all four parameters beside the loss curve it starts, decaying from 36 towards zero over twenty iterations.](diagrams/02-one-step-and-after.svg)
+*The four gradients are only correct if spending them lowers the loss. They do, and repeating the same step collapses it geometrically.*
+
 Running the new weights through the forward pass:
 
 $$z_{\text{new}} = (1)(-3.12) + (-2)(-0.76) + (3)(1.64) + 0.88 = -3.12 + 1.52 + 4.92 + 0.88 = 4.20.$$

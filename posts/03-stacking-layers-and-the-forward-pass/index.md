@@ -87,6 +87,9 @@ Multiplying out and grouping the constant pieces shows the collapse explicitly:
 
 $$\mathbf{Z}_2 = \mathbf{X} \cdot \underbrace{(\mathbf{W}_1^{\top} \mathbf{W}_2^{\top})}_{\mathbf{W}_\ast} + \underbrace{(\mathbf{b}_1 \mathbf{W}_2^{\top} + \mathbf{b}_2)}_{\mathbf{b}_\ast} = \mathbf{X} \cdot \mathbf{W}_\ast + \mathbf{b}_\ast.$$
 
+![The two-layer forward-pass chain above the single equivalent layer that computes the same function, with the substituted weight and bias named.](diagrams/03-linear-collapse.svg)
+*Both chains take the same input shape to the same output shape. Without an activation between the layers, the upper one has no capability the lower one lacks.*
+
 The right-hand side is a single dense layer with weight $\mathbf{W}_\ast$ and bias $\mathbf{b}_\ast$. The two layers are mathematically one, which is the point §3.1 made. The next post breaks that linearity by inserting an activation function between $\mathbf{Z}_1$ and the call to $\mathbf{W}_2$, so $\mathbf{Z}_1$ can no longer be substituted away.
 
 For an arbitrary depth $L$, the pattern reads:

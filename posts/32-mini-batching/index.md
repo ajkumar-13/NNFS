@@ -61,6 +61,9 @@ The choice is parameterised by a single number: how many samples contribute to e
 | **Mini-batch SGD** | $1 \ll B \ll N$ | $N / B$ | proportional to $B$ | noisy estimate of true gradient |
 | **Pure SGD** | $1$ | $N$ | tiny | very noisy single-sample gradient |
 
+![Three cards with identical 60,000-sample bars cut into 1, 469 and 60,000 batches, with matching update counts and noise levels.](diagrams/02-same-cost-more-steps.svg)
+*Every bar is the same width because every regime processes the same data each epoch. What differs is how many times the weights move.*
+
 The cost per epoch is identical across all three: every sample is touched exactly once in every epoch. The difference is how many *update steps* each regime takes and how *noisy* each step is.
 
 **Full-batch** is the textbook ideal: one true gradient, one parameter step, repeated for as many epochs as the compute budget allows. The path through the loss landscape is smooth because no noise is introduced. It takes few steps and converges slowly in wall-clock time.

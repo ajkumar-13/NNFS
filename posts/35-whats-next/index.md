@@ -25,6 +25,9 @@ Posts 1–34 leave a fully working multi-layer perceptron (MLP, a stack of dense
 
 The forward-pass / backward-pass / optimiser-step pattern from post 21 generalises: every new layer type, no matter how exotic, has a `.forward(...)` and a `.backward(...)` that fit into the same training loop. Every new optimiser has the same `pre_update_params → update_params → post_update_params` contract from post 23. The skeleton is fixed.
 
+![The training loop in the centre, with a card for any layer on the left and any optimiser on the right, each plugging into it through a fixed interface.](diagrams/02-the-skeleton-is-fixed.svg)
+*A transformer block is a forward and a backward. AdamW is three hooks. Neither needs a line of the loop to move.*
+
 What changes past this series is the *content* slotted into that skeleton. The next sections are organised by what the addition is.
 
 ---

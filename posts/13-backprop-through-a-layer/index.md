@@ -212,6 +212,9 @@ The line that computes `dL_dW` is the structural heart of the post:
 dL_dW = dL_dZ.reshape(-1, 1) * inputs    # shape (3, 4)
 ```
 
+![A column of upstream gradients times a row of inputs, filling a 3-by-4 matrix, with one cell traced back to the pair that produced it.](diagrams/02-outer-product.svg)
+*Every cell of the weight-gradient matrix is one upstream value times one input. That is what the reshape and the broadcast are for.*
+
 The reshape turns `dL_dZ` (shape `(3,)`) into a column vector of shape `(3, 1)`. NumPy broadcasts that column against the input row `(4,)` to produce a `(3, 4)` matrix of per-weight gradients. This is exactly the **outer product** of `dL_dZ` and `inputs`. Part 14 generalises it to a single `np.dot` call that works for an entire batch at once.
 
 ---

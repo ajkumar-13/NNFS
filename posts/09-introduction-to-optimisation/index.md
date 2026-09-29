@@ -33,6 +33,9 @@ The 21 parameters in the current architecture are not many by modern standards (
 | `b2` | `(1, 3)` | 3 |
 | **total** | | **21** |
 
+![Every one of the twenty-one parameters drawn as a cell, beside the parameter counts of a small ResNet and GPT-3.](diagrams/02-parameter-count.svg)
+*Small enough to draw in full, and already far too many to find by luck. The same update rule has to serve all three scales.*
+
 The question this post sets up: **what is the right algorithm for moving these 21 numbers in the direction that lowers the loss?**
 
 ---

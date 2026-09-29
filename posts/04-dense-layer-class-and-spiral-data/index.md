@@ -47,6 +47,9 @@ X, y = spiral_data(samples=100, classes=3)
 
 ### 2.1. Why this dataset and not MNIST
 
+![The spiral set at 300 samples, 2 features and 3 classes beside MNIST at 60,000 samples, 784 features and 10 classes.](diagrams/04-why-spirals-not-mnist.svg)
+*Two features is what keeps every intermediate array in the next thirty posts plottable on a single chart and checkable by eye.*
+
 MNIST is the canonical first dataset for deep learning, but for a from-scratch series it gets in the way: each image is 784 features, the training set is 60 000 samples, and the visualisations require a grid of greyscale tiles. The spiral dataset has 2 features and 300 samples, which means every intermediate computation can be plotted on a single chart and inspected by hand. MNIST arrives in the [MNIST from scratch project](../../projects/01-mnist-from-scratch/README.md); for now, two features and three classes are the right scale.
 
 ---

@@ -40,6 +40,9 @@ The second interpretation is statistical. A network with $n$ neurons defines $2^
 
 After training, the network is effectively an ensemble of $2^n$ subnetworks that have been jointly optimised. At test time, with dropout disabled, the output of the full network approximates a weighted average over every subnetwork, a form of model averaging without the compute cost of actually training many models.
 
+![One layer of five units above four sampled masks, with the note that all subnetworks share one set of weights.](diagrams/02-implicit-ensemble.svg)
+*The mask is not damage to one network. It is a choice of which subnetwork gets this step, and every subnetwork shares the same weights.*
+
 Ensembles are well known to generalise better than single models (random forests, bagged classifiers, etc.). Dropout is one of the cheapest ways to get an ensemble-like effect inside a single network: no extra training, no extra storage, no extra inference.
 
 ---

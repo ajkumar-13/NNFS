@@ -171,6 +171,9 @@ Three common leak patterns:
 
 **Label-correlated metadata.** Sometimes a feature is technically not the label but is so tightly coupled that it acts as one. The textbook example: predicting whether a customer will buy a product using a feature like "did the customer call to cancel?". Cancel calls only happen after a non-purchase; the feature encodes the label. On truly new customers the feature is meaningless and the model fails.
 
+![Two pipelines over the same three steps: splitting before fitting the scaler stays clean, fitting first leaks.](diagrams/02-data-leakage.svg)
+*The same three operations in two orders. What makes the second wrong is that a necessary step happens one position too early.*
+
 The defence against leakage is mechanical rather than clever:
 
 - Shuffle and split *before* any global preprocessing.

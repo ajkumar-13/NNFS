@@ -59,6 +59,9 @@ The three forms share a single rule: **the last axis of the first argument is co
 
 A short boundary section, because the NumPy API has several functions that look similar and behave differently.
 
+![np.dot contracts a shared axis, the star operator multiplies position by position and contracts nothing, and the at operator matches np.dot at two dimensions but not beyond.](diagrams/05-not-the-same-call.svg)
+*What separates the three is what each one does to the shape. Only `*` returns an array shaped like its inputs, which is why misusing it raises nothing and surfaces later as a wrong answer.*
+
 - **`np.dot()` is not element-wise multiplication.** The element-wise product `A * B` requires the two arrays to have identical (or broadcast-compatible) shapes, multiplies them position by position, and returns an array of the same shape. It is a different operation entirely.
 - **`np.dot()` is not always interchangeable with `@` (the `__matmul__` operator) or `np.matmul()`.** They agree for 1-D and 2-D inputs. They diverge for arrays with 3 or more dimensions; for those, `@` and `np.matmul()` broadcast over the leading dimensions while `np.dot()` performs a tensor contraction. For this series, every array is at most 2-D, so the three are interchangeable here.
 - **`np.dot()` is not a geometric dot product when given matrices.** With 2-D arguments it is matrix multiplication, and the geometric reading does not apply.

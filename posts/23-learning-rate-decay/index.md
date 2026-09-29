@@ -211,6 +211,9 @@ The split of update into `pre_update_params → update_params → post_update_pa
 | RMSProp (Part 26) | recompute $\alpha$ | EMA (exponential moving average) of $g^2$, then $\theta \mathrel{-}= \alpha \cdot g / \sqrt{E+\epsilon}$ | $t \mathrel{+}{=} 1$ |
 | Adam (Part 27) | recompute $\alpha$ | EMA of $g$ and $g^2$, bias-correct, then update | $t \mathrel{+}{=} 1$ |
 
+![Six optimisers as rows against three hook columns, with pre and post identical from row two down and only the update column varying.](diagrams/02-three-hook-contract.svg)
+*Two of the three columns stop changing here. Everything Parts 24 to 27 add is a change to the middle cell.*
+
 Every optimiser in the series uses the same three-hook contract. Code that uses `optimizer.pre_update_params(); for layer: optimizer.update_params(layer); optimizer.post_update_params()` works unchanged across all six. Adding the contract here, while it is still trivial, means none of it has to be retrofitted later.
 
 This pattern is also what every production framework (PyTorch, TensorFlow, JAX/Optax) does in spirit: a scheduler step that updates hyperparameters, a per-parameter update, and a counter bump. The names differ; the shape does not.

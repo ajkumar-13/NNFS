@@ -137,6 +137,9 @@ With `learning_rate = 1.0` and 10 000 epochs on the spiral dataset:
 | 10,000 | ~0.87 | ~0.65 |
 | 50,000 | ~0.29 | ~0.91 |
 
+![The SGD loss curve still descending at 10,000 epochs, beside bars comparing SGD at 10k and 50k epochs with Adam at 10k.](diagrams/02-sgd-is-slow.svg)
+*The curve has not flattened; the budget ran out. That is a different problem from being stuck, and it is the one Parts 23 to 27 solve.*
+
 One feature dominates: **progress is slow**. After 1000 epochs the loss has barely moved (1.10 → 1.06) and accuracy is still near chance. Real learning gathers pace only later: by 10 000 epochs the network reaches about 65% (loss 0.87), and it is still improving. Left to run for 50 000 epochs it climbs to about 91%.
 
 So vanilla SGD is not broken, and it is not stuck in a local minimum; it is **inefficient**. It reaches a good solution eventually, but only after a punishing number of epochs. The optimisers in Parts 23 through 27 reach the same accuracy in a fraction of the budget: Adam (Part 27) hits 96% in the same 10 000 epochs that leave plain SGD at 65%.

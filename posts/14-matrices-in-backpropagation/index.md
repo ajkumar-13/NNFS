@@ -135,6 +135,9 @@ In real training, the input is a batch of $N$ samples, not a single one. The sha
 | $\partial L / \partial \mathbf{W}$ | $(m, n)$ | $(m, n)$ (unchanged) |
 | $\partial L / \partial \mathbf{b}$ | $(m,)$ | $(m,)$ (unchanged) |
 
+![One sample and a batch of N producing the same (m, n) gradient, with the contracted axis changing from 1 to N.](diagrams/02-batch-axis-contracts.svg)
+*Both cases end on the same pair of axes. All that changes is the length of the one being contracted, and a contracted axis is by definition the one that does not survive.*
+
 The crucial observation: **the gradient shapes do not depend on the batch size**. The weights and biases are the same regardless of how many samples were fed in; only the inputs and the per-sample upstream gradients grow.
 
 For batches, the formula is still:

@@ -99,6 +99,9 @@ Not every gap means overfitting. The size and direction of the gap, and the abso
 | **Overfitting** (this post) | high | lower | large | The model has memorised noise. | Capacity reduction, fewer epochs, regularisation, dropout. |
 | **Distribution shift** | high | low | very large | The test set comes from a different distribution than training. | Re-curate the test set, or domain-adapt. |
 
+![Four cards pairing train and test accuracy on one scale: underfitting, good fit, overfitting, and distribution shift.](diagrams/03-four-regimes.svg)
+*The gap is the diagnosis, not the training accuracy. Two of these four need opposite treatments.*
+
 The model in §3 sits in the overfitting regime: high training, lower test, large gap, same distribution. The remaining sections of this post focus there.
 
 ### 4.1. What "simpler" means

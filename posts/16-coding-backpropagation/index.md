@@ -150,6 +150,9 @@ class Activation_ReLU:
 
 ### 4.1. Why a copy, not an in-place modification
 
+![One array with two names, whose masking corrupts the caller, beside two arrays where it does not.](diagrams/02-copy-not-alias.svg)
+*Both versions produce the same `dinputs`. Only one of them leaves the caller's `dvalues` intact for the layer that still needs it.*
+
 `self.dinputs = dvalues` (without `.copy()`) would alias the caller's array. The next line `self.dinputs[self.inputs <= 0] = 0` would then mutate the caller's array, with no warning. The copy is one extra allocation and prevents an entire class of nasty bugs.
 
 Numerical check:

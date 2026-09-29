@@ -90,6 +90,9 @@ The Glorot-uniform variant draws from $\mathcal{U}(-a, a)$ with $a = \sqrt{6 / (
 
 Glorot's variance-preservation argument assumes the activation function is approximately linear around zero. Tanh and sigmoid satisfy this (their derivative at zero is 1 and 1/4 respectively).
 
+![A zero-centred bell with its negative half shaded and swept onto a single spike at zero, beside the Glorot and He formulas.](diagrams/02-the-factor-of-two.svg)
+*Half the distribution lands on one point, so half the variance is gone. He's 2 is that halving undone, not a tuned constant.*
+
 ReLU does not. It zeros out the entire negative half of its input:
 
 $$\text{ReLU}(z) = \max(0, z)$$

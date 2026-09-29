@@ -148,6 +148,9 @@ Second, **activation functions never change the shape**. They are pointwise (ReL
 
 A trained classifier on this dataset would output rows like `[0.95, 0.03, 0.02]` for a confident class-0 sample and `[0.10, 0.85, 0.05]` for a class-1 sample. The output here is `[0.333, 0.333, 0.333]` for every sample. Two reasons explain this.
 
+![The uniform output row beside a trained one on the same scale, with the chain from small weights to near-equal logits to a uniform softmax.](diagrams/03-uniform-baseline.svg)
+*Both rows sum to 1.0. What separates them is not well-formedness but where the mass sits, and at initialisation it sits nowhere in particular.*
+
 **The weights are random and small.** `0.01 * np.random.randn(n_in, n_out)` produces values that are normally distributed with standard deviation $0.01$. Their product with the input features (which are also small numbers in the spiral data) yields very small logits, near zero, with no class clearly dominating. Concretely: a feature of magnitude $\approx 0.5$ times a weight of magnitude $\approx 0.01$, summed over two inputs, gives a logit on the order of $0.01$, a hundredth of a unit.
 
 **Softmax of near-zero logits is uniform.** When every logit is approximately the same number, $\text{softmax}(o)_i \approx 1/C$ for all $i$, where $o$ denotes those logits (the `dense2` output) and $C$ is the class count. With three classes, that is approximately $0.333$.

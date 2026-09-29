@@ -196,6 +196,9 @@ Three implementation notes.
 | Multi-label classification | K labels per sample | Sigmoid + BCE per output, summed |
 | Regression | continuous | Linear output + MSE (project 04) |
 
+![Four cards for binary, multi-class, multi-label and regression, giving output shape, activation, loss and target for each.](diagrams/02-choosing-the-head.svg)
+*Multi-label sits beside multi-class because that is where the mistake happens: the same neuron count, and a different activation.*
+
 **Binary** is exactly what post 34 covers: one output neuron, sigmoid + BCE.
 
 **Multi-label** is a subtler case. Each sample can have multiple positive labels at once (e.g., a movie tagged with both "comedy" and "drama"). For $K$ labels, use $K$ output neurons each with its own sigmoid + BCE. The losses are independent and sum. This is **not** the same as softmax + CCE, which forces the predicted probabilities to sum to 1, i.e., assumes exactly one positive label.

@@ -22,6 +22,9 @@ After ten posts on backprop, every component the spiral classifier needs has bot
 | `Activation_ReLU` | $\max(0, \mathbf{Z})$ | masked copy → `dinputs` | no |
 | `Activation_Softmax_Loss_CategoricalCrossentropy` | softmax then cross-entropy | $(\hat{\mathbf{y}} - \mathbf{y})/N$ → `dinputs` | no |
 
+![Three class cards sorted by whether they hold parameters: Layer_Dense trainable, ReLU and the fused softmax loss holding nothing.](diagrams/02-the-toolkit.svg)
+*Only one of the three has anything to learn. The other two exist to move gradients through, which is why the optimiser never touches them.*
+
 Three classes, eight methods. That is the entire computational toolkit a classification network needs.
 
 The architecture this post wires together is the same one from [Part 07](../07-coding-the-complete-forward-pass/index.md): two inputs, one hidden layer of three ReLU neurons, one output layer of three softmax neurons, categorical cross-entropy loss. The only difference is that every component now has a `backward` method, so the pipeline can compute gradients and update parameters — which is what makes it a *trainable* classifier rather than a forward-only one.

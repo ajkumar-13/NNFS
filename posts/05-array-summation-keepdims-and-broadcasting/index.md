@@ -75,7 +75,10 @@ np.sum(b, axis=1).shape              # (4, 3)  — axis 1 is gone
 
 ### 2.5. What is *not* obvious about the result
 
-Both `np.sum(a, axis=0)` and `np.sum(a, axis=1)` return a 1-D array of shape `(3,)`. That 1-D shape is the source of the silent-bug class that §3 catalogues. A 1-D `(n,)` array is not the same thing as a row vector of shape `(1, n)` nor a column vector of shape `(n, 1)`. NumPy's broadcasting rules treat the three differently, and the difference is invisible at the `print` site.
+Both `np.sum(a, axis=0)` and `np.sum(a, axis=1)` return a 1-D array of shape `(3,)`. That 1-D shape is the source of the silent-bug class that §3 catalogues.
+
+![A 1-D shape and a row vector both stretch downward; only a column vector of shape (n, 1) stretches sideways.](diagrams/04-three-shapes.svg)
+*`(n,)` and `(1, n)` are interchangeable; `(n, 1)` is neither of them. Every silent bug in this post is a reduction that returned the first when the third was wanted.* A 1-D `(n,)` array is not the same thing as a row vector of shape `(1, n)` nor a column vector of shape `(n, 1)`. NumPy's broadcasting rules treat the three differently, and the difference is invisible at the `print` site.
 
 ---
 

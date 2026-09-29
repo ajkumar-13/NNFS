@@ -34,6 +34,9 @@ With a single learning rate $\alpha = 0.1$:
 - The step for $W_1$ is $0.1 \cdot 0.02 = 0.002$. Negligible. $W_1$ barely moves.
 - The step for $W_2$ is $0.1 \cdot 2.0 = 0.2$. $W_2$ moves 100× faster. If $\alpha$ is large enough to make $W_1$ progress visibly, $W_2$ overshoots and oscillates.
 
+![The loss W1 squared over 100 plus W2 squared, with both candidate learning rates worked out and both failing.](diagrams/02-one-rate-two-params.svg)
+*Every α is either sized for the large gradient or the small one. There is no third option, which is why the fix has to be per-parameter.*
+
 This is a fundamental incompatibility. The right step for $W_1$ is the wrong step for $W_2$, and there is no global $\alpha$ that works for both. Either $\alpha$ is sized for the largest gradient (so the small-gradient parameters never learn) or for the smallest (so the large-gradient parameters explode).
 
 In real networks the same problem appears at scale. Some weights see consistent large gradients (e.g. early layers receiving direct gradient signal from a deep stack); some see tiny gradients (e.g. late-layer weights inside saturated regions). A single $\alpha$ fights both at once.

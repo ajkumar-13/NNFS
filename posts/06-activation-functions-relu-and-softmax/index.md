@@ -43,6 +43,9 @@ $$\text{ReLU}(x) = \max(0, x).$$
 
 Negative inputs become zero. Positive inputs pass through unchanged. The plot is two straight lines meeting at the origin, with a sharp kink at $x = 0$.
 
+![The ReLU plot: flat along the axis for negative inputs, a kink at the origin, a straight rise for positive inputs, with four boundary notes beside it.](diagrams/04-relu-anatomy.svg)
+*Two straight lines meeting at the origin. Everything a network can bend traces back to this one kink, and the four notes are what it still cannot do.*
+
 That kink is everything. A single ReLU adds one bend to the function the network represents. Stacking many neurons with different weights and biases shifts and scales these bends. Putting them in two or three layers lets the network compose hundreds of bends into any continuous shape: spirals, decision boundaries, image edges, anything.
 
 ### 2.1. Why ReLU and not the older alternatives

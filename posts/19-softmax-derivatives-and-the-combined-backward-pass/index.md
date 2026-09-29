@@ -69,6 +69,9 @@ The full algebra (with the quotient rule applied to softmax directly and then mu
 
 Two reasons, both decisive.
 
+![A table of Jacobian versus shortcut work at 3, 1000 and 50,000 classes, beside the log-sum-exp stability argument.](diagrams/02-why-fused.svg)
+*At a language-model vocabulary the explicit route computes two and a half billion numbers per sample where the shortcut computes fifty thousand.*
+
 **Numerical stability.** The "log of softmax" inside the cross-entropy can be computed via the log-sum-exp trick (which is just the max-subtraction stabiliser from [Part 06](../06-activation-functions-relu-and-softmax/index.md) §4.2 in disguise). When the two ops are computed separately and the results threaded together, intermediate quantities can underflow or overflow. The combined op avoids materialising the unstable intermediates.
 
 **Speed.** Computing the full Jacobian and multiplying by the upstream is $O(N C^2)$. The combined shortcut is $O(N C)$. For classification tasks with $C = 1000$ classes (ImageNet) or $C = 50\,000$ tokens (language models), the difference is enormous.

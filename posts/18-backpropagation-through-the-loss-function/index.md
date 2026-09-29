@@ -145,6 +145,9 @@ Three details deserve naming.
 
 **The label-format check is the same one `forward` uses.** Backward must support whichever format was passed in; the conversion is cheap.
 
+![Every other class has a layer to its right sending a gradient; the loss class has a dashed empty box instead.](diagrams/02-where-backprop-starts.svg)
+*The loss is the only class in the series with nothing downstream of it, which is why its `dvalues` is not a gradient.*
+
 **`dvalues` is the prediction array.** This is the loss-layer special case: elsewhere in the series `dvalues` means the incoming gradient from the next layer, but the loss sits at the top of the chain, so the only thing flowing in is the predictions themselves. The upstream gradient is the loss with respect to itself (a scalar `1`), so the implementation skips the explicit upstream multiplication and goes straight to the local gradient $-\mathbf{y} / \hat{\mathbf{y}}$. The chain-rule "× upstream" step is implicit because the upstream is `1`.
 
 **Clipping appears in `forward`, not in `backward`.** The gradient formula has $\hat{y}$ in the denominator, so if any value in `dvalues` is zero, the result is `inf`. Two defences exist: clip inside `backward`, or trust that `forward` was called first and the clipped predictions are what reach `backward`. The class in [Part 16](../16-coding-backpropagation/index.md) uses the latter pattern; production code often does both for safety.

@@ -53,6 +53,9 @@ Five lines, all elementwise. The first two come straight from Parts 24 and 26. T
 
 Both $m_0$ and $v_0$ are initialised to zero. On the first iteration, $m_1 = (1 - \beta_1) \, g_1$, only 10% of the actual gradient when $\beta_1 = 0.9$, and only 0.1% when $\beta_2 = 0.999$. Without correction, the early steps are silently 10× to 1000× smaller than the gradient is asking for, and the optimiser wastes the first dozens of iterations crawling toward the warmed-up steady state.
 
+![The cold-start damping of both moments, beside the correction factor decaying from 10x and 1000x back to 1x.](diagrams/02-bias-correction.svg)
+*The correction is large exactly when it is needed and gone once it is not, without any schedule deciding when.*
+
 The mathematical fix is exact. Take a constant gradient $g$ and trace the EMA:
 
 $$m_t = (1 - \beta_1) \sum_{k=0}^{t-1} \beta_1^k \, g = (1 - \beta_1^t) \, g$$

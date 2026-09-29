@@ -73,6 +73,9 @@ The cleanest way to see what these two penalties actually do is to compare their
 | 10   | 0.01 | 0.2 |
 | 100  | 0.01 | 2.0 |
 
+![L1 gradient pressure flat at 0.01 against L2 rising as 0.02w, on log-log axes from |w| = 0.01 to 100, crossing at 0.5.](diagrams/02-gradient-pressure.svg)
+*A flat line and a line of slope 1. Where they cross depends on λ, so the crossing point is an illustration rather than a threshold.*
+
 L1 applies the same constant pressure to every weight, no matter how small. That constant pressure is what pushes weights *all the way to zero*: once a weight is small enough that the L1 gradient term (of size $\lambda$) outweighs the data-loss gradient term, the next update pushes the weight further toward zero until it crosses and is clamped at zero. The exact crossover point depends on $\lambda$ and on the data-loss gradient; for the $\lambda = 0.01$ table above it sits near $|w| = 1$, but that is a $\lambda$-dependent illustration rather than a universal threshold.
 
 L2 applies pressure proportional to weight magnitude. A weight of 0.01 sees pressure of $0.0002$, which is dwarfed by the data-loss gradient. A weight of 100 sees pressure of $2.0$, which dominates. The result: L2 *shrinks* large weights but leaves small weights essentially alone, never quite driving them to zero.

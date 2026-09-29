@@ -35,6 +35,9 @@ Consider two consecutive gradient steps inside a narrow valley:
 
 The vertical (downhill) components of both steps agree: both point downward. The horizontal (across-the-valley) components disagree: one points right, the next points left.
 
+![Two consecutive steps decomposed into across and down components, then added: the across parts cancel to zero and the down parts double.](diagrams/02-vector-cancellation.svg)
+*The bounce and the descent are separate components of the same two vectors. Adding the vectors first keeps one and destroys the other.*
+
 If something **adds** these two vectors before applying them, two things happen at once:
 
 - The horizontal components partially cancel; the bounce dampens.

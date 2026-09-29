@@ -160,6 +160,9 @@ The same modularity is why PyTorch's `loss.backward()` works without any special
 
 Reading off the chain rule for any composition is mechanical:
 
+![Three step cards working the derivative of 3(2x squared) to the fifth: split it, differentiate each part, multiply.](diagrams/03-three-step-pattern.svg)
+*The same three steps that produce 960x⁹ here produce the four-factor gradient of the network. Only the middle step changes.*
+
 | Step | Action |
 |:---:|---|
 | 1 | Identify the chain of composed functions, outermost to innermost. |

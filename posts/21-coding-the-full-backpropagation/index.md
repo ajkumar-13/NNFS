@@ -196,6 +196,9 @@ dense2.dbiases: [[-0.00019  0.00010  0.00009]]
 
 Two facts to confirm by eye, every single time:
 
+![The printed loss of 1.0986 checked against −log(1/3), beside a table pairing every parameter with its gradient and shape.](diagrams/02-two-sanity-checks.svg)
+*Neither check needs the loss to fall, which is why both work on iteration zero, before the training loop exists.*
+
 **Each gradient array has the same shape as its parameter.** `dense1.dweights.shape == dense1.weights.shape`; same for biases and for `dense2`. Any mismatch is a bug.
 
 **The magnitudes are small.** Of order $10^{-3}$ to $10^{-4}$. This is expected for an untrained network with small initial weights and an `nnfs.init()`-style RNG seed; large gradients on the first step usually mean exploding-gradient initialisation, which is a real problem covered later.
