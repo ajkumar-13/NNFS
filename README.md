@@ -60,6 +60,8 @@ posts/                       → 35 blog posts, one directory each
     index.md                 → the lecture
     diagrams/                → SVG diagrams shipped with the post
 
+poster/                      → the one-page A2 reference sheet, hand-drawn, light and dark
+
 projects/                    → 4 applied projects, each a standalone README + code
   01-mnist-from-scratch/     → two-hidden-layer MLP, ~97% MNIST accuracy
   02-binary-classifier/      → two-moons, sigmoid + BCE
@@ -68,6 +70,7 @@ projects/                    → 4 applied projects, each a standalone README + 
 
 cheatsheets/                 → four quick-reference sheets (Parts 1–5, 6–9, 10–21, 22–31)
 dashboards/                  → optimiser and regularisation side-by-side comparison tables
+assets/diagrams/             → the generator that draws every hand-drawn figure and the poster
 
 cumulative_notebook.ipynb    → all series code in one runnable notebook
 INDEX.md                     → series index and guided learning path
@@ -97,6 +100,7 @@ appendix_softmax_combined_backward.md  → full derivation of the combined backw
 
 | Resource | Purpose |
 |---|---|
+| [One-page poster](poster/) | The whole series on a single A2 sheet, in eight panels. Hand-drawn, light and dark |
 | [Glossary](glossary.md) | Plain-English definitions for every term in the series |
 | [Notation Guide](notation_guide.md) | Symbols, tensor shapes, and optimiser variables in one place |
 | [References](REFERENCES.md) | Master bibliography of every paper, book, and doc cited |
