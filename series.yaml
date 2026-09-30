@@ -1,0 +1,46 @@
+# Series manifest, family standard 2.2.0 (STANDARD.md Section 5).
+# parts[].posts is the whole locked curriculum in reading order, drafted or not; a post without a
+# directory has an entry under planned. Ids are allocated from next_post_ordinal and never reused.
+# 35 locked posts in 8 parts; generated from plan.md Section 5 by tools/plan_to_manifest.py.
+standard: "2.2.0"
+key: nnfs
+code: nn
+title: Neural Networks from Scratch
+status: complete
+author: Ajay
+library: null
+slug_patterns:
+  core: ^[0-9]{2,3}-[a-z0-9-]+$
+next_post_ordinal: 36
+next_project_ordinal: 1
+projects: []
+levels_used: [beginner, intermediate]
+vocab: {}
+question_policy: {}
+parts:
+- number: 1
+  title: Part I - Foundations
+  posts: [nn-001, nn-002, nn-003, nn-004, nn-005]
+- number: 2
+  title: Part II - Activations and forward pass
+  posts: [nn-006, nn-007]
+- number: 3
+  title: Part III - Loss and optimisation
+  posts: [nn-008, nn-009]
+- number: 4
+  title: Part IV - Calculus for backpropagation
+  posts: [nn-010, nn-011]
+- number: 5
+  title: Part V - Backpropagation
+  posts: [nn-012, nn-013, nn-014, nn-015, nn-016, nn-017, nn-018, nn-019, nn-020, nn-021]
+- number: 6
+  title: Part VI - Optimisers
+  posts: [nn-022, nn-023, nn-024, nn-025, nn-026, nn-027]
+- number: 7
+  title: Part VII - Generalisation and regularisation
+  posts: [nn-028, nn-029, nn-030, nn-031]
+- number: 8
+  title: Part VIII - Practical training and extensions
+  posts: [nn-032, nn-033, nn-034, nn-035]
+retired: []
+gates: []
