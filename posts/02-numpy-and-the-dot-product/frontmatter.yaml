@@ -1,8 +1,24 @@
 id: nn-002
 slug: 02-numpy-and-the-dot-product
-title: "Part 02 · NumPy and the dot product"
+title: "02 - NumPy and the dot product"
+summary: "The three forms of np.dot, vector by vector, matrix by vector, and matrix by matrix, and the one shape rule that says which runs, whether the call succeeds, and when a batch needs the transpose."
 date: 2026-05-24
+updated: 2026-10-05
+status: complete
+part: "Part I - Foundations"
+level: beginner
+reading_time: 20
 tags: [neural-networks, from-scratch, numpy, linear-algebra, foundations]
 hero: diagrams/01-three-forms.svg
-reading_time: 13
-part: "Part I — Foundations"
+prerequisites: [nn-001]
+code: included
+outcomes:
+  - id: o1
+    text: "Name the three forms of np.dot and match each one to a neuron, a layer, or a batch."
+  - id: o2
+    text: "Predict from the shapes alone whether a np.dot call succeeds and what shape it returns."
+  - id: o3
+    text: "Explain why swapping the arguments is harmless for two vectors and changes or breaks the call once a matrix is involved."
+  - id: o4
+    text: "Decide when a layer call needs the transpose of the weight matrix, and write the batch call that uses it."
+compute: cpu

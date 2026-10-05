@@ -1,0 +1,885 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-002",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-002-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "three-forms",
+        "layer"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`W` has shape $(5, 3)$ and `x` has shape $(3,)$. Which neural-network computation does `np.dot(W, x)` carry out, before any bias is added?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "One neuron with 3 inputs on one sample; the result is a scalar.",
+          "correct": false,
+          "feedback": "A scalar comes from two 1-D arguments. Here the first argument is 2-D, so there is one dot product per row of `W`, five in all."
+        },
+        {
+          "key": "b",
+          "text": "A layer of 5 neurons with 3 inputs each on one sample; the result has shape $(5,)$.",
+          "correct": true,
+          "feedback": "Right. Each of the 5 rows of `W` holds one neuron's weights, and each row is dotted with the same 3-element sample."
+        },
+        {
+          "key": "c",
+          "text": "A layer of 3 neurons on a batch of 5 samples; the result has shape $(5, 3)$.",
+          "correct": false,
+          "feedback": "A batch needs a 2-D second argument holding several samples. A 1-D `x` is a single sample, so the result is 1-D."
+        },
+        {
+          "key": "d",
+          "text": "A layer of 3 neurons with 5 inputs each on one sample; the result has shape $(3,)$.",
+          "correct": false,
+          "feedback": "That reads the shape backwards. The size that meets the 3 entries of `x` is the last axis of `W`; the 5 rows are the neurons and survive into the result."
+        }
+      ],
+      "explanation": "Section 3's table lists the matrix by vector form: shapes $(m, n)$ and $(n,)$ give $(m,)$, one dot product per row of the matrix, which is a layer of $m$ neurons on one sample. Here $m = 5$ and $n = 3$, so the call returns the five weighted sums of a 5-neuron layer.",
+      "hints": [
+        "Count the axes of each argument first, then find the two sizes that must be equal."
+      ]
+    },
+    {
+      "id": "nn-002-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "shape-rule",
+        "matrix-product"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`P` has shape $(5, 3)$ and `Q` has shape $(3, 4)$. What does `np.dot(P, Q)` return?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "A matrix of shape $(5, 4)$.",
+          "correct": true,
+          "feedback": "Right. The inner sizes, 3 and 3, match and are summed away; the outer sizes 5 and 4 form the result."
+        },
+        {
+          "key": "b",
+          "text": "A matrix of shape $(3, 3)$.",
+          "correct": false,
+          "feedback": "That keeps the inner sizes and drops the outer ones, the reverse of the rule. The matching 3s are the axis that disappears."
+        },
+        {
+          "key": "c",
+          "text": "A matrix of shape $(5, 3)$, the position-by-position products.",
+          "correct": false,
+          "feedback": "Position-by-position multiplication is `P * Q`, and it would fail here because $(5, 3)$ and $(3, 4)$ do not broadcast. `np.dot` sums over the shared axis."
+        },
+        {
+          "key": "d",
+          "text": "Nothing: it raises a `ValueError` because the two shapes are different.",
+          "correct": false,
+          "feedback": "The two shapes need not be equal. Only the last size of the first and the first size of the second must agree, and both are 3."
+        }
+      ],
+      "explanation": "Section 6 states the rule: for shapes $(m, n)$ and $(n, p)$ the inner sizes must match and the result is $(m, p)$. With $m = 5$, $n = 3$ and $p = 4$ the result is $(5, 4)$, and its entry $(i, j)$ is the dot product of row $i$ of `P` with column $j$ of `Q`.",
+      "hints": [
+        "Write the two shapes side by side and look at the two numbers in the middle."
+      ]
+    },
+    {
+      "id": "nn-002-q03",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "10",
+      "est_minutes": 4,
+      "tags": [
+        "batch",
+        "counting",
+        "timing"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Suppose the last line of the script is changed to `compare(500, 20, 30, loop_repeats=3, dot_repeats=20)`. Inside `compare`, the call `np.dot(X, W.T)` then receives `X` of shape $(500, 20)$, one row per sample, and `W` of shape $(30, 20)$, one row per neuron. Give the number of rows and of columns of its result, the number of dot products that one call computes, and the multiply-add count the script prints for this case.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "path": "snippets/loop_vs_dot.py",
+        "caption": "The timing script of this post."
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "rows of the result",
+            "value": 500,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "columns of the result",
+            "value": 30,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "dot products",
+            "value": 15000,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "multiply-adds printed",
+            "value": 300000,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form: the batch form returns $(N, m) = (500, 30)$, one dot product per entry, each over $n = 20$ terms. Running `snippets/loop_vs_dot.py` with that last line prints `300,000 multiply-adds`.",
+      "explanation": "The call is the batch form: $(500, 20) \\cdot (20, 30) \\to (500, 30)$, one row per sample and one column per neuron. Every entry is one dot product, so there are $500 \\cdot 30 = 15{,}000$ of them, each a sum of 20 products, $300{,}000$ multiply-adds in all, which is the product of the three sizes that the script prints. Section 10 reports that on the script's own large case nested Python loops took about a thousand times as long as the one `np.dot` call. A fair timing uses plain NumPy, as the script does: the `nnfs.init()` call of later posts wraps `np.dot` so that its arguments are converted to float64 and its result to float32, which adds to the measured time.",
+      "hints": [
+        "The batch form returns one row per sample and one column per neuron.",
+        "Each entry of the result is one dot product over the shared axis of length 20."
+      ]
+    },
+    {
+      "id": "nn-002-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 4,
+      "tags": [
+        "matrix-by-vector",
+        "result-shape"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Both lines compute the same sum. Work that number out by hand, then give the number of axes of `r1` and of `r2`, that is, the value `np.ndim` returns for each.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "import numpy as np\n\nr1 = np.dot([[0.2, 0.8, -0.5, 1.0]], [1, 2, 3, 2.5])\nr2 = np.dot([0.2, 0.8, -0.5, 1.0], [1, 2, 3, 2.5])"
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "the number held by r1 and by r2",
+            "value": 2.8,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "axes of r1",
+            "value": 1,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "axes of r2",
+            "value": 0,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "By hand, $0.2 + 1.6 - 1.5 + 2.5 = 2.8$. NumPy returns `[2.8]` with shape $(1,)$ for `r1` and the scalar `2.8` for `r2`.",
+      "explanation": "The products are $0.2$, $1.6$, $-1.5$ and $2.5$, which sum to $2.8$. In `r1` the first argument has shape $(1, 4)$, so the matrix by vector form of section 5 runs: one dot product per row, and with a single row the result has shape $(1,)$, a 1-D array holding one number. In `r2` both arguments are 1-D, the vector by vector form of section 4, and the result is a scalar with no axes. The extra pair of brackets changes which form runs, not the arithmetic.",
+      "hints": [
+        "Count the brackets: the first argument of `r1` is a list that contains one list.",
+        "A 2-D first argument with a 1-D second gives one dot product per row of the first."
+      ]
+    },
+    {
+      "id": "nn-002-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 6,
+      "tags": [
+        "order-of-arguments",
+        "matrix-by-vector"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Let `a = np.array([2, -1, 3])` and `M = np.array([[1, 0, 2], [4, 1, -1], [0, 3, 5]])`. Compute the three entries of `np.dot(a, M)` and the three entries of `np.dot(M, a)`.",
+      "answer": {
+        "parts": [
+          {
+            "label": "np.dot(a, M), first entry",
+            "value": -2,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "np.dot(a, M), second entry",
+            "value": 8,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "np.dot(a, M), third entry",
+            "value": 20,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "np.dot(M, a), first entry",
+            "value": 8,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "np.dot(M, a), second entry",
+            "value": 4,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "np.dot(M, a), third entry",
+            "value": 12,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Computed with NumPy: `np.dot(a, M)` prints `[-2  8 20]` and `np.dot(M, a)` prints `[ 8  4 12]`; by hand, one dot product per column and one per row.",
+      "explanation": "Section 5 shows that with the vector first each entry is the dot product of `a` with a column of the matrix, and with the matrix first each entry is the dot product of a row with `a`. The columns $(1, 4, 0)$, $(0, 1, 3)$ and $(2, -1, 5)$ give $2 - 4 + 0 = -2$, $0 - 1 + 9 = 8$ and $4 + 1 + 15 = 20$. The rows $(1, 0, 2)$, $(4, 1, -1)$ and $(0, 3, 5)$ give $2 + 0 + 6 = 8$, $8 - 1 - 3 = 4$ and $0 - 3 + 15 = 12$. Both orders run because `M` is square, and they return different vectors because `M` is not symmetric.",
+      "hints": [
+        "With the vector first, pair `a` with each column of `M`; with the matrix first, pair each row of `M` with `a`.",
+        "The first entry of `np.dot(a, M)` uses the column $(1, 4, 0)$; the first entry of `np.dot(M, a)` uses the row $(1, 0, 2)$."
+      ]
+    },
+    {
+      "id": "nn-002-q06",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 2,
+      "tags": [
+        "transpose",
+        "batch"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A batch `X` has shape $(N, n)$, one row per sample, and a weight matrix `W` has shape $(m, n)$, one row per neuron, with $N$, $m$ and $n$ all different. Write the single `np.dot` call that returns the $(N, m)$ array of weighted sums.",
+      "answer": {
+        "model": "`np.dot(X, W.T)`",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:not|never|instead\\s+of|rather\\s+than)\\s+`?(?:(?:np|numpy)\\.)?(?:dot|matmul)\\s*[(]\\s*X\\s*,\\s*W\\.T)(?![\\s\\S]*\\b(?:or|and)\\s+`?(?:(?:np|numpy)\\.)?(?:dot|matmul)\\s*[(])(?:(?!(?:dot|matmul)\\s*[(]|@)[\\s\\S])*?(?<![\\w.])(?:(?:np|numpy)\\.)?(?:dot|matmul)\\s*[(]\\s*X\\s*,\\s*(?:W\\.T|W\\.transpose[(]\\s*[)]|(?:np|numpy)\\.transpose[(]\\s*W\\s*[)])\\s*[)](?!\\s*`?\\s*\\.(?:T\\b|transpose\\b))",
+          "^\\s*`?\\s*X\\s*@\\s*W\\.T\\s*`?\\s*\\.?\\s*$",
+          "^\\s*`?\\s*X\\.dot[(]\\s*W\\.T\\s*[)]\\s*`?\\s*\\.?\\s*$",
+          "^\\s*`?\\s*(?:(?:np|numpy)\\.)?(?:dot|matmul)[(]\\s*W\\s*,\\s*X\\.T\\s*[)]\\.T\\s*`?\\s*\\.?\\s*$"
+        ]
+      },
+      "explanation": "Section 7 lines the shapes up: `np.dot(X, W)` would be $(N, n) \\cdot (m, n)$, whose inner sizes $n$ and $m$ differ, so the weights are transposed to $(n, m)$ and `np.dot(X, W.T)` is $(N, n) \\cdot (n, m) \\to (N, m)$. Each entry is the dot product of one sample with one neuron's row of weights.",
+      "hints": [
+        "Write the two shapes side by side and compare the inner sizes."
+      ]
+    },
+    {
+      "id": "nn-002-q07",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "shape-error",
+        "valueerror"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The last line of this code raises. Name the exception class, and give the two sizes that failed to match.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "import numpy as np\n\nX = np.ones((5, 4))    # 5 samples, 4 features\nW = np.ones((3, 4))    # 3 neurons, 4 inputs each\nnp.dot(X, W)"
+      },
+      "answer": {
+        "model": "`ValueError`: the last axis of `X` has size 4 and the first axis of `W` has size 3. The message reads `shapes (5,4) and (3,4) not aligned: 4 (dim 1) != 3 (dim 0)`.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:not|no|never|isn't|is\\s+not|rather\\s+than|instead\\s+of)\\s+(?:an?\\s+|the\\s+)?`?value\\s*error)(?![\\s\\S]*\\bno\\s+(?:error|exception)\\b)(?![\\s\\S]*\\b(?:does\\s+not|doesn't|won't|will\\s+not|would\\s+not|wouldn't)\\s+raise)(?![\\s\\S]*value\\s*error`?\\s+(?:is|was|will\\s+be|would\\s+be)\\s*(?:not|never)\\s+(?:be\\s+)?(?:raised|thrown))(?![\\s\\S]*value\\s*error`?\\s+(?:isn't|wasn't|won't\\s+be|wouldn't\\s+be)\\s+(?:raised|thrown))(?!(?:(?:[(\\[]\\s*\\d+\\s*,\\s*\\d+\\s*[)\\]]|\\b\\d+\\s*(?:x|\\*|by)\\s*\\d+\\b)|(?!(?:[(\\[]\\s*\\d+\\s*,\\s*\\d+\\s*[)\\]]|\\b\\d+\\s*(?:x|\\*|by)\\s*\\d+\\b))[\\s\\S])*?\\b(?:5|five)\\b(?:(?:\\s+\\w+){0,2}?\\s*(?:!=|<>|=/=|vs\\.?|versus|against)|\\s*(?:and|&|with|/))\\s*(?:the\\s+)?\\b(?:3|three)\\b)(?!(?:(?:[(\\[]\\s*\\d+\\s*,\\s*\\d+\\s*[)\\]]|\\b\\d+\\s*(?:x|\\*|by)\\s*\\d+\\b)|(?!(?:[(\\[]\\s*\\d+\\s*,\\s*\\d+\\s*[)\\]]|\\b\\d+\\s*(?:x|\\*|by)\\s*\\d+\\b))[\\s\\S])*?\\b(?:3|three)\\b(?:(?:\\s+\\w+){0,2}?\\s*(?:!=|<>|=/=|vs\\.?|versus|against)|\\s*(?:and|&|with|/))\\s*(?:the\\s+)?\\b(?:5|five)\\b)(?!(?:(?:[(\\[]\\s*\\d+\\s*,\\s*\\d+\\s*[)\\]]|\\b\\d+\\s*(?:x|\\*|by)\\s*\\d+\\b)|(?!(?:[(\\[]\\s*\\d+\\s*,\\s*\\d+\\s*[)\\]]|\\b\\d+\\s*(?:x|\\*|by)\\s*\\d+\\b))[\\s\\S])*?\\b(?:5|five)\\b[^.;:\\n0-9]{0,30}?(?:(?:not|n't)\\s+(?:equal|match|the\\s+same|agree)|differs?\\b|mismatch))(?![\\s\\S]*(?:not|n't)\\s+(?:equal|match)\\s+(?:to\\s+)?(?:the\\s+)?\\b(?:5|five)\\b)(?=[\\s\\S]*value\\s*error)(?=(?:(?:[(\\[]\\s*\\d+\\s*,\\s*\\d+\\s*[)\\]]|\\b\\d+\\s*(?:x|\\*|by)\\s*\\d+\\b)|(?!(?:[(\\[]\\s*\\d+\\s*,\\s*\\d+\\s*[)\\]]|\\b\\d+\\s*(?:x|\\*|by)\\s*\\d+\\b))[\\s\\S])*?\\b(?:4|four)\\b)(?=(?:(?:[(\\[]\\s*\\d+\\s*,\\s*\\d+\\s*[)\\]]|\\b\\d+\\s*(?:x|\\*|by)\\s*\\d+\\b)|(?!(?:[(\\[]\\s*\\d+\\s*,\\s*\\d+\\s*[)\\]]|\\b\\d+\\s*(?:x|\\*|by)\\s*\\d+\\b))[\\s\\S])*?\\b(?:3|three)\\b)"
+        ]
+      },
+      "explanation": "The call is $(5, 4) \\cdot (3, 4)$: the last axis of `X` has size 4 and the first axis of `W` has size 3, so the inner sizes do not match and NumPy raises `ValueError: shapes (5,4) and (3,4) not aligned: 4 (dim 1) != 3 (dim 0)`. Section 7 gives the cure, `np.dot(X, W.T)`, which is $(5, 4) \\cdot (4, 3) \\to (5, 3)$, and section 11 reads the same message for the post's pair of $(3, 4)$ arrays.",
+      "hints": [
+        "Compare the last size of the first shape with the first size of the second."
+      ]
+    },
+    {
+      "id": "nn-002-q08",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o4"
+      ],
+      "section": "11",
+      "est_minutes": 4,
+      "tags": [
+        "square-layer",
+        "silent-bug",
+        "transpose"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A layer has 4 neurons with 4 inputs each, so its weights `W` have shape $(4, 4)$, one row per neuron, and `W` is not symmetric. The batch `X` has shape $(10, 4)$, one row per sample. A developer writes `np.dot(X, W)`, forgetting the transpose. What happens?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "NumPy raises `ValueError: shapes (10,4) and (4,4) not aligned`, as it does for any missing transpose.",
+          "correct": false,
+          "feedback": "The inner sizes are 4 and 4, so the shape rule is satisfied and nothing is raised. The error appears only when the layer has different numbers of neurons and inputs."
+        },
+        {
+          "key": "b",
+          "text": "It returns a $(10, 4)$ array of wrong numbers: each sample is dotted with a column of `W`, not with a neuron's row.",
+          "correct": true,
+          "feedback": "Right. The shapes cannot tell the two axes of a square `W` apart, so the call runs and pairs each sample with the $j$-th weight of every neuron where neuron $j$'s own weights belong."
+        },
+        {
+          "key": "c",
+          "text": "It returns the same $(10, 4)$ array as `np.dot(X, W.T)`, because transposing a square matrix leaves it unchanged.",
+          "correct": false,
+          "feedback": "Transposing a square matrix keeps its shape but moves entry $(i, j)$ to $(j, i)$. The values change unless the matrix is symmetric, and this one is not."
+        },
+        {
+          "key": "d",
+          "text": "It returns a $(4, 10)$ array, with one row per neuron and one column per sample, the transpose of what was wanted.",
+          "correct": false,
+          "feedback": "The result takes the outer sizes in order, 10 then 4. A $(4, 10)$ result would come from `np.dot(W, X.T)`."
+        }
+      ],
+      "explanation": "Section 11 runs this case with a $3 \\times 3$ weight matrix: for the sample $(1, 0, 0)$ the call with the transpose returns every neuron's first weight, the call without it returns neuron 1's three weights, and neither raises. The shape rule only compares inner sizes, and for a square `W` they match in both layouts, so `np.dot(X, W)` computes $\\mathbf{X}\\mathbf{W}$ where the layer needs $\\mathbf{X}\\mathbf{W}^\\top$. Only a check on values, or a test with a non-square layer, exposes the mistake.",
+      "hints": [
+        "Apply the inner-size test to $(10, 4)$ and $(4, 4)$ before deciding whether anything is raised.",
+        "Entry $(i, j)$ of the result pairs row $i$ of `X` with column $j$ of `W`; ask whose weights a column of `W` holds."
+      ]
+    },
+    {
+      "id": "nn-002-q09",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "order-of-arguments",
+        "commutativity"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "For which pair of arguments does swapping the order, `np.dot(u, v)` against `np.dot(v, u)`, give the same result for every choice of values?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "A square 2-D array and a 1-D array of matching length.",
+          "correct": false,
+          "feedback": "Both orders run, but one takes a dot product per row and the other per column. The post's `a` and `B` give `[32 50 68]` one way and `[48 54 60]` the other."
+        },
+        {
+          "key": "b",
+          "text": "Two square 2-D arrays of the same size.",
+          "correct": false,
+          "feedback": "Both orders run and both return a square matrix, but entry $(i, j)$ pairs row $i$ of the first with column $j$ of the second, so swapping changes which rows meet which columns."
+        },
+        {
+          "key": "c",
+          "text": "Two 1-D arrays of the same length.",
+          "correct": true,
+          "feedback": "Right. Both orders compute the same sum of products $u_i v_i$, and each product is the same either way round."
+        },
+        {
+          "key": "d",
+          "text": "Any pair for which both orders run without an error.",
+          "correct": false,
+          "feedback": "Running in both orders only means the sizes fit both ways. The square cases run both ways and still give different numbers."
+        }
+      ],
+      "explanation": "Section 4 shows that two vectors give the same sum in either order, because each product $u_i v_i$ equals $v_i u_i$. Section 5 shows that with a square matrix both orders run but one takes a dot product per row and the other per column, and section 6 shows the same for two matrices, where entry $(i, j)$ pairs a row of the first with a column of the second. Running in both orders is a statement about shapes, not about values.",
+      "hints": [
+        "For each pair, write out which numbers are multiplied together in each order."
+      ]
+    },
+    {
+      "id": "nn-002-q10",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3.1",
+      "est_minutes": 3,
+      "tags": [
+        "element-wise",
+        "star-operator",
+        "silent-bug"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`inputs` and `weights` both have shape $(3, 4)$: 3 samples of 4 features, and 3 neurons of 4 inputs. What do `np.dot(inputs, weights)` and `inputs * weights` each do?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`np.dot` returns the $(3, 3)$ layer output; `*` returns a $(3, 4)$ array of position-by-position products.",
+          "correct": false,
+          "feedback": "The $(3, 3)$ output needs `weights.T`. As written the inner sizes are 4 and 3, so `np.dot` raises."
+        },
+        {
+          "key": "b",
+          "text": "Both raise a `ValueError`, because a batch call needs the transpose of the weights.",
+          "correct": false,
+          "feedback": "Only `np.dot` compares inner sizes. `*` multiplies matching positions and is satisfied by two equal shapes, so it runs silently."
+        },
+        {
+          "key": "c",
+          "text": "`np.dot` raises a `ValueError`; `*` returns a $(3, 4)$ array of position-by-position products.",
+          "correct": true,
+          "feedback": "Right. `np.dot` needs the inner sizes 4 and 3 to match and they do not; `*` only needs equal or broadcastable shapes, which it has, so it returns numbers that are not a layer output."
+        },
+        {
+          "key": "d",
+          "text": "`np.dot` raises a `ValueError`; `*` returns the $(3, 3)$ layer output, since `*` between 2-D arrays is matrix multiplication.",
+          "correct": false,
+          "feedback": "In NumPy `*` between arrays is always element-wise. Matrix multiplication is `np.dot`, `np.matmul` or `@`."
+        }
+      ],
+      "explanation": "Section 3.1 separates the two operations: `np.dot` contracts the last axis of the first argument with the first axis of the second, so $(3, 4)$ with $(3, 4)$ fails on inner sizes 4 and 3, while `*` multiplies matching positions and accepts two equal shapes. Section 11 runs both on the post's arrays: `np.dot(inputs, weights)` raises and `inputs * weights` returns a $(3, 4)$ array without complaint, which is what makes the second mistake harder to find.",
+      "hints": [
+        "Ask what each operation requires of the two shapes: equal inner sizes, or equal (broadcastable) shapes."
+      ]
+    },
+    {
+      "id": "nn-002-q11",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "9",
+      "est_minutes": 4,
+      "tags": [
+        "result-shape",
+        "shape-diary"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Arrange these five `np.dot` calls by the number of entries in what each returns, fewest first. Each item gives the shapes of the first and second argument; a scalar counts as one entry.",
+      "items": [
+        {
+          "key": "a",
+          "text": "$(2, 4)$ and $(4, 5)$"
+        },
+        {
+          "key": "b",
+          "text": "$(4,)$ and $(4,)$"
+        },
+        {
+          "key": "c",
+          "text": "$(6, 2)$ and $(2, 3)$"
+        },
+        {
+          "key": "d",
+          "text": "$(3, 4)$ and $(4,)$"
+        },
+        {
+          "key": "e",
+          "text": "$(4,)$ and $(4, 5)$"
+        }
+      ],
+      "answer": [
+        "b",
+        "d",
+        "e",
+        "a",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "The one rule of section 3 gives each result; section 9's shape diary lists all but the vector-first case, which section 5 works: $(4,)$ with $(4,)$ is a scalar, 1 entry; $(3, 4)$ with $(4,)$ gives $(3,)$, 3 entries; $(4,)$ with $(4, 5)$ gives $(5,)$, 5 entries; $(2, 4)$ with $(4, 5)$ gives $(2, 5)$, 10 entries; $(6, 2)$ with $(2, 3)$ gives $(6, 3)$, 18 entries. In every case the two inner sizes match and vanish, and the outer sizes that remain are multiplied to count the entries.",
+      "hints": [
+        "Find each result shape first: drop the two inner sizes and keep what is left.",
+        "The number of entries is the product of the sizes that survive, and 1 when none survives."
+      ]
+    },
+    {
+      "id": "nn-002-q12",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "9",
+      "est_minutes": 4,
+      "tags": [
+        "three-forms",
+        "shape-diary"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Match each call to what it computes. `w` and `x` have shape $(n,)$; `W` has shape $(m, n)$, one row per neuron; `X` has shape $(N, n)$, one row per sample; $N$, $m$ and $n$ are all different.",
+      "left": [
+        {
+          "key": "a",
+          "text": "`np.dot(w, x)`"
+        },
+        {
+          "key": "b",
+          "text": "`np.dot(W, x)`"
+        },
+        {
+          "key": "c",
+          "text": "`np.dot(X, W.T)`"
+        },
+        {
+          "key": "d",
+          "text": "`np.dot(W, X.T)`"
+        },
+        {
+          "key": "e",
+          "text": "`np.dot(X, w)`"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "One neuron on one sample: a scalar"
+        },
+        {
+          "key": "q",
+          "text": "A layer of $m$ neurons on one sample: shape $(m,)$"
+        },
+        {
+          "key": "r",
+          "text": "A layer of $m$ neurons on $N$ samples, one row per sample: shape $(N, m)$"
+        },
+        {
+          "key": "s",
+          "text": "A layer of $m$ neurons on $N$ samples, one column per sample: shape $(m, N)$"
+        },
+        {
+          "key": "t",
+          "text": "One neuron on $N$ samples: shape $(N,)$"
+        },
+        {
+          "key": "u",
+          "text": "Position-by-position products: shape $(N, n)$"
+        },
+        {
+          "key": "v",
+          "text": "Nothing: the inner sizes do not match"
+        }
+      ],
+      "answer": {
+        "a": "p",
+        "b": "q",
+        "c": "r",
+        "d": "s",
+        "e": "t"
+      },
+      "explanation": "Section 9's shape diary lists the first three: two vectors give a scalar, one neuron on one sample; `np.dot(W, x)` gives $(m,)$, a layer on one sample; `np.dot(X, W.T)` gives $(N, m)$, the batch form with one row per sample. `np.dot(W, X.T)` is the neurons-first form of section 3, $(m, n) \\cdot (n, N) \\to (m, N)$, with one column per sample. `np.dot(X, w)` is the matrix by vector form read the other way: one dot product per row of `X`, so one neuron applied to every sample, shape $(N,)$. No call here multiplies position by position, and all five satisfy the shape rule.",
+      "hints": [
+        "Work out each result shape from the inner and outer sizes, then ask what its rows and columns count."
+      ]
+    },
+    {
+      "id": "nn-002-q13",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 15,
+      "tags": [
+        "shape-rule",
+        "implementation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "implement",
+      "language": "python",
+      "prompt": "Implement `dot_shape(shape_a, shape_b)`, which predicts what `np.dot` does with two arrays of the given shapes without computing any product. Each shape is a tuple of one or two positive integers. Return the shape of the result as a tuple, with `()` for a scalar, and raise `ValueError` exactly when `np.dot` would.",
+      "starter": "def dot_shape(shape_a, shape_b):\n    \"\"\"Shape of np.dot(A, B) for A of shape shape_a and B of shape shape_b.\n\n    Each shape is a tuple of one or two positive integers. Returns a tuple, () for a\n    scalar result. Raises ValueError when np.dot would refuse the two shapes.\n    \"\"\"\n    raise NotImplementedError\n",
+      "solution": "def dot_shape(shape_a, shape_b):\n    \"\"\"Shape of np.dot(A, B) for A of shape shape_a and B of shape shape_b.\n\n    Each shape is a tuple of one or two positive integers. Returns a tuple, () for a\n    scalar result. Raises ValueError when np.dot would refuse the two shapes.\n    \"\"\"\n    if shape_a[-1] != shape_b[0]:\n        raise ValueError(f\"shapes {shape_a} and {shape_b} not aligned: {shape_a[-1]} != {shape_b[0]}\")\n    return tuple(shape_a[:-1]) + tuple(shape_b[1:])\n",
+      "tests": "import itertools\n\nimport numpy as np\n\nsizes = [1, 2, 3, 4]\nshapes = [(n,) for n in sizes] + [(m, n) for m in sizes for n in sizes]\nchecked = 0\nfor shape_a, shape_b in itertools.product(shapes, repeat=2):\n    try:\n        expected = np.dot(np.zeros(shape_a), np.zeros(shape_b)).shape\n    except ValueError:\n        expected = \"ValueError\"\n    try:\n        got = dot_shape(shape_a, shape_b)\n    except ValueError:\n        got = \"ValueError\"\n    assert got == expected, f\"dot_shape({shape_a}, {shape_b}) gave {got}, np.dot gives {expected}\"\n    if expected != \"ValueError\":\n        assert isinstance(got, tuple), f\"dot_shape({shape_a}, {shape_b}) must return a tuple\"\n    checked += 1\n\nassert dot_shape((4,), (4,)) == ()\nassert dot_shape((3, 4), (4,)) == (3,)\nassert dot_shape((4,), (4, 5)) == (5,)\nassert dot_shape((3, 4), (4, 5)) == (3, 5)\nprint(f\"all {checked} shape pairs agree with np.dot\")\n",
+      "explanation": "Section 3's one rule is the whole implementation: the last axis of the first argument is contracted with the first axis of the second, so those two sizes must be equal, and the result keeps every other axis in order. For shapes of one or two axes that is `shape_a[:-1] + shape_b[1:]`, which yields `()` for two vectors, $(m,)$ for a matrix and a vector, $(p,)$ for a vector and a matrix, and $(m, p)$ for two matrices. The tests compare the function with `np.dot` on arrays of zeros for every pair of shapes with sizes 1 to 4.",
+      "hints": [
+        "Only two of the sizes ever have to be compared; find which two for each of the four combinations of 1-D and 2-D.",
+        "Once the inner sizes match, the result is what remains of the first shape followed by what remains of the second.",
+        "Tuple slicing handles the 1-D cases without a branch: a 1-D shape has nothing left once its only axis is removed."
+      ]
+    },
+    {
+      "id": "nn-002-q14",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 10,
+      "tags": [
+        "transpose",
+        "batch",
+        "bug-fix"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "fix",
+      "language": "python",
+      "prompt": "`layer_forward(inputs, weights, biases)` should return the weighted sums of a dense layer for a batch. `inputs` holds one sample per row, shape $(N, n)$; `weights` holds one neuron per row, shape $(m, n)$; `biases` has shape $(m,)$; the result has shape $(N, m)$. Each argument may be a NumPy array or a nested Python list. The starter raises on most layers and, on a layer with as many neurons as inputs, returns wrong numbers without raising. Fix it.",
+      "starter": "import numpy as np\n\n\ndef layer_forward(inputs, weights, biases):\n    \"\"\"Weighted sums of a dense layer for a batch.\n\n    inputs: (N, n), one sample per row. weights: (m, n), one neuron per row.\n    biases: (m,). Arrays or nested lists. Returns an array of shape (N, m).\n    \"\"\"\n    return np.dot(inputs, weights) + biases\n",
+      "solution": "import numpy as np\n\n\ndef layer_forward(inputs, weights, biases):\n    \"\"\"Weighted sums of a dense layer for a batch.\n\n    inputs: (N, n), one sample per row. weights: (m, n), one neuron per row.\n    biases: (m,). Arrays or nested lists. Returns an array of shape (N, m).\n    \"\"\"\n    return np.dot(inputs, np.array(weights).T) + biases\n",
+      "tests": "import numpy as np\n\n\ndef _reference(inputs, weights, biases):\n    out = []\n    for sample in inputs:\n        row = []\n        for neuron_weights, bias in zip(weights, biases):\n            total = bias\n            for x_i, w_i in zip(sample, neuron_weights):\n                total += x_i * w_i\n            row.append(total)\n        out.append(row)\n    return np.array(out)\n\n\n# 1. The post's batch, passed as plain lists.\ninputs = [[1.0, 2.0, 3.0, 2.5], [2.0, 5.0, -1.0, 2.0], [-1.5, 2.7, 3.3, -0.8]]\nweights = [[0.2, 0.8, -0.5, 1.0], [0.5, -0.91, 0.26, -0.5], [-0.26, -0.27, 0.17, 0.87]]\nbiases = [2.0, 3.0, 0.5]\nout = layer_forward(inputs, weights, biases)\nassert np.shape(out) == (3, 3), np.shape(out)\nassert np.allclose(out, [[4.8, 1.21, 2.385], [8.9, -1.81, 0.2], [1.41, 1.051, 0.026]]), out\n\n# 2. Five samples through three neurons of four inputs: the result is (5, 3).\nrng = np.random.default_rng(2)\nX, W, b = rng.standard_normal((5, 4)), rng.standard_normal((3, 4)), rng.standard_normal(3)\nout = layer_forward(X, W, b)\nassert out.shape == (5, 3), out.shape\nassert np.allclose(out, _reference(X.tolist(), W.tolist(), b.tolist()))\n\n# 3. A square layer: a missing transpose runs here and returns wrong numbers.\nX, W, b = rng.standard_normal((6, 3)), rng.standard_normal((3, 3)), rng.standard_normal(3)\nout = layer_forward(X, W, b)\nassert out.shape == (6, 3), out.shape\nassert np.allclose(out, _reference(X.tolist(), W.tolist(), b.tolist())), \"square layer: each sample must meet the rows of the weights\"\nprint(\"all tests passed\")\n",
+      "explanation": "Section 8's batch call is `np.dot(inputs, weights.T) + biases`: the inputs lead with the sample count, so the row-per-neuron weights are transposed to bring the shared feature axis inward, $(N, n) \\cdot (n, m) \\to (N, m)$. Section 7 adds that a Python list has no `.T`, so the weights are converted with `np.array` first. The tests use the post's batch as plain lists, a $(5, 4)$ batch through 3 neurons, and a square layer, where the starter would run and return each sample dotted with the columns of the weights.",
+      "hints": [
+        "Print the two shapes that reach `np.dot` and compare the inner sizes.",
+        "The fix must also work when `weights` is a list of lists, which has no `.T` attribute."
+      ]
+    },
+    {
+      "id": "nn-002-q15",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 15,
+      "tags": [
+        "commutativity",
+        "symmetric-matrix",
+        "derivation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "derive",
+      "prompt": "Start from the definition $\\mathbf{a} \\cdot \\mathbf{b} = \\sum_i a_i b_i$. (1) Show that `np.dot(a, b)` equals `np.dot(b, a)` for any two vectors of the same length. (2) For `a = [1, 2]` and `B = [[1, 2], [3, 4]]`, compute `np.dot(a, B)` and `np.dot(B, a)` and say which sums each one takes. (3) State the condition on a square matrix `B` under which the two orders agree for every vector `a`, and justify it.",
+      "answer_length": "half a page",
+      "solution": "1. **Two vectors.** By definition `np.dot(a, b)` is $\\sum_i a_i b_i$ and `np.dot(b, a)` is $\\sum_i b_i a_i$. Multiplication of numbers is commutative, so $a_i b_i = b_i a_i$ for every $i$; the two sums have the same terms and are equal.\n2. **Vector first.** `np.dot(a, B)` takes one dot product of `a` with each column of `B`: its entry $j$ is $\\sum_i a_i B_{ij}$. The columns are $(1, 3)$ and $(2, 4)$, giving $1 \\cdot 1 + 2 \\cdot 3 = 7$ and $1 \\cdot 2 + 2 \\cdot 4 = 10$, so the result is `[7 10]`.\n3. **Matrix first.** `np.dot(B, a)` takes one dot product of each row of `B` with `a`: its entry $j$ is $\\sum_i B_{ji} a_i$. The rows are $(1, 2)$ and $(3, 4)$, giving $1 \\cdot 1 + 2 \\cdot 2 = 5$ and $3 \\cdot 1 + 4 \\cdot 2 = 11$, so the result is `[5 11]`. The two orders differ because one pairs `a` with columns and the other with rows.\n4. **When they agree.** Entry $j$ of the two results is $\\sum_i a_i B_{ij}$ and $\\sum_i a_i B_{ji}$. If $B_{ij} = B_{ji}$ for all $i$ and $j$, that is, if `B` equals its own transpose (a symmetric matrix), the two sums are identical for every `a`.\n5. **Only then.** Conversely, take `a` to be the vector with 1 in position $i$ and 0 elsewhere. Entry $j$ of `np.dot(a, B)` is then $B_{ij}$ and entry $j$ of `np.dot(B, a)` is $B_{ji}$. Agreement for every such `a` forces $B_{ij} = B_{ji}$, so symmetry is necessary as well as sufficient. In the example $B_{12} = 2$ and $B_{21} = 3$, which is why the two results differ.",
+      "rubric": [
+        {
+          "criterion": "Proves the vector case term by term from $a_i b_i = b_i a_i$",
+          "points": 2
+        },
+        {
+          "criterion": "Computes `np.dot(a, B)` as `[7 10]` and identifies it as one dot product per column",
+          "points": 1
+        },
+        {
+          "criterion": "Computes `np.dot(B, a)` as `[5 11]` and identifies it as one dot product per row",
+          "points": 1
+        },
+        {
+          "criterion": "States the condition: `B` is symmetric, $B_{ij} = B_{ji}$",
+          "points": 2
+        },
+        {
+          "criterion": "Justifies it: sufficiency from the index form, necessity from a vector with a single 1 or an equivalent argument",
+          "points": 2
+        }
+      ],
+      "explanation": "Section 2 gives the commutativity of the vector case from the definition, and section 5 shows that with a matrix one order takes a dot product per column and the other per row. Writing both results in index form, $\\sum_i a_i B_{ij}$ against $\\sum_i a_i B_{ji}$, shows that they agree for every `a` exactly when $B_{ij} = B_{ji}$, that is, when the matrix is symmetric. The post's remark that a square matrix lets both orders run is about shapes; this condition is about values.",
+      "hints": [
+        "Write entry $j$ of each result as a sum over $i$, keeping track of which index of `B` is summed.",
+        "To show the condition is necessary, choose a vector `a` with a single entry equal to 1."
+      ]
+    },
+    {
+      "id": "nn-002-q16",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o2",
+        "o4"
+      ],
+      "section": "11",
+      "est_minutes": 15,
+      "tags": [
+        "silent-bug",
+        "square-layer",
+        "testing",
+        "critique"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "critique",
+      "prompt": "A teammate argues: 'NumPy checks the shapes, so if a layer call runs, the call is right.' Critique the claim for a layer whose weights `W` have shape $(m, n)$, one row per neuron, and a batch `X` of shape $(N, n)$, one row per sample. Give two concrete situations in which a wrong call runs without an error, say what each wrong call actually computes, and name a check that would catch them.",
+      "answer_length": "half a page",
+      "solution": "1. **What NumPy checks.** `np.dot` checks one thing: that the last axis of the first argument and the first axis of the second have the same length. `*` checks that the two shapes are equal or broadcast. Neither knows which axis holds samples, features, or neurons, so a call that runs has passed a necessary test, not a sufficient one.\n2. **A square layer.** If $m = n$, `W` is square and `np.dot(X, W)` runs: $(N, n) \\cdot (n, n) \\to (N, n)$, the same shape as the correct `np.dot(X, W.T)`. Its entry $(i, j)$ is $\\sum_k X_{ik} W_{kj}$, sample $i$ dotted with column $j$ of `W`, which holds the $j$-th weight of every neuron, where the layer needs row $j$, the weights of neuron $j$. For `W = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]` and the sample $(1, 0, 0)$ the correct call gives $(1, 4, 7)$ and the wrong one $(1, 2, 3)$. The two agree for every batch only if `W` is symmetric.\n3. **The star operator.** If the batch size equals the number of neurons, $N = m$, then `X * W` runs: both shapes are $(N, n)$ and the result is the $(N, n)$ array of position-by-position products $X_{ik} W_{ik}$. Nothing is summed, and the result is not an $(N, m)$ layer output, although no error is raised. A third silent case: when $N = n$, `np.dot(W, X)` runs and computes $\\mathbf{W}\\mathbf{X}$ where $\\mathbf{W}\\mathbf{X}^\\top$ was meant.\n4. **A check that catches them.** Asserting that the output has shape $(N, m)$ catches the star case whenever $n \\ne m$, but it cannot catch the square case, where the wrong result has the right shape. A value check can: compare one output entry with the dot product of one sample and one neuron's row, computed by hand or by a loop. The cheapest protection is a test layer in which $N$, $n$ and $m$ are all different and none of them is 1, so that every one of these mix-ups raises.",
+      "rubric": [
+        {
+          "criterion": "States that NumPy checks only the inner sizes for `np.dot` (or broadcast compatibility for `*`), a necessary condition and not a sufficient one",
+          "points": 2
+        },
+        {
+          "criterion": "Gives one silent case with its condition on the sizes and says what the wrong call computes; for the square layer $m = n$, each sample dotted with a column of `W`, $\\mathbf{X}\\mathbf{W}$ in place of $\\mathbf{X}\\mathbf{W}^\\top$",
+          "points": 2
+        },
+        {
+          "criterion": "Gives a second, different silent case, such as `*` with equal shapes or `np.dot(W, X)` when $N = n$, and says what it computes",
+          "points": 2
+        },
+        {
+          "criterion": "Names a check that catches both cases given, such as a value comparison or a test with all sizes different; a shape assertion does not count when one of the cases is the square layer",
+          "points": 2
+        }
+      ],
+      "explanation": "Section 11 lists the failures that run: a square weight matrix satisfies the shape rule with or without the transpose, and `*` accepts any two equal shapes. NumPy verifies that sizes fit, never that the axes mean what the author intended. The post's defence is a value check against a dot product worked by hand and a test layer whose sizes are all different, since a shape assertion cannot see the square case.",
+      "hints": [
+        "List what `np.dot` and `*` each require of two shapes, then look for values of $N$, $m$ and $n$ that meet the requirement by coincidence.",
+        "For the square case, write entry $(i, j)$ of `np.dot(X, W)` as a sum and ask whether it uses a row or a column of `W`."
+      ]
+    },
+    {
+      "id": "nn-002-q17",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o2",
+        "o4"
+      ],
+      "section": "6",
+      "est_minutes": 20,
+      "tags": [
+        "backward-pass",
+        "weight-gradient",
+        "shape-rule"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "connect",
+      "connects": [
+        "nn-014"
+      ],
+      "prompt": "Post 14 needs the gradient of the loss with respect to a dense layer's weights. By then the weights `W` have shape $(n, m)$, one column per neuron; the batch `X` has shape $(N, n)$, and the gradient arriving from the next component, `dvalues`, has shape $(N, m)$. The weight gradient has the shape of `W` and is a single `np.dot` of `X` and `dvalues`, each possibly transposed. With $N$, $n$ and $m$ all different, use only the shape rule to say which of the eight candidate products run, give the shape of each one that does, and identify the one that can be the weight gradient. Then say which product fits the row-per-neuron layout of posts 01 to 03.",
+      "answer_length": "half a page",
+      "solution": "1. **The shapes available.** `X` is $(N, n)$ and `X.T` is $(n, N)$; `dvalues` is $(N, m)$ and `dvalues.T` is $(m, N)$. A product runs only if the last size of its first argument equals the first size of its second.\n2. **`X` or `X.T` first.** `np.dot(X, dvalues)`: inner sizes $n$ and $N$, fails. `np.dot(X, dvalues.T)`: $n$ and $m$, fails. `np.dot(X.T, dvalues)`: $N$ and $N$, runs, shape $(n, m)$. `np.dot(X.T, dvalues.T)`: $N$ and $m$, fails.\n3. **`dvalues` or `dvalues.T` first.** `np.dot(dvalues, X)`: $m$ and $N$, fails. `np.dot(dvalues, X.T)`: $m$ and $n$, fails. `np.dot(dvalues.T, X)`: $N$ and $N$, runs, shape $(m, n)$. `np.dot(dvalues.T, X.T)`: $N$ and $n$, fails.\n4. **The weight gradient.** Two of the eight run. Only `np.dot(X.T, dvalues)` has the shape $(n, m)$ of `W`, so it is the only candidate; it is the `dweights` line of the series' `Layer_Dense.backward`. Both surviving products contract the sample axis $N$: a weight gradient adds up one contribution per sample.\n5. **The other layout.** With one row per neuron, `W` is $(m, n)$, and the candidate with that shape is `np.dot(dvalues.T, X)`. It is the transpose of the first, since $(\\mathbf{X}^\\top \\mathbf{D})^\\top = \\mathbf{D}^\\top \\mathbf{X}$ for $\\mathbf{D}$ the matrix `dvalues`, the same identity that related the two batch forms of this post.\n6. **What the argument does not show.** The shape rule eliminates six candidates and leaves one per layout; it does not prove that the survivor is the gradient. Post 14 derives the entries and finds that they agree.",
+      "rubric": [
+        {
+          "criterion": "Applies the inner-size test to all eight candidates and finds that exactly two run",
+          "points": 3
+        },
+        {
+          "criterion": "Gives the shapes $(n, m)$ for `np.dot(X.T, dvalues)` and $(m, n)$ for `np.dot(dvalues.T, X)`",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies `np.dot(X.T, dvalues)` as the only candidate with the shape of the column-per-neuron `W`",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies `np.dot(dvalues.T, X)`, shape $(m, n)$, as the product that fits the row-per-neuron layout",
+          "points": 2
+        }
+      ],
+      "explanation": "Section 6's rule is all the question needs: a product runs only when its inner sizes are equal, and the outer sizes form the result. Of the eight candidates only `np.dot(X.T, dvalues)`, shape $(n, m)$, and `np.dot(dvalues.T, X)`, shape $(m, n)$, pass, and they are transposes of each other, one for each weight layout. Post 14 derives the weight gradient entry by entry and arrives at these same two products, one for each layout, which is why the transpose of this post reappears in the backward pass.",
+      "hints": [
+        "Write down the four shapes available: `X`, `X.T`, `dvalues` and `dvalues.T`.",
+        "For each ordered pair, compare the last size of the first with the first size of the second; only the sample count $N$ can meet itself."
+      ]
+    },
+    {
+      "id": "nn-002-q18",
+      "type": "mcq",
+      "track": "connect",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "weight-convention",
+        "dense-layer"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "connects": [
+        "nn-004"
+      ],
+      "prompt": "Post 04's `Layer_Dense` creates its weights as `0.01 * np.random.randn(n_inputs, n_neurons)`, one column per neuron. For a batch `X` of shape $(N, n_\\text{inputs})$, with $N$, $n_\\text{inputs}$ and $n_\\text{neurons}$ all different, which call returns that layer's weighted sums, shape $(N, n_\\text{neurons})$, before the bias is added? `W` stands for the stored weights.",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`np.dot(X, W.T)`",
+          "correct": false,
+          "feedback": "That is the call for weights stored one row per neuron. Here `W.T` has shape $(n_\\text{neurons}, n_\\text{inputs})$, so the inner sizes are $n_\\text{inputs}$ and $n_\\text{neurons}$ and the call raises."
+        },
+        {
+          "key": "b",
+          "text": "`np.dot(W, X)`",
+          "correct": false,
+          "feedback": "The shapes are $(n_\\text{inputs}, n_\\text{neurons})$ and $(N, n_\\text{inputs})$. The inner sizes $n_\\text{neurons}$ and $N$ differ, so the call raises."
+        },
+        {
+          "key": "c",
+          "text": "`np.dot(W.T, X.T)`",
+          "correct": false,
+          "feedback": "This one runs: $(n_\\text{neurons}, n_\\text{inputs}) \\cdot (n_\\text{inputs}, N)$ gives $(n_\\text{neurons}, N)$, one column per sample. It is the transpose of the array asked for."
+        },
+        {
+          "key": "d",
+          "text": "`np.dot(X, W)`",
+          "correct": true,
+          "feedback": "Right. $(N, n_\\text{inputs}) \\cdot (n_\\text{inputs}, n_\\text{neurons})$: the inner sizes already meet, so storing one column per neuron removes this post's `.T` from the forward call."
+        }
+      ],
+      "explanation": "Section 7 describes the two conventions: with one row per neuron the batch call needs `weights.T`, and with one column per neuron, the layout post 04 adopts, the weights already have shape $(n_\\text{inputs}, n_\\text{neurons})$ and `np.dot(X, W)` satisfies the shape rule as written. The two layouts hold the same numbers and differ by a transpose, so the result is the same $(N, n_\\text{neurons})$ array either way.",
+      "hints": [
+        "Write the shape of `W` as post 04 stores it, then test the inner sizes of each candidate."
+      ]
+    }
+  ]
+}
