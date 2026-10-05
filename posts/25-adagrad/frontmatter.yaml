@@ -1,8 +1,22 @@
 id: nn-025
 slug: 25-adagrad
-title: "Part 25 · AdaGrad"
+title: "25 - AdaGrad"
+summary: "AdaGrad divides every parameter's step by the root of that parameter's own summed squared gradients. The post builds the optimiser, prints how its effective rates only fall, and measures it against momentum on five seeds."
 date: 2026-05-29
+updated: 2026-10-05
+status: complete
+part: "Part VI - Optimisers"
+level: intermediate
+reading_time: 22
 tags: [neural-networks, from-scratch, optimisation, adagrad, adaptive-rates]
 hero: diagrams/01-per-parameter-rates.svg
-reading_time: 12
-part: "Part VI — Optimisers"
+prerequisites: [nn-024]
+code: included
+outcomes:
+  - id: o1
+    text: "Explain why one global learning rate cannot suit parameters whose gradients differ in scale."
+  - id: o2
+    text: "Implement Optimizer_Adagrad with a per-layer weight_cache and bias_cache."
+  - id: o3
+    text: "Predict when AdaGrad helps and when its shrinking effective learning rates dominate."
+compute: cpu

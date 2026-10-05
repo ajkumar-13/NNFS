@@ -1,0 +1,857 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-025",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-025-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 1,
+      "tags": [
+        "per-parameter"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network with two dense layers is trained with AdaGrad. How many different effective learning rates are in use at one update?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "One for the whole network, as with gradient descent.",
+          "correct": false,
+          "feedback": "That is the single learning rate $\\alpha$. AdaGrad divides it by a quantity that differs from parameter to parameter."
+        },
+        {
+          "key": "b",
+          "text": "One for each layer.",
+          "correct": false,
+          "feedback": "The caches are stored on the layers, but each cache is an array with the shape of the weights or biases, not one number per layer."
+        },
+        {
+          "key": "c",
+          "text": "One for each weight and each bias.",
+          "correct": true,
+          "feedback": "Every parameter has its own cache entry $G$, and its rate is $\\alpha / (\\sqrt{G} + \\epsilon)$."
+        },
+        {
+          "key": "d",
+          "text": "One for each sample of the batch.",
+          "correct": false,
+          "feedback": "The gradients are already summed over the batch when the optimiser sees them; nothing in the optimiser is per sample."
+        }
+      ],
+      "explanation": "Section 2: the cache has the shape of the parameters, so every weight and every bias has its own entry of $G$ and therefore its own effective learning rate $\\alpha / (\\sqrt{G} + \\epsilon)$.",
+      "hints": [
+        "Ask what shape the cache has."
+      ]
+    },
+    {
+      "id": "nn-025-q02",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 4,
+      "tags": [
+        "gradient-descent",
+        "two-weights"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The loss $L(w_1, w_2) = w_1^2 / 50 + 2 w_2^2$ is minimised by plain gradient descent with $\\alpha = 0.2$, starting from $(w_1, w_2) = (1, 1)$. Give the size of the first step of each weight, and the ratio of the second to the first.",
+      "answer": {
+        "parts": [
+          {
+            "label": "first step of w1",
+            "value": 0.008,
+            "tolerance": 0.0002,
+            "unit": ""
+          },
+          {
+            "label": "first step of w2",
+            "value": 0.8,
+            "tolerance": 0.005,
+            "unit": ""
+          },
+          {
+            "label": "step of w2 divided by step of w1",
+            "value": 100,
+            "tolerance": 0.5,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form: gradients 2 * w1 / 50 = 0.04 and 4 * w2 = 4, each times alpha = 0.2. Checked with Optimizer_SGD(learning_rate=0.2) from snippets/adagrad.py.",
+      "explanation": "Section 1: gradient descent multiplies every gradient by the same $\\alpha$, so the steps keep the ratio of the gradients. Here the gradients are $2 w_1 / 50 = 0.04$ and $4 w_2 = 4$, the steps are $0.008$ and $0.8$, and the ratio is 100. The rate that moves $w_2$ most of the way in one step moves $w_1$ by less than 1 percent.",
+      "hints": [
+        "A gradient-descent step is the learning rate times the partial derivative.",
+        "Differentiate each term of the loss with respect to its own weight and evaluate at 1."
+      ]
+    },
+    {
+      "id": "nn-025-q03",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "2",
+      "est_minutes": 4,
+      "tags": [
+        "update-rule"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Match each ingredient of the AdaGrad update $\\theta_t = \\theta_{t-1} - \\alpha g_t / (\\sqrt{G_t} + \\epsilon)$, with $G_t = G_{t-1} + g_t^2$, to what it is responsible for.",
+      "left": [
+        {
+          "key": "a",
+          "text": "The gradient is squared before it is added to the cache."
+        },
+        {
+          "key": "b",
+          "text": "The step is divided by the square root of the cache."
+        },
+        {
+          "key": "c",
+          "text": "The cache is a sum that is never reset or averaged."
+        },
+        {
+          "key": "d",
+          "text": "$\\epsilon$ is added to the denominator."
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "The effective learning rate of a parameter can never rise."
+        },
+        {
+          "key": "q",
+          "text": "Gradients of alternating sign cannot cancel in the cache."
+        },
+        {
+          "key": "r",
+          "text": "A parameter whose gradients have all been zero gets a step of zero and not `nan`."
+        },
+        {
+          "key": "s",
+          "text": "Multiplying all gradients of a parameter by a constant leaves its step unchanged."
+        },
+        {
+          "key": "t",
+          "text": "Every parameter of a layer shares one effective learning rate."
+        },
+        {
+          "key": "u",
+          "text": "The first step of every parameter is zero."
+        }
+      ],
+      "answer": {
+        "a": "q",
+        "b": "s",
+        "c": "p",
+        "d": "r"
+      },
+      "explanation": "Section 2: squaring makes every term of the cache non-negative, so oscillating gradients add up; the root gives the cache the units of the gradient, which makes the step independent of the gradient's scale. Section 4: a sum of non-negative terms never falls, so the rate never rises. Section 10: $\\epsilon$ turns the $0/0$ of a zero cache into zero. Neither of the two remaining statements is true of AdaGrad.",
+      "hints": [
+        "Remove each ingredient in turn and ask what would break."
+      ]
+    },
+    {
+      "id": "nn-025-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "3",
+      "est_minutes": 5,
+      "tags": [
+        "cache",
+        "constant-gradient"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "One parameter receives the gradient $0.2$ at every update. It is trained by AdaGrad with $\\alpha = 0.5$ and no decay; $\\epsilon$ can be neglected. Give its cache after 400 updates, its effective learning rate at that update, and the size of the step it takes at that update.",
+      "answer": {
+        "parts": [
+          {
+            "label": "cache after 400 updates",
+            "value": 16,
+            "tolerance": 0.01,
+            "unit": ""
+          },
+          {
+            "label": "effective learning rate",
+            "value": 0.125,
+            "tolerance": 0.0005,
+            "unit": ""
+          },
+          {
+            "label": "size of the step",
+            "value": 0.025,
+            "tolerance": 0.0002,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form: G = 400 * 0.2^2 = 16, rate = 0.5 / sqrt(16), step = rate * 0.2. Checked by 400 calls of Optimizer_Adagrad(learning_rate=0.5) on a toy layer of snippets/adagrad.py.",
+      "explanation": "Section 3: with a constant gradient the cache grows by $g^2 = 0.04$ per update, so $G_{400} = 16$. The effective learning rate is $\\alpha / \\sqrt{G} = 0.5 / 4 = 0.125$ and the step is that rate times the gradient, $0.025$. The first step of the same parameter was $0.5$, twenty times larger.",
+      "hints": [
+        "The cache is a sum of equal terms.",
+        "Add $0.2^2$ four hundred times, take the root, and divide $\\alpha$ by it."
+      ]
+    },
+    {
+      "id": "nn-025-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 5,
+      "tags": [
+        "prediction",
+        "rule"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A parameter is trained by AdaGrad with $\\alpha = 1$ and no decay. The root of the mean of its squared gradients stays at $g_\\text{rms} = 0.05$ throughout. After how many updates has its effective learning rate fallen to $0.1$? Neglect $\\epsilon$.",
+      "answer": {
+        "value": 40000,
+        "tolerance": 1,
+        "unit": "updates"
+      },
+      "precision_note": "Closed form of section 4: alpha / (g_rms * sqrt(t)) = 0.1 gives sqrt(t) = 1 / (0.05 * 0.1) = 200, t = 40,000.",
+      "explanation": "Section 4: after $t$ updates the cache is $t \\, g_\\text{rms}^2$, so the rate is $\\alpha / (g_\\text{rms} \\sqrt{t})$. Setting it to $0.1$ gives $\\sqrt{t} = 1 / (0.05 \\cdot 0.1) = 200$ and $t = 40{,}000$. A parameter with gradients ten times larger would be there after 400 updates.",
+      "hints": [
+        "Write the cache after $t$ updates in terms of $g_\\text{rms}$.",
+        "Solve $\\alpha / (g_\\text{rms} \\sqrt{t}) = 0.1$ for $t$; the unknown sits under a root."
+      ]
+    },
+    {
+      "id": "nn-025-q06",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "structural-flaw"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Which property of AdaGrad becomes a handicap in a long training run with gradients arriving at every update?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It stores one extra array per parameter array, which exhausts memory.",
+          "correct": false,
+          "feedback": "The caches double the memory of the parameters, the same cost as the velocity of momentum; that does not grow with the length of the run."
+        },
+        {
+          "key": "b",
+          "text": "Its cache only grows, so every effective learning rate keeps falling.",
+          "correct": true,
+          "feedback": "Nothing ever lowers a cache, so after many updates the steps are small even where the gradient still points somewhere."
+        },
+        {
+          "key": "c",
+          "text": "Its gradients become zero once the cache is large.",
+          "correct": false,
+          "feedback": "The gradient comes from the backward pass and does not depend on the cache. It is the step, not the gradient, that shrinks."
+        },
+        {
+          "key": "d",
+          "text": "It ignores the sign of the gradient because the gradient is squared.",
+          "correct": false,
+          "feedback": "Only the cache uses the square. The step still multiplies the rate by the signed gradient $g_t$."
+        }
+      ],
+      "explanation": "Section 4: a squared gradient is never negative, so $G_t \\ge G_{t-1}$ and the rate $\\alpha / \\sqrt{G_t}$ can only fall, as $1/\\sqrt{t}$ for gradients of steady size. The parameter still receives a gradient and follows it less and less.",
+      "hints": [
+        "Look at what can and what cannot happen to $G$ from one update to the next."
+      ]
+    },
+    {
+      "id": "nn-025-q07",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 1,
+      "tags": [
+        "class",
+        "attributes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The first time `update_params` of `Optimizer_Adagrad` is called with a layer, it creates two arrays of zeros on that layer. Give their attribute names.",
+      "answer": {
+        "model": "`weight_cache` and `bias_cache`.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:not|neither|nor)\\s+(?:the\\s+)?`?(?:layer\\.)?(?:weight|bias)[_ ]?caches?\\b)(?!(?![\\s\\S]*\\b(?:not|unlike|instead|rather|were|was|whereas|while|replac\\w*)\\b)[\\s\\S]*momentum)(?=[\\s\\S]*\\bweight[_ ]?caches?\\b)(?=[\\s\\S]*\\bbias[_ ]?caches?\\b)[\\s\\S]+$"
+        ]
+      },
+      "explanation": "Section 5: the `hasattr` test creates `layer.weight_cache` and `layer.bias_cache` with `np.zeros_like`, so they have the shapes of `weights` and `biases`. They hold the running sums of the squared gradients.",
+      "hints": [
+        "They are named after the two parameter arrays of a dense layer and after what AdaGrad calls its running sum."
+      ]
+    },
+    {
+      "id": "nn-025-q08",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "monotone"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "An AdaGrad run uses no learning-rate decay. Can the effective learning rate of one particular parameter be larger at some update than it was at an earlier update? Answer yes or no and give the reason in one sentence.",
+      "answer": {
+        "model": "No. The cache is a sum of squared gradients, which are never negative, so it never decreases and the rate can only fall or stay the same.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:yes|sometimes|maybe|perhaps)\\b)(?!\\s*(?:it|that)\\s+depends\\b)(?![\\s\\S]*\\b(?:cache|sum|G|denominator)\\s+(?:of\\s+squared\\s+gradients\\s+)?(?:can\\s+|may\\s+|might\\s+|does\\s+|will\\s+|sometimes\\s+)?(?:shrinks?|decreases?|falls?|gets?\\s+smaller|goes\\s+down)\\b)(?![\\s\\S]*\\b(?:cache|sum|G|denominator)\\s+(?:can\\s*not|cannot|can't|can\\s+never|never|does\\s+not|doesn't|will\\s+not|won't|will\\s+never)\\s+(?:ever\\s+)?(?:increases?|grows?|rises?|gets?\\s+(?:larger|bigger)|goes?\\s+up)\\b)(?![\\s\\S]*\\b(?:so|and|therefore|thus|hence|then|means)\\s+(?:that\\s+)?(?:the\\s+|its\\s+)?(?:effective\\s+)?(?:learning\\s+)?(?:rate|step)s?\\s+(?:also\\s+)?(?:rises?|grows?|increases?|goes\\s+up|gets?\\s+(?:larger|bigger))\\b)(?=\\s*(?:never|cannot|it\\s+cannot|it\\s+can't|it\\s+can\\s*not)\\b|[\\s\\S]*\\bno\\b|[\\s\\S]*\\bimpossible\\b|[\\s\\S]*\\b(?:it|rate)\\s+(?:can\\s*not|cannot|can't|can\\s+never|never|will\\s+never)\\b)(?=[\\s\\S]*(?:\\bcache|\\bsum\\b|\\bG(?:_t)?\\b|accumulat|squared\\s+gradients?|squares?\\b|\\bdenominator))(?=[\\s\\S]*(?:only\\s+(?:ever\\s+)?(?:grows?|increases?|gets?\\s+(?:larger|bigger)|goes\\s+up|adds?|accumulates?)|(?:never|not|cannot|can\\s*not|can't|doesn't|does\\s+not|won't|unable\\s+to|no\\s+way\\s+to)\\s+(?:ever\\s+)?(?:be\\s+)?(?:decreases?d?|shrinks?|falls?|gets?\\s+smaller|goes?\\s+down|drops?|reduced?|lowered|negative)|not\\s+able\\s+to\\s+(?:shrink|decrease|fall)|non-?\\s?decreasing|monoton|(?<!cache\\sis\\s)non-?\\s?negative|keeps?\\s+(?:on\\s+)?(?:growing|increasing)|always\\s+(?:grows?|increases?)|>=|\\\\ge\\b|≥|can\\s+only\\s+(?:grow|increase|get\\s+(?:larger|bigger)|go\\s+up)|nothing\\s+(?:is\\s+|gets\\s+)?(?:ever\\s+)?(?:subtracted|removed|taken)|(?:zero|0)\\s+or\\s+positive|positive\\s+or\\s+(?:zero|0)))[\\s\\S]+$"
+        ]
+      },
+      "explanation": "Section 4: every update adds $g_t^2 \\ge 0$ to the cache, so $G_t \\ge G_{t-1}$, and the rate $\\alpha / (\\sqrt{G_t} + \\epsilon)$ cannot rise. In the documented run of the post the smallest change of any cache entry between two epochs is exactly zero.",
+      "hints": [
+        "Ask what sign the quantity added to the cache can have."
+      ]
+    },
+    {
+      "id": "nn-025-q09",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "10",
+      "est_minutes": 3,
+      "tags": [
+        "epsilon"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`Optimizer_Adagrad(epsilon=0.0)` updates a layer in which one weight has received a gradient of exactly zero at every update so far. What happens to that weight?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Python raises `ZeroDivisionError` and the run stops.",
+          "correct": false,
+          "feedback": "That is what plain Python floats do. NumPy arrays divide element by element and return a special value with a warning."
+        },
+        {
+          "key": "b",
+          "text": "It keeps its value, because its gradient is zero.",
+          "correct": false,
+          "feedback": "The numerator is zero, but so is the denominator. $0/0$ is not zero in floating-point arithmetic."
+        },
+        {
+          "key": "c",
+          "text": "NumPy prints a warning and the weight becomes `nan`.",
+          "correct": true,
+          "feedback": "The cache is zero and so is its root, so the step is $0/0$, which NumPy evaluates to `nan`; the next forward pass spreads it."
+        },
+        {
+          "key": "d",
+          "text": "It becomes `inf`, because a number is divided by zero.",
+          "correct": false,
+          "feedback": "A non-zero number divided by zero gives `inf`. Here the numerator, the gradient, is zero as well."
+        }
+      ],
+      "explanation": "Section 10: with a cache of zero and $\\epsilon = 0$ the step is $0/0$. NumPy raises no exception; it warns of an invalid value and writes `nan` into the weight. With the default $\\epsilon = 10^{-7}$ the same step is $0 / 10^{-7} = 0$, which is the only job $\\epsilon$ has in the class.",
+      "hints": [
+        "Write down the numerator and the denominator of the step for this weight.",
+        "Both are exactly zero; recall what NumPy returns for that quotient."
+      ]
+    },
+    {
+      "id": "nn-025-q10",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "10",
+      "est_minutes": 4,
+      "tags": [
+        "cache-reset",
+        "bug"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A version of `update_params` begins with the two lines of the stimulus, without the `hasattr` test of the post's class, and is otherwise unchanged. Which description of every step it takes is right, for a gradient far larger than $\\epsilon$?",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "layer.weight_cache = np.zeros_like(layer.weights)\nlayer.bias_cache   = np.zeros_like(layer.biases)"
+      },
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It is the plain gradient-descent step, the learning rate times the gradient.",
+          "correct": false,
+          "feedback": "The division is still there. With one squared gradient in the cache the gradient is divided by its own size, which removes its magnitude."
+        },
+        {
+          "key": "b",
+          "text": "It has the size of the learning rate and the sign of the gradient.",
+          "correct": true,
+          "feedback": "The cache holds only $g^2$, so the step is $\\alpha g / \\lvert g \\rvert$: every update is as large as AdaGrad's first one."
+        },
+        {
+          "key": "c",
+          "text": "It is zero, because the cache is zero.",
+          "correct": false,
+          "feedback": "The cache is zeroed and then the current squared gradient is added before the division, so it is $g^2$, not zero."
+        },
+        {
+          "key": "d",
+          "text": "It is the correct AdaGrad step; only memory is wasted.",
+          "correct": false,
+          "feedback": "The history is thrown away on every call, so the denominator never grows beyond one gradient and the rates never fall."
+        }
+      ],
+      "explanation": "Section 10: zeroing the cache on every call leaves exactly one squared gradient in it, so the step is $\\alpha g / \\lvert g \\rvert$, the learning rate with a sign. On seed 0 of the spiral run every update is then as large as the first, and all 64 hidden neurons end up dead.",
+      "hints": [
+        "Follow one call: what does the cache hold when the division happens?",
+        "Compare with the first step of the correct class."
+      ]
+    },
+    {
+      "id": "nn-025-q11",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 4,
+      "tags": [
+        "seeds",
+        "reading-results"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The stimulus gives the final accuracy of three optimisers on the same network for five seeds, 10,001 epochs each. Which statements does the table support? Select all that apply.",
+      "stimulus": {
+        "kind": "table",
+        "content": "| Seed | Gradient descent | Momentum | AdaGrad |\n|:---:|:---:|:---:|:---:|\n| 0 | 0.6467 | 0.9567 | 0.8400 |\n| 1 | 0.7467 | 0.6867 | 0.7567 |\n| 2 | 0.5367 | 0.7300 | 0.8167 |\n| 3 | 0.8700 | 0.8167 | 0.9267 |\n| 4 | 0.7867 | 0.9800 | 0.7967 |",
+        "caption": "Final accuracy; the seed sets the data and the initial weights."
+      },
+      "select": "multiple",
+      "options": [
+        {
+          "key": "a",
+          "text": "AdaGrad ends above plain gradient descent on every seed.",
+          "correct": true,
+          "feedback": "Row by row: 0.8400, 0.7567, 0.8167, 0.9267 and 0.7967 are each above the gradient-descent entry."
+        },
+        {
+          "key": "b",
+          "text": "Momentum ends above AdaGrad on every seed.",
+          "correct": false,
+          "feedback": "That holds on seeds 0 and 4 only. On seeds 1, 2 and 3 AdaGrad is ahead."
+        },
+        {
+          "key": "c",
+          "text": "Which of momentum and AdaGrad is ahead depends on the seed.",
+          "correct": true,
+          "feedback": "Momentum leads on two seeds and AdaGrad on three, so one seed cannot settle the comparison."
+        },
+        {
+          "key": "d",
+          "text": "Momentum ends above plain gradient descent on every seed.",
+          "correct": false,
+          "feedback": "On seeds 1 and 3 plain gradient descent is ahead of momentum, with 0.7467 against 0.6867 and 0.8700 against 0.8167."
+        },
+        {
+          "key": "e",
+          "text": "AdaGrad's accuracies spread over a wider range than momentum's.",
+          "correct": false,
+          "feedback": "AdaGrad runs from 0.7567 to 0.9267, a range of 0.17; momentum from 0.6867 to 0.9800, a range of 0.29."
+        }
+      ],
+      "explanation": "Section 7: over the five seeds AdaGrad's accuracy is above plain gradient descent every time, by 1.0 to 28.0 points, and above momentum on three of five. A statement about which optimiser is better has to be worded by the spread, not by seed 0.",
+      "hints": [
+        "Compare the columns one row at a time before comparing any averages."
+      ]
+    },
+    {
+      "id": "nn-025-q12",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 15,
+      "tags": [
+        "implement",
+        "optimiser"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Complete `update_params` of `Optimizer_Adagrad`. A layer is any object with the arrays `weights`, `biases`, `dweights` and `dbiases`. The method keeps the running sums of the squared gradients in `layer.weight_cache` and `layer.bias_cache`, and takes the AdaGrad step with the scheduled learning rate and with `self.epsilon` in the place the post's class puts it.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "import numpy as np\n\n\nclass Optimizer_Adagrad:\n\n    def __init__(self, learning_rate=1.0, decay=0.0, epsilon=1e-7):\n        self.learning_rate = learning_rate\n        self.current_learning_rate = learning_rate\n        self.decay = decay\n        self.epsilon = epsilon\n        self.iterations = 0\n\n    def pre_update_params(self):\n        if self.decay:\n            self.current_learning_rate = self.learning_rate / (1.0 + self.decay * self.iterations)\n\n    def update_params(self, layer):\n        # TODO: on the first call create layer.weight_cache and layer.bias_cache as zeros,\n        # then add the squared gradients to them and take the AdaGrad step on\n        # layer.weights and layer.biases.\n        pass\n\n    def post_update_params(self):\n        self.iterations += 1\n",
+      "solution": "import numpy as np\n\n\nclass Optimizer_Adagrad:\n\n    def __init__(self, learning_rate=1.0, decay=0.0, epsilon=1e-7):\n        self.learning_rate = learning_rate\n        self.current_learning_rate = learning_rate\n        self.decay = decay\n        self.epsilon = epsilon\n        self.iterations = 0\n\n    def pre_update_params(self):\n        if self.decay:\n            self.current_learning_rate = self.learning_rate / (1.0 + self.decay * self.iterations)\n\n    def update_params(self, layer):\n        # The caches live on the layer and are created once.\n        if not hasattr(layer, 'weight_cache'):\n            layer.weight_cache = np.zeros_like(layer.weights)\n            layer.bias_cache = np.zeros_like(layer.biases)\n\n        # The current gradient enters the cache before it is used.\n        layer.weight_cache += layer.dweights ** 2\n        layer.bias_cache += layer.dbiases ** 2\n\n        # epsilon is added to the root, not under it.\n        layer.weights -= self.current_learning_rate * layer.dweights / (np.sqrt(layer.weight_cache) + self.epsilon)\n        layer.biases -= self.current_learning_rate * layer.dbiases / (np.sqrt(layer.bias_cache) + self.epsilon)\n\n    def post_update_params(self):\n        self.iterations += 1\n",
+      "tests": "import warnings\nfrom types import SimpleNamespace\n\nwarnings.simplefilter(\"ignore\")\n\n\ndef _layer(weights, biases):\n    return SimpleNamespace(weights=np.array(weights, dtype=float), biases=np.array(biases, dtype=float))\n\n\ndef _step(optimizer, layer, dweights, dbiases):\n    layer.dweights = np.array(dweights, dtype=float)\n    layer.dbiases = np.array(dbiases, dtype=float)\n    optimizer.pre_update_params()\n    optimizer.update_params(layer)\n    optimizer.post_update_params()\n\n\n# 1. The caches are created on the layer, with the shapes of the parameters.\noptimizer = Optimizer_Adagrad(learning_rate=0.5)\nlayer = _layer([[1.0, 1.0, 1.0]], [[2.0]])\n_step(optimizer, layer, [[3.0, -0.04, 0.0]], [[0.5]])\nassert hasattr(layer, \"weight_cache\") and hasattr(layer, \"bias_cache\"), \"the caches belong on the layer\"\nassert np.shape(layer.weight_cache) == (1, 3) and np.shape(layer.bias_cache) == (1, 1), \"a cache has the shape of its parameter array\"\nassert np.allclose(layer.weight_cache, [[9.0, 0.0016, 0.0]]), \"after one update the cache holds the squared gradients\"\n\n# 2. The first step has the size of the learning rate, whatever the gradient; a zero gradient moves nothing.\nassert np.all(np.isfinite(layer.weights)), \"a zero gradient with a zero cache must give a step of zero\"\nassert np.allclose(layer.weights, [[0.5, 1.5, 1.0]], atol=1e-4), \"the first step is learning_rate * g / |g|\"\nassert np.allclose(layer.biases, [[1.5]], atol=1e-4), \"the biases are updated like the weights\"\n\n# 3. The second update adds to the cache.\n_step(optimizer, layer, [[3.0, -0.04, 0.0]], [[0.5]])\nsecond = 0.5 / np.sqrt(2.0)\nassert np.allclose(layer.weight_cache, [[18.0, 0.0032, 0.0]]), \"the cache is a running sum\"\nassert np.allclose(layer.weights, [[0.5 - second, 1.5 + second, 1.0]], atol=1e-4), \"the second step is divided by sqrt(2 g^2)\"\nassert np.allclose(layer.biases, [[1.5 - second]], atol=1e-4)\n\n# 4. epsilon is added to the root.\noptimizer = Optimizer_Adagrad(learning_rate=1.0, epsilon=1e-7)\nlayer = _layer([[0.0]], [[0.0]])\n_step(optimizer, layer, [[1e-5]], [[1e-5]])\nassert abs(layer.weights[0, 0] + 1e-5 / (1e-5 + 1e-7)) < 1e-6, \"epsilon is added to the root, not under it\"\n\n# 5. The step uses the scheduled learning rate.\noptimizer = Optimizer_Adagrad(learning_rate=1.0, decay=1.0)\nlayer = _layer([[0.0]], [[0.0]])\n_step(optimizer, layer, [[2.0]], [[2.0]])\n_step(optimizer, layer, [[2.0]], [[2.0]])\nassert np.allclose(layer.weights, [[-1.0 - 0.5 / np.sqrt(2.0)]], atol=1e-4), \"the step uses current_learning_rate\"\n\n# 6. One optimiser serves two layers without mixing their caches.\noptimizer = Optimizer_Adagrad()\nfirst, other = _layer([[0.0, 0.0]], [[0.0]]), _layer([[0.0]], [[0.0, 0.0]])\n_step(optimizer, first, [[1.0, 2.0]], [[3.0]])\n_step(optimizer, other, [[4.0]], [[5.0, 6.0]])\nassert np.allclose(first.weight_cache, [[1.0, 4.0]]) and np.allclose(other.bias_cache, [[25.0, 36.0]]), \"each layer keeps its own caches\"\n\n# 7. The epsilon handed to the constructor is the one used.\noptimizer = Optimizer_Adagrad(learning_rate=1.0, epsilon=0.5)\nlayer = _layer([[0.0]], [[0.0]])\n_step(optimizer, layer, [[0.5]], [[0.5]])\nassert np.allclose(layer.weights, [[-0.5]]) and np.allclose(layer.biases, [[-0.5]]), \"the step uses self.epsilon\"\n\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "Section 5: the method creates the two caches on the layer the first time it sees it, adds the squared gradients, and only then divides, so the current gradient is part of its own denominator and the first step has the size of the learning rate. The tests also catch the mistakes of section 10: a cache that is reset, a missing square root, and $\\epsilon$ under the root.",
+      "hints": [
+        "Three things happen in order: create the caches if the layer has none, add to them, then step.",
+        "The squared gradient is added to the cache before the division, and the divisor is the root of the cache plus `self.epsilon`.",
+        "Use `self.current_learning_rate`, and treat `layer.biases` exactly as `layer.weights`."
+      ]
+    },
+    {
+      "id": "nn-025-q13",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "contract",
+        "call-order"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network with one trainable layer is trained with `Optimizer_Adagrad` and a non-zero `decay`. The backward pass of the first training iteration has just finished. Put what the optimiser then does in the order in which it happens.",
+      "items": [
+        {
+          "key": "a",
+          "text": "The squared gradients are added to `layer.weight_cache` and `layer.bias_cache`."
+        },
+        {
+          "key": "b",
+          "text": "`post_update_params` raises `iterations` by one."
+        },
+        {
+          "key": "c",
+          "text": "`update_params` finds no `weight_cache` on the layer and creates both caches as zeros."
+        },
+        {
+          "key": "d",
+          "text": "The weights and biases are lowered by the scheduled rate times the gradient over the root of the cache plus $\\epsilon$."
+        },
+        {
+          "key": "e",
+          "text": "`pre_update_params` computes `current_learning_rate` from `iterations`."
+        }
+      ],
+      "answer": [
+        "e",
+        "c",
+        "a",
+        "d",
+        "b"
+      ],
+      "partial_credit": true,
+      "explanation": "Sections 5 and 6: `pre_update_params` sets the scheduled rate from the count of completed updates before any layer is touched. Inside `update_params` the caches are created if the layer has none, then raised by the squared gradients, and only then used, so the current gradient is in its own denominator. `post_update_params` counts the update last.",
+      "hints": [
+        "The optimiser's three calls keep the order of post 23; only the inside of the middle one is new."
+      ]
+    },
+    {
+      "id": "nn-025-q14",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 6,
+      "tags": [
+        "predict-output",
+        "first-step"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The stimulus applies the post's `Optimizer_Adagrad` twice to a stand-in layer with two weights, with the same gradient both times. Give the two numbers of the printed row, to three decimals.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "from types import SimpleNamespace\nimport numpy as np\n\nlayer = SimpleNamespace(weights=np.array([[1.0, 1.0]]), biases=np.array([[0.0]]),\n                        dweights=np.array([[3.0, -0.04]]), dbiases=np.array([[0.0]]))\noptimizer = Optimizer_Adagrad(learning_rate=0.5)\nfor _ in range(2):\n    optimizer.pre_update_params()\n    optimizer.update_params(layer)\n    optimizer.post_update_params()\nprint(np.round(layer.weights, 3))"
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "first weight",
+            "value": 0.146,
+            "tolerance": 0.002,
+            "unit": ""
+          },
+          {
+            "label": "second weight",
+            "value": 1.854,
+            "tolerance": 0.002,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form: each weight moves 0.5 and then 0.5 / sqrt(2) = 0.3536 against the sign of its gradient. Checked by running the stimulus with the class of snippets/adagrad.py, which prints [[0.146 1.854]].",
+      "explanation": "Section 2: the first step of every parameter is $\\alpha g / \\lvert g \\rvert$, so both weights move by $0.5$, the first down and the second up, although their gradients differ by a factor of 75. At the second update each cache is $2 g^2$ and the step is $0.5 / \\sqrt{2} = 0.354$. The results are $1 - 0.5 - 0.354 = 0.146$ and $1 + 0.5 + 0.354 = 1.854$.",
+      "hints": [
+        "The size of the gradient cancels; only its sign and its history matter.",
+        "After two equal gradients the cache is $2 g^2$, so the second step is $\\alpha / \\sqrt{2}$."
+      ]
+    },
+    {
+      "id": "nn-025-q15",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "10",
+      "est_minutes": 4,
+      "tags": [
+        "epsilon",
+        "placement"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Two versions of the update differ in one place: one divides by $\\sqrt{G} + \\epsilon$, the other by $\\sqrt{G + \\epsilon}$, both with $\\alpha = 1$ and $\\epsilon = 10^{-7}$. A parameter's first gradient is $10^{-5}$. What are the sizes of its first step in the two versions, in that order?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "About 0.99 and about 0.99.",
+          "correct": false,
+          "feedback": "That would hold for a gradient well above $\\sqrt{\\epsilon} = 3.2 \\times 10^{-4}$. Here $g^2 = 10^{-10}$ is a thousand times smaller than $\\epsilon$."
+        },
+        {
+          "key": "b",
+          "text": "About 0.99 and about 0.032.",
+          "correct": true,
+          "feedback": "$10^{-5} / (10^{-5} + 10^{-7}) = 0.990$, and $10^{-5} / \\sqrt{10^{-10} + 10^{-7}} = 10^{-5} / (3.16 \\times 10^{-4}) = 0.032$."
+        },
+        {
+          "key": "c",
+          "text": "About 0.032 and about 0.99.",
+          "correct": false,
+          "feedback": "The order is reversed: it is under the root that $\\epsilon$ outweighs $g^2$, because there it is compared with the square of the gradient."
+        },
+        {
+          "key": "d",
+          "text": "About $10^{-5}$ in both.",
+          "correct": false,
+          "feedback": "That is the gradient-descent step $\\alpha g$. In both versions the gradient is divided by a quantity far below 1."
+        }
+      ],
+      "explanation": "Section 10: outside the root, $\\epsilon$ is compared with $\\lvert g \\rvert$; under the root it is compared with $g^2$, so it takes over for gradients below $\\sqrt{\\epsilon} = 3.2 \\times 10^{-4}$. The two forms then give different first steps, 0.9901 and 0.0316 here, and on the spiral network they are different runs from the first update on.",
+      "hints": [
+        "Put $G = g^2$ into both denominators.",
+        "Compare $10^{-7}$ with $10^{-5}$ in one case and with $10^{-10}$ in the other."
+      ]
+    },
+    {
+      "id": "nn-025-q16",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 10,
+      "tags": [
+        "derivation",
+        "scale-invariance"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Neglect $\\epsilon$. Show that the AdaGrad step of a parameter at update $t$ does not change when every gradient the parameter has received is multiplied by the same constant $c > 0$, and give the size of its first step. Then state what the gradient-descent step does under the same rescaling, and what that means for two parameters whose gradients differ by a factor of 100.",
+      "kind": "derive",
+      "solution": "1. The cache after $t$ updates is $G_t = \\sum_{s=1}^{t} g_s^2$, and the step is $\\Delta_t = \\alpha \\, g_t / \\sqrt{G_t}$.\n2. Replace every $g_s$ by $c \\, g_s$. The cache becomes $\\sum_s c^2 g_s^2 = c^2 G_t$, and its root becomes $c \\sqrt{G_t}$, since $c > 0$.\n3. The step becomes $\\alpha \\, c \\, g_t / (c \\sqrt{G_t}) = \\alpha \\, g_t / \\sqrt{G_t}$. The factor $c$ cancels, so the step is unchanged.\n4. For $t = 1$ the cache is $g_1^2$, so the step is $\\alpha \\, g_1 / \\lvert g_1 \\rvert$: its size is $\\alpha$, whatever the gradient.\n5. The gradient-descent step is $\\alpha \\, g_t$, which becomes $c$ times as large under the rescaling.\n6. Consequence: under gradient descent two parameters whose gradients differ by a factor of 100 take steps that differ by 100, so no single $\\alpha$ suits both. Under AdaGrad the factor cancels and the two take steps of the same size, as the two weights of the post's example do.",
+      "rubric": [
+        {
+          "criterion": "Writes the cache as the sum of the squared gradients and the step as $\\alpha g_t / \\sqrt{G_t}$",
+          "points": 1
+        },
+        {
+          "criterion": "Shows that the rescaling multiplies the cache by $c^2$ and its root by $c$",
+          "points": 2
+        },
+        {
+          "criterion": "Cancels $c$ and concludes that the step is unchanged",
+          "points": 1
+        },
+        {
+          "criterion": "Gives the size of the first step as $\\alpha$",
+          "points": 1
+        },
+        {
+          "criterion": "States that the gradient-descent step scales with $c$",
+          "points": 1
+        },
+        {
+          "criterion": "Draws the consequence for two parameters with gradients a factor of 100 apart",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 2: the square root gives the cache the units of the gradient, so a constant factor in the gradients appears once in the numerator and once in the denominator. That is why the two weights of the post's example, whose gradients differ by 100, follow the same path under AdaGrad and cannot share a learning rate under gradient descent (section 1).",
+      "hints": [
+        "Write the step with the cache spelled out as a sum.",
+        "Put $c g_s$ in place of every $g_s$, in the numerator and inside the sum, and see what leaves the root."
+      ]
+    },
+    {
+      "id": "nn-025-q17",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 12,
+      "tags": [
+        "diagnosis",
+        "reading-a-run"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The stimulus gives two rows of an AdaGrad run with `learning_rate=1.0` and `decay=1e-4`: the scheduled learning rate, the largest cache, and the smallest effective learning rate over all parameters. A reader concludes: \"The smallest rate fell by a factor of about 8, so AdaGrad's cache has stopped the learning.\" Assess the conclusion. Separate the part of the fall that the schedule causes from the part the cache causes, check the smallest rate at the end against the cache, and say what the two loss values do and do not show.",
+      "stimulus": {
+        "kind": "table",
+        "content": "| Epoch | Loss | Scheduled rate | Largest cache | Smallest effective rate | Median effective rate |\n|:---:|:---:|:---:|:---:|:---:|:---:|\n| 10 | 1.1331 | 0.9990 | 8.16 | 0.350 | 3.86 |\n| 9,000 | 0.3932 | 0.5263 | 115 | 0.049 | 1.28 |\n| 10,000 | 0.3847 | 0.5000 | 123 | 0.045 | 1.20 |",
+        "caption": "Seed 0 of the post's documented run."
+      },
+      "kind": "critique",
+      "solution": "The smallest rate goes from 0.350 to 0.045, a factor of 7.8. It is the product of two causes. The schedule lowers `current_learning_rate` from 0.9990 to 0.5000, a factor of 2.0, for every parameter alike. The largest cache grows from 8.16 to 123, and its root by $\\sqrt{123 / 8.16} = 3.9$. $2.0 \\cdot 3.9 = 7.8$, so the cache explains about two thirds of the fall on a logarithmic scale and the explicit decay the rest.\n\nThe final value is consistent with the cache: $0.5 / \\sqrt{123} = 0.045$.\n\nThe conclusion does not follow. First, the smallest rate belongs to one parameter, and the median of 1.20 shows that it is not typical. The median needs care as well: in the post's run 204 of the 387 parameters belong to dead neurons, whose caches no longer grow, and the 183 others have a median rate of 0.41. That is a shrunken rate, not a stopped one. Second, the loss is still falling, from 0.3932 at epoch 9,000 to 0.3847 at epoch 10,000, so learning has slowed and not stopped. Third, the table cannot say why it has slowed: a loss also falls more slowly near a minimum with any optimiser, and no run without the shrinking is given for comparison. What the table does show is that the rates only fell, and that part of the fall is the schedule's, not AdaGrad's.",
+      "rubric": [
+        {
+          "criterion": "Computes the fall of the smallest rate as a factor of about 7.8",
+          "points": 1
+        },
+        {
+          "criterion": "Attributes a factor of 2.0 to the schedule, from the scheduled rates 0.9990 and 0.5000",
+          "points": 2
+        },
+        {
+          "criterion": "Attributes a factor of about 3.9 to the cache, from the root of the ratio of the largest caches",
+          "points": 2
+        },
+        {
+          "criterion": "Checks the final smallest rate as the scheduled rate over the root of the largest cache",
+          "points": 1
+        },
+        {
+          "criterion": "Uses the median rate or the falling loss to reject the claim that learning has stopped",
+          "points": 2
+        },
+        {
+          "criterion": "States that the table cannot attribute the slowdown to the rates alone",
+          "points": 1
+        }
+      ],
+      "answer_length": "two paragraphs",
+      "explanation": "Section 7: in the class the scheduled rate and the cache multiply, so a fall of the effective rate has two causes that the printed columns let the reader separate: 2.0 from the schedule and 3.9 from the largest cache. The rates have shrunk and not died; the loss still falls by 0.0085 over the last 1,000 epochs.",
+      "hints": [
+        "The effective rate is a quotient; look at what happened to its numerator and to its denominator separately.",
+        "The numerator is the scheduled rate and the denominator the root of the cache. Then ask whether one parameter's rate, or a loss that still changes, supports the word stopped."
+      ]
+    },
+    {
+      "id": "nn-025-q18",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "3",
+      "est_minutes": 12,
+      "tags": [
+        "decay",
+        "comparison"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The decay schedule of `nn-023` and AdaGrad's cache both make steps smaller as training goes on. Compare them for a parameter that receives a gradient of the same size at every update: give the factor each applies to the learning rate after $t$ updates (the schedule with decay $d$; AdaGrad relative to its own first update), evaluate both for $d = 10^{-4}$ and $t = 10{,}000$, say which falls faster for very large $t$, name two ways in which they differ apart from the formula, and state what `Optimizer_Adagrad` does when `decay` is not zero.",
+      "kind": "compare",
+      "connects": [
+        "nn-023"
+      ],
+      "solution": "The schedule multiplies the learning rate by $1 / (1 + d \\, t)$. AdaGrad's effective rate under a gradient of constant size $\\lvert g \\rvert$ is $\\alpha / (\\lvert g \\rvert \\sqrt{t})$; at the first update it is $\\alpha / \\lvert g \\rvert$, so relative to that it has fallen by $1 / \\sqrt{t}$.\n\nFor $d = 10^{-4}$ and $t = 10{,}000$ the schedule gives $1 / (1 + 1) = 0.5$ and AdaGrad gives $1 / \\sqrt{10{,}000} = 0.01$. At this point AdaGrad has lowered the rate fifty times as much.\n\nFor very large $t$ the schedule behaves like $1 / (d \\, t)$ and falls faster than $1 / \\sqrt{t}$. With $d = 10^{-4}$ the two factors are equal where $1 + d \\, t = \\sqrt{t}$, near $t = 10^{8}$; for every run shorter than that and longer than one update, AdaGrad's factor is the smaller one.\n\nDifferences: (1) the schedule is global, one factor for every parameter, while the cache is per parameter; (2) the schedule depends only on the number of updates and is set by an explicit argument, while AdaGrad's fall depends on the gradients the parameter actually received and has no knob of its own. A parameter with zero gradients keeps its AdaGrad rate, but the schedule lowers its rate all the same.\n\nIn the class the two multiply: `pre_update_params` sets `current_learning_rate` from the schedule, and `update_params` divides it by the root of the cache plus $\\epsilon$.",
+      "rubric": [
+        {
+          "criterion": "Gives the schedule's factor $1/(1 + d t)$ and AdaGrad's relative factor $1/\\sqrt{t}$ for a gradient of constant size",
+          "points": 2
+        },
+        {
+          "criterion": "Evaluates them as 0.5 and 0.01 for the given values",
+          "points": 2
+        },
+        {
+          "criterion": "States that the schedule falls faster asymptotically, as $1/t$ against $1/\\sqrt{t}$",
+          "points": 1
+        },
+        {
+          "criterion": "Names global against per parameter as one difference",
+          "points": 1
+        },
+        {
+          "criterion": "Names dependence on the update count and an explicit argument against dependence on the received gradients as another",
+          "points": 1
+        },
+        {
+          "criterion": "States that the class multiplies the two, through `current_learning_rate`",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 3 follows a constant gradient and finds an effective rate that falls as $1/\\sqrt{t}$, per parameter and without a `decay` argument; the schedule of `nn-023` is $\\alpha_0 / (1 + d \\cdot t)$ for all parameters. Sections 5 and 6: in the class the scheduled rate is the numerator of the effective rate, so the two reductions multiply, 0.5 from the schedule at the end of the documented run.",
+      "hints": [
+        "Write each as a factor on the learning rate after $t$ updates.",
+        "With a gradient of constant size the cache is $t g^2$; compare its root with the denominator $1 + d t$ of the schedule, first at the given numbers and then for $t$ going to infinity."
+      ]
+    }
+  ]
+}
