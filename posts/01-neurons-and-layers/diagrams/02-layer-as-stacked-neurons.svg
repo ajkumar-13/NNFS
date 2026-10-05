@@ -41,7 +41,7 @@
     .out-label{font-weight:600;font-size:12px;fill:var(--nn-ink);}
     .badge-1{fill:var(--nn-accent);}
     .badge-3{fill:var(--nn-primary);}
-    .badge-text{font-weight:700;font-size:14px;fill:#FFFFFF;}
+    .badge-text{font-weight:700;font-size:14px;fill:var(--nn-surface);}
     .count-head{font-weight:700;font-size:13px;fill:var(--nn-ink);}
     .count-body{font-size:12px;fill:var(--nn-ink-muted);}
     .count-num{font-weight:700;font-size:20px;fill:var(--nn-ink);}

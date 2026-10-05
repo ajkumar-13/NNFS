@@ -1,8 +1,26 @@
 id: nn-001
 slug: 01-neurons-and-layers
-title: "Part 01 · Neurons and layers"
+title: "01 - Neurons and layers"
+summary: "A neuron is a weighted sum of its inputs plus a bias, and a layer is several neurons reading the same inputs. The post codes both by hand, with loops, and with one NumPy dot product, then follows every shape from one sample to a batch."
 date: 2026-05-23
+updated: 2026-10-05
+status: complete
+part: "Part I - Foundations"
+level: beginner
+reading_time: 20
 tags: [neural-networks, from-scratch, numpy, perceptron, foundations]
 hero: diagrams/01-neuron-anatomy.svg
-reading_time: 14
-part: "Part I — Foundations"
+prerequisites: []
+code: included
+outcomes:
+  - id: o1
+    text: "State in one sentence what a neuron computes and what a layer computes."
+  - id: o2
+    text: "Compute the output of a neuron or a layer by hand from its inputs, weights, and biases."
+  - id: o3
+    text: "Count the weights and biases of a layer from its number of inputs and its number of neurons."
+  - id: o4
+    text: "Code a neuron and a layer in plain Python and then as one NumPy dot product plus the biases."
+  - id: o5
+    text: "Predict the shape of every intermediate array as a single sample becomes a batch."
+compute: cpu
