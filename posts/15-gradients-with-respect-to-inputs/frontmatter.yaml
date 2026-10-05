@@ -1,8 +1,26 @@
 id: nn-015
 slug: 15-gradients-with-respect-to-inputs
-title: "Part 15 · Gradients with respect to inputs"
+title: "15 - Gradients with respect to inputs"
+summary: "Why a dense layer must pass back the gradient of the loss with respect to its inputs, why that gradient adds one path per neuron, and how one matrix product computes it, checked with finite differences."
 date: 2026-05-28
-tags: [neural-networks, from-scratch, backpropagation, gradients]
+updated: 2026-10-05
+status: complete
+part: "Part V - Backpropagation"
+level: intermediate
+reading_time: 18
+tags: [neural-networks, from-scratch, backpropagation, gradients, input-gradient, chain-rule]
 hero: diagrams/01-input-gradients.svg
-reading_time: 10
-part: "Part V — Backpropagation"
+prerequisites: [nn-014]
+code: included
+outcomes:
+  - id: o1
+    text: "State why the input gradient is a sum over neurons while the weight gradient is a single product."
+  - id: o2
+    text: "Derive the input gradient of a dense layer from the chain rule as the upstream gradient times the transposed weight matrix."
+  - id: o3
+    text: "Verify an input gradient numerically with a central difference on each input."
+  - id: o4
+    text: "Explain why the input gradient keeps one row per sample while the weight and bias gradients sum over the batch."
+  - id: o5
+    text: "Write the three NumPy lines of a dense layer's backward pass and say which result is passed back to the layer before, and why."
+compute: cpu

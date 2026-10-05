@@ -1,0 +1,848 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-015",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-015-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "1",
+      "est_minutes": 2,
+      "tags": [
+        "hand-off",
+        "dinputs"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The inputs of a dense layer are not parameters, and no optimiser ever updates them. Why does the layer's backward pass still compute the gradient of the loss with respect to its inputs?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The layer needs it before it can compute its own weight and bias gradients.",
+          "correct": false,
+          "feedback": "The layer's own weight gradient is built from the upstream gradient and the cached inputs. The input gradient is not used inside the layer that computes it."
+        },
+        {
+          "key": "b",
+          "text": "The layer before it receives it as the source of its upstream gradient.",
+          "correct": true,
+          "feedback": "The output of the earlier layer is this layer's input, so this is the only route by which the earlier layer learns how the loss responds to what it produced."
+        },
+        {
+          "key": "c",
+          "text": "The optimiser uses it to scale the step taken on the weights.",
+          "correct": false,
+          "feedback": "The optimiser reads only the weight and bias gradients. The step size comes from the learning rate, not from the input gradient."
+        },
+        {
+          "key": "d",
+          "text": "The loss value cannot be reported until it is known.",
+          "correct": false,
+          "feedback": "The loss is computed in the forward pass, before any gradient exists. No gradient is needed to report it."
+        }
+      ],
+      "explanation": "Section 1: of the three gradients a dense layer produces, the weight and bias gradients stay in the layer and are consumed by the optimiser, and the input gradient is the only one that leaves. It becomes the upstream gradient of the layer before, once it has passed that layer's activation.",
+      "hints": [
+        "Ask which component's output this layer's inputs are."
+      ]
+    },
+    {
+      "id": "nn-015-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2.1",
+      "est_minutes": 3,
+      "tags": [
+        "paths",
+        "chain-rule"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A dense layer has 5 inputs and 7 neurons and processes one sample. How many chain-rule terms are added to form the gradient of the loss with respect to one input, and how many to form the gradient with respect to one weight?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "5 terms for the input, 1 for the weight",
+          "correct": false,
+          "feedback": "Five is the number of inputs. One input does not reach the loss through the other inputs; it reaches it through the neurons it feeds."
+        },
+        {
+          "key": "b",
+          "text": "7 terms for the input, 5 for the weight",
+          "correct": false,
+          "feedback": "The input count is right, but a weight multiplies one input inside one neuron, so it lies on a single path and not on five."
+        },
+        {
+          "key": "c",
+          "text": "7 terms for the input, 1 for the weight",
+          "correct": true,
+          "feedback": "The input feeds all 7 neurons, one path each. The weight appears in the pre-activation of one neuron only."
+        },
+        {
+          "key": "d",
+          "text": "35 terms for the input, 7 for the weight",
+          "correct": false,
+          "feedback": "Thirty-five is the number of weights in the layer. One input is connected to 7 of them, one per neuron, and one weight belongs to a single neuron."
+        }
+      ],
+      "explanation": "Section 2.1 counts paths: an input appears in every pre-activation, so its gradient has one term per neuron, and a weight appears in exactly one pre-activation, so its sum has a single term, which is the plain product of post 13.",
+      "hints": [
+        "Count the pre-activations in which the variable appears."
+      ]
+    },
+    {
+      "id": "nn-015-q03",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "local-derivative"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Each term of the sum that gives $\\partial L / \\partial x_j$ multiplies an upstream entry $\\partial L / \\partial z_k$ by the local derivative $\\partial z_k / \\partial x_j$. For a dense layer, what is that local derivative equal to?",
+      "answer": {
+        "model": "The weight $w_{kj}$, the weight that neuron $k$ puts on input $j$.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:times|multiplied\\s+by|plus)\\s+(?:the\\s+|its\\s+)?(?:input|x_|\\$?x\\b))(?![\\s\\S]*\\b(?:not|isn't|never)\\s+(?:the\\s+|a\\s+)?(?:weight|\\\\?\\$?w_))\\W*(?:(?:it(?:'s|\\s+is|\\s+equals)?|that\\s+is|that's|this\\s+is|the\\s+answer\\s+is|the\\s+local\\s+derivative\\s+is|equal\\s+to|equals|is|just|simply|only|exactly)\\W+)*(?:(?:the|a|one|that|single|its|corresponding|connecting|matching|relevant)\\s+)*(?:weight\\b(?!\\s*(?:gradients?|sums?|matrix|vector|times|decay|update|inputs?|bias(?:es)?|of\\s+the\\s+(?:next|previous|following|earlier|later)|,\\s*(?:the\\s+)?(?:input|bias)|,?\\s*which\\s+(?:is|equals)\\s+(?:1|one|0|zero))\\b)|\\$?\\\\?w\\s*_?\\s*\\{?\\s*k\\s*,?\\s*j)",
+          "^(?![\\s\\S]*\\b(?:not|isn't|never)\\b)\\W*(?:(?:it(?:'s|\\s+is|\\s+equals)?|that\\s+is|that's|this\\s+is|the\\s+answer\\s+is|the\\s+local\\s+derivative\\s+is|equal\\s+to|equals|is|just|simply|only|exactly)\\W+)*(?:(?:the|a|one|that|single)\\s+)*(?:\\(?\\s*k\\s*,\\s*j\\s*\\)?\\s+)?(?:entry|element)\\b[\\s\\S]*\\bweight"
+        ]
+      },
+      "explanation": "Section 2: $z_k = \\sum_j w_{kj} x_j + b_k$, and $x_j$ appears in it once, multiplied by $w_{kj}$. With every other input and every weight held fixed, the derivative of $z_k$ with respect to $x_j$ is that weight.",
+      "hints": [
+        "Write out $z_k$ and find the single place where $x_j$ appears."
+      ]
+    },
+    {
+      "id": "nn-015-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3.1",
+      "est_minutes": 5,
+      "tags": [
+        "matrix-form",
+        "dinputs"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A dense layer with 2 inputs and 3 neurons stores its weights as `Layer_Dense` does, one column per neuron: $\\mathbf{W} = \\begin{bmatrix} 1 & 3 & 5 \\\\ 2 & 4 & 6 \\end{bmatrix}$. For one sample the upstream gradient is $\\partial L / \\partial \\mathbf{Z} = [2, -1, 3]$. Give the two entries of $\\partial L / \\partial \\mathbf{X}$.",
+      "answer": {
+        "parts": [
+          {
+            "label": "dL/dX1",
+            "value": 14,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "dL/dX2",
+            "value": 18,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 3: np.dot(dvalues, W.T) with dvalues = [[2, -1, 3]] gives [[14, 18]]; recomputed with NumPy when the bank was built.",
+      "explanation": "Section 3: the input gradient is the upstream row times $\\mathbf{W}^\\top$, so each entry pairs the upstream gradient with the weights leaving one input, which are one row of $\\mathbf{W}$ in this layout. $2 \\cdot 1 - 1 \\cdot 3 + 3 \\cdot 5 = 14$ and $2 \\cdot 2 - 1 \\cdot 4 + 3 \\cdot 6 = 18$.",
+      "hints": [
+        "Each input collects one term from every neuron.",
+        "In this layout the weights leaving input 1 are the first row of the matrix."
+      ]
+    },
+    {
+      "id": "nn-015-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "2",
+      "est_minutes": 6,
+      "tags": [
+        "sum-over-paths",
+        "cancellation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A layer holds one row of weights per neuron: neuron 1 has $[0.1, 0.2, 0.3, 0.4]$, neuron 2 has $[0.5, 0.6, 0.7, 0.8]$, and neuron 3 has $[0.9, 1.0, 1.1, 1.2]$. For one sample the upstream gradient is $\\partial L / \\partial \\mathbf{Z} = [5, -3, 2]$. Give $\\partial L / \\partial x_1$ and $\\partial L / \\partial x_4$.",
+      "answer": {
+        "parts": [
+          {
+            "label": "dL/dX1",
+            "value": 0.8,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "dL/dX4",
+            "value": 2.0,
+            "tolerance": 0.001,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 2: np.array([[5, -3, 2]]) @ weights with the weights of snippets/input_gradient.py gives [[0.8, 1.2, 1.6, 2.0]]; recomputed with NumPy when the bank was built.",
+      "explanation": "Section 2: each input adds one term per neuron. $5 \\cdot 0.1 - 3 \\cdot 0.5 + 2 \\cdot 0.9 = 0.8$ and $5 \\cdot 0.4 - 3 \\cdot 0.8 + 2 \\cdot 1.2 = 2.0$. The negative upstream entry of neuron 2 works against the other two paths: for $x_1$ the terms are $0.5$, $-1.5$, and $1.8$, and for $x_4$ the term $-2.4$ cancels the $2.4$ of neuron 3 exactly, leaving the $2.0$ of neuron 1.",
+      "hints": [
+        "The weights that leave one input form a column of this array.",
+        "Multiply each upstream entry by the weight its neuron puts on the input, keep the signs, and add."
+      ]
+    },
+    {
+      "id": "nn-015-q06",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2",
+        "o5"
+      ],
+      "section": "3.1",
+      "est_minutes": 3,
+      "tags": [
+        "transpose",
+        "layout"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A layer computes its forward pass as `output = np.dot(inputs, weights) + biases`, with `inputs` of shape $(N, n)$ and `weights` of shape $(n, m)$. The gradient arriving from the next component is `dvalues`, of shape $(N, m)$. Which line computes the gradient to pass back?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`np.dot(weights, dvalues)`",
+          "correct": false,
+          "feedback": "The shapes are $(n, m)$ and $(N, m)$; the inner sizes $m$ and $N$ do not match unless the batch size happens to equal the number of neurons, and the result would not have the shape of the inputs."
+        },
+        {
+          "key": "b",
+          "text": "`np.dot(dvalues, weights)`",
+          "correct": false,
+          "feedback": "The inner sizes are $m$ and $n$, so this fails for any layer with different numbers of inputs and neurons, and in a square layer it runs and returns wrong numbers."
+        },
+        {
+          "key": "c",
+          "text": "`np.dot(weights.T, dvalues)`",
+          "correct": false,
+          "feedback": "The shapes are $(m, n)$ and $(N, m)$. The transpose is the right matrix, but it is on the wrong side of the product."
+        },
+        {
+          "key": "d",
+          "text": "`np.dot(dvalues, weights.T)`",
+          "correct": true,
+          "feedback": "$(N, m) \\cdot (m, n) \\rightarrow (N, n)$: the neuron axis is summed away and the result has the shape of the inputs."
+        }
+      ],
+      "explanation": "Section 3.1: the input gradient multiplies by the transpose of the matrix the forward pass multiplied by. Here the forward pass used `weights` with no transpose, so the backward line is `np.dot(dvalues, weights.T)`, which sums over the neurons and keeps one row per sample.",
+      "hints": [
+        "The result must have the shape of `inputs`.",
+        "The axis that disappears in the product must be the neuron axis."
+      ]
+    },
+    {
+      "id": "nn-015-q07",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o4",
+        "o5"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "shapes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A `Layer_Dense` receives `inputs` of shape $(5, 3)$ and stores `weights` of shape $(3, 4)$. Its backward pass runs the three lines `np.dot(inputs.T, dvalues)`, `np.sum(dvalues, axis=0, keepdims=True)`, and `np.dot(dvalues, weights.T)`. Give the number of rows and columns of each of the three results.",
+      "answer": {
+        "parts": [
+          {
+            "label": "dweights rows",
+            "value": 3,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "dweights columns",
+            "value": 4,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "dbiases rows",
+            "value": 1,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "dbiases columns",
+            "value": 4,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "dinputs rows",
+            "value": 5,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "dinputs columns",
+            "value": 3,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Shape rule of section 6, with dvalues of shape (5, 4); the three NumPy lines were run on zero arrays of these shapes when the bank was built: (3, 4), (1, 4), (5, 3).",
+      "explanation": "Section 6: every gradient has the shape of the array it differentiates. `dvalues` has the shape of the layer's output, $(5, 4)$. The weight gradient is $(3, 5) \\cdot (5, 4) \\rightarrow (3, 4)$, the bias gradient sums the five rows into $(1, 4)$, and the input gradient is $(5, 4) \\cdot (4, 3) \\rightarrow (5, 3)$, the only one that keeps the batch size.",
+      "hints": [
+        "Work out the shape of `dvalues` first, from the forward pass.",
+        "Each result must be subtractable from, or comparable with, the array it belongs to."
+      ]
+    },
+    {
+      "id": "nn-015-q08",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "batch",
+        "per-sample"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "For a batch of $N$ samples the bias gradient is one row, summed over the batch, while the input gradient has $N$ rows. What is the reason for the difference?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The same bias is used by every sample, so their contributions add; each sample has its own inputs.",
+          "correct": true,
+          "feedback": "A shared quantity collects one contribution per sample. An input row belongs to one sample and affects only that sample's pre-activations."
+        },
+        {
+          "key": "b",
+          "text": "The input gradient is averaged later by the optimiser, so the sum is postponed.",
+          "correct": false,
+          "feedback": "The optimiser never sees the input gradient. It is passed to the previous component as it is, one row per sample."
+        },
+        {
+          "key": "c",
+          "text": "Biases are vectors and inputs are matrices, and NumPy keeps the larger shape.",
+          "correct": false,
+          "feedback": "The shapes follow from the calculus, not from a NumPy rule. The weight matrix is two-dimensional as well, and its gradient still sums over the batch."
+        },
+        {
+          "key": "d",
+          "text": "The input gradient is summed over the neurons instead, and a gradient can be summed over only one axis.",
+          "correct": false,
+          "feedback": "The sum over neurons comes from the paths of one input inside one sample. Nothing forbids two sums; the batch axis stays because no input is shared between samples."
+        }
+      ],
+      "explanation": "Section 5: a weight or a bias is one number used by every sample, so each sample pulls on it and the pulls add. The pre-activations of sample $i$ depend on the inputs of sample $i$ only, so the input gradient is computed row by row, and the layer before needs it row by row.",
+      "hints": [
+        "Ask which of the two quantities is shared between the samples of a batch."
+      ]
+    },
+    {
+      "id": "nn-015-q09",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "batch",
+        "shapes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A dense layer's backward pass turns a batch of $N$ samples into three gradient arrays, for the weights, the biases, and the inputs. Which one of the three changes shape when $N$ changes?",
+      "answer": {
+        "model": "The input gradient, `dinputs`, which has one row per sample.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:dweights|dbiases|weights?|bias(?:es)?|all|both|none|neither|every|each|not|no|never|isn't|doesn't|stays?|remains?|fixed|unchanged|constant|same|dvalues|upstream)\\b)(?=[\\s\\S]*(?:\\bdinputs\\b|\\binputs?\\b|d\\s*l\\s*/\\s*d\\s*x\\b|∂l\\s*/\\s*∂\\s*x\\b|partial\\s*l\\s*/\\s*\\\\?partial\\s*(?:\\\\mathbf\\s*\\{\\s*)?x\\b))",
+          "^\\W*(?:(?:it(?:'s|\\s+is)?|that\\s+is|only|just|the\\s+answer\\s+is|the\\s+one\\s+(?:for|with\\s+respect\\s+to)|the\\s+gradient\\s+(?:for|of|with\\s+respect\\s+to|w\\.?r\\.?t\\.?)|the|of|for)\\W+)*(?:dinputs\\b|inputs?\\b|d\\s*l\\s*/\\s*d\\s*x\\b)(?!\\W*(?:gradients?\\s+)?(?:does\\s+not|doesn't|do\\s+not|don't|stays?|keeps?|remains?|is\\s+fixed|is\\s+unchanged|is\\s+constant|is\\s+the\\s+same|never|is\\s+not|isn't)\\b)(?![\\s\\S]*\\b(?:weights?|dweights|bias(?:es)?|dbiases)\\s+(?:gradients?\\s+)?(?:(?:do|does)\\b(?!\\s+not|n't)|grows?\\b|changes?\\b|gains?\\b))(?=[\\s\\S]*\\b(?:not|don't|doesn't|unlike|whereas|while|but|only|others?|fixed|independent|unchanged|same|stay|keep)\\b[\\s\\S]*)(?![\\s\\S]*\\b(?:and|plus|as\\s+well\\s+as|also)\\s+(?:the\\s+)?(?:dweights|dbiases|weights?|bias(?:es)?)\\s+(?:gradients?\\s+)?(?:change|changes|grow|grows|too|as\\s+well)\\b)(?![\\s\\S]*\\b(?:all|both)\\b)"
+        ]
+      },
+      "explanation": "Section 6: the weight and bias gradients have the shapes of the weights and the biases, whatever the batch size, because they collect the whole batch into one update. The input gradient has the shape of the inputs, $(N, n)$, so it gains a row for every sample.",
+      "hints": [
+        "Each gradient has the shape of the array it differentiates. Only one of those arrays has $N$ in its shape."
+      ]
+    },
+    {
+      "id": "nn-015-q10",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o3",
+        "o1"
+      ],
+      "section": "7.1",
+      "est_minutes": 6,
+      "tags": [
+        "central-difference",
+        "predict-output"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The script measures one entry of an input gradient with a central difference. Work out the same entry from the sum over paths and give the number the script prints.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "import numpy as np\n\nweights = np.array([[1.0, -2.0],\n                    [0.5, 3.0]])      # one row per neuron\nx = np.array([3.0, 1.0])\n\n\ndef loss(x):\n    return np.sum(np.maximum(0, weights @ x)) ** 2\n\n\nh = 1e-5\nstep = np.array([0.0, h])\nprint(round((loss(x + step) - loss(x - step)) / (2 * h), 4))\n"
+      },
+      "answer": {
+        "value": 11.0,
+        "tolerance": 0.001,
+        "unit": ""
+      },
+      "precision_note": "The stimulus was run when the bank was built and prints 11.0. Closed form: pre-activations [1, 4.5], layer sum 5.5, upstream 2 * 5.5 = 11 for both neurons, and 11 * (-2) + 11 * 3 = 11.",
+      "explanation": "Section 7.1: the step moves the second input only, so the script measures $\\partial L / \\partial x_2$. The pre-activations are $1$ and $4.5$, both gates are open, the layer sum is $\\hat{y} = 5.5$, and the upstream gradient is $2\\hat{y} = 11$ for each neuron. The two paths from the second input carry the weights $-2$ and $3$, so the sum is $11 \\cdot (-2) + 11 \\cdot 3 = 11$. The loss is quadratic in the input, so the central difference returns the same value up to rounding.",
+      "hints": [
+        "Find which input the step moves.",
+        "Compute the two pre-activations, check both gates, and form the upstream gradient $2\\hat{y}$ for each neuron.",
+        "Add one term per neuron, each with the weight that neuron puts on the moved input."
+      ]
+    },
+    {
+      "id": "nn-015-q11",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "8",
+      "est_minutes": 4,
+      "tags": [
+        "float32",
+        "gradient-check"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A backward pass is checked against a central difference with $h = 10^{-5}$. With every array in float32 the largest gap is 1.5 on gradient entries of size about 20. The identical code with every array converted to float64 gives a largest gap of $2.8 \\times 10^{-9}$. What does this show?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The backward pass has a bug that float64 arithmetic happens to hide.",
+          "correct": false,
+          "feedback": "A wrong formula stays wrong in any precision. A gap that falls to $10^{-9}$ when only the precision changes cannot come from the formula."
+        },
+        {
+          "key": "b",
+          "text": "The step $h$ is too large, and a smaller one would repair the float32 check.",
+          "correct": false,
+          "feedback": "A smaller step makes the float32 estimate worse: the two loss values differ in still fewer of the roughly 7 digits a float32 number carries."
+        },
+        {
+          "key": "c",
+          "text": "One pre-activation sits on a ReLU corner, so the finite difference is invalid in both runs.",
+          "correct": false,
+          "feedback": "A corner would spoil the float64 check as well, because the central difference would straddle it in either precision."
+        },
+        {
+          "key": "d",
+          "text": "The backward pass is right; float32 leaves the difference quotient too few digits.",
+          "correct": true,
+          "feedback": "The float64 run is the valid check. In float32 the subtraction of two nearly equal losses leaves too few correct digits to divide by $2 \\times 10^{-5}$."
+        }
+      ],
+      "explanation": "Section 8 repeats the check of the post's batch in float32 and finds a gap of about 1.5 for a correct gradient, against $2.8 \\times 10^{-9}$ in float64. Post 10 gave the reason: a float32 number keeps about 7 significant digits, so a step of $10^{-5}$ leaves almost nothing of the difference between the two losses. A gradient check is run in float64.",
+      "hints": [
+        "Ask what changed between the two runs, and whether a wrong formula could depend on it.",
+        "Recall how many significant digits a float32 number carries, and what the subtraction in the numerator does to them."
+      ]
+    },
+    {
+      "id": "nn-015-q12",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "8",
+      "est_minutes": 5,
+      "tags": [
+        "transpose",
+        "square-layer",
+        "diagnosis"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A hidden layer has 64 inputs and 64 neurons and stores its weights as `Layer_Dense` does. Its backward pass was written as `self.dinputs = np.dot(dvalues, self.weights)`. The network runs without any error, and the layers before this one learn poorly. Which statements are correct?",
+      "select": "multiple",
+      "options": [
+        {
+          "key": "a",
+          "text": "The line has the right shape and wrong values: it sums along the wrong axis of the weights.",
+          "correct": true,
+          "feedback": "With a square matrix both products are $(N, 64)$. Without the transpose, entry $j$ sums over the weights of neuron $j$, which is not the sum over the paths of input $j$."
+        },
+        {
+          "key": "b",
+          "text": "The same line in a layer with 64 inputs and 32 neurons would raise a shape error.",
+          "correct": true,
+          "feedback": "There `dvalues` is $(N, 32)$ and the weights are $(64, 32)$; the inner sizes 32 and 64 do not match, so NumPy refuses the product."
+        },
+        {
+          "key": "c",
+          "text": "A central difference on this layer's inputs would agree with the line, since the shapes match.",
+          "correct": false,
+          "feedback": "A finite difference measures the true slope and knows nothing about shapes. It would disagree with the wrong product, which is how the bug is found."
+        },
+        {
+          "key": "d",
+          "text": "This layer's own weight gradient is wrong as well, since it is computed from `dinputs`.",
+          "correct": false,
+          "feedback": "The layer's weight gradient is built from its cached inputs and `dvalues`. Only the components before it, which receive `dinputs`, are affected."
+        }
+      ],
+      "explanation": "Section 8: in a square layer `np.dot(dvalues, W)` and `np.dot(dvalues, W.T)` have the same shape, so the wrong one runs silently; the script shows a gap of 7.2 against a central difference in a 3 by 3 layer. In a layer with different numbers of inputs and neurons the wrong product fails with a shape error. The bug damages only what is upstream of the hand-off: the layer's own `dweights` does not use `dinputs`.",
+      "hints": [
+        "Compare the shapes of the two candidate products when the weight matrix is square.",
+        "Ask which components read `dinputs` and which do not."
+      ]
+    },
+    {
+      "id": "nn-015-q13",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 12,
+      "tags": [
+        "derivation",
+        "matrix-form"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A dense layer has $n$ inputs and $m$ neurons, with $z_k = \\sum_{j=1}^{n} w_{kj} x_j + b_k$ for one sample, where $w_{kj}$ is the weight neuron $k$ puts on input $j$. The gradients $\\partial L / \\partial z_k$ are known. Derive $\\partial L / \\partial x_j$, then write the result for all inputs as one matrix product for a layer that stores its weights as $\\mathbf{W}$ of shape $(n, m)$, and check the shapes.",
+      "kind": "derive",
+      "solution": "1. The loss depends on $x_j$ only through the pre-activations, and $x_j$ appears in every one of them, so the chain rule is applied along each of the $m$ paths and the results are added: $\\partial L / \\partial x_j = \\sum_{k=1}^{m} (\\partial L / \\partial z_k) \\cdot (\\partial z_k / \\partial x_j)$.\n2. In $z_k$ the input $x_j$ appears once, multiplied by $w_{kj}$; every other term is constant when $x_j$ alone moves. So $\\partial z_k / \\partial x_j = w_{kj}$.\n3. Therefore $\\partial L / \\partial x_j = \\sum_{k=1}^{m} (\\partial L / \\partial z_k) \\cdot w_{kj}$.\n4. This is the dot product of the row vector $\\partial L / \\partial \\mathbf{Z}$, of shape $(1, m)$, with the list $w_{1j}, \\dots, w_{mj}$ of weights that leave input $j$.\n5. $\\mathbf{W}$ has one row per input and one column per neuron, so that list is row $j$ of $\\mathbf{W}$, which is column $j$ of $\\mathbf{W}^\\top$. Taking all $j$ at once gives $\\partial L / \\partial \\mathbf{X} = (\\partial L / \\partial \\mathbf{Z}) \\, \\mathbf{W}^\\top$.\n6. Shapes: $(1, m) \\cdot (m, n) \\rightarrow (1, n)$, the shape of $\\mathbf{X}$. The inner size $m$ that disappears is the neuron index summed over in step 3.",
+      "rubric": [
+        {
+          "criterion": "States that $x_j$ reaches the loss through all $m$ pre-activations and that the contributions of the paths are added",
+          "points": 2
+        },
+        {
+          "criterion": "Finds the local derivative $\\partial z_k / \\partial x_j = w_{kj}$ with a reason",
+          "points": 2
+        },
+        {
+          "criterion": "Writes $\\partial L / \\partial x_j = \\sum_k (\\partial L / \\partial z_k) w_{kj}$",
+          "points": 1
+        },
+        {
+          "criterion": "Identifies the sum as a product of the upstream row with the transposed weight matrix, $(\\partial L / \\partial \\mathbf{Z}) \\, \\mathbf{W}^\\top$, for the $(n, m)$ layout",
+          "points": 2
+        },
+        {
+          "criterion": "Checks the shapes, $(1, m) \\cdot (m, n) \\rightarrow (1, n)$, and names the summed axis as the neurons",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Sections 2 and 3: the input feeds every neuron, the local derivative along each path is the weight on that path, and the paths add. The sum over $k$ is a dot product with the weights leaving input $j$; those are a row of an $(n, m)$ weight matrix, so the matrix form carries a transpose.",
+      "hints": [
+        "Start from the pre-activations in which $x_j$ appears and differentiate one of them.",
+        "Decide whether the weights leaving one input form a row or a column of the stored matrix."
+      ]
+    },
+    {
+      "id": "nn-015-q14",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o1",
+        "o4"
+      ],
+      "section": "5",
+      "est_minutes": 12,
+      "tags": [
+        "batch",
+        "paths",
+        "relu-gate"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Within one sample a weight lies on one path to the loss and an input lies on one path per neuron. Over a batch, however, the weight gradient is a sum over the samples and the input gradient is not. Explain both facts with the same counting argument, and then say what the input gradient of one sample is when the layer's activation is ReLU and every pre-activation of that sample is negative, and what that means for the layers before.",
+      "kind": "explain",
+      "solution": "The rule in both cases is the same: a gradient adds one term for every place where the variable enters the computation of the loss.\n\nA weight $w_{kj}$ enters one pre-activation per sample, $z_{ik}$ for each sample $i$. Inside one sample that is a single path, so the per-sample gradient is the single product $(\\partial L / \\partial z_{ik}) x_{ij}$. Across a batch the same weight is used $N$ times, once per sample, so its gradient is the sum of $N$ such products. The matrix product $\\mathbf{X}^\\top (\\partial L / \\partial \\mathbf{Z})$ performs that sum, because the batch axis is the inner one.\n\nAn input $x_{ij}$ belongs to sample $i$ alone. It enters the $m$ pre-activations $z_{i1}, \\dots, z_{im}$ of that sample and no pre-activation of any other sample, so its gradient is a sum over the $m$ neurons and has nothing to add across the batch. In $(\\partial L / \\partial \\mathbf{Z}) \\, \\mathbf{W}^\\top$ the neuron axis is the inner one and the batch axis survives, giving one row per sample.\n\nIf every pre-activation of a sample is negative, every ReLU gate of that sample is closed and its row of the upstream gradient $\\partial L / \\partial \\mathbf{Z}$ is zero. Every term of every sum is then zero, so that sample's input gradient is exactly zero. The layers before receive no signal from that sample: their weight gradients get no contribution from it. If this holds for every sample, nothing before the layer learns at all.",
+      "rubric": [
+        {
+          "criterion": "States one counting rule: a gradient adds a term for each place the variable is used",
+          "points": 1
+        },
+        {
+          "criterion": "Weight: one use per sample, hence one term per sample and a sum over the batch",
+          "points": 2
+        },
+        {
+          "criterion": "Input: used by the $m$ neurons of its own sample only, hence a sum over neurons and no sum over the batch",
+          "points": 2
+        },
+        {
+          "criterion": "Relates each sum to the inner axis of the corresponding matrix product",
+          "points": 1
+        },
+        {
+          "criterion": "All gates closed: the sample's upstream row is zero, so its input gradient is exactly zero",
+          "points": 1
+        },
+        {
+          "criterion": "Consequence: earlier layers receive no gradient from that sample (none at all if it holds for every sample)",
+          "points": 1
+        }
+      ],
+      "answer_length": "two or three paragraphs",
+      "explanation": "Sections 2.1 and 5 count where each variable is used: a weight once per sample, an input once per neuron of its own sample. Each count is the axis summed inside the matrix product. Section 8 shows the closed-gate case: with every gate closed the input gradient prints as four zeros, and the hand-off of section 1 then carries nothing.",
+      "hints": [
+        "List every pre-activation, over the whole batch, in which a given weight appears; then do the same for a given input.",
+        "For the last part, work out the upstream gradient of the sample before anything is multiplied by the weights."
+      ]
+    },
+    {
+      "id": "nn-015-q15",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o2",
+        "o5"
+      ],
+      "section": "6",
+      "est_minutes": 15,
+      "tags": [
+        "weight-gradient",
+        "identity"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "For one sample of a dense layer, show that $\\sum_j x_j \\, \\partial L / \\partial x_j = \\sum_{k} \\sum_{j} w_{kj} \\, \\partial L / \\partial w_{kj}$, using the weight gradient of the earlier matrix post and the input gradient of this one. Then confirm the identity with numbers on the layer with inputs $[1, 2, 3, 4]$, weight rows $[0.1, 0.2, 0.3, 0.4]$, $[0.5, 0.6, 0.7, 0.8]$, $[0.9, 1.0, 1.1, 1.2]$, and upstream gradient $[43.2, 43.2, 43.2]$, and say in one sentence why the two sides must agree.",
+      "kind": "connect",
+      "solution": "1. Weight gradient (posts 13 and 14): $\\partial L / \\partial w_{kj} = (\\partial L / \\partial z_k) x_j$.\n2. Input gradient (this post): $\\partial L / \\partial x_j = \\sum_k (\\partial L / \\partial z_k) w_{kj}$.\n3. Left side: $\\sum_j x_j \\sum_k (\\partial L / \\partial z_k) w_{kj} = \\sum_k \\sum_j (\\partial L / \\partial z_k) w_{kj} x_j$.\n4. Right side: $\\sum_k \\sum_j w_{kj} (\\partial L / \\partial z_k) x_j$, the same double sum.\n5. Numbers, left: the input gradient is $[64.8, 77.76, 90.72, 103.68]$, and $1 \\cdot 64.8 + 2 \\cdot 77.76 + 3 \\cdot 90.72 + 4 \\cdot 103.68 = 907.2$.\n6. Numbers, right: every row of the weight gradient is $[43.2, 86.4, 129.6, 172.8]$. The weighted sums of the three weight rows with the inputs are $3.0$, $7.0$, and $11.0$, so the right side is $43.2 \\cdot (3.0 + 7.0 + 11.0) = 907.2$.\n7. Reason: inputs and weights enter the layer only through the products $w_{kj} x_j$, so each side equals $\\sum_k (\\partial L / \\partial z_k)(z_k - b_k)$. Both gradients are the same upstream gradient multiplied by the other factor of the same product.",
+      "rubric": [
+        {
+          "criterion": "Quotes the weight gradient $(\\partial L / \\partial z_k) x_j$ and the input gradient $\\sum_k (\\partial L / \\partial z_k) w_{kj}$ correctly",
+          "points": 2
+        },
+        {
+          "criterion": "Substitutes both and reduces each side to the double sum $\\sum_k \\sum_j (\\partial L / \\partial z_k) w_{kj} x_j$",
+          "points": 2
+        },
+        {
+          "criterion": "Computes the left side as 907.2 from the input gradient $[64.8, 77.76, 90.72, 103.68]$",
+          "points": 1
+        },
+        {
+          "criterion": "Computes the right side as 907.2 from the weight gradient rows $[43.2, 86.4, 129.6, 172.8]$",
+          "points": 1
+        },
+        {
+          "criterion": "Explains the agreement: weights and inputs appear only as products $w_{kj} x_j$, each gradient being the upstream gradient times the other factor",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 6 sets the three gradients side by side, and section 2.1 notes that the weight and input gradients come from one line, $z_k = \\sum_j w_{kj} x_j + b_k$, differentiated with respect to each factor in turn. Multiplying each gradient by its own variable restores the product $w_{kj} x_j$ on both sides, so the sums agree; with the numbers of posts 13 and 14 both are 907.2.",
+      "hints": [
+        "Write both gradients with indices before summing anything.",
+        "After substituting, compare the terms inside the two double sums.",
+        "For the numbers, the weight gradient of the earlier post has the same four entries in every row."
+      ],
+      "connects": [
+        "nn-014",
+        "nn-013"
+      ]
+    },
+    {
+      "id": "nn-015-q16",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o5",
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 15,
+      "tags": [
+        "dense-backward",
+        "gradient-check"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Complete `dense_backward(inputs, weights, dvalues)` for a dense layer whose forward pass is `np.dot(inputs, weights) + biases`, with `weights` of shape `(n_inputs, n_neurons)`. It must return `dweights`, `dbiases` of shape `(1, n_neurons)`, and `dinputs`, without changing its arguments. The tests compare each result with a central difference.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "import numpy as np\n\n\ndef dense_backward(inputs, weights, dvalues):\n    \"\"\"Backward pass of a dense layer whose forward pass is np.dot(inputs, weights) + biases.\n\n    inputs is (N, n_inputs), weights is (n_inputs, n_neurons), dvalues is (N, n_neurons).\n    Return the tuple (dweights, dbiases, dinputs).\n    \"\"\"\n    dweights = np.zeros_like(weights)\n    dbiases = np.zeros((1, weights.shape[1]))\n    dinputs = np.zeros_like(inputs)\n    # TODO: one line for each of the three gradients\n    return dweights, dbiases, dinputs\n",
+      "solution": "import numpy as np\n\n\ndef dense_backward(inputs, weights, dvalues):\n    \"\"\"Backward pass of a dense layer whose forward pass is np.dot(inputs, weights) + biases.\n\n    inputs is (N, n_inputs), weights is (n_inputs, n_neurons), dvalues is (N, n_neurons).\n    Return the tuple (dweights, dbiases, dinputs).\n    \"\"\"\n    dweights = np.dot(inputs.T, dvalues)                 # sums over the batch\n    dbiases = np.sum(dvalues, axis=0, keepdims=True)     # sums over the batch\n    dinputs = np.dot(dvalues, weights.T)                 # sums over the neurons, one row per sample\n    return dweights, dbiases, dinputs\n",
+      "tests": "def check(n_samples, n_inputs, n_neurons):\n    inputs = np.sin(np.arange(n_samples * n_inputs, dtype=np.float64)).reshape(n_samples, n_inputs)\n    weights = np.cos(np.arange(n_inputs * n_neurons, dtype=np.float64)).reshape(n_inputs, n_neurons)\n    biases = np.linspace(-0.5, 0.5, n_neurons).reshape(1, n_neurons)\n    coeff = np.sin(1.0 + np.arange(n_samples * n_neurons, dtype=np.float64)).reshape(n_samples, n_neurons)\n\n    def loss():\n        # L = sum of coeff * Z, so the gradient arriving at the layer is coeff itself\n        return np.sum(coeff * (np.dot(inputs, weights) + biases))\n\n    def numeric(array, h=1e-5):\n        grad = np.zeros_like(array)\n        for index in np.ndindex(*array.shape):\n            saved = array[index]\n            array[index] = saved + h\n            plus = loss()\n            array[index] = saved - h\n            minus = loss()\n            array[index] = saved\n            grad[index] = (plus - minus) / (2 * h)\n        return grad\n\n    kept = (inputs.copy(), weights.copy(), coeff.copy())\n    dweights, dbiases, dinputs = dense_backward(inputs, weights, coeff)\n    assert np.array_equal(inputs, kept[0]) and np.array_equal(weights, kept[1]) and np.array_equal(coeff, kept[2]), \"the arguments must not be modified\"\n    assert dweights.shape == weights.shape, f\"dweights has shape {dweights.shape}, expected {weights.shape}\"\n    assert dbiases.shape == biases.shape, f\"dbiases has shape {dbiases.shape}, expected {biases.shape}\"\n    assert dinputs.shape == inputs.shape, f\"dinputs has shape {dinputs.shape}, expected {inputs.shape}\"\n    assert np.max(np.abs(dweights - numeric(weights))) < 1e-6, \"dweights disagrees with a central difference\"\n    assert np.max(np.abs(dbiases - numeric(biases))) < 1e-6, \"dbiases disagrees with a central difference\"\n    assert np.max(np.abs(dinputs - numeric(inputs))) < 1e-6, \"dinputs disagrees with a central difference\"\n\n\ncheck(3, 4, 2)\ncheck(5, 3, 3)      # a square layer: a misplaced transpose has the right shape here\ncheck(1, 2, 6)\nprint(\"all three gradients pass\")\n",
+      "expected_output": "all three gradients pass\n",
+      "explanation": "Section 6 lists the three lines: the weight gradient is the transposed inputs times `dvalues`, the bias gradient is `dvalues` summed over the batch axis with `keepdims=True`, and the input gradient is `dvalues` times the transposed weights. The tests use a loss that is linear in the layer's output, so `dvalues` is a fixed array and a central difference on each of the three arrays is exact up to rounding. The second test uses a square layer, in which a misplaced transpose keeps the right shape and is caught only by the values.",
+      "hints": [
+        "Each returned array must have the shape of the array it differentiates.",
+        "Two of the three lines sum over the batch axis and one sums over the neuron axis; the axis that is summed is the inner axis of a matrix product, or the `axis` of `np.sum`."
+      ]
+    },
+    {
+      "id": "nn-015-q17",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o5",
+        "o2"
+      ],
+      "section": "7.3",
+      "est_minutes": 5,
+      "tags": [
+        "hand-off",
+        "backward-order"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network is a dense layer with ReLU followed by a second dense layer and a loss. Both layers store their weights as `Layer_Dense` does, one column per neuron. Put the steps that lead to the first layer's weight gradient in the order in which they must happen.",
+      "items": [
+        {
+          "key": "a",
+          "text": "The second layer multiplies the gradient it received by its transposed weights and returns the result."
+        },
+        {
+          "key": "b",
+          "text": "The first layer multiplies its transposed inputs by the gradient of its pre-activations."
+        },
+        {
+          "key": "c",
+          "text": "The forward pass runs, and each layer keeps the inputs it saw."
+        },
+        {
+          "key": "d",
+          "text": "The returned gradient is set to zero wherever the first layer's pre-activation was not positive."
+        },
+        {
+          "key": "e",
+          "text": "The loss produces the gradient with respect to the second layer's output."
+        }
+      ],
+      "answer": [
+        "c",
+        "e",
+        "a",
+        "d",
+        "b"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 7.3 runs this chain: the forward pass supplies the cached values, the loss supplies the second layer's `dvalues`, the second layer returns `dinputs` through $\\mathbf{W}^\\top$, the ReLU gate of the first layer turns that into the first layer's `dvalues`, and only then can the first layer form its weight gradient. Each step consumes the result of the one before, so no other order is possible.",
+      "hints": [
+        "The backward pass starts where the forward pass ended.",
+        "Each step uses an array that exactly one other step produces."
+      ]
+    },
+    {
+      "id": "nn-015-q18",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "caching",
+        "three-lines"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Besides the gradient arriving from the next component, each line of a dense layer's backward pass needs something the layer holds from its forward pass. Match each gradient to what its line needs.",
+      "left": [
+        {
+          "key": "a",
+          "text": "weight gradient"
+        },
+        {
+          "key": "b",
+          "text": "bias gradient"
+        },
+        {
+          "key": "c",
+          "text": "input gradient"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "the weights the layer used"
+        },
+        {
+          "key": "q",
+          "text": "the inputs the layer saw"
+        },
+        {
+          "key": "r",
+          "text": "nothing more"
+        },
+        {
+          "key": "s",
+          "text": "the output the layer produced"
+        },
+        {
+          "key": "t",
+          "text": "the value of the loss"
+        }
+      ],
+      "answer": {
+        "a": "q",
+        "b": "r",
+        "c": "p"
+      },
+      "explanation": "Section 6: the weight gradient is the transposed inputs times the arriving gradient, so the layer must have kept its inputs; the input gradient is the arriving gradient times the transposed weights, so it needs the weights; the bias gradient is a sum of the arriving gradient alone. None of the three needs the layer's output or the loss value.",
+      "hints": [
+        "In each formula, look at what multiplies the arriving gradient."
+      ]
+    }
+  ]
+}
