@@ -15,7 +15,7 @@ next_post_ordinal: 36
 next_project_ordinal: 5
 projects: [nn-p01, nn-p02, nn-p03, nn-p04]
 levels_used: [beginner, intermediate]
-vocab: {}
+vocab: {compute: [cpu]}
 question_policy: {}
 parts:
 - number: 1
