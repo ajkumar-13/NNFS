@@ -1,24 +1,29 @@
-# Part 13 · Backpropagation through a layer of neurons
+# 13 - Backpropagation through a layer of neurons
 
-> **TL;DR.** The single-neuron recipe from Part 12 scales without modification to an entire layer: the same chain rule walks back through each neuron in parallel, the same upstream gradient is broadcast across every neuron, and the same "upstream × input" pattern produces the gradient for every weight. This post makes that same-pattern-times-three structure explicit on a three-neuron layer and runs a 200-iteration training loop that drops the loss to essentially zero.
+> **TL;DR.** The single-neuron recipe of post 12 does not change when three neurons share the same four inputs: the loss derivative is computed once and shared by all fifteen parameters, each neuron applies its own ReLU gate, and each weight multiplies the result by its own input. On the worked layer the shared value is $2\hat{y} = 43.2$ and every row of weight gradients is 43.2, 86.4, 129.6, and 172.8, confirmed by central differences to $6.4 \times 10^{-9}$. A 200-iteration loop takes the loss from 466.56 to about $6 \times 10^{-10}$ by switching two of the three neurons off on the way.
 >
-> **After reading this you will be able to:**
-> - Apply the chain rule across all 15 parameters of a layer with one upstream gradient and per-weight inputs.
-> - Write the per-neuron backward pass as a Python loop and recognise where it becomes a matrix multiplication (Part 14).
-> - Predict the gradient of any weight in any neuron given the input vector and the layer's upstream gradient.
+> **Prerequisites:** [Post 12](../12-backprop-through-a-single-neuron/index.md).
+> **Safe to skip?** Skip it if the reader can already write down $\partial L / \partial w_{kj}$ for a layer of ReLU neurons whose outputs are summed and squared, say which factors of that product are shared by which parameters, and explain why the twelve weight gradients form an outer product.
+>
+> **After reading, you will be able to:**
+>
+> - Apply the chain rule across all fifteen parameters of a three-neuron layer with one shared upstream gradient.
+> - Write the per-neuron backward pass as a Python loop and identify where it becomes a matrix multiplication.
+> - Predict the gradient of any weight or bias from the input vector, the upstream gradient, and the neuron's ReLU gate.
 
-![Three neurons sharing four inputs, all back-propagating from the same upstream gradient. Each weight's gradient is the upstream value multiplied by the corresponding input.](diagrams/01-layer-backprop.svg)
-*One upstream gradient, three local ReLU gates, twelve weight gradients. The pattern from Part 12, run three times in parallel.*
+![Four inputs 1, 2, 3 and 4 feed three neurons with weighted sums 3.1, 7.2 and 11.3, which are added to 21.6 and squared to a loss of 466.56. The value 43.2 flows back to all three neurons, and a table shows three identical rows of weight gradients: 43.2, 86.4, 129.6 and 172.8.](diagrams/01-layer-backprop.svg)
+
+*One upstream value, three ReLU gates, twelve weight gradients: every column of the table is the upstream value times one input.*
 
 ---
 
-## 1. From one neuron to a layer
+## 1. The question: does the recipe change when neurons share inputs?
 
-Part 12 derived the backward pass for a single neuron: four chain-rule factors, one upstream gradient, one input-vector multiplication. The result was four numbers (three weight gradients, one bias gradient) that the optimiser used to update the parameters.
+[Post 12](../12-backprop-through-a-single-neuron/index.md) derived the backward pass for a single neuron: a product of chain-rule factors from the loss, through the ReLU, to one weight. Each of its three weight gradients was the upstream gradient times the input attached to that weight.
 
-This post takes the next step. The architecture has **three neurons** sharing the same four-dimensional input. Each neuron has its own four weights and its own bias, for a total of 15 learnable parameters. The number of partial derivatives therefore grows from 4 in Part 12 (3 weights + 1 bias) to 15 here (12 weights + 3 biases), but the structure is identical. Their outputs are summed and squared to produce a scalar loss.
+A layer is several neurons reading the same inputs, and the question of this post is whether that sharing changes anything. The layer used here has **three neurons** over the same four inputs, each with its own four weights and its own bias, for 15 learnable parameters against the 4 of post 12. The three outputs are added, and the sum is squared to give a scalar loss.
 
-Nothing new in the math is introduced. The single-neuron chain rule runs once per neuron, gets the same upstream signal from the loss, and produces the same "upstream × input" pattern for every weight. The point of the post is to make that **same-pattern-times-three** structure explicit, then formalise it as a matrix product in Part 14.
+The recipe does not change. The single-neuron chain rule runs once per neuron, and every run starts from the same number computed at the loss. The post writes that **same pattern, three times** as a loop and shows the line of code in which the loop becomes the matrix product of post 14.
 
 ---
 
@@ -26,145 +31,233 @@ Nothing new in the math is introduced. The single-neuron chain rule runs once pe
 
 | Component | Detail |
 |---|---|
-| Inputs | $X_1 = 1,\ X_2 = 2,\ X_3 = 3,\ X_4 = 4$ |
+| Inputs | $x_1 = 1,\ x_2 = 2,\ x_3 = 3,\ x_4 = 4$ |
 | Neurons | 3, each with 4 weights and 1 bias |
-| Activations | ReLU on each neuron output |
-| Layer output | $Y = A_1 + A_2 + A_3$ |
-| Loss | $L = Y^2$ (target = 0) |
-| Parameters | $3 \times 4 = 12$ weights + 3 biases = **15** |
+| Activations | ReLU on each neuron's weighted sum |
+| Layer sum | $\hat{y} = a_1 + a_2 + a_3$ |
+| Loss | $L = \hat{y}^2$ (target 0) |
 
-Symbolic forward pass for neuron $k$ (where $k = 1, 2, 3$ and $j = 1, 2, 3, 4$):
+The forward pass for neuron $k$, with $k = 1, 2, 3$ counting neurons and $j = 1, 2, 3, 4$ counting inputs, is
 
-$$Z_k = \sum_{j=1}^{4} W_{kj} X_j + b_k, \qquad A_k = \text{ReLU}(Z_k).$$
+$$z_k = \sum_{j=1}^{4} w_{kj} x_j + b_k, \qquad a_k = \text{ReLU}(z_k) = \max(0, z_k).$$
 
-Layer output and loss:
+The layer sum and the loss are
 
-$$Y = A_1 + A_2 + A_3, \qquad L = Y^2.$$
+$$\hat{y} = a_1 + a_2 + a_3, \qquad L = (\hat{y} - y)^2 = \hat{y}^2 \quad \text{with target } y = 0.$$
 
-The squared-error loss with a target of zero is the same simplification used in Part 12. It keeps the backward pass clean while preserving every interesting derivative.
+The target of zero is the simplification post 12 used, and $\hat{y}$ is, as there, the single number that feeds the loss: there one neuron's output, here the sum of three.
+
+Three conventions need stating before any numbers appear.
+
+- **Indices.** The weight $w_{kj}$ connects input $j$ to neuron $k$: neuron first, input second. The maths counts from 1 and the code from 0, so $w_{kj}$ is `weights[k-1][j-1]`; post 12 counted from 0 in both.
+- **Weight layout.** The weights are stored one row per neuron, shape $(n_\text{neurons}, n_\text{inputs}) = (3, 4)$, the layout of posts 01 to 03. The `Layer_Dense` class of [post 04](../04-dense-layer-class-and-spiral-data/index.md) stores the transpose, and post 14 reconciles the two.
+- **Code names.** The code calls the pre-activations `Z`, the activations `A`, the layer sum `Y`, and the loss `L`, and names a gradient by its fraction: `dL_dY` is $\partial L / \partial \hat{y}$ and `dL_dW` is the table of all $\partial L / \partial w_{kj}$.
 
 ---
 
 ## 3. The chain rule for one weight
 
-To compute $\partial L / \partial W_{11}$ (the first weight of the first neuron), the chain rule unfolds the same way as in Part 12, with one extra step for the layer-output sum:
+Take $w_{11}$, the first weight of the first neuron. Changing it changes $z_1$, then $a_1$, then $\hat{y}$, then $L$, and nothing else: $w_{11}$ does not appear in $z_2$ or $z_3$. There is exactly one path from $w_{11}$ to the loss, and the chain rule of post 11 multiplies the local derivatives along it:
 
-$$\frac{\partial L}{\partial W_{11}} = \underbrace{\frac{\partial L}{\partial Y}}_{2Y} \cdot \underbrace{\frac{\partial Y}{\partial A_1}}_{1} \cdot \underbrace{\frac{\partial A_1}{\partial Z_1}}_{\text{ReLU}'(Z_1)} \cdot \underbrace{\frac{\partial Z_1}{\partial W_{11}}}_{X_1}.$$
+$$\frac{\partial L}{\partial w_{11}} = \underbrace{\frac{\partial L}{\partial \hat{y}}}_{2\hat{y}} \cdot \underbrace{\frac{\partial \hat{y}}{\partial a_1}}_{1} \cdot \underbrace{\frac{\partial a_1}{\partial z_1}}_{\mathbb{1}[z_1 > 0]} \cdot \underbrace{\frac{\partial z_1}{\partial w_{11}}}_{x_1}.$$
 
-The four factors and their meanings:
+The four factors:
 
-- $\partial L / \partial Y = 2Y$: derivative of the squared-error loss.
-- $\partial Y / \partial A_1 = 1$: derivative of a sum with respect to one of its addends.
-- $\partial A_1 / \partial Z_1 = \mathbb{1}[Z_1 > 0]$: the ReLU derivative gate.
-- $\partial Z_1 / \partial W_{11} = X_1$: the local derivative of the multiplication node.
-
-Two of these factors (the squared-error and the sum derivatives) are shared by every weight in the layer. One factor (the ReLU gate) is shared across the four weights of the *same* neuron. Only the last factor (the input) changes between weights within the same neuron. Reading this list bottom-up gives the algorithm.
+- $\partial L / \partial \hat{y} = 2\hat{y}$: the derivative of the squared-error loss, by the power rule.
+- $\partial \hat{y} / \partial a_1 = 1$: the derivative of a sum with respect to one of its terms. This factor is new; a single neuron has no layer sum.
+- $\partial a_1 / \partial z_1 = \mathbb{1}[z_1 > 0]$: the ReLU derivative, 1 when $z_1$ is positive and 0 otherwise. It acts as a gate that either passes the gradient or blocks it.
+- $\partial z_1 / \partial w_{11} = x_1$: in the weighted sum, $w_{11}$ multiplies $x_1$ and every other term is a constant. Post 12 wrote this step as two factors, 1 for the sum and $x$ for the product.
 
 ### 3.1. Generalising to every weight in the layer
 
-For neuron $k$, weight index $j$:
+Nothing in the argument depended on the indices being 1 and 1. For neuron $k$ and input $j$:
 
-$$\frac{\partial L}{\partial W_{kj}} = 2Y \cdot 1 \cdot \mathbb{1}[Z_k > 0] \cdot X_j.$$
+$$\frac{\partial L}{\partial w_{kj}} = 2\hat{y} \cdot 1 \cdot \mathbb{1}[z_k > 0] \cdot x_j.$$
 
-Three things to read off:
+Three things can be read off the formula, and read in this order they are already the algorithm.
 
-- **The same upstream gradient $2Y$ appears once per weight.** Computing it once at the loss is enough.
-- **The ReLU gate depends only on the neuron index $k$, not on $j$.** All four weights of neuron $k$ share the same gate.
-- **Only $X_j$ varies across the weights of a single neuron.** The input vector is the per-weight scaling factor.
+- **The upstream gradient $2\hat{y}$ is the same number in all twelve weight gradients.** Computing it once at the loss is enough. "Upstream" names the part of the product that arrives from the loss side at the point being discussed. Post 12 used the word for $\partial L / \partial z$, the gradient that arrives at the weights with the ReLU factor already in it; this post uses it for $2\hat{y}$, the gradient that arrives at the three ReLUs, and gives $\partial L / \partial z_k$ its own name below.
+- **The ReLU gate depends only on the neuron index $k$, not on $j$.** The four weights of neuron $k$, and its bias, share one gate.
+- **Only $x_j$ varies across the weights of a single neuron.** The input vector is the per-weight scaling factor.
 
-For the bias of neuron $k$:
+The first three factors do not involve $j$, so their product is given a name of its own. It is the derivative of the loss with respect to the neuron's pre-activation:
 
-$$\frac{\partial L}{\partial b_k} = 2Y \cdot 1 \cdot \mathbb{1}[Z_k > 0] \cdot 1.$$
+$$\frac{\partial L}{\partial z_k} = 2\hat{y} \cdot 1 \cdot \mathbb{1}[z_k > 0], \qquad \frac{\partial L}{\partial w_{kj}} = \frac{\partial L}{\partial z_k} \cdot x_j.$$
 
-The bias's "input" is the constant $1$, so its gradient is just the upstream-times-ReLU-gate product.
+The code stores the three of them as `dL_dZ`. For the bias of neuron $k$ the last factor is $\partial z_k / \partial b_k = 1$, because the bias is added without a multiplier:
+
+$$\frac{\partial L}{\partial b_k} = \frac{\partial L}{\partial z_k} \cdot 1 = 2\hat{y} \cdot \mathbb{1}[z_k > 0].$$
+
+The bias behaves like a weight whose input is the constant 1. All fifteen gradients are now written down, and only one chain was derived.
 
 ---
 
 ## 4. The forward pass, with numbers
 
+The layer's inputs, weights, and biases, and the forward pass written one neuron at a time in plain Python:
+
 ```python
-import numpy as np
+inputs = [1.0, 2.0, 3.0, 4.0]
 
-inputs  = np.array([1, 2, 3, 4])
+weights = [[0.1, 0.2, 0.3, 0.4],     # neuron 1
+           [0.5, 0.6, 0.7, 0.8],     # neuron 2
+           [0.9, 1.0, 1.1, 1.2]]     # neuron 3
 
-weights = np.array([[0.1, 0.2, 0.3, 0.4],     # Neuron 1
-                    [0.5, 0.6, 0.7, 0.8],     # Neuron 2
-                    [0.9, 1.0, 1.1, 1.2]])    # Neuron 3
+biases = [0.1, 0.2, 0.3]
 
-biases  = np.array([0.1, 0.2, 0.3])
 
-Z = weights @ inputs + biases       # [3.1, 7.2, 11.3]
-A = np.maximum(0, Z)                # [3.1, 7.2, 11.3]  (all > 0)
-Y = np.sum(A)                       # 21.6
-L = Y ** 2                          # 466.56
+def forward(weights, biases, inputs):
+    """Weighted sum and ReLU for each neuron, then the layer sum Y and the loss L = Y ** 2."""
+    Z = []
+    for k in range(len(weights)):                # one neuron at a time
+        z = biases[k]
+        for j in range(len(inputs)):
+            z += weights[k][j] * inputs[j]
+        Z.append(z)
+    A = [max(0.0, z) for z in Z]
+    Y = sum(A)
+    L = Y ** 2
+    return Z, A, Y, L
 ```
 
-| Quantity | Value |
-|---|---|
-| $Z_1, Z_2, Z_3$ | $3.1,\ 7.2,\ 11.3$ |
-| $A_1, A_2, A_3$ | $3.1,\ 7.2,\ 11.3$ (every $Z_k > 0$, so ReLU is the identity here) |
-| $Y$ | $21.6$ |
-| $L$ | $\mathbf{466.56}$ |
+By hand, for the first neuron,
 
-Every $Z_k$ is positive, so every ReLU gate is $1$. The backward pass simplifies dramatically.
+$$z_1 = (0.1)(1) + (0.2)(2) + (0.3)(3) + (0.4)(4) + 0.1 = 0.1 + 0.4 + 0.9 + 1.6 + 0.1 = 3.1,$$
+
+and in the same way $z_2 = 7.2$ and $z_3 = 11.3$. All three are positive, so ReLU passes each one unchanged, $\hat{y} = 3.1 + 7.2 + 11.3 = 21.6$, and $L = 21.6^2 = \mathbf{466.56}$.
+
+Every ReLU gate is 1. That is a property of these particular numbers: section 5.3 closes a gate on purpose, and section 8.1 shows two of them closing during training.
 
 ---
 
 ## 5. The backward pass
 
-With every gate equal to $1$, the formula collapses to:
+With every gate equal to 1, the formula of section 3.1 collapses to
 
-$$\frac{\partial L}{\partial W_{kj}} = 2Y \cdot X_j = 43.2 \cdot X_j.$$
+$$\frac{\partial L}{\partial w_{kj}} = 2\hat{y} \cdot x_j = 43.2 \cdot x_j.$$
 
-The upstream gradient is $2Y = 43.2$, shared by all twelve weights and all three biases.
+The upstream gradient is $2\hat{y} = 2 \times 21.6 = 43.2$, shared by all twelve weights and all three biases, and $\partial L / \partial z_k = 43.2$ for each of the three neurons.
 
-| Weight | $X_j$ | Gradient |
+| Weights | $x_j$ | Gradient |
 |---|:---:|---:|
-| $W_{11}, W_{21}, W_{31}$ | $X_1 = 1$ | $43.2$ |
-| $W_{12}, W_{22}, W_{32}$ | $X_2 = 2$ | $86.4$ |
-| $W_{13}, W_{23}, W_{33}$ | $X_3 = 3$ | $129.6$ |
-| $W_{14}, W_{24}, W_{34}$ | $X_4 = 4$ | $172.8$ |
+| $w_{11}, w_{21}, w_{31}$ | $x_1 = 1$ | $43.2$ |
+| $w_{12}, w_{22}, w_{32}$ | $x_2 = 2$ | $86.4$ |
+| $w_{13}, w_{23}, w_{33}$ | $x_3 = 3$ | $129.6$ |
+| $w_{14}, w_{24}, w_{34}$ | $x_4 = 4$ | $172.8$ |
 
-And the biases:
+Each of the three bias gradients is $2\hat{y} \cdot 1 = 43.2$.
 
-$$\frac{\partial L}{\partial b_k} = 2Y \cdot 1 = 43.2 \qquad \text{for } k = 1, 2, 3.$$
+Two observations explain the structure of the table. **Every weight that multiplies the same input has the same gradient**, because here the rest of the chain is identical for the three neurons; it holds only while all the gates agree. **The gradient grows in proportion to the input**, which is why $x_4 = 4$ produces the largest gradient and $x_1 = 1$ the smallest. With inputs on very different scales, the weights attached to them receive gradients of very different sizes and learn at different rates; LeCun et al. (1998) recommend bringing the input features to a common scale so that those rates are balanced.
 
-Two observations explain the structure. **The gradient for every weight that multiplies the same input is identical** (because the rest of the chain is shared); this is why all weights in the column $j$ get the same gradient. **The gradient grows linearly with the input magnitude**, which is why $X_4 = 4$ produces the largest gradient and $X_1 = 1$ the smallest. Both observations carry over to the matrix form in Part 14.
+### 5.1. The backward pass as a loop
+
+The formula of section 3.1 is a loop over neurons with a loop over inputs inside it. The function below takes the pre-activations and the layer sum from the forward pass and returns all fifteen gradients:
+
+```python
+def backward(Z, Y, inputs):
+    """The single-neuron recipe of post 12, run once per neuron with a shared upstream value."""
+    dL_dY = 2 * Y                                # computed once, at the loss
+    dL_dZ = []
+    dL_dW = []
+    dL_db = []
+    for k in range(len(Z)):                      # one neuron at a time
+        gate = 1.0 if Z[k] > 0 else 0.0          # this neuron's own ReLU gate
+        dL_dZ_k = dL_dY * 1.0 * gate             # loss factor, sum factor, gate
+        dL_dZ.append(dL_dZ_k)
+        dL_dW.append([dL_dZ_k * x for x in inputs])   # one gradient per weight: times its input
+        dL_db.append(dL_dZ_k)                    # the bias multiplies a constant 1
+    return dL_dZ, dL_dW, dL_db
+```
+
+`dL_dY` sits outside the loop because it is the same for every neuron, `gate` sits inside it because there is one per neuron, and the list comprehension is the inner loop over inputs. The loop needs `Z` and `inputs`, which is why a backward pass always follows a forward pass on the same data.
+
+Run on the layer of section 4, `snippets/layer_backward.py` prints the table above, row by row:
+
+```text
+== Sections 4 and 5: forward pass, then the fifteen gradients from the loop
+Z = [   3.1    7.2   11.3]   A = [   3.1    7.2   11.3]   Y = 21.6   L = 466.56
+upstream dL/dY = 2Y = 43.2   gates = [1, 1, 1]   dL/dZ = [  43.2   43.2   43.2]
+neuron 1   dL/dW = [  43.2   86.4  129.6  172.8]   dL/db =  43.2
+neuron 2   dL/dW = [  43.2   86.4  129.6  172.8]   dL/db =  43.2
+neuron 3   dL/dW = [  43.2   86.4  129.6  172.8]   dL/db =  43.2
+largest gap to a central difference (h = 1e-5) over 15 parameters: 6.4e-09
+```
+
+### 5.2. Checking all fifteen against a central difference
+
+A derivation and a loop that agree could still share a mistake, so the script also measures each gradient with the central difference of post 10, moving one parameter at a time by $\pm h$ with $h = 10^{-5}$. The last line of the output reports the result: the largest difference over the fifteen parameters is $6.4 \times 10^{-9}$, on gradients between 43.2 and 172.8, which is rounding error.
+
+### 5.3. A neuron whose gate is closed
+
+All three gates were open above, which hides the one factor that distinguishes neurons. The script therefore negates the four weights of neuron 2, so that $z_2 = -0.5 - 1.2 - 2.1 - 3.2 + 0.2 = -6.8$, and changes nothing else:
+
+```text
+== Section 5.3: neuron 2 switched off (its four weights negated)
+Z = [   3.1   -6.8   11.3]   A = [   3.1    0.0   11.3]   Y = 14.4   L = 207.36
+upstream dL/dY = 2Y = 28.8   gates = [1, 0, 1]   dL/dZ = [  28.8    0.0   28.8]
+neuron 1   dL/dW = [  28.8   57.6   86.4  115.2]   dL/db =  28.8
+neuron 2   dL/dW = [   0.0    0.0    0.0    0.0]   dL/db =   0.0
+neuron 3   dL/dW = [  28.8   57.6   86.4  115.2]   dL/db =  28.8
+largest gap to a central difference (h = 1e-5) over 15 parameters: 2.1e-09
+```
+
+Two things changed, and they are different in kind.
+
+- **Neuron 2's five gradients are all zero.** Its gate is 0, and the gate multiplies every one of them. A small change to any of its weights leaves $a_2$ at zero, so the neuron receives no update from this sample.
+- **Neurons 1 and 3 have smaller gradients, 28.8 per unit of input instead of 43.2**, although nothing about them was touched. What changed is the upstream value: $\hat{y}$ fell from 21.6 to $3.1 + 0 + 11.3 = 14.4$, so $2\hat{y}$ fell to 28.8. The neurons are coupled through the sum that feeds the loss: no neuron's gradient contains another's weights or gate, but all contain $2\hat{y}$, which is built from all three activations. The bias gradients are now 28.8, 0, and 28.8.
+
+Predicting any gradient in the layer therefore takes three questions: what is the upstream value $2\hat{y}$, is this neuron's $z_k$ positive, and which input does this weight multiply (1 for a bias)?
 
 ---
 
 ## 6. One gradient-descent step
 
-With $\alpha = 0.001$:
+The update rule of post 09 subtracts $\alpha$ times its gradient from each of the fifteen parameters at once, with learning rate $\alpha = 0.001$. The script prints neuron 1 after the step and the forward pass that follows:
 
-$$\mathbf{W}_{\text{new}} = \mathbf{W}_{\text{old}} - \alpha \cdot \frac{\partial L}{\partial \mathbf{W}}.$$
+```text
+== Section 6: one gradient-descent step with learning rate 0.001
+neuron 1 weights after the step: [0.0568 0.1136 0.1704 0.2272]   bias 0.0568
+Z before = [   3.1    7.2   11.3]   Z after = [1.7608 5.8608 9.9608]
+Y  21.6000 -> 17.5824
+L  466.5600 -> 309.1408   ratio 0.6626
+```
 
-After applying the rule to all 15 parameters once:
+The loss drops by about one third, and the size of the drop can be predicted. Substituting the update into the weighted sum, as post 12 did for one neuron, shows that every open neuron's pre-activation falls by the same amount, $2\alpha\hat{y}\,(\sum_j x_j^2 + 1) = 2\alpha\hat{y} \cdot 31$, which is $1.3392$ here. With $m$ gates open, and as long as none of them closes during the step, the layer sum falls by $m$ such amounts:
 
-| Metric | Before | After |
-|---|---:|---:|
-| $Y$ | $21.6$ | $17.58$ |
-| $L$ | $466.56$ | $\mathbf{309.14}$ |
+$$\hat{y}^{\text{new}} = \hat{y}\,\bigl(1 - 2\alpha m \cdot 31\bigr) = \hat{y}\,(1 - 0.062\,m).$$
 
-The loss drops by roughly one-third in a single step. The learning rate is intentionally small; a bigger step would oscillate over the target.
+With $m = 3$ the factor is $0.814$, so $\hat{y}$ goes from 21.6 to $17.5824$ and the loss is multiplied by $0.814^2 = 0.6626$. Because all open neurons move down by equal amounts, the one with the smallest pre-activation will be the first to reach zero.
 
 ---
 
-## 7. The full implementation
+## 7. What this post adds beyond post 12
+
+| Property | Post 12 (one neuron) | Post 13 (one layer) |
+|---|:---:|:---:|
+| Pre-activation | scalar `z` | vector `Z`, shape `(3,)` |
+| Loss derivative | scalar $2\hat{y}$, with $\hat{y}$ the neuron's output | scalar $2\hat{y}$, with $\hat{y}$ the layer sum, shared |
+| Activation derivative | one gate | vector of gates, one per neuron |
+| Weight gradient | upstream scalar times the input vector | every entry of `dL_dZ` times every input (section 8.2) |
+| Bias gradient | scalar | vector, equal to `dL_dZ` |
+
+The recipe is unchanged and each quantity gains one dimension. Still missing are the batch of samples (post 14), the gradient with respect to the inputs, which reach the loss by three paths and not one (post 15), and the class that stores what the backward pass needs (post 16).
+
+---
+
+## 8. Make it run: the loop, 200 times
+
+Three scripts under `snippets/` produce every number in this post. Each runs from the series root in under a second, needs only NumPy, and uses no random numbers:
+
+- `python posts/13-backprop-through-a-layer/snippets/layer_backward.py` runs sections 4, 5, 6, and 8.2.
+- `python posts/13-backprop-through-a-layer/snippets/training_loop.py` runs section 8.1.
+- `python posts/13-backprop-through-a-layer/snippets/what_can_go_wrong.py` runs section 9.
+
+### 8.1. The training loop
+
+The training script holds the same layer as NumPy arrays, defines `relu` and `relu_deriv`, and repeats forward pass, backward pass, and update 200 times. Array operations replace the loops of section 5.1: `weights @ inputs` is the three weighted sums at once, and `dL_dZ` is a length-3 array.
 
 ```python
-import numpy as np
-
-inputs  = np.array([1, 2, 3, 4], dtype=float)
-weights = np.array([[0.1, 0.2, 0.3, 0.4],
-                    [0.5, 0.6, 0.7, 0.8],
-                    [0.9, 1.0, 1.1, 1.2]])
-biases  = np.array([0.1, 0.2, 0.3])
-lr      = 0.001
-
-def relu(x):        return np.maximum(0, x)
-def relu_deriv(x):  return np.where(x > 0, 1.0, 0.0)
-
+previous_gates = None
 for i in range(200):
     # Forward.
     Z = weights @ inputs + biases
@@ -172,130 +265,161 @@ for i in range(200):
     Y = np.sum(A)
     L = Y ** 2
 
-    # Backward: one upstream value, broadcast across all neurons.
-    dL_dY  = 2 * Y                              # scalar
-    dY_dA  = np.ones_like(A)                    # all 1s
-    dA_dZ  = relu_deriv(Z)                      # gate per neuron
-    dL_dZ  = dL_dY * dY_dA * dA_dZ              # per-neuron upstream
+    # Backward: one upstream value, shared by all three neurons.
+    dL_dY = 2 * Y                               # scalar
+    dY_dA = np.ones_like(A)                     # all 1s
+    dA_dZ = relu_deriv(Z)                       # one gate per neuron
+    dL_dZ = dL_dY * dY_dA * dA_dZ               # shape (3,)
 
-    # Per-neuron, per-input gradient: outer product.
-    dL_dW  = dL_dZ.reshape(-1, 1) * inputs      # shape (3, 4)
-    dL_dB  = dL_dZ                              # shape (3,)
+    # One gradient per weight: every dL_dZ entry times every input.
+    dL_dW = dL_dZ.reshape(-1, 1) * inputs       # shape (3, 4)
+    dL_db = dL_dZ                               # shape (3,)
 
-    # Update.
+    gates = dA_dZ.astype(int).tolist()
+    if i % 40 == 0 or i == 199 or gates != previous_gates:
+        print(f"iter {i:3d}  loss = {L:.6f}  Y = {Y:.6f}  gates = {gates}")
+    previous_gates = gates
+
+    # Update, only after every gradient has been computed.
     weights -= lr * dL_dW
-    biases  -= lr * dL_dB
-
-    if i % 20 == 0 or i == 199:
-        print(f"iter {i:3d}  loss = {L:.6f}")
+    biases -= lr * dL_db
 ```
 
-**Output (selected iterations):**
+It prints a line every 40 iterations and at every iteration where a gate changes:
 
+```text
+iter   0  loss = 466.560000  Y = 21.600000  gates = [1, 1, 1]
+iter   3  loss = 140.818219  Y = 11.866685  gates = [0, 1, 1]
+iter  12  loss = 14.840513  Y = 3.852339  gates = [0, 0, 1]
+iter  40  loss = 0.411915  Y = 0.641806  gates = [0, 0, 1]
+iter  80  loss = 0.002461  Y = 0.049604  gates = [0, 0, 1]
+iter 120  loss = 0.000015  Y = 0.003834  gates = [0, 0, 1]
+iter 160  loss = 0.000000  Y = 0.000296  gates = [0, 0, 1]
+iter 199  loss = 0.000000  Y = 0.000024  gates = [0, 0, 1]
+
+loss at iteration 199, in full: 5.961e-10
+final Z      : [-0.216657 -0.247661  0.000023]
 ```
-iter   0  loss = 466.560000
-iter  20  loss = 5.329596
-iter  40  loss = 0.411915
-iter  60  loss = 0.031836
-iter  80  loss = 0.002461
-iter 100  loss = 0.000190
-iter 199  loss = 0.000000
-```
 
-The loss converges to effectively zero. The network has learned a set of weights for which the three neurons' ReLU'd outputs sum to zero, which is the target. Because the updates only shrink the positive pre-activations toward zero, every $Z_k$ stays positive for the whole run, so all three ReLU gates remain $1$ throughout training and the per-neuron story above never changes. The geometry is uninteresting (with a target of zero and a single sample, many parameter configurations satisfy it); the mechanics of the backward pass are what this post is about.
+The loss falls from 466.56 to $5.96 \times 10^{-10}$, but the gates do not stay open. All three pre-activations fall by equal amounts, as section 6 predicted, and the smallest runs out first: at iteration 3 $z_1$ is $-0.2167$ and neuron 1's gate is closed. Neurons 2 and 3 carry on falling together until, at iteration 12, $z_2$ is $-0.2477$ and neuron 2's gate closes as well. From then on only neuron 3 learns. With $m = 1$ the formula of section 6 gives $\hat{y}^{\text{new}} = 0.938\,\hat{y}$, so $z_3 = \hat{y}$ shrinks towards zero and stays positive, and the loss approaches zero without reaching it.
 
-### 7.1. Where the matrix product is hiding
+Neurons 1 and 2 never reopen, because a closed gate passes no gradient to the weights that could move them: on this single input they are **dead neurons** in the sense of post 06. That outcome belongs to this example, with one input and one target. With many samples a neuron closed for one of them usually still receives gradient from others; what carries over is that the gates are recomputed at every forward pass, and a closed gate removes its neuron's parameters from that update.
 
-The line that computes `dL_dW` is the structural heart of the post:
+### 8.2. Where the matrix product is hiding
+
+The line that computes `dL_dW` is the structural centre of the post:
 
 ```python
-dL_dW = dL_dZ.reshape(-1, 1) * inputs    # shape (3, 4)
+dL_dW = dL_dZ.reshape(-1, 1) * inputs       # shape (3, 4)
 ```
 
-![A column of upstream gradients times a row of inputs, filling a 3-by-4 matrix, with one cell traced back to the pair that produced it.](diagrams/02-outer-product.svg)
-*Every cell of the weight-gradient matrix is one upstream value times one input. That is what the reshape and the broadcast are for.*
+![A column of three upstream gradients, each 43.2, times a row of the inputs 1, 2, 3 and 4 gives a 3 by 4 matrix whose rows each read 43.2, 86.4, 129.6 and 172.8. One cell, 172.8, is traced back to the 43.2 and the 4 that produce it.](diagrams/02-outer-product.svg)
 
-The reshape turns `dL_dZ` (shape `(3,)`) into a column vector of shape `(3, 1)`. NumPy broadcasts that column against the input row `(4,)` to produce a `(3, 4)` matrix of per-weight gradients. This is exactly the **outer product** of `dL_dZ` and `inputs`. Part 14 generalises it to a single `np.dot` call that works for an entire batch at once.
+*Every cell of the weight-gradient matrix is one entry of `dL_dZ` times one input.*
 
----
+`dL_dZ` has shape `(3,)`. The reshape turns it into a column of shape `(3, 1)`, and NumPy broadcasts that column against the input vector of shape `(4,)` by the rule of post 05, producing a `(3, 4)` array whose entry in row $k$ and column $j$ is $\partial L / \partial z_k$ times $x_j$. That is the double loop of section 5.1 with both loops removed.
 
-## 8. What this post adds beyond Part 12
+This table of all pairwise products of two vectors is called their **outer product**. A column times a row is also an ordinary matrix product, $(3, 1) \cdot (1, 4) \rightarrow (3, 4)$ by the shape rule of post 02, and that is where the matrix multiplication of the backward pass comes from. The script confirms that the broadcast, `np.outer(dL_dZ, inputs)`, and the `(3, 1)` by `(1, 4)` product written with `@` all give the same array as the loop:
 
-A short comparison, to make the scaling explicit.
+```text
+== Section 8.2: the loop against its one-line NumPy forms
+shape of the broadcast result: (3, 4)
+loop equals broadcast: True
+broadcast equals np.outer: True
+broadcast equals the matrix product: True
+```
 
-| Property | Part 12 (one neuron) | Part 13 (one layer) |
-|---|:---:|:---:|
-| Parameters | 4 | 15 |
-| Forward shape | scalar `z` | vector `Z`, shape `(3,)` |
-| Loss derivative | scalar $2 \hat{y}$ | scalar $2Y$ (shared) |
-| Activation derivative | scalar | vector, one gate per neuron |
-| Weight gradient | vector × input | outer product of `dL_dZ` and `inputs` |
-| Bias gradient | scalar | vector, equals `dL_dZ` |
-
-The structural recipe is unchanged. The shape of each quantity grows by one dimension. The loss-derivative row renames the same quantity: $\hat{y}$ was Part 12's single-neuron output, and $Y$ is this layer's summed output, so $2\hat{y}$ and $2Y$ are the identical loss derivative applied to whichever scalar feeds the loss.
+A gradient always has the shape of the parameter it belongs to, here `(3, 4)`, so that the update subtracts element from matching element. Post 14 extends the product from one input vector to a whole batch and, in its section 8, rewrites it for the $(n_\text{inputs}, n_\text{neurons})$ layout of `Layer_Dense`.
 
 ---
 
-## 9. What this version is *not*
+## 9. What can go wrong?
 
-- **It is not the batched form.** This post uses a single input vector. Real training uses a batch of `N` samples; the batched form is in Part 14 and gets coded into the class in Part 16.
-- **It is not the gradient with respect to the inputs.** Backprop through a deeper network needs $\partial L / \partial \mathbf{X}$ at every layer; Part 15 derives it.
-- **It does not store intermediate values in a class.** The forward pass here recomputes everything on the fly. The `Layer_Dense.backward` method in Part 16 stores `self.inputs` so the backward call can use them without recomputing.
-- **It does not handle multiple loss functions.** A squared-error layer-output loss is enough to demonstrate the mechanics; the cross-entropy backward is derived separately in Part 18.
+`snippets/what_can_go_wrong.py` reproduces three mistakes on the layer of section 4.
+
+**A learning rate that closes every gate.** With $\alpha = 0.01$ one step lowers each pre-activation by $2\alpha\hat{y} \cdot 31 = 13.392$, more than the largest of them:
+
+```text
+== 1. A learning rate of 0.01 instead of 0.001
+iter 0  Z = [ 3.1  7.2 11.3]  loss = 466.56  largest |gradient| = 172.8
+iter 1  Z = [-10.292  -6.192  -2.092]  loss = 0.00  largest |gradient| = 0.0
+iter 2  Z = [-10.292  -6.192  -2.092]  loss = 0.00  largest |gradient| = 0.0
+```
+
+After one update every gate is closed and every gradient is exactly zero. The loss reads 0.00 only because the target is zero: the layer would output 0 for this input whatever the target was, and no further step can change that. The loss does not oscillate around the target; the ReLU clips the overshoot and the layer stops.
+
+**Reshaping the wrong array.** Leaving out the reshape, or reshaping `inputs` instead of `dL_dZ`, fails in different ways:
+
+```text
+== 2. The reshape, done wrong
+dL_dZ * inputs               -> operands could not be broadcast together with shapes (3,) (4,)
+inputs.reshape(-1, 1) * dL_dZ -> shape (4, 3)  equal to the transpose of the right answer: True
+weights - lr * flipped        -> operands could not be broadcast together with shapes (3,4) (4,3)
+a square layer, 3 inputs and 3 neurons, raises nothing:
+right, dL_dZ.reshape(-1, 1) * inputs:
+[[10. 20. 30.]
+ [ 0.  0.  0.]
+ [30. 60. 90.]]
+wrong, inputs.reshape(-1, 1) * dL_dZ:
+[[10.  0. 30.]
+ [20.  0. 60.]
+ [30.  0. 90.]]
+```
+
+With 4 inputs and 3 neurons NumPy refuses both mistakes, the second only at the update. With as many inputs as neurons nothing is raised: the flipped product has the right shape and the wrong contents, a zero *column* where the closed gate of neuron 2 should give a zero *row*. A gradient check as in section 5.2 catches this where a shape check cannot.
+
+**One gate for the whole layer.** Taking the ReLU derivative as a single number, for instance from the sign of the layer sum, gives a switched-off neuron the gradients of an open one:
+
+```text
+== 3. One gate for the whole layer (neuron 2 switched off)
+Z = [ 3.1 -6.8 11.3]
+neuron 2 row with one gate per neuron : [0. 0. 0. 0.]
+neuron 2 row with one gate for all    : [ 28.8  57.6  86.4 115.2]
+neuron 2 row by central difference    : [0. 0. 0. 0.]
+largest gap, one gate per neuron: 2.1e-09
+largest gap, one gate for all   : 115.2
+```
+
+The mistake is invisible while all three gates are 1, and in the training loop of section 8.1 that stops being true at iteration 3.
 
 ---
 
-## 10. Anticipated questions
-
-- **Why are all three biases' gradients equal in this example?** Because the ReLU gates are all $1$ and `dY/dA` is also $1$ for every neuron. With different inputs (some negative, some positive) the ReLU gates would differ, and the bias gradients would differ accordingly.
-- **What changes if a neuron's $Z_k$ is negative?** That neuron's gate becomes $0$. All four of its weight gradients and its bias gradient drop to zero. The neuron does not learn from this sample.
-- **Why is `dL_dW` shape `(3, 4)` and not `(4, 3)`?** Because this post stores `weights` as `(n_neurons, n_inputs)` = `(3, 4)`, matching Part 12's per-neuron layout, so the gradient comes out the same shape. From [Part 04](../04-dense-layer-class-and-spiral-data/index.md) onward the production class uses the transposed convention `(n_inputs, n_neurons)`, where the weight gradient is `(4, 3)` instead. Either works, as long as the gradient's shape mirrors the weight's; Part 14 walks through both.
-- **Why does the loss converge to zero on this example but not on the spiral dataset?** Because there is only one input vector and one scalar target. A network with 15 parameters can fit one sample exactly with many possible weight configurations. The spiral dataset has 300 samples that pull in different directions; the loss settles at a non-zero minimum.
-
----
-
-## 11. Summary
+## 10. Summary
 
 | Concept | Takeaway |
 |---|---|
-| Same chain rule, more neurons | Backprop through a layer is Part 12's recipe applied once per neuron |
-| Upstream sharing | $\partial L / \partial Y$ is one scalar reused across all 15 parameters |
-| Per-neuron gate | The ReLU derivative is one scalar per neuron, shared across its four weights |
-| Per-weight scaling | The input $X_j$ is the only thing that changes between the weights of one neuron |
-| Bias gradient | Equals the per-neuron upstream (`dL_dZ`); no input factor |
-| Outer product | The per-weight gradient matrix is `dL_dZ × inputs` — a glimpse of Part 14's matrix form |
+| Same chain rule, more neurons | Backpropagation through a layer is post 12's recipe applied once per neuron |
+| Shared factors | $2\hat{y}$ for all 15 parameters, one ReLU gate per neuron, one input $x_j$ per weight |
+| Bias gradient | Equals $\partial L / \partial z_k$ (`dL_dZ`); its "input" is the constant 1 |
+| Outer product | The weight-gradient matrix is the column `dL_dZ` times the row `inputs` |
+| Check | A central difference with $h = 10^{-5}$ agrees with all fifteen gradients to $6.4 \times 10^{-9}$ |
 
 ---
 
 ## Common pitfalls
 
-- **Forgetting that each neuron has its own ReLU gate.** Treating the gates as a single scalar instead of a length-`m` vector lets the wrong neurons learn at the wrong times.
-- **Reshaping `inputs` instead of `dL_dZ`.** The outer product `dL_dZ.reshape(-1, 1) * inputs` puts the neuron axis first; flipping it transposes the gradient matrix and breaks the update.
-- **Mixing the two weight conventions in the same code.** From [Part 04](../04-dense-layer-class-and-spiral-data/index.md) onward, the standard is `weights: (n_inputs, n_neurons)`. The example here uses `(n_neurons, n_inputs)` to match Part 12's notation; the production class in Part 16 uses the new convention. Pick one in your own code and never mix them.
-- **Assuming all gates are $1$.** They are in this contrived example, where every $Z_k$ is positive at initialisation. Real networks have many neurons that fire and many that do not; the gates are a real per-neuron filter.
-- **Updating `weights` before computing `dL_dW`.** The update has to use the *current* weights' gradient, not the post-update ones. Always compute every gradient first, then update.
-- **Conflating the per-sample loss with the batch loss.** This post uses one sample. A batch averages the per-sample losses; the gradient with respect to weights also averages. Part 14 covers the batch form.
-- **Trying to read the gradient as "intuition" instead of mechanics.** The numbers come out the way they do because of the chain-rule recipe. Trying to predict them by intuition is unreliable; trust the formula.
+1. **Forgetting that each neuron has its own ReLU gate.** The gates are a vector with one entry per neuron, not a single number (section 9).
+2. **Reshaping `inputs` instead of `dL_dZ`.** That transposes the gradient matrix, which raises an error at the update for a non-square layer and silently corrupts the update for a square one.
+3. **Mixing the two weight layouts.** This post stores `weights` as $(n_\text{neurons}, n_\text{inputs})$ and `Layer_Dense` stores the transpose; a gradient must have the shape of the weights it updates.
+4. **Assuming all gates are 1.** They are in the opening example. They are not three updates later (section 8.1), and in a network on real data each sample switches some of the neurons off.
+5. **Updating `weights` before computing every gradient.** All fifteen gradients of one step come from the same forward pass. Compute them all, then update them all.
+6. **Treating the neurons as independent.** Switching one neuron off changed the gradients of the other two from 43.2 to 28.8 per unit of input, through the shared $2\hat{y}$ (section 5.3).
 
 ---
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6.5 (Back-Propagation) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 13 (2020).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, section 6.5 (Back-Propagation and Other Differentiation Algorithms) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 9 (2020).
+- LeCun, Y., Bottou, L., Orr, G. B., and Müller, K.-R., *"Efficient BackProp"*, in *Neural Networks: Tricks of the Trade* (Springer, 1998), for the advice to bring the inputs to a common scale so that the weights attached to them learn at comparable rates.
 - Nielsen, M., *Neural Networks and Deep Learning*, chapter 2 (online, 2015).
-- Rumelhart, D., Hinton, G., and Williams, R., *"Learning representations by back-propagating errors"* (Nature, 1986).
+- Rumelhart, D., Hinton, G., and Williams, R., *"Learning Representations by Back-Propagating Errors"* (Nature, 1986).
 
-Full citations in [REFERENCES.md](../../REFERENCES.md).
+Full citations are in [REFERENCES.md](../../REFERENCES.md).
 
 ---
 
 ## What to read next
 
-- **[Part 14 — Matrices in backpropagation](../14-matrices-in-backpropagation/index.md)**: turning the per-neuron loop above into a single `np.dot` call that handles a whole batch.
-- **[Part 15 — Gradients with respect to inputs](../15-gradients-with-respect-to-inputs/index.md)**: what to pass back to the previous layer when there is one.
-- **[Part 16 — Coding backpropagation](../16-coding-backpropagation/index.md)**: adding the `backward` method to `Layer_Dense`, the production version of what this post does by hand.
-
----
-
-> **Try it yourself:** Hands-on exercises and quizzes for this lecture live in [Exercises](../../exercises.md) and [Quizzes](../../quizzes.md).
+- **[Post 14 - Matrices in backpropagation](../14-matrices-in-backpropagation/index.md):** the outer product of section 8.2 written as one matrix product that handles a whole batch.
+- **[Post 16 - Coding backpropagation](../16-coding-backpropagation/index.md):** the `backward` method of `Layer_Dense`, the class version of the loop written here by hand.

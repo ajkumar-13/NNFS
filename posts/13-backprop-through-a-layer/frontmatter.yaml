@@ -1,8 +1,22 @@
 id: nn-013
 slug: 13-backprop-through-a-layer
-title: "Part 13 · Backpropagation through a layer of neurons"
+title: "13 - Backpropagation through a layer of neurons"
+summary: "The single-neuron backward pass run once per neuron: one upstream gradient shared by three ReLU neurons, one gate per neuron, one input per weight, and all fifteen gradients checked against central differences."
 date: 2026-05-28
-tags: [neural-networks, from-scratch, backpropagation, gradients]
+updated: 2026-10-05
+status: complete
+part: "Part V - Backpropagation"
+level: intermediate
+reading_time: 18
+tags: [neural-networks, from-scratch, backpropagation, gradients, chain-rule, relu]
 hero: diagrams/01-layer-backprop.svg
-reading_time: 11
-part: "Part V — Backpropagation"
+prerequisites: [nn-012]
+code: included
+outcomes:
+  - id: o1
+    text: "Apply the chain rule across all fifteen parameters of a three-neuron layer with one shared upstream gradient."
+  - id: o2
+    text: "Write the per-neuron backward pass as a Python loop and identify where it becomes a matrix multiplication."
+  - id: o3
+    text: "Predict the gradient of any weight or bias from the input vector, the upstream gradient, and the neuron's ReLU gate."
+compute: cpu

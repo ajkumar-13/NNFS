@@ -1,0 +1,885 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-013",
+  "next_ordinal": 20,
+  "questions": [
+    {
+      "id": "nn-013-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3.1",
+      "est_minutes": 2,
+      "tags": [
+        "chain-rule",
+        "upstream-gradient"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "For the layer of three ReLU neurons whose outputs are summed and squared, $\\partial L / \\partial w_{kj} = 2\\hat{y} \\cdot 1 \\cdot \\mathbb{1}[z_k > 0] \\cdot x_j$. Which quantity has the same value in the gradients of all fifteen parameters?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "$x_j$",
+          "correct": false,
+          "feedback": "The input changes from weight to weight inside one neuron, and the biases use the constant 1 in its place."
+        },
+        {
+          "key": "b",
+          "text": "$\\mathbb{1}[z_k > 0]$",
+          "correct": false,
+          "feedback": "There is one gate per neuron. It is shared by that neuron's four weights and bias, not by the other neurons."
+        },
+        {
+          "key": "c",
+          "text": "$2\\hat{y}$",
+          "correct": true,
+          "feedback": "Right: the loss derivative is computed once at the loss and enters every one of the fifteen products."
+        },
+        {
+          "key": "d",
+          "text": "$w_{kj}$",
+          "correct": false,
+          "feedback": "The weight itself is not a factor of its own gradient here; it influences the gradient only through $\\hat{y}$ and the gate."
+        }
+      ],
+      "explanation": "Section 3.1 reads three things off the formula: the upstream gradient $2\\hat{y}$ is one number for the whole layer, the gate depends only on the neuron index $k$, and only $x_j$ varies across the weights of one neuron.",
+      "hints": [
+        "Ask which factor carries no index at all."
+      ]
+    },
+    {
+      "id": "nn-013-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "3.1",
+      "est_minutes": 2,
+      "tags": [
+        "bias-gradient"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the same layer, what is the gradient of the loss with respect to the bias $b_k$ of neuron $k$?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "$\\partial L / \\partial z_k$ times the sum of the four inputs",
+          "correct": false,
+          "feedback": "The bias is added to the weighted sum without multiplying any input, so no input appears in its gradient."
+        },
+        {
+          "key": "b",
+          "text": "$2\\hat{y}$, whatever the sign of $z_k$",
+          "correct": false,
+          "feedback": "That forgets the ReLU gate. With $z_k \\le 0$ the bias gradient is 0, as for neuron 2 when it is switched off."
+        },
+        {
+          "key": "c",
+          "text": "0, because no input multiplies the bias",
+          "correct": false,
+          "feedback": "The last factor is $\\partial z_k / \\partial b_k = 1$, not 0: raising the bias raises $z_k$ by the same amount."
+        },
+        {
+          "key": "d",
+          "text": "$\\partial L / \\partial z_k$ itself, with no input factor at all",
+          "correct": true,
+          "feedback": "Right: the bias behaves like a weight whose input is the constant 1."
+        }
+      ],
+      "explanation": "Section 3.1 gives $\\partial L / \\partial b_k = \\partial L / \\partial z_k \\cdot 1$, because the bias enters $z_k$ with no multiplier. On the worked layer all three bias gradients are 43.2; with neuron 2 switched off they are 28.8, 0, and 28.8.",
+      "hints": [
+        "Write $z_k$ out and differentiate it with respect to $b_k$ alone."
+      ]
+    },
+    {
+      "id": "nn-013-q03",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "8.2",
+      "est_minutes": 2,
+      "tags": [
+        "shapes",
+        "weight-layout"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A layer stored one row of weights per neuron, as in this post, has 5 inputs and 2 neurons. What is the shape of its weight gradient `dL_dW`?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`(5, 2)`",
+          "correct": false,
+          "feedback": "That is the shape under the $(n_\\text{inputs}, n_\\text{neurons})$ layout of `Layer_Dense`. Here the weights are `(2, 5)` and the gradient must match them."
+        },
+        {
+          "key": "b",
+          "text": "`(2, 5)`",
+          "correct": true,
+          "feedback": "Right: a gradient has the shape of the parameter it belongs to, and the weights are stored as $(n_\\text{neurons}, n_\\text{inputs})$."
+        },
+        {
+          "key": "c",
+          "text": "`(2,)`",
+          "correct": false,
+          "feedback": "That is the shape of `dL_dZ` and of the bias gradient, one number per neuron."
+        },
+        {
+          "key": "d",
+          "text": "`(5,)`",
+          "correct": false,
+          "feedback": "That is the shape of the input vector. The weight gradient has one entry per weight, ten in all."
+        }
+      ],
+      "explanation": "Section 8.2 states that a gradient always has the shape of its parameter, so that the update subtracts element from matching element. With one row per neuron the weights, and so `dL_dW`, have shape $(n_\\text{neurons}, n_\\text{inputs}) = (2, 5)$.",
+      "hints": [
+        "Start from the shape of `weights` itself."
+      ]
+    },
+    {
+      "id": "nn-013-q04",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5.3",
+      "est_minutes": 3,
+      "tags": [
+        "relu-gate",
+        "coupling"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the worked layer ($z = 3.1, 7.2, 11.3$, upstream value 43.2) the four weights of neuron 2 are negated, so that $z_2 = -6.8$. Nothing about neuron 1 is touched. What happens to neuron 1's weight gradients?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "They stay at $43.2\\,x_j$, since neuron 1's weights, gate, and inputs are unchanged.",
+          "correct": false,
+          "feedback": "Neuron 1's own factors are unchanged, but the upstream value $2\\hat{y}$ is not: $\\hat{y}$ lost the 7.2 that neuron 2 contributed."
+        },
+        {
+          "key": "b",
+          "text": "They fall to $28.8\\,x_j$, since $\\hat{y}$ drops to 14.4 and the upstream value with it.",
+          "correct": true,
+          "feedback": "Right: $\\hat{y} = 3.1 + 0 + 11.3 = 14.4$, so $2\\hat{y} = 28.8$ for every neuron whose gate is open."
+        },
+        {
+          "key": "c",
+          "text": "They become 0, since the closed gate of neuron 2 blocks the upstream value.",
+          "correct": false,
+          "feedback": "A gate blocks only its own neuron's gradients. Neuron 1's gate is still open."
+        },
+        {
+          "key": "d",
+          "text": "They rise above $43.2\\,x_j$, since neuron 1 now has to make up for neuron 2.",
+          "correct": false,
+          "feedback": "Nothing in the chain rule assigns extra gradient to the surviving neurons; the shared factor became smaller, not larger."
+        }
+      ],
+      "explanation": "Section 5.3 runs this case. Neuron 2's five gradients are zero because its gate is closed, and the other two neurons' gradients shrink from 43.2 to 28.8 per unit of input because the upstream value $2\\hat{y}$ is built from all three activations.",
+      "hints": [
+        "Decide which of the four chain-rule factors of neuron 1 could have changed.",
+        "Recompute $\\hat{y}$ with $a_2 = 0$."
+      ]
+    },
+    {
+      "id": "nn-013-q05",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "9",
+      "est_minutes": 4,
+      "tags": [
+        "learning-rate",
+        "dead-neuron",
+        "diagnosis"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The 200-iteration loop is rerun with the learning rate changed from 0.001 to 0.01. After a single update the script reports a loss of 0.00, and every one of the fifteen gradients is exactly zero from then on. Which diagnosis fits?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Gradient descent converged in one step, and the layer could follow a new non-zero target just as quickly.",
+          "correct": false,
+          "feedback": "With every gate closed the gradient is zero for any target, so the layer cannot move towards a new one on this input."
+        },
+        {
+          "key": "b",
+          "text": "The layer sum overshot the target and will oscillate around zero over the following iterations.",
+          "correct": false,
+          "feedback": "ReLU clips the overshoot: the pre-activations are negative, the layer sum is exactly 0, and iterations 1 and 2 are identical."
+        },
+        {
+          "key": "c",
+          "text": "The step pushed all three pre-activations below zero, so every gate is closed and no gradient flows.",
+          "correct": true,
+          "feedback": "Right: each open $z_k$ falls by $2\\alpha\\hat{y} \\cdot 31 = 13.392$, more than the largest of them, 11.3."
+        },
+        {
+          "key": "d",
+          "text": "The gradients underflowed in float64 because the weights became too small to represent.",
+          "correct": false,
+          "feedback": "Nothing is near the limits of float64: the weights are of order 1. The zeros come from the gate factor, which is exactly 0."
+        }
+      ],
+      "explanation": "Section 6 shows that one step lowers every open pre-activation by $2\\alpha\\hat{y}(\\sum_j x_j^2 + 1)$. At $\\alpha = 0.01$ that is 13.392, so $z$ becomes $(-10.292, -6.192, -2.092)$, as section 9 prints. All gates are closed, the layer outputs 0 for this input, and the loss is zero only because the target is zero.",
+      "hints": [
+        "Work out how far one step moves each pre-activation.",
+        "Compare that distance with $z_3 = 11.3$, then ask what the ReLU derivative is afterwards."
+      ]
+    },
+    {
+      "id": "nn-013-q06",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "8.2",
+      "est_minutes": 3,
+      "tags": [
+        "outer-product",
+        "broadcasting"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`dL_dZ` is a NumPy array of shape `(3,)` and `inputs` one of shape `(4,)`. Which expressions return the `(3, 4)` array whose entry in row $k$, column $j$ is `dL_dZ[k] * inputs[j]`? Select all that apply.",
+      "select": "multiple",
+      "options": [
+        {
+          "key": "a",
+          "text": "`dL_dZ.reshape(-1, 1) * inputs`",
+          "correct": true,
+          "feedback": "Right: a `(3, 1)` column broadcast against a `(4,)` row gives every pairwise product in a `(3, 4)` array."
+        },
+        {
+          "key": "b",
+          "text": "`inputs.reshape(-1, 1) * dL_dZ`",
+          "correct": false,
+          "feedback": "This gives shape `(4, 3)`, the transpose: the input index runs down the rows instead of across the columns."
+        },
+        {
+          "key": "c",
+          "text": "`np.outer(dL_dZ, inputs)`",
+          "correct": true,
+          "feedback": "Right: this is the outer product by name, with the first argument indexing the rows."
+        },
+        {
+          "key": "d",
+          "text": "`np.dot(dL_dZ, inputs)`",
+          "correct": false,
+          "feedback": "A dot product of two vectors needs equal lengths and returns one number; with lengths 3 and 4 NumPy raises an error."
+        },
+        {
+          "key": "e",
+          "text": "`dL_dZ.reshape(3, 1) @ inputs.reshape(1, 4)`",
+          "correct": true,
+          "feedback": "Right: a `(3, 1)` by `(1, 4)` matrix product has shape `(3, 4)` and the same twelve entries."
+        }
+      ],
+      "explanation": "Section 8.2 computes the weight gradient three ways and prints that they agree: the broadcast of a column against a row, `np.outer`, and a `(3, 1)` by `(1, 4)` matrix product. Section 9 shows that reshaping `inputs` instead gives the `(4, 3)` transpose.",
+      "hints": [
+        "Write down the shape each expression produces before looking at its contents."
+      ]
+    },
+    {
+      "id": "nn-013-q07",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "5.3",
+      "est_minutes": 8,
+      "tags": [
+        "chain-rule",
+        "relu-gate",
+        "hand-computation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A layer with one row of weights per neuron has two inputs $x = (2, -1)$ and three neurons with weight rows $(0.5, 1.0)$, $(1.0, 3.0)$, and $(1.5, -0.5)$ and biases $0.5$, $0$, and $1.0$. Each neuron applies ReLU, the three outputs are summed to $\\hat{y}$, and $L = \\hat{y}^2$. Compute the four gradients listed.",
+      "answer": {
+        "parts": [
+          {
+            "label": "dL/dw_11",
+            "value": 20,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "dL/dw_12",
+            "value": -10,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "dL/dw_22",
+            "value": 0,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "dL/db_3",
+            "value": 10,
+            "tolerance": 0.001,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form dL/dw_kj = 2 * y_hat * gate_k * x_j with z = (0.5, -1.0, 4.5), y_hat = 5; recomputed in NumPy with the vectorised form of snippets/training_loop.py.",
+      "explanation": "The forward pass gives $z = (0.5, -1.0, 4.5)$, so the gates are $(1, 0, 1)$, $\\hat{y} = 0.5 + 0 + 4.5 = 5$, and the upstream value is $2\\hat{y} = 10$. Then $\\partial L / \\partial w_{11} = 10 \\cdot 2 = 20$ and $\\partial L / \\partial w_{12} = 10 \\cdot (-1) = -10$; neuron 2's gate is closed, so $\\partial L / \\partial w_{22} = 0$; and $\\partial L / \\partial b_3 = 10$. Section 5.3 asks the same three questions: upstream value, gate, input.",
+      "hints": [
+        "Run the forward pass first; the gates are not all open.",
+        "Compute $2\\hat{y}$ once, then multiply by each neuron's gate and each weight's input."
+      ]
+    },
+    {
+      "id": "nn-013-q08",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "6",
+      "est_minutes": 6,
+      "tags": [
+        "gradient-descent-step"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Starting from the worked layer (inputs 1, 2, 3, 4; $z = 3.1, 7.2, 11.3$; $\\hat{y} = 21.6$), one gradient-descent step is applied to all fifteen parameters with learning rate $\\alpha = 0.002$ instead of 0.001. Give the layer sum and the loss after that step.",
+      "answer": {
+        "parts": [
+          {
+            "label": "layer sum after the step",
+            "value": 13.5648,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "loss after the step",
+            "value": 184.0038,
+            "tolerance": 0.01,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form y_new = y * (1 - 2 * alpha * m * 31) with m = 3 open gates, valid because z_1 = 3.1 - 2.6784 = 0.4216 stays positive; confirmed in NumPy with the update of snippets/training_loop.py at lr = 0.002 (loss after one step: 184.003799).",
+      "explanation": "Section 6 shows that each open pre-activation falls by $2\\alpha\\hat{y}(\\sum_j x_j^2 + 1) = 2 \\cdot 0.002 \\cdot 21.6 \\cdot 31 = 2.6784$. The smallest, $z_1 = 3.1$, stays positive at 0.4216, so all three gates remain open and $\\hat{y}$ falls by three such amounts: $21.6 - 8.0352 = 13.5648$. The loss is $13.5648^2 = 184.0038$.",
+      "hints": [
+        "Find how much one step lowers a single open pre-activation.",
+        "Check that no gate closes during the step, then subtract three equal amounts from the layer sum."
+      ]
+    },
+    {
+      "id": "nn-013-q09",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "8.1",
+      "est_minutes": 8,
+      "tags": [
+        "training-loop",
+        "relu-gate"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In `snippets/training_loop.py`, change `lr = 0.001` to `lr = 0.002` and run the script. It prints a line whenever the gate pattern changes. Report the iteration at which the pattern first becomes `[0, 1, 1]`, the iteration at which it becomes `[0, 0, 1]`, and the number of gates still open at iteration 199.",
+      "answer": {
+        "parts": [
+          {
+            "label": "iteration of the first change",
+            "value": 2,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "iteration of the second change",
+            "value": 6,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "open gates at iteration 199",
+            "value": 1,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "snippets/training_loop.py with lr = 0.002: gates [0, 1, 1] at iteration 2 (z_1 = -1.2604), [0, 0, 1] at iteration 6 (z_2 = -0.4863), [0, 0, 1] at iteration 199.",
+      "explanation": "With the larger rate every open pre-activation falls twice as far per step, so the gates close sooner than in section 8.1: neuron 1 at iteration 2 instead of 3, and neuron 2 at iteration 6 instead of 12. Neuron 3 stays open for the same reason as before: once it is alone, $z_3 = \\hat{y}$ is multiplied by a positive factor, $1 - 0.124 = 0.876$, at every step.",
+      "hints": [
+        "Only one line of the script changes.",
+        "Read the `gates` column of the printed lines."
+      ]
+    },
+    {
+      "id": "nn-013-q10",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "8.2",
+      "est_minutes": 1,
+      "tags": [
+        "outer-product",
+        "terminology"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The weight gradient of the layer is the table of all pairwise products of one entry of `dL_dZ` with one entry of `inputs`. What is this product of two vectors called?",
+      "answer": {
+        "model": "The outer product of `dL_dZ` and `inputs`.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:not|isn't|neither|nor|dot|inner|scalar|cross|hadamard|element[- ]?wise)\\b)[\\s\\S]*\\bouter[- ]?product\\b",
+          "^\\W*(?:(?:it\\s+is|it's|that\\s+is|that's|this\\s+is|the\\s+answer\\s+is|an?|the|their)\\W+)*outer[- ]?product\\b[^.;]*?\\b(?:not|rather\\s+than|instead\\s+of|unlike|as\\s+opposed\\s+to)\\s+(?:an?\\s+|the\\s+)?(?:dot|inner|scalar)\\b(?![\\s\\S]*\\b(?:it\\s+is|it's|is)\\s+(?:an?\\s+|the\\s+)?(?:dot|inner|scalar)\\b)",
+          "^\\W*(?:it's\\s+|it\\s+is\\s+)?not\\s+(?:an?\\s+|the\\s+)?(?:dot|inner|scalar)(?:\\s+product)?\\W+(?:but\\s+)?(?:it's\\s+|it\\s+is\\s+)?(?:an?\\s+|the\\s+)?outer[- ]?product\\b",
+          "^\\W*(?:an?\\s+|the\\s+)?outer\\W*$"
+        ]
+      },
+      "explanation": "Section 8.2 names the table of all pairwise products of two vectors their outer product. It has one row per entry of the first vector and one column per entry of the second, unlike the dot product, which returns a single number.",
+      "hints": [
+        "It is the counterpart of the product that returns a single number."
+      ]
+    },
+    {
+      "id": "nn-013-q11",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "3",
+      "est_minutes": 1,
+      "tags": [
+        "relu-gate"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A neuron of the layer has pre-activation $z_2 = -6.8$. What is the value of the factor $\\partial a_2 / \\partial z_2$ in the chain for any of its weights?",
+      "answer": {
+        "model": "0",
+        "accept": [
+          "^\\W*(?:(?:it\\s+is|it's|it\\s+equals|the\\s+(?:gate|factor|derivative|value|answer|relu\\s+derivative)\\s+is|is|equals|=)\\W+)*(?:exactly\\s+)?(?:0(?:\\.0+)?|zero)(?![\\d.]*\\d)(?!\\s*/)\\b(?!\\W+(?:1|one)\\b)(?![\\s\\S]*\\b(?:or|and)\\s+(?:1|one)\\b)(?![\\s\\S]*\\bnot\\s+(?:0|zero|the|right|correct|it)\\b)",
+          "^\\W*(?:0(?:\\.0+)?|zero)\\W+(?:and\\s+)?not\\s+(?:1|one)\\b",
+          "^(?![\\s\\S]*\\b(?:or|and)\\s+(?:1|one)\\b)(?![\\s\\S]*\\bnot\\s+(?:0|zero|equal)\\b)(?![\\s\\S]*\\bnon-?zero\\b)(?![\\s\\S]*(?:\\b(?:is|equals?|becomes|gives)|=)\\s+(?:exactly\\s+)?(?:1|one)\\b)[\\s\\S]*(?:\\b(?:is|equals?|becomes|gives)|=)\\s+(?:exactly\\s+)?(?:0(?:\\.0+)?|zero)(?![\\d.]*\\d)(?!\\s*/)\\b(?!\\W+(?:1|one)\\b)"
+        ]
+      },
+      "explanation": "Section 3 gives the ReLU derivative as $\\mathbb{1}[z > 0]$: 1 for a positive pre-activation and 0 otherwise. With $z_2 = -6.8$ the factor is 0, and since it multiplies the whole product, all four weight gradients and the bias gradient of that neuron are 0.",
+      "hints": [
+        "ReLU is flat on one side of zero."
+      ]
+    },
+    {
+      "id": "nn-013-q12",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "8.1",
+      "est_minutes": 2,
+      "tags": [
+        "training-loop",
+        "relu-gate"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the 200-iteration run with learning rate 0.001, the pre-activations start at $z = (3.1, 7.2, 11.3)$ with all three gates open. Which neuron's gate is the first to close?",
+      "answer": {
+        "model": "Neuron 1. All open neurons fall by the same amount per step, so the smallest pre-activation, 3.1, reaches zero first.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:never|neither)\\b)(?![\\s\\S]*\\b(?:doesn't|does\\s+not|won't|will\\s+not|isn't|is\\s+not)\\s+(?:close|the\\s+first|first)\\b)(?![\\s\\S]*\\blast\\s+to\\b)(?![\\s\\S]*\\bneurons?\\s*(?:2|3|two|three)\\b[^.;,\\n]*\\b(?:first|earliest)\\b)(?![\\s\\S]*\\b(?:first|earliest)\\b\\s+(?:to\\s+\\w+\\s+)?(?:is|are|was|will\\s+be)\\s+(?:the\\s+)?neurons?\\s*(?:2|3|two|three)\\b)\\W*(?:(?:it\\s+is|it's|that\\s+is|the)\\W+)*(?:neuron\\s*(?:1|one)|(?:first|1st)\\s+(?:neuron|one)|z\\s*_?\\{?1\\}?|k\\s*=\\s*1)(?![\\d.]*\\d)\\b(?!\\W+(?:and\\s+|or\\s+)?(?:neurons?\\s*)?(?:2|3|two|three)\\b)",
+          "^\\W*(?:the\\s+)?(?:1|one|first|1st)\\W*$",
+          "^(?![\\s\\S]*\\b(?:not|never|neither|nor|largest|biggest|highest|second|third|last)\\b)(?![\\s\\S]*\\bneurons?\\s*(?:2|3|two|three)\\b)[\\s\\S]*\\b(?:smallest|lowest|least)\\b[\\s\\S]*\\b(?:pre-?activation|weighted\\s+sum|z|output|activation)\\b",
+          "^(?![\\s\\S]*\\b(?:not|never|neither|nor)\\b)(?![\\s\\S]*\\bneurons?\\s*(?:2|3|two|three)\\b)(?![\\s\\S]*(?<![\\d.])(?:7\\.2|11\\.3)(?!\\d))[\\s\\S]*(?<![\\d.])3\\.1(?!\\d)"
+        ]
+      },
+      "explanation": "Section 6 shows that every open neuron's pre-activation falls by the same amount, $2\\alpha\\hat{y} \\cdot 31$, at each step, because the upstream value and the inputs are shared. The smallest one therefore crosses zero first: section 8.1 prints the gates as `[0, 1, 1]` at iteration 3, when $z_1 = -0.2167$.",
+      "hints": [
+        "Compare how far one step moves each of the three pre-activations."
+      ]
+    },
+    {
+      "id": "nn-013-q13",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "3.1",
+      "est_minutes": 12,
+      "tags": [
+        "chain-rule",
+        "derivation",
+        "target"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Suppose the loss of the worked layer is changed to $L = (\\hat{y} - y)^2$ with a target $y$ that is not zero, and nothing else changes ($\\hat{y} = 21.6$, all gates open, inputs 1, 2, 3, 4). Derive $\\partial L / \\partial w_{kj}$ and $\\partial L / \\partial b_k$. Then evaluate one row of weight gradients for $y = 10$ and for $y = 30$, and say in which direction gradient descent moves the weights in each case.",
+      "kind": "derive",
+      "solution": "1. Only the first factor of the chain involves the loss. $\\partial L / \\partial \\hat{y} = 2(\\hat{y} - y)$ by the power rule and the chain rule, in place of $2\\hat{y}$.\n2. The other factors are those of the layer: $\\partial \\hat{y} / \\partial a_k = 1$, $\\partial a_k / \\partial z_k = \\mathbb{1}[z_k > 0]$, $\\partial z_k / \\partial w_{kj} = x_j$, and $\\partial z_k / \\partial b_k = 1$.\n3. Therefore $\\partial L / \\partial w_{kj} = 2(\\hat{y} - y) \\cdot \\mathbb{1}[z_k > 0] \\cdot x_j$ and $\\partial L / \\partial b_k = 2(\\hat{y} - y) \\cdot \\mathbb{1}[z_k > 0]$.\n4. For $y = 10$ the upstream value is $2(21.6 - 10) = 23.2$. Every row of the weight gradient is $(23.2, 46.4, 69.6, 92.8)$ and every bias gradient is 23.2. The gradients are positive, so gradient descent lowers every weight and bias, which lowers $\\hat{y}$ towards 10.\n5. For $y = 30$ the upstream value is $2(21.6 - 30) = -16.8$. Every row is $(-16.8, -33.6, -50.4, -67.2)$ and every bias gradient is $-16.8$. The gradients are negative, so gradient descent raises every weight and bias, which raises $\\hat{y}$ towards 30.\n6. The layer's own factors, the gate and the input, did not change. The loss reaches the layer only through the upstream value, whose sign says whether the layer sum is above or below the target.",
+      "rubric": [
+        {
+          "criterion": "States $\\partial L / \\partial \\hat{y} = 2(\\hat{y} - y)$ and that it is the only factor that changes",
+          "points": 2
+        },
+        {
+          "criterion": "Writes both general formulas, with the gate and with $x_j$ for a weight and 1 for a bias",
+          "points": 2
+        },
+        {
+          "criterion": "Evaluates $y = 10$: upstream 23.2 and row $(23.2, 46.4, 69.6, 92.8)$",
+          "points": 2
+        },
+        {
+          "criterion": "Evaluates $y = 30$: upstream $-16.8$ and row $(-16.8, -33.6, -50.4, -67.2)$",
+          "points": 2
+        },
+        {
+          "criterion": "Gives the direction of the update in both cases from the sign of the gradient",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 3.1 separates the chain into a factor that belongs to the loss and factors that belong to the layer. Changing the target changes only the first: $2\\hat{y}$ becomes $2(\\hat{y} - y)$, which is 23.2 for $y = 10$ and $-16.8$ for $y = 30$. Each weight gradient is still that value times the gate times $x_j$, and its sign tells the update which way to move.",
+      "hints": [
+        "Decide which of the four factors contains the target.",
+        "Evaluate $2(\\hat{y} - y)$ for each target before multiplying by the inputs."
+      ]
+    },
+    {
+      "id": "nn-013-q14",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "8.2",
+      "est_minutes": 12,
+      "tags": [
+        "broadcasting",
+        "matrix-product",
+        "shapes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Using the broadcasting rule of post 05 and the shape rule for matrix products of post 02, explain (a) why `dL_dZ.reshape(-1, 1) * inputs` produces a `(3, 4)` array when `dL_dZ` has shape `(3,)` and `inputs` has shape `(4,)`, (b) why `dL_dZ * inputs` without the reshape raises an error, and (c) in what sense the same twelve numbers are a matrix product.",
+      "kind": "connect",
+      "solution": "**(a)** Broadcasting compares shapes from the last axis, and two sizes are compatible when they are equal or one of them is 1. `(3, 1)` against `(4,)` is treated as `(3, 1)` against `(1, 4)`: on the last axis 1 meets 4, and on the first axis 3 meets 1, so both are compatible and the result is `(3, 4)`. The column is repeated across four columns and the row down three rows, so entry $(k, j)$ is `dL_dZ[k] * inputs[j]`.\n\n**(b)** Without the reshape the shapes are `(3,)` and `(4,)`. On the last axis 3 meets 4; they are not equal and neither is 1, so NumPy raises `operands could not be broadcast together`. Element-wise multiplication of two vectors pairs entry with entry, which is not what the gradient needs: it needs every entry of one with every entry of the other.\n\n**(c)** By the shape rule $(m, n) \\cdot (n, p) \\rightarrow (m, p)$, a `(3, 1)` column times a `(1, 4)` row is a matrix product of shape `(3, 4)`. Its entry $(k, j)$ is the dot product of row $k$ of the column, a single number, with column $j$ of the row, a single number, which is again `dL_dZ[k] * inputs[j]`. The inner size is 1, so each dot product has a single term. This is the outer product, and it is the matrix multiplication that the batched backward pass of post 14 generalises.",
+      "rubric": [
+        {
+          "criterion": "States the broadcasting rule (compare from the last axis; sizes equal or one of them 1)",
+          "points": 2
+        },
+        {
+          "criterion": "Applies it to `(3, 1)` and `(4,)` to obtain `(3, 4)` and identifies entry $(k, j)$ as one pairwise product",
+          "points": 2
+        },
+        {
+          "criterion": "Explains the error for `(3,)` against `(4,)`: sizes 3 and 4 are unequal and neither is 1",
+          "points": 2
+        },
+        {
+          "criterion": "Applies $(3, 1) \\cdot (1, 4) \\rightarrow (3, 4)$ and notes each entry is a one-term dot product",
+          "points": 2
+        },
+        {
+          "criterion": "Names the result the outer product",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 8.2 replaces the double loop by a reshape and a broadcast. Post 05's rule makes `(3, 1)` and `(4,)` compatible and `(3,)` and `(4,)` incompatible, and post 02's shape rule shows that a column times a row is a matrix product with inner size 1, which is why the script prints that the broadcast, `np.outer`, and the `@` product agree.",
+      "hints": [
+        "Write the two shapes one above the other, aligned on the right.",
+        "For part (c), give both vectors two axes and apply the shape rule for a matrix product."
+      ],
+      "connects": [
+        "nn-005",
+        "nn-002"
+      ]
+    },
+    {
+      "id": "nn-013-q15",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "8.1",
+      "est_minutes": 12,
+      "tags": [
+        "training-loop",
+        "dead-neuron",
+        "critique"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A reader summarises the 200-iteration run as follows: the loss fell from 466.56 to about $6 \\times 10^{-10}$, so all three neurons kept learning throughout and each ended with an output close to zero and its gate open. Using the printed gate patterns and the final pre-activations $(-0.2167, -0.2477, 0.000023)$, say what is right and what is wrong in this summary, and explain the mechanism.",
+      "kind": "critique",
+      "solution": "The loss figures are right, and the layer sum did approach the target of zero. The account of how is wrong.\n\n1. The gates did not stay open. The printed pattern is `[1, 1, 1]` at iteration 0, `[0, 1, 1]` from iteration 3, and `[0, 0, 1]` from iteration 12 to the end.\n2. While several gates are open, every open pre-activation falls by the same amount per step, $2\\alpha\\hat{y} \\cdot 31$, because the upstream value and the inputs are shared. The smallest one, $z_1 = 3.1$, therefore reaches zero first, and $z_2 = 7.2$ second.\n3. A neuron whose gate is closed has all five of its gradients equal to zero, so its weights and bias stop changing. Neurons 1 and 2 are frozen at $z_1 = -0.2167$ and $z_2 = -0.2477$: they did not keep learning, their outputs are exactly 0 and not merely close to it, and they cannot reopen on this input.\n4. Only neuron 3 learned for iterations 12 to 199. Being the only open neuron, $z_3 = \\hat{y}$ is multiplied by $1 - 0.062 = 0.938$ at every step, so it shrinks towards zero and stays positive; its gate is open at the end with $z_3 = 0.000023$.\n5. The result is specific to one input and a target of zero. It should not be generalised: with many samples a neuron closed for one sample usually still receives gradient from others.",
+      "rubric": [
+        {
+          "criterion": "Accepts the loss values and that the layer sum approached the target",
+          "points": 1
+        },
+        {
+          "criterion": "Identifies that gates 1 and 2 closed, at iterations 3 and 12, and stayed closed",
+          "points": 2
+        },
+        {
+          "criterion": "Explains why neuron 1 closed first: equal falls per step, smallest pre-activation",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that a closed gate zeroes all five gradients of that neuron, so it stops learning",
+          "points": 2
+        },
+        {
+          "criterion": "Explains why neuron 3 stays open and shrinks geometrically",
+          "points": 2
+        },
+        {
+          "criterion": "Notes that the outcome is particular to one sample and a zero target",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 8.1 prints the gate pattern changing to `[0, 1, 1]` at iteration 3 and `[0, 0, 1]` at iteration 12. The target is reached by switching two neurons off and shrinking the third by a factor 0.938 per step, not by three neurons learning together. A closed gate multiplies every gradient of its neuron by zero, which is why the two negative pre-activations never move again.",
+      "hints": [
+        "Read the gates column of the output before the loss column.",
+        "Ask what gradient a neuron receives once its pre-activation is negative, and what that means for later iterations."
+      ]
+    },
+    {
+      "id": "nn-013-q16",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o1"
+      ],
+      "section": "5.1",
+      "est_minutes": 15,
+      "tags": [
+        "backward-pass",
+        "loop",
+        "implementation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Complete `layer_backward(weights, biases, inputs)` in plain Python, without NumPy. The layer stores one list of weights per neuron, applies ReLU to each weighted sum, adds the outputs to $\\hat{y}$, and has loss $L = \\hat{y}^2$. The function returns the gradient of $L$ with respect to every weight, laid out like `weights`, and with respect to every bias.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "def layer_backward(weights, biases, inputs):\n    \"\"\"Gradients of L = (sum of the ReLU outputs) ** 2 for one layer and one input vector.\n\n    weights holds one list per neuron, biases one number per neuron, inputs is a list of numbers.\n    Returns (dL_dW, dL_db): dL_dW is laid out like weights and dL_db like biases.\n    \"\"\"\n    dL_dW = [[0.0 for _ in inputs] for _ in weights]\n    dL_db = [0.0 for _ in biases]\n    # TODO: forward pass, upstream value, one gate per neuron, one input per weight\n    return dL_dW, dL_db\n",
+      "solution": "def layer_backward(weights, biases, inputs):\n    \"\"\"Gradients of L = (sum of the ReLU outputs) ** 2 for one layer and one input vector.\n\n    weights holds one list per neuron, biases one number per neuron, inputs is a list of numbers.\n    Returns (dL_dW, dL_db): dL_dW is laid out like weights and dL_db like biases.\n    \"\"\"\n    Z = []\n    for k in range(len(weights)):\n        z = biases[k]\n        for j in range(len(inputs)):\n            z += weights[k][j] * inputs[j]\n        Z.append(z)\n    Y = sum(max(0.0, z) for z in Z)\n    dL_dY = 2 * Y                                 # computed once, at the loss\n    dL_dW = []\n    dL_db = []\n    for k in range(len(weights)):\n        gate = 1.0 if Z[k] > 0 else 0.0           # one gate per neuron\n        dL_dZ_k = dL_dY * gate\n        dL_dW.append([dL_dZ_k * x for x in inputs])   # one input per weight\n        dL_db.append(dL_dZ_k)\n    return dL_dW, dL_db\n",
+      "tests": "def close(a, b):\n    return abs(a - b) < 1e-9\n\n\nW = [[0.1, 0.2, 0.3, 0.4], [0.5, 0.6, 0.7, 0.8], [0.9, 1.0, 1.1, 1.2]]\nb = [0.1, 0.2, 0.3]\nx = [1.0, 2.0, 3.0, 4.0]\ndW, db = layer_backward(W, b, x)\nassert x == [1.0, 2.0, 3.0, 4.0], \"the inputs must not be modified\"\nassert len(dW) == 3 and all(len(row) == 4 for row in dW), \"dL_dW must be laid out like weights\"\nfor row in dW:\n    assert all(close(g, e) for g, e in zip(row, [43.2, 86.4, 129.6, 172.8])), row\nassert all(close(g, 43.2) for g in db), db\n\nW_off = [W[0], [-w for w in W[1]], W[2]]\ndW, db = layer_backward(W_off, b, x)\nassert all(close(g, e) for g, e in zip(dW[0], [28.8, 57.6, 86.4, 115.2])), dW[0]\nassert all(close(g, 0.0) for g in dW[1]), \"a neuron with a negative weighted sum has zero gradients\"\nassert all(close(g, e) for g, e in zip(db, [28.8, 0.0, 28.8])), db\n\ndW, db = layer_backward([[0.5, 1.0], [1.0, 3.0], [1.5, -0.5]], [0.5, 0.0, 1.0], [2.0, -1.0])\nassert [[round(g, 9) + 0.0 for g in row] for row in dW] == [[20.0, -10.0], [0.0, 0.0], [20.0, -10.0]], dW\nassert [round(g, 9) for g in db] == [10.0, 0.0, 10.0], db\nprint(\"all layer gradients correct\")\n",
+      "expected_output": "all layer gradients correct\n",
+      "explanation": "Section 5.1 writes the backward pass as a loop over neurons: the upstream value $2\\hat{y}$ is computed once outside the loop, each neuron applies its own gate, and an inner loop multiplies by each input. The tests use the worked layer (rows of 43.2, 86.4, 129.6, 172.8), the layer with neuron 2 switched off, and a two-input layer with one closed gate and a negative input.",
+      "hints": [
+        "The backward pass needs the pre-activations, so the function has to run the forward pass first.",
+        "Compute the upstream value once, outside the loop over neurons.",
+        "Inside the loop, one gate per neuron multiplies everything that belongs to that neuron."
+      ]
+    },
+    {
+      "id": "nn-013-q17",
+      "type": "code",
+      "track": "run",
+      "difficulty": 4,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "9",
+      "est_minutes": 20,
+      "tags": [
+        "gradient-check",
+        "debugging",
+        "outer-product"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The function below computes the gradients of $L = \\hat{y}^2$ for a layer with one row of weights per neuron. It runs without raising on a layer with three inputs and three neurons, yet its results disagree with a central-difference check. It contains two mistakes. Find and fix both, keeping the function's signature.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "import numpy as np\n\n\ndef layer_backward(weights, biases, inputs):\n    \"\"\"weights (n_neurons, n_inputs), biases (n_neurons,), inputs (n_inputs,).\n\n    Loss L = np.sum(relu(Z)) ** 2. Returns (dL_dW, dL_db) with the shapes of weights and biases.\n    \"\"\"\n    Z = weights @ inputs + biases\n    Y = np.sum(np.maximum(0, Z))\n    gate = 1.0 if Y > 0 else 0.0\n    dL_dZ = 2 * Y * gate * np.ones_like(Z)\n    dL_dW = inputs.reshape(-1, 1) * dL_dZ\n    dL_db = dL_dZ\n    return dL_dW, dL_db\n",
+      "solution": "import numpy as np\n\n\ndef layer_backward(weights, biases, inputs):\n    \"\"\"weights (n_neurons, n_inputs), biases (n_neurons,), inputs (n_inputs,).\n\n    Loss L = np.sum(relu(Z)) ** 2. Returns (dL_dW, dL_db) with the shapes of weights and biases.\n    \"\"\"\n    Z = weights @ inputs + biases\n    Y = np.sum(np.maximum(0, Z))\n    gates = np.where(Z > 0, 1.0, 0.0)            # one gate per neuron, from its own Z\n    dL_dZ = 2 * Y * gates\n    dL_dW = dL_dZ.reshape(-1, 1) * inputs        # neuron axis first: shape (n_neurons, n_inputs)\n    dL_db = dL_dZ\n    return dL_dW, dL_db\n",
+      "tests": "def loss(weights, biases, inputs):\n    return np.sum(np.maximum(0, weights @ inputs + biases)) ** 2\n\n\ndef numerical(weights, biases, inputs, h=1e-5):\n    num_dW = np.zeros_like(weights)\n    num_db = np.zeros_like(biases)\n    for k in range(weights.shape[0]):\n        for j in range(weights.shape[1]):\n            up, down = weights.copy(), weights.copy()\n            up[k, j] += h\n            down[k, j] -= h\n            num_dW[k, j] = (loss(up, biases, inputs) - loss(down, biases, inputs)) / (2 * h)\n        up, down = biases.copy(), biases.copy()\n        up[k] += h\n        down[k] -= h\n        num_db[k] = (loss(weights, up, inputs) - loss(weights, down, inputs)) / (2 * h)\n    return num_dW, num_db\n\n\n# A square layer: 3 inputs, 3 neurons, neuron 2 switched off (Z = [7, -6, 2.5]).\nW = np.array([[1.0, 0.0, 2.0], [-1.0, -1.0, -1.0], [0.5, 0.5, 0.0]])\nb = np.array([0.0, 0.0, 1.0])\nx = np.array([1.0, 2.0, 3.0])\ndW, db = layer_backward(W, b, x)\nnum_dW, num_db = numerical(W, b, x)\nassert dW.shape == W.shape and db.shape == b.shape\nassert np.allclose(dW[1], 0.0), \"neuron 2 has a negative weighted sum, so its row must be zero\"\nassert np.allclose(dW, num_dW, atol=1e-6), \"dL_dW disagrees with the central difference\"\nassert np.allclose(db, num_db, atol=1e-6), \"dL_db disagrees with the central difference\"\nassert np.allclose(dW, [[19.0, 38.0, 57.0], [0.0, 0.0, 0.0], [19.0, 38.0, 57.0]])\n\n# The layer of the post: 4 inputs, 3 neurons.\nW = np.array([[0.1, 0.2, 0.3, 0.4], [0.5, 0.6, 0.7, 0.8], [0.9, 1.0, 1.1, 1.2]])\nb = np.array([0.1, 0.2, 0.3])\nx = np.array([1.0, 2.0, 3.0, 4.0])\ndW, db = layer_backward(W, b, x)\nassert dW.shape == (3, 4), dW.shape\nassert np.allclose(dW, np.outer([43.2, 43.2, 43.2], x))\nassert np.allclose(db, 43.2)\nprint(\"gradient check passed\")\n",
+      "expected_output": "gradient check passed\n",
+      "explanation": "Section 9 shows both mistakes. A single gate taken from the layer sum gives a switched-off neuron the gradients of an open one; the gate must be computed per neuron from its own $z_k$. Reshaping `inputs` instead of `dL_dZ` builds the transpose of the outer product, which a square layer accepts without complaint. The tests compare against central differences with $h = 10^{-5}$ on a square layer with one closed gate, where both mistakes show.",
+      "hints": [
+        "A square layer hides a mistake that a shape error would otherwise reveal.",
+        "Check which array is turned into a column, and compare with the layout of the weights.",
+        "Look at how many gates the function computes and how many neurons there are."
+      ]
+    },
+    {
+      "id": "nn-013-q18",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "5.1",
+      "est_minutes": 4,
+      "tags": [
+        "backward-pass",
+        "algorithm"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Put the steps of one training iteration for the layer of three ReLU neurons in the order in which they must be carried out.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Multiply each neuron's $\\partial L / \\partial z_k$ by each input to get its weight gradients, and take $\\partial L / \\partial z_k$ itself as its bias gradient"
+        },
+        {
+          "key": "b",
+          "text": "Compute the upstream value $2\\hat{y}$ at the loss"
+        },
+        {
+          "key": "c",
+          "text": "Subtract the learning rate times its gradient from each of the fifteen parameters"
+        },
+        {
+          "key": "d",
+          "text": "Run the forward pass, keeping the pre-activations $z_k$ and the layer sum $\\hat{y}$"
+        },
+        {
+          "key": "e",
+          "text": "Multiply the upstream value by each neuron's ReLU gate to get $\\partial L / \\partial z_k$"
+        }
+      ],
+      "answer": [
+        "d",
+        "b",
+        "e",
+        "a",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 5.1 follows the chain from the loss backwards. The forward pass comes first because the backward pass needs $z_k$ and $\\hat{y}$; the upstream value is computed once; each neuron's gate turns it into $\\partial L / \\partial z_k$; the inputs turn that into the weight gradients; and the update comes last, after every gradient has been computed from the same forward pass.",
+      "hints": [
+        "Each step uses a quantity produced by the one before it."
+      ]
+    },
+    {
+      "id": "nn-013-q19",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3.1",
+      "est_minutes": 4,
+      "tags": [
+        "chain-rule",
+        "sharing"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the layer of three neurons over four inputs, each factor of the chain rule is shared by a particular set of parameters. Match each factor to the largest set of parameters whose gradients contain it.",
+      "left": [
+        {
+          "key": "a",
+          "text": "The loss derivative $2\\hat{y}$"
+        },
+        {
+          "key": "b",
+          "text": "The gate $\\mathbb{1}[z_2 > 0]$"
+        },
+        {
+          "key": "c",
+          "text": "The input $x_3$ as the last factor"
+        },
+        {
+          "key": "d",
+          "text": "The constant 1 as the last factor, from $\\partial z_k / \\partial b_k$"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "$w_{13}$, $w_{23}$, and $w_{33}$"
+        },
+        {
+          "key": "q",
+          "text": "The four weights of neuron 2 and its bias"
+        },
+        {
+          "key": "r",
+          "text": "All fifteen parameters"
+        },
+        {
+          "key": "s",
+          "text": "$b_1$, $b_2$, and $b_3$"
+        },
+        {
+          "key": "t",
+          "text": "The four weights of neuron 2 only"
+        },
+        {
+          "key": "u",
+          "text": "$w_{31}$, $w_{32}$, $w_{33}$, and $w_{34}$"
+        }
+      ],
+      "answer": {
+        "a": "r",
+        "b": "q",
+        "c": "p",
+        "d": "s"
+      },
+      "explanation": "Section 3.1 reads off how widely each factor is shared. The loss derivative enters all fifteen gradients; a gate enters the five gradients of its own neuron, bias included; an input $x_j$ is the last factor for the weight in column $j$ of every neuron; and the biases use the constant 1 in its place.",
+      "hints": [
+        "Recall that $w_{kj}$ has the neuron index first and the input index second."
+      ]
+    }
+  ]
+}
