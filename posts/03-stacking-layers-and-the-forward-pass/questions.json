@@ -1,0 +1,878 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-003",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-003-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "forward-pass",
+        "chaining"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The stimulus is the forward pass of this post's two-layer network (4 input features, then 3 and 3 neurons) with one name blanked out. Which name completes the second line?",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "layer1_outputs = np.dot(inputs, weights1.T) + biases1\nlayer2_outputs = np.dot(______, weights2.T) + biases2"
+      },
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`inputs`",
+          "correct": false,
+          "feedback": "That sends the original batch into both layers, which is two separate layers side by side, not a stack. Here it also fails on shapes: the batch has 4 columns and layer 2 expects 3."
+        },
+        {
+          "key": "b",
+          "text": "`layer1_outputs`",
+          "correct": true,
+          "feedback": "Right. Stacking means the output of layer 1 becomes the input of layer 2, so the second call starts from `layer1_outputs`."
+        },
+        {
+          "key": "c",
+          "text": "`weights1`",
+          "correct": false,
+          "feedback": "Weights are multiplied by data; they are never passed on as data. Layer 2 receives what layer 1 computed, not the parameters layer 1 used."
+        },
+        {
+          "key": "d",
+          "text": "`layer1_outputs.T`",
+          "correct": false,
+          "feedback": "The layer-1 output already has one row per sample, shape $(N, 3)$, which is what the product with `weights2.T` needs. Transposing it would put the samples in the columns."
+        }
+      ],
+      "explanation": "Section 4 writes the chain as $\\mathbf{Z}_1 = \\mathbf{X} \\mathbf{W}_1^\\top + \\mathbf{b}_1$ followed by $\\mathbf{Z}_2 = \\mathbf{Z}_1 \\mathbf{W}_2^\\top + \\mathbf{b}_2$: the input of the second layer is the output of the first. In the code of section 8 that output is the array `layer1_outputs`.",
+      "hints": [
+        "Ask which array holds what layer 1 computed."
+      ]
+    },
+    {
+      "id": "nn-003-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "shape-rule",
+        "weights"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In a two-layer network, every neuron of layer 2 owns one weight for each number it receives. How many weights does each layer-2 neuron have?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "One per sample in the batch",
+          "correct": false,
+          "feedback": "The batch size sets the number of rows of every array flowing through the network, not the size of any weight matrix. The same weights serve a batch of 1 or of 1,000."
+        },
+        {
+          "key": "b",
+          "text": "One per neuron of layer 1",
+          "correct": true,
+          "feedback": "Right. Layer 2 receives one number from each neuron of layer 1, so each of its neurons needs exactly that many weights."
+        },
+        {
+          "key": "c",
+          "text": "One per feature of the original input",
+          "correct": false,
+          "feedback": "That is the count for layer 1. Layer 2 never sees the original features, only the outputs of layer 1."
+        },
+        {
+          "key": "d",
+          "text": "One per neuron of layer 2",
+          "correct": false,
+          "feedback": "The number of neurons in layer 2 sets how many rows its weight matrix has, one row per neuron. The weights per neuron come from the layer before it."
+        }
+      ],
+      "explanation": "Section 3 states the rule: the number of weights per neuron in layer $\\ell$ equals the number of neurons in layer $\\ell - 1$. With 5 neurons in layer 1 and 2 neurons in layer 2, every neuron of layer 2 has 5 weights, whatever the batch size and whatever the number of original features.",
+      "hints": [
+        "Ask where the numbers arriving at a layer-2 neuron come from."
+      ]
+    },
+    {
+      "id": "nn-003-q03",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "shapes",
+        "batch"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A dense layer with 5 neurons receives a batch of 7 samples from a previous layer of 9 neurons. What is the shape of its output array?",
+      "answer": {
+        "model": "(7, 5): one row per sample and one column per neuron.",
+        "accept": [
+          "^(?![\\s\\S]*(?:\\b(?:not|never)\\b|n['’]t\\b)\\s*(?:(?:be|of|a|an|the|shape|have|has|equal|to|just|simply|exactly)\\s+){0,3}[(\\[$]*\\s*7(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)5\\b)(?![\\s\\S]*(?:^|[.;\\n])(?:(?!\\b(?:not|never|than|instead of)\\b|n['’]t\\b)[^.;\\n])*?\\b(?:5(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)7|9(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)7)\\b)(?![\\s\\S]*\\boutput\\b[^.;\\n0-9]{0,30}\\b(?:7(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)9|9(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)5|5(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)9)\\b)(?![\\s\\S]*[0-9][\\s)$,]*\\bor\\b[\\s$(]*[0-9])(?=[\\s\\S]*(?:\\b7(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)5\\b(?!\\.[0-9])(?!\\s*(?:,|x|×|by)\\s*[0-9])|\\b7\\s+rows?\\b[^.;\\n0-9]{0,40}\\b5\\s+col(?:umn)?s?\\b))"
+        ]
+      },
+      "explanation": "Section 2 gives the output of a dense layer as shape $(N, m)$, one row per sample and one column per neuron, so 7 samples and 5 neurons give $(7, 5)$. The 9 neurons of the previous layer set how many weights each neuron needs: they appear in the layer's weight matrix, $(5, 9)$, and not in its output.",
+      "hints": [
+        "Each sample keeps its own row; ask what gives the output its columns."
+      ]
+    },
+    {
+      "id": "nn-003-q04",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "3.1",
+      "est_minutes": 3,
+      "tags": [
+        "linearity",
+        "depth"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network is a stack of three dense layers with no activation function anywhere. A fourth dense layer, with as many neurons as the third and again no activation, is appended. What does the network gain?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The ability to fit curved patterns, because every extra layer composes one more function.",
+          "correct": false,
+          "feedback": "Composition adds new shapes only when some of the composed functions are non-linear. A composition of linear layers is a linear layer, so no curved pattern becomes reachable."
+        },
+        {
+          "key": "b",
+          "text": "More parameters and multiplications, but no function beyond that of one dense layer.",
+          "correct": true,
+          "feedback": "Right. The four layers still collapse into a single weight matrix and a single bias vector; only the cost and the parameter count have grown."
+        },
+        {
+          "key": "c",
+          "text": "Nothing at all, because the weights of the new layer have no effect on the output.",
+          "correct": false,
+          "feedback": "The new weights do change the numbers that come out. What stays the same is the family of functions available, which is still that of a single dense layer."
+        },
+        {
+          "key": "d",
+          "text": "A non-linearity, because a product of several weight matrices is no longer a matrix.",
+          "correct": false,
+          "feedback": "A product of matrices is a matrix, which is exactly why the stack collapses. A non-linearity has to be added on purpose, as an activation between layers."
+        }
+      ],
+      "explanation": "Section 3.1 says that stacking does not add expressive power on its own, because a composition of linear maps is a linear map, and section 4 extends the collapse to any depth. What an extra layer does add is counted in sections 3.1 and 6: $m_\\ell \\cdot m_{\\ell-1}$ more multiplications per sample and $m_\\ell (m_{\\ell-1} + 1)$ more parameters.",
+      "hints": [
+        "Ask what kind of function results when one linear function is applied to the output of another."
+      ]
+    },
+    {
+      "id": "nn-003-q05",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "linearity",
+        "collapse"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Two dense layers are chained with no activation function between them. In one sentence, say why the pair can compute nothing that a single dense layer could not.",
+      "answer": {
+        "model": "Substituting the first layer's output into the second gives $\\mathbf{Z}_2 = \\mathbf{X} (\\mathbf{W}_1^\\top \\mathbf{W}_2^\\top) + (\\mathbf{b}_1 \\mathbf{W}_2^\\top + \\mathbf{b}_2)$, which is the formula of one dense layer: a composition of linear maps is itself linear.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:is|are|becomes?|turns?|gets?)\\s+(?:not|no longer|never)\\s+(?:just\\s+|simply\\s+)?(?:a\\s+|an\\s+|itself\\s+)?(?:linear|affine|equivalent|the same|equal|matrix\\b|single\\b|one\\b|another\\b))(?![\\s\\S]*\\b(?:isn't|aren't|is not|are not|cannot be|can't be|can not be)\\s+(?:a\\s+|itself\\s+)?(?:linear\\b|affine\\b|equivalent|the same|equal|collapsed|reduced|merged|written|rewritten|combined))(?![\\s\\S]*\\b(?:is|are|becomes?|turns?)\\s+(?:itself\\s+)?non-?linear)(?![\\s\\S]*\\b(?:only if|only when|as long as|provided)\\b(?![^.;]{0,30}\\b(?:no|not|without|lacks?|absent|missing)\\b)[^.;]{0,40}\\b(?:activation|non-?linear))(?![\\s\\S]*\\b(?:one|a single|single)\\s+(?:dense\\s+|linear\\s+)?layer\\s+(?:cannot|can't|can not|could not|couldn't|is unable to)\\b)(?![\\s\\S]*(?<!no )(?<!not )(?<!never )\\bmore (?:powerful|expressive|complex) than (?:one|a single|a)\\b)(?![\\s\\S]*(?:\\b(?:not|never|cannot|no longer)\\b|n['’]t\\b)\\s+(?:(?:really|actually|simply|just|ever|quite|fully|always|truly)\\s+)?(?:collaps|reduc|simplif|merg|combin|fold|amount|equal)\\w*)(?![\\s\\S]*(?:\\b(?:not|never|cannot|no longer)\\b|n['’]t\\b)\\s+(?:(?:really|actually|simply|just|ever|quite|fully|always|truly)\\s+)?(?:becom\\w*|form\\w*|giv\\w*|yield\\w*|mak\\w*|behav\\w*|act\\w*)\\s+(?:(?:just|only|like|as)\\s+)?(?:one|a single|another)\\b)[\\s\\S]*\\b(?:compos\\w+|product|chain\\w*|stack\\w*|combin\\w+|sequence|applying|apply|substitut\\w+|nest\\w+)\\b[^.;]{0,100}(?<!non-)(?<!non )\\b(?:linear|affine)\\b[^.;]{0,80}\\b(?:is|are|remains?|stays?|gives?|yields?|results? in|produces?|makes?|leaves?)\\b[^.;]{0,40}(?<!non-)(?<!non )\\b(?:linear|affine)\\b",
+          "^(?![\\s\\S]*\\b(?:is|are|becomes?|turns?|gets?)\\s+(?:not|no longer|never)\\s+(?:just\\s+|simply\\s+)?(?:a\\s+|an\\s+|itself\\s+)?(?:linear|affine|equivalent|the same|equal|matrix\\b|single\\b|one\\b|another\\b))(?![\\s\\S]*\\b(?:isn't|aren't|is not|are not|cannot be|can't be|can not be)\\s+(?:a\\s+|itself\\s+)?(?:linear\\b|affine\\b|equivalent|the same|equal|collapsed|reduced|merged|written|rewritten|combined))(?![\\s\\S]*\\b(?:is|are|becomes?|turns?)\\s+(?:itself\\s+)?non-?linear)(?![\\s\\S]*\\b(?:only if|only when|as long as|provided)\\b(?![^.;]{0,30}\\b(?:no|not|without|lacks?|absent|missing)\\b)[^.;]{0,40}\\b(?:activation|non-?linear))(?![\\s\\S]*\\b(?:one|a single|single)\\s+(?:dense\\s+|linear\\s+)?layer\\s+(?:cannot|can't|can not|could not|couldn't|is unable to)\\b)(?![\\s\\S]*(?<!no )(?<!not )(?<!never )\\bmore (?:powerful|expressive|complex) than (?:one|a single|a)\\b)(?![\\s\\S]*(?:\\b(?:not|never|cannot|no longer)\\b|n['’]t\\b)\\s+(?:(?:really|actually|simply|just|ever|quite|fully|always|truly)\\s+)?(?:collaps|reduc|simplif|merg|combin|fold|amount|equal)\\w*)(?![\\s\\S]*(?:\\b(?:not|never|cannot|no longer)\\b|n['’]t\\b)\\s+(?:(?:really|actually|simply|just|ever|quite|fully|always|truly)\\s+)?(?:becom\\w*|form\\w*|giv\\w*|yield\\w*|mak\\w*|behav\\w*|act\\w*)\\s+(?:(?:just|only|like|as)\\s+)?(?:one|a single|another)\\b)[\\s\\S]*\\b(?:two|several|multiple|both|successive|consecutive|stacked|chained)\\b[^.;]{0,30}(?<!non-)(?<!non )\\b(?:linear|affine)\\b[^.;]{0,80}\\b(?:is|are|remains?|stays?|gives?|yields?|results? in|produces?|makes?|leaves?)\\b[^.;]{0,40}(?<!non-)(?<!non )\\b(?:linear|affine)\\b",
+          "^(?![\\s\\S]*\\b(?:is|are|becomes?|turns?|gets?)\\s+(?:not|no longer|never)\\s+(?:just\\s+|simply\\s+)?(?:a\\s+|an\\s+|itself\\s+)?(?:linear|affine|equivalent|the same|equal|matrix\\b|single\\b|one\\b|another\\b))(?![\\s\\S]*\\b(?:isn't|aren't|is not|are not|cannot be|can't be|can not be)\\s+(?:a\\s+|itself\\s+)?(?:linear\\b|affine\\b|equivalent|the same|equal|collapsed|reduced|merged|written|rewritten|combined))(?![\\s\\S]*\\b(?:is|are|becomes?|turns?)\\s+(?:itself\\s+)?non-?linear)(?![\\s\\S]*\\b(?:only if|only when|as long as|provided)\\b(?![^.;]{0,30}\\b(?:no|not|without|lacks?|absent|missing)\\b)[^.;]{0,40}\\b(?:activation|non-?linear))(?![\\s\\S]*\\b(?:one|a single|single)\\s+(?:dense\\s+|linear\\s+)?layer\\s+(?:cannot|can't|can not|could not|couldn't|is unable to)\\b)(?![\\s\\S]*(?<!no )(?<!not )(?<!never )\\bmore (?:powerful|expressive|complex) than (?:one|a single|a)\\b)(?![\\s\\S]*(?:\\b(?:not|never|cannot|no longer)\\b|n['’]t\\b)\\s+(?:(?:really|actually|simply|just|ever|quite|fully|always|truly)\\s+)?(?:collaps|reduc|simplif|merg|combin|fold|amount|equal)\\w*)(?![\\s\\S]*(?:\\b(?:not|never|cannot|no longer)\\b|n['’]t\\b)\\s+(?:(?:really|actually|simply|just|ever|quite|fully|always|truly)\\s+)?(?:becom\\w*|form\\w*|giv\\w*|yield\\w*|mak\\w*|behav\\w*|act\\w*)\\s+(?:(?:just|only|like|as)\\s+)?(?:one|a single|another)\\b)[\\s\\S]*\\b(?:collaps\\w+|reduc\\w+|simplif\\w+|merg\\w+|combin\\w+|fold\\w*|rewrit\\w+|writ\\w+|express\\w*|multipl\\w+)\\b[^.;]{0,80}?\\b(?:into|to|as)\\b[^.;]{0,40}?\\b(?:one|a single|single|just one|only one|another|one big|one equivalent)\\s+(?:(?:dense |linear |equivalent |affine |combined |single )*layer|(?:weight )?matrix(?: and (?:one |a )?bias(?: vector)?)?|(?:linear|affine) (?:map|function|transformation|layer)|matrix multiplication)\\b",
+          "^(?![\\s\\S]*\\b(?:is|are|becomes?|turns?|gets?)\\s+(?:not|no longer|never)\\s+(?:just\\s+|simply\\s+)?(?:a\\s+|an\\s+|itself\\s+)?(?:linear|affine|equivalent|the same|equal|matrix\\b|single\\b|one\\b|another\\b))(?![\\s\\S]*\\b(?:isn't|aren't|is not|are not|cannot be|can't be|can not be)\\s+(?:a\\s+|itself\\s+)?(?:linear\\b|affine\\b|equivalent|the same|equal|collapsed|reduced|merged|written|rewritten|combined))(?![\\s\\S]*\\b(?:is|are|becomes?|turns?)\\s+(?:itself\\s+)?non-?linear)(?![\\s\\S]*\\b(?:only if|only when|as long as|provided)\\b(?![^.;]{0,30}\\b(?:no|not|without|lacks?|absent|missing)\\b)[^.;]{0,40}\\b(?:activation|non-?linear))(?![\\s\\S]*\\b(?:one|a single|single)\\s+(?:dense\\s+|linear\\s+)?layer\\s+(?:cannot|can't|can not|could not|couldn't|is unable to)\\b)(?![\\s\\S]*(?<!no )(?<!not )(?<!never )\\bmore (?:powerful|expressive|complex) than (?:one|a single|a)\\b)(?![\\s\\S]*(?:\\b(?:not|never|cannot|no longer)\\b|n['’]t\\b)\\s+(?:(?:really|actually|simply|just|ever|quite|fully|always|truly)\\s+)?(?:collaps|reduc|simplif|merg|combin|fold|amount|equal)\\w*)(?![\\s\\S]*(?:\\b(?:not|never|cannot|no longer)\\b|n['’]t\\b)\\s+(?:(?:really|actually|simply|just|ever|quite|fully|always|truly)\\s+)?(?:becom\\w*|form\\w*|giv\\w*|yield\\w*|mak\\w*|behav\\w*|act\\w*)\\s+(?:(?:just|only|like|as)\\s+)?(?:one|a single|another)\\b)[\\s\\S]*\\b(?:equals?|same as|identical to|equivalent to|amounts? to|(?:is|are) (?:just|still|itself|themselves|really|effectively|simply|only|again|exactly|together)|becomes?|(?:behaves?|acts?) (?:like|as)|(?:form|formula|equation|expression) of|(?:which|that|it|this|result|pair|stack|whole|thing|network|composition|product|together|both|they|layers)\\s+(?:is|are))\\s+(?:(?:just|still|only|simply|exactly|again|itself|really|effectively|together|then)\\s+)*\\b(?:one|a single|single|just one|only one|another|one big|one equivalent)\\s+(?:(?:dense |linear |equivalent |affine |combined |single )*layer|(?:weight )?matrix(?: and (?:one |a )?bias(?: vector)?)?|(?:linear|affine) (?:map|function|transformation|layer)|matrix multiplication)\\b",
+          "^(?![\\s\\S]*\\b(?:is|are|becomes?|turns?|gets?)\\s+(?:not|no longer|never)\\s+(?:just\\s+|simply\\s+)?(?:a\\s+|an\\s+|itself\\s+)?(?:linear|affine|equivalent|the same|equal|matrix\\b|single\\b|one\\b|another\\b))(?![\\s\\S]*\\b(?:isn't|aren't|is not|are not|cannot be|can't be|can not be)\\s+(?:a\\s+|itself\\s+)?(?:linear\\b|affine\\b|equivalent|the same|equal|collapsed|reduced|merged|written|rewritten|combined))(?![\\s\\S]*\\b(?:is|are|becomes?|turns?)\\s+(?:itself\\s+)?non-?linear)(?![\\s\\S]*\\b(?:only if|only when|as long as|provided)\\b(?![^.;]{0,30}\\b(?:no|not|without|lacks?|absent|missing)\\b)[^.;]{0,40}\\b(?:activation|non-?linear))(?![\\s\\S]*\\b(?:one|a single|single)\\s+(?:dense\\s+|linear\\s+)?layer\\s+(?:cannot|can't|can not|could not|couldn't|is unable to)\\b)(?![\\s\\S]*(?<!no )(?<!not )(?<!never )\\bmore (?:powerful|expressive|complex) than (?:one|a single|a)\\b)(?![\\s\\S]*(?:\\b(?:not|never|cannot|no longer)\\b|n['’]t\\b)\\s+(?:(?:really|actually|simply|just|ever|quite|fully|always|truly)\\s+)?(?:collaps|reduc|simplif|merg|combin|fold|amount|equal)\\w*)(?![\\s\\S]*(?:\\b(?:not|never|cannot|no longer)\\b|n['’]t\\b)\\s+(?:(?:really|actually|simply|just|ever|quite|fully|always|truly)\\s+)?(?:becom\\w*|form\\w*|giv\\w*|yield\\w*|mak\\w*|behav\\w*|act\\w*)\\s+(?:(?:just|only|like|as)\\s+)?(?:one|a single|another)\\b)[\\s\\S]*\\bproduct of (?:the )?(?:two |both )?(?:weight )?matri(?:x|ces)\\b[^.;]{0,40}\\b(?:is|gives|yields)\\b[^.;]{0,20}\\b(?:a|another|one|a single|just a|just another|still a)\\s+(?:weight |single )?matrix\\b",
+          "^(?![\\s\\S]*\\b(?:is|are|becomes?|turns?|gets?)\\s+(?:not|no longer|never)\\s+(?:just\\s+|simply\\s+)?(?:a\\s+|an\\s+|itself\\s+)?(?:linear|affine|equivalent|the same|equal|matrix\\b|single\\b|one\\b|another\\b))(?![\\s\\S]*\\b(?:isn't|aren't|is not|are not|cannot be|can't be|can not be)\\s+(?:a\\s+|itself\\s+)?(?:linear\\b|affine\\b|equivalent|the same|equal|collapsed|reduced|merged|written|rewritten|combined))(?![\\s\\S]*\\b(?:is|are|becomes?|turns?)\\s+(?:itself\\s+)?non-?linear)(?![\\s\\S]*\\b(?:only if|only when|as long as|provided)\\b(?![^.;]{0,30}\\b(?:no|not|without|lacks?|absent|missing)\\b)[^.;]{0,40}\\b(?:activation|non-?linear))(?![\\s\\S]*\\b(?:one|a single|single)\\s+(?:dense\\s+|linear\\s+)?layer\\s+(?:cannot|can't|can not|could not|couldn't|is unable to)\\b)(?![\\s\\S]*(?<!no )(?<!not )(?<!never )\\bmore (?:powerful|expressive|complex) than (?:one|a single|a)\\b)(?![\\s\\S]*(?:\\b(?:not|never|cannot|no longer)\\b|n['’]t\\b)\\s+(?:(?:really|actually|simply|just|ever|quite|fully|always|truly)\\s+)?(?:collaps|reduc|simplif|merg|combin|fold|amount|equal)\\w*)(?![\\s\\S]*(?:\\b(?:not|never|cannot|no longer)\\b|n['’]t\\b)\\s+(?:(?:really|actually|simply|just|ever|quite|fully|always|truly)\\s+)?(?:becom\\w*|form\\w*|giv\\w*|yield\\w*|mak\\w*|behav\\w*|act\\w*)\\s+(?:(?:just|only|like|as)\\s+)?(?:one|a single|another)\\b)[\\s\\S]*X\\s*[·.*@]?\\s*\\(?\\s*W\\}?_?\\{?1\\}?[^=;]{0,25}W\\}?_?\\{?2\\}?[\\s\\S]{0,60}b\\}?_?\\{?1\\}?[^=;]{0,25}W\\}?_?\\{?2\\}?[^=;]{0,25}b\\}?_?\\{?2\\}?",
+          "^(?![\\s\\S]*\\b(?:is|are|becomes?|turns?|gets?)\\s+(?:not|no longer|never)\\s+(?:just\\s+|simply\\s+)?(?:a\\s+|an\\s+|itself\\s+)?(?:linear|affine|equivalent|the same|equal|matrix\\b|single\\b|one\\b|another\\b))(?![\\s\\S]*\\b(?:isn't|aren't|is not|are not|cannot be|can't be|can not be)\\s+(?:a\\s+|itself\\s+)?(?:linear\\b|affine\\b|equivalent|the same|equal|collapsed|reduced|merged|written|rewritten|combined))(?![\\s\\S]*\\b(?:is|are|becomes?|turns?)\\s+(?:itself\\s+)?non-?linear)(?![\\s\\S]*\\b(?:only if|only when|as long as|provided)\\b(?![^.;]{0,30}\\b(?:no|not|without|lacks?|absent|missing)\\b)[^.;]{0,40}\\b(?:activation|non-?linear))(?![\\s\\S]*\\b(?:one|a single|single)\\s+(?:dense\\s+|linear\\s+)?layer\\s+(?:cannot|can't|can not|could not|couldn't|is unable to)\\b)(?![\\s\\S]*(?<!no )(?<!not )(?<!never )\\bmore (?:powerful|expressive|complex) than (?:one|a single|a)\\b)(?![\\s\\S]*(?:\\b(?:not|never|cannot|no longer)\\b|n['’]t\\b)\\s+(?:(?:really|actually|simply|just|ever|quite|fully|always|truly)\\s+)?(?:collaps|reduc|simplif|merg|combin|fold|amount|equal)\\w*)(?![\\s\\S]*(?:\\b(?:not|never|cannot|no longer)\\b|n['’]t\\b)\\s+(?:(?:really|actually|simply|just|ever|quite|fully|always|truly)\\s+)?(?:becom\\w*|form\\w*|giv\\w*|yield\\w*|mak\\w*|behav\\w*|act\\w*)\\s+(?:(?:just|only|like|as)\\s+)?(?:one|a single|another)\\b)[\\s\\S]*W\\}?_?\\{?2\\}?[^=;]{0,15}W\\}?_?\\{?1\\}?[^=;]{0,15}x[^=;]{0,15}\\+[^=;]{0,15}W\\}?_?\\{?2\\}?[^=;]{0,15}b\\}?_?\\{?1\\}?[^=;]{0,15}\\+[^=;]{0,15}b\\}?_?\\{?2\\}?",
+          "^(?![\\s\\S]*\\b(?:is|are|becomes?|turns?|gets?)\\s+(?:not|no longer|never)\\s+(?:just\\s+|simply\\s+)?(?:a\\s+|an\\s+|itself\\s+)?(?:linear|affine|equivalent|the same|equal|matrix\\b|single\\b|one\\b|another\\b))(?![\\s\\S]*\\b(?:isn't|aren't|is not|are not|cannot be|can't be|can not be)\\s+(?:a\\s+|itself\\s+)?(?:linear\\b|affine\\b|equivalent|the same|equal|collapsed|reduced|merged|written|rewritten|combined))(?![\\s\\S]*\\b(?:is|are|becomes?|turns?)\\s+(?:itself\\s+)?non-?linear)(?![\\s\\S]*\\b(?:only if|only when|as long as|provided)\\b(?![^.;]{0,30}\\b(?:no|not|without|lacks?|absent|missing)\\b)[^.;]{0,40}\\b(?:activation|non-?linear))(?![\\s\\S]*\\b(?:one|a single|single)\\s+(?:dense\\s+|linear\\s+)?layer\\s+(?:cannot|can't|can not|could not|couldn't|is unable to)\\b)(?![\\s\\S]*(?<!no )(?<!not )(?<!never )\\bmore (?:powerful|expressive|complex) than (?:one|a single|a)\\b)(?![\\s\\S]*(?:\\b(?:not|never|cannot|no longer)\\b|n['’]t\\b)\\s+(?:(?:really|actually|simply|just|ever|quite|fully|always|truly)\\s+)?(?:collaps|reduc|simplif|merg|combin|fold|amount|equal)\\w*)(?![\\s\\S]*(?:\\b(?:not|never|cannot|no longer)\\b|n['’]t\\b)\\s+(?:(?:really|actually|simply|just|ever|quite|fully|always|truly)\\s+)?(?:becom\\w*|form\\w*|giv\\w*|yield\\w*|mak\\w*|behav\\w*|act\\w*)\\s+(?:(?:just|only|like|as)\\s+)?(?:one|a single|another)\\b)[\\s\\S]*(?<!non-)(?<!non )\\b(?:linear|affine)\\b\\s+(?:map|function|transformation|layer)s?\\s+of\\s+(?:(?:a|an|another|the)\\s+)?(?:linear|affine)\\s+(?:map|function|transformation|layer)s?\\b[^.;]{0,40}\\b(?:is|are|remains?|stays?|gives?|yields?|results? in|produces?|makes?|leaves?)\\b[^.;]{0,40}(?<!non-)(?<!non )\\b(?:linear|affine)\\b"
+        ]
+      },
+      "explanation": "Section 4 substitutes $\\mathbf{Z}_1$ into the second layer and multiplies out: the result is $\\mathbf{X} \\mathbf{W}_\\ast + \\mathbf{b}_\\ast$ with $\\mathbf{W}_\\ast = \\mathbf{W}_1^\\top \\mathbf{W}_2^\\top$ and $\\mathbf{b}_\\ast = \\mathbf{b}_1 \\mathbf{W}_2^\\top + \\mathbf{b}_2$, a single dense layer. A complete answer says that the composition is again linear, or that the two layers collapse into one; saying only that each layer is linear stops halfway.",
+      "hints": [
+        "Write the formula of the second layer with the formula of the first layer in place of its input.",
+        "Multiply out and look at the form of the result."
+      ]
+    },
+    {
+      "id": "nn-003-q06",
+      "type": "short",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "shape-rule",
+        "weights"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network takes 4 input features into a first layer of 5 neurons and then a second layer of 2 neurons. In the layout of this post, one row of weights per neuron, give the shapes of $\\mathbf{W}_1$ and $\\mathbf{W}_2$, in that order.",
+      "answer": {
+        "model": "$\\mathbf{W}_1$ has shape $(5, 4)$ and $\\mathbf{W}_2$ has shape $(2, 5)$.",
+        "accept": [
+          "^(?![\\s\\S]*(?:\\b(?:not|never)\\b|n['’]t\\b)\\s*(?:(?:be|of|a|an|the|shape|have|has|equal|to|just|simply|exactly)\\s+){0,3}[(\\[$]*\\s*(?:5(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)4|2(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)5)\\b)(?![\\s\\S]*(?:^|[.;\\n])(?:(?!\\b(?:not|never|than|instead of)\\b|n['’]t\\b)[^.;\\n])*?\\b(?:4(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)5\\b|5(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)2\\b|2(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)4\\b|4(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)2\\b(?!\\s*(?:,|x|×|by))))(?![\\s\\S]*(?:W\\}?_?\\{?2\\}?|weights_?2)[\\s\\S]*(?:W\\}?_?\\{?1\\}?|weights_?1))[\\s\\S]*?\\b5(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)4\\b[\\s\\S]*?\\b2(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)5\\b",
+          "^(?![\\s\\S]*(?:\\b(?:not|never)\\b|n['’]t\\b)\\s*(?:(?:be|of|a|an|the|shape|have|has|equal|to|just|simply|exactly)\\s+){0,3}[(\\[$]*\\s*(?:5(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)4|2(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)5)\\b)(?![\\s\\S]*(?:^|[.;\\n])(?:(?!\\b(?:not|never|than|instead of)\\b|n['’]t\\b)[^.;\\n])*?\\b(?:4(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)5\\b|5(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)2\\b|2(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)4\\b|4(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)2\\b(?!\\s*(?:,|x|×|by))))(?=[\\s\\S]*(?:W\\}?_?\\{?1\\}?|weights_?1)[^0-9]{0,30}5(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)4\\b)(?=[\\s\\S]*(?:W\\}?_?\\{?2\\}?|weights_?2)[^0-9]{0,30}2(?:\\s*(?:,|x|×|by|\\*)\\s*|\\s*rows?\\s*(?:and|by|x|,)?\\s*)5\\b)"
+        ]
+      },
+      "explanation": "By the rule of section 3, a weight matrix has one row per neuron of its layer and one column per number each neuron receives. Layer 1 has 5 neurons reading 4 features, so $\\mathbf{W}_1$ is $(5, 4)$; layer 2 has 2 neurons reading the 5 outputs of layer 1, so $\\mathbf{W}_2$ is $(2, 5)$. The shapes $(4, 5)$ and $(5, 2)$ are the same matrices in the layout post 04 adopts, one column per neuron.",
+      "hints": [
+        "Rows count the neurons of the layer; columns count the numbers each neuron receives.",
+        "Layer 2 receives the outputs of layer 1, not the original features."
+      ]
+    },
+    {
+      "id": "nn-003-q07",
+      "type": "match",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 4,
+      "tags": [
+        "shapes",
+        "shape-diary"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A batch of 5 samples with 4 features each passes through a first layer of 6 neurons and a second layer of 2 neurons, with weights stored one row per neuron. Match each array with its shape.",
+      "left": [
+        {
+          "key": "a",
+          "text": "$\\mathbf{X}$, the input batch"
+        },
+        {
+          "key": "b",
+          "text": "$\\mathbf{W}_1$"
+        },
+        {
+          "key": "c",
+          "text": "$\\mathbf{b}_1$"
+        },
+        {
+          "key": "d",
+          "text": "$\\mathbf{Z}_1$, the layer-1 output"
+        },
+        {
+          "key": "e",
+          "text": "$\\mathbf{W}_2$"
+        },
+        {
+          "key": "f",
+          "text": "$\\mathbf{Z}_2$, the layer-2 output"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "$(5, 4)$"
+        },
+        {
+          "key": "q",
+          "text": "$(6, 4)$"
+        },
+        {
+          "key": "r",
+          "text": "$(6,)$"
+        },
+        {
+          "key": "s",
+          "text": "$(5, 6)$"
+        },
+        {
+          "key": "t",
+          "text": "$(2, 6)$"
+        },
+        {
+          "key": "u",
+          "text": "$(5, 2)$"
+        },
+        {
+          "key": "v",
+          "text": "$(4, 6)$"
+        },
+        {
+          "key": "w",
+          "text": "$(6, 2)$"
+        },
+        {
+          "key": "x",
+          "text": "$(2,)$"
+        }
+      ],
+      "answer": {
+        "a": "p",
+        "b": "q",
+        "c": "r",
+        "d": "s",
+        "e": "t",
+        "f": "u"
+      },
+      "explanation": "Section 5 traces the shapes: the batch is $(N, n) = (5, 4)$; every weight matrix is (neurons, inputs), so $\\mathbf{W}_1$ is $(6, 4)$ and $\\mathbf{W}_2$ is $(2, 6)$; a bias has one entry per neuron, so $\\mathbf{b}_1$ is $(6,)$; and every layer output is $(N, m_\\ell)$, here $(5, 6)$ and then $(5, 2)$. The shapes $(4, 6)$ and $(6, 2)$ are the weight matrices with their two sizes swapped, and $(2,)$ is the shape of $\\mathbf{b}_2$, which is not on the list.",
+      "hints": [
+        "Every array that flows through the network has the batch size as its first number.",
+        "A weight matrix has one row per neuron of its own layer."
+      ]
+    },
+    {
+      "id": "nn-003-q08",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 5,
+      "tags": [
+        "parameter-count",
+        "shape-rule"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network maps 4 input features to a first layer of 8 neurons and then to a second layer of 3 neurons. Count the weights of layer 1, the weights of layer 2, the biases of both layers together, and the parameters of the whole network.",
+      "answer": {
+        "parts": [
+          {
+            "label": "weights of layer 1",
+            "value": 32,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "weights of layer 2",
+            "value": 24,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "biases, both layers",
+            "value": 11,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "parameters in total",
+            "value": 67,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 6, $\\sum_\\ell m_\\ell (m_{\\ell-1} + 1)$ with $n = 4$, $m_1 = 8$, $m_2 = 3$: $8 \\cdot 5 + 3 \\cdot 9 = 67$. Checked by summing the sizes of NumPy arrays of shapes (8, 4), (8,), (3, 8), (3,).",
+      "explanation": "Section 6: layer $\\ell$ owns $m_\\ell \\cdot m_{\\ell-1}$ weights and $m_\\ell$ biases. Layer 1 has $8 \\cdot 4 = 32$ weights and layer 2 has $3 \\cdot 8 = 24$, so 56 weights in all; the biases number $8 + 3 = 11$, one per neuron; the total is $56 + 11 = 67$. Stopping at 56 counts the weights and forgets that every neuron also owns a bias.",
+      "hints": [
+        "Each neuron owns one weight per number it receives, and one bias.",
+        "Layer $\\ell$ has $m_\\ell \\cdot m_{\\ell-1}$ weights and $m_\\ell$ biases; for layer 1 the previous size is the feature count."
+      ]
+    },
+    {
+      "id": "nn-003-q09",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "8",
+      "est_minutes": 6,
+      "tags": [
+        "forward-pass",
+        "trace"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Trace the script in the stimulus by hand. Give the three entries of `z1` and the single entry of `z2`.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "import numpy as np\n\nx = np.array([[1.0, 2.0]])            # one sample, two features\nw1 = np.array([[1.0, 0.0],\n               [0.0, 1.0],\n               [1.0, 1.0]])\nb1 = np.array([0.0, 1.0, -1.0])\nw2 = np.array([[1.0, -1.0, 2.0]])\nb2 = np.array([0.5])\n\nz1 = np.dot(x, w1.T) + b1\nz2 = np.dot(z1, w2.T) + b2\nprint(z1, z2)"
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "z1, first entry",
+            "value": 1,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "z1, second entry",
+            "value": 3,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "z1, third entry",
+            "value": 2,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "z2",
+            "value": 2.5,
+            "tolerance": 0.001,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Running the stimulus prints [[1. 3. 2.]] [[2.5]]. By hand, $z_1 = [1,\\ 2 + 1,\\ 3 - 1]$ and $z_2 = 1 - 3 + 4 + 0.5$.",
+      "explanation": "Each neuron of layer 1 takes a weighted sum of the sample $[1, 2]$ and adds its bias: $1 \\cdot 1 + 0 \\cdot 2 + 0 = 1$, $0 \\cdot 1 + 1 \\cdot 2 + 1 = 3$, and $1 \\cdot 1 + 1 \\cdot 2 - 1 = 2$. Layer 2 has one neuron, and it reads those three outputs, not the original two features: $1 \\cdot 1 - 1 \\cdot 3 + 2 \\cdot 2 + 0.5 = 2.5$. Handing `z1` to the second call is the chain of sections 4 and 8.",
+      "hints": [
+        "Work one layer at a time, and one neuron at a time inside a layer.",
+        "Each row of `w1` is the weights of one neuron; the neuron of layer 2 multiplies its weights by `z1`, not by `x`."
+      ]
+    },
+    {
+      "id": "nn-003-q10",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "8.1",
+      "est_minutes": 5,
+      "tags": [
+        "identity",
+        "forward-pass"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the network of this post the first sample leaves layer 1 as $[4.8, 1.21, 2.385]$, and $\\mathbf{b}_2 = [-1.0, 2.0, -0.5]$. The layer-2 weights are replaced by the matrix in the stimulus, an identity matrix with its first two rows exchanged. Give the three layer-2 outputs for that sample.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "weights2 = np.array([[0.0, 1.0, 0.0],\n                     [1.0, 0.0, 0.0],\n                     [0.0, 0.0, 1.0]])\nlayer2_outputs = np.dot(layer1_outputs, weights2.T) + biases2"
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "neuron 1",
+            "value": 0.21,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "neuron 2",
+            "value": 6.8,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "neuron 3",
+            "value": 1.885,
+            "tolerance": 0.001,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Running the stimulus on the layer-1 outputs printed by snippets/two_layer_forward.py gives [0.21, 6.8, 1.885] for the first sample: $1.21 - 1.0$, $4.8 + 2.0$, $2.385 - 0.5$.",
+      "explanation": "Each row of the weight matrix is one neuron. The first row, $[0, 1, 0]$, makes neuron 1 copy the second layer-1 output and add its own bias: $1.21 - 1.0 = 0.21$. The second row copies the first output: $4.8 + 2.0 = 6.8$. The third row is the identity's: $2.385 - 0.5 = 1.885$. As in the identity experiment of section 8.1, a layer whose neurons each copy one input only reorders and shifts what it receives.",
+      "hints": [
+        "Read the weight matrix one row at a time: each row holds the weights of one neuron.",
+        "A row with a single 1 copies the input in that position; the bias of that neuron is then added."
+      ]
+    },
+    {
+      "id": "nn-003-q11",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "8.2",
+      "est_minutes": 15,
+      "tags": [
+        "implementation",
+        "numpy",
+        "forward-pass"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "implement",
+      "language": "python",
+      "prompt": "Implement `forward(X, weights, biases)` for a stack of dense layers of any depth with no activation, in the layout of this post: `weights[k]` has one row per neuron and `biases[k]` is a 1-D array. Return a list holding the output of every layer, first layer first, so that a caller can print every intermediate shape. The input batch must not be modified.",
+      "starter": "import numpy as np\n\n\ndef forward(X, weights, biases):\n    \"\"\"Forward pass through a stack of dense layers with no activation.\n\n    X: array of shape (N, n), one sample per row.\n    weights: list of 2-D arrays, one row of weights per neuron, so weights[k] has\n        shape (neurons in that layer, inputs to that layer).\n    biases: list of 1-D arrays, biases[k] of shape (neurons in that layer,).\n    Returns a list holding the output of every layer, first layer first; the last\n    entry is the output of the network.\n    \"\"\"\n    raise NotImplementedError\n",
+      "solution": "import numpy as np\n\n\ndef forward(X, weights, biases):\n    \"\"\"Forward pass through a stack of dense layers with no activation.\n\n    X: array of shape (N, n), one sample per row.\n    weights: list of 2-D arrays, one row of weights per neuron, so weights[k] has\n        shape (neurons in that layer, inputs to that layer).\n    biases: list of 1-D arrays, biases[k] of shape (neurons in that layer,).\n    Returns a list holding the output of every layer, first layer first; the last\n    entry is the output of the network.\n    \"\"\"\n    outputs = []\n    z = X\n    for w, b in zip(weights, biases):\n        z = np.dot(z, w.T) + b      # this layer's output is the next layer's input\n        outputs.append(z)\n    return outputs\n",
+      "tests": "import numpy as np\n\n# 1. The two-layer network of the post.\nX = np.array([[1.0, 2.0, 3.0, 2.5],\n              [2.0, 5.0, -1.0, 2.0],\n              [-1.5, 2.7, 3.3, -0.8]])\nw1 = np.array([[0.2, 0.8, -0.5, 1.0],\n               [0.5, -0.91, 0.26, -0.5],\n               [-0.26, -0.27, 0.17, 0.87]])\nb1 = np.array([2.0, 3.0, 0.5])\nw2 = np.array([[0.1, -0.14, 0.5],\n               [-0.5, 0.12, -0.33],\n               [-0.44, 0.73, -0.13]])\nb2 = np.array([-1.0, 2.0, -0.5])\nX_before = X.copy()\noutputs = forward(X, [w1, w2], [b1, b2])\nassert isinstance(outputs, list) and len(outputs) == 2, \"one output per layer, in a list\"\nassert np.allclose(outputs[0], [[4.8, 1.21, 2.385], [8.9, -1.81, 0.2], [1.41, 1.051, 0.026]]), outputs[0]\nassert np.allclose(outputs[1], [[0.5031, -1.04185, -2.03875],\n                                [0.2434, -2.7332, -5.7633],\n                                [-0.99314, 1.41254, -0.35655]]), \"layer 2 must read layer 1's output through w2.T\"\nassert np.array_equal(X, X_before), \"the input batch must not be modified\"\n\n# 2. A deeper stack with layers of different widths: every shape is (N, neurons).\nrng = np.random.default_rng(3)\nsizes = [4, 6, 5, 3, 4, 2]\nweights = [rng.standard_normal((m, n)) for n, m in zip(sizes[:-1], sizes[1:])]\nbiases = [rng.standard_normal(m) for m in sizes[1:]]\nX = rng.standard_normal((7, 4))\noutputs = forward(X, weights, biases)\nassert [o.shape for o in outputs] == [(7, 6), (7, 5), (7, 3), (7, 4), (7, 2)], [o.shape for o in outputs]\nexpected = X\nfor w, b, got in zip(weights, biases, outputs):\n    expected = expected @ w.T + b\n    assert np.allclose(got, expected), \"a layer's output disagrees with the chained reference\"\n\n# 3. A single layer is a stack of depth one.\noutputs = forward(X, weights[:1], biases[:1])\nassert len(outputs) == 1 and np.allclose(outputs[0], X @ weights[0].T + biases[0])\nprint(\"all tests passed\")\n",
+      "explanation": "Section 8.2 runs a forward pass of any depth as one line inside a loop, where the output of each layer becomes the input of the next. The solution also keeps every intermediate array in a list, so the shapes $(N, m_1)$, $(N, m_2)$ and so on of section 5 can be checked after the call. The tests run the post's two-layer network, a five-layer stack with layers of different widths, and a single layer.",
+      "hints": [
+        "Keep one variable for the array currently flowing through the stack and update it once per layer.",
+        "Each layer applies the call of section 8 to the previous layer's output; append each result to the list before moving on."
+      ]
+    },
+    {
+      "id": "nn-003-q12",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8.1",
+      "est_minutes": 20,
+      "tags": [
+        "implementation",
+        "numpy",
+        "collapse"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "implement",
+      "language": "python",
+      "prompt": "Implement `collapse(weights, biases)`. Given a stack of dense layers of any depth with no activation, in the layout of this post (`weights[k]` has one row per neuron, `biases[k]` is 1-D), return the weight matrix `W` and bias `b` of the single dense layer, in the same layout, that computes the same function: `np.dot(X, W.T) + b` must equal the output of the whole stack for every batch `X`.",
+      "starter": "import numpy as np\n\n\ndef collapse(weights, biases):\n    \"\"\"Single dense layer equivalent to a stack of dense layers with no activation.\n\n    weights: list of 2-D arrays, one row of weights per neuron, so weights[k] has\n        shape (neurons in that layer, inputs to that layer).\n    biases: list of 1-D arrays, biases[k] of shape (neurons in that layer,).\n    Returns (W, b) in the same layout, W of shape (neurons in the last layer,\n    inputs to the first layer) and b of shape (neurons in the last layer,), such\n    that np.dot(X, W.T) + b equals the output of the whole stack for any batch X.\n    \"\"\"\n    raise NotImplementedError\n",
+      "solution": "import numpy as np\n\n\ndef collapse(weights, biases):\n    \"\"\"Single dense layer equivalent to a stack of dense layers with no activation.\n\n    weights: list of 2-D arrays, one row of weights per neuron, so weights[k] has\n        shape (neurons in that layer, inputs to that layer).\n    biases: list of 1-D arrays, biases[k] of shape (neurons in that layer,).\n    Returns (W, b) in the same layout, W of shape (neurons in the last layer,\n    inputs to the first layer) and b of shape (neurons in the last layer,), such\n    that np.dot(X, W.T) + b equals the output of the whole stack for any batch X.\n    \"\"\"\n    W = weights[0]\n    b = biases[0]\n    for w_next, b_next in zip(weights[1:], biases[1:]):\n        b = np.dot(w_next, b) + b_next      # the old bias passes through the new layer\n        W = np.dot(w_next, W)               # rows of the new layer combine the rows so far\n    return W, b\n",
+      "tests": "import numpy as np\n\n\ndef _stack_output(X, weights, biases):\n    z = X\n    for w, b in zip(weights, biases):\n        z = np.dot(z, w.T) + b\n    return z\n\n\n# 1. The two-layer network of the post: W is W2 . W1 and b is b1 . W2^T + b2.\nX = np.array([[1.0, 2.0, 3.0, 2.5],\n              [2.0, 5.0, -1.0, 2.0],\n              [-1.5, 2.7, 3.3, -0.8]])\nw1 = np.array([[0.2, 0.8, -0.5, 1.0],\n               [0.5, -0.91, 0.26, -0.5],\n               [-0.26, -0.27, 0.17, 0.87]])\nb1 = np.array([2.0, 3.0, 0.5])\nw2 = np.array([[0.1, -0.14, 0.5],\n               [-0.5, 0.12, -0.33],\n               [-0.44, 0.73, -0.13]])\nb2 = np.array([-1.0, 2.0, -0.5])\nW, b = collapse([w1, w2], [b1, b2])\nassert W.shape == (3, 4), W.shape\nassert b.shape == (3,), b.shape\nassert np.allclose(W, [[-0.18, 0.0724, -0.0014, 0.605],\n                       [0.0458, -0.4201, 0.2251, -0.8471],\n                       [0.3108, -0.9812, 0.3877, -0.9181]]), W\nassert np.allclose(b, [-0.97, 1.195, 0.745]), b\nassert np.allclose(np.dot(X, W.T) + b, _stack_output(X, [w1, w2], [b1, b2]))\n\n# 2. Five layers of different widths collapse to one layer from 4 inputs to 2 neurons.\nrng = np.random.default_rng(5)\nsizes = [4, 6, 5, 3, 4, 2]\nweights = [rng.standard_normal((m, n)) for n, m in zip(sizes[:-1], sizes[1:])]\nbiases = [rng.standard_normal(m) for m in sizes[1:]]\nkept = [w.copy() for w in weights]\nW, b = collapse(weights, biases)\nassert W.shape == (2, 4) and b.shape == (2,), (W.shape, b.shape)\nX = rng.standard_normal((9, 4))\nassert np.allclose(np.dot(X, W.T) + b, _stack_output(X, weights, biases)), \"the single layer does not reproduce the stack\"\nassert all(np.array_equal(w, k) for w, k in zip(weights, kept)), \"the stack's weights must not be modified\"\n\n# 3. A stack of one layer collapses to itself.\nW, b = collapse(weights[:1], biases[:1])\nassert np.allclose(W, weights[0]) and np.allclose(b, biases[0])\nprint(\"all tests passed\")\n",
+      "explanation": "Section 4 collapses two layers into $\\mathbf{W}_\\ast = \\mathbf{W}_1^\\top \\mathbf{W}_2^\\top$ and $\\mathbf{b}_\\ast = \\mathbf{b}_1 \\mathbf{W}_2^\\top + \\mathbf{b}_2$, and notes that in the one-row-per-neuron layout the same layer stores $\\mathbf{W}_\\ast^\\top = \\mathbf{W}_2 \\mathbf{W}_1$. Repeating the substitution one layer at a time gives the loop of the solution: the bias so far passes through the next layer and that layer's bias is added, and the weights so far are multiplied on the left by the next layer's matrix. The tests check the post's numbers, a five-layer stack, and a stack of one layer.",
+      "hints": [
+        "Collapse two layers first, then treat the result as the first layer of a shorter stack.",
+        "In this layout the combined weight of two layers is the second layer's matrix times the first layer's, and the first bias has to pass through the second layer before the second bias is added.",
+        "Check the result on shapes: for layer sizes $4 \\to 3 \\to 3$ the returned `W` must be $(3, 4)$."
+      ]
+    },
+    {
+      "id": "nn-003-q13",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o4",
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 15,
+      "tags": [
+        "derivation",
+        "collapse",
+        "parameter-count"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "derive",
+      "prompt": "Three dense layers with no activations map $n = 5$ features to $m_1 = 4$, $m_2 = 3$, and $m_3 = 2$ neurons, in the layout of this post. Starting from $\\mathbf{Z}_\\ell = \\mathbf{Z}_{\\ell-1} \\mathbf{W}_\\ell^\\top + \\mathbf{b}_\\ell$, derive the single equivalent layer $\\mathbf{Z}_3 = \\mathbf{X} \\mathbf{W}_\\ast + \\mathbf{b}_\\ast$: give $\\mathbf{W}_\\ast$ and $\\mathbf{b}_\\ast$ in terms of the three weight matrices and bias vectors, state the shape of each, and count the parameters of the three-layer stack and of the equivalent layer.",
+      "answer_length": "half a page",
+      "solution": "1. **The three layers.** $\\mathbf{Z}_1 = \\mathbf{X} \\mathbf{W}_1^\\top + \\mathbf{b}_1$, $\\mathbf{Z}_2 = \\mathbf{Z}_1 \\mathbf{W}_2^\\top + \\mathbf{b}_2$, $\\mathbf{Z}_3 = \\mathbf{Z}_2 \\mathbf{W}_3^\\top + \\mathbf{b}_3$, with $\\mathbf{W}_1$ of shape $(4, 5)$, $\\mathbf{W}_2$ of shape $(3, 4)$, and $\\mathbf{W}_3$ of shape $(2, 3)$.\n2. **First substitution.** $\\mathbf{Z}_2 = (\\mathbf{X} \\mathbf{W}_1^\\top + \\mathbf{b}_1) \\mathbf{W}_2^\\top + \\mathbf{b}_2 = \\mathbf{X} \\mathbf{W}_1^\\top \\mathbf{W}_2^\\top + \\mathbf{b}_1 \\mathbf{W}_2^\\top + \\mathbf{b}_2$.\n3. **Second substitution.** $\\mathbf{Z}_3 = \\mathbf{X} \\mathbf{W}_1^\\top \\mathbf{W}_2^\\top \\mathbf{W}_3^\\top + \\mathbf{b}_1 \\mathbf{W}_2^\\top \\mathbf{W}_3^\\top + \\mathbf{b}_2 \\mathbf{W}_3^\\top + \\mathbf{b}_3$.\n4. **The equivalent layer.** $\\mathbf{W}_\\ast = \\mathbf{W}_1^\\top \\mathbf{W}_2^\\top \\mathbf{W}_3^\\top$ is a product of shapes $(5, 4) \\cdot (4, 3) \\cdot (3, 2)$, so it has shape $(5, 2)$. $\\mathbf{b}_\\ast = \\mathbf{b}_1 \\mathbf{W}_2^\\top \\mathbf{W}_3^\\top + \\mathbf{b}_2 \\mathbf{W}_3^\\top + \\mathbf{b}_3$ is a sum of three terms of shape $(2,)$: $(4,) \\cdot (4, 3) \\cdot (3, 2)$, $(3,) \\cdot (3, 2)$, and $(2,)$.\n5. **Parameters.** The stack has $4 \\cdot (5 + 1) + 3 \\cdot (4 + 1) + 2 \\cdot (3 + 1) = 24 + 15 + 8 = 47$. The equivalent layer has $2 \\cdot (5 + 1) = 12$.\n6. **Conclusion.** The three layers compute $\\mathbf{X} \\mathbf{W}_\\ast + \\mathbf{b}_\\ast$, the formula of one dense layer from 5 inputs to 2 neurons, so their 47 parameters describe nothing that 12 could not.",
+      "rubric": [
+        {
+          "criterion": "Writes the three layer equations with weight shapes $(4, 5)$, $(3, 4)$, and $(2, 3)$",
+          "points": 1
+        },
+        {
+          "criterion": "Substitutes twice and multiplies out, keeping every bias term with the transposed weights of the layers after it",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies $\\mathbf{W}_\\ast = \\mathbf{W}_1^\\top \\mathbf{W}_2^\\top \\mathbf{W}_3^\\top$ with shape $(5, 2)$ and $\\mathbf{b}_\\ast$ with shape $(2,)$",
+          "points": 2
+        },
+        {
+          "criterion": "Counts 47 parameters in the stack and 12 in the equivalent layer",
+          "points": 2
+        },
+        {
+          "criterion": "Concludes that the stack computes nothing a single layer from 5 inputs to 2 neurons cannot",
+          "points": 1
+        }
+      ],
+      "explanation": "Section 4 does the substitution for two layers and states the general result $\\mathbf{W}_\\ast = \\mathbf{W}_1^\\top \\mathbf{W}_2^\\top \\cdots \\mathbf{W}_L^\\top$; section 6 gives the parameter count $\\sum_\\ell m_\\ell (m_{\\ell-1} + 1)$. A third layer adds one more substitution, and every earlier bias picks up one more factor on its right.",
+      "hints": [
+        "Collapse the first two layers as the post does, then feed the result into the third.",
+        "Each bias is multiplied by the transposed weights of every layer after its own; check each product with the inner-size rule."
+      ]
+    },
+    {
+      "id": "nn-003-q14",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "9",
+      "est_minutes": 4,
+      "tags": [
+        "transpose",
+        "silent-bug"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A batch of 6 samples with 5 features goes through a first layer of 4 neurons and a second layer of 4 neurons, with weights stored one row per neuron. The second call is written `np.dot(z1, w2) + b2`, without the transpose. What happens?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "NumPy raises a `ValueError`, because the inner sizes of the product no longer match.",
+          "correct": false,
+          "feedback": "That is what happens when the weight matrix is not square. Here `z1` is $(6, 4)$ and `w2` is $(4, 4)$, so the inner sizes are 4 and 4 with or without the transpose."
+        },
+        {
+          "key": "b",
+          "text": "It runs and returns the correct $(6, 4)$ output, because a square matrix equals its transpose.",
+          "correct": false,
+          "feedback": "Only a symmetric matrix equals its transpose. A square weight matrix generally has different rows and columns, so the numbers change."
+        },
+        {
+          "key": "c",
+          "text": "It runs and returns a $(6, 4)$ array of wrong numbers, built from the columns of `w2`.",
+          "correct": true,
+          "feedback": "Right. The shapes still line up, so nothing is raised, but each neuron now uses a column of `w2` where it should use its own row."
+        },
+        {
+          "key": "d",
+          "text": "It runs but returns a $(4, 6)$ array, with samples and neurons exchanged.",
+          "correct": false,
+          "feedback": "The output shape comes from the outer sizes, 6 and 4, which are unchanged. The shape is right, which is why the mistake is silent."
+        }
+      ],
+      "explanation": "Section 9 runs this mistake: with a square weight matrix the inner sizes match with or without `.T`, so NumPy raises nothing and the output keeps its shape, $(6, 4)$. The numbers are wrong because `np.dot(z1, w2)` pairs each sample with the columns of `w2`. On the first layer, whose matrix is $(4, 5)$, the same slip raises a `ValueError`.",
+      "hints": [
+        "Write the two shapes entering the product and compare their inner sizes.",
+        "When the product is legal, ask which entries of `w2` each output neuron ends up using."
+      ]
+    },
+    {
+      "id": "nn-003-q15",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "9",
+      "est_minutes": 4,
+      "tags": [
+        "bias",
+        "broadcasting",
+        "silent-bug"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The biases of a layer of 4 neurons are stored as a column, shape $(4, 1)$, and added to the layer's product of shape $(N, 4)$. The code is tried on a batch of 4 samples and then on a batch of 32. What happens in the two runs?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Both runs are correct: broadcasting matches each bias to its neuron however it is stored.",
+          "correct": false,
+          "feedback": "Broadcasting compares shapes from the last axis. A $(4, 1)$ column is matched to the rows of the output, so bias $i$ goes to sample $i$, not to neuron $i$."
+        },
+        {
+          "key": "b",
+          "text": "The 4-sample run is correct and the 32-sample run raises a `ValueError`.",
+          "correct": false,
+          "feedback": "The second half is right, but the first run is not correct: the shapes $(4, 4)$ and $(4, 1)$ combine without complaint and put bias $i$ on every neuron of sample $i$."
+        },
+        {
+          "key": "c",
+          "text": "The 4-sample run is silently wrong and the 32-sample run raises a `ValueError`.",
+          "correct": true,
+          "feedback": "Right. With $N = 4$ the column happens to fit the rows, so each sample gets one bias on all its neurons; with $N = 32$ the shapes $(32, 4)$ and $(4, 1)$ cannot be combined."
+        },
+        {
+          "key": "d",
+          "text": "Both runs raise a `ValueError`, because a $(4, 1)$ array never fits an $(N, 4)$ array.",
+          "correct": false,
+          "feedback": "It fits when $N = 4$, and when $N = 1$, which is what makes the mistake dangerous: a test on a batch as large as the layer is wide passes without an error."
+        }
+      ],
+      "explanation": "Section 9 shows both outcomes for a $(3, 1)$ bias: against a $(3, 3)$ output it runs and gives sample $i$ the bias $i$ on every neuron, and against a $(2, 3)$ output NumPy raises. A 1-D bias of shape $(m,)$ always lines up with the $m$ columns, one bias per neuron.",
+      "hints": [
+        "Compare the two shapes from the right: the last sizes are 4 and 1, the next ones $N$ and 4.",
+        "Decide for each run whether $N$ and 4 are compatible, and if they are, which axis of the output the four biases run along."
+      ]
+    },
+    {
+      "id": "nn-003-q16",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "4",
+      "est_minutes": 15,
+      "tags": [
+        "bottleneck",
+        "critique",
+        "parameter-count"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "critique",
+      "prompt": "A colleague argues: \"An activation-free stack of sizes $6 \\to 2 \\to 6$ collapses to one layer from 6 inputs to 6 neurons, so it can compute anything such a layer can, for example copying its input to its output.\" Critique the argument: say which part is right, show why this stack cannot copy its input, and compare the parameter count of the stack with that of a single dense layer from 6 inputs to 6 neurons.",
+      "answer_length": "half a page",
+      "solution": "1. **What is right.** Substituting the first layer into the second gives $\\mathbf{Z}_2 = \\mathbf{X} (\\mathbf{W}_1^\\top \\mathbf{W}_2^\\top) + (\\mathbf{b}_1 \\mathbf{W}_2^\\top + \\mathbf{b}_2)$ with $\\mathbf{W}_1$ of shape $(2, 6)$ and $\\mathbf{W}_2$ of shape $(6, 2)$, so $\\mathbf{W}_\\ast$ has shape $(6, 6)$: the stack does equal some single layer from 6 inputs to 6 neurons.\n2. **What is wrong.** The converse does not follow. Every sample passes through $\\mathbf{Z}_1$, which holds only two numbers per sample, and $\\mathbf{Z}_2$ is computed from those two numbers alone. Two samples with the same row of $\\mathbf{Z}_1$ therefore get the same output.\n3. **Why copying fails.** Layer 1 has 2 neurons reading 6 inputs, so there are different inputs that give both neurons the same weighted sums: two equations cannot pin down six unknowns. Those inputs differ, yet the stack maps them to the same output, while a copy would have to return them unchanged and therefore different. No choice of weights makes the stack copy its input. A single layer from 6 inputs to 6 neurons does it with the identity matrix as its weights and zero biases.\n4. **Parameters.** The stack has $2 \\cdot (6 + 1) + 6 \\cdot (2 + 1) = 14 + 18 = 32$ parameters and the single layer $6 \\cdot (6 + 1) = 42$. Thirty-two numbers cannot specify an arbitrary set of 42.\n5. **Verdict.** A linear stack is at most as powerful as one layer, and strictly less powerful when a hidden layer is narrower than both the input and the output. The collapse runs one way: every such stack is a layer, but not every layer is such a stack.",
+      "rubric": [
+        {
+          "criterion": "States that the stack does collapse to a single layer whose matrix $\\mathbf{W}_1^\\top \\mathbf{W}_2^\\top$ has shape $(6, 6)$",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies the two-number hidden layer as a bottleneck: the output depends on the input only through $\\mathbf{Z}_1$",
+          "points": 2
+        },
+        {
+          "criterion": "Shows that copying is impossible because different inputs with the same hidden values receive the same output",
+          "points": 2
+        },
+        {
+          "criterion": "Counts 32 parameters for the stack against 42 for the single layer",
+          "points": 1
+        },
+        {
+          "criterion": "Concludes that a linear stack is at most as powerful as one layer and can be strictly weaker",
+          "points": 1
+        }
+      ],
+      "explanation": "Section 4 notes that the collapse never adds anything and can take something away: when the hidden layer is narrower than both the input and the output, every sample is squeezed through that many numbers. The formula of section 6 gives the two parameter counts. The argument in the prompt reads the collapse backwards, from every such stack being a layer to every layer being such a stack.",
+      "hints": [
+        "Count how many numbers describe one sample between the two layers.",
+        "Look for two different inputs that the first layer cannot tell apart, and ask what a copy would have to do with them.",
+        "Use $m_\\ell (m_{\\ell-1} + 1)$ per layer for the parameter counts."
+      ]
+    },
+    {
+      "id": "nn-003-q17",
+      "type": "mcq",
+      "track": "connect",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "weight-layout",
+        "transpose"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "connects": [
+        "nn-004"
+      ],
+      "prompt": "From post 04 on, this series stores a layer's weights with one column per neuron, shape $(n_\\text{inputs}, n_\\text{neurons})$. For the network of this post, 4 features into 3 neurons and then 3 neurons, what do the two weight arrays and the forward call look like in that layout?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "$\\mathbf{W}_1$ is $(3, 4)$, $\\mathbf{W}_2$ is $(3, 3)$, and each call is `np.dot(inputs, weights)`.",
+          "correct": false,
+          "feedback": "Those are the shapes of this post's layout, one row per neuron. Without the transpose, an $(N, 4)$ batch times a $(3, 4)$ matrix has inner sizes 4 and 3 and fails."
+        },
+        {
+          "key": "b",
+          "text": "$\\mathbf{W}_1$ is $(4, 3)$, $\\mathbf{W}_2$ is $(3, 3)$, and each call is `np.dot(inputs, weights)`.",
+          "correct": true,
+          "feedback": "Right. Each matrix is the transpose of the one used here, so its input axis already faces the batch and the call needs no `.T`."
+        },
+        {
+          "key": "c",
+          "text": "$\\mathbf{W}_1$ is $(4, 3)$, $\\mathbf{W}_2$ is $(3, 3)$, and each call is `np.dot(inputs, weights.T)`.",
+          "correct": false,
+          "feedback": "The shapes are right, but the transpose is what the new layout removes. Transposing a $(4, 3)$ matrix gives $(3, 4)$, which does not fit a batch with 4 columns."
+        },
+        {
+          "key": "d",
+          "text": "$\\mathbf{W}_1$ is $(4, 3)$, $\\mathbf{W}_2$ is $(4, 3)$, and each call is `np.dot(inputs, weights)`.",
+          "correct": false,
+          "feedback": "Layer 2 receives the 3 outputs of layer 1, not the 4 original features, so its matrix has 3 rows in this layout. The rule of the neighbouring layer holds in both layouts."
+        }
+      ],
+      "explanation": "Section 2 notes that posts 01 to 03 keep one row of weights per neuron, that post 04 switches to the transposed layout of shape $(n, m)$, and that the forward call then needs no `.T`. Transposing $(3, 4)$ gives $(4, 3)$; the square $(3, 3)$ matrix keeps its shape, although its rows and columns trade places. The shape rule is unchanged: the size that faces the incoming data equals the size of the layer before.",
+      "hints": [
+        "Transpose each weight matrix of this post and check the inner sizes of its product with the batch."
+      ]
+    },
+    {
+      "id": "nn-003-q18",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o1",
+        "o2",
+        "o4"
+      ],
+      "section": "4",
+      "est_minutes": 15,
+      "tags": [
+        "np-dot",
+        "single-sample",
+        "collapse"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "connect",
+      "connects": [
+        "nn-002"
+      ],
+      "prompt": "Post 02 described three forms of `np.dot`. Rewrite the two-layer forward pass of this post for a single sample stored as a 1-D array `x` of shape $(4,)$, with the weights still one row per neuron. Say which form of `np.dot` each call uses in the single-sample version and in the batch version, give the shape of every intermediate array in both, explain why the batch version needs `.T` and the single-sample version does not, and write the single equivalent layer in the single-sample form, saying how its matrix relates to the $\\mathbf{W}_\\ast$ of the batch form.",
+      "answer_length": "half a page",
+      "solution": "1. **Single sample.** `z1 = np.dot(weights1, x) + biases1` is the matrix by vector form, $(3, 4) \\cdot (4,) \\to (3,)$. `z2 = np.dot(weights2, z1) + biases2` is the same form, $(3, 3) \\cdot (3,) \\to (3,)$. Each output entry is the dot product of one neuron's row of weights with the incoming vector.\n2. **Batch.** `np.dot(X, weights1.T)` is the matrix by matrix form, $(N, 4) \\cdot (4, 3) \\to (N, 3)$, and `np.dot(Z1, weights2.T)` is $(N, 3) \\cdot (3, 3) \\to (N, 3)$. The biases of shape $(3,)$ are added to every row.\n3. **Why the transpose appears.** `np.dot` contracts the last axis of its first argument with the first axis of its second. With the matrix first and a vector second, the last axis of $\\mathbf{W}_1$ is its input axis, of length 4, and it meets the 4 entries of `x` directly. In a batch the samples must stay on the first axis, so $\\mathbf{X}$ goes first and its last axis, the 4 features, has to meet the first axis of the second argument. $\\mathbf{W}_1$ is $(3, 4)$, so it is transposed to $(4, 3)$ to bring its input axis inward. The arithmetic is the same in both versions.\n4. **The collapse.** Substituting, $\\mathbf{z}_2 = \\mathbf{W}_2 (\\mathbf{W}_1 \\mathbf{x} + \\mathbf{b}_1) + \\mathbf{b}_2 = (\\mathbf{W}_2 \\mathbf{W}_1) \\mathbf{x} + (\\mathbf{W}_2 \\mathbf{b}_1 + \\mathbf{b}_2)$: one layer whose matrix $\\mathbf{W}_2 \\mathbf{W}_1$ has shape $(3, 4)$, one row per neuron, and whose bias has shape $(3,)$. That matrix is the transpose of the batch form's $\\mathbf{W}_\\ast = \\mathbf{W}_1^\\top \\mathbf{W}_2^\\top$, and $\\mathbf{W}_2 \\mathbf{b}_1$ is the same vector as $\\mathbf{b}_1 \\mathbf{W}_2^\\top$.\n5. **Check.** For $\\mathbf{x} = [1, 2, 3, 2.5]$ the single-sample code gives $\\mathbf{z}_1 = [4.8, 1.21, 2.385]$ and $\\mathbf{z}_2 = [0.5031, -1.04185, -2.03875]$, the first rows of the batch outputs.",
+      "rubric": [
+        {
+          "criterion": "Writes both single-sample calls with the weight matrix first and no transpose, and names the matrix by vector form",
+          "points": 2
+        },
+        {
+          "criterion": "Gives the shapes $(3,)$ and $(3,)$ for the single sample and $(N, 3)$ and $(N, 3)$ for the batch",
+          "points": 2
+        },
+        {
+          "criterion": "Explains the transpose through the contracted axes: a batch keeps its samples on the first axis, so the input axis of the weights must be brought inward",
+          "points": 2
+        },
+        {
+          "criterion": "Derives the collapsed layer $(\\mathbf{W}_2 \\mathbf{W}_1) \\mathbf{x} + (\\mathbf{W}_2 \\mathbf{b}_1 + \\mathbf{b}_2)$ with shapes $(3, 4)$ and $(3,)$",
+          "points": 2
+        },
+        {
+          "criterion": "Relates it to the batch form: $\\mathbf{W}_2 \\mathbf{W}_1$ is the transpose of $\\mathbf{W}_1^\\top \\mathbf{W}_2^\\top$",
+          "points": 1
+        }
+      ],
+      "explanation": "Post 02 gives the matrix by vector form for one sample and the matrix by matrix form for a batch, and explains the transpose as bookkeeping. Section 4 of this post chains two such calls and collapses them. In the single-sample form the collapsed matrix appears directly as $\\mathbf{W}_2 \\mathbf{W}_1$, the one-row-per-neuron matrix that section 4 writes as $\\mathbf{W}_\\ast^\\top$.",
+      "hints": [
+        "Start from the single-sample layer call of post 02 and apply it twice.",
+        "For the transpose, write the shapes on both sides of each product and mark which axes are contracted.",
+        "For the collapse, substitute the first line into the second and collect the terms that multiply the input."
+      ]
+    }
+  ]
+}

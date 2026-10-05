@@ -1,8 +1,24 @@
 id: nn-003
 slug: 03-stacking-layers-and-the-forward-pass
-title: "Part 03 · Stacking layers and the forward pass"
+title: "03 - Stacking layers and the forward pass"
+summary: "How one dense layer's output becomes the next layer's input: a two-layer forward pass in NumPy with every shape traced, the weight-shape rule, and why layers stacked without an activation are still one linear layer."
 date: 2026-05-24
-tags: [neural-networks, from-scratch, forward-pass, foundations]
+updated: 2026-10-05
+status: complete
+part: "Part I - Foundations"
+level: beginner
+reading_time: 17
+tags: [neural-networks, from-scratch, forward-pass, dense-layer, shapes, foundations]
 hero: diagrams/01-multi-layer-anatomy.svg
-reading_time: 12
-part: "Part I — Foundations"
+prerequisites: [nn-001, nn-002]
+code: included
+outcomes:
+  - id: o1
+    text: "Implement a two-layer forward pass in NumPy by feeding the first layer's output into the second."
+  - id: o2
+    text: "Predict the shape of every intermediate array in a stack of dense layers before running the code."
+  - id: o3
+    text: "Pick the weight-matrix shape of each layer from the sizes of the layers around it."
+  - id: o4
+    text: "Explain in one sentence why dense layers stacked without activations are no more powerful than a single layer."
+compute: cpu
