@@ -1,8 +1,26 @@
 id: nn-004
 slug: 04-dense-layer-class-and-spiral-data
-title: "Part 04 · The Dense layer class and spiral data"
+title: "04 - The Dense layer class and spiral data"
+summary: "The forward pass packaged as a reusable dense-layer class with small random weights and zero biases, the switch to one weight column per neuron, and the three-class spiral dataset that no straight-line model can separate."
 date: 2026-05-24
+updated: 2026-10-05
+status: complete
+part: "Part I - Foundations"
+level: beginner
+reading_time: 19
 tags: [neural-networks, from-scratch, oop, dense-layer, spiral-data, foundations]
 hero: diagrams/01-spiral-data.svg
-reading_time: 13
-part: "Part I — Foundations"
+prerequisites: [nn-003]
+code: included
+outcomes:
+  - id: o1
+    text: "Implement a Layer_Dense class whose constructor allocates small random weights and zero biases and whose forward method computes a batch's output."
+  - id: o2
+    text: "Generate the spiral dataset with spiral_data and state the shape and meaning of the arrays X and y it returns."
+  - id: o3
+    text: "Explain in one sentence why no linear model can separate the three spiral classes."
+  - id: o4
+    text: "Convert a layer between the two weight-matrix conventions and name the one the series uses from this post on."
+  - id: o5
+    text: "Trace the shape of every array as a batch passes through one or two Layer_Dense instances."
+compute: cpu

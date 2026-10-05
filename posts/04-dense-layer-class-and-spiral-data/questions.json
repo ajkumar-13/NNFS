@@ -1,0 +1,836 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-004",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-004-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "spiral-data",
+        "shapes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "After `X, y = spiral_data(samples=100, classes=3)`, what do the two arrays hold?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`X` has shape $(100, 3)$, one column per class, and `y` has shape $(100,)$, one label per sample.",
+          "correct": false,
+          "feedback": "This reads the two arguments as the two axes of `X`. They multiply to give the number of rows; the number of columns is the number of features, which is always 2."
+        },
+        {
+          "key": "b",
+          "text": "`X` has shape $(300, 2)$, one point of the plane per row, and `y` has shape $(300,)$, one class label per row.",
+          "correct": true,
+          "feedback": "Right. There are $100 \\times 3 = 300$ samples with 2 features each, and `y` stores the label 0, 1 or 2 of every row."
+        },
+        {
+          "key": "c",
+          "text": "`X` has shape $(300, 3)$, with the class in its third column, and `y` has shape $(300,)$, a copy of that column.",
+          "correct": false,
+          "feedback": "The labels are not a column of `X`. `X` holds only the two coordinates of each point, and the labels come back separately in `y`."
+        },
+        {
+          "key": "d",
+          "text": "`X` has shape $(3, 100, 2)$, one block of points per class, and `y` has shape $(3,)$, one label per block.",
+          "correct": false,
+          "feedback": "The classes are not a separate axis. The three arms are stacked row after row in one $(300, 2)$ matrix, and `y` says which arm each row belongs to."
+        }
+      ],
+      "explanation": "Section 2 runs the call and prints `X: (300, 2) float32` and `y: (300,) uint8`: `samples * classes` rows, two feature columns, and one label per row in a separate array. The pair is the supervised-learning format of inputs and the labels they should predict.",
+      "hints": [
+        "Count the points first: how many per class, and how many classes?"
+      ]
+    },
+    {
+      "id": "nn-004-q02",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2",
+      "est_minutes": 4,
+      "tags": [
+        "spiral-data",
+        "shapes",
+        "labels"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The call is changed to `X, y = spiral_data(samples=100, classes=5)`. Give the number of rows of `X`, the number of columns of `X`, the label stored in `y[250]`, and the index of the first row that belongs to class 4. Rows and classes are numbered from 0.",
+      "answer": {
+        "parts": [
+          {
+            "label": "rows of X",
+            "value": 500,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "columns of X",
+            "value": 2,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "label in y[250]",
+            "value": 2,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "index of the first row of class 4",
+            "value": 400,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 2: samples * classes rows, 2 columns, rows in blocks of `samples`, one block per class. snippets/spiral_dataset.py prints X (500, 2), y (500,) for these arguments; y[250] = 2 and first index of label 4 = 400 checked by running the call.",
+      "explanation": "`X` has $100 \\times 5 = 500$ rows and, as always, 2 columns. Section 2 states that the rows are ordered by class in blocks of `samples`: rows 0 to 99 are class 0, rows 100 to 199 class 1, rows 200 to 299 class 2, so row 250 carries the label 2, and class 4 starts at row $4 \\times 100 = 400$.",
+      "hints": [
+        "The two arguments multiply to give the number of rows; the number of features does not depend on them.",
+        "The rows come in blocks of `samples`, one block per class, in class order."
+      ]
+    },
+    {
+      "id": "nn-004-q03",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "2.1",
+      "est_minutes": 3,
+      "tags": [
+        "spiral-data",
+        "linear-model"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "State in one sentence why a linear classifier cannot separate the three classes of the spiral dataset.",
+      "answer": {
+        "model": "A linear classifier can only cut the plane with straight boundaries, and the three spiral arms wrap around one another, so no straight cut keeps one class on one side.",
+        "accept": [
+          "^(?![\\s\\S]*(\\b(not enough|too few|too many|too small|too little|more (data|samples|points|training|epochs|steps)|train(ed|ing)? (for )?long(er)?( enough)?|nois[ey]|learning rate|random weights|weights? (are|were|is|start) random|bias(es)? (are|is|start|were) (at )?zero|float(32|64)?|precis(e|ion)|parameters|three of them|(only|just) (\\w+ ){0,5}two|two (groups|classes|categories|parts))\\b))(?![\\s\\S]*(\\b(not true|untrue|false|incorrect|not the case)\\b))(?![\\s\\S]*(\\b(arms?|classes|spirals?|points|data) (do(es)? ?n[o']t|do not|does not|never|are not|aren't) (really |actually )?(wrap|wind|intertwin|interleav|curl|coil|twist|curv|bend|overlap|spiral)))(?![\\s\\S]*(\\b(not|never|cannot|can't|doesn't|don't) fail))(?![\\s\\S]*(\\b((a|the|one|any|every) (single )?(straight |linear )?(line|boundary|cut|hyperplane|model|classifier|layer)|(straight|linear) (lines|boundaries|cuts|models|classifiers)|so|and|it|they|this|thus|therefore|hence) (can|could|does|do|will) (easily |always |still |indeed |therefore |thus )?(separate|split|divide|solve)\\b))(?![\\s\\S]*(\\b(arms?|classes|spirals?|data) (are|is|lie on|form) (a )?straight))(?!\\W*\\w+(\\W*[,;/|]\\W*\\w+)+\\W*$)(?=[\\s\\S]*\\b(straight|lines?|flat|hyperplanes?|half-?planes?|convex|linearly separa\\w+)\\b)(?=[\\s\\S]*(spiral|wrap|\\bwind|\\bwound\\b|intertwin|interleav|interlock|interlac|\\bcurl|\\bcoil|twist|curv|\\bbend|\\bbent\\b|entangl|tangl|swirl|a?round (each|one an)other))(?=[\\s\\S]*(\\b(straight|lines?|flat|hyperplanes?|boundar(y|ies)|edges?|cuts?|regions?|linear (model|classifier|layer|function|map)s?)\\b[^.;,]{0,80}\\b(cannot|can ?not|can't|could ?n[o']t|never|unable|fails?|impossible|won't|will not|no way)|\\b(cannot|can ?not|can't|could ?n[o']t|never|unable|fails?|impossible|won't|will not|no way)\\b[^.;,]{0,80}\\b(straight|lines?|flat|hyperplanes?|boundar(y|ies)|edges?|cuts?|regions?|linear (model|classifier|layer|function|map)s?)\\b|\\bno (\\w+ ){0,3}(lines?|cuts?|boundar(y|ies)|hyperplanes?|split|edges?)\\b|\\bnot (be )?(linearly )?separa|\\bonly\\b[^.;,]{0,50}\\b(straight|lines?|flat|linear)\\b|\\b(every|any|each|all) (\\w+ ){0,2}(lines?|cuts?|boundar(y|ies)|hyperplanes?)\\b[^.;,]{0,60}\\b(cuts?|cross(es)?|slices?|pass(es)?|intersects?|hits?)\\b|\\b(straight|lines?|flat|hyperplanes?|boundar(y|ies)|edges?|cuts?|regions?|linear (model|classifier|layer|function|map)s?)\\b[^.;,]{0,40}\\b(always|inevitably|necessarily|must|has to)\\b[^.;,]{0,30}\\b(cuts?|cross(es)?|slices?|pass(es)?|intersects?|hits?)\\b|\\b(is|are|draws?|makes?|has|have|gives?|produces?|uses?)\\b[^.;,]{0,40}\\b(straight|flat)\\b))"
+        ]
+      },
+      "explanation": "Section 2.1: a linear classifier for three classes compares three weighted sums of the two coordinates, which cuts the plane into at most three regions with straight edges. The arms of the spiral wrap around one another, so no arrangement of straight cuts can follow them; a fitted linear model gets only 118 of the 300 points right.",
+      "hints": [
+        "Describe the shape of the boundary a linear model can draw, then the shape of the classes."
+      ]
+    },
+    {
+      "id": "nn-004-q04",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "2.1",
+      "est_minutes": 3,
+      "tags": [
+        "linear-model",
+        "non-linearity"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "One `Layer_Dense(2, 3)` followed by softmax, trained until it stops improving, gets 118 of the 300 spiral points right. Which single change removes the cause of that ceiling?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Training the same layer for ten times as many steps.",
+          "correct": false,
+          "feedback": "The fit has already converged: between step 100 and step 1,000 of `snippets/linear_baseline.py` neither the loss, to four decimals, nor the number of correct answers changes. More steps cannot move a fit that has converged."
+        },
+        {
+          "key": "b",
+          "text": "Generating 1,000 samples per class and training the same layer on them.",
+          "correct": false,
+          "feedback": "More points make the arms denser but do not change their shape. The model still draws only straight boundaries, and the arms still wrap around one another."
+        },
+        {
+          "key": "c",
+          "text": "Feeding its output straight into a second `Layer_Dense(3, 3)`.",
+          "correct": false,
+          "feedback": "Two dense layers with nothing between them collapse into one linear map, as post 03 showed, so the pair is still a straight-line classifier with the same limit."
+        },
+        {
+          "key": "d",
+          "text": "Placing a non-linear activation between it and a second dense layer.",
+          "correct": true,
+          "feedback": "Right. The ceiling comes from linearity, not from training or data. With a non-linearity between two layers the boundary is no longer forced to be straight; post 06 introduces it."
+        }
+      ],
+      "explanation": "Section 2.1 traces the score to the model's shape: a linear classifier draws straight boundaries, and section 7 shows that it has converged. Training longer, adding data, or stacking a second `Layer_Dense` directly (section 5.3) all leave the model linear. Only a non-linear activation between layers changes what boundaries it can draw; how well the result then does depends on its width and training.",
+      "hints": [
+        "Decide first whether the limit comes from the optimisation, from the data, or from the kind of function the model is.",
+        "For each option, ask whether the model is still a weighted sum of the two coordinates afterwards."
+      ]
+    },
+    {
+      "id": "nn-004-q05",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "weight-convention",
+        "shapes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "From this post on, how is a layer with 4 inputs and 3 neurons stored and applied to a batch `X`?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Weights of shape $(3, 4)$, one row per neuron, applied as `np.dot(X, W.T) + b`.",
+          "correct": false,
+          "feedback": "This is the convention of posts 01 to 03. It computes the same numbers, but it is the layout this post leaves behind."
+        },
+        {
+          "key": "b",
+          "text": "Weights of shape $(3, 4)$, one row per neuron, applied as `np.dot(X, W) + b`.",
+          "correct": false,
+          "feedback": "The call multiplies $(N, 4)$ by $(3, 4)$. The inner sizes 4 and 3 differ, so NumPy raises a `ValueError`."
+        },
+        {
+          "key": "c",
+          "text": "Weights of shape $(4, 3)$, one column per neuron, applied as `np.dot(X, W) + b`.",
+          "correct": true,
+          "feedback": "Right. The new convention is $(n_\\text{inputs}, n_\\text{neurons})$, so the inner sizes of $(N, 4) \\cdot (4, 3)$ match without a transpose."
+        },
+        {
+          "key": "d",
+          "text": "Weights of shape $(4, 3)$, one column per neuron, applied as `np.dot(X, W.T) + b`.",
+          "correct": false,
+          "feedback": "Transposing the new layout gives $(3, 4)$, and $(N, 4) \\cdot (3, 4)$ does not align. The transpose belongs to the old layout only."
+        }
+      ],
+      "explanation": "Section 4 switches from one row per neuron, $(n_\\text{neurons}, n_\\text{inputs})$ with `np.dot(X, W.T) + b`, to one column per neuron, $(n_\\text{inputs}, n_\\text{neurons})$ with `np.dot(X, W) + b`. For 4 inputs and 3 neurons that is a $(4, 3)$ matrix and no transpose in the call.",
+      "hints": [
+        "In the new convention, which count comes first in the shape: inputs or neurons?"
+      ]
+    },
+    {
+      "id": "nn-004-q06",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o4",
+        "o5"
+      ],
+      "section": "4",
+      "est_minutes": 8,
+      "tags": [
+        "weight-convention",
+        "transpose",
+        "worked-example"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A layer of 2 neurons over 3 inputs is stored in the convention of posts 01 to 03: $\\mathbf{W}_\\text{old}$ has rows $[1, 2, 3]$ and $[4, 5, 6]$, and the biases are $[0.5, -1]$. Rewrite the weights in the convention of this post as $\\mathbf{W}$, then compute $\\mathbf{Z} = \\mathbf{X}\\mathbf{W} + \\mathbf{b}$ for the batch $\\mathbf{X}$ with rows $[1, 0, -1]$ and $[2, 1, 0]$. Indices start at 0. Give the number of rows and of columns of $\\mathbf{W}$, the entry $W_{2,0}$, and the entries $Z_{0,0}$ and $Z_{1,1}$.",
+      "answer": {
+        "parts": [
+          {
+            "label": "rows of W",
+            "value": 3,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "columns of W",
+            "value": 2,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "W[2, 0]",
+            "value": 3,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "Z[0, 0]",
+            "value": -1.5,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "Z[1, 1]",
+            "value": 12,
+            "tolerance": 0.001,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 4: W is W_old transposed and Z = XW + b. Checked with NumPy: np.dot(X, W_old.T) + b and np.dot(X, W) + b both give [[-1.5, -3], [4.5, 12]].",
+      "explanation": "Each row of $\\mathbf{W}_\\text{old}$ is one neuron, so in the new layout each becomes a column: $\\mathbf{W}$ has rows $[1, 4]$, $[2, 5]$, $[3, 6]$, shape $(3, 2)$, and $W_{2,0} = 3$. Then $Z_{0,0} = 1 \\cdot 1 + 0 \\cdot 2 + (-1) \\cdot 3 + 0.5 = -1.5$ and $Z_{1,1} = 2 \\cdot 4 + 1 \\cdot 5 + 0 \\cdot 6 - 1 = 12$. The full output is $[-1.5, -3]$ and $[4.5, 12]$, the same as `np.dot(X, W_old.T) + b` (section 4).",
+      "hints": [
+        "Each row of the old matrix is one neuron; in the new layout each neuron is a column.",
+        "Write $\\mathbf{W}$ as a matrix whose columns are the old rows, then take a row of $\\mathbf{X}$ against a column of $\\mathbf{W}$ and add that neuron's bias."
+      ]
+    },
+    {
+      "id": "nn-004-q07",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 3,
+      "tags": [
+        "weight-convention",
+        "silent-bug"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A layer has 3 inputs and 3 neurons. Its weight matrix was copied from code written in the convention of posts 01 to 03 and never transposed, and the forward pass `np.dot(inputs, self.weights) + self.biases` runs on a batch of shape $(300, 3)$. What happens?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "NumPy raises a `ValueError` because the shapes are not aligned.",
+          "correct": false,
+          "feedback": "That is what happens for a layer that is not square, where the two layouts have different shapes. Here both are $(3, 3)$, so the product is defined."
+        },
+        {
+          "key": "b",
+          "text": "The call runs and gives the right numbers, because a square matrix equals its transpose.",
+          "correct": false,
+          "feedback": "Only a symmetric matrix equals its transpose. A random $(3, 3)$ weight matrix is not symmetric, so the output differs."
+        },
+        {
+          "key": "c",
+          "text": "The call runs and returns an output of shape $(3, 300)$, with the batch axis last.",
+          "correct": false,
+          "feedback": "The output shape comes from the outer sizes of $(300, 3) \\cdot (3, 3)$, which is $(300, 3)$ in either layout. The batch axis stays first."
+        },
+        {
+          "key": "d",
+          "text": "The call runs and returns an output of shape $(300, 3)$ whose numbers are wrong.",
+          "correct": true,
+          "feedback": "Right. A square matrix has the same shape in both layouts, so nothing fails, but each output column now mixes one weight from every neuron."
+        }
+      ],
+      "explanation": "Section 8 separates the two cases. For a layer that is not square the old layout has a different shape and `np.dot` raises a `ValueError`. For a square layer both layouts are $(3, 3)$: no error is raised, and the output has the right shape and the wrong numbers, which `snippets/pitfalls.py` confirms with `same shape: True | same numbers: False`.",
+      "hints": [
+        "Compare the shape of the weight matrix in the two layouts when the number of inputs equals the number of neurons.",
+        "Ask whether a random square matrix is equal to its own transpose."
+      ]
+    },
+    {
+      "id": "nn-004-q08",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "5.1",
+      "est_minutes": 2,
+      "tags": [
+        "initialisation",
+        "weight-scale"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Why does `Layer_Dense` multiply its random weights by 0.01?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "To keep the layer outputs small at the start of training.",
+          "correct": true,
+          "feedback": "Right. Unscaled weights make the outputs grow with every stacked layer: with a scale of 1.0, six 64-neuron layers take their spread from 0.57 to 21,510 in `snippets/init_scale.py`."
+        },
+        {
+          "key": "b",
+          "text": "To make the neurons of a layer differ from one another.",
+          "correct": false,
+          "feedback": "The randomness does that, at any scale. The factor 0.01 changes the size of the weights, not whether they differ."
+        },
+        {
+          "key": "c",
+          "text": "To make every weight positive, as a dense layer requires.",
+          "correct": false,
+          "feedback": "Multiplying by a positive constant keeps every sign, so about half of the weights stay negative. A dense layer needs no particular sign."
+        },
+        {
+          "key": "d",
+          "text": "To keep the values inside the range that `np.dot` accepts.",
+          "correct": false,
+          "feedback": "`np.dot` accepts any finite numbers. The factor is a choice about scale, not a NumPy requirement."
+        }
+      ],
+      "explanation": "Section 5.1: standard-normal weights are too large once layers are stacked, because each layer multiplies the typical size of its input by about the weight scale times the square root of the number of inputs per neuron. The factor 0.01 keeps the outputs small; `snippets/init_scale.py` measures both cases.",
+      "hints": [
+        "Think about what a second and a third layer would do to outputs that are already large."
+      ]
+    },
+    {
+      "id": "nn-004-q09",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "5.1",
+      "est_minutes": 3,
+      "tags": [
+        "initialisation",
+        "biases",
+        "symmetry-breaking"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`Layer_Dense` starts every bias at zero but draws every weight at random. Why can the biases all start at the same value when the weights cannot?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "A bias of zero is the only value that broadcasts correctly across a batch of any size.",
+          "correct": false,
+          "feedback": "Any $(1, n_\\text{neurons})$ row broadcasts, whatever its values. Broadcasting depends on shapes, not on the numbers inside."
+        },
+        {
+          "key": "b",
+          "text": "Biases are not updated during training, so their starting value is never used again.",
+          "correct": false,
+          "feedback": "Biases are parameters and are updated like the weights. They start at zero because nothing is gained by randomising them."
+        },
+        {
+          "key": "c",
+          "text": "Random weights already make the neurons differ; equal ones would leave them as copies.",
+          "correct": true,
+          "feedback": "Right. With identical weights every neuron of a layer computes the same output and, in training, receives the same update. Random weights break that symmetry, so the biases can all be zero."
+        },
+        {
+          "key": "d",
+          "text": "Random biases would make `np.dot` raise a shape error on the very first forward pass.",
+          "correct": false,
+          "feedback": "The bias is added after the product and never enters `np.dot`. Random biases would run; they would only make the outputs harder to check."
+        }
+      ],
+      "explanation": "Section 5.1 calls this symmetry breaking: if every weight started at the same value, the neurons of a layer would stay copies of one another. The random weights provide the asymmetry, so random biases add nothing and only complicate debugging.",
+      "hints": [
+        "Imagine two neurons of one layer that start with exactly the same weights and bias. What does each of them compute?"
+      ]
+    },
+    {
+      "id": "nn-004-q10",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "5.1",
+      "est_minutes": 6,
+      "tags": [
+        "initialisation",
+        "weight-scale",
+        "depth"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A stack of dense layers has 256 neurons in every layer, zero biases and no activation functions, and its weights are drawn as `0.01 * np.random.randn(256, 256)`. Using this post's rule for how one layer changes the typical size of its input, estimate the number by which the standard deviation of one layer's outputs is multiplied to give that of the next layer, and give the weight scale at which that number would be 1.",
+      "answer": {
+        "parts": [
+          {
+            "label": "multiplier per layer at scale 0.01",
+            "value": 0.16,
+            "tolerance": 0.01,
+            "unit": ""
+          },
+          {
+            "label": "weight scale that makes the multiplier 1",
+            "value": 0.0625,
+            "tolerance": 0.002,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form quoted in section 5.1: factor = weight scale * sqrt(inputs per neuron) = 0.01 * 16 = 0.16, and level scale = 1 / sqrt(256) = 0.0625. A six-layer run in the manner of snippets/init_scale.py at width 256 measures 0.157 per layer.",
+      "explanation": "Section 5.1: each layer multiplies the typical size of its input by about the weight scale times the square root of the number of inputs per neuron. Here that is $0.01 \\times \\sqrt{256} = 0.16$, so the outputs shrink about 6-fold per layer, and the factor is 1 when the scale is $1/\\sqrt{256} = 0.0625$. The post works the same sums for 64 neurons and gets 0.08 and 0.125.",
+      "hints": [
+        "The rule multiplies two quantities: the weight scale and a function of the number of inputs per neuron.",
+        "The function is a square root. For the level scale, set the product equal to 1 and solve for the scale."
+      ]
+    },
+    {
+      "id": "nn-004-q11",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "5.2",
+      "est_minutes": 2,
+      "tags": [
+        "forward",
+        "return-value"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "After `result = dense1.forward(X)`, what value does `result` hold, and where is the output of the layer found?",
+      "answer": {
+        "model": "`result` is `None`, because `forward` returns nothing; the output is stored on the instance and is read from `dense1.output`.",
+        "accept": [
+          "^(?![\\s\\S]*(\\b(not|isn'?t|never) (a |the )?none\\b))(?![\\s\\S]*(output\\W+(is|holds|=|contains|stays|becomes|returns|will be|would be)\\W+(still |also )?none))(?![\\s\\S]*(\\bnone\\b (is |gets |was )?(stored|saved|kept|found|placed|put|written)))(?![\\s\\S]*(result\\.output|\\b(result|it) (holds|is|contains|has|=|equals|stores|gets) (the |an? |that )?(layer'?s? )?(\\(\\d+, ?\\d+\\) )?(output|array|matrix)))(?![\\s\\S]*(\\b(not|never|isn't|is not) (stored|saved|kept)\\b|\\blost\\b|\\bdiscarded\\b))(?=[\\s\\S]*(\\bnone(type)?\\b|\\breturns? nothing\\b|\\bno (return )?value\\b|\\bnothing is returned\\b))(?=[\\s\\S]*(\\.output\\b|\\boutput attribute\\b|\\battribute\\b[^.;]{0,25}\\boutput\\b|\\boutput\\b[^.;]{0,40}\\b(on|in|of) (the |its |that )?(instance|object|layer|self)\\b|\\b(instance|object|layer|self)('s)? output\\b))"
+        ]
+      },
+      "explanation": "Section 5.2: `forward` stores its result on the instance as `self.output` and returns nothing, so the assignment binds `result` to `None`. Section 8 shows the consequence, `TypeError: 'NoneType' object is not subscriptable` on `result[:5]`. The output is read from `dense1.output`.",
+      "hints": [
+        "Look for a `return` statement in the body of `forward`."
+      ]
+    },
+    {
+      "id": "nn-004-q12",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "script-order",
+        "random-stream"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Put the steps of this post's two-layer script in the order that reproduces its printed output, from the first call to the last.",
+      "items": [
+        {
+          "key": "a",
+          "text": "`nnfs.init()` seeds the random generator with 0."
+        },
+        {
+          "key": "b",
+          "text": "`spiral_data(samples=100, classes=3)` uses 300 random numbers for the noise on the points."
+        },
+        {
+          "key": "c",
+          "text": "`Layer_Dense(2, 3)` takes 6 random numbers as the weights of `dense1`."
+        },
+        {
+          "key": "d",
+          "text": "`dense1.forward(X)` stores a $(300, 3)$ array in `dense1.output`."
+        },
+        {
+          "key": "e",
+          "text": "`dense2.forward(dense1.output)` stores a second $(300, 3)$ array."
+        }
+      ],
+      "answer": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e"
+      ],
+      "partial_credit": true,
+      "explanation": "The seed comes first, so that the stream of random numbers is fixed. `spiral_data` then uses the first 300 numbers and `dense1` the six after them; section 8 shows that creating the layer before the data gives it different weights. `dense1.forward(X)` needs both `X` and the layer, and `dense2.forward` needs `dense1.output`.",
+      "hints": [
+        "Two of the steps consume random numbers. The printed weights depend on which of them runs first."
+      ]
+    },
+    {
+      "id": "nn-004-q13",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o5",
+        "o1"
+      ],
+      "section": "6.1",
+      "est_minutes": 4,
+      "tags": [
+        "shapes",
+        "parameter-count",
+        "predict-the-output"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The script in the stimulus is run. Give the two numbers of the shape it prints, rows first, and the number it prints after the shape.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "import numpy as np\n\n\nclass Layer_Dense:\n\n    def __init__(self, n_inputs, n_neurons):\n        self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)\n        self.biases = np.zeros((1, n_neurons))\n\n    def forward(self, inputs):\n        self.output = np.dot(inputs, self.weights) + self.biases\n\n\nX = np.ones((32, 4))\nlayer = Layer_Dense(4, 8)\nlayer.forward(X)\nprint(layer.output.shape, layer.weights.size + layer.biases.size)\n"
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "rows of the output",
+            "value": 32,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "columns of the output",
+            "value": 8,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "number printed after the shape",
+            "value": 40,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Running the stimulus prints (32, 8) 40. Closed forms of section 6.1: (N, n_inputs) . (n_inputs, n_neurons) gives (N, n_neurons), and a layer has n_inputs * n_neurons + n_neurons = 4 * 8 + 8 = 40 parameters.",
+      "explanation": "The product $(32, 4) \\cdot (4, 8)$ has shape $(32, 8)$, and the $(1, 8)$ bias row broadcasts over the 32 rows without changing that shape. The second number counts the layer's parameters: $4 \\times 8 = 32$ weights and 8 biases, 40 in all. The batch size 32 does not enter that count (section 6.1).",
+      "hints": [
+        "The inner sizes of the product must match and disappear; the outer sizes are the shape of the output.",
+        "For the second number, count one weight per input per neuron, then one bias per neuron."
+      ]
+    },
+    {
+      "id": "nn-004-q14",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "5",
+      "est_minutes": 15,
+      "tags": [
+        "implementation",
+        "layer-dense",
+        "numpy"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "implement",
+      "language": "python",
+      "prompt": "Implement `Layer_Dense` so that `Layer_Dense(n_inputs, n_neurons, weight_scale=0.01)` allocates `weights` of shape $(n_\\text{inputs}, n_\\text{neurons})$, drawn as `weight_scale` times standard-normal numbers, and `biases` of shape $(1, n_\\text{neurons})$ filled with zeros, and so that `forward(inputs)` stores $\\mathbf{X}\\mathbf{W} + \\mathbf{b}$ in `self.output` for a batch of any size and returns nothing.",
+      "starter": "import numpy as np\n\n\nclass Layer_Dense:\n\n    def __init__(self, n_inputs, n_neurons, weight_scale=0.01):\n        # Allocate self.weights and self.biases here.\n        raise NotImplementedError\n\n    def forward(self, inputs):\n        # Store the output of the layer in self.output.\n        raise NotImplementedError\n",
+      "solution": "import numpy as np\n\n\nclass Layer_Dense:\n\n    def __init__(self, n_inputs, n_neurons, weight_scale=0.01):\n        # One column of weights per neuron; one bias per neuron, stored as a row.\n        self.weights = weight_scale * np.random.randn(n_inputs, n_neurons)\n        self.biases = np.zeros((1, n_neurons))\n\n    def forward(self, inputs):\n        self.output = np.dot(inputs, self.weights) + self.biases\n",
+      "tests": "import numpy as np\n\nnp.random.seed(0)\n\n# 1. Shapes and starting values.\nlayer = Layer_Dense(4, 3)\nassert layer.weights.shape == (4, 3), layer.weights.shape\nassert layer.biases.shape == (1, 3), layer.biases.shape\nassert np.all(layer.biases == 0), \"biases must start at zero\"\nassert len(np.unique(layer.weights)) == layer.weights.size, \"weights must be random, not constant\"\n\n# 2. The weights are standard-normal numbers times weight_scale.\nwide = Layer_Dense(200, 300)\nassert 0.009 < wide.weights.std() < 0.011, wide.weights.std()\nassert abs(wide.weights.mean()) < 0.001, wide.weights.mean()\nbig = Layer_Dense(200, 300, weight_scale=1.0)\nassert 0.9 < big.weights.std() < 1.1, big.weights.std()\nassert abs(big.weights.mean()) < 0.1, big.weights.mean()\n\n# 3. forward stores X W + b for any batch size and returns nothing.\nlayer.weights = np.arange(12, dtype=float).reshape(4, 3)\nlayer.biases = np.array([[1.0, -1.0, 0.5]])\nX = np.array([[1.0, 0.0, 2.0, -1.0], [0.5, 0.5, 0.5, 0.5]])\nreturned = layer.forward(X)\nassert returned is None, \"forward stores its result and returns nothing\"\nassert layer.output.shape == (2, 3), layer.output.shape\nexpected = np.array([[4.0, 4.0, 7.5], [10.0, 10.0, 13.5]])\nassert np.allclose(layer.output, expected), layer.output\nlayer.forward(np.ones((7, 4)))\nassert layer.output.shape == (7, 3), layer.output.shape\n\n# 4. Two instances own separate arrays.\na, b = Layer_Dense(2, 3), Layer_Dense(2, 3)\nassert a.weights is not b.weights, \"each instance needs its own weight array\"\nassert not np.array_equal(a.weights, b.weights), \"two instances must draw different weights\"\nprint(\"all tests passed\")\n",
+      "explanation": "Section 5 gives the class: `__init__` allocates `weights` as a scaled `np.random.randn(n_inputs, n_neurons)`, one column per neuron, and `biases` as `np.zeros((1, n_neurons))`; `forward` stores `np.dot(inputs, self.weights) + self.biases` on the instance. The only change here is that the scale is an argument. The tests check both shapes, the zero biases, the spread and mean of the weights for two scales, a hand-computed output, the `None` return value, and that two instances do not share weights.",
+      "hints": [
+        "The constructor needs two lines, one per array; the order of the two arguments of `randn` is the shape of the weight matrix.",
+        "`forward` is one assignment to `self.output`: a matrix product of the inputs with the weights, plus the biases. It has no `return`."
+      ]
+    },
+    {
+      "id": "nn-004-q15",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o5",
+        "o1"
+      ],
+      "section": "6.2",
+      "est_minutes": 20,
+      "tags": [
+        "stacking",
+        "shape-continuity",
+        "debugging"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "fix",
+      "language": "python",
+      "prompt": "`build_stack(sizes)` should return one `Layer_Dense` per consecutive pair of sizes, so that `build_stack([2, 64, 32, 3])` is a stack that takes a batch with 2 features to 3 outputs, and `forward_stack(layers, X)` should pass a batch through the layers in order and return the output of the last one. The starter contains two mistakes, each of which breaks the chain of shapes from one layer to the next. Find and fix both.",
+      "starter": "import numpy as np\n\n\nclass Layer_Dense:\n\n    def __init__(self, n_inputs, n_neurons):\n        self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)\n        self.biases = np.zeros((1, n_neurons))\n\n    def forward(self, inputs):\n        self.output = np.dot(inputs, self.weights) + self.biases\n\n\ndef build_stack(sizes):\n    \"\"\"One layer per consecutive pair: sizes [2, 64, 32, 3] gives three layers.\"\"\"\n    layers = []\n    for i in range(len(sizes) - 1):\n        layers.append(Layer_Dense(sizes[i + 1], sizes[i]))\n    return layers\n\n\ndef forward_stack(layers, X):\n    \"\"\"Pass X through every layer in order and return the output of the last one.\"\"\"\n    for layer in layers:\n        layer.forward(X)\n    return layers[-1].output\n",
+      "solution": "import numpy as np\n\n\nclass Layer_Dense:\n\n    def __init__(self, n_inputs, n_neurons):\n        self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)\n        self.biases = np.zeros((1, n_neurons))\n\n    def forward(self, inputs):\n        self.output = np.dot(inputs, self.weights) + self.biases\n\n\ndef build_stack(sizes):\n    \"\"\"One layer per consecutive pair: sizes [2, 64, 32, 3] gives three layers.\"\"\"\n    layers = []\n    for i in range(len(sizes) - 1):\n        # n_inputs is what feeds the layer, n_neurons is what it produces.\n        layers.append(Layer_Dense(sizes[i], sizes[i + 1]))\n    return layers\n\n\ndef forward_stack(layers, X):\n    \"\"\"Pass X through every layer in order and return the output of the last one.\"\"\"\n    values = X\n    for layer in layers:\n        layer.forward(values)\n        values = layer.output          # the next layer reads this layer's output\n    return values\n",
+      "tests": "import numpy as np\n\nnp.random.seed(0)\n\n# 1. The weight shapes chain: each layer's n_inputs is the n_neurons of the layer before it.\nlayers = build_stack([2, 64, 32, 3])\nassert len(layers) == 3, len(layers)\nshapes = [layer.weights.shape for layer in layers]\nassert shapes == [(2, 64), (64, 32), (32, 3)], shapes\nassert [layer.biases.shape for layer in layers] == [(1, 64), (1, 32), (1, 3)]\n\n# 2. A batch of 10 goes (10, 2) -> (10, 64) -> (10, 32) -> (10, 3).\nX = np.random.randn(10, 2)\nout = forward_stack(layers, X)\nassert out.shape == (10, 3), out.shape\nassert layers[0].output.shape == (10, 64), layers[0].output.shape\nassert layers[1].output.shape == (10, 32), layers[1].output.shape\nexpected = X\nfor layer in layers:\n    expected = np.dot(expected, layer.weights) + layer.biases\nassert np.allclose(out, expected), \"the output is not the chain of the three layers\"\n\n# 3. Equal sizes hide a shape error, so check the numbers there as well.\nsquare = build_stack([3, 3, 3])\nX3 = np.random.randn(5, 3)\nout3 = forward_stack(square, X3)\nfirst = np.dot(X3, square[0].weights) + square[0].biases\nchain = np.dot(first, square[1].weights) + square[1].biases\nassert np.allclose(out3, chain), \"every layer must read the output of the layer before it\"\nprint(\"all tests passed\")\n",
+      "explanation": "Section 6.2: the `n_inputs` of a layer is fixed by what feeds it, the data for the first layer and the `n_neurons` of the previous layer for every other one, so layer $i$ is `Layer_Dense(sizes[i], sizes[i + 1])`, not the reverse. And a layer in a stack reads the `output` of the layer before it, not the original batch. For sizes $[2, 64, 32, 3]$ the weight shapes are $(2, 64)$, $(64, 32)$ and $(32, 3)$, and a batch of 10 goes $(10, 2) \\to (10, 64) \\to (10, 32) \\to (10, 3)$.",
+      "hints": [
+        "Write down the shape every weight matrix should have for sizes $[2, 64, 32, 3]$ and compare with what the starter builds.",
+        "Then follow one batch through `forward_stack` by hand: what does the second layer receive?"
+      ]
+    },
+    {
+      "id": "nn-004-q16",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o3",
+        "o5"
+      ],
+      "section": "5.3",
+      "est_minutes": 15,
+      "tags": [
+        "linear-collapse",
+        "stacking",
+        "parameter-count"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "connect",
+      "connects": [
+        "nn-003",
+        "nn-006"
+      ],
+      "prompt": "A reader stacks `dense1 = Layer_Dense(2, 3)` and `dense2 = Layer_Dense(3, 3)` exactly as in this post, with nothing between them, and argues that the pair must classify the spiral data better than a single `Layer_Dense(2, 3)` because it has 21 parameters in place of 9. Using the substitution argument of post 03, rewritten in the weight convention of this post, show which single layer the pair is equivalent to, say what that implies for the spiral data, and name what has to be added before the extra parameters can help.",
+      "answer_length": "half a page",
+      "solution": "1. **The two layers.** In this post's convention $\\mathbf{Z}_1 = \\mathbf{X}\\mathbf{W}_1 + \\mathbf{b}_1$ with $\\mathbf{W}_1$ of shape $(2, 3)$ and $\\mathbf{b}_1$ of shape $(1, 3)$, and $\\mathbf{Z}_2 = \\mathbf{Z}_1\\mathbf{W}_2 + \\mathbf{b}_2$ with $\\mathbf{W}_2$ of shape $(3, 3)$ and $\\mathbf{b}_2$ of shape $(1, 3)$.\n2. **Substitute.** $\\mathbf{Z}_2 = (\\mathbf{X}\\mathbf{W}_1 + \\mathbf{b}_1)\\mathbf{W}_2 + \\mathbf{b}_2 = \\mathbf{X}(\\mathbf{W}_1\\mathbf{W}_2) + (\\mathbf{b}_1\\mathbf{W}_2 + \\mathbf{b}_2)$.\n3. **One equivalent layer.** The pair equals a single dense layer with weights $\\mathbf{W}_\\ast = \\mathbf{W}_1\\mathbf{W}_2$, shape $(2, 3)$, and biases $\\mathbf{b}_\\ast = \\mathbf{b}_1\\mathbf{W}_2 + \\mathbf{b}_2$, shape $(1, 3)$. In this convention the product runs in forward order; in the convention of post 03 the same collapse read $\\mathbf{W}_1^\\top\\mathbf{W}_2^\\top$.\n4. **Parameters are not capability.** The 21 numbers of the pair describe a function that 9 numbers describe: whatever the pair outputs, one `Layer_Dense(2, 3)` holding $\\mathbf{W}_\\ast$ and $\\mathbf{b}_\\ast$ outputs too.\n5. **The spiral data.** The pair is therefore still a linear classifier: three scores that are weighted sums of the two coordinates, hence at most three regions with straight edges. It is bound by the same limit as the single layer of section 2.1, which gets 118 of the 300 points right when fitted.\n6. **What is missing.** A non-linear activation between the two layers (post 06). With it, $\\mathbf{Z}_1$ can no longer be substituted away, and the boundary is no longer forced to be straight.",
+      "rubric": [
+        {
+          "criterion": "Writes both layers in the new convention, $\\mathbf{Z}_1 = \\mathbf{X}\\mathbf{W}_1 + \\mathbf{b}_1$ and $\\mathbf{Z}_2 = \\mathbf{Z}_1\\mathbf{W}_2 + \\mathbf{b}_2$, with the shapes $(2, 3)$ and $(3, 3)$",
+          "points": 1
+        },
+        {
+          "criterion": "Substitutes and obtains one layer with $\\mathbf{W}_\\ast = \\mathbf{W}_1\\mathbf{W}_2$ of shape $(2, 3)$ and $\\mathbf{b}_\\ast = \\mathbf{b}_1\\mathbf{W}_2 + \\mathbf{b}_2$",
+          "points": 3
+        },
+        {
+          "criterion": "Concludes that the pair computes nothing a single layer cannot, so 21 parameters give no more capability than 9",
+          "points": 2
+        },
+        {
+          "criterion": "Applies this to the spiral data: the pair still draws straight boundaries and meets the same linear limit",
+          "points": 2
+        },
+        {
+          "criterion": "Names a non-linear activation between the layers as the missing piece",
+          "points": 1
+        }
+      ],
+      "explanation": "Section 5.3 states that `Layer_Dense` has no activation, so stacking it reproduces the collapse of post 03: two linear layers are one linear layer. In this post's convention the equivalent weights are $\\mathbf{W}_1\\mathbf{W}_2$. The stack is therefore bound by the linear limit of section 2.1 until post 06 places a non-linearity between the layers.",
+      "hints": [
+        "Write $\\mathbf{Z}_2$ in terms of $\\mathbf{Z}_1$, then replace $\\mathbf{Z}_1$ by its own formula.",
+        "Multiply out and group the terms that contain $\\mathbf{X}$ and the terms that do not; read off the shape of each group."
+      ]
+    },
+    {
+      "id": "nn-004-q17",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "8",
+      "est_minutes": 12,
+      "tags": [
+        "reproducibility",
+        "random-stream",
+        "debugging"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "explain",
+      "prompt": "A reader copies the class of this post, calls `nnfs.init()`, and prints `dense1.weights[0]` for `dense1 = Layer_Dense(2, 3)`. The script of this post gives `[-0.01306527  0.01658131 -0.00118164]`; the reader's gives `[0.01764052 0.00400157 0.00978738]`, and gives it again on every run. Diagnose the difference: say what the two scripts must be doing differently, why rerunning does not change the reader's result, whether either set of weights is wrong, and how to make the two agree.",
+      "answer_length": "one or two paragraphs",
+      "solution": "1. **Where weights come from.** The weights of a layer are the next numbers of NumPy's random stream at the moment the instance is created, multiplied by 0.01. `nnfs.init()` seeds that stream with 0 in both scripts, so the stream is the same; what differs is how far along it each script is when `Layer_Dense(2, 3)` runs.\n2. **The post's script.** It calls `spiral_data(samples=100, classes=3)` first. That call uses 300 random numbers, the noise on the angle of each point, so `dense1` receives numbers 301 to 306 of the stream.\n3. **The reader's script.** Its layer holds the first six numbers of the stream, so the layer was created before any other random draw: before the call to `spiral_data`, or in a script that never generates the data.\n4. **Why rerunning changes nothing.** The seed replays the same stream and the script makes the same calls in the same order, so it reproduces its own result exactly. Without a seed the weights would change on every run.\n5. **Neither is wrong.** Both are valid draws of `0.01 * randn`, and the layer works with either. Only the reproduction of the printed numbers is affected.\n6. **The fix.** Make the calls in the same order after `nnfs.init()`: generate the data, then create `dense1`, then `dense2`.",
+      "rubric": [
+        {
+          "criterion": "Explains that the weights are the next numbers of the random stream, so they depend on what was drawn before the layer was created",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies that `spiral_data` uses 300 random numbers and that the post creates the layer after it",
+          "points": 2
+        },
+        {
+          "criterion": "Concludes that the reader created the layer before generating the data, or without generating it",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that the seed makes each script repeat its own result exactly, so rerunning cannot remove the difference",
+          "points": 1
+        },
+        {
+          "criterion": "States that neither initialisation is wrong and gives the fix: the same order of calls after `nnfs.init()`",
+          "points": 2
+        }
+      ],
+      "explanation": "Section 8 gives both rows: created after the data, `dense1` receives the six numbers that follow the 300 used by `spiral_data`; created before it, the first six of the stream. `snippets/pitfalls.py` prints both, and shows that setting the seed again replays the same weights while two instances in one run differ.",
+      "hints": [
+        "Both scripts start from the same seed. Ask which random numbers each script has already used when the layer is created.",
+        "`spiral_data` adds random noise to every point. Count how many numbers that takes."
+      ]
+    },
+    {
+      "id": "nn-004-q18",
+      "type": "mcq",
+      "track": "connect",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "5.3",
+      "est_minutes": 3,
+      "tags": [
+        "forward",
+        "backward-pass",
+        "caching"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "connects": [
+        "nn-016"
+      ],
+      "prompt": "Post 16 adds a `backward` method to `Layer_Dense`. Which change does it make to the `forward` of this post, and why?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It adds `return self.output`, because `backward` needs the output handed back to it.",
+          "correct": false,
+          "feedback": "The output stays on the instance and `forward` still returns nothing. The `backward` of a dense layer does not use the layer's own output."
+        },
+        {
+          "key": "b",
+          "text": "It transposes `self.weights`, because gradients use the layout of posts 01 to 03.",
+          "correct": false,
+          "feedback": "The weights keep the $(n_\\text{inputs}, n_\\text{neurons})$ layout for the rest of the series. Transposes appear inside the gradient products, not in the stored matrix."
+        },
+        {
+          "key": "c",
+          "text": "It makes the biases random, because a zero bias would receive a zero gradient.",
+          "correct": false,
+          "feedback": "A bias that starts at zero still receives a gradient, the incoming gradient summed over the batch, and is updated like any other parameter. The initialisation is unchanged."
+        },
+        {
+          "key": "d",
+          "text": "It adds `self.inputs = inputs`, because the weight gradient is computed from it.",
+          "correct": true,
+          "feedback": "Right. The `forward` of this post keeps no reference to its input; post 16 stores it so that `backward` can form the weight gradient from it."
+        }
+      ],
+      "explanation": "Sections 5.2 and 5.3 note that this version of the class does not remember its input and that `self.inputs = inputs` is added in post 16. The backward pass computes the weight gradient from the input the layer saw, so the forward pass has to keep it.",
+      "hints": [
+        "List what `forward` stores on the instance in this post, then ask which quantity of the forward pass is thrown away."
+      ]
+    }
+  ]
+}
