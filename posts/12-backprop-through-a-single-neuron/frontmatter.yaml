@@ -1,8 +1,23 @@
 id: nn-012
 slug: 12-backprop-through-a-single-neuron
-title: "Part 12 · Backpropagation through a single neuron"
+title: "12 - Backpropagation through a single neuron"
+summary: "The chain rule worked by hand on one three-input ReLU neuron with a squared-error loss: four local derivatives, one shared upstream gradient, four gradients, one update, and a 200-iteration loop that checks them."
 date: 2026-05-28
-tags: [neural-networks, from-scratch, backpropagation, gradients]
+updated: 2026-10-05
+status: complete
+part: "Part V - Backpropagation"
+level: intermediate
+reading_time: 20
+tags: [neural-networks, from-scratch, backpropagation, gradients, chain-rule, gradient-descent]
 hero: diagrams/01-single-neuron-backprop.svg
-reading_time: 12
-part: "Part V — Backpropagation"
+prerequisites: [nn-010, nn-011]
+code: included
+outcomes:
+  - id: o1
+    text: "Identify the four chain-rule factors in the backward pass of a single neuron."
+  - id: o2
+    text: "Compute by hand the gradient of a squared-error loss with respect to each weight and the bias of a three-input ReLU neuron."
+  - id: o3
+    text: "Run a 200-iteration gradient-descent loop on one neuron and predict how fast its loss falls towards zero."
+recommended: [nn-003]
+compute: cpu

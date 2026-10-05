@@ -1,0 +1,861 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-012",
+  "next_ordinal": 20,
+  "questions": [
+    {
+      "id": "nn-012-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "local-derivative",
+        "product"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The neuron of the post has inputs $(x_1, x_2, x_3) = (1, -2, 3)$, weights $(w_1, w_2, w_3) = (-3, -1, 2)$, bias $b = 1$, a ReLU activation, and the loss $L = (\\hat{y} - y)^2$ with target $y = 0$. In the chain for $\\partial L / \\partial w_2$, the factor nearest the weight is $\\partial (x_2 w_2) / \\partial w_2$. What is its value?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "$-1$",
+          "correct": false,
+          "feedback": "That is $w_2$ itself, which is the derivative of the product with respect to $x_2$, not with respect to $w_2$."
+        },
+        {
+          "key": "b",
+          "text": "$1$",
+          "correct": false,
+          "feedback": "A derivative of 1 belongs to the sum, or to the bias. A product $x_2 w_2$ changes by $x_2$ for each unit change of $w_2$."
+        },
+        {
+          "key": "c",
+          "text": "$-2$",
+          "correct": true,
+          "feedback": "Right: with $x_2$ held constant, the derivative of $x_2 w_2$ with respect to $w_2$ is $x_2 = -2$."
+        },
+        {
+          "key": "d",
+          "text": "$12$",
+          "correct": false,
+          "feedback": "That is the upstream gradient, the product of the other three factors. The question asks for the one factor that is specific to $w_2$."
+        }
+      ],
+      "explanation": "Section 4 computes the last factor as the derivative of the product $x_i w_i$ with respect to $w_i$, with the input treated as a constant, which is the input $x_i$. For $w_2$ it is $x_2 = -2$, and section 5 multiplies it by the upstream gradient 12 to get $-24$.",
+      "hints": [
+        "Treat the input as a constant and differentiate the product with respect to the weight."
+      ]
+    },
+    {
+      "id": "nn-012-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4.1",
+      "est_minutes": 3,
+      "tags": [
+        "upstream-gradient"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the backward pass of a single ReLU neuron with a squared-error loss, what is the upstream gradient that arrives at the weights and the bias?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The value of the loss after the forward pass",
+          "correct": false,
+          "feedback": "The loss is a value (36 in the post), not a derivative. The upstream gradient there is 12."
+        },
+        {
+          "key": "b",
+          "text": "The product of the factors all parameters share, $\\partial L / \\partial z$",
+          "correct": true,
+          "feedback": "Right: the loss derivative, the ReLU derivative and the derivative of the sum multiply into one number that is reused for every parameter."
+        },
+        {
+          "key": "c",
+          "text": "The learning rate multiplied by the gradient of one weight",
+          "correct": false,
+          "feedback": "That is the size of one update. The learning rate plays no part in the backward pass."
+        },
+        {
+          "key": "d",
+          "text": "The derivative of the loss with respect to the inputs, $\\partial L / \\partial x_i$",
+          "correct": false,
+          "feedback": "That gradient is what a layer passes back to an earlier layer. The post computes the gradients of the parameters only."
+        }
+      ],
+      "explanation": "Section 4.1 observes that only the last factor depends on the parameter. The first three (loss with respect to output, output with respect to $z$, $z$ with respect to one of its terms) are shared; their product is the upstream gradient, and because the third factor is 1 it equals $\\partial L / \\partial z$.",
+      "hints": [
+        "Ask which of the four factors change when a different weight is chosen."
+      ]
+    },
+    {
+      "id": "nn-012-q03",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4.1",
+      "est_minutes": 1,
+      "tags": [
+        "bias"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The gradient of each weight is the upstream gradient multiplied by the input attached to that weight. By which number is the upstream gradient multiplied to give the gradient of the bias?",
+      "answer": {
+        "model": "By 1, because the bias is added to $z$ directly, so $\\partial z / \\partial b = 1$.",
+        "accept": [
+          "^\\s*(?:(?:it\\s+is|it's|the\\s+answer\\s+is|it\\s+is\\s+multiplied\\s+by|multiplied\\s+by|by|times|just|simply|exactly|the\\s+number)\\s+)*\\$?(?:(?<![\\d.\\-])1(?:\\.0+)?\\b(?!\\.?\\d|\\s*/)|\\bone\\b(?!\\s+(?:of|inputs?|weights?)\\b)|\\bunity\\b)(?!\\s*(?:or|and)\\b[\\s\\S]*(?:\\d|\\bzero\\b|\\binputs?\\b|\\bx\\b|\\bx\\s*_))",
+          "^(?:(?!\\b(?:not|never|nor|neither|inputs?)\\b|n't|\\bx\\s*_?\\s*\\{?\\s*\\d|\\bw\\s*_?\\s*\\{?\\s*\\d)[\\s\\S])*?(?:\\bby|\\btimes|\\*|\\bis|=|\\bequals)\\s*(?:(?:exactly|just|simply|the\\s+number)\\s+)?\\$?(?:(?<![\\d.\\-])1(?:\\.0+)?\\b(?!\\.?\\d|\\s*/)|\\bone\\b(?!\\s+(?:of|inputs?|weights?)\\b)|\\bunity\\b)(?!\\s*(?:or|and)\\b[\\s\\S]*(?:\\d|\\bzero\\b|\\binputs?\\b|\\bx\\b|\\bx\\s*_))"
+        ]
+      },
+      "explanation": "Section 4.1: the bias enters $z$ by addition and is not multiplied by anything, so the derivative of $z$ with respect to $b$ is 1 and the bias gradient is the upstream gradient itself. In the post it is $12 \\cdot 1 = 12$.",
+      "hints": [
+        "Look at how the bias enters the pre-activation: is it multiplied by anything?"
+      ]
+    },
+    {
+      "id": "nn-012-q04",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "update-rule",
+        "sign"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "For the neuron of the post, $\\partial L / \\partial w_2 = -24$. What does one gradient-descent update with a small positive learning rate do to $w_2$?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It increases $w_2$",
+          "correct": true,
+          "feedback": "Right: the update subtracts $\\alpha \\cdot (-24)$, which adds a positive amount. With $\\alpha = 0.01$ the weight goes from $-1$ to $-0.76$."
+        },
+        {
+          "key": "b",
+          "text": "It decreases $w_2$",
+          "correct": false,
+          "feedback": "That would follow the gradient uphill. The update subtracts the gradient, and subtracting a negative number raises the weight."
+        },
+        {
+          "key": "c",
+          "text": "It leaves $w_2$ unchanged",
+          "correct": false,
+          "feedback": "Only a zero gradient leaves a weight where it is. This gradient is $-24$."
+        },
+        {
+          "key": "d",
+          "text": "It sets $w_2$ to $-24$",
+          "correct": false,
+          "feedback": "The gradient is a slope, not a new value for the weight. The update moves the weight by the learning rate times the slope."
+        }
+      ],
+      "explanation": "Section 5 reads the sign: $w_2$ multiplies a negative input, so raising it lowers $z$ and therefore the loss. Section 6 applies $w_{\\text{new}} = w_{\\text{old}} - \\alpha \\cdot (\\partial L / \\partial w)$, which gives $-1 - 0.01 \\cdot (-24) = -0.76$.",
+      "hints": [
+        "Write the update rule for this one weight and watch the two minus signs."
+      ]
+    },
+    {
+      "id": "nn-012-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 5,
+      "tags": [
+        "chain-rule",
+        "squared-error"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The neuron of the post keeps its inputs $(1, -2, 3)$, weights $(-3, -1, 2)$ and bias $1$, but the target is changed from $0$ to $y = 2$. Give the loss, the upstream gradient, and $\\partial L / \\partial w_2$.",
+      "answer": {
+        "parts": [
+          {
+            "label": "loss",
+            "value": 16,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "upstream gradient",
+            "value": 8,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "dL/dw_2",
+            "value": -16,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form: z = 6, yhat = 6, L = (6 - 2)^2, upstream = 2 (6 - 2) * 1 * 1, dL/dw_2 = upstream * x_2. Recomputed with the forward and backward functions of snippets/by_hand.py.",
+      "explanation": "The forward pass up to the output does not involve the target, so $z = \\hat{y} = 6$ as in section 3. The loss is $(6 - 2)^2 = 16$. Factor 1 is $2(\\hat{y} - y) = 8$, the ReLU derivative and the derivative of the sum are both 1, so the upstream gradient is 8, and section 4.1 gives $\\partial L / \\partial w_2 = 8 \\cdot x_2 = -16$.",
+      "hints": [
+        "Only the loss and its derivative involve the target.",
+        "The derivative of the squared error with respect to the output is $2(\\hat{y} - y)$."
+      ]
+    },
+    {
+      "id": "nn-012-q06",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 8,
+      "tags": [
+        "chain-rule",
+        "by-hand"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A ReLU neuron with a squared-error loss $L = (\\hat{y} - y)^2$ has inputs $(x_1, x_2, x_3) = (2, -1, 0.5)$, weights $(w_1, w_2, w_3) = (1, -2, 4)$, bias $b = -1$ and target $y = 3$. Compute the four gradients.",
+      "answer": {
+        "parts": [
+          {
+            "label": "dL/dw_1",
+            "value": 8,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "dL/dw_2",
+            "value": -4,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "dL/dw_3",
+            "value": 2,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "dL/db",
+            "value": 4,
+            "tolerance": 0.001,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form: z = 2 + 2 + 2 - 1 = 5, yhat = 5, upstream = 2 (5 - 3) = 4, gradients = 4 * (2, -1, 0.5) and 4. Recomputed with the forward and backward functions of snippets/by_hand.py.",
+      "explanation": "Forward: $z = (2)(1) + (-1)(-2) + (0.5)(4) - 1 = 5$, so $\\hat{y} = 5$ and $L = 4$. Backward, as in sections 4 and 5: factor 1 is $2(5 - 3) = 4$, the ReLU derivative is 1 because $z > 0$, and the sum contributes 1, so the upstream gradient is 4. Each weight gradient is 4 times its input, $(8, -4, 2)$, and the bias gradient is 4.",
+      "hints": [
+        "Run the forward pass first; the backward pass needs $z$ and the output.",
+        "Compute the one number every parameter shares before multiplying by anything specific to a parameter."
+      ]
+    },
+    {
+      "id": "nn-012-q07",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "backward-walk"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The backward pass for the weight $w_1$ of a ReLU neuron with a squared-error loss multiplies four local derivatives. Put them in the order in which the backward walk meets them, starting from the loss.",
+      "items": [
+        {
+          "key": "a",
+          "text": "$\\partial (x_1 w_1) / \\partial w_1$, the derivative of the product"
+        },
+        {
+          "key": "b",
+          "text": "$\\partial \\hat{y} / \\partial z$, the derivative of the ReLU"
+        },
+        {
+          "key": "c",
+          "text": "$\\partial L / \\partial \\hat{y}$, the derivative of the squared error"
+        },
+        {
+          "key": "d",
+          "text": "$\\partial z / \\partial (x_1 w_1)$, the derivative of the sum"
+        }
+      ],
+      "answer": [
+        "c",
+        "b",
+        "d",
+        "a"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 7: the walk starts at the loss and moves towards the weights, so it meets the functions in the reverse of the forward order. Forward the order is product, sum, ReLU, squared error; backward it is squared error, ReLU, sum, product. The product of the first three is the shared upstream gradient.",
+      "hints": [
+        "List the functions in the order the forward pass applies them, then reverse the list."
+      ]
+    },
+    {
+      "id": "nn-012-q08",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 4,
+      "tags": [
+        "local-derivative"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Match each local derivative of the single-neuron chain to its value or formula.",
+      "left": [
+        {
+          "key": "a",
+          "text": "Squared error $(\\hat{y} - y)^2$ with respect to $\\hat{y}$"
+        },
+        {
+          "key": "b",
+          "text": "ReLU with respect to $z$, at a negative $z$"
+        },
+        {
+          "key": "c",
+          "text": "The pre-activation $z$ with respect to the bias $b$"
+        },
+        {
+          "key": "d",
+          "text": "The product $x_i w_i$ with respect to $w_i$"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "$x_i$"
+        },
+        {
+          "key": "q",
+          "text": "$0$"
+        },
+        {
+          "key": "r",
+          "text": "$2(\\hat{y} - y)$"
+        },
+        {
+          "key": "s",
+          "text": "$1$"
+        },
+        {
+          "key": "t",
+          "text": "$w_i$"
+        },
+        {
+          "key": "u",
+          "text": "$\\hat{y}^2$"
+        }
+      ],
+      "answer": {
+        "a": "r",
+        "b": "q",
+        "c": "s",
+        "d": "p"
+      },
+      "explanation": "Section 4 computes each factor: the squared error gives $2(\\hat{y} - y)$; the ReLU has slope 0 on its negative side (section 4.2); the bias is added to $z$, so its local derivative is 1; and the product $x_i w_i$ differentiated with respect to the weight leaves the input $x_i$. The weight $w_i$ would be the derivative of the product with respect to the input.",
+      "hints": [
+        "Differentiate each function with respect to the named variable only, holding everything else constant."
+      ]
+    },
+    {
+      "id": "nn-012-q09",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4.2",
+      "est_minutes": 4,
+      "tags": [
+        "relu",
+        "dead-neuron"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A three-input ReLU neuron with the loss $(\\hat{y} - y)^2$ has inputs $(1, -2, 3)$, a pre-activation of $z = -4$ after the forward pass, and target $y = 1$. What are its weight gradients $(\\partial L / \\partial w_1, \\partial L / \\partial w_2, \\partial L / \\partial w_3)$?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "$(-2, 4, -6)$",
+          "correct": false,
+          "feedback": "This multiplies the loss derivative $2(0 - 1) = -2$ by the inputs and leaves out the ReLU derivative, which is 0 for a negative $z$."
+        },
+        {
+          "key": "b",
+          "text": "$(-10, 20, -30)$",
+          "correct": false,
+          "feedback": "This uses $2(z - y) = -10$ as the loss derivative. The loss depends on the output $\\hat{y} = 0$, not on $z$, and the ReLU derivative is 0 as well."
+        },
+        {
+          "key": "c",
+          "text": "$(0, 0, 0)$",
+          "correct": true,
+          "feedback": "Right: the ReLU derivative at a negative pre-activation is 0, so the upstream gradient is 0 and every weight gradient with it."
+        },
+        {
+          "key": "d",
+          "text": "They are undefined, because the ReLU has no derivative there",
+          "correct": false,
+          "feedback": "The ReLU lacks a derivative only at exactly $z = 0$. At $z = -4$ its slope is 0."
+        }
+      ],
+      "explanation": "Section 4.2: for $z < 0$ the output is 0 and factor 2 is 0. The loss derivative is $2(0 - 1) = -2$, but the upstream gradient is $-2 \\cdot 0 = 0$, and each weight gradient is that zero times an input. The loss is 1 and no update can change it, which is the dead neuron that section 10 builds.",
+      "hints": [
+        "Evaluate each of the first three factors at the values the forward pass produced.",
+        "The second factor is the slope of the ReLU at $z = -4$."
+      ]
+    },
+    {
+      "id": "nn-012-q10",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "zero-input"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A single neuron has an upstream gradient of 12, and the input attached to one of its weights is exactly 0 for the current sample. What is the gradient of the loss with respect to that weight?",
+      "answer": {
+        "model": "Zero: the weight gradient is the upstream gradient times the input, $12 \\cdot 0 = 0$.",
+        "accept": [
+          "^\\W*(?:(?:it\\s+is|it's|the\\s+gradient\\s+is|that\\s+is|exactly|the\\s+answer\\s+is)\\s+)*(?:(?<![\\d.])0(?:\\.0+)?(?!\\.?\\d)|\\bzero\\b)(?!\\s*(?:or\\b|/|inputs?\\b))",
+          "\\b(?:gradient|derivative|dL\\s*/\\s*dw\\w*|it|answer|result|product)\\b(?:(?!\\binputs?\\b|\\d|\\bnot\\b|\\bnever\\b|n't|\\bnon)[^.\\n]){0,60}?(?:=|\\bis|\\bequals|\\bgives)\\s*(?:(?:exactly|also|just)\\s+)*(?:(?<![\\d.])0(?:\\.0+)?(?!\\.?\\d)|\\bzero\\b)(?!\\s*(?:or\\b|/))",
+          "(?<![\\d.])(?:12\\s*(?:\\*|x|\\u00d7|\\u00b7|times|\\\\cdot|\\\\times)\\s*0|0\\s*(?:\\*|x|\\u00d7|\\u00b7|times|\\\\cdot|\\\\times)\\s*12)\\s*(?:=|is|gives|equals)\\s*(?:(?<![\\d.])0(?:\\.0+)?(?!\\.?\\d)|\\bzero\\b)",
+          "\\b(?:which|this|that)\\s+(?:gives|is|equals|makes)\\s+(?:exactly\\s+)?(?:(?<![\\d.])0(?:\\.0+)?(?!\\.?\\d)|\\bzero\\b)\\W*$"
+        ]
+      },
+      "explanation": "Section 4.1 gives $\\partial L / \\partial w_i = (\\partial L / \\partial z) \\cdot x_i$, and section 5 notes the consequence: with an input of 0 the gradient is $12 \\cdot 0 = 0$ however large the upstream gradient is, because with that input the weight has no effect on the output.",
+      "hints": [
+        "Use the one-line rule for a weight gradient: upstream gradient times the connected input."
+      ]
+    },
+    {
+      "id": "nn-012-q11",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 6,
+      "tags": [
+        "gradient-descent",
+        "shrink-factor"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The neuron of the post has inputs $(x_1, x_2, x_3) = (1, -2, 3)$, weights $(w_1, w_2, w_3) = (-3, -1, 2)$, bias $b = 1$, a ReLU activation, and the loss $L = (\\hat{y} - y)^2$ with target $y = 0$. One gradient-descent update is taken with a learning rate of $\\alpha = 0.02$ in place of the post's $0.01$. Give the pre-activation and the loss after that update.",
+      "answer": {
+        "parts": [
+          {
+            "label": "z after the update",
+            "value": 2.4,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "loss after the update",
+            "value": 5.76,
+            "tolerance": 0.001,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form z_new = z (1 - 2 * alpha * 15) = 6 * 0.4 and L = z_new^2; recomputed with the forward and backward functions of snippets/by_hand.py at lr = 0.02.",
+      "explanation": "The gradients are $(12, -24, 36, 12)$ as in section 5, so the new parameters are $(-3.24, -0.52, 1.28)$ and $0.76$, and $z = -3.24 + 1.04 + 3.84 + 0.76 = 2.4$. Section 6 gives the shortcut: each update multiplies $z$ by $1 - 2\\alpha \\cdot 15 = 0.4$, so $z = 6 \\cdot 0.4 = 2.4$ and the loss is $2.4^2 = 5.76$.",
+      "hints": [
+        "The four gradients do not depend on the learning rate; only the size of the step does.",
+        "Either update all four parameters and rerun the forward pass, or use the factor $1 - 2\\alpha(x_1^2 + x_2^2 + x_3^2 + 1)$."
+      ]
+    },
+    {
+      "id": "nn-012-q12",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "9.2",
+      "est_minutes": 6,
+      "tags": [
+        "training-loop"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In `snippets/training_loop.py` the line `lr = 0.01` is changed to `lr = 0.02` and the script is run again. What loss does it print, to four decimal places, on the line for iteration 4?",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "    if i <= 20 and i % 4 == 0:\n        print(f\"iter {i:3d}  loss = {loss:.4f}   (exactly {loss:.3e})\")",
+        "caption": "The line of the loop that prints the first six reports."
+      },
+      "answer": {
+        "value": 0.0236,
+        "tolerance": 0.0001,
+        "unit": ""
+      },
+      "precision_note": "snippets/training_loop.py run with lr = 0.02 prints 'iter   4  loss = 0.0236   (exactly 2.359e-02)'; closed form 36 * 0.16^4 = 0.02359.",
+      "explanation": "With $\\alpha = 0.02$ each update multiplies $z$ by $1 - 30\\alpha = 0.4$ and the loss by $0.16$ (section 6). The loss printed at iteration $i$ is the one before that iteration's update, so iteration 4 shows $36 \\cdot 0.16^4 = 0.0236$, where the original run shows $36 \\cdot 0.49^4 = 2.0753$.",
+      "hints": [
+        "The loss printed at iteration $i$ has had $i$ updates applied to it.",
+        "Work out the factor by which one update multiplies the loss at this learning rate."
+      ]
+    },
+    {
+      "id": "nn-012-q13",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o1"
+      ],
+      "section": "9.1",
+      "est_minutes": 15,
+      "tags": [
+        "backward-pass",
+        "implement"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Complete `backward(inputs, weights, bias, target)` so that it returns the gradient of the loss $(\\text{ReLU}(z) - y)^2$ with respect to each weight and to the bias of a single neuron with any number of inputs. Use plain Python lists, and a ReLU derivative of 0 at $z = 0$.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "def backward(inputs, weights, bias, target):\n    \"\"\"Gradients of L = (ReLU(z) - target)^2 for one neuron, z = sum(x_i * w_i) + bias.\n\n    inputs and weights are lists of floats of the same length.\n    Returns (dweights, dbias): a list with one gradient per weight, and the bias gradient.\n    \"\"\"\n    dweights = [0.0 for _ in weights]\n    dbias = 0.0\n    # TODO: forward pass, then the upstream gradient, then one multiplication per parameter\n    return dweights, dbias\n",
+      "solution": "def backward(inputs, weights, bias, target):\n    \"\"\"Gradients of L = (ReLU(z) - target)^2 for one neuron, z = sum(x_i * w_i) + bias.\n\n    inputs and weights are lists of floats of the same length.\n    Returns (dweights, dbias): a list with one gradient per weight, and the bias gradient.\n    \"\"\"\n    # Forward pass: the backward pass needs z and the output.\n    z = sum(x * w for x, w in zip(inputs, weights)) + bias\n    yhat = max(0.0, z)\n    # The factors every parameter shares.\n    dloss_dyhat = 2.0 * (yhat - target)\n    dyhat_dz = 1.0 if z > 0 else 0.0\n    upstream = dloss_dyhat * dyhat_dz          # the sum contributes a factor of 1\n    dweights = [upstream * x for x in inputs]  # last factor: the connected input\n    dbias = upstream                           # last factor: 1\n    return dweights, dbias\n",
+      "tests": "def close(a, b):\n    return abs(a - b) < 1e-9\n\n\ndw, db = backward([1.0, -2.0, 3.0], [-3.0, -1.0, 2.0], 1.0, 0.0)\nassert len(dw) == 3\nassert all(close(a, b) for a, b in zip(dw, [12.0, -24.0, 36.0])), dw\nassert close(db, 12.0), \"the bias gradient is the upstream gradient, with no input in it\"\n\ndw, db = backward([2.0, -1.0, 0.5], [1.0, -2.0, 4.0], -1.0, 3.0)\nassert all(close(a, b) for a, b in zip(dw, [8.0, -4.0, 2.0])), dw\nassert close(db, 4.0), db\n\ndw, db = backward([1.0, -2.0, 3.0], [-3.0, -1.0, -2.0], 1.0, 1.0)\nassert all(close(a, 0.0) for a in dw) and close(db, 0.0), \"a negative z passes back no gradient\"\n\ndw, db = backward([1.0, -2.0, 3.0], [-3.0, -1.0, 0.0], 1.0, 1.0)\nassert all(close(a, 0.0) for a in dw) and close(db, 0.0), \"the series uses a ReLU derivative of 0 at z = 0\"\n\ndw, db = backward([3.0, 4.0], [1.0, 1.0], 0.0, 10.0)\nassert all(close(a, b) for a, b in zip(dw, [-18.0, -24.0])) and close(db, -6.0), (dw, db)\nprint(\"all backward-pass checks passed\")\n",
+      "expected_output": "all backward-pass checks passed\n",
+      "explanation": "Section 9.1 writes the same function for NumPy arrays. The forward pass gives $z$ and $\\hat{y}$; the upstream gradient is $2(\\hat{y} - y)$ times the ReLU derivative; each weight gradient is the upstream gradient times its input, and the bias gradient is the upstream gradient alone. The tests use the post's neuron, $(12, -24, 36)$ and 12, a second neuron, a dead neuron, a pre-activation of exactly 0, and an output below its target, where the upstream gradient is negative.",
+      "hints": [
+        "The backward pass cannot start until the forward pass has produced the pre-activation and the output.",
+        "Compute one shared number from the loss derivative and the ReLU derivative, then multiply it by each input in turn; the bias takes it unchanged."
+      ]
+    },
+    {
+      "id": "nn-012-q14",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "9.2",
+      "est_minutes": 15,
+      "tags": [
+        "training-loop",
+        "fix"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The function `train` is meant to run gradient descent on one ReLU neuron with a squared-error loss and return the loss before each update. On the post's neuron with a learning rate of 0.01 its losses should be $36 \\cdot 0.49^{t}$, but it returns 36, 17.64, 5.76, 0.36, 0, 0. Find the bug and fix it.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "def train(inputs, weights, bias, target, lr, steps):\n    \"\"\"Gradient descent on one ReLU neuron with a squared-error loss.\n\n    Returns the list of losses, one per step, each measured before that step's update.\n    \"\"\"\n    weights = list(weights)\n    losses = []\n    z = sum(x * w for x, w in zip(inputs, weights)) + bias\n    yhat = max(0.0, z)\n    upstream = 2.0 * (yhat - target) * (1.0 if z > 0 else 0.0)\n    for _ in range(steps):\n        z = sum(x * w for x, w in zip(inputs, weights)) + bias\n        yhat = max(0.0, z)\n        losses.append((yhat - target) ** 2)\n        for i, x in enumerate(inputs):\n            weights[i] -= lr * upstream * x\n        bias -= lr * upstream\n    return losses\n",
+      "solution": "def train(inputs, weights, bias, target, lr, steps):\n    \"\"\"Gradient descent on one ReLU neuron with a squared-error loss.\n\n    Returns the list of losses, one per step, each measured before that step's update.\n    \"\"\"\n    weights = list(weights)\n    losses = []\n    for _ in range(steps):\n        z = sum(x * w for x, w in zip(inputs, weights)) + bias\n        yhat = max(0.0, z)\n        losses.append((yhat - target) ** 2)\n        # The upstream gradient belongs to this forward pass, so it is recomputed every step.\n        upstream = 2.0 * (yhat - target) * (1.0 if z > 0 else 0.0)\n        for i, x in enumerate(inputs):\n            weights[i] -= lr * upstream * x\n        bias -= lr * upstream\n    return losses\n",
+      "tests": "start = [-3.0, -1.0, 2.0]\nlosses = train([1.0, -2.0, 3.0], start, 1.0, 0.0, 0.01, 8)\nassert start == [-3.0, -1.0, 2.0], \"the caller's weights must not be modified\"\nassert len(losses) == 8\nassert abs(losses[0] - 36.0) < 1e-9\nassert abs(losses[1] - 17.64) < 1e-9\nfor t in range(8):\n    assert abs(losses[t] - 36.0 * 0.49 ** t) < 1e-9, (t, losses[t])\nother = train([1.0, -2.0, 3.0], start, 1.0, 1.0, 0.03, 4)\nfor t in range(4):\n    assert abs(other[t] - 25.0 * 0.01 ** t) < 1e-9, (t, other[t])\nscaled = train([2.0, -1.0, 0.5], [1.0, -2.0, 4.0], -1.0, 3.0, 0.04, 5)\nfor t in range(5):\n    assert abs(scaled[t] - 4.0 * 0.25 ** t) < 1e-9, \"the bias update has no input in it\"\ndead = train([1.0, -2.0, 3.0], [-3.0, -1.0, -2.0], 1.0, 1.0, 0.1, 4)\nassert all(abs(loss - 1.0) < 1e-9 for loss in dead), \"a negative z passes back no gradient\"\nprint(\"all training-loop checks passed\")\n",
+      "expected_output": "all training-loop checks passed\n",
+      "explanation": "The starter computes the upstream gradient once, before the loop, and reuses it at every step. The first update is right, since the gradient is fresh, and the later ones subtract the same $0.01 \\cdot 12 \\cdot 15 = 1.8$ from $z$ each time, giving $z = 6, 4.2, 2.4, 0.6, -1.2$ where the correct run has $6 \\cdot 0.7^{t}$. Section 9.2 recomputes the forward and the backward pass inside the loop, and the Common pitfalls list differentiating at stale values.",
+      "hints": [
+        "Compare the second and third losses with what a constant factor of 0.49 would give; the first update is correct and the later ones are not.",
+        "Check which quantities are computed inside the loop and which only once before it."
+      ]
+    },
+    {
+      "id": "nn-012-q15",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 12,
+      "tags": [
+        "derivation",
+        "shrink-factor"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A ReLU neuron with inputs $x_1, x_2, x_3$, a bias, and the loss $(\\hat{y} - y)^2$ has a positive pre-activation $z$ before and after one gradient-descent update with learning rate $\\alpha$. Derive how the gap $z - y$ between output and target changes in that update, for a general target $y$, and state for which learning rates the update carries $z$ past the target.",
+      "kind": "derive",
+      "solution": "1. With $z > 0$ the output is $\\hat{y} = z$ and the ReLU derivative is 1, so the upstream gradient is $g = 2(\\hat{y} - y) \\cdot 1 \\cdot 1 = 2(z - y)$.\n2. The gradients are $\\partial L / \\partial w_i = g x_i$ and $\\partial L / \\partial b = g$, so the update is $w_i \\leftarrow w_i - \\alpha g x_i$ and $b \\leftarrow b - \\alpha g$.\n3. The new pre-activation is $z_{\\text{new}} = \\sum_i x_i (w_i - \\alpha g x_i) + (b - \\alpha g) = z - \\alpha g (x_1^2 + x_2^2 + x_3^2 + 1)$.\n4. Write $S = x_1^2 + x_2^2 + x_3^2 + 1$ and substitute $g = 2(z - y)$: $z_{\\text{new}} - y = (z - y) - 2 \\alpha S (z - y) = (z - y)(1 - 2 \\alpha S)$.\n5. The gap is multiplied by the constant $1 - 2 \\alpha S$ at every update. It keeps its sign and shrinks when $0 < \\alpha < 1/(2S)$; it is zero after one update when $\\alpha = 1/(2S)$; and it changes sign, so that $z$ has passed the target, when $\\alpha > 1/(2S)$.\n6. For the post's inputs $S = 15$, so the factor is $1 - 30\\alpha$ and the threshold is $\\alpha = 1/30 \\approx 0.033$. With $y = 0$ and $\\alpha = 0.01$ this is the factor 0.7 of the post.\n7. The derivation holds only while $z$ stays positive. An update that lands at $z \\le 0$ switches the ReLU off, and from then on every gradient is zero.",
+      "rubric": [
+        {
+          "criterion": "States the upstream gradient $2(z - y)$ for a positive pre-activation",
+          "points": 1
+        },
+        {
+          "criterion": "Writes the update of each weight and of the bias in terms of the upstream gradient and the inputs",
+          "points": 1
+        },
+        {
+          "criterion": "Substitutes the updated parameters into $z$ and obtains $z - \\alpha g (x_1^2 + x_2^2 + x_3^2 + 1)$, including the 1 from the bias",
+          "points": 2
+        },
+        {
+          "criterion": "Reaches $z_{\\text{new}} - y = (z - y)(1 - 2\\alpha S)$",
+          "points": 2
+        },
+        {
+          "criterion": "States that the update passes the target when $\\alpha > 1/(2S)$, with $S = x_1^2 + x_2^2 + x_3^2 + 1$",
+          "points": 1
+        },
+        {
+          "criterion": "Notes that the result requires the pre-activation to stay positive",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 6 does this derivation for $y = 0$ and finds $z_{\\text{new}} = 0.7 z$; section 10 states the general form, $z_{\\text{new}} - y = (z - y)(1 - 30\\alpha)$ for the post's inputs. The factor depends on the learning rate and on the inputs through $x_1^2 + x_2^2 + x_3^2 + 1$, with the 1 contributed by the bias, and not on the weights.",
+      "hints": [
+        "Start from the upstream gradient and write the update of every parameter with it.",
+        "Substitute the updated weights and bias into the formula for $z$ and collect the terms that multiply the upstream gradient."
+      ]
+    },
+    {
+      "id": "nn-012-q16",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6.1",
+      "est_minutes": 3,
+      "tags": [
+        "rounding",
+        "display"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The post's training loop, run with a learning rate of 0.01, prints `loss = 0.0000` to four decimal places at iteration 20. Which statement about that iteration is correct?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The loss has underflowed to exactly zero in float64 arithmetic",
+          "correct": false,
+          "feedback": "Float64 represents numbers far smaller than this loss. The loss becomes exactly zero much later, when the computed $z$ is lost to rounding near $10^{-16}$."
+        },
+        {
+          "key": "b",
+          "text": "The ReLU has switched off, which makes all four gradients zero",
+          "correct": false,
+          "feedback": "The pre-activation is still positive, about $0.005$, so the ReLU derivative is 1."
+        },
+        {
+          "key": "c",
+          "text": "Gradient descent has overshot the target",
+          "correct": false,
+          "feedback": "With this learning rate each update multiplies $z$ by 0.7, which never changes its sign."
+        },
+        {
+          "key": "d",
+          "text": "The loss is near $2.3 \\times 10^{-5}$, with non-zero gradients",
+          "correct": true,
+          "feedback": "Right: $36 \\cdot 0.49^{20} \\approx 2.3 \\times 10^{-5}$, which four decimal places show as 0.0000, and the upstream gradient $2z$ is still positive."
+        }
+      ],
+      "explanation": "Section 6.1 separates two things. The printed zero at iteration 20 is display rounding: the loss is $36 \\cdot 0.49^{20} \\approx 2.3 \\times 10^{-5}$ and training continues. The loss of the float64 run does become exactly 0.0, but only at iteration 113, when rounding in the sum that computes $z$ cancels the four terms exactly.",
+      "hints": [
+        "Use the per-step factor of the loss to work out its value after 20 updates."
+      ]
+    },
+    {
+      "id": "nn-012-q17",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "direction",
+        "cost"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Why does the backward pass start at the loss and move towards the parameters, and not start at each parameter and move towards the loss?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The product of the local derivatives is different in the other direction",
+          "correct": false,
+          "feedback": "The factors are plain numbers and multiplication commutes, so the product is the same in either order."
+        },
+        {
+          "key": "b",
+          "text": "The factors nearest the loss are shared by every parameter, so they are computed once",
+          "correct": true,
+          "feedback": "Right: one walk from the loss yields the upstream gradient, and each parameter then needs a single further multiplication."
+        },
+        {
+          "key": "c",
+          "text": "The local derivatives near the loss cannot be evaluated until the weights have been updated",
+          "correct": false,
+          "feedback": "Every local derivative is evaluated at the values of the forward pass, before any update."
+        },
+        {
+          "key": "d",
+          "text": "The ReLU derivative is only defined when approached from the loss side",
+          "correct": false,
+          "feedback": "The ReLU derivative depends on the sign of $z$ alone, not on the direction of the walk."
+        }
+      ],
+      "explanation": "Section 7: the direction changes the cost and not the result. From the loss, the shared factors are multiplied once and reused, so four gradients cost one upstream gradient and four multiplications. From a parameter, the whole chain has to be walked again for every parameter. A network has many parameters and one loss, so the walk starts at the loss.",
+      "hints": [
+        "Compare the chains of two different weights and see which factors they have in common."
+      ]
+    },
+    {
+      "id": "nn-012-q18",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o3",
+        "o2"
+      ],
+      "section": "10",
+      "est_minutes": 12,
+      "tags": [
+        "learning-rate",
+        "dead-neuron",
+        "diagnosis"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The neuron of the post has inputs $(x_1, x_2, x_3) = (1, -2, 3)$, weights $(w_1, w_2, w_3) = (-3, -1, 2)$, bias $b = 1$, a ReLU activation, and the loss $L = (\\hat{y} - y)^2$ with target $y = 0$. A colleague raises the learning rate from $0.01$ to $0.1$, sees the loss go from 36 to exactly 0 after a single update, and concludes that the larger learning rate trains this neuron a hundred times faster. Work out what the update did, say whether the conclusion holds, and describe a small change to the experiment that would expose the problem.",
+      "kind": "critique",
+      "solution": "The gradients at the start are $(12, -24, 36)$ for the weights and 12 for the bias, with an upstream gradient of 12. An update with $\\alpha = 0.1$ changes the pre-activation by $-\\alpha \\cdot 12 \\cdot (1 + 4 + 9 + 1) = -18$, so $z$ goes from 6 to $-12$. Equivalently the factor $1 - 30\\alpha$ is $-2$.\n\nAt $z = -12$ the ReLU outputs 0. The target is 0, so the loss is $(0 - 0)^2 = 0$. The loss is zero because the neuron has been switched off, and the output of a switched-off neuron coincides with this particular target. The step did not land on the target value of $z$; it jumped far past it.\n\nThe conclusion does not hold. The ReLU derivative at $z = -12$ is 0, so the upstream gradient and all four gradients are 0 and the parameters can never move again. Nothing was learned about how to produce an output, and the same neuron could not follow any other target.\n\nChanging the target shows it. With $y = 1$ the first update with $\\alpha = 0.1$ has upstream gradient $2(6 - 1) = 10$ and moves $z$ to $6 - 0.1 \\cdot 10 \\cdot 15 = -9$. The output is 0, the loss is $(0 - 1)^2 = 1$, the gradients are zero, and the loss stays at 1 for every later update, while $\\alpha = 0.01$ drives it to the rounding floor. Printing $z$, or the gradients, after the update would expose the same thing without changing the target: a loss of zero together with a negative pre-activation and zero gradients is a dead neuron.",
+      "rubric": [
+        {
+          "criterion": "Computes the pre-activation after the update, $z = -12$ (or the factor $1 - 30\\alpha = -2$)",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that the loss is zero because the ReLU outputs 0 and the target happens to be 0",
+          "points": 2
+        },
+        {
+          "criterion": "States that all gradients are now zero, so the neuron cannot learn further",
+          "points": 2
+        },
+        {
+          "criterion": "Rejects the conclusion: the run overshot and switched the neuron off; it did not converge faster",
+          "points": 1
+        },
+        {
+          "criterion": "Proposes a test that exposes it, such as a non-zero target (loss stuck at 1) or printing $z$ and the gradients",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 10 runs this sweep. For the target 0 every learning rate from 0.035 upward ends with a loss of exactly zero after one update, because a dead neuron outputs 0 and 0 is the target. With a target of 1 the learning rates from 0.05 upward leave the loss at 1 for all 200 updates, while 0.035 overshoots and recovers. Section 6.1 notes that the loss is zero for every $z \\le 0$ when the target is 0.",
+      "hints": [
+        "Compute the pre-activation after the update before looking at the loss.",
+        "Ask what the ReLU outputs there, what its derivative is, and what the loss would be if the target were 1."
+      ]
+    },
+    {
+      "id": "nn-012-q19",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o2",
+        "o1"
+      ],
+      "section": "9.1",
+      "est_minutes": 12,
+      "tags": [
+        "gradient-check",
+        "central-difference"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The finite differences of post 10 can measure a derivative without any algebra. Explain how a central difference is used to check the four hand-derived gradients of the single neuron, how many forward passes the check costs, why the step $h = 10^{-5}$ is used, at which parameter values the check would be misleading, and why the check does not replace the backward pass during training.",
+      "kind": "connect",
+      "connects": [
+        "nn-010"
+      ],
+      "solution": "**The check.** For each of the four parameters in turn, the parameter is moved to $+h$ and to $-h$ with the other three held at their values, the forward pass is run for both, and the difference of the two losses is divided by $2h$. This is the partial derivative of post 10 measured along one axis. The four results are compared with the four gradients from the chain rule; for the post's neuron both give $12$, $-24$, $36$ and $12$, and they agree to better than $10^{-9}$.\n\n**The cost.** Two forward passes per parameter, so eight for four parameters, and $2n$ for $n$ parameters.\n\n**The step.** Post 10 showed that the truncation error of a central difference falls as $h^2$ while its rounding error grows as about $10^{-15}/h$, and that in float64 the two balance near $h = 10^{-5}$. A much larger step is inaccurate and a much smaller one loses digits to rounding.\n\n**Where it misleads.** At a pre-activation of exactly 0, or within $h$ of it, the two evaluations fall on different sides of the ReLU corner. The central difference then returns a value between the two one-sided slopes, while the backward pass uses a ReLU derivative of 0, and the two disagree although the backward pass follows its convention correctly. The check should be made at a point where $z$ is clearly positive or clearly negative, and in float64.\n\n**Why it is only a check.** The backward pass gets all four gradients from one walk that reuses the shared upstream gradient. The numerical gradient needs two forward passes for every parameter on every update, which is 2,000,000 passes per update for a network with a million parameters, and its result is an approximation. It is therefore used to test a backward pass, not to train with.",
+      "rubric": [
+        {
+          "criterion": "Describes moving one parameter by $+h$ and $-h$ with the others fixed, and dividing the loss difference by $2h$",
+          "points": 2
+        },
+        {
+          "criterion": "States the cost: two forward passes per parameter, eight here",
+          "points": 1
+        },
+        {
+          "criterion": "Justifies $h = 10^{-5}$ by the balance of truncation error and rounding error in float64",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies the ReLU corner at $z = 0$ as a point where the check and a correct backward pass disagree",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that the cost grows with the number of parameters while one backward walk yields every gradient",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 9.1 measures the four gradients with a central difference at $h = 10^{-5}$ and finds a largest gap of $7.7 \\times 10^{-10}$, using eight forward passes. Section 10 shows the check returning about $-1$ at a pre-activation of exactly 0, where the backward pass returns 0. The step size and the cost argument are those of post 10, sections 6.1 and 7.",
+      "hints": [
+        "Recall how a partial derivative is measured: one coordinate moves and the others stay fixed.",
+        "Think about what the two evaluations see when the pre-activation is exactly 0, and about how the number of forward passes grows with the number of parameters."
+      ]
+    }
+  ]
+}
