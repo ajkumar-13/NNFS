@@ -18,6 +18,7 @@ The bibliography of Neural Networks from Scratch. Every source cited in a post's
 - Nielsen, M., *Neural Networks and Deep Learning* (online, 2015).
 - Petersen, K. B. and Pedersen, M. S., *The Matrix Cookbook* (2012).
 - Ramalho, L., *Fluent Python* (O'Reilly, 2nd edition, 2022).
+- Stanford CS231n, *Convolutional Neural Networks for Visual Recognition*, course notes, ["Putting it together: Minimal Neural Network Case Study"](https://cs231n.github.io/neural-networks-case-study/).
 - Strang, G., *Calculus* (Wellesley-Cambridge, 2010).
 - Strang, G., *Introduction to Linear Algebra* (Wellesley-Cambridge, 6th edition, 2023).
 
