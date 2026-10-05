@@ -5,59 +5,59 @@
 
   <style><![CDATA[
     :root{
-      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
-      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
-      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
-      --ce-grid:rgba(26,26,26,0.06);
+      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
+      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
+      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+      --nn-grid:rgba(26,26,26,0.06);
     }
     @media (prefers-color-scheme: dark){
       :root{
-        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
-        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
-        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
-        --ce-grid:rgba(241,238,232,0.08);
+        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
+        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
+        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
+        --nn-grid:rgba(241,238,232,0.08);
       }
     }
     text{font-family:Inter,system-ui,sans-serif;}
-    .bg{fill:var(--ce-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
-    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
-    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
-    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .panel-head{font-weight:700;font-size:14px;fill:var(--ce-ink);}
-    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .bg{fill:var(--nn-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
+    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
+    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
+    .panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .panel-head{font-weight:700;font-size:14px;fill:var(--nn-ink);}
+    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
 
-    .axis{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
-    .grid{stroke:var(--ce-grid);stroke-width:0.75;fill:none;}
-    .axis-label{font-size:10px;fill:var(--ce-ink-muted);}
-    .axis-title{font-size:11px;fill:var(--ce-ink-muted);font-style:italic;}
+    .axis{stroke:var(--nn-ink-muted);stroke-width:1;fill:none;}
+    .grid{stroke:var(--nn-grid);stroke-width:0.75;fill:none;}
+    .axis-label{font-size:10px;fill:var(--nn-ink-muted);}
+    .axis-title{font-size:11px;fill:var(--nn-ink-muted);font-style:italic;}
 
-    .diag-line{stroke:var(--ce-ink-subtle);stroke-width:1.2;fill:none;stroke-dasharray:5 4;}
-    .point{fill:var(--ce-primary);stroke:var(--ce-ink);stroke-width:0.5;fill-opacity:0.55;}
-    .point-cap{fill:var(--ce-alert);stroke:var(--ce-ink);stroke-width:0.6;fill-opacity:0.65;}
+    .diag-line{stroke:var(--nn-ink-subtle);stroke-width:1.2;fill:none;stroke-dasharray:5 4;}
+    .point{fill:var(--nn-primary);stroke:var(--nn-ink);stroke-width:0.5;fill-opacity:0.55;}
+    .point-cap{fill:var(--nn-alert);stroke:var(--nn-ink);stroke-width:0.6;fill-opacity:0.65;}
 
-    .anno-text{font-size:10.5px;font-style:italic;fill:var(--ce-ink-muted);}
-    .anno-line{stroke:var(--ce-ink-subtle);stroke-width:0.75;fill:none;stroke-dasharray:2 2;}
+    .anno-text{font-size:10.5px;font-style:italic;fill:var(--nn-ink-muted);}
+    .anno-line{stroke:var(--nn-ink-subtle);stroke-width:0.75;fill:none;stroke-dasharray:2 2;}
 
-    .side-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
-    .side-sub{font-size:10.5px;fill:var(--ce-ink-muted);}
-    .side-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
+    .side-head{font-weight:700;font-size:13px;fill:var(--nn-ink);}
+    .side-sub{font-size:10.5px;fill:var(--nn-ink-muted);}
+    .side-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--nn-ink);}
 
-    .arch-input  {fill:var(--ce-primary);fill-opacity:0.12;stroke:var(--ce-primary);stroke-width:1.2;}
-    .arch-hidden {fill:var(--ce-success);fill-opacity:0.12;stroke:var(--ce-success);stroke-width:1.2;}
-    .arch-output {fill:var(--ce-accent);fill-opacity:0.18;stroke:var(--ce-accent);stroke-width:1.2;}
-    .arch-text   {font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;font-weight:600;fill:var(--ce-ink);}
-    .arch-arrow  {stroke:var(--ce-ink-subtle);stroke-width:1;fill:none;}
+    .arch-input  {fill:var(--nn-primary);fill-opacity:0.12;stroke:var(--nn-primary);stroke-width:1.2;}
+    .arch-hidden {fill:var(--nn-success);fill-opacity:0.12;stroke:var(--nn-success);stroke-width:1.2;}
+    .arch-output {fill:var(--nn-accent);fill-opacity:0.18;stroke:var(--nn-accent);stroke-width:1.2;}
+    .arch-text   {font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;font-weight:600;fill:var(--nn-ink);}
+    .arch-arrow  {stroke:var(--nn-ink-subtle);stroke-width:1;fill:none;}
 
-    .metrics-panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .metric-head{font-weight:700;font-size:10.5px;fill:var(--ce-ink-muted);}
-    .metric-num {font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;font-weight:700;fill:var(--ce-ink);}
-    .metric-lbl {font-size:10px;fill:var(--ce-ink-muted);}
+    .metrics-panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .metric-head{font-weight:700;font-size:10.5px;fill:var(--nn-ink-muted);}
+    .metric-num {font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;font-weight:700;fill:var(--nn-ink);}
+    .metric-lbl {font-size:10px;fill:var(--nn-ink-muted);}
   ]]></style>
 
   <defs>
     <marker id="ar-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-ink-subtle)"/>
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--nn-ink-subtle)"/>
     </marker>
   </defs>
 
@@ -176,8 +176,8 @@
 
   <!-- Cap-effect annotation -->
   <line class="anno-line" x1="410" y1="240" x2="465" y2="180"/>
-  <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="430" y="155" width="120" height="46" rx="5"/>
-  <text class="anno-text" x="490" y="172" text-anchor="middle" style="fill:var(--ce-alert);font-weight:700;">cap-effect cluster</text>
+  <rect fill="var(--nn-surface)" stroke="var(--nn-border)" stroke-width="1" x="430" y="155" width="120" height="46" rx="5"/>
+  <text class="anno-text" x="490" y="172" text-anchor="middle" style="fill:var(--nn-alert);font-weight:700;">cap-effect cluster</text>
   <text class="anno-text" x="490" y="186" text-anchor="middle">actual was top-coded</text>
   <text class="anno-text" x="490" y="198" text-anchor="middle">at $500k</text>
 
@@ -227,21 +227,21 @@
   <text class="metric-head" x="612" y="304">metric</text>
   <text class="metric-head" x="760" y="304" text-anchor="middle">train</text>
   <text class="metric-head" x="880" y="304" text-anchor="middle">test</text>
-  <line stroke="var(--ce-border)" stroke-width="1" x1="612" y1="310" x2="904" y2="310"/>
+  <line stroke="var(--nn-border)" stroke-width="1" x1="612" y1="310" x2="904" y2="310"/>
 
   <!-- RMSE row -->
   <text class="side-sub" x="612" y="328">RMSE  ($)</text>
-  <text class="metric-num" x="760" y="328" text-anchor="middle" style="fill:var(--ce-success);">$52 100</text>
+  <text class="metric-num" x="760" y="328" text-anchor="middle" style="fill:var(--nn-success);">$52 100</text>
   <text class="metric-num" x="880" y="328" text-anchor="middle">$58 400</text>
 
   <!-- MAE row -->
   <text class="side-sub" x="612" y="352">MAE  ($)</text>
-  <text class="metric-num" x="760" y="352" text-anchor="middle" style="fill:var(--ce-success);">$37 500</text>
+  <text class="metric-num" x="760" y="352" text-anchor="middle" style="fill:var(--nn-success);">$37 500</text>
   <text class="metric-num" x="880" y="352" text-anchor="middle">$41 200</text>
 
   <!-- R^2 row -->
   <text class="side-sub" x="612" y="378">R²</text>
-  <text class="metric-num" x="760" y="378" text-anchor="middle" style="fill:var(--ce-success);">0.82</text>
+  <text class="metric-num" x="760" y="378" text-anchor="middle" style="fill:var(--nn-success);">0.82</text>
   <text class="metric-num" x="880" y="378" text-anchor="middle" style="font-weight:700;">0.78</text>
 
   <!-- Reading the R^2 -->

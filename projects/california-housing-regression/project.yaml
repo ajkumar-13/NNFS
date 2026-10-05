@@ -1,35 +1,41 @@
 id: nn-p04
 slug: california-housing-regression
 title: "California housing regression"
-summary: "The series' first regression: a dense network in NumPy alone with a linear output and mean squared error, trained on the California housing data with the target standardised from the training fold only."
+summary: "The series' first regression: a two-hidden-layer dense network in NumPy alone with a linear output and mean squared error, trained on the California housing data with every scaling statistic taken from the training fold only. From a fixed seed it reaches a test R squared of 0.8231 and an RMSE of 49,222 dollars with 4,801 parameters, and the locked environment repeats the run bit for bit."
 kind: model
-status: planned
+status: released
 level: intermediate
 after_post: nn-032
-uses: [nn-016, nn-027, nn-029, nn-032]
-problem: "Every post in the series classifies, so nothing shows the forward and backward machinery surviving a change of loss. This project swaps in a linear output and mean squared error, predicts median house value from eight features, and keeps test data out of every statistic used in training."
-users: "Readers who want to see regression built from the same classes, and the no-leakage rule of the validation post applied in code."
-impact: "Trained from the fixed seed with the documented command, the model reaches the test-fold R squared and error recorded in docs/EVALUATION.md, computed in dollars after undoing the target scaling."
+uses: [nn-016, nn-027, nn-029, nn-030, nn-032]
+problem: "Every post in the series classifies, so nothing shows the forward and backward machinery surviving a change of loss, and the rule of the validation post against data leakage is stated but never run. This project swaps the softmax and cross-entropy for a linear output and mean squared error in an 8-64-64-1 network, predicts the median house value of a California block group from eight features, and keeps the test fold out of every statistic used in training, with tests that fail if it gets in."
+users: "Readers who have finished the post on mini-batching (nn-032) and want to see a regression built from the classes they wrote, and readers of the validation post (nn-029) who want its no-leakage rule as running code and as tests."
+impact: "Trained from seed 0 with the documented command, the 4,801-parameter network reaches an R squared of 0.8231 on the 4,128 block groups of the test fold, with an RMSE of 49,222 dollars and an MAE of 33,708 dollars measured against the published values. docs/EVALUATION.md records the run, and the eval command exits with an error if a rerun in the locked environment scores an R squared below 0.82."
 stack:
   language: python
   frameworks: [numpy]
+runtime:
+  deploy: none
+  targets: []
 commands:
   setup: "uv sync --frozen"
-  test: "uv run pytest --cov=src --cov-fail-under=80"
-  lint: "uv run ruff check ."
+  test: "uv run pytest --cov=src --cov-fail-under=95"
+  lint: "uv run ruff check . && uv run ruff format --check ."
+  run: "uv run python -m california_housing_regression.train"
+  eval: "uv run python -m california_housing_regression.evaluate --min-r2 0.82"
 quality:
-  coverage_min: 80
+  coverage_min: 95
   evaluation: docs/EVALUATION.md
 data:
   - name: california-housing
-    source: assets/registry/datasets.yaml (california-housing)
-    license: public domain
+    source: scripts/download_california_housing.py
+    license: public domain (1990 United States census, via StatLib; cite Pace and Barry 1997)
+    checksum: "sha256:aaa5c9a6afe2225cc2aed2723682ae403280c4a3695a2ddda4ffb5d8215ea681"
 security:
   secrets: none
   threat_notes: docs/SECURITY.md
   audited: 2026-10-05
 release:
-  version: "0.0.0"
+  version: "1.0.0"
   license: MIT
   registry: null
 maintenance:

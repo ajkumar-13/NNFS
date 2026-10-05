@@ -1,209 +1,116 @@
-# Project 04 · California housing regression
+# California housing regression
 
-> **TL;DR.** The first three projects in this series were all *classification* — predict a discrete label from a probability distribution. This project is *regression*: predict a continuous target (the median house value of a California census block group) from 8 numerical features. The architectural and code changes from project 01 are small but precise: **no softmax**, **no sigmoid**, the last Dense layer's raw scalar output is the prediction; **mean squared error** replaces cross-entropy as the loss; and the target gets **standardised to zero mean and unit variance** before training (then de-standardised at evaluation so the reported error is in dollars). A 64-64 hidden network trained with Adam for 200 epochs hits an R² of ~0.82 on the test set with RMSE around $49 000 — competitive with a tree-ensemble baseline on this dataset.
+Every post in the series classifies, which leaves one question open: does the forward and backward machinery survive a change of loss? This project answers it. It assembles the classes the series builds, with their arithmetic unchanged, into a two-hidden-layer dense network ($8 \to 64 \to 64 \to 1$) with a linear output and a mean squared error, and predicts the median house value of a California census block group from eight features. It splits the 20,640 block groups into 16,512 for training and 4,128 for testing, computes every scaling statistic from the training fold alone, and reports its errors in dollars. From the fixed seed the documented run reaches $R^2 = 0.8231$ on the test fold, with an RMSE of 49,222 dollars, 4,801 parameters and nothing but NumPy.
 
----
+It is a reference model with a reproducible result, not a library and not a valuation tool: the data is the 1990 census, the target is capped at 500,001 dollars, and the network is the smallest change to the series' classifier that makes it a regressor, on purpose.
 
-## What this project demonstrates
+## Who this is for
 
-- **Regression vs classification.** Same forward pipeline of Dense + ReLU layers; only the **last activation and the loss** change. No softmax, no probabilities, no cross-entropy.
-- **Standardisation done correctly.** Training-fold statistics are used to fit the scaler, then applied to the test fold without re-fitting. This is the no-leakage rule from [post 29 §5](../../posts/29-validation-and-hyperparameter-tuning/) made explicit.
-- **The dataset's quirks show in the scatter.** California housing is top-coded at $500 000 — any block group with a higher actual value was clipped to the cap. The trained model has never seen un-capped truth above $500k and predicts ~$200k-$280k for those samples, producing the distinctive vertical cluster at the right edge of the predicted-vs-actual scatter.
+- Readers of Neural Networks from Scratch who have finished the post on mini-batching (`nn-032`) and want to see a regression built from the classes they wrote, with every number traceable to a command.
+- Readers of the validation post (`nn-029`) who want its rule against data leakage as running code and as tests: the scaler is fitted on the training fold, applied to the test fold, and the evaluation refuses weights that were trained on another split.
 
-## File layout
+## Quickstart
 
-```
-california-housing-regression/
-├── README.md
-├── requirements.txt    ← numpy + (optional) sklearn
-├── nn.py               ← Dense, ReLU, Loss_MSE, Adam, regularization_loss
-├── data.py             ← cal-housing loader, train/test split, standardise/destandardise
-├── train.py            ← MSE training loop with mini-batches
-└── evaluate.py         ← train + test RMSE/MAE/R², predicted-vs-actual dump
-```
-
-## Quick start
+You need [uv](https://docs.astral.sh/uv/), which fetches Python 3.13 and the locked packages, and a network connection for the first two commands. From a clone of the series repository:
 
 ```bash
 cd projects/california-housing-regression
-pip install -r requirements.txt
-python train.py              # ~30 sec on a modern laptop CPU
-python evaluate.py
+uv sync --frozen
+uv run python scripts/download_california_housing.py
+uv run python -m california_housing_regression.train
+uv run python -m california_housing_regression.evaluate
 ```
 
-The first call to `train.py` downloads the dataset via `sklearn.datasets.fetch_california_housing`. The manual backend (`--backend manual`) pulls `cal_housing.tgz` from the StatLib mirror and parses it with stdlib only.
+`download_california_housing.py` fetches one archive, `cal_housing.tgz` (441,963 bytes), into `cal_housing_cache/` and keeps it only if its SHA-256 is the expected one. `train` runs 200 epochs from seed 0 and writes `cal_housing_weights.npz`; `evaluate` loads that file and prints, for each fold, the RMSE, the MAE, the mean error and $R^2$ in dollars, then the test fold at and below the census cap, then two baselines. The dataset and the weights stay on your machine and are never committed.
 
----
+To check the project itself:
 
-## 1. The dataset
+```bash
+uv run pytest --cov=src --cov-fail-under=95
+uv run ruff check . && uv run ruff format --check .
+```
 
-The California housing dataset comes from the 1990 US Census via Pace and Barry (1997). Each row is a *block group* — the smallest geographical unit the Census Bureau publishes data for, typically 600 to 3 000 people. The eight features are the kind of aggregate statistics any real-estate model wants:
+These are the commands in `project.yaml`, and they were last run from a clean environment on the `verified` date there.
 
-| Index | Feature | Meaning |
-|:---:|---|---|
-| 0 | `MedInc` | Median income in the block group |
-| 1 | `HouseAge` | Median house age |
-| 2 | `AveRooms` | Average number of rooms per household |
-| 3 | `AveBedrms` | Average number of bedrooms per household |
-| 4 | `Population` | Total population |
-| 5 | `AveOccup` | Average household occupancy |
-| 6 | `Latitude` | Block group latitude |
-| 7 | `Longitude` | Block group longitude |
+## What it does
 
-The target is **median house value in the block group**, in units of $100 000. So a target value of 2.5 means $250 000. The dataset is **top-coded at $500 000**: any block group with a true median above the cap was clipped. About 5% of the data sits exactly at the cap, which becomes the vertical cluster in the hero diagram.
+- Trains the network from a fixed seed, so that two runs on the same machine give the same weights bit for bit. Both commands print a SHA-256 fingerprint of the weights, which is how you can tell.
+- Keeps the test fold out of training. The split comes first, the mean and standard deviation of every feature and of the target come from the training rows only, and the same numbers scale the test rows.
+- Scores the saved weights on both folds in dollars, against the values the census published, and separately on the block groups recorded at the cap, where the published value is a floor and not a measurement.
+- Puts the result beside two baselines fitted on the same training fold: the training mean, and a least-squares line on the same eight features.
+- Turns the headline into a check: `uv run python -m california_housing_regression.evaluate --min-r2 0.82` exits with status 1 if the test $R^2$ is lower.
+- Refuses to start on a dataset that is not byte for byte the published one, and says which command fetches it.
+- Stores weights as plain arrays in an `.npz` file, so loading weights never runs code from the file.
 
-20 640 samples in total. The `train_test_split` in `data.py` splits 80/20 by default, leaving 16 512 training and 4 128 test samples.
+`--epochs`, `--batch-size`, `--seed`, `--log-every`, `--data-dir` and `--weights` change a training run; `--help` on any command lists them. The seed fixes the split as well as the weights, so `evaluate` takes the same `--seed`, and with `--predictions FILE.npz` it also writes the predicted and published values of both folds for plotting. The optimiser settings, the layer sizes, the L2 strength and the test fraction are fixed in the code, because they are the documented baseline.
 
-## 2. Why standardise?
+## Architecture
 
-Raw feature values span very different ranges:
+Each block group is eight numbers: median income, median house age, rooms, bedrooms and people per household, population, latitude and longitude. They are standardised and passed through two hidden layers of 64 units, each a dense layer and a ReLU, and a dense layer of one unit with no activation after it. That one number is the prediction in standardised units, and $(\hat{y}\,\sigma_y + \mu_y) \times 100{,}000$ is the prediction in dollars. The loss is the mean squared error, and the two hidden layers carry an L2 penalty of 0.0001 on their weights. Training is Adam with learning rate 0.01 and decay 0.0001 for 200 epochs, each one 65 mini-batches of at most 256 block groups drawn in a fresh random order.
 
-| Feature | Range |
-|---|:---:|
-| `MedInc` | 0.5 – 15 |
-| `HouseAge` | 1 – 52 |
-| `Population` | 3 – 35 000 |
-| `Latitude` | 32 – 42 |
+What changes from the series' MNIST classifier (`nn-p01`) is short:
 
-A weight that fits `MedInc` well (multiplier in the 0.0–0.5 range) is the wrong magnitude for `Population` (where the same data-space step requires a 0.00005 multiplier). The optimiser cannot balance these per-feature scales fast — and Adam's per-parameter rescaling helps but does not fully fix the problem.
-
-Standardisation gives every feature zero mean and unit variance:
-
-$$x^{\text{std}}_i = \frac{x_i - \bar{x}}{\sigma_x}$$
-
-After standardisation, every column has the same scale and the initial random weights operate on a level playing field. Training converges in a fraction of the epochs.
-
-Same idea applies to the target: with standardised `y`, the MSE loss values are on the same scale as the lecture examples (in the 0–1 range early in training, dropping to ~0.2 at convergence). Without standardisation, the raw loss is in the 10⁹ range and Adam's default learning rates don't fit.
-
-The de-standardisation step lives in `evaluate.py`: predictions in standardised units multiply by `y_std`, add `y_mean`, multiply by $100 000, and become dollars. The reported RMSE/MAE numbers are honest dollar errors.
-
-## 3. What changes from project 01
-
-The full list of differences from `projects/mnist-from-scratch/`:
-
-| Piece | Project 01 (MNIST classifier) | Project 04 (regression) |
+| Piece | MNIST classifier | This project |
 |---|---|---|
-| Last layer activation | Softmax | None (raw linear output) |
-| Loss class | `Activation_Softmax_Loss_CategoricalCrossentropy` | `Loss_MSE` |
-| Output shape | (N, 10) probabilities | (N, 1) scalar |
-| Target shape | (N,) integer labels | (N,) float values |
-| Metrics | Accuracy, confusion matrix | RMSE, MAE, R² |
-| Architecture | 784 → 128 → 128 → 10 | 8 → 64 → 64 → 1 |
-| Loss range | 0 - ~2.3 (cross-entropy) | 0 - ~5 in std units |
-| Backward call | `loss_act.backward(loss_act.output, y_batch)` | `loss_fn.backward(dense3.output)` |
+| Layer sizes | $784 \to 128 \to 128 \to 10$ | $8 \to 64 \to 64 \to 1$ |
+| After the last dense layer | softmax | nothing; the output is the prediction |
+| Loss | categorical cross-entropy, combined with the softmax in one class | `Loss_MSE`, with gradient $2(\hat{y} - y)/N$ |
+| Target | a class index | a real number, standardised |
+| Inputs | pixels scaled to $[0, 1]$ by a constant | features standardised with the training fold's statistics |
+| Dropout | 0.1 after each hidden layer | none |
+| What is reported | accuracy, confusion matrix | RMSE, MAE and mean error in dollars, $R^2$ |
 
-The forward and backward pass logic is otherwise identical: linear → ReLU → linear → ReLU → linear → loss. The chain rule does not care whether the loss is cross-entropy or MSE.
+The dense layer, the ReLU, the optimiser and the penalty are the same classes, and the backward pass is the same chain of calls with one loss swapped for another.
 
-## 4. The MSE loss class
+The code is one package, `src/california_housing_regression/`, of six small modules: `nn.py` holds the series' classes and the loss, `model.py` assembles them and reads and writes the weights, `data.py` checks, parses, splits and scales the dataset, `download.py` fetches it, and `train.py` and `evaluate.py` are the two commands. [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) describes the components and the data flow and carries the diagram, and the records under [docs/adr/](docs/adr/) give the reasons for the decisions a maintainer would otherwise have to rediscover.
 
-```python
-class Loss_MSE:
-    def forward(self, y_pred, y_true):
-        self.y_pred = y_pred
-        self.y_true = np.asarray(y_true).reshape(y_pred.shape)
-        return float(np.mean((y_pred - self.y_true) ** 2))
+## Results
 
-    def backward(self, y_pred, y_true=None):
-        y_true = self.y_true if y_true is None else \
-            np.asarray(y_true).reshape(y_pred.shape)
-        samples = len(y_pred)
-        outputs = y_pred.shape[1] if y_pred.ndim > 1 else 1
-        self.dinputs = 2 * (y_pred - y_true) / (samples * outputs)
-```
+Measured on 2026-10-05 with the quickstart commands, seed 0, on an Intel Core i7-9750H with 7.8 GB of memory, CPU only. [docs/EVALUATION.md](docs/EVALUATION.md) has the full output and the limits of the claim.
 
-Two points worth noting:
-
-**No combined-class trick.** The classification projects used `Activation_Softmax_Loss_CategoricalCrossentropy` to absorb the softmax forward + cross-entropy backward into a single class with the simplified `(y_pred - y_true) / N` derivative. For MSE there is no comparable simplification: the gradient is already `2 * (y_pred - y_true) / N` and the output has no activation to absorb.
-
-**Mean over both batch and output dims.** For a (N, K) output, the loss is the mean over all NK elements; the gradient divides by `samples * outputs` accordingly. For this project K = 1, so it's just division by N, but the formula handles vector regression too.
-
-## 5. Architecture
-
-```
-input (8) → Dense(8, 64) → ReLU → Dense(64, 64) → ReLU → Dense(64, 1)
-```
-
-Parameter count:
-
-| Layer | Weights | Biases |
-|---|:---:|:---:|
-| Dense(8, 64)  | 512   | 64 |
-| Dense(64, 64) | 4 096 | 64 |
-| Dense(64, 1)  | 64    | 1  |
-| **Total** |  | **4 801** |
-
-About 4 800 parameters — small. The dataset has 16 512 training samples, so we have roughly 3.4 training samples per parameter, well into the "no overfitting expected" regime. L2 weight decay (`lambda=1e-4`) is included for hygiene but contributes a tiny fraction of the loss.
-
-## 6. Result
-
-Representative final metrics from a typical 200-epoch run:
-
-| Metric | Train | Test |
-|---|:---:|:---:|
-| MSE (standardised units) | ~0.15 | ~0.18 |
-| RMSE ($) | ~$45 000 | ~$49 000 |
-| MAE ($) | ~$31 000 | ~$34 000 |
-| R² | ~0.85 | ~0.82 |
-
-The ~2-point train/test R² gap is mild — barely overfit. The RMSE of $49k on a target with mean ~$207k is about a 24% relative error, which sounds high but is typical for "all of California" regression: the dataset bundles together expensive coastal block groups and cheap inland ones, and 8 numerical features cannot fully separate them.
-
-### 6.1 Comparing to baselines
-
-| Model | Test R² | Notes |
-|---|:---:|---|
-| Predict the training mean | 0.000 | The zero-knowledge floor |
-| Ordinary least squares (linear regression) | ~0.64 | A linear model on the 8 features |
-| **2-layer MLP (this project)** | **~0.82** | What we built |
-| sklearn `GradientBoostingRegressor` (defaults) | ~0.81 | A strong tree-ensemble baseline; the from-scratch MLP edges it here |
-| xgboost with tuning | ~0.85 | The competitive ML ceiling on this dataset |
-
-The MLP comfortably beats linear regression and gets within striking distance of well-tuned gradient boosting. For a single hidden-layer change, that's the right shape.
-
-## 7. The cap-effect cluster
-
-The most visually distinctive feature of the predicted-vs-actual scatter is the vertical column of red dots at the right edge — actual value = $500 000, predicted values scattered from ~$200k to ~$320k.
-
-This is **not a model failure**; it's the data telling the truth. The Census Bureau top-coded any block group above $500k, so:
-
-- The model never saw an uncapped truth value above $500k.
-- For block groups that *would have been* worth $750k or $1.2M, the loss penalised any prediction differently from $500k.
-- The model learned that the features associated with high-end housing predict values around $300k-$500k, not higher.
-- At test time, those same high-end block groups still appear at the cap and the model under-predicts.
-
-The fix is **not** a different model architecture — it's a different *target*. If you cared about top-end predictions, you would either find an uncapped dataset, model the cap as a censored regression problem, or train on a transformed target (e.g. log(price)) that compresses the high end.
-
-## 8. Stretch goals
-
-| Goal | Difficulty | Hint |
+| Figure | Training fold | Test fold |
 |---|---|---|
-| Hit R² > 0.80 | medium | Wider hidden layers (128, 128) or a 3rd hidden layer |
-| Compare to ordinary least squares | easy | One `np.linalg.lstsq` call as a baseline; report both R² |
-| Plot residuals vs actual | easy | `residuals = y_pred - y_true; plt.scatter(y_true, residuals)` |
-| Per-region accuracy | medium | Slice the test set by Latitude buckets; the model is more accurate in the SF Bay area than in inland regions |
-| Predict log(price) instead | medium | Standardise `log(y)` instead of `y`; exponentiate at evaluation; reduces cap-effect underprediction |
-| Add a validation set + early stopping | medium | Split the training fold further; halt when val RMSE plateaus |
+| Block groups | 16,512 | 4,128 |
+| $R^2$ | 0.8458 | 0.8231 |
+| RMSE | 45,152 dollars | 49,222 dollars |
+| MAE | 31,240 dollars | 33,708 dollars |
+| Mean error, prediction minus published value | 4,408 dollars | 6,794 dollars |
 
-## 9. Related lectures
+| Model, fitted on the training fold | Test RMSE | Test $R^2$ |
+|---|---|---|
+| The training mean | 117,040 dollars | -0.0001 |
+| A least-squares line on the eight features | 70,477 dollars | 0.6374 |
+| This network, 4,801 parameters | 49,222 dollars | 0.8231 |
 
-| Lecture | Used here for |
-|---|---|
-| [Part 4 — Dense layer class](../../posts/04-dense-layer-class-and-spiral-data/) | `Layer_Dense` |
-| [Part 6 — Activations](../../posts/06-activation-functions-relu-and-softmax/) | `Activation_ReLU` |
-| [Part 21 — Coding full backpropagation](../../posts/21-coding-the-full-backpropagation/) | Forward + backward composition |
-| [Part 27 — Adam](../../posts/27-adam-optimiser/) | `Optimizer_Adam` |
-| [Part 29 — Validation](../../posts/29-validation-and-hyperparameter-tuning/) | Train/test split discipline, no-leakage standardisation |
-| [Part 30 — L2 regularisation](../../posts/30-l1-and-l2-regularisation/) | `weight_regularizer_l2` |
+Training takes 17.9 s for the 200 epochs; other runs that day took up to 20.9 s on the same busy laptop.
 
-## 10. Common pitfalls
+The census recorded every median value above its cap as 500,001 dollars, which is the value of 207 of the 4,128 test block groups. For those the network predicts 468,755 dollars on average, 31,246 dollars under the recorded figure, with an RMSE of 71,679 dollars; for the 3,921 below the cap the RMSE is 47,744 dollars. The network cannot learn a value the data never shows it, and the recorded figure is itself only a lower bound for those homes.
 
-- **Forgetting to standardise the features.** Raw values span 4-5 orders of magnitude. Without standardisation, training takes hundreds of epochs to even start moving.
-- **Fitting the standardiser on the whole dataset, not the training fold.** Leakage; the test set's distribution informs the training set's preprocessing. `data.py` enforces the right pattern with `standardise_fit` (training-only) and `standardise_apply` (any fold).
-- **Reporting MSE in standardised units as if they were dollars.** Always de-standardise before reporting dollar metrics.
-- **Including a softmax or sigmoid at the output.** Regression outputs are unbounded; an activation at the end *restricts* the range and biases predictions. Last Dense layer's raw output IS the prediction.
-- **Using accuracy as the metric.** Accuracy is a classification concept. Use RMSE, MAE, or R² for regression.
-- **Confusing R² with correlation r².** They are related but not the same. R² is `1 - SS_res / SS_tot`; it can be negative if the model is worse than predicting the mean. Correlation r² is always in [0, 1].
-- **Comparing models that predicted the raw target vs the log-target without re-aligning units.** Always evaluate in the same units; log-space MSE looks much smaller than raw-space MSE but is not better, just different.
+## Limits
 
----
+- **One seed, one machine, and the best of three.** The headline is the seed 0 run. Seeds 1 and 2 gave a test $R^2$ of 0.8135 and 0.8074. The seed also decides which block groups are tested, so quote a figure with its seed.
+- **The capped rows have no true value.** Every error here is against the recorded value. For the most expensive block groups that understates the real error by an amount this data cannot give.
+- **1990 dollars, one state.** The model is not a way to value a house, then or now.
+- **A random split is a kind one.** Latitude and longitude are features and neighbouring block groups resemble each other, so most test rows have close neighbours in the training fold. The result says nothing about a region held out whole.
+- **Bit-for-bit reproduction needs the locked environment.** NumPy is pinned to 2.3.5. With another version or on another processor the last digits can differ; the fingerprint tells you whether your run is the documented one.
+- **No validation split.** The settings are fixed and nothing is tuned. Anyone who changes a setting and compares test figures is tuning on the test fold, the mistake `nn-029` describes; hold out part of the training fold first, and fit the scaler on what remains.
+- **A baseline, not the series' best practice.** The layers start from `0.01 * randn` weights, which `nn-033` shows is a poor choice for deeper networks. It is kept because this run is the documented baseline.
+- **Weights and scaler only.** The `.npz` file holds the six parameter arrays and the four scaling statistics and no optimiser state, so a run cannot be resumed. Pickle checkpoints written by the scripts before version 1.0.0 are not loaded.
 
-> *Project 04 of N. See [projects/README.md](../README.md) for the project index. The from-scratch series lives in [posts/](../../posts/).*
+## Built from
+
+- `nn-016`: `Layer_Dense` and `Activation_ReLU`, each with its backward pass.
+- `nn-027`: `Optimizer_Adam`, with bias correction and learning-rate decay.
+- `nn-029`: the rule that the scaler is fitted on the training fold and only applied to the test fold.
+- `nn-030`: the L2 penalty in the dense layer's gradient and in the loss.
+- `nn-032`: the epoch and mini-batch loops of the trainer.
+
+The mean squared error has no post of its own. `Loss_MSE` is written here in the form of the series' loss classes, and `nn-008` points to this project as the place where the series meets it.
+
+## Corrections
+
+The series takes no pull requests or issues. If you find a mistake, send the correction through the series website.
+
+## Licence
+
+Code under MIT, prose and figures under CC BY 4.0, as stated in the series [LICENSE](../../LICENSE). The data is the StatLib California housing table of Pace and Barry (1997), built from the 1990 United States census.

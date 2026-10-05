@@ -1,0 +1,20 @@
+# Environment and tool output
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# The dataset is fetched by scripts/download_california_housing.py and never committed
+cal_housing_cache/
+*.tgz
+
+# Weights and predictions written by the commands, and pickle checkpoints from before 1.0.0
+*.npz
+*.pkl
+
+# The test fixture is a few hundred bytes of synthetic data in the dataset's own format
+!tests/fixtures/*.tgz

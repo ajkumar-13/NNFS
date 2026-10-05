@@ -1,0 +1,45 @@
+[project]
+name = "california-housing-regression"
+version = "1.0.0"
+description = "A two-hidden-layer dense network written in NumPy alone, trained on the California housing data with a linear output and mean squared error."
+readme = "README.md"
+requires-python = ">=3.13"
+license = "MIT"
+authors = [{ name = "Ajay" }]
+# Pinned exactly: the documented result depends on the linear algebra build inside this NumPy
+# wheel and on its random generators (docs/adr/0003-pin-numpy-for-bit-reproducibility.md).
+dependencies = ["numpy==2.3.5"]
+
+[dependency-groups]
+dev = ["pytest>=9.1", "pytest-cov>=7.1", "ruff>=0.16"]
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/california_housing_regression"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["tests"]
+# No cache directory: the test command writes nothing into the project but coverage's data file.
+addopts = "-q -p no:cacheprovider"
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+
+[tool.coverage.report]
+show_missing = true
+exclude_also = ["if __name__ == .__main__.:"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+src = ["src", "tests"]
+# Prose is never rewritten by the code formatter.
+extend-exclude = ["*.md"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "C4", "PT", "RUF"]
