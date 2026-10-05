@@ -1,0 +1,787 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-020",
+  "next_ordinal": 18,
+  "questions": [
+    {
+      "id": "nn-020-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "parameter-gradients"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The network of the post is `dense1` (a `Layer_Dense`), `activation1` (an `Activation_ReLU`), `dense2` (a `Layer_Dense`) and `loss_activation` (the combined softmax and cross-entropy class). After its four backward calls have run, which objects hold a `dweights` and a `dbiases` array?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "All four objects",
+          "correct": false,
+          "feedback": "Every object stores `dinputs`, but `dweights` and `dbiases` exist only where there are weights and biases, and two of the four objects have none."
+        },
+        {
+          "key": "b",
+          "text": "`dense1` and `dense2` only",
+          "correct": true,
+          "feedback": "Right: the dense layers are the only components with parameters, so they are the only ones that store parameter gradients."
+        },
+        {
+          "key": "c",
+          "text": "`dense2` only, because it is next to the loss",
+          "correct": false,
+          "feedback": "Distance from the loss does not matter. The chain continues through `activation1` to `dense1`, whose `backward` stores the same three arrays."
+        },
+        {
+          "key": "d",
+          "text": "`dense1`, `dense2` and `loss_activation`",
+          "correct": false,
+          "feedback": "The combined class computes $(\\hat{\\mathbf{y}} - \\mathbf{y})/N$ and stores it as `dinputs`. It has no weights or biases, so it has no gradients for them."
+        }
+      ],
+      "explanation": "Section 3 lists what each call stores. Only `Layer_Dense` has weights and biases, so only `dense1` and `dense2` store `dweights` and `dbiases`. The ReLU and the combined class have no parameters and store `dinputs` alone, which is why the update of section 5 has four lines and not eight.",
+      "hints": [
+        "Ask which of the three classes has anything to learn."
+      ]
+    },
+    {
+      "id": "nn-020-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "update-rule"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A backward pass has left `dense1.dweights` beside `dense1.weights`. Which line performs one gradient-descent step on those weights with the step size `learning_rate`?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`dense1.weights += learning_rate * dense1.dweights`",
+          "correct": false,
+          "feedback": "This moves the weights along the gradient, the direction in which the loss rises. Section 7 measures it: the loss goes up by as much as it should have gone down."
+        },
+        {
+          "key": "b",
+          "text": "`dense1.weights = dense1.dweights`",
+          "correct": false,
+          "feedback": "This throws the weights away and replaces them with their own gradient. A gradient says how to change a parameter, it is not a new value for it."
+        },
+        {
+          "key": "c",
+          "text": "`dense1.weights -= learning_rate * dense1.dweights`",
+          "correct": true,
+          "feedback": "Right: a step against the gradient, with its length set by the learning rate."
+        },
+        {
+          "key": "d",
+          "text": "`dense1.weights -= dense1.dweights`",
+          "correct": false,
+          "feedback": "The direction is right, but the learning rate is missing, so the step has length 1 times the gradient whatever `learning_rate` is set to."
+        }
+      ],
+      "explanation": "Section 5: gradient descent moves each parameter against its gradient, scaled by the learning rate, so the line is a subtraction of `learning_rate * dense1.dweights`. The gradient points in the direction in which the loss rises, which is why the sign is a minus.",
+      "hints": [
+        "The gradient points in the direction in which the loss increases."
+      ]
+    },
+    {
+      "id": "nn-020-q03",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 1,
+      "tags": [
+        "hand-off"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The network of the post is `dense1` (a `Layer_Dense`), `activation1` (an `Activation_ReLU`), `dense2` (a `Layer_Dense`) and `loss_activation` (the combined softmax and cross-entropy class). After `dense2.backward` has run, which attribute of `dense2` is handed to `activation1.backward`?",
+      "answer": {
+        "model": "`dense2.dinputs`, the gradient of the loss with respect to the inputs of `dense2`.",
+        "accept": [
+          "^(?![\\s\\S]*(?:\\b(?:not|never|nor|neither)\\b|n't))(?![\\s\\S]*\\bd_?(?:weights|biases)\\b)(?![\\s\\S]*\\b(?:activation1|dense1|loss_activation)\\s*\\.\\s*dinputs)(?![\\s\\S]*\\b(?:dense[12]|self)\\s*\\.\\s*(?:output|inputs|weights|biases)\\b)(?![\\s\\S]*\\bor\\b)[\\s\\S]*\\bdinputs\\b"
+        ]
+      },
+      "explanation": "Section 3: every backward call after the first is handed the `dinputs` of the call before it. `dense2.dinputs` is the gradient of the loss with respect to the inputs of `dense2`, and those inputs are the outputs of `activation1`, so it is exactly the `dvalues` that `activation1.backward` needs.",
+      "hints": [
+        "It is the one array of the three stored by a dense layer that the layer itself and the update never use."
+      ]
+    },
+    {
+      "id": "nn-020-q04",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "first-call",
+        "seed"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Calls 2 to 4 of the backward pass are each handed a gradient that the call before computed. Why is the first call, on the combined softmax and loss class, handed the predictions and the labels instead?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The predictions already are the gradient of the loss with respect to the logits.",
+          "correct": false,
+          "feedback": "They are only its starting point. The gradient is the predictions minus the one-hot labels, divided by the number of samples."
+        },
+        {
+          "key": "b",
+          "text": "Nothing follows the loss, so there is no upstream gradient; the class builds its own from them.",
+          "correct": true,
+          "feedback": "Right: the factor that would arrive from the right is $\\partial L / \\partial L = 1$, and the formula $(\\hat{\\mathbf{y}} - \\mathbf{y})/N$ needs the predictions and the labels."
+        },
+        {
+          "key": "c",
+          "text": "The labels are the upstream gradient, and the class multiplies them by the softmax Jacobian.",
+          "correct": false,
+          "feedback": "The labels are data, not a gradient, and the combined class never builds a Jacobian. Avoiding it is the point of post 19."
+        },
+        {
+          "key": "d",
+          "text": "The loss value is the upstream gradient, and the class reads it from where `forward` stored it.",
+          "correct": false,
+          "feedback": "The loss value plays no part in the backward pass. `forward` returns it and stores only the predictions."
+        }
+      ],
+      "explanation": "Section 3: the loss is the right-hand end of the chain, and the derivative of the loss with respect to itself is 1, so there is no upstream gradient to multiply by. The combined class computes its own gradient, $(\\hat{\\mathbf{y}} - \\mathbf{y})/N$, and those are the two arrays the formula needs.",
+      "hints": [
+        "Ask what stands to the right of the loss in the chain."
+      ]
+    },
+    {
+      "id": "nn-020-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2",
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 4,
+      "tags": [
+        "shapes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network is built as `dense1 = Layer_Dense(5, 8)`, a ReLU, `dense2 = Layer_Dense(8, 4)` and the combined softmax and loss class, and is run forward and backward on a batch of 32 samples. Give the number of columns of `loss_activation.dinputs`, of `dense2.dinputs` and of `dense1.dinputs`.",
+      "answer": {
+        "parts": [
+          {
+            "label": "columns of loss_activation.dinputs",
+            "value": 4,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "columns of dense2.dinputs",
+            "value": 8,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "columns of dense1.dinputs",
+            "value": 5,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Shape rule of section 3; confirmed by running the classes of snippets/assemble.py with these sizes on a batch of 32.",
+      "explanation": "Section 3: each `dinputs` has the shape of the input of the component that stores it. The combined class receives the 4 logits of each sample, `dense2` receives the 8 outputs of the ReLU, and `dense1` receives the 5 inputs. All three arrays have 32 rows, one per sample.",
+      "hints": [
+        "A gradient has the shape of the array it is the gradient of."
+      ]
+    },
+    {
+      "id": "nn-020-q06",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 6,
+      "tags": [
+        "bias-gradient",
+        "combined-gradient"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A three-class network is so close to its initialisation that every prediction equals $1/3$. Its batch has six samples: three of class 0, two of class 1 and one of class 2. Give the three entries of the `dbiases` of the last dense layer.",
+      "answer": {
+        "parts": [
+          {
+            "label": "class 0",
+            "value": -0.1667,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "class 1",
+            "value": 0.0,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "class 2",
+            "value": 0.1667,
+            "tolerance": 0.001,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form (N/3 - count_k)/N with N = 6 and counts 3, 2, 1: -1/6, 0, 1/6. Recomputed with NumPy as the column sum of (1/3 - one-hot)/6.",
+      "explanation": "Section 3 reads `dense2.dbiases` the same way: it is the column sum of $(\\hat{\\mathbf{y}} - \\mathbf{y})/N$. Each column of predictions sums to $6 \\cdot 1/3 = 2$ and each column of one-hot labels sums to the number of samples of that class, so the entries are $(2 - 3)/6$, $(2 - 2)/6$ and $(2 - 1)/6$.",
+      "hints": [
+        "The bias gradient of a dense layer is the sum of its `dvalues` over the batch.",
+        "The `dvalues` of the last dense layer is the predictions minus the one-hot labels, divided by the number of samples."
+      ]
+    },
+    {
+      "id": "nn-020-q07",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "update-rule"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "One weight of a dense layer is $0.50$ and its gradient is $-0.20$. One bias of the same layer is $0.10$ and its gradient is $0.30$. Give both values after one gradient-descent update with a learning rate of $0.1$.",
+      "answer": {
+        "parts": [
+          {
+            "label": "weight",
+            "value": 0.52,
+            "tolerance": 0.0001,
+            "unit": ""
+          },
+          {
+            "label": "bias",
+            "value": 0.07,
+            "tolerance": 0.0001,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form: parameter - learning_rate * gradient.",
+      "explanation": "Section 5: each parameter becomes itself minus the learning rate times its gradient. The weight becomes $0.50 - 0.1 \\cdot (-0.20) = 0.52$, and the bias becomes $0.10 - 0.1 \\cdot 0.30 = 0.07$. A negative gradient raises the parameter and a positive one lowers it.",
+      "hints": [
+        "Subtracting a negative number adds."
+      ]
+    },
+    {
+      "id": "nn-020-q08",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 6,
+      "tags": [
+        "learning-rate",
+        "run-the-script"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In `snippets/assemble.py`, change the line `learning_rate = 0.01` to `learning_rate = 0.1` and run the script. Report the loss it prints after the update, to six decimal places.",
+      "answer": {
+        "value": 1.094503,
+        "tolerance": 2e-06,
+        "unit": ""
+      },
+      "precision_note": "snippets/assemble.py with learning_rate = 0.1, seed 0: loss before 1.098629, after 1.094503 (1.0945025193).",
+      "explanation": "With the larger step the script prints a loss of 1.094503 after the update, a fall of $4.13 \\times 10^{-3}$ from 1.098629. The first-order prediction of section 5 is now $-0.1 \\cdot 0.041968 = -4.20 \\times 10^{-3}$: the fall is ten times larger, and the gap between prediction and measurement has grown, because the prediction holds for small steps.",
+      "hints": [
+        "Only one line of the script changes; the gradients are the same as before.",
+        "The value is on the line that begins with `loss before`."
+      ]
+    },
+    {
+      "id": "nn-020-q09",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 4,
+      "tags": [
+        "call-order"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Put the eight calls of one forward and one backward pass through the post's network in the order in which they must run.",
+      "items": [
+        {
+          "key": "a",
+          "text": "`dense2.backward(loss_activation.dinputs)`"
+        },
+        {
+          "key": "b",
+          "text": "`activation1.forward(dense1.output)`"
+        },
+        {
+          "key": "c",
+          "text": "`dense1.backward(activation1.dinputs)`"
+        },
+        {
+          "key": "d",
+          "text": "`loss_activation.forward(dense2.output, y)`"
+        },
+        {
+          "key": "e",
+          "text": "`dense1.forward(X)`"
+        },
+        {
+          "key": "f",
+          "text": "`activation1.backward(dense2.dinputs)`"
+        },
+        {
+          "key": "g",
+          "text": "`dense2.forward(activation1.output)`"
+        },
+        {
+          "key": "h",
+          "text": "`loss_activation.backward(loss_activation.output, y)`"
+        }
+      ],
+      "answer": [
+        "e",
+        "b",
+        "g",
+        "d",
+        "h",
+        "a",
+        "f",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "Sections 2 and 3: the forward pass runs from the data to the loss, each call reading the `output` of the one before, and the backward pass calls the same four objects in the opposite order, each call reading the `dinputs` of the one before. No other order works, because every call reads an array that only the call before it creates.",
+      "hints": [
+        "Write the forward calls first, then reverse the list of objects."
+      ]
+    },
+    {
+      "id": "nn-020-q10",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 4,
+      "tags": [
+        "hand-off",
+        "notation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the post's network $\\mathbf{Z}_1$ and $\\mathbf{Z}_2$ are the outputs of the two dense layers and $\\mathbf{A}_1$ is the output of the ReLU. Match each stored array to the derivative it holds.",
+      "left": [
+        {
+          "key": "a",
+          "text": "`loss_activation.dinputs`"
+        },
+        {
+          "key": "b",
+          "text": "`dense2.dinputs`"
+        },
+        {
+          "key": "c",
+          "text": "`activation1.dinputs`"
+        },
+        {
+          "key": "d",
+          "text": "`dense1.dinputs`"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "$\\partial L / \\partial \\mathbf{A}_1$"
+        },
+        {
+          "key": "q",
+          "text": "$\\partial L / \\partial \\mathbf{X}$"
+        },
+        {
+          "key": "r",
+          "text": "$\\partial L / \\partial \\mathbf{Z}_2$"
+        },
+        {
+          "key": "s",
+          "text": "$\\partial L / \\partial \\mathbf{W}_2$"
+        },
+        {
+          "key": "t",
+          "text": "$\\partial L / \\partial \\mathbf{Z}_1$"
+        },
+        {
+          "key": "u",
+          "text": "$\\partial L / \\partial \\hat{\\mathbf{y}}$"
+        }
+      ],
+      "answer": {
+        "a": "r",
+        "b": "p",
+        "c": "t",
+        "d": "q"
+      },
+      "explanation": "Section 3: every `dinputs` is the gradient of the loss with respect to the input of the component that stores it. The input of the combined class is $\\mathbf{Z}_2$, the input of `dense2` is $\\mathbf{A}_1$, the input of the ReLU is $\\mathbf{Z}_1$ and the input of `dense1` is the data. $\\partial L / \\partial \\mathbf{W}_2$ is `dense2.dweights`, and the gradient with respect to the predictions is never stored, because the combined class skips it.",
+      "hints": [
+        "For each object, ask what its `forward` was given."
+      ]
+    },
+    {
+      "id": "nn-020-q11",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "7",
+      "est_minutes": 4,
+      "tags": [
+        "logits",
+        "silent-failure"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The network of the post is `dense1` (a `Layer_Dense`), `activation1` (an `Activation_ReLU`), `dense2` (a `Layer_Dense`) and `loss_activation` (the combined softmax and cross-entropy class). A script runs the forward pass correctly and then starts the backward pass with `loss_activation.backward(dense2.output, y)`. The other three backward calls are as in the post. What happens?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "NumPy raises a shape error in `loss_activation.backward`.",
+          "correct": false,
+          "feedback": "Logits and predictions both have one row per sample and one column per class, so every operation in the method goes through."
+        },
+        {
+          "key": "b",
+          "text": "No error is raised, and only the two gradients of `dense2` are wrong.",
+          "correct": false,
+          "feedback": "`dense2.dinputs` is computed from the same wrong array and is handed on, so the gradients of `dense1` are wrong as well."
+        },
+        {
+          "key": "c",
+          "text": "No error is raised, and the gradients are correct, because softmax preserves the order of the logits.",
+          "correct": false,
+          "feedback": "Order is not enough. The formula $(\\hat{\\mathbf{y}} - \\mathbf{y})/N$ needs the probabilities themselves, and logits are not probabilities."
+        },
+        {
+          "key": "d",
+          "text": "No error is raised, and all four parameter gradients are wrong.",
+          "correct": true,
+          "feedback": "Right: the first array of the chain is wrong, and every later array is computed from it."
+        }
+      ],
+      "explanation": "Section 7: `dense2.output` holds the logits and has the same shape as the predictions, so nothing is raised. The method subtracts the one-hot labels from whatever it is given, the resulting array is not the gradient of the loss, and every later call inherits it. The post measures gaps in all four parameter gradients, and rows that sum to about $-0.25$ where correct rows sum to 0.",
+      "hints": [
+        "Compare the shapes of the logits and the predictions.",
+        "Ask which later calls read an array that depends on this first one."
+      ]
+    },
+    {
+      "id": "nn-020-q12",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "7",
+      "est_minutes": 4,
+      "tags": [
+        "skipped-component",
+        "silent-failure"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The network of the post is `dense1` (a `Layer_Dense`), `activation1` (an `Activation_ReLU`), `dense2` (a `Layer_Dense`) and `loss_activation` (the combined softmax and cross-entropy class). A backward pass runs `loss_activation.backward(loss_activation.output, y)`, then `dense2.backward(loss_activation.dinputs)`, then `dense1.backward(dense2.dinputs)`. Which parameter gradients are wrong?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "None: a ReLU changes no shape, so `dense2.dinputs` can stand in for `activation1.dinputs`.",
+          "correct": false,
+          "feedback": "Equal shapes make the mistake silent, not harmless. The ReLU sets the gradient to zero wherever its input was not positive, and that step is missing."
+        },
+        {
+          "key": "b",
+          "text": "Those of `dense1` only",
+          "correct": true,
+          "feedback": "Right: the mistake lies between `dense2` and `dense1`, so only what is computed after it is affected."
+        },
+        {
+          "key": "c",
+          "text": "Those of `dense2` only",
+          "correct": false,
+          "feedback": "`dense2.backward` ran with the correct `dvalues` before the mistake was made, so its gradients are the correct ones."
+        },
+        {
+          "key": "d",
+          "text": "All four",
+          "correct": false,
+          "feedback": "The backward pass runs from the loss towards the data. A mistake corrupts what is computed after it, and the gradients of `dense2` were computed before."
+        }
+      ],
+      "explanation": "Section 7: `dense1.backward` is handed $\\partial L / \\partial \\mathbf{A}_1$ where it needs $\\partial L / \\partial \\mathbf{Z}_1$, because the masking step of the ReLU was skipped. The two arrays have the same shape, so nothing is raised, and both gradients of `dense1` are wrong. `dense2.dweights` and `dense2.dbiases` were computed before the skipped call and are correct.",
+      "hints": [
+        "Find the first call that is handed the wrong array.",
+        "A gradient computed before that call cannot be affected by it."
+      ]
+    },
+    {
+      "id": "nn-020-q13",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "depth",
+        "update-rule"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network has three dense layers, a ReLU after the first and after the second, and the combined softmax and loss class at the end. How many subtraction lines does one gradient-descent update of all its parameters need?",
+      "answer": {
+        "model": "Six: the weights and the biases of each of the three dense layers.",
+        "accept": [
+          "^(?![\\s\\S]*(?:\\b(?:not|never|nor|neither|or)\\b|n't))(?![\\s\\S]*(?<![\\w.])(?:[045789]|\\d{2,}|four|five|seven|eight|nine|ten|eleven|twelve)\\b)[\\s\\S]*(?<![\\w.])(?:6|six)\\b(?!\\.\\d)(?!\\s*(?:components?|objects?|classes|layers?)\\b)"
+        ]
+      },
+      "explanation": "Sections 4 and 5: only dense layers have parameters, and each has two parameter arrays, its weights and its biases. Three dense layers give $3 \\cdot 2 = 6$ subtractions. The two ReLUs and the combined class add calls to the forward and the backward pass, but no line to the update.",
+      "hints": [
+        "Count parameter arrays, not components."
+      ]
+    },
+    {
+      "id": "nn-020-q14",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o2",
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 15,
+      "tags": [
+        "implement",
+        "training-step"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Complete `train_step` so that it runs one forward pass, one backward pass and one gradient-descent update on the post's four objects, and returns the loss of the forward pass. The tests supply the three classes of the post and compare the updated parameters with the same step computed on loose arrays.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "def train_step(dense1, activation1, dense2, loss_activation, X, y, learning_rate):\n    \"\"\"One forward pass, one backward pass and one gradient-descent update.\n\n    dense1 and dense2 are Layer_Dense objects, activation1 is an Activation_ReLU and\n    loss_activation is an Activation_Softmax_Loss_CategoricalCrossentropy, as in the post.\n    y holds one integer label per sample. The four parameter arrays are updated in place.\n    Returns the loss of the forward pass, which is the loss before the update.\n    \"\"\"\n    # TODO: four forward calls, four backward calls, four subtractions\n    return None\n",
+      "solution": "def train_step(dense1, activation1, dense2, loss_activation, X, y, learning_rate):\n    \"\"\"One forward pass, one backward pass and one gradient-descent update.\n\n    dense1 and dense2 are Layer_Dense objects, activation1 is an Activation_ReLU and\n    loss_activation is an Activation_Softmax_Loss_CategoricalCrossentropy, as in the post.\n    y holds one integer label per sample. The four parameter arrays are updated in place.\n    Returns the loss of the forward pass, which is the loss before the update.\n    \"\"\"\n    # Forward, left to right.\n    dense1.forward(X)\n    activation1.forward(dense1.output)\n    dense2.forward(activation1.output)\n    loss = loss_activation.forward(dense2.output, y)\n\n    # Backward, right to left: each call is handed the dinputs of the call before it.\n    loss_activation.backward(loss_activation.output, y)\n    dense2.backward(loss_activation.dinputs)\n    activation1.backward(dense2.dinputs)\n    dense1.backward(activation1.dinputs)\n\n    # Update: only the dense layers have parameters.\n    dense1.weights -= learning_rate * dense1.dweights\n    dense1.biases -= learning_rate * dense1.dbiases\n    dense2.weights -= learning_rate * dense2.dweights\n    dense2.biases -= learning_rate * dense2.dbiases\n    return loss\n",
+      "tests": "import numpy as np\n\n\nclass Layer_Dense:\n    def __init__(self, n_inputs, n_neurons):\n        self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)\n        self.biases = np.zeros((1, n_neurons))\n\n    def forward(self, inputs):\n        self.inputs = inputs\n        self.output = np.dot(inputs, self.weights) + self.biases\n\n    def backward(self, dvalues):\n        self.dweights = np.dot(self.inputs.T, dvalues)\n        self.dbiases = np.sum(dvalues, axis=0, keepdims=True)\n        self.dinputs = np.dot(dvalues, self.weights.T)\n\n\nclass Activation_ReLU:\n    def forward(self, inputs):\n        self.inputs = inputs\n        self.output = np.maximum(0, inputs)\n\n    def backward(self, dvalues):\n        self.dinputs = dvalues.copy()\n        self.dinputs[self.inputs <= 0] = 0\n\n\nclass Activation_Softmax_Loss_CategoricalCrossentropy:\n    def forward(self, inputs, y_true):\n        exp_values = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))\n        self.output = exp_values / np.sum(exp_values, axis=1, keepdims=True)\n        confidences = np.clip(self.output[range(len(inputs)), y_true], 1e-7, 1 - 1e-7)\n        return np.mean(-np.log(confidences))\n\n    def backward(self, dvalues, y_true):\n        samples = len(dvalues)\n        self.dinputs = dvalues.copy()\n        self.dinputs[range(samples), y_true] -= 1\n        self.dinputs /= samples\n\n\ndef reference(X, y, W1, b1, W2, b2, learning_rate):\n    \"\"\"The same step on loose arrays: the loss before the update and the four new parameters.\"\"\"\n    Z1 = X @ W1 + b1\n    A1 = np.maximum(0, Z1)\n    Z2 = A1 @ W2 + b2\n    E = np.exp(Z2 - Z2.max(axis=1, keepdims=True))\n    P = E / E.sum(axis=1, keepdims=True)\n    loss = np.mean(-np.log(P[range(len(y)), y]))\n    dZ2 = P.copy()\n    dZ2[range(len(y)), y] -= 1\n    dZ2 /= len(y)\n    dZ1 = (dZ2 @ W2.T) * (Z1 > 0)\n    return (loss, W1 - learning_rate * X.T @ dZ1, b1 - learning_rate * dZ1.sum(axis=0, keepdims=True),\n            W2 - learning_rate * A1.T @ dZ2, b2 - learning_rate * dZ2.sum(axis=0, keepdims=True))\n\n\nfor seed, (n_in, n_hidden, n_out, n_samples), learning_rate in [(1, (2, 3, 3, 4), 0.01),\n                                                                (2, (4, 6, 3, 9), 0.5),\n                                                                (3, (3, 5, 4, 7), 0.1)]:\n    rng = np.random.default_rng(seed)\n    X = rng.normal(size=(n_samples, n_in))\n    y = rng.integers(0, n_out, size=n_samples)\n    dense1, activation1 = Layer_Dense(n_in, n_hidden), Activation_ReLU()\n    dense2, loss_activation = Layer_Dense(n_hidden, n_out), Activation_Softmax_Loss_CategoricalCrossentropy()\n    dense1.weights = rng.normal(size=(n_in, n_hidden))\n    dense1.biases = rng.normal(size=(1, n_hidden))\n    dense2.weights = rng.normal(size=(n_hidden, n_out))\n    dense2.biases = rng.normal(size=(1, n_out))\n    want = reference(X, y, dense1.weights.copy(), dense1.biases.copy(),\n                     dense2.weights.copy(), dense2.biases.copy(), learning_rate)\n    gates = (X @ dense1.weights + dense1.biases) > 0\n    assert gates.any() and not gates.all(), \"the test batch must open some ReLU gates and close others\"\n\n    loss = train_step(dense1, activation1, dense2, loss_activation, X, y, learning_rate)\n\n    assert loss is not None, \"train_step must return the loss of its forward pass\"\n    assert abs(loss - want[0]) < 1e-12, \"the returned loss is the one computed before the update\"\n    for name, got, expected in [(\"dense1.weights\", dense1.weights, want[1]),\n                                (\"dense1.biases\", dense1.biases, want[2]),\n                                (\"dense2.weights\", dense2.weights, want[3]),\n                                (\"dense2.biases\", dense2.biases, want[4])]:\n        assert got.shape == expected.shape, name + \" changed shape\"\n        assert np.allclose(got, expected, rtol=0, atol=1e-12), name + \" is not parameter - learning_rate * gradient\"\nprint(\"all train_step checks passed\")\n",
+      "expected_output": "all train_step checks passed\n",
+      "explanation": "The function is sections 2, 3 and 5 of the post in order: four forward calls from the data to the loss, four backward calls in the opposite order with each `dinputs` handed to the next call, and four subtractions. The tests use random weights of ordinary size and nonzero biases, so that some ReLU gates are open and some closed, and they fail if the logits are handed to the first backward call, if the ReLU is skipped on the way back, if the sign of the update is wrong, or if a bias array is left out.",
+      "hints": [
+        "The forward calls and the backward calls visit the same four objects in opposite orders.",
+        "The first backward call takes the predictions stored by the combined class and the labels; every later one takes the `dinputs` of the object just called. Only the two dense layers are updated."
+      ]
+    },
+    {
+      "id": "nn-020-q15",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 12,
+      "tags": [
+        "derivation",
+        "loose-arrays"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Write the backward pass of the post's network as formulas on arrays, without the classes. Start from the predictions $\\hat{\\mathbf{y}}$ and the one-hot labels $\\mathbf{y}$ of a batch of $N$ samples, use $\\mathbf{X}$, $\\mathbf{Z}_1$, $\\mathbf{A}_1$, $\\mathbf{W}_2$ from the forward pass, and end at the four parameter gradients. State which of the intermediate results is the `dinputs` of which object.",
+      "kind": "derive",
+      "solution": "1. The combined class gives $\\partial L / \\partial \\mathbf{Z}_2 = (\\hat{\\mathbf{y}} - \\mathbf{y})/N$, of shape $(N, 3)$. This is `loss_activation.dinputs`.\n2. The second dense layer received $\\mathbf{A}_1$ as its input, so $\\partial L / \\partial \\mathbf{W}_2 = \\mathbf{A}_1^{\\top} \\, \\partial L / \\partial \\mathbf{Z}_2$, of shape $(3, 3)$, and $\\partial L / \\partial \\mathbf{b}_2$ is the sum of $\\partial L / \\partial \\mathbf{Z}_2$ over the batch, of shape $(1, 3)$.\n3. The same layer passes back $\\partial L / \\partial \\mathbf{A}_1 = (\\partial L / \\partial \\mathbf{Z}_2) \\, \\mathbf{W}_2^{\\top}$, of shape $(N, 3)$. This is `dense2.dinputs`.\n4. The ReLU keeps this gradient where its input was positive and sets it to zero elsewhere: $\\partial L / \\partial \\mathbf{Z}_1 = \\partial L / \\partial \\mathbf{A}_1 \\odot [\\mathbf{Z}_1 > 0]$, element by element. This is `activation1.dinputs`.\n5. The first dense layer received $\\mathbf{X}$, so $\\partial L / \\partial \\mathbf{W}_1 = \\mathbf{X}^{\\top} \\, \\partial L / \\partial \\mathbf{Z}_1$, of shape $(2, 3)$, and $\\partial L / \\partial \\mathbf{b}_1$ is the sum of $\\partial L / \\partial \\mathbf{Z}_1$ over the batch, of shape $(1, 3)$.\n6. The first layer would pass back $\\partial L / \\partial \\mathbf{X} = (\\partial L / \\partial \\mathbf{Z}_1) \\, \\mathbf{W}_1^{\\top}$ as `dense1.dinputs`; nothing reads it, and no parameter gradient needs it.\n7. Each step uses only the result of an earlier step and arrays of the forward pass, which is why one array handed from call to call is enough.",
+      "rubric": [
+        {
+          "criterion": "Starts from $(\\hat{\\mathbf{y}} - \\mathbf{y})/N$ as the gradient with respect to $\\mathbf{Z}_2$, including the division by $N$",
+          "points": 1
+        },
+        {
+          "criterion": "Gives the weight and bias gradients of the second layer with $\\mathbf{A}_1^{\\top}$ on the left and a sum over the batch",
+          "points": 2
+        },
+        {
+          "criterion": "Passes the gradient back through the second layer with $\\mathbf{W}_2^{\\top}$",
+          "points": 1
+        },
+        {
+          "criterion": "Applies the ReLU mask taken from $\\mathbf{Z}_1$ before the first layer",
+          "points": 1
+        },
+        {
+          "criterion": "Gives the weight and bias gradients of the first layer from $\\mathbf{X}^{\\top}$ and the masked gradient",
+          "points": 2
+        },
+        {
+          "criterion": "Names the three intermediate gradients as the `dinputs` of the combined class, `dense2` and `activation1`",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 4 replays the pass in nine lines of NumPy that follow exactly these formulas, and the script finds no difference from the chain of objects. The intermediate arrays $\\partial L / \\partial \\mathbf{Z}_2$, $\\partial L / \\partial \\mathbf{A}_1$ and $\\partial L / \\partial \\mathbf{Z}_1$ are the three `dinputs` that are handed from one call to the next.",
+      "hints": [
+        "Begin with the gradient that the combined class computes, and ask what each dense layer does with the gradient it receives.",
+        "A dense layer turns its `dvalues` into three results: inputs transposed times `dvalues`, the column sum of `dvalues`, and `dvalues` times the weights transposed."
+      ]
+    },
+    {
+      "id": "nn-020-q16",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o3",
+        "o1"
+      ],
+      "section": "5",
+      "est_minutes": 12,
+      "tags": [
+        "diagnosis",
+        "small-gradients"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A script wires the post's network correctly, with weights initialised at a scale of 0.01, and runs it on a batch in which each of the three classes occurs equally often. One update with a learning rate of 0.01 lowers the loss from 1.098612 to 1.098611. The author concludes that the backward pass must be broken, because \"a working network would learn faster than that\". Assess the conclusion, say why the loss starts where it does, and name two checks on the stored arrays that would support or refute it.",
+      "kind": "critique",
+      "solution": "The conclusion does not follow. The loss starts at $\\ln 3 \\approx 1.098612$ because weights of scale 0.01 give logits near zero and predictions near $1/3$. On the post's batch nearly all of the fall comes from the bias gradient of the last layer, whose entries are about $(N/3 - c_k)/N$ for a class with $c_k$ samples. With balanced classes $c_k = N/3$, so that gradient nearly cancels. What remains are the weight gradients and the bias gradient of the first layer. Each of them contains a factor of the size of the weights or of the hidden activations, about 0.01, so they are small, and the fall, which is about the learning rate times the sum of the squared gradients, is of the order of $10^{-6}$ or less. A fall of $10^{-6}$ is therefore what a correct pass produces here.\n\nChecks that would decide the matter: (1) the change of the loss should be close to $-\\alpha$ times the sum of the squares of all entries of the four gradient arrays, and it should be negative; (2) every row of `loss_activation.dinputs` should sum to zero, since predictions and one-hot labels both sum to 1; (3) each gradient array should have the shape of its parameter, and `activation1.dinputs` should be zero exactly where `dense1.output` is not positive. If these hold, the pass is wired correctly and the slow start is a property of the initialisation and the batch. Repeating the cycle many times, or a better step rule, is the remedy, not a change to the backward pass.",
+      "rubric": [
+        {
+          "criterion": "States that the small fall does not by itself show a bug",
+          "points": 1
+        },
+        {
+          "criterion": "Explains the starting loss of $\\ln 3$ from near-uniform predictions",
+          "points": 1
+        },
+        {
+          "criterion": "Explains that the last layer's bias gradient nearly cancels when the classes are balanced",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that the remaining gradients are small because of the 0.01 scale of the weights",
+          "points": 1
+        },
+        {
+          "criterion": "Names two valid checks on the stored arrays (first-order prediction of the change, zero row sums, shapes, mask positions)",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 5 measures this case: on a balanced batch the same correct code lowers the loss by between $2.7 \\times 10^{-7}$ and $1.4 \\times 10^{-6}$ per step, against $4.2 \\times 10^{-4}$ on the unbalanced batch. A small fall is what the initialisation and the batch produce, and the first-order prediction and the row sums of section 7 are checks that do not depend on the size of the fall.",
+      "hints": [
+        "Ask which of the four gradients is largest on the post's own batch, and what happens to it when the classes are balanced.",
+        "A check should compare two quantities that a correct backward pass ties together, such as the measured change of the loss and the one predicted from the gradients."
+      ]
+    },
+    {
+      "id": "nn-020-q17",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 12,
+      "tags": [
+        "chain-rule",
+        "input-gradient"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Use the chain rule of nn-011 and the input gradient of nn-015 to explain why `dense2.dinputs` can be handed to `activation1.backward` unchanged, and why `dense1.dinputs` is computed in the post's network although nothing reads it. Say in which network it would be read.",
+      "kind": "connect",
+      "solution": "The network is a composition: $\\mathbf{A}_1$ is produced by the ReLU and consumed by the second dense layer. The chain rule of nn-011 writes the gradient of the loss with respect to anything upstream of $\\mathbf{A}_1$ as a product in which $\\partial L / \\partial \\mathbf{A}_1$ is one factor and the local derivative of the upstream component is the next. Nothing to the right of $\\mathbf{A}_1$ appears in that product except through $\\partial L / \\partial \\mathbf{A}_1$.\n\nnn-015 showed that a dense layer can compute the gradient with respect to its own input, $(\\partial L / \\partial \\mathbf{Z}_2) \\, \\mathbf{W}_2^{\\top}$, and `dense2` stores it as `dinputs`. Its input is $\\mathbf{A}_1$, which is also the output of `activation1`. So `dense2.dinputs` is $\\partial L / \\partial \\mathbf{A}_1$, exactly the gradient with respect to its output that `activation1.backward` expects as `dvalues`. No conversion is needed, because the two names refer to the same derivative of the same variable.\n\n`dense1.dinputs` is $\\partial L / \\partial \\mathbf{X}$. It is computed because `Layer_Dense.backward` has one body for every layer and cannot know whether a component precedes it. In the post's network the input of `dense1` is the data, which is not updated, so nothing reads the array. It would be read in any network with a component before that layer: if another dense layer and ReLU were placed in front, `dense1.dinputs` would be the `dvalues` of that ReLU.",
+      "rubric": [
+        {
+          "criterion": "Identifies the output of `activation1` and the input of `dense2` as the same variable $\\mathbf{A}_1$",
+          "points": 2
+        },
+        {
+          "criterion": "Uses the chain rule to argue that everything to the right enters only through $\\partial L / \\partial \\mathbf{A}_1$",
+          "points": 2
+        },
+        {
+          "criterion": "States that `dense1.dinputs` is the gradient with respect to the data and that the data are not updated",
+          "points": 1
+        },
+        {
+          "criterion": "Explains that the layer computes it anyway because its `backward` is the same for every position",
+          "points": 1
+        },
+        {
+          "criterion": "Names a network in which it is read: one with a further component before `dense1`",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 4 states the identity in words: the output of one component is the input of the next, so the gradient with respect to the one is the gradient with respect to the other. Section 3 notes that `dense1.dinputs` is the gradient at the data and has no reader, because no component stands before `dense1`.",
+      "hints": [
+        "Write the loss as a composition and ask which variable the output of the ReLU and the input of the second dense layer are.",
+        "The input gradient of nn-015 exists to serve whatever comes before a layer. Ask what comes before `dense1`."
+      ],
+      "connects": [
+        "nn-011",
+        "nn-015"
+      ]
+    }
+  ]
+}

@@ -1,8 +1,22 @@
 id: nn-020
 slug: 20-assembling-full-backpropagation
-title: "Part 20 · Assembling full backpropagation"
+title: "20 - Assembling full backpropagation"
+summary: "Three classes with a forward and a backward method each are wired into one pass on a two-layer classifier: four calls left to right, four right to left with each stored gradient handed on, and one update of the four parameter arrays."
 date: 2026-05-28
-tags: [neural-networks, from-scratch, backpropagation, integration]
+updated: 2026-10-05
+status: complete
+part: "Part V - Backpropagation"
+level: intermediate
+reading_time: 14
+tags: [neural-networks, from-scratch, backpropagation, integration, gradient-descent]
 hero: diagrams/01-full-backprop-pipeline.svg
-reading_time: 11
-part: "Part V — Backpropagation"
+prerequisites: [nn-016, nn-019]
+code: included
+outcomes:
+  - id: o1
+    text: "Wire Layer_Dense, Activation_ReLU and the combined softmax-loss class into a complete forward and backward pass."
+  - id: o2
+    text: "Trace how one component's dinputs becomes the previous component's dvalues."
+  - id: o3
+    text: "Apply a single gradient-descent update to all four parameter arrays."
+compute: cpu
