@@ -1,0 +1,875 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-007",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-007-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "wiring",
+        "forward-pass"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the script of this post, `dense1 = Layer_Dense(2, 3)` is followed by `activation1 = Activation_ReLU()`, `dense2 = Layer_Dense(3, 3)`, and `activation2 = Activation_Softmax()`. Which array is passed to `dense2.forward`?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`dense1.output`",
+          "correct": false,
+          "feedback": "That skips the ReLU. The call runs, because the shape is the same, but the two dense layers then collapse into one linear layer."
+        },
+        {
+          "key": "b",
+          "text": "`activation1.output`",
+          "correct": true,
+          "feedback": "Right. The second dense layer reads the hidden values after the ReLU has been applied to them."
+        },
+        {
+          "key": "c",
+          "text": "`X`",
+          "correct": false,
+          "feedback": "`X` has 2 columns and `dense2` expects 3, so this raises a `ValueError`; `X` is the input of `dense1` only."
+        },
+        {
+          "key": "d",
+          "text": "`activation2.output`",
+          "correct": false,
+          "feedback": "That array does not exist yet: `activation2` runs after `dense2` and reads the logits that `dense2` produces."
+        }
+      ],
+      "explanation": "Section 3 wires the four objects so that each call reads the `output` of the object before it: `dense1` reads `X`, `activation1` reads `dense1.output`, `dense2` reads `activation1.output`, and `activation2` reads `dense2.output`. The second dense layer must receive the hidden values after the ReLU, or the non-linearity is lost.",
+      "hints": [
+        "Each `forward` call reads what the object just before it in the pipeline stored."
+      ]
+    },
+    {
+      "id": "nn-007-q02",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 4,
+      "tags": [
+        "pipeline",
+        "data-flow"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Put the operations of this post's forward pass and the prediction that follows it in the order in which they are applied to the spiral data, from first to last.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Each row of two coordinates is multiplied by a $(2, 3)$ weight matrix and a $(1, 3)$ bias row is added."
+        },
+        {
+          "key": "b",
+          "text": "Every negative entry of the hidden array is replaced by 0."
+        },
+        {
+          "key": "c",
+          "text": "Each row of three hidden values is multiplied by a $(3, 3)$ weight matrix and a $(1, 3)$ bias row is added, giving the logits."
+        },
+        {
+          "key": "d",
+          "text": "Each row of logits is exponentiated and divided by the sum of its own exponentials."
+        },
+        {
+          "key": "e",
+          "text": "The index of the largest entry of each row is taken as the predicted class."
+        }
+      ],
+      "answer": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e"
+      ],
+      "explanation": "Section 2 gives the order: the first dense layer forms three weighted sums per row, ReLU zeroes the negative ones, the second dense layer turns the three hidden values into three logits, and softmax turns each row of logits into probabilities. Section 5 then takes the index of the largest probability of each row as the prediction. Every step reads the output of the step before it, so no other order is possible.",
+      "hints": [
+        "Start from the array with 2 columns, and end with the only step that returns one number per row."
+      ]
+    },
+    {
+      "id": "nn-007-q03",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "shapes",
+        "batch-dimension"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A batch passes through a chain of `Layer_Dense`, `Activation_ReLU`, and `Activation_Softmax` objects. Which statement about the shapes holds for every such network and every batch?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Every array has as many rows as the input batch.",
+          "correct": true,
+          "feedback": "Right. Each row is one sample from the input to the probabilities; no step adds, removes, or merges rows."
+        },
+        {
+          "key": "b",
+          "text": "ReLU reduces the number of columns, because it removes the negative values.",
+          "correct": false,
+          "feedback": "ReLU replaces negative values by 0; it does not delete them, so the shape is unchanged."
+        },
+        {
+          "key": "c",
+          "text": "Softmax returns one number per row.",
+          "correct": false,
+          "feedback": "Softmax returns one probability per class for each row, so its output has the shape of its input. One number per row is what `np.argmax(..., axis=1)` returns."
+        },
+        {
+          "key": "d",
+          "text": "A dense layer sets the number of rows to its neuron count.",
+          "correct": false,
+          "feedback": "The neuron count sets the number of columns. The number of rows is the batch size and is untouched."
+        }
+      ],
+      "explanation": "Section 4 states the two invariants of the shape audit: the batch dimension never changes, and an activation never changes the shape at all. Only a dense layer changes the number of columns, to its own neuron count.",
+      "hints": [
+        "Ask which of the two numbers of a shape the layers control, and which the data controls."
+      ]
+    },
+    {
+      "id": "nn-007-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 5,
+      "tags": [
+        "shapes",
+        "parameter-count"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A batch of 32 samples with 5 features goes through `Layer_Dense(5, 8)`, `Activation_ReLU()`, `Layer_Dense(8, 4)`, and `Activation_Softmax()`, wired as in this post. Give the number of rows and of columns of the first dense layer's output, the number of columns of the ReLU output, the number of columns of the logits, the number of rows of the final output, and the total number of weights and biases in the network.",
+      "answer": {
+        "parts": [
+          {
+            "label": "rows of the first dense output",
+            "value": 32,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "columns of the first dense output",
+            "value": 8,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "columns of the ReLU output",
+            "value": 8,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "columns of the logits",
+            "value": 4,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "rows of the final output",
+            "value": 32,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "total parameters",
+            "value": 84,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 4: (N, n_inputs) through Layer_Dense(n_inputs, n_neurons) gives (N, n_neurons); parameters n_inputs * n_neurons + n_neurons per layer. Checked by running the four objects on a (32, 5) array: shapes (32, 8), (32, 8), (32, 4), (32, 4) and 84 parameters.",
+      "explanation": "The batch size, 32, is the row count of every array. The first dense layer sets the column count to its 8 neurons, the ReLU keeps it, and the second dense layer sets it to 4. The parameters are $5 \\cdot 8 + 8 = 48$ for the first layer and $8 \\cdot 4 + 4 = 36$ for the second, 84 in all; the activations have none.",
+      "hints": [
+        "Rows come from the batch, columns from the neuron count of the last dense layer the data went through."
+      ]
+    },
+    {
+      "id": "nn-007-q05",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o4"
+      ],
+      "section": "4",
+      "est_minutes": 4,
+      "tags": [
+        "shape-audit",
+        "silent-bug"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In this post's network a typing slip produces `activation2.forward(activation1.output)`: the softmax reads the hidden values and `dense2` is never used. What do the shape audit and the row-sum check report for `activation2.output` on the 300 spiral points?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "A `ValueError` is raised, because softmax accepts only logits.",
+          "correct": false,
+          "feedback": "Softmax has no way to know where its input came from. Any 2-D array of numbers is accepted."
+        },
+        {
+          "key": "b",
+          "text": "The shape is `(300, 3)` and every row sums to 1, so both checks pass.",
+          "correct": true,
+          "feedback": "Right. The hidden array has the same shape as the logits, and softmax makes any row sum to 1, so neither check sees the mistake."
+        },
+        {
+          "key": "c",
+          "text": "The shape is `(300, 3)`, but the rows no longer sum to 1.",
+          "correct": false,
+          "feedback": "Dividing each row by the sum of its own exponentials makes it sum to 1 whatever the row held."
+        },
+        {
+          "key": "d",
+          "text": "The shape becomes `(300,)`, which the shape audit catches.",
+          "correct": false,
+          "feedback": "Softmax keeps the shape of its input, and the hidden array is `(300, 3)`."
+        }
+      ],
+      "explanation": "Section 4 names the blind spot: four of the five arrays share the shape `(300, 3)`, so handing a call the wrong one of them changes no shape and raises no error. Softmax normalises whatever rows it is given, so the row sums are 1 as well. Running the slip gives shape `(300, 3)` and `np.allclose(row_sums, 1)` equal to `True`; only a check that involves `dense2` itself can expose it.",
+      "hints": [
+        "Compare the shape of `activation1.output` with the shape of `dense2.output`.",
+        "Then ask whether softmax needs its input to come from a dense layer in order to produce rows that sum to 1."
+      ]
+    },
+    {
+      "id": "nn-007-q06",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "uniform-output",
+        "initialisation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In one or two sentences, explain why this post's network, before any training, gives each of the three classes a probability close to $1/3$ on every spiral point.",
+      "answer": {
+        "model": "The weights are small random numbers (scaled by 0.01), so after two dense layers all the logits are very close to zero and therefore almost equal; softmax of almost equal logits gives almost equal probabilities, about 1/3 each.",
+        "accept": [
+          "^(?![\\s\\S]*\\bsoftmax\\b[^.;]{0,70}\\b(always|regardless|no matter|whatever|any (inputs?|logits?|numbers?|values?))\\b)(?![\\s\\S]*\\b(large|big|huge)\\b[^.;]{0,15}\\b(weights?|logits?)\\b)(?![\\s\\S]*\\b(not|aren'?t|isn'?t|never)\\b(?! (exactly|quite|perfectly|precisely)\\b)[^.;,]{0,10}\\b(small|tiny|nearly|almost|close|equal|similar|uniform|the same)\\b)(?![\\s\\S]*\\b(by chance|at random|randomly (guess|pick|choos)\\w*))(?=[\\s\\S]*(\\bsmall\\b|\\btiny\\b|0\\.01|\\bnear(ly)? (to )?(zero|0)\\b|\\bclose to (zero|0)\\b|\\b(around|about|almost|approximately|roughly) (zero|0)\\b))(?=[\\s\\S]*\\b(logits?|scores?|outputs? of (the )?(second|last|final|output) (dense )?layer|dense2|(values?|numbers?|inputs?) (reaching|entering|going into|fed (in)?to|passed (in)?to|given to|into|of) (the )?softmax|softmax'?s? inputs?)\\b)(?=[\\s\\S]*(\\b(nearly|almost|approximately|roughly|about|practically|virtually|basically|essentially|more or less|pretty much) (the same|equal|identical)\\b|\\bclose to (each|one an)other\\b|\\bclose together\\b|\\bsimilar\\b|\\b(barely|hardly|scarcely) differ|\\bdiffer(ences?)?\\b[^.;]{0,25}\\b(tiny|small|negligibl|little|barely|hardly|ten-thousandths?)|\\b(tiny|small|negligible)\\b[^.;]{0,15}\\b(gaps?|differences?)\\b|\\bno (class|logit|score)\\b[^.;]{0,30}(dominat|stands? out|larger|bigger)|\\b(equal|same|uniform|even(ly)?) (probabilit|share|split|spread)|\\buniform\\b|\\be\\s*\\^?\\s*0\\s*(=|is|equals)\\s*1\\b|\\bexp[(]0[)]\\s*(=|is|equals)\\s*1\\b))"
+        ]
+      },
+      "explanation": "Section 5 gives two facts. The weights are random numbers scaled by 0.01, and the data passes through two such layers, so every logit is tiny: at most 0.00023 in size. Logits that close to zero are close to one another, and softmax of nearly equal logits gives nearly equal probabilities, $1/3$ each for three classes.",
+      "hints": [
+        "Follow the size of the numbers from the input through both dense layers, then ask what softmax does with three numbers that barely differ."
+      ]
+    },
+    {
+      "id": "nn-007-q07",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "uniform-output",
+        "class-count"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The network of this post is rebuilt for a problem with five classes: `dense2 = Layer_Dense(3, 5)`, everything else unchanged, weights still drawn as `0.01 * np.random.randn(...)`. Before any training, what does a typical row of the output look like?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "About 0.333 in three of the entries and about 0 in the other two.",
+          "correct": false,
+          "feedback": "Nothing singles out three of the five classes. The value $1/3$ in this post is 1 over the number of classes, which is now 5."
+        },
+        {
+          "key": "b",
+          "text": "About 0.01 in every entry.",
+          "correct": false,
+          "feedback": "0.01 is the scale of the weights. Softmax output must sum to 1 over the row, and five entries of 0.01 sum to 0.05."
+        },
+        {
+          "key": "c",
+          "text": "About 0.2 in every entry.",
+          "correct": true,
+          "feedback": "Right. Nearly equal logits give nearly equal probabilities, and five equal shares of 1 are 0.2 each."
+        },
+        {
+          "key": "d",
+          "text": "One entry near 1 and the rest near 0, at a class that varies from row to row.",
+          "correct": false,
+          "feedback": "That would need one logit to be far above the others. With weights this small all the logits are within a few ten-thousandths of each other."
+        }
+      ],
+      "explanation": "Section 5's argument does not depend on the number of classes: two layers of 0.01-scaled weights make all the logits nearly equal, and softmax of $K$ nearly equal logits gives about $1/K$ each. For five classes that is 0.2. Running the five-class network on `spiral_data(samples=100, classes=5)` gives probabilities between 0.19998 and 0.20004.",
+      "hints": [
+        "Softmax shares a total of 1 among the classes. How is it shared when no logit stands out?"
+      ]
+    },
+    {
+      "id": "nn-007-q08",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 8,
+      "tags": [
+        "softmax",
+        "logit-gap",
+        "worked-example"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "One row of a three-class network has the logits $0.03$, $0$, and $-0.03$. Using the relation between two probabilities of the same row and the difference of their logits, give the ratio of the largest probability to the smallest. Then compute the largest and the smallest probability themselves.",
+      "answer": {
+        "parts": [
+          {
+            "label": "largest probability over smallest",
+            "value": 1.0618,
+            "tolerance": 0.0005,
+            "unit": ""
+          },
+          {
+            "label": "largest probability",
+            "value": 0.3434,
+            "tolerance": 0.0005,
+            "unit": ""
+          },
+          {
+            "label": "smallest probability",
+            "value": 0.3234,
+            "tolerance": 0.0005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 5: ratio = exp(z_a - z_b) = exp(0.06) = 1.061837; softmax of [0.03, 0, -0.03] computed in Python is [0.343382, 0.333233, 0.323385].",
+      "explanation": "For two classes of one row the softmax denominator cancels, so $\\hat{y}_a / \\hat{y}_b = e^{z_a - z_b}$; here the gap is $0.06$ and $e^{0.06} = 1.0618$. The exponentials are $1.03045$, $1$, and $0.97045$, with sum $3.00090$, so the probabilities are $0.3434$, $0.3332$, and $0.3234$. Logits a hundred times larger than this post's still give a row within about 0.01 of uniform.",
+      "hints": [
+        "Only the difference between two logits enters the ratio of their probabilities.",
+        "For the probabilities, exponentiate the three logits and divide each by the sum of the three."
+      ]
+    },
+    {
+      "id": "nn-007-q09",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "5",
+      "est_minutes": 5,
+      "tags": [
+        "argmax",
+        "accuracy",
+        "predict-the-output"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The script in the stimulus is run. Rows and classes are numbered from 0. Give the predicted class of row 1, the predicted class of row 3, the accuracy printed on the first line, and the number printed on the second line.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "import numpy as np\n\nprobabilities = np.array([[0.2, 0.5, 0.3],\n                          [0.4, 0.4, 0.2],\n                          [0.1, 0.1, 0.8],\n                          [0.6, 0.3, 0.1]])\ny = np.array([1, 1, 2, 2])\n\npredictions = np.argmax(probabilities, axis=1)\nprint(predictions, np.mean(predictions == y))\nprint(np.argmax(probabilities))\n"
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "predicted class of row 1",
+            "value": 0,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "predicted class of row 3",
+            "value": 0,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "accuracy",
+            "value": 0.5,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "number on the second line",
+            "value": 8,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Running the stimulus prints [1 0 2 0] 0.5 and then 8.",
+      "explanation": "With `axis=1`, `np.argmax` returns the index of the largest entry of each row: 1, 0, 2, 0. Row 1 is a tie between classes 0 and 1, and a tie goes to the first index. Two of the four predictions equal the labels, so the accuracy is 0.5. Without an axis the array is flattened, and the largest entry, 0.8, sits at flat position $2 \\cdot 3 + 2 = 8$.",
+      "hints": [
+        "For row 1, recall which index `np.argmax` returns when two entries are equal. For the last line, count positions row by row."
+      ]
+    },
+    {
+      "id": "nn-007-q10",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "5",
+      "est_minutes": 4,
+      "tags": [
+        "baseline",
+        "accuracy"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "On the 300 spiral points, 100 per class, the untrained network of this post predicts the right class for 102 points, an accuracy of 0.34. A reader concludes that the random weights have already captured a little of the structure of the data, since 0.34 is above $1/3$. Which reading of the number is correct?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It is correct: any accuracy above $1/3$ on three classes shows that learning has begun.",
+          "correct": false,
+          "feedback": "No weight has been changed, so nothing was learned. Untrained runs under other seeds land anywhere from 0.24 to 0.42."
+        },
+        {
+          "key": "b",
+          "text": "It is a bug: an untrained network must score exactly $1/3$.",
+          "correct": false,
+          "feedback": "Nothing forces exactly 100 of 300. That is what one answer for every row scores, and a few rows landing elsewhere move the count by a few without any bug."
+        },
+        {
+          "key": "c",
+          "text": "It is the one-class baseline: nearly every row gets one answer, which scores 100 of 300.",
+          "correct": true,
+          "feedback": "Right. 292 rows are predicted as class 2, and the 8 tie rows add 3 correct answers where a pure one-class rule would have had 1."
+        },
+        {
+          "key": "d",
+          "text": "It shows the softmax is broken: a working one gives at least 0.5.",
+          "correct": false,
+          "feedback": "Softmax is checked by the row sums, not by accuracy. A correct softmax on untrained logits gives a uniform output and chance-level accuracy."
+        }
+      ],
+      "explanation": "Section 5 breaks the 102 down. The network gives 292 rows to class 2, which is right for 99 of them, and the 8 rows with exactly tied probabilities go to class 0 by the first-index rule of `np.argmax`, which is right for 3. Answering one class for every point scores exactly 100 of 300 on balanced classes, so 102 is that baseline plus two tie rows; across seeds 0 to 199 the same network scores between 0.24 and 0.42.",
+      "hints": [
+        "Work out what accuracy a rule that ignores its input and always answers the same class would get on this dataset.",
+        "Then look at how the network's 300 predictions are split among the three classes."
+      ]
+    },
+    {
+      "id": "nn-007-q11",
+      "type": "match",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o4"
+      ],
+      "section": "9",
+      "est_minutes": 6,
+      "tags": [
+        "debugging",
+        "symptoms"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Each symptom on the left was produced by one mistake in a copy of this post's script, run on the 300 spiral points. Match every symptom to the mistake that causes it.",
+      "left": [
+        {
+          "key": "a",
+          "text": "`ValueError: shapes (300,3) and (2,3) not aligned: 3 (dim 1) != 2 (dim 0)`"
+        },
+        {
+          "key": "b",
+          "text": "`AttributeError: 'NoneType' object has no attribute 'shape'`"
+        },
+        {
+          "key": "c",
+          "text": "The line that should give 300 predictions gives the single number 299."
+        },
+        {
+          "key": "d",
+          "text": "No error; the logits equal $\\mathbf{X}(\\mathbf{W}_1\\mathbf{W}_2)$ up to rounding."
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "`dense2.forward` was given `dense1.output`."
+        },
+        {
+          "key": "q",
+          "text": "The second layer was created as `Layer_Dense(2, 3)`."
+        },
+        {
+          "key": "r",
+          "text": "The result was taken from the return value of a `forward` call."
+        },
+        {
+          "key": "s",
+          "text": "`np.argmax` was called without `axis=1`."
+        },
+        {
+          "key": "t",
+          "text": "`nnfs.init()` was left out of the script."
+        },
+        {
+          "key": "u",
+          "text": "The weights were drawn without the factor 0.01."
+        }
+      ],
+      "answer": {
+        "a": "q",
+        "b": "r",
+        "c": "s",
+        "d": "p"
+      },
+      "explanation": "Section 9 triggers each of these. A second layer created with `n_inputs=2` cannot take the 3 hidden values, and `np.dot` names both shapes. `forward` returns `None`, so reading an attribute of its return value fails. `np.argmax` without an axis flattens the array and returns one position. Feeding `dense2` the output of `dense1` skips the ReLU, and two dense layers with nothing between them equal one linear layer.",
+      "hints": [
+        "Sort the symptoms first into those that stop the program and those that only change a value.",
+        "For each error message, ask which object or call produced the `None` or the mismatched shape."
+      ]
+    },
+    {
+      "id": "nn-007-q12",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "9",
+      "est_minutes": 4,
+      "tags": [
+        "softmax",
+        "axis",
+        "row-sums"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A forward pass on the 300 spiral points produces an output of shape `(300, 3)` with no error. Every row sums to about 0.01, and each of the three columns sums to 1. Name the mistake in the softmax.",
+      "answer": {
+        "model": "The softmax was normalised along axis 0, down each column over the batch, instead of along axis 1, across the classes of each row.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(instead of|rather than)\\b[^.;]{0,15}(\\baxis\\s*=?\\s*0\\b|\\bcolumns?\\b|\\bbatch\\b|\\bsamples\\b))(?![\\s\\S]*\\b(should|must|needs? to|has to|ought to) (be|use|have been|have used|sum|normali[sz]e|run|go|work)( over| along| down| across| on)? (the |each |every )?(axis\\s*=?\\s*0\\b|columns?\\b))(?!(?:(?!\\baxis\\s*=?\\s*1\\b|\\brows?\\b)[\\s\\S])*\\b(not|isn'?t|wasn'?t|never)\\b(?:(?!\\baxis\\s*=?\\s*1\\b|\\brows?\\b)[^.;,]){0,12}(\\baxis\\s*=?\\s*0\\b|\\bcolumn))(?![\\s\\S]*\\bkeepdims\\b(?![\\s\\S]*\\baxis\\b))(?=[\\s\\S]*(\\baxis\\s*=?\\s*(0|zero)\\b|\\bcolumn-?wise\\b|\\b(normali[sz]\\w*|sum\\w*|divid\\w*|taken|computed|applied|run|ran|works?|worked|softmax\\w*)\\b[^.;]{0,30}\\b(down|over|along|across|per|by|each|every)\\b[^.;]{0,15}\\bcolumns?\\b|\\b(down|over|along|per) (the |each |every )?columns?\\b|\\bcolumns?\\b[^.;]{0,30}\\b(instead of|not|rather than)\\b[^.;]{0,20}\\brows?\\b|\\bwrong axis\\b|\\b(over|across|along) (the )?(batch|samples)\\b))"
+        ]
+      },
+      "explanation": "Section 9 runs this case. A softmax that takes its maximum and its sum along `axis=0` normalises each column over the 300 samples, so every column sums to 1 and the total of 3 is shared among 300 nearly identical rows, about 0.01 each. The shape is unchanged, which is why only the row-sum check catches it. The fix is `axis=1`, one distribution per row.",
+      "hints": [
+        "Ask which direction of the array currently adds up to 1, and which direction should.",
+        "The softmax code chooses that direction with one argument of `np.max` and `np.sum`."
+      ]
+    },
+    {
+      "id": "nn-007-q13",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "5",
+      "est_minutes": 15,
+      "tags": [
+        "baseline",
+        "row-sums",
+        "accuracy",
+        "implementation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Implement `baseline_checks(probabilities, y)` for an output of shape $(N, K)$ and $N$ integer labels. It returns three things: `rows_ok`, which is true only when every entry is non-negative and every row sums to 1 within $10^{-5}$; `predictions`, the $(N,)$ array holding the index of the largest probability of each row; and `accuracy`, the fraction of rows whose prediction equals the label.",
+      "kind": "implement",
+      "language": "python",
+      "starter": "import numpy as np\n\n\ndef baseline_checks(probabilities, y):\n    \"\"\"Return (rows_ok, predictions, accuracy) for an (N, K) output and N class indices.\n\n    rows_ok     : True when every entry is non-negative and every row sums to 1 within 1e-5\n    predictions : (N,) array, the index of the largest probability of each row\n    accuracy    : the fraction of rows whose prediction equals the label\n    \"\"\"\n    raise NotImplementedError\n",
+      "solution": "import numpy as np\n\n\ndef baseline_checks(probabilities, y):\n    \"\"\"Return (rows_ok, predictions, accuracy) for an (N, K) output and N class indices.\n\n    rows_ok     : True when every entry is non-negative and every row sums to 1 within 1e-5\n    predictions : (N,) array, the index of the largest probability of each row\n    accuracy    : the fraction of rows whose prediction equals the label\n    \"\"\"\n    row_sums = np.sum(probabilities, axis=1)                  # one sum per row\n    rows_ok = bool(np.all(probabilities >= 0) and np.all(np.abs(row_sums - 1) <= 1e-5))\n    predictions = np.argmax(probabilities, axis=1)            # one class index per row\n    accuracy = float(np.mean(predictions == y))\n    return rows_ok, predictions, accuracy\n",
+      "tests": "import numpy as np\n\n# 1. A well-formed output with a tie in row 1.\nprobabilities = np.array([[0.2, 0.5, 0.3],\n                          [0.4, 0.4, 0.2],\n                          [0.1, 0.1, 0.8],\n                          [0.6, 0.3, 0.1]])\ny = np.array([1, 1, 2, 2])\nrows_ok, predictions, accuracy = baseline_checks(probabilities, y)\nassert rows_ok is True or rows_ok == True, rows_ok\nassert np.shape(predictions) == (4,), np.shape(predictions)\nassert list(predictions) == [1, 0, 2, 0], predictions\nassert abs(accuracy - 0.5) < 1e-12, accuracy\n\n# 2. float32 rounding in the row sums is not a failure.\nuniform = np.full((300, 3), 1 / 3, dtype=np.float32)\nlabels = np.repeat(np.arange(3), 100)\nrows_ok, predictions, accuracy = baseline_checks(uniform, labels)\nassert rows_ok, \"row sums within 1e-5 of 1 must pass\"\nassert np.all(predictions == 0), \"an exact tie goes to the first index\"\nassert abs(accuracy - 1 / 3) < 1e-12, accuracy\n\n# 3. A softmax taken along axis 0: columns sum to 1, rows do not. Not square, on purpose.\nlogits = np.array([[0.1, 0.2, 0.3], [0.0, 0.0, 0.0], [0.3, 0.1, 0.2], [0.2, 0.2, 0.2], [0.1, 0.0, 0.1]])\nby_column = np.exp(logits) / np.sum(np.exp(logits), axis=0, keepdims=True)\nrows_ok, predictions, accuracy = baseline_checks(by_column, np.zeros(5, dtype=int))\nassert not rows_ok, \"rows that do not sum to 1 must fail\"\nassert np.shape(predictions) == (5,), \"predictions are per row even when the check fails\"\n\n# 4. Rows that sum to 1 but hold a negative entry are not probabilities.\nrows_ok, _, _ = baseline_checks(np.array([[1.2, -0.2], [0.5, 0.5]]), np.array([0, 1]))\nassert not rows_ok, \"a negative entry must fail\"\n\n# 5. A row sum that is off by 1e-3 is not rounding.\nrows_ok, _, _ = baseline_checks(np.array([[0.5, 0.501], [0.5, 0.5]]), np.array([0, 1]))\nassert not rows_ok, \"a row sum of 1.001 must fail\"\n\n# 6. Two classes, six rows: the axis must be the class axis.\nsix = np.array([[0.9, 0.1], [0.2, 0.8], [0.7, 0.3], [0.4, 0.6], [0.5, 0.5], [0.1, 0.9]])\nrows_ok, predictions, accuracy = baseline_checks(six, np.array([0, 1, 1, 1, 1, 0]))\nassert rows_ok and list(predictions) == [0, 1, 0, 1, 0, 1], predictions\nassert abs(accuracy - 0.5) < 1e-12, accuracy\n\n# 7. Every row is checked, not the rows on average: sums of 1.2 and 0.8 must fail.\nrows_ok, _, _ = baseline_checks(np.array([[0.6, 0.6], [0.4, 0.4]]), np.array([0, 1]))\nassert not rows_ok, \"each row must sum to 1, not the rows on average\"\nprint(\"all tests passed\")\n",
+      "explanation": "Section 5 computes all three in three lines: `np.sum(probabilities, axis=1)` for the row sums, `np.argmax(probabilities, axis=1)` for the predictions, and `np.mean(predictions == y)` for the accuracy. Both reductions run along `axis=1`, the class axis. The tests include a softmax taken along the wrong axis, whose rows do not sum to 1, and a `float32` uniform output, whose rounding error must not count as a failure.",
+      "hints": [
+        "Both the row sums and the predictions are reductions along the class axis, one result per row.",
+        "Compare each row sum with 1 using an absolute tolerance, and remember that a comparison of two arrays gives booleans whose mean is a fraction."
+      ]
+    },
+    {
+      "id": "nn-007-q14",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o5",
+        "o1"
+      ],
+      "section": "7",
+      "est_minutes": 20,
+      "tags": [
+        "depth",
+        "shape-continuity",
+        "extend"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The starter builds and runs this post's network for exactly one hidden layer. Extend `build_network(sizes)` so that a list such as `[2, 64, 64, 3]` gives one `Layer_Dense` per consecutive pair of sizes, an `Activation_ReLU` after every dense layer except the last, and an `Activation_Softmax` after the last; and extend `forward_network(network, X)` so that it runs a batch through any such list and returns the probabilities.",
+      "kind": "extend",
+      "language": "python",
+      "starter": "import numpy as np\n\n\nclass Layer_Dense:\n    def __init__(self, n_inputs, n_neurons):\n        self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)\n        self.biases = np.zeros((1, n_neurons))\n\n    def forward(self, inputs):\n        self.output = np.dot(inputs, self.weights) + self.biases\n\n\nclass Activation_ReLU:\n    def forward(self, inputs):\n        self.output = np.maximum(0, inputs)\n\n\nclass Activation_Softmax:\n    def forward(self, inputs):\n        shifted = inputs - np.max(inputs, axis=1, keepdims=True)\n        exp_values = np.exp(shifted)\n        self.output = exp_values / np.sum(exp_values, axis=1, keepdims=True)\n\n\ndef build_network(sizes):\n    \"\"\"Return the list of objects for layer sizes such as [2, 3, 3]: only one hidden layer so far.\"\"\"\n    n_inputs, n_hidden, n_classes = sizes\n    return [Layer_Dense(n_inputs, n_hidden), Activation_ReLU(),\n            Layer_Dense(n_hidden, n_classes), Activation_Softmax()]\n\n\ndef forward_network(network, X):\n    \"\"\"Run X through the objects and return the probabilities: only four objects so far.\"\"\"\n    dense1, activation1, dense2, activation2 = network\n    dense1.forward(X)\n    activation1.forward(dense1.output)\n    dense2.forward(activation1.output)\n    activation2.forward(dense2.output)\n    return activation2.output\n",
+      "solution": "import numpy as np\n\n\nclass Layer_Dense:\n    def __init__(self, n_inputs, n_neurons):\n        self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)\n        self.biases = np.zeros((1, n_neurons))\n\n    def forward(self, inputs):\n        self.output = np.dot(inputs, self.weights) + self.biases\n\n\nclass Activation_ReLU:\n    def forward(self, inputs):\n        self.output = np.maximum(0, inputs)\n\n\nclass Activation_Softmax:\n    def forward(self, inputs):\n        shifted = inputs - np.max(inputs, axis=1, keepdims=True)\n        exp_values = np.exp(shifted)\n        self.output = exp_values / np.sum(exp_values, axis=1, keepdims=True)\n\n\ndef build_network(sizes):\n    \"\"\"Return the list of objects for layer sizes such as [2, 64, 64, 3], any number of hidden layers.\"\"\"\n    network = []\n    for i in range(len(sizes) - 1):\n        # Each layer's n_inputs is the n_neurons of the layer before it.\n        network.append(Layer_Dense(sizes[i], sizes[i + 1]))\n        last = i == len(sizes) - 2\n        network.append(Activation_Softmax() if last else Activation_ReLU())\n    return network\n\n\ndef forward_network(network, X):\n    \"\"\"Run X through the objects in order and return the probabilities.\"\"\"\n    values = X\n    for component in network:\n        component.forward(values)\n        values = component.output          # the next object reads this output\n    return values\n",
+      "tests": "import numpy as np\n\nnp.random.seed(0)\n\n# 1. One hidden layer still works: Dense, ReLU, Dense, Softmax.\nsmall = build_network([2, 3, 3])\nassert [type(c).__name__ for c in small] == [\"Layer_Dense\", \"Activation_ReLU\", \"Layer_Dense\", \"Activation_Softmax\"]\n\n# 2. Two hidden layers: three dense layers, ReLU after the hidden ones, softmax last.\ndeep = build_network([2, 64, 64, 3])\nnames = [type(c).__name__ for c in deep]\nassert names == [\"Layer_Dense\", \"Activation_ReLU\", \"Layer_Dense\", \"Activation_ReLU\",\n                 \"Layer_Dense\", \"Activation_Softmax\"], names\nassert [c.weights.shape for c in deep[0::2]] == [(2, 64), (64, 64), (64, 3)]\nassert sum(c.weights.size + c.biases.size for c in deep[0::2]) == 4547\n\n# 3. The forward pass keeps 300 rows and ends in probabilities.\nX = np.random.randn(300, 2)\nout = forward_network(deep, X)\nassert out.shape == (300, 3), out.shape\nassert np.allclose(np.sum(out, axis=1), 1)\nassert [c.output.shape for c in deep] == [(300, 64)] * 4 + [(300, 3)] * 2\n\n# 4. The numbers are the chain Dense, ReLU, Dense, ReLU, Dense, Softmax, with larger weights\n#    so that a skipped ReLU or a skipped layer changes the result visibly.\nnet = build_network([4, 5, 6, 7, 2])\nassert len(net) == 8\nfor dense in net[0::2]:\n    dense.weights = np.random.randn(*dense.weights.shape)\n    dense.biases = np.random.randn(*dense.biases.shape)\nXs = np.random.randn(9, 4)\nout = forward_network(net, Xs)\nvalues = Xs\nfor index, dense in enumerate(net[0::2]):\n    values = np.dot(values, dense.weights) + dense.biases\n    if index < 3:\n        values = np.maximum(0, values)\nshifted = values - np.max(values, axis=1, keepdims=True)\nexpected = np.exp(shifted) / np.sum(np.exp(shifted), axis=1, keepdims=True)\nassert out.shape == (9, 2), out.shape\nassert np.allclose(out, expected), \"the output is not Dense, ReLU, ..., Dense, Softmax in order\"\nprint(\"all tests passed\")\n",
+      "explanation": "Section 7 adds depth by repeating one pattern: a `Layer_Dense` whose `n_inputs` equals the `n_neurons` of the layer before it, followed by an activation, with each `forward` call reading the `output` of the object before it. Written as a loop over consecutive pairs of sizes, that is the whole solution. For `[2, 64, 64, 3]` it gives weights of shape $(2, 64)$, $(64, 64)$, and $(64, 3)$, and the 4,547 parameters of the post.",
+      "hints": [
+        "Consecutive entries of `sizes` are the `n_inputs` and `n_neurons` of one dense layer.",
+        "In the forward pass keep one variable holding the latest output, and hand it to the next object."
+      ]
+    },
+    {
+      "id": "nn-007-q15",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "7",
+      "est_minutes": 6,
+      "tags": [
+        "depth",
+        "shape-continuity",
+        "parameter-count"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network for the spiral data is `Layer_Dense(2, 64)`, ReLU, `Layer_Dense(64, 3)`, softmax. A second hidden layer of 32 neurons, with its own ReLU, is inserted between the first ReLU and the output layer. Give the `n_inputs` of the new dense layer, the `n_inputs` that the output layer must now have, the number of columns of the array that the softmax receives, and the total number of weights and biases of the new network.",
+      "answer": {
+        "parts": [
+          {
+            "label": "n_inputs of the new layer",
+            "value": 64,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "n_inputs of the output layer",
+            "value": 32,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "columns of the softmax input",
+            "value": 3,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "total parameters",
+            "value": 2371,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form: widths 2, 64, 32, 3; parameters n_inputs * n_neurons + n_neurons per layer: 192 + 2080 + 99 = 2371. Checked by building the three layers in NumPy and summing weights.size + biases.size.",
+      "explanation": "The shape-continuity rule of section 7 fixes every number: a layer's `n_inputs` is the `n_neurons` of the layer before it. The new layer follows 64 neurons, so it is `Layer_Dense(64, 32)`, and the output layer becomes `Layer_Dense(32, 3)`. The logits still have 3 columns, one per class. The parameters are $2 \\cdot 64 + 64 = 192$, $64 \\cdot 32 + 32 = 2{,}080$, and $32 \\cdot 3 + 3 = 99$, a total of 2,371.",
+      "hints": [
+        "Write the chain of widths the data passes through, starting at 2 and ending at 3.",
+        "Each dense layer has one weight per input per neuron and one bias per neuron."
+      ]
+    },
+    {
+      "id": "nn-007-q16",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 4,
+      "outcomes": [
+        "o3",
+        "o4"
+      ],
+      "section": "5",
+      "est_minutes": 15,
+      "tags": [
+        "argmax",
+        "ties",
+        "baseline"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the seeded run of this post the three rows of `dense2.weights` are $[-0.0133, -0.0135, 0.0069]$, $[-0.0016, -0.0013, 0.0108]$, and $[-0.0113, -0.0073, -0.0038]$, the biases are zero, and 8 of the 300 rows of `activation1.output` are all zero. Show from these facts alone that the network predicts class 2 for 292 rows and class 0 for 8. Then, given that each class holds 100 of the 300 points, that 3 of the 8 all-zero rows belong to class 0, and that exactly 1 belongs to class 2, derive the accuracy.",
+      "kind": "derive",
+      "solution": "1. With zero biases the logits of a row are $z_k = \\sum_j a_j W_{jk}$, where $a_1, a_2, a_3$ are the hidden values of that row and $W_{jk}$ is the entry of `dense2.weights` in row $j$, column $k$.\n\n2. The hidden values are ReLU outputs, so $a_j \\ge 0$ for every $j$.\n\n3. In every row of the weight matrix the entry in column 2 is the largest: $0.0069$ against $-0.0133$ and $-0.0135$; $0.0108$ against $-0.0016$ and $-0.0013$; $-0.0038$ against $-0.0113$ and $-0.0073$. So $W_{j2} - W_{jk} > 0$ for every $j$ and for $k = 0, 1$.\n\n4. Therefore $z_2 - z_k = \\sum_j a_j (W_{j2} - W_{jk})$ is a sum of non-negative terms, and it is strictly positive as soon as one $a_j$ is positive. On each of the $300 - 8 = 292$ rows with a positive hidden value, logit 2 is the largest, softmax preserves the order, and the prediction is class 2.\n\n5. On the 8 rows whose hidden values are all zero, $z_0 = z_1 = z_2 = 0$, the three probabilities are equal, and `np.argmax` returns the first index of a tie: class 0.\n\n6. Correct answers: of the 100 class-2 points, 1 is a tie row and is predicted as class 0, so 99 are predicted correctly. Of the 8 tie rows, the 3 that belong to class 0 are correct. No class-1 point is ever predicted as class 1. The total is $99 + 3 = 102$, and the accuracy is $102 / 300 = 0.34$.",
+      "rubric": [
+        {
+          "criterion": "Writes each logit as a weighted sum of the row's hidden values, with zero biases",
+          "points": 1
+        },
+        {
+          "criterion": "Uses that hidden values are ReLU outputs and therefore non-negative",
+          "points": 2
+        },
+        {
+          "criterion": "Observes that column 2 holds the largest weight of every row and concludes that logit 2 minus either other logit is positive when a hidden value is positive",
+          "points": 3
+        },
+        {
+          "criterion": "Handles the 8 all-zero rows: equal logits, tied probabilities, first index returned, class 0",
+          "points": 2
+        },
+        {
+          "criterion": "Counts 99 correct class-2 rows plus 3 correct tie rows and reports 102 of 300, 0.34",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 5 gives the argument in outline. Writing the logit differences as sums over the hidden values, with non-negative hidden values and a largest weight in column 2 of every row, shows that class 2 wins strictly whenever one hidden value is positive. All-zero hidden rows give three equal logits, an exact tie, and `np.argmax` returns the first index. Counting the correct rows in both groups gives 102 of 300.",
+      "hints": [
+        "Write logit 2 minus logit 0 for one row as a sum over the three hidden values, and look at the sign of each coefficient.",
+        "Treat the rows with no positive hidden value separately: what are their logits, and what does `np.argmax` do with them?",
+        "For the accuracy, count the class-2 points that are not among the 8 tie rows."
+      ]
+    },
+    {
+      "id": "nn-007-q17",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 15,
+      "tags": [
+        "initialisation",
+        "weight-scale",
+        "uniform-output"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Post 04 chose the factor 0.01 in `0.01 * np.random.randn(...)`. Suppose both layers of this post's network are created with the factor 1.0 instead, with the same random draws and zero biases. Explain what happens to the hidden values, to the logits, and to the output rows, and say whether the predicted classes and the accuracy change. Use the sizes this post measured, a largest hidden value of 0.017 and a largest logit of 0.00023, to estimate the largest logit in the new network.",
+      "kind": "connect",
+      "solution": "Replacing 0.01 by 1.0 multiplies every weight by 100.\n\n**Hidden values.** `dense1.output` is $\\mathbf{X}\\mathbf{W}_1$ with zero biases, so it is multiplied by 100: its largest entry goes from about 0.017 to about 1.7. ReLU satisfies $\\max(0, 100z) = 100 \\max(0, z)$, so the hidden values are multiplied by 100 as well, and the same entries are zero as before.\n\n**Logits.** `dense2` multiplies hidden values that are 100 times larger by weights that are 100 times larger, so every logit is multiplied by $100 \\cdot 100 = 10{,}000$. The largest goes from 0.00023 to about 2.3.\n\n**Output rows.** The logits of a row are no longer nearly equal. Two probabilities of a row stand in the ratio $e^{z_a - z_b}$, and gaps of order 1 give ratios well away from 1, so many rows put most of their mass on one class. Running it gives probabilities from 0.04 to 0.92. The rows still sum to 1; what is lost is the uniform output, so an untrained output near $1/3$ can no longer be used as a sign that the pipeline is wired correctly, and a confident wrong row is now possible before any training.\n\n**Predictions.** Every logit was multiplied by the same positive number, which does not change which entry of a row is the largest, and exact ties stay ties. The predictions are the same 292 rows for class 2 and 8 for class 0, and the accuracy stays at 0.34. A larger initial scale makes the untrained network confident, not better.",
+      "rubric": [
+        {
+          "criterion": "States that the first layer's output and, through ReLU, the hidden values are multiplied by 100",
+          "points": 2
+        },
+        {
+          "criterion": "States that the logits are multiplied by 10,000 and estimates the largest at about 2.3",
+          "points": 2
+        },
+        {
+          "criterion": "Concludes that the logits are no longer nearly equal, so the output rows are no longer near-uniform, while still summing to 1",
+          "points": 2
+        },
+        {
+          "criterion": "Argues that a common positive factor leaves the largest entry of each row in place, so predictions and accuracy are unchanged",
+          "points": 3
+        },
+        {
+          "criterion": "Draws the consequence for the baseline: a uniform untrained output depends on the small initial scale",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "With zero biases, multiplying every weight by 100 multiplies the first layer's output by 100, the ReLU output by 100, and the logits by $100 \\cdot 100$. The largest logit grows from 0.00023 to about 2.3, softmax is no longer near-uniform, and the uniform baseline of section 5 disappears. Because every logit is scaled by the same positive number, the largest entry of each row stays in place, so the predictions and the accuracy of 0.34 do not change.",
+      "hints": [
+        "Follow one factor of 100 through `dense1`, through the ReLU, and through `dense2`. How many times is it applied by the time the logits are reached?",
+        "Then ask two separate questions of the scaled logits: are they still nearly equal, and has their order within a row changed?"
+      ],
+      "connects": [
+        "nn-004"
+      ]
+    },
+    {
+      "id": "nn-007-q18",
+      "type": "mcq",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 4,
+      "tags": [
+        "keepdims",
+        "softmax",
+        "shapes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Inside `Activation_Softmax.forward`, this post's batch of logits has shape $(300, 3)$ and the line `np.sum(exp_values, axis=1, keepdims=True)` computes the denominators. Using the reduction and broadcasting rules of post 05, what is the shape of that result, and what happens to the division `exp_values / ...` if `keepdims=True` is removed?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "$(300, 1)$; without `keepdims` it is $(300,)$ and the division raises a broadcasting error.",
+          "correct": true,
+          "feedback": "Right. The $(300,)$ array lines up with the 3 columns, 300 and 3 do not match, and NumPy refuses."
+        },
+        {
+          "key": "b",
+          "text": "$(300, 1)$; without `keepdims` it is $(300,)$ and the division runs with wrong numbers.",
+          "correct": false,
+          "feedback": "That silent case needs as many columns as rows. Here the sizes that meet are 300 and 3, so NumPy raises an error."
+        },
+        {
+          "key": "c",
+          "text": "$(1, 3)$; without `keepdims` it is $(3,)$ and the division still works.",
+          "correct": false,
+          "feedback": "Those are the shapes of a reduction along `axis=0`, which sums each column over the batch. The softmax sums each row."
+        },
+        {
+          "key": "d",
+          "text": "$(300, 3)$; `keepdims` only affects how the array is printed.",
+          "correct": false,
+          "feedback": "A sum along an axis cannot keep that axis at its full size. `keepdims` changes the shape from $(300,)$ to $(300, 1)$, which changes how it broadcasts."
+        }
+      ],
+      "explanation": "A reduction along `axis=1` removes the class axis; `keepdims=True` keeps it with size 1, so the result is $(300, 1)$ and broadcasts across the 3 columns of each row. Without `keepdims` the result is $(300,)$, which broadcasting aligns with the last axis of $(300, 3)$; 300 against 3 does not fit, and NumPy raises `operands could not be broadcast together with shapes (300,3) (300,)`. The silent wrong answer of post 05 needs a square array, which this batch is not.",
+      "hints": [
+        "`axis=1` names the axis that disappears; `keepdims=True` keeps it at size 1.",
+        "A 1-D array is lined up with the last axis of a 2-D array. Compare the two sizes that then meet."
+      ],
+      "connects": [
+        "nn-005"
+      ]
+    }
+  ]
+}

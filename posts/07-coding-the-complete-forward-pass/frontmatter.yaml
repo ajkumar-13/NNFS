@@ -1,8 +1,26 @@
 id: nn-007
 slug: 07-coding-the-complete-forward-pass
-title: "Part 07 · Coding the complete forward pass"
+title: "07 - Coding the complete forward pass"
+summary: "The three classes built so far wired into one script: spiral data through Dense, ReLU, Dense, and Softmax, the shape of every array on the way, and why the untrained output is one third for every class, the baseline training has to beat."
 date: 2026-05-27
+updated: 2026-10-05
+status: complete
+part: "Part II - Activations and forward pass"
+level: beginner
+reading_time: 20
 tags: [neural-networks, from-scratch, forward-pass, integration]
 hero: diagrams/01-pipeline-anatomy.svg
-reading_time: 10
-part: "Part II — Activations and forward pass"
+prerequisites: [nn-004, nn-006]
+code: included
+outcomes:
+  - id: o1
+    text: "Assemble a complete forward-pass script from the Layer_Dense, Activation_ReLU, and Activation_Softmax classes."
+  - id: o2
+    text: "Audit the shape of every intermediate array of a forward pass against the network's architecture."
+  - id: o3
+    text: "Explain why an untrained network gives every class a probability close to one over the number of classes."
+  - id: o4
+    text: "Check an untrained forward pass against its baseline: rows that sum to 1 and accuracy near one in three."
+  - id: o5
+    text: "Extend the script to a deeper network by adding Layer_Dense and Activation_ReLU pairs whose shapes chain."
+compute: cpu
