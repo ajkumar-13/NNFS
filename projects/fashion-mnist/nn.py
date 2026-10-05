@@ -1,7 +1,7 @@
 """
 From-scratch neural network classes used by the Fashion-MNIST project.
 
-Identical to projects/01-mnist-from-scratch/nn.py — vendored here so this
+Identical to projects/mnist-from-scratch/nn.py — vendored here so this
 project is self-contained. Every class was built incrementally across
 posts/01..31; this module collects the final versions in one place.
 

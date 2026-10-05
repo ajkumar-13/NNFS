@@ -1,0 +1,38 @@
+id: nn-p01
+slug: mnist-from-scratch
+title: "MNIST from scratch"
+summary: "A two-hidden-layer dense network written in NumPy alone, with Adam, L2 and dropout, trained in mini-batches on the 60,000 MNIST digits and scored on the 10,000 test images."
+kind: model
+status: planned
+level: intermediate
+after_post: nn-032
+uses: [nn-016, nn-019, nn-027, nn-030, nn-031, nn-032]
+problem: "The series derives every layer, loss and optimiser on a toy spiral dataset, which leaves open whether the pieces compose into a model that works on real data. This project assembles them, unchanged, into a 784-128-128-10 classifier for handwritten digits."
+users: "Readers who have finished Part VIII and want a first real result, and the sibling CNN series, which uses this network as its dense baseline."
+impact: "Trained from the fixed seed with the documented command, the model reaches the test accuracy recorded in docs/EVALUATION.md, and the evaluation script reproduces that figure from a fresh run."
+stack:
+  language: python
+  frameworks: [numpy]
+commands:
+  setup: "uv sync --frozen"
+  test: "uv run pytest --cov=src --cov-fail-under=80"
+  lint: "uv run ruff check ."
+quality:
+  coverage_min: 80
+  evaluation: docs/EVALUATION.md
+data:
+  - name: mnist
+    source: assets/registry/datasets.yaml (mnist)
+    license: CC BY-SA 3.0
+security:
+  secrets: none
+  threat_notes: docs/SECURITY.md
+  audited: 2026-10-05
+release:
+  version: "0.0.0"
+  license: MIT
+  registry: null
+maintenance:
+  owner: "Ajay"
+  verified: 2026-10-05
+  cadence: yearly

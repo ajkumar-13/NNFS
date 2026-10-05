@@ -196,7 +196,7 @@ A condensed list, ranked by "biggest payoff per hour" for someone who just finis
 | Priority | Topic | Best source |
 |:---:|---|---|
 | 1 | Read Karpathy's "Zero to Hero" videos | [karpathy/nn-zero-to-hero](https://github.com/karpathy/nn-zero-to-hero) |
-| 2 | Learn PyTorch basics; reimplement [project 01](../../projects/01-mnist-from-scratch/README.md) in PyTorch | [pytorch.org tutorials](https://pytorch.org/tutorials/) |
+| 2 | Learn PyTorch basics; reimplement [project 01](../../projects/mnist-from-scratch/README.md) in PyTorch | [pytorch.org tutorials](https://pytorch.org/tutorials/) |
 | 3 | Read the CS231n CNN notes | [cs231n.github.io](http://cs231n.github.io/convolutional-networks/) |
 | 4 | Build a transformer from scratch following Karpathy's GPT video | [Karpathy "Let's build GPT"](https://www.youtube.com/watch?v=kCc8FmEb1nY) |
 | 5 | Read the BatchNorm paper + Santurkar follow-up | (see §3.1) |

@@ -13,7 +13,7 @@
 ## File layout
 
 ```
-02-binary-classifier/
+binary-classifier/
 ├── README.md
 ├── requirements.txt    ← numpy only
 ├── nn.py               ← Dense, ReLU, Sigmoid, combined Sigmoid+BCE, Adam
@@ -25,7 +25,7 @@
 ## Quick start
 
 ```bash
-cd projects/02-binary-classifier
+cd projects/binary-classifier
 pip install -r requirements.txt
 python train.py            # ~5 sec on a modern laptop CPU
 python evaluate.py         # writes decision_grid.npz alongside the checkpoint

@@ -29,7 +29,7 @@ For binary problems ($K = 2$) this exact pipeline can be used mechanically:
 
 It works, but it is $2\times$ the work for no benefit. A single neuron with a sigmoid carries the same information: output $p \in (0, 1)$ is the probability of class 1, and $1 - p$ is the probability of class 0 implicitly. Targets become scalar $y \in \{0, 1\}$ instead of one-hot pairs. The math is parallel to softmax + CCE but cleaner: a single scalar output instead of a $K$-element distribution, a single log term instead of $K$, and the simplified gradient $\sigma(z) - y$ that drops out of the algebra exactly the way $\hat{y} - y$ dropped out in post 19. The practical payoff: the output is half the size, the math is one line shorter, and a numerically stable forward pass is half a page of code.
 
-This is the standard production pattern for binary classification, and what [project 02](../../projects/02-binary-classifier/README.md) uses. This lecture is the underlying theory.
+This is the standard production pattern for binary classification, and what [project 02](../../projects/binary-classifier/README.md) uses. This lecture is the underlying theory.
 
 A short comparison table:
 
@@ -203,7 +203,7 @@ Three implementation notes.
 
 **Multi-label** is a subtler case. Each sample can have multiple positive labels at once (e.g., a movie tagged with both "comedy" and "drama"). For $K$ labels, use $K$ output neurons each with its own sigmoid + BCE. The losses are independent and sum. This is **not** the same as softmax + CCE, which forces the predicted probabilities to sum to 1, i.e., assumes exactly one positive label.
 
-**Regression** uses no last-layer activation at all; the network output is the prediction directly, and the loss is MSE (or MAE, or Huber, etc.). See [project 04](../../projects/04-california-housing-regression/README.md) for the worked example.
+**Regression** uses no last-layer activation at all; the network output is the prediction directly, and the loss is MSE (or MAE, or Huber, etc.). See [project 04](../../projects/california-housing-regression/README.md) for the worked example.
 
 ---
 
@@ -259,4 +259,4 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ---
 
-> **Try it yourself:** [Project 02 — Binary classifier on two-moons](../../projects/02-binary-classifier/README.md) uses this exact setup. Read its `nn.py` and trace the forward/backward pass against this lecture's derivation.
+> **Try it yourself:** [Project 02 — Binary classifier on two-moons](../../projects/binary-classifier/README.md) uses this exact setup. Read its `nn.py` and trace the forward/backward pass against this lecture's derivation.

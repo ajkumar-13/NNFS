@@ -262,4 +262,4 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ---
 
-> **Try it yourself:** Re-train [Project 03 — Fashion-MNIST](../../projects/03-fashion-mnist/README.md) with `init="he"` and compare to the default. The accuracy gap is small (the network is only 2 hidden layers), but the loss in the first 5 epochs drops noticeably faster.
+> **Try it yourself:** Re-train [Project 03 — Fashion-MNIST](../../projects/fashion-mnist/README.md) with `init="he"` and compare to the default. The accuracy gap is small (the network is only 2 hidden layers), but the loss in the first 5 epochs drops noticeably faster.

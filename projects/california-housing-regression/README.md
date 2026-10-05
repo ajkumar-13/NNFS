@@ -13,7 +13,7 @@
 ## File layout
 
 ```
-04-california-housing-regression/
+california-housing-regression/
 ├── README.md
 ├── requirements.txt    ← numpy + (optional) sklearn
 ├── nn.py               ← Dense, ReLU, Loss_MSE, Adam, regularization_loss
@@ -25,7 +25,7 @@
 ## Quick start
 
 ```bash
-cd projects/04-california-housing-regression
+cd projects/california-housing-regression
 pip install -r requirements.txt
 python train.py              # ~30 sec on a modern laptop CPU
 python evaluate.py
@@ -79,7 +79,7 @@ The de-standardisation step lives in `evaluate.py`: predictions in standardised 
 
 ## 3. What changes from project 01
 
-The full list of differences from `projects/01-mnist-from-scratch/`:
+The full list of differences from `projects/mnist-from-scratch/`:
 
 | Piece | Project 01 (MNIST classifier) | Project 04 (regression) |
 |---|---|---|

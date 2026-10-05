@@ -1,0 +1,38 @@
+id: nn-p04
+slug: california-housing-regression
+title: "California housing regression"
+summary: "The series' first regression: a dense network in NumPy alone with a linear output and mean squared error, trained on the California housing data with the target standardised from the training fold only."
+kind: model
+status: planned
+level: intermediate
+after_post: nn-032
+uses: [nn-016, nn-027, nn-029, nn-032]
+problem: "Every post in the series classifies, so nothing shows the forward and backward machinery surviving a change of loss. This project swaps in a linear output and mean squared error, predicts median house value from eight features, and keeps test data out of every statistic used in training."
+users: "Readers who want to see regression built from the same classes, and the no-leakage rule of the validation post applied in code."
+impact: "Trained from the fixed seed with the documented command, the model reaches the test-fold R squared and error recorded in docs/EVALUATION.md, computed in dollars after undoing the target scaling."
+stack:
+  language: python
+  frameworks: [numpy]
+commands:
+  setup: "uv sync --frozen"
+  test: "uv run pytest --cov=src --cov-fail-under=80"
+  lint: "uv run ruff check ."
+quality:
+  coverage_min: 80
+  evaluation: docs/EVALUATION.md
+data:
+  - name: california-housing
+    source: assets/registry/datasets.yaml (california-housing)
+    license: public domain
+security:
+  secrets: none
+  threat_notes: docs/SECURITY.md
+  audited: 2026-10-05
+release:
+  version: "0.0.0"
+  license: MIT
+  registry: null
+maintenance:
+  owner: "Ajay"
+  verified: 2026-10-05
+  cadence: yearly

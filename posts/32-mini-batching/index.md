@@ -279,4 +279,4 @@ Full citations in [REFERENCES.md](../../REFERENCES.md).
 
 ---
 
-> **Try it yourself:** [Project 01 — MNIST from scratch](../../projects/01-mnist-from-scratch/README.md) and [Project 03 — Fashion-MNIST](../../projects/03-fashion-mnist/README.md) both use mini-batching exactly as described here. Read the code; compare it to this lecture's pseudocode.
+> **Try it yourself:** [Project 01 — MNIST from scratch](../../projects/mnist-from-scratch/README.md) and [Project 03 — Fashion-MNIST](../../projects/fashion-mnist/README.md) both use mini-batching exactly as described here. Read the code; compare it to this lecture's pseudocode.

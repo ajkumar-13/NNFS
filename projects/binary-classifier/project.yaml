@@ -1,0 +1,38 @@
+id: nn-p02
+slug: binary-classifier
+title: "Binary classifier on two moons"
+summary: "A small dense network with a sigmoid output and binary cross-entropy, written in NumPy alone, that separates the two-moons dataset and writes the decision grid needed to draw its boundary."
+kind: model
+status: planned
+level: intermediate
+after_post: nn-034
+uses: [nn-019, nn-027, nn-033, nn-034]
+problem: "Sigmoid with binary cross-entropy is derived in the series but never trained on data whose decision boundary can be seen. This project trains a 2-16-16-1 network on two interleaved half-moons and exports the boundary as a grid of predictions."
+users: "Readers of the sigmoid and binary cross-entropy post who want to see the combined derivative at work on a problem that can be drawn."
+impact: "Trained from the fixed seed with the documented command, the model reaches the test accuracy recorded in docs/EVALUATION.md, and the same script shows the initialisation that fails to reach it."
+stack:
+  language: python
+  frameworks: [numpy]
+commands:
+  setup: "uv sync --frozen"
+  test: "uv run pytest --cov=src --cov-fail-under=80"
+  lint: "uv run ruff check ."
+quality:
+  coverage_min: 80
+  evaluation: docs/EVALUATION.md
+data:
+  - name: two-moons
+    source: assets/registry/datasets.yaml (two-moons)
+    license: generated
+security:
+  secrets: none
+  threat_notes: docs/SECURITY.md
+  audited: 2026-10-05
+release:
+  version: "0.0.0"
+  license: MIT
+  registry: null
+maintenance:
+  owner: "Ajay"
+  verified: 2026-10-05
+  cadence: yearly

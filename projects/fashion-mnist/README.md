@@ -13,10 +13,10 @@
 ## File layout
 
 ```
-03-fashion-mnist/
+fashion-mnist/
 ├── README.md
 ├── requirements.txt    ← numpy + (optional) sklearn
-├── nn.py               ← vendored from projects/01-mnist-from-scratch/nn.py
+├── nn.py               ← vendored from projects/mnist-from-scratch/nn.py
 ├── data.py             ← Fashion-MNIST loader + CLASS_NAMES dict
 ├── train.py            ← identical loop to project 01
 └── evaluate.py         ← per-class accuracy + named confusion matrix
@@ -25,7 +25,7 @@
 ## Quick start
 
 ```bash
-cd projects/03-fashion-mnist
+cd projects/fashion-mnist
 pip install -r requirements.txt
 python train.py              # ~20 epochs, ~3-5 min on CPU
 python evaluate.py

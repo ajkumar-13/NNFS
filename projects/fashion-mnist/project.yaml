@@ -1,0 +1,38 @@
+id: nn-p03
+slug: fashion-mnist
+title: "Fashion-MNIST with the same network"
+summary: "The MNIST project's dense network run unchanged on Fashion-MNIST, with a per-class report and confusion matrix that show where a dense network fails on clothing images."
+kind: model
+status: planned
+level: intermediate
+after_post: nn-033
+uses: [nn-027, nn-028, nn-032, nn-033]
+problem: "A model that scores well on MNIST says little about harder images, and a single accuracy figure hides which classes fail. This project changes only the data loader, trains the same 784-128-128-10 network on Fashion-MNIST, and reports the errors class by class."
+users: "Readers who need to see that MNIST flatters a model, and the sibling CNN series, which uses this run as its dense baseline on Fashion-MNIST."
+impact: "Trained from the fixed seed with the documented command, the model reaches the test accuracy and per-class figures recorded in docs/EVALUATION.md, and the evaluation script reproduces them from the trained weights."
+stack:
+  language: python
+  frameworks: [numpy]
+commands:
+  setup: "uv sync --frozen"
+  test: "uv run pytest --cov=src --cov-fail-under=80"
+  lint: "uv run ruff check ."
+quality:
+  coverage_min: 80
+  evaluation: docs/EVALUATION.md
+data:
+  - name: fashion-mnist
+    source: assets/registry/datasets.yaml (fashion-mnist)
+    license: MIT
+security:
+  secrets: none
+  threat_notes: docs/SECURITY.md
+  audited: 2026-10-05
+release:
+  version: "0.0.0"
+  license: MIT
+  registry: null
+maintenance:
+  owner: "Ajay"
+  verified: 2026-10-05
+  cadence: yearly

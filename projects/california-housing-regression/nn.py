@@ -1,7 +1,7 @@
 """
 From-scratch neural-network classes for the regression project.
 
-Differences vs projects/01-mnist-from-scratch/nn.py:
+Differences vs projects/mnist-from-scratch/nn.py:
   * Replaces Activation_Softmax_Loss_CategoricalCrossentropy with
     Loss_MSE — the natural loss for predicting a continuous target.
   * No softmax (the output is a scalar, not a probability distribution).

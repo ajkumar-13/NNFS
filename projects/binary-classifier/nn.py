@@ -1,7 +1,7 @@
 """
 From-scratch neural-network classes for the binary classifier project.
 
-Differences vs projects/01-mnist-from-scratch/nn.py:
+Differences vs projects/mnist-from-scratch/nn.py:
   * Adds Activation_Sigmoid (forward/backward).
   * Adds Activation_Sigmoid_Loss_BinaryCrossentropy (the analogue of
     the softmax + cross-entropy combined class from posts/19).

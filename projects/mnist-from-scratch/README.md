@@ -13,7 +13,7 @@
 ## File layout
 
 ```
-01-mnist-from-scratch/
+mnist-from-scratch/
 ├── README.md          ← this file
 ├── requirements.txt   ← numpy + (optional) scikit-learn
 ├── nn.py              ← every class lifted from the series (posts 1–32)
@@ -25,7 +25,7 @@
 ## Quick start
 
 ```bash
-cd projects/01-mnist-from-scratch
+cd projects/mnist-from-scratch
 pip install -r requirements.txt
 python train.py              # ~20 epochs, ~2-5 min on a modern laptop CPU
 python evaluate.py
