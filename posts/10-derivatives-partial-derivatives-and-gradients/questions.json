@@ -1,0 +1,830 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-010",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-010-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2.1",
+      "est_minutes": 2,
+      "tags": [
+        "power-rule"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "What is the slope of $f(x) = x^3$ at the point $x = 2$?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "8",
+          "correct": false,
+          "feedback": "That is $f(2) = 2^3$, the height of the curve at $x = 2$, not its slope there."
+        },
+        {
+          "key": "b",
+          "text": "6",
+          "correct": false,
+          "feedback": "This is $3x$ at $x = 2$: the exponent came down but the remaining power should be $x^2$, not $x$."
+        },
+        {
+          "key": "c",
+          "text": "12",
+          "correct": true,
+          "feedback": "Right: $f'(x) = 3x^2$, and $3 \\cdot 2^2 = 12$."
+        },
+        {
+          "key": "d",
+          "text": "4",
+          "correct": false,
+          "feedback": "This is $x^2$ at $x = 2$: the exponent was lowered by one but never brought down as a multiplier."
+        }
+      ],
+      "explanation": "Section 2.1 gives the power rule $\\frac{d}{dx} a x^n = n a x^{n-1}$, so $f'(x) = 3x^2$ and $f'(2) = 3 \\cdot 4 = 12$. Section 6.1 measures the same slope with a central difference.",
+      "hints": [
+        "Apply the power rule first, then substitute the point."
+      ]
+    },
+    {
+      "id": "nn-010-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3.1",
+      "est_minutes": 3,
+      "tags": [
+        "partial-derivative",
+        "frozen-variable"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Let $g(x, y) = 4xy + y^2$. What is $\\partial g / \\partial x$?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "$4$",
+          "correct": false,
+          "feedback": "The frozen $y$ multiplies $x$, so it stays as a constant factor, exactly as the 4 does."
+        },
+        {
+          "key": "b",
+          "text": "$4y$",
+          "correct": true,
+          "feedback": "Right: with $y$ held constant the first term is $(4y) \\cdot x$ and the second has no $x$ at all."
+        },
+        {
+          "key": "c",
+          "text": "$4y + 2y$",
+          "correct": false,
+          "feedback": "The $2y$ is the derivative of $y^2$ with respect to $y$. With $x$ as the variable, $y^2$ is a constant and contributes zero."
+        },
+        {
+          "key": "d",
+          "text": "$4x$",
+          "correct": false,
+          "feedback": "That is the contribution of the first term to $\\partial g / \\partial y$, where $x$ is the frozen one."
+        }
+      ],
+      "explanation": "Section 3.1 freezes every variable except the live one. With $y$ frozen, $4xy$ is the constant $4y$ times $x$, whose derivative is $4y$, and $y^2$ contains no $x$, so it contributes zero.",
+      "hints": [
+        "Decide which symbol is the variable and which behaves as a fixed number.",
+        "A fixed number that multiplies the variable survives differentiation; one that stands in a term of its own does not."
+      ]
+    },
+    {
+      "id": "nn-010-q03",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4.1",
+      "est_minutes": 2,
+      "tags": [
+        "gradient",
+        "steepest-ascent"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "At a point where it is not zero, the gradient $\\nabla f$ points in the direction of what?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The fastest decrease of $f$",
+          "correct": false,
+          "feedback": "That is $-\\nabla f$. The gradient itself points uphill, which is why the update rule carries a minus sign."
+        },
+        {
+          "key": "b",
+          "text": "The nearest minimum of $f$",
+          "correct": false,
+          "feedback": "The gradient is purely local. Even its negative need not point at a minimum, as the bowl $x^2 + 10y^2$ of section 4.3 shows."
+        },
+        {
+          "key": "c",
+          "text": "The fastest increase of $f$",
+          "correct": true,
+          "feedback": "Right: no direction raises $f$ faster per unit distance than the gradient direction."
+        },
+        {
+          "key": "d",
+          "text": "No change in $f$",
+          "correct": false,
+          "feedback": "Directions at right angles to the gradient leave $f$ unchanged to first order; the gradient is the opposite extreme."
+        }
+      ],
+      "explanation": "Section 4.1 shows that the rate of change of $f$ in a unit direction $\\mathbf{u}$ is $\\nabla f \\cdot \\mathbf{u} = \\|\\nabla f\\| \\cos\\phi$, which is largest when $\\mathbf{u}$ lines up with the gradient. That is why gradient descent subtracts the gradient.",
+      "hints": [
+        "Recall which sign the update rule puts in front of the gradient, and why."
+      ]
+    },
+    {
+      "id": "nn-010-q04",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6.1",
+      "est_minutes": 4,
+      "tags": [
+        "finite-difference",
+        "rounding-error"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A central difference of $f(x) = x^3$ at $x = 2$ is computed in float64, first with $h = 10^{-5}$ and then with $h = 10^{-12}$. How does the error of the second estimate compare with the first?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It is far smaller, about $10^{-24}$, because the error is $h^2$",
+          "correct": false,
+          "feedback": "That is the truncation error alone. Float64 cannot resolve differences that small, and rounding error takes over long before."
+        },
+        {
+          "key": "b",
+          "text": "It is millions of times larger, about $10^{-3}$",
+          "correct": true,
+          "feedback": "Right: rounding error of about $10^{-15}/h$ reaches $10^{-3}$ at $h = 10^{-12}$, against $2.1 \\times 10^{-10}$ at $h = 10^{-5}$."
+        },
+        {
+          "key": "c",
+          "text": "It is about the same, because float64 has already reached its limit",
+          "correct": false,
+          "feedback": "The error does not level off. Below the best step it grows roughly tenfold for each tenfold cut in $h$."
+        },
+        {
+          "key": "d",
+          "text": "The estimate is exactly 0, because $2 + h$ equals 2 in float64",
+          "correct": false,
+          "feedback": "That happens at $h = 10^{-16}$. At $10^{-12}$ the step is still thousands of times larger than the gap between float64 numbers near 2."
+        }
+      ],
+      "explanation": "Section 6.1 measures an error of $2.1 \\times 10^{-10}$ at $h = 10^{-5}$ and $1.1 \\times 10^{-3}$ at $h = 10^{-12}$. The truncation error $h^2$ keeps falling, but the rounding error, about $10^{-15}/h$, rises as $h$ shrinks and dominates below $h = 10^{-5}$.",
+      "hints": [
+        "Two different errors are present, and they respond to a smaller step in opposite ways.",
+        "Estimate how much of $f(x + h) - f(x - h)$ survives when both values are stored to about 16 digits."
+      ]
+    },
+    {
+      "id": "nn-010-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2.2",
+      "est_minutes": 4,
+      "tags": [
+        "power-rule",
+        "sum-rule"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Differentiate $f(x) = 5x^3 + 2x$ and give the slope at $x = 2$ and at $x = -1$.",
+      "answer": {
+        "parts": [
+          {
+            "label": "f'(2)",
+            "value": 62,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "f'(-1)",
+            "value": 17,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form f'(x) = 15x^2 + 2; snippets/finite_differences.py checks the same rule at x = 1.5 (35.75).",
+      "explanation": "By the power rule each term gives $15x^2$ and $2$, and by the sum rule $f'(x) = 15x^2 + 2$ (sections 2.1 and 2.2). Then $f'(2) = 62$ and $f'(-1) = 17$. The slope is the same at $x = 1$ and $x = -1$ because $x$ enters only squared.",
+      "hints": [
+        "Differentiate term by term, then substitute."
+      ]
+    },
+    {
+      "id": "nn-010-q06",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 6,
+      "tags": [
+        "partial-derivative",
+        "gradient"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "For $f(x, y) = x^2 + 3xy + y^2$, compute the two components of the gradient at the point $(x, y) = (1, 2)$.",
+      "answer": {
+        "parts": [
+          {
+            "label": "df/dx at (1, 2)",
+            "value": 8,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "df/dy at (1, 2)",
+            "value": 7,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed forms 2x + 3y and 3x + 2y; a central difference with h = 1e-5 returns 8.000000 and 7.000000.",
+      "explanation": "Freezing $y$ gives $\\partial f / \\partial x = 2x + 3y$, and freezing $x$ gives $\\partial f / \\partial y = 3x + 2y$ (section 3.1). At $(1, 2)$ these are $2 + 6 = 8$ and $3 + 4 = 7$, so the gradient there is $(8, 7)$. The cross term $3xy$ contributes to both partial derivatives, each time with the frozen variable as a constant factor.",
+      "hints": [
+        "Take one variable at a time and treat the other as a number.",
+        "The term $3xy$ survives in both partial derivatives; decide what is left of it each time."
+      ]
+    },
+    {
+      "id": "nn-010-q07",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "2.5",
+      "est_minutes": 6,
+      "tags": [
+        "finite-difference",
+        "forward",
+        "central"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Estimate the derivative of $f(x) = x^3$ at $x = 3$ with a step $h = 0.01$, once with the forward difference and once with the central difference. Give both estimates to four decimal places.",
+      "answer": {
+        "parts": [
+          {
+            "label": "forward difference",
+            "value": 27.0901,
+            "tolerance": 5e-05,
+            "unit": ""
+          },
+          {
+            "label": "central difference",
+            "value": 27.0001,
+            "tolerance": 5e-05,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed forms 3x^2 + 3xh + h^2 and 3x^2 + h^2 from section 2.5; forward_difference and central_difference of snippets/finite_differences.py return 27.0901 and 27.0001.",
+      "explanation": "Section 2.5 expands the two estimates for $x^3$: the forward difference is $3x^2 + 3xh + h^2 = 27 + 0.09 + 0.0001 = 27.0901$ and the central difference is $3x^2 + h^2 = 27.0001$. The exact slope is 27, so the errors are $0.0901$ and $0.0001$.",
+      "hints": [
+        "Write each estimate as a quotient of two function values, or use the expansions the post gives for $x^3$.",
+        "The forward error is $3xh + h^2$ and the central error is $h^2$."
+      ]
+    },
+    {
+      "id": "nn-010-q08",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "2.5",
+      "est_minutes": 2,
+      "tags": [
+        "finite-difference",
+        "truncation-error"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "One of the two finite differences has a truncation error that becomes about a hundred times smaller when the step $h$ is made ten times smaller. Which one?",
+      "answer": {
+        "model": "The central difference, whose truncation error is of order $h^2$.",
+        "accept": [
+          "^(?![\\s\\S]*\\bforward\\b)(?![\\s\\S]*\\b(?:not|neither|isn't)\\b)(?=[\\s\\S]*\\b(?:central|centred|centered|symmetric|two[- ]sided)\\b)",
+          "^(?![\\s\\S]*\\b(?:not|neither|isn't|nor)\\s+(?:\\w+\\s+){0,2}(?:central|centred|centered|symmetric|two[- ]sided)\\b)(?![\\s\\S]*\\b(?:central|centred|centered|symmetric|two[- ]sided)\\b(?:\\s+\\w+){0,2}\\s+(?:is\\s+not|isn't|does\\s+not|doesn't|cannot|can't)\\b)\\W*(?:(?:it\\s+is|it's|that\\s+is|that's|the\\s+answer\\s+is|answer|the)\\W+)*(?:central|centred|centered|symmetric|two[- ]sided)\\b(?=[\\s\\S]*\\b(?:not|unlike|whereas|while|than|but|only|versus|vs|compared)\\b[\\s\\S]*\\bforward\\b|[\\s\\S]*\\bforward\\b[\\s\\S]*\\b(?:only|ten|10|proportional|linear|linearly|first[- ]order)\\b)",
+          "^\\W*(?:it's\\s+|it\\s+is\\s+)?not\\s+(?:the\\s+)?forward(?:\\s+(?:difference|one))?\\W+(?:but\\s+)?(?:it's\\s+|it\\s+is\\s+)?(?:the\\s+)?(?:central|centred|centered|symmetric|two[- ]sided)\\b"
+        ]
+      },
+      "explanation": "Section 2.5 shows that in the central difference the error term proportional to $h$ cancels between the two sides, leaving an error of order $h^2$, so a tenfold cut in $h$ cuts the error a hundredfold. The forward difference has an error of order $h$ and gains only a factor of ten.",
+      "hints": [
+        "Compare how the two errors for $x^3$ depend on $h$."
+      ]
+    },
+    {
+      "id": "nn-010-q09",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "relu",
+        "corner",
+        "central"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A central difference with a small step $h$ is applied to $\\text{ReLU}(z) = \\max(0, z)$ at exactly $z = 0$. What number does it return?",
+      "answer": {
+        "model": "0.5, for any small positive $h$.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:not|never|isn't|neither|nor|rather\\s+than|instead\\s+of)\\s+(?:(?!but\\b)\\w+\\s+){0,3}(?:(?<![\\d.])0?\\.50*(?!\\d)|\\b(?:a|one)[- ]half\\b|\\bhalf\\b|(?<![\\d/])1\\s*/\\s*2(?![\\d/])))(?=[\\s\\S]*(?:(?<![\\d.])0?\\.50*(?!\\d)|\\b(?:a|one)[- ]half\\b|\\bhalf\\b|(?<![\\d/])1\\s*/\\s*2(?![\\d/])))"
+        ]
+      },
+      "explanation": "The estimate is $(\\max(0, h) - \\max(0, -h)) / (2h) = h / (2h) = 0.5$ for every $h > 0$. Section 7 prints it: the slope on the right is 1, the slope on the left is 0, and the central difference returns a value that is neither, which is why a numerical check near a corner disagrees with a correct backward pass.",
+      "hints": [
+        "Evaluate ReLU at $+h$ and at $-h$ and substitute into the central-difference quotient."
+      ]
+    },
+    {
+      "id": "nn-010-q10",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o4",
+        "o1"
+      ],
+      "section": "2.5",
+      "est_minutes": 10,
+      "tags": [
+        "finite-difference",
+        "derivation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "For $f(x) = x^2$, work out the forward difference and the central difference exactly as functions of $x$ and $h$, state the truncation error of each, and explain what is special about the central difference for this function.",
+      "kind": "derive",
+      "solution": "1. Forward difference: $\\frac{(x + h)^2 - x^2}{h} = \\frac{2xh + h^2}{h} = 2x + h$.\n2. The exact derivative is $2x$ by the power rule, so the forward truncation error is $h$: it shrinks in proportion to the step.\n3. Central difference: $\\frac{(x + h)^2 - (x - h)^2}{2h} = \\frac{(x^2 + 2xh + h^2) - (x^2 - 2xh + h^2)}{2h} = \\frac{4xh}{2h} = 2x$.\n4. The central truncation error is zero for every $h$. The $h^2$ terms of the two expansions are equal and cancel in the subtraction, and a quadratic has no higher terms.\n5. In general the central error is of order $h^2$ and its size is set by the third derivative of the function; for a quadratic that derivative is zero. On a computer the estimate still carries rounding error, which grows as $h$ shrinks.",
+      "rubric": [
+        {
+          "criterion": "Expands the forward difference correctly to $2x + h$",
+          "points": 2
+        },
+        {
+          "criterion": "States the forward truncation error as $h$, proportional to the step",
+          "points": 1
+        },
+        {
+          "criterion": "Expands the central difference correctly to exactly $2x$",
+          "points": 2
+        },
+        {
+          "criterion": "Explains the exactness by the cancellation of the even ($h^2$) terms and the absence of higher powers in a quadratic",
+          "points": 2
+        },
+        {
+          "criterion": "States the central truncation error as zero for every $h$",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 2.5 does the same expansion for $x^3$. For $x^2$ the forward difference is $2x + h$, with error $h$, and the central difference is exactly $2x$: the $h^2$ terms of the two expansions are equal and cancel in the subtraction, and a quadratic has no higher powers. The hero-figure rows of the script show central differences that agree with $-3$, $1$, and $4$ to all six printed decimals; what is left is rounding error.",
+      "hints": [
+        "Expand $(x + h)^2$ and $(x - h)^2$ before subtracting.",
+        "Look at which powers of $h$ survive the subtraction in each numerator."
+      ]
+    },
+    {
+      "id": "nn-010-q11",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 12,
+      "tags": [
+        "float32",
+        "rounding-error",
+        "diagnosis"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A script calls `nnfs.init()`, builds a small network, and checks one weight's derivative with a forward difference and a step of $10^{-7}$. Every numerical derivative comes out as exactly 0, while the analytic values are not 0. Diagnose the cause and give a check that would work.",
+      "kind": "critique",
+      "solution": "**Cause.** `nnfs.init()` makes the arrays float32, which keeps about 7 significant digits (machine epsilon $1.2 \\times 10^{-7}$). Moving one weight by $10^{-7}$ changes the loss by about $|\\partial L / \\partial w| \\times 10^{-7}$, which is below $10^{-7}$ for a slope smaller than 1. A loss near 1 is stored in float32 with a spacing of about $1.2 \\times 10^{-7}$, so the perturbed loss rounds to the same float32 number as the original loss, the numerator is exactly 0, and so is the forward difference. A weight of size 2 or more does not even move, because there `w + h == w`; the post's float32 sweep shows that case for $x^3$ at $x = 2$, where the forward difference at $h = 10^{-7}$ is 0.\n\n**Why a slightly larger step is still poor.** In float32 the rounding error of a difference quotient is about $10^{-6}/h$ for function values of order 1 to 10, so at $h = 10^{-5}$ the estimate is good to only about two or three digits (12.016 for an exact 12), and the best central error on the grid is $8.4 \\times 10^{-5}$ at $h = 10^{-2}$.\n\n**A check that works.** Run the check in float64: convert the inputs and parameters to float64 copies, use the central difference $\\frac{L(w + h) - L(w - h)}{2h}$, and take $h$ near $10^{-5}$, where truncation error ($h^2$) and rounding error (about $10^{-15}/h$) balance. The analytic and numerical values should then agree to many digits unless the step carries the input of some ReLU across its corner at 0.",
+      "rubric": [
+        {
+          "criterion": "Identifies float32 arithmetic after `nnfs.init()` as the source of the problem",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that the change a step of $10^{-7}$ makes to the loss is below float32 resolution, so the perturbed and unperturbed losses are stored as the same number",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that rounding error grows as the step shrinks, so the step cannot simply be made tiny",
+          "points": 2
+        },
+        {
+          "criterion": "Proposes float64 arithmetic for the check",
+          "points": 2
+        },
+        {
+          "criterion": "Proposes a central difference with a step near $10^{-5}$ and justifies it by the balance of truncation and rounding error",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Sections 6.1 and 7 give the cause. After `nnfs.init()` the arrays are float32 (post 04), whose neighbouring numbers near 1 are about $10^{-7}$ apart. A step of $10^{-7}$ in one weight changes the loss by less than that spacing, so both losses are stored as the same number and their difference is exactly 0; a weight of size 2 or more does not even move. A larger step does not rescue float32, because rounding error of about $10^{-7}/h$ or more swamps the estimate.",
+      "hints": [
+        "Ask what precision the arrays have after `nnfs.init()` and how finely that precision can resolve a small change in the loss.",
+        "Compare the step with machine epsilon, then choose the difference and the step that section 6.1 found best for float64."
+      ]
+    },
+    {
+      "id": "nn-010-q12",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6.3",
+      "est_minutes": 12,
+      "tags": [
+        "gradient",
+        "random-search"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Post 09 showed random perturbation stalling on the spiral data with a 21-parameter network. Using what a gradient is, explain what information one gradient gives that one random perturbation does not, and how the update rule uses each of the 21 components. Refer to the measurement of random directions in this post.",
+      "kind": "connect",
+      "solution": "A random perturbation picks one direction in the 21-dimensional parameter space, pays for a forward pass, and learns a single fact: whether the loss went up or down along that one direction. Section 6.3 measures how weak that is: about half of all random directions go the wrong way (4,973 of 10,000 went uphill for the example function), and even the favourable ones are far from the best direction, because a random direction is rarely aligned with the gradient.\n\nThe gradient $\\nabla L$ is a vector of 21 partial derivatives. Component $k$ is the slope of the loss along the axis of parameter $k$ with the other 20 held at their current values, so it says how sensitive the loss is to that one weight or bias and in which sense. The 21 components together give the direction of steepest ascent, and the rate of change in any other direction is $\\nabla L \\cdot \\mathbf{u}$, so nothing has to be tried.\n\nThe update $\\theta \\leftarrow \\theta - \\alpha \\nabla L$ uses every component at once: a parameter with a large positive component is decreased, one with a large negative component is increased, and one with a near-zero component is left almost unchanged, each in proportion to its own sensitivity. That is the difference post 09 called direction-blindness: random perturbation discovers a direction's quality after stepping, and gradient descent knows the best direction before stepping.",
+      "rubric": [
+        {
+          "criterion": "States that a random perturbation reveals only whether one direction raised or lowered the loss, at the cost of a forward pass",
+          "points": 2
+        },
+        {
+          "criterion": "Uses the post's measurement that about half of random directions go uphill and none beats the gradient",
+          "points": 2
+        },
+        {
+          "criterion": "Describes each of the 21 components as the partial derivative of the loss for one parameter with the others held fixed",
+          "points": 2
+        },
+        {
+          "criterion": "Explains how the sign and the size of a component determine that parameter's update",
+          "points": 2
+        },
+        {
+          "criterion": "Concludes that the gradient gives the best local direction before a step is taken",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 4.2 reads each component as the sensitivity of the loss to one parameter, and section 6.3 measures that about half of 10,000 random directions (4,973) go uphill, the wrong way for a loss, and that none is steeper than the gradient. A random perturbation learns one number about one direction after a forward pass; the gradient gives 21 signed sensitivities, which together name the best direction before any step is taken.",
+      "hints": [
+        "State what a single random trial reveals about the loss surface and what it leaves unknown.",
+        "Then say what the sign and the size of one component of $\\nabla L$ tell the optimiser about one weight."
+      ],
+      "connects": [
+        "nn-009"
+      ]
+    },
+    {
+      "id": "nn-010-q13",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o4"
+      ],
+      "section": "6.3",
+      "est_minutes": 15,
+      "tags": [
+        "numerical-gradient",
+        "central"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Complete `numerical_gradient(f, point, h)` so that it returns the list of partial derivatives of `f` at `point`, each measured by a central difference in which only one coordinate moves. `f` takes a list of floats; `point` must be left unchanged.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "def numerical_gradient(f, point, h=1e-5):\n    \"\"\"Return the list of partial derivatives of f at point, by central differences.\n\n    f takes a list of floats and returns a float. point is a list of floats.\n    \"\"\"\n    grad = [0.0 for _ in point]\n    # TODO: for each coordinate k, move only that coordinate by +h and by -h\n    return grad\n",
+      "solution": "def numerical_gradient(f, point, h=1e-5):\n    \"\"\"Return the list of partial derivatives of f at point, by central differences.\n\n    f takes a list of floats and returns a float. point is a list of floats.\n    \"\"\"\n    grad = [0.0 for _ in point]\n    for k in range(len(point)):\n        plus = list(point)\n        minus = list(point)\n        plus[k] += h          # move along axis k only; the other coordinates stay frozen\n        minus[k] -= h\n        grad[k] = (f(plus) - f(minus)) / (2 * h)\n    return grad\n",
+      "tests": "def f1(p):\n    x, y = p\n    return x * x + 3 * x * y + y * y\n\n\ndef f2(p):\n    x, y, z = p\n    return 3 * x * x * x * z - y * y + 5 * z + 2 * y * z\n\n\nstart = [1.0, 2.0]\ng1 = numerical_gradient(f1, start)\nassert start == [1.0, 2.0], \"the input point must not be modified\"\nassert len(g1) == 2\nassert abs(g1[0] - 8.0) < 1e-6 and abs(g1[1] - 7.0) < 1e-6, g1\ng2 = numerical_gradient(f2, [1.0, 2.0, 3.0])\nassert all(abs(a - b) < 1e-6 for a, b in zip(g2, [27.0, 2.0, 12.0])), g2\ng3 = numerical_gradient(f2, [1.0, 2.0, -3.0])\nassert abs(g3[0] + 27.0) < 1e-6, g3\ng4 = numerical_gradient(lambda p: p[0] * p[0] * p[0], [2.0], h=1e-3)\nassert abs(g4[0] - 12.000001) < 1e-8, \"use the central difference, not the forward one\"\nprint(\"all gradient checks passed\")\n",
+      "expected_output": "all gradient checks passed\n",
+      "explanation": "Section 6.3 writes the freezing rule as code: for each coordinate $k$, evaluate $f$ with only that coordinate moved to $+h$ and to $-h$, and divide the difference by $2h$. The tests use $x^2 + 3xy + y^2$ at $(1, 2)$, whose gradient is $(8, 7)$, and example 2 of section 3.1 at $(1, 2, 3)$, whose gradient is $(27, 2, 12)$; the last test separates the central from the forward difference through the $h^2$ error of $x^3$.",
+      "hints": [
+        "A partial derivative moves one coordinate and holds the rest, so each coordinate needs its own pair of function evaluations.",
+        "Copy the point before changing coordinate $k$, so that the other coordinates and the caller's list stay as they were."
+      ]
+    },
+    {
+      "id": "nn-010-q14",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6.1",
+      "est_minutes": 5,
+      "tags": [
+        "finite-difference",
+        "error-ranking"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Five float64 estimates of the derivative of $x^3$ at $x = 2$ are listed. Order them from the smallest error to the largest.",
+      "items": [
+        {
+          "key": "a",
+          "text": "forward difference, $h = 10^{-4}$"
+        },
+        {
+          "key": "b",
+          "text": "central difference, $h = 10^{-13}$"
+        },
+        {
+          "key": "c",
+          "text": "central difference, $h = 10^{-5}$"
+        },
+        {
+          "key": "d",
+          "text": "forward difference, $h = 10^{-1}$"
+        },
+        {
+          "key": "e",
+          "text": "central difference, $h = 10^{-3}$"
+        }
+      ],
+      "answer": [
+        "c",
+        "e",
+        "a",
+        "b",
+        "d"
+      ],
+      "partial_credit": true,
+      "explanation": "From the sweep of section 6.1 the errors are $2.1 \\times 10^{-10}$ (central, $h = 10^{-5}$), $1.0 \\times 10^{-6}$ (central, $h = 10^{-3}$), $6.0 \\times 10^{-4}$ (forward, $h = 10^{-4}$), $9.6 \\times 10^{-3}$ (central, $h = 10^{-13}$), and $6.1 \\times 10^{-1}$ (forward, $h = 10^{-1}$). The central difference with a far too small step is worse than a forward difference with a moderate one, because rounding error of about $10^{-15}/h$ has reached $10^{-2}$.",
+      "hints": [
+        "Estimate the truncation error of each from $6h$ or $h^2$.",
+        "For the very small step, estimate the rounding error from $10^{-15}/h$ and compare it with the others."
+      ]
+    },
+    {
+      "id": "nn-010-q15",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4.2",
+      "est_minutes": 3,
+      "tags": [
+        "gradient",
+        "update-rule"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Match each component of a loss gradient to what one gradient-descent update with a small learning rate does to that weight.",
+      "left": [
+        {
+          "key": "a",
+          "text": "$\\partial L / \\partial w = +4.0$"
+        },
+        {
+          "key": "b",
+          "text": "$\\partial L / \\partial w = -4.0$"
+        },
+        {
+          "key": "c",
+          "text": "$\\partial L / \\partial w = 0$"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "The weight is increased, and the loss falls"
+        },
+        {
+          "key": "q",
+          "text": "The weight is decreased, and the loss falls"
+        },
+        {
+          "key": "r",
+          "text": "The weight does not move, because the loss is insensitive to it here"
+        },
+        {
+          "key": "s",
+          "text": "The weight is set to zero"
+        },
+        {
+          "key": "t",
+          "text": "The weight is increased, and the loss rises"
+        }
+      ],
+      "answer": {
+        "a": "q",
+        "b": "p",
+        "c": "r"
+      },
+      "explanation": "Section 4.2 reads the gradient one component at a time. The update subtracts $\\alpha$ times the component, so a positive component lowers the weight, a negative one raises it, and a zero one leaves it where it was. Nothing in the rule sets a weight to zero or flips its sign.",
+      "hints": [
+        "Write the update for a single weight and look at the sign of what is subtracted."
+      ]
+    },
+    {
+      "id": "nn-010-q16",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "pitfalls",
+      "est_minutes": 3,
+      "tags": [
+        "power-rule",
+        "chain-rule-trap"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Which expression is the derivative of $f(x) = (2x + 1)^2$?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "$2(2x + 1)$",
+          "correct": false,
+          "feedback": "This treats the bracket as if it were a bare $x$. It is half the true slope; the missing factor of 2 comes from the inside of the bracket."
+        },
+        {
+          "key": "b",
+          "text": "$8x + 4$",
+          "correct": true,
+          "feedback": "Right: $(2x + 1)^2 = 4x^2 + 4x + 1$, whose derivative term by term is $8x + 4$."
+        },
+        {
+          "key": "c",
+          "text": "$4x + 1$",
+          "correct": false,
+          "feedback": "This differentiates $4x^2$ to $4x$, forgetting to multiply by the exponent, and keeps the constant 1, whose derivative is zero."
+        },
+        {
+          "key": "d",
+          "text": "$8x + 5$",
+          "correct": false,
+          "feedback": "The terms $8x$ and $4$ are right, but the constant 1 of the expansion has derivative zero and adds nothing."
+        }
+      ],
+      "explanation": "Expanding gives $4x^2 + 4x + 1$, and the power and sum rules give $8x + 4$. Section 6.2 confirms it at $x = 1.5$, where the measured slope is 16 and the tempting $2(2x + 1)$ gives 8. The first Common pitfall names the trap: the power rule applies directly only when the thing raised to a power is the variable itself.",
+      "hints": [
+        "Expand the square into a polynomial before differentiating."
+      ]
+    },
+    {
+      "id": "nn-010-q17",
+      "type": "numeric",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "4.3",
+      "est_minutes": 7,
+      "tags": [
+        "gradient",
+        "descent-step"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "For the bowl $f(x, y) = x^2 + 10y^2$, give the two components of the gradient at $(1, 1)$, and the point reached from $(1, 1)$ by one update $\\theta \\leftarrow \\theta - \\alpha \\nabla f$ with $\\alpha = 0.05$.",
+      "answer": {
+        "parts": [
+          {
+            "label": "df/dx at (1, 1)",
+            "value": 2,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "df/dy at (1, 1)",
+            "value": 20,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "new x",
+            "value": 0.9,
+            "tolerance": 0.0001,
+            "unit": ""
+          },
+          {
+            "label": "new y",
+            "value": 0,
+            "tolerance": 0.0001,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form: gradient (2x, 20y) = (2, 20); (1 - 0.05 * 2, 1 - 0.05 * 20) = (0.9, 0).",
+      "explanation": "The partial derivatives are $2x$ and $20y$, so the gradient at $(1, 1)$ is $(2, 20)$ (section 4.3). The update subtracts $0.05 \\cdot 2 = 0.1$ from $x$ and $0.05 \\cdot 20 = 1$ from $y$, reaching $(0.9, 0)$. The step is not aimed at the minimum at the origin: the steep $y$ direction is corrected fully and the shallow $x$ direction hardly at all.",
+      "hints": [
+        "Find each partial derivative with the other variable frozen.",
+        "Apply the update to each coordinate separately, using its own component."
+      ]
+    },
+    {
+      "id": "nn-010-q18",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4.2",
+      "est_minutes": 3,
+      "tags": [
+        "sensitivity",
+        "rate-not-delta"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "At the current parameters, $\\partial L / \\partial w = -3$ for one weight $w$. If $w$ alone is raised by $0.01$, what happens to the loss, to first order?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It falls by about 3",
+          "correct": false,
+          "feedback": "That reads the derivative as the change itself. The derivative is a rate per unit of $w$, and $w$ moved by only 0.01."
+        },
+        {
+          "key": "b",
+          "text": "It rises by about 0.03",
+          "correct": false,
+          "feedback": "The size is right but the sign is not: a negative derivative means the loss decreases when the weight increases."
+        },
+        {
+          "key": "c",
+          "text": "It falls by about 0.03",
+          "correct": true,
+          "feedback": "Right: change is approximately rate times step, $-3 \\cdot 0.01 = -0.03$."
+        },
+        {
+          "key": "d",
+          "text": "It does not change, because only one of many weights moved",
+          "correct": false,
+          "feedback": "A partial derivative is exactly the effect of moving one weight with the others fixed, and here it is not zero."
+        }
+      ],
+      "explanation": "Sections 2.4 and 4.2 read a derivative as a rate: the change in the loss is about the component times the nudge, $-3 \\cdot 0.01 = -0.03$. The negative sign means that raising this weight lowers the loss, which is why the update rule, with its minus sign, raises it.",
+      "hints": [
+        "A derivative is a rate; multiply it by the size of the step to estimate the change."
+      ]
+    }
+  ]
+}

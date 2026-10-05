@@ -1,8 +1,24 @@
 id: nn-010
 slug: 10-derivatives-partial-derivatives-and-gradients
-title: "Part 10 · Derivatives, partial derivatives, and gradients"
+title: "10 - Derivatives, partial derivatives, and gradients"
+summary: "The calculus behind gradient descent, built in order: the derivative as a slope, the partial derivative as a slope with the other variables held fixed, and the gradient as the vector of all partials, each checked with finite differences."
 date: 2026-05-28
-tags: [neural-networks, from-scratch, calculus, gradients]
+updated: 2026-10-05
+status: complete
+part: "Part IV - Calculus for backpropagation"
+level: beginner
+reading_time: 25
+tags: [neural-networks, from-scratch, calculus, derivatives, gradients, finite-differences]
 hero: diagrams/01-derivative-as-slope.svg
-reading_time: 12
-part: "Part IV — Calculus for backpropagation"
+prerequisites: [nn-009]
+code: included
+outcomes:
+  - id: o1
+    text: "Differentiate any polynomial using the power and sum rules."
+  - id: o2
+    text: "Compute partial derivatives of a multi-variable function by holding the other variables constant."
+  - id: o3
+    text: "Read a gradient vector component by component as the sensitivity of the loss to one weight."
+  - id: o4
+    text: "Check an analytic derivative against a forward or a central finite difference at a sensibly chosen step size."
+compute: cpu
