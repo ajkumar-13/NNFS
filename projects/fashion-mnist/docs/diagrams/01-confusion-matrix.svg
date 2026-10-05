@@ -5,49 +5,49 @@
 
   <style><![CDATA[
     :root{
-      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
-      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
-      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
-      --ce-grid:rgba(26,26,26,0.06);
+      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
+      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
+      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+      --nn-grid:rgba(26,26,26,0.06);
     }
     @media (prefers-color-scheme: dark){
       :root{
-        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
-        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
-        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
-        --ce-grid:rgba(241,238,232,0.08);
+        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
+        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
+        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
+        --nn-grid:rgba(241,238,232,0.08);
       }
     }
     text{font-family:Inter,system-ui,sans-serif;}
-    .bg{fill:var(--ce-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
-    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
-    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .bg{fill:var(--nn-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
+    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
+    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
 
-    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .panel-head{font-weight:700;font-size:14px;fill:var(--ce-ink);}
-    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .panel-head{font-weight:700;font-size:14px;fill:var(--nn-ink);}
+    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
 
-    .cell-base{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:0.6;}
-    .cell-diag{fill:var(--ce-success);}
-    .cell-off {fill:var(--ce-warn);}
-    .cell-num {font-family:"JetBrains Mono",ui-monospace,monospace;font-size:9.5px;font-weight:700;fill:var(--ce-ink);}
+    .cell-base{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:0.6;}
+    .cell-diag{fill:var(--nn-success);}
+    .cell-off {fill:var(--nn-warn);}
+    .cell-num {font-family:"JetBrains Mono",ui-monospace,monospace;font-size:9.5px;font-weight:700;fill:var(--nn-ink);}
     .cell-num-light{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:9.5px;font-weight:700;fill:#FFFFFF;}
-    .axis-name {font-size:10px;fill:var(--ce-ink-muted);}
-    .axis-name-bold {font-size:10.5px;font-weight:700;fill:var(--ce-ink-muted);}
+    .axis-name {font-size:10px;fill:var(--nn-ink-muted);}
+    .axis-name-bold {font-size:10.5px;font-weight:700;fill:var(--nn-ink-muted);}
 
-    .side-head{font-weight:700;font-size:12px;fill:var(--ce-ink);}
-    .side-sub{font-size:10.5px;fill:var(--ce-ink-muted);}
-    .side-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10.5px;font-weight:600;fill:var(--ce-ink);}
-    .bar-bg{fill:var(--ce-neutral-1);}
-    .bar-good{fill:var(--ce-success);}
-    .bar-ok{fill:var(--ce-warn);}
-    .bar-bad{fill:var(--ce-alert);}
-    .bar-label{font-size:10px;fill:var(--ce-ink);}
-    .bar-pct{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;font-weight:700;fill:var(--ce-ink);}
-    .confused-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;font-weight:600;fill:var(--ce-ink);}
+    .side-head{font-weight:700;font-size:12px;fill:var(--nn-ink);}
+    .side-sub{font-size:10.5px;fill:var(--nn-ink-muted);}
+    .side-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10.5px;font-weight:600;fill:var(--nn-ink);}
+    .bar-bg{fill:var(--nn-neutral-1);}
+    .bar-good{fill:var(--nn-success);}
+    .bar-ok{fill:var(--nn-warn);}
+    .bar-bad{fill:var(--nn-alert);}
+    .bar-label{font-size:10px;fill:var(--nn-ink);}
+    .bar-pct{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;font-weight:700;fill:var(--nn-ink);}
+    .confused-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;font-weight:600;fill:var(--nn-ink);}
 
-    .legend-text{font-size:10px;fill:var(--ce-ink-muted);}
+    .legend-text{font-size:10px;fill:var(--nn-ink-muted);}
   ]]></style>
 
   <rect class="bg" width="960" height="540"/>
@@ -326,10 +326,10 @@
     <text class="bar-pct"  x="312" y="133">96.0%</text>
 
     <!-- Shirt 71.0 (worst, highlighted alert) -->
-    <text class="bar-label" x="120" y="155" text-anchor="end" style="fill:var(--ce-alert);font-weight:700;">Shirt</text>
+    <text class="bar-label" x="120" y="155" text-anchor="end" style="fill:var(--nn-alert);font-weight:700;">Shirt</text>
     <rect class="bar-bg"   x="126" y="146" width="180" height="14" rx="2"/>
     <rect class="bar-bad"  x="126" y="146" width="127.8" height="14" rx="2"/>
-    <text class="bar-pct"  x="312" y="157" style="fill:var(--ce-alert);">71.0%</text>
+    <text class="bar-pct"  x="312" y="157" style="fill:var(--nn-alert);">71.0%</text>
 
     <!-- Sneaker 95.0 -->
     <text class="bar-label" x="120" y="179" text-anchor="end">Sneaker</text>
@@ -354,7 +354,7 @@
   <text class="side-head" x="576" y="392">Top 5 most-confused pairs</text>
   <text class="side-sub"  x="576" y="408">true class → predicted class</text>
   <g transform="translate(576, 418)">
-    <rect fill="var(--ce-neutral-1)" stroke="var(--ce-border)" stroke-width="1" x="0" y="0" width="344" height="76" rx="6"/>
+    <rect fill="var(--nn-neutral-1)" stroke="var(--nn-border)" stroke-width="1" x="0" y="0" width="344" height="76" rx="6"/>
     <text class="confused-mono" x="12" y="16">Pullover  → Coat       100</text>
     <text class="confused-mono" x="12" y="30">Shirt     → T-shirt    100</text>
     <text class="confused-mono" x="12" y="44">Shirt     → Pullover    95</text>

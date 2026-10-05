@@ -1,0 +1,20 @@
+# Environment and tool output
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# The dataset is fetched by scripts/download_fashion_mnist.py and never committed
+fashion_mnist_cache/
+*.gz
+
+# Weights written by the trainer, and pickle checkpoints from before 1.0.0
+*.npz
+*.pkl
+
+# The test fixture is a few hundred bytes of synthetic data in the dataset's own format
+!tests/fixtures/*.gz
