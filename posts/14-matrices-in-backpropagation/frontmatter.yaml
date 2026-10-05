@@ -1,8 +1,25 @@
 id: nn-014
 slug: 14-matrices-in-backpropagation
-title: "Part 14 · Matrices in backpropagation"
+title: "14 - Matrices in backpropagation"
+summary: "The per-weight gradients of a dense layer written as one matrix product and the bias gradients as one sum, checked against the hand-computed numbers of post 13 and extended to batches, where the product sums over the samples."
 date: 2026-05-28
+updated: 2026-10-05
+status: complete
+part: "Part V - Backpropagation"
+level: intermediate
+reading_time: 22
 tags: [neural-networks, from-scratch, backpropagation, matrices, vectorisation]
 hero: diagrams/01-matrix-weight-gradient.svg
-reading_time: 11
-part: "Part V — Backpropagation"
+prerequisites: [nn-013]
+code: included
+outcomes:
+  - id: o1
+    text: "Compute the weight and bias gradients of a dense layer for one sample or a batch with two NumPy lines."
+  - id: o2
+    text: "Read off the shape of each gradient array from the shapes of the inputs and the layer."
+  - id: o3
+    text: "Explain why the matrix form of the weight gradient sums the contributions of a batch automatically."
+  - id: o4
+    text: "Convert the two gradient lines between the row-per-neuron and the column-per-neuron weight layouts."
+recommended: [nn-002]
+compute: cpu

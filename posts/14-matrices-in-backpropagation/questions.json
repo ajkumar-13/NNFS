@@ -1,0 +1,889 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-014",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-014-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "weight-gradient",
+        "matrix-product"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A dense layer stores its weights with one row per neuron, shape $(m, n)$. A batch `X` of shape $(N, n)$ went through it, and the upstream gradient `dL_dZ` has shape $(N, m)$. Which line computes the weight gradient?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`dL_dW = dL_dZ @ X`",
+          "correct": false,
+          "feedback": "The inner sizes are $m$ and $N$, which match only by coincidence; when they do, the result is not the gradient."
+        },
+        {
+          "key": "b",
+          "text": "`dL_dW = dL_dZ.T @ X`",
+          "correct": true,
+          "feedback": "Right: $(m, N) \\cdot (N, n) \\rightarrow (m, n)$, the shape of the weights, with the batch axis contracted."
+        },
+        {
+          "key": "c",
+          "text": "`dL_dW = X.T @ dL_dZ`",
+          "correct": false,
+          "feedback": "This gives shape $(n, m)$. It is the correct gradient for the other layout, one column per neuron, and the transpose of what is asked for."
+        },
+        {
+          "key": "d",
+          "text": "`dL_dW = dL_dZ * X`",
+          "correct": false,
+          "feedback": "The star is element-wise. Shapes $(N, m)$ and $(N, n)$ do not broadcast in general, and an element-wise product cannot pair every neuron with every input."
+        }
+      ],
+      "explanation": "Section 2 derives $\\partial L / \\partial \\mathbf{W} = (\\partial L / \\partial \\mathbf{Z})^{\\top} \\mathbf{X}$ for the row-per-neuron layout, and section 6 shows that the same product serves a batch. The transpose turns the $(N, m)$ upstream gradient into $(m, N)$, so the product with the $(N, n)$ inputs has matching inner sizes and returns $(m, n)$.",
+      "hints": [
+        "Write the shape of each candidate product and compare it with the shape of the weights."
+      ]
+    },
+    {
+      "id": "nn-014-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "batch",
+        "contraction"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "For a batch, `dL_dZ.T @ X` returns a gradient that already combines all $N$ samples, although the line contains no loop and no call to `np.sum`. What produces the sum?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "NumPy detects the extra rows of a batch and averages the per-sample gradients.",
+          "correct": false,
+          "feedback": "NumPy inspects nothing here, and the result is a sum, not an average. A $1/N$ can only come from the loss."
+        },
+        {
+          "key": "b",
+          "text": "Broadcasting repeats the gradient of the first sample once for every row of the batch.",
+          "correct": false,
+          "feedback": "No broadcasting takes place in a matrix product, and every sample contributes its own input row and its own upstream row."
+        },
+        {
+          "key": "c",
+          "text": "The transpose puts the batch axis on the inside of the product, and a matrix product sums over its inner axis.",
+          "correct": true,
+          "feedback": "Right: entry $(k, j)$ of $(m, N) \\cdot (N, n)$ is a sum of $N$ terms, one per sample."
+        },
+        {
+          "key": "d",
+          "text": "The upstream gradient was already summed over the batch before it reached the layer, so nothing is left to add.",
+          "correct": false,
+          "feedback": "The upstream gradient has one row per sample, shape $(N, m)$. Nothing has been summed over the batch before the product."
+        }
+      ],
+      "explanation": "Section 6 writes the batched gradient as $\\partial L / \\partial w_{kj} = \\sum_i (\\partial L / \\partial z_{ik}) x_{ij}$, which is the definition of entry $(k, j)$ of the product $(\\partial L / \\partial \\mathbf{Z})^{\\top} \\mathbf{X}$. The sum over $i$ is the contraction of the inner axis, and the transpose is what places the batch axis there.",
+      "hints": [
+        "Write out one entry of a matrix product as a sum, and ask what its summation index runs over here."
+      ]
+    },
+    {
+      "id": "nn-014-q03",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "10",
+      "est_minutes": 3,
+      "tags": [
+        "bias-gradient",
+        "axis"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A batch of three samples reaches a three-neuron layer with the upstream gradient `dL_dZ = [[1, 1, 1], [2, 2, 2], [3, 3, 3]]`, one row per sample. The bias update is written `biases -= lr * np.sum(dL_dZ)`, with no `axis` argument. What happens?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "NumPy raises a `ValueError`, because a scalar cannot be subtracted from a vector.",
+          "correct": false,
+          "feedback": "A scalar broadcasts against an array of any shape, so the line runs. That is why this mistake is silent."
+        },
+        {
+          "key": "b",
+          "text": "Every bias moves by `lr * 6`, because `np.sum` reduces the batch axis by default.",
+          "correct": false,
+          "feedback": "With no `axis`, `np.sum` reduces every axis and returns one number. The value 6 per neuron needs `axis=0`."
+        },
+        {
+          "key": "c",
+          "text": "Every bias moves by `lr * 18`, three times the correct `lr * 6`.",
+          "correct": true,
+          "feedback": "Right: the sum of all nine entries is 18, and the scalar is applied to each of the three biases."
+        },
+        {
+          "key": "d",
+          "text": "The biases move by `lr * 3`, `lr * 6` and `lr * 9`, one amount per neuron.",
+          "correct": false,
+          "feedback": "Those are the row sums, which `axis=1` would return: one number per sample, not per neuron."
+        }
+      ],
+      "explanation": "Section 10 runs this case. The bias gradient is the sum of the upstream gradient over the batch axis, `axis=0`, which gives $1 + 2 + 3 = 6$ for each neuron. Without the axis `np.sum` adds all nine entries to 18, and the scalar broadcasts across the biases without an error.",
+      "hints": [
+        "Recall what `np.sum` returns when it is given no axis, and what subtracting that from an array does."
+      ]
+    },
+    {
+      "id": "nn-014-q04",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 3,
+      "tags": [
+        "convention",
+        "transpose"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A layer stores its weights with one column per neuron, shape $(n, m)$, and computes `X @ weights` in the forward pass. Its weight gradient is written `X.T @ dL_dZ`. What does the transpose on `X` do?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It inverts the forward product, since the backward pass has to undo what the forward pass did.",
+          "correct": false,
+          "feedback": "A transpose is not an inverse, and the backward pass does not undo the forward pass. It multiplies local derivatives along the same path."
+        },
+        {
+          "key": "b",
+          "text": "It puts the batch axis inside the product: $(n, N) \\cdot (N, m)$ has the shape of the weights.",
+          "correct": true,
+          "feedback": "Right: the batch axis is contracted and the result is $(n, m)$, one entry per weight."
+        },
+        {
+          "key": "c",
+          "text": "It is a matter of taste: `X @ dL_dZ` holds the same numbers in a different arrangement.",
+          "correct": false,
+          "feedback": "`X @ dL_dZ` multiplies $(N, n)$ by $(N, m)$. It raises an error unless $n = N$, and when it runs it is a different product."
+        },
+        {
+          "key": "d",
+          "text": "It gives the gradient the shape of the inputs, which is what the previous layer needs.",
+          "correct": false,
+          "feedback": "The shape of the inputs belongs to the input gradient of the next post. A weight gradient has the shape of the weights."
+        }
+      ],
+      "explanation": "Section 8 converts the gradient to the column-per-neuron layout: $\\mathbf{X}^{\\top} (\\partial L / \\partial \\mathbf{Z})$ has shapes $(n, N) \\cdot (N, m) \\rightarrow (n, m)$. The transpose is what makes the batch axis the inner, contracted one, so that the result has the shape of the array it updates.",
+      "hints": [
+        "Compare the shapes of the two operands with and without the transpose."
+      ]
+    },
+    {
+      "id": "nn-014-q05",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "6.3",
+      "est_minutes": 4,
+      "tags": [
+        "mean-loss",
+        "scaling"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network's loss is the mean of the per-sample losses over a batch of $N$ samples. Its backward pass delivers $\\partial L / \\partial \\mathbf{Z}$ to a dense layer, which computes `dL_dW = dL_dZ.T @ X`. Should the layer divide `dL_dW` by $N$ afterwards?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Yes: the product sums over the batch, and a mean loss needs the mean gradient.",
+          "correct": false,
+          "feedback": "The first half is true, but the $1/N$ of a mean loss is already inside every entry of the upstream gradient. Dividing again applies it twice."
+        },
+        {
+          "key": "b",
+          "text": "No: a matrix product averages over the axis it contracts, so the mean is built in.",
+          "correct": false,
+          "feedback": "The conclusion is right for the wrong reason. A matrix product sums over the contracted axis; it never averages."
+        },
+        {
+          "key": "c",
+          "text": "Only the bias gradient needs it, because `np.sum` adds where the product averages.",
+          "correct": false,
+          "feedback": "Both gradients are sums over the batch axis and both receive the same upstream gradient, so neither needs a further division."
+        },
+        {
+          "key": "d",
+          "text": "No: the $1/N$ is already inside the upstream gradient, and $N$ such terms sum to the mean.",
+          "correct": true,
+          "feedback": "Right: the loss decides the scaling, and the layer only sums what it is given."
+        }
+      ],
+      "explanation": "Section 6.3 separates the two roles. The matrix product sums the per-sample contributions, and a loss that is a batch mean puts a factor $1/N$ into every entry of the upstream gradient, so the sum is already the mean. Section 10 shows that a second division leaves the gradient $N$ times too small.",
+      "hints": [
+        "Ask where the derivative of a mean puts its $1/N$.",
+        "Then ask what the layer does with $N$ contributions that each carry that factor."
+      ]
+    },
+    {
+      "id": "nn-014-q06",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 5,
+      "tags": [
+        "outer-product",
+        "single-sample"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A layer of two neurons over three inputs stores one row of weights per neuron. One sample `X = [[2, -1, 0.5]]` gives the upstream gradient `dL_dZ = [[3, -2]]`. Compute the requested entries of `dL_dW = dL_dZ.T @ X` and of the bias gradient, with indices counted from 0 as in the code.",
+      "answer": {
+        "parts": [
+          {
+            "label": "dL_dW[0, 0]",
+            "value": 6,
+            "tolerance": 1e-09,
+            "unit": ""
+          },
+          {
+            "label": "dL_dW[0, 2]",
+            "value": 1.5,
+            "tolerance": 1e-09,
+            "unit": ""
+          },
+          {
+            "label": "dL_dW[1, 1]",
+            "value": 2,
+            "tolerance": 1e-09,
+            "unit": ""
+          },
+          {
+            "label": "dL_db[1]",
+            "value": -2,
+            "tolerance": 1e-09,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form dL_dW[k, j] = dL_dZ[0, k] * X[0, j] and dL_db[k] = dL_dZ[0, k]; the full matrix is [[6, -3, 1.5], [-4, 2, -1]].",
+      "explanation": "Section 4 computes the single-sample gradient as an outer product: entry $(k, j)$ is the upstream value of neuron $k$ times input $j$. So the entries are $3 \\cdot 2 = 6$, $3 \\cdot 0.5 = 1.5$, and $(-2) \\cdot (-1) = 2$. By section 5 the bias gradient of a single sample is the upstream gradient itself, so the second bias receives $-2$.",
+      "hints": [
+        "Each entry is one number from the upstream gradient times one number from the input.",
+        "The row index picks the neuron and the column index picks the input."
+      ]
+    },
+    {
+      "id": "nn-014-q07",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "6.2",
+      "est_minutes": 10,
+      "tags": [
+        "batch",
+        "by-hand"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A layer of two neurons over two inputs (one row of weights per neuron) receives the batch `X = [[1, 2], [3, -1], [0, 4]]` and the upstream gradient `dL_dZ = [[0.5, -1], [1, 0], [-2, 2]]`, one row per sample. Compute all four entries of `dL_dW` and both entries of `dL_db` by hand, with indices counted from 0.",
+      "answer": {
+        "parts": [
+          {
+            "label": "dL_dW[0, 0]",
+            "value": 3.5,
+            "tolerance": 1e-09,
+            "unit": ""
+          },
+          {
+            "label": "dL_dW[0, 1]",
+            "value": -8,
+            "tolerance": 1e-09,
+            "unit": ""
+          },
+          {
+            "label": "dL_dW[1, 0]",
+            "value": -1,
+            "tolerance": 1e-09,
+            "unit": ""
+          },
+          {
+            "label": "dL_dW[1, 1]",
+            "value": 6,
+            "tolerance": 1e-09,
+            "unit": ""
+          },
+          {
+            "label": "dL_db[0]",
+            "value": -0.5,
+            "tolerance": 1e-09,
+            "unit": ""
+          },
+          {
+            "label": "dL_db[1]",
+            "value": 1,
+            "tolerance": 1e-09,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "dL_dZ.T @ X and np.sum(dL_dZ, axis=0) evaluated in NumPy for these arrays, the two lines of snippets/batch.py: [[3.5, -8], [-1, 6]] and [-0.5, 1].",
+      "explanation": "Section 6.2 builds the batched gradient as a sum of per-sample outer products. Row 0 is $0.5 \\cdot [1, 2] + 1 \\cdot [3, -1] + (-2) \\cdot [0, 4] = [3.5, -8]$ and row 1 is $(-1) \\cdot [1, 2] + 0 \\cdot [3, -1] + 2 \\cdot [0, 4] = [-1, 6]$. The bias gradient sums each column of the upstream gradient: $0.5 + 1 - 2 = -0.5$ and $-1 + 0 + 2 = 1$.",
+      "hints": [
+        "Treat each sample separately first, as if it were the only one.",
+        "Row $k$ of the result is a weighted sum of the input rows, with the weights taken from column $k$ of the upstream gradient."
+      ]
+    },
+    {
+      "id": "nn-014-q08",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "shapes",
+        "batch"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A dense layer has 64 neurons over 784 inputs and stores one row of weights per neuron. It processes a batch of 128 samples. Give the number of rows and of columns of `dL_dW`, the number of entries of `dL_db`, and the number of products that are added together to form one entry of `dL_dW`.",
+      "answer": {
+        "parts": [
+          {
+            "label": "rows of dL_dW",
+            "value": 64,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "columns of dL_dW",
+            "value": 784,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "entries of dL_db",
+            "value": 64,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "products per entry",
+            "value": 128,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Shape rule (m, N) . (N, n) -> (m, n) with m = 64, n = 784, N = 128; each entry is a sum over the contracted axis of length N.",
+      "explanation": "Section 6 gives the shapes $(m, N) \\cdot (N, n) \\rightarrow (m, n)$, so the weight gradient is $64 \\times 784$, the shape of the weights, whatever the batch size. The bias gradient has one entry per neuron, 64. The batch size appears only as the length of the contracted axis: each entry of the weight gradient is a sum of 128 products, one per sample.",
+      "hints": [
+        "A gradient has the shape of the array it updates; the batch size has to show up somewhere else."
+      ]
+    },
+    {
+      "id": "nn-014-q09",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "batch",
+        "contraction"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the product `dL_dZ.T @ X` for a batch, one axis is shared by the two operands, is summed over, and does not appear in the result. Name that axis by what it counts.",
+      "answer": {
+        "model": "The batch axis: it counts the samples.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:not|neither|nor|never|no|unlike|rather\\s+than|instead\\s+of)\\s+(?:\\w+\\s+){0,2}(?:batch|samples?|examples?)\\b)(?![\\s\\S]*\\b(?:batch|samples?|examples?)\\b(?:\\s+\\w+){0,3}\\s+(?:stays?|survives?|remains?|(?:is|are)\\s+(?:kept|not|never)|isn't|aren't|appears?\\s+in)\\b)(?![\\s\\S]*\\b(?:batch|samples?|examples?)\\s+of\\s+(?:the\\s+)?(?:neurons?|inputs?|features?|weights?)\\b)(?:(?![\\s\\S]*\\b(?:neurons?|inputs?|features?|weights?)\\b)|(?=[\\s\\S]*\\b(?:not|unlike|rather\\s+than|instead\\s+of|survives?|remains?|stays?|kept|keeps?|left|while|whereas)\\b))(?:(?!\\b(?:neurons?|inputs?|features?|weights?|columns?|outputs?)\\b)[\\s\\S])*?\\b(?:batch|samples?|examples?)\\b"
+        ]
+      },
+      "explanation": "Section 6 shows that the transpose moves the batch axis of the upstream gradient to the inside of the product, where it meets the batch axis of $\\mathbf{X}$. The shapes are $(m, N) \\cdot (N, n) \\rightarrow (m, n)$: the axis of length $N$, which counts the samples, is contracted, and the neuron and input axes survive.",
+      "hints": [
+        "Write the shapes of the two operands and look at which size appears twice."
+      ]
+    },
+    {
+      "id": "nn-014-q10",
+      "type": "short",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "shapes",
+        "predict-output"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Predict the single line this script prints.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "import numpy as np\n\nX = np.ones((5, 7))\ndL_dZ = np.ones((5, 2))\nprint((dL_dZ.T @ X).shape)\n"
+      },
+      "answer": {
+        "model": "(2, 7)",
+        "accept": [
+          "^\\W*(?:(?:(?:it|this|the\\s+script|the\\s+line)\\s+)?prints\\s+|(?:the\\s+)?(?:shape|answer|output)\\s+(?:is\\s+)?)?[(\\[]?\\s*2\\s*(?:,|x|×|by)\\s*7\\s*[)\\]]?(?!\\s*,?\\s*\\d)\\W*$",
+          "^\\W*2\\s+rows?\\s*(?:and|,|by)?\\s*7\\s+col(?:umn)?s?\\W*$",
+          "^\\W*(?:(?:(?:it|this|the\\s+script|the\\s+line)\\s+)?prints\\s+|(?:the\\s+)?(?:shape|answer|output)\\s+(?:is\\s+)?)?[(\\[]?\\s*2\\s*(?:,|x|×|by)\\s*7\\s*[)\\]]?(?!\\s*,?\\s*\\d)\\s*(?:[:;,.]|because\\b|since\\b|as\\b)(?![\\s\\S]*\\b(?:or|not|isn't)\\b)(?![\\s\\S]*7\\s*,\\s*2\\s*[)\\]])"
+        ]
+      },
+      "explanation": "Section 6 reads the shape off the operands: the transpose turns the $(5, 2)$ upstream gradient into $(2, 5)$, and $(2, 5) \\cdot (5, 7) \\rightarrow (2, 7)$. The batch size 5 is contracted and does not appear; the result has one row per neuron and one column per input.",
+      "hints": [
+        "Apply the transpose to the first shape, then the rule that inner sizes match and disappear."
+      ]
+    },
+    {
+      "id": "nn-014-q11",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3",
+        "o1"
+      ],
+      "section": "6",
+      "est_minutes": 12,
+      "tags": [
+        "derivation",
+        "batch"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A dense layer with one row of weights per neuron computes $z_{ik} = \\sum_j x_{ij} w_{kj} + b_k$ for sample $i$ and neuron $k$. Starting from this line and the chain rule, derive the gradient of the loss with respect to one weight $w_{kj}$ and one bias $b_k$ for a batch of $N$ samples, and show that the weight result is entry $(k, j)$ of $(\\partial L / \\partial \\mathbf{Z})^{\\top} \\mathbf{X}$. Give the shapes of the two factors and of the product.",
+      "kind": "derive",
+      "solution": "1. The weight $w_{kj}$ appears in the pre-activation of neuron $k$ only, but once for every sample: in $z_{1k}, \\dots, z_{Nk}$. The local derivative is $\\partial z_{ik} / \\partial w_{kj} = x_{ij}$, and $\\partial z_{ik'} / \\partial w_{kj} = 0$ for every other neuron $k' \\ne k$.\n2. The loss depends on $w_{kj}$ through those $N$ pre-activations, so the chain rule gives one term per sample and the terms add: $\\partial L / \\partial w_{kj} = \\sum_{i=1}^{N} (\\partial L / \\partial z_{ik}) \\, x_{ij}$.\n3. Entry $(k, j)$ of a product $\\mathbf{P}\\mathbf{Q}$ is $\\sum_i P_{ki} Q_{ij}$. Take $\\mathbf{P} = (\\partial L / \\partial \\mathbf{Z})^{\\top}$, of shape $(m, N)$, whose entry $(k, i)$ is $\\partial L / \\partial z_{ik}$, and $\\mathbf{Q} = \\mathbf{X}$, of shape $(N, n)$. Then $\\sum_i P_{ki} Q_{ij}$ is exactly the sum of step 2, so $\\partial L / \\partial \\mathbf{W} = (\\partial L / \\partial \\mathbf{Z})^{\\top} \\mathbf{X}$, of shape $(m, n)$.\n4. The bias $b_k$ also appears in $z_{ik}$ for every sample, with $\\partial z_{ik} / \\partial b_k = 1$, so $\\partial L / \\partial b_k = \\sum_{i=1}^{N} \\partial L / \\partial z_{ik}$: the sum of column $k$ of the upstream gradient, `np.sum(dL_dZ, axis=0)`.\n5. For $N = 1$ each sum has a single term and the weight gradient is the outer product of the upstream column and the input row.",
+      "rubric": [
+        {
+          "criterion": "States the local derivative $\\partial z_{ik} / \\partial w_{kj} = x_{ij}$ and that other neurons' pre-activations do not depend on $w_{kj}$",
+          "points": 2
+        },
+        {
+          "criterion": "Sums the chain-rule terms over the samples $i$, giving $\\sum_i (\\partial L / \\partial z_{ik}) x_{ij}$",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies the sum with entry $(k, j)$ of a matrix product and names the two factors, with the transpose on the upstream gradient",
+          "points": 2
+        },
+        {
+          "criterion": "Derives the bias gradient as the sum over samples of $\\partial L / \\partial z_{ik}$",
+          "points": 1
+        },
+        {
+          "criterion": "Checks the shapes $(m, N) \\cdot (N, n) \\rightarrow (m, n)$",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 6 carries out this derivation. The weight $w_{kj}$ enters $z_{ik}$ for every sample $i$, the chain rule adds one term per sample, and the resulting sum over $i$ is the definition of an entry of the product $(\\partial L / \\partial \\mathbf{Z})^{\\top} \\mathbf{X}$. The bias repeats the argument with the constant 1 in place of $x_{ij}$.",
+      "hints": [
+        "Count the pre-activations in which the one weight $w_{kj}$ appears when there are $N$ samples.",
+        "Write the definition of entry $(k, j)$ of a matrix product and match its summation index to the sample index."
+      ]
+    },
+    {
+      "id": "nn-014-q12",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o2",
+        "o1"
+      ],
+      "section": "10",
+      "est_minutes": 12,
+      "tags": [
+        "debugging",
+        "transpose"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A layer has 16 neurons over 8 inputs, with one row of weights per neuron. Its backward pass contains `dL_dW = dL_dZ @ X` and `dL_db = np.sum(dL_dZ, axis=0)`. Trained with batches of 16 samples the program runs without an error, but the loss does not fall as it should. When the batch size is changed to 32 the program stops with a `ValueError` in the first of the two lines. Explain both observations, give the fix, and propose a test that would have exposed the bug at once.",
+      "kind": "critique",
+      "solution": "The first line lacks the transpose. `dL_dZ` has shape $(N, 16)$ and `X` has shape $(N, 8)$, so `dL_dZ @ X` multiplies $(N, 16)$ by $(N, 8)$, whose inner sizes are 16 and $N$.\n\nWith $N = 16$ the inner sizes happen to match. The product runs and returns a $(16, 8)$ array, which is also the shape of the weights, so the update `weights -= lr * dL_dW` runs too. The numbers are wrong: entry $(i, j)$ is $\\sum_k (\\partial L / \\partial z_{ik}) x_{kj}$, which pairs the upstream value of neuron $k$ in sample $i$ with input $j$ of sample $k$. The contracted axis mixes a neuron index with a sample index, which has no meaning. The weights are moved in a direction unrelated to the gradient, so the loss does not fall as it should. The bias line is correct.\n\nWith $N = 32$ the inner sizes are 16 and 32, and NumPy refuses the product.\n\nThe fix is `dL_dW = dL_dZ.T @ X`: $(16, N) \\cdot (N, 8) \\rightarrow (16, 8)$ for every $N$, with the batch axis contracted.\n\nTwo tests expose the bug immediately. A shape test with a batch size different from both the number of neurons and the number of inputs (for example $N = 5$) turns the silent case into an error. A numerical gradient check, comparing `dL_dW` with central differences of the loss at $h = 10^{-5}$ in float64, fails even when the shapes agree, because it compares values, not shapes.",
+      "rubric": [
+        {
+          "criterion": "Identifies the missing transpose and writes the shapes $(N, 16)$ and $(N, 8)$ of the two operands",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that with $N = 16$ the inner sizes coincide, so the product runs and returns the shape of the weights",
+          "points": 2
+        },
+        {
+          "criterion": "Explains why the values are wrong (the contraction pairs a neuron index with a sample index) and that the bias line is correct",
+          "points": 2
+        },
+        {
+          "criterion": "Explains the `ValueError` at $N = 32$ from the mismatched inner sizes 16 and 32",
+          "points": 1
+        },
+        {
+          "criterion": "Gives the fix `dL_dZ.T @ X` with its shape arithmetic",
+          "points": 1
+        },
+        {
+          "criterion": "Proposes a test that catches it: distinct sizes for batch, inputs, and neurons, or a numerical gradient check",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 10 shows this failure on a smaller case: without the transpose the inner sizes are the number of neurons and the batch size, and when the two coincide the product returns the right shape with the wrong numbers. A shape check cannot see it; unequal test sizes or the central-difference check of section 9 can.",
+      "hints": [
+        "Write the shapes of both operands of the first line for each batch size.",
+        "Ask which two sizes must be equal for that product to run, and what the array it then returns has in common with the true gradient."
+      ]
+    },
+    {
+      "id": "nn-014-q13",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o4",
+        "o2"
+      ],
+      "section": "8",
+      "est_minutes": 12,
+      "tags": [
+        "convention",
+        "layer-dense"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The `Layer_Dense` class of post 04 stores `weights` of shape $(n_\\text{inputs}, n_\\text{neurons})$ and `biases` of shape $(1, n_\\text{neurons})$, and its forward pass is `np.dot(inputs, self.weights) + self.biases`. Starting from the two lines `dL_dW = dL_dZ.T @ X` and `dL_db = np.sum(dL_dZ, axis=0)`, which belong to the row-per-neuron layout, write the two lines this class needs, justify each, and give the shape of every array involved for a layer of 3 neurons over 2 inputs on a batch of 300 samples.",
+      "kind": "connect",
+      "connects": [
+        "nn-004",
+        "nn-005"
+      ],
+      "solution": "The class stores the transpose of the row-per-neuron weight matrix, so its weight gradient must be the transpose of $(\\partial L / \\partial \\mathbf{Z})^{\\top} \\mathbf{X}$. By the rule $(\\mathbf{P}\\mathbf{Q})^{\\top} = \\mathbf{Q}^{\\top} \\mathbf{P}^{\\top}$ that is $\\mathbf{X}^{\\top} (\\partial L / \\partial \\mathbf{Z})$, in code `dweights = np.dot(inputs.T, dvalues)`, where `dvalues` is the upstream gradient.\n\nJustification: a gradient must have the shape of the array it updates. Here `inputs` is $(300, 2)$ and `dvalues` is $(300, 3)$, so `inputs.T` is $(2, 300)$ and the product is $(2, 300) \\cdot (300, 3) \\rightarrow (2, 3)$, the shape of `weights`. The batch axis is the inner one, so the product still sums the 300 per-sample contributions; entry $(j, k)$ is $\\sum_i x_{ij} \\, \\partial L / \\partial z_{ik}$, the same number that sat at $(k, j)$ in the other layout.\n\nThe biases are stored as a $(1, 3)$ row (post 04), so the bias gradient keeps the summed axis: `dbiases = np.sum(dvalues, axis=0, keepdims=True)`. The sum over axis 0 removes the batch axis of the $(300, 3)$ upstream gradient, and `keepdims=True` (post 05) leaves it as an axis of length 1, giving $(1, 3)$ where the plain sum gives $(3,)$. The values are the same in both shapes.\n\nSummary of shapes: `inputs` $(300, 2)$, `weights` $(2, 3)$, `biases` $(1, 3)$, `dvalues` $(300, 3)$, `dweights` $(2, 3)$, `dbiases` $(1, 3)$. Using the row-per-neuron line here would give a $(3, 2)$ array, and the update would raise a shape error.",
+      "rubric": [
+        {
+          "criterion": "Writes the weight line as `inputs.T @ dvalues` (or `np.dot(inputs.T, dvalues)`, or the same product under the prompt's names, `X.T @ dL_dZ`)",
+          "points": 2
+        },
+        {
+          "criterion": "Justifies it as the transpose of the row-per-neuron gradient, or directly from the requirement that the gradient has the shape of the weights",
+          "points": 2
+        },
+        {
+          "criterion": "States that the batch axis is still the contracted one, so the sum over samples is unchanged",
+          "points": 1
+        },
+        {
+          "criterion": "Writes the bias line with `axis=0` and `keepdims=True` and explains why the $(1, 3)$ shape is wanted",
+          "points": 2
+        },
+        {
+          "criterion": "Gives the six shapes correctly for 2 inputs, 3 neurons, and 300 samples",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 8 reconciles the two layouts: the gradients are transposes of each other, $\\mathbf{X}^{\\top} (\\partial L / \\partial \\mathbf{Z})$ has shapes $(n, N) \\cdot (N, m) \\rightarrow (n, m)$, and the bias row keeps its $(1, m)$ shape through `keepdims=True`. The rule behind both lines is that a gradient has the shape of the array it updates.",
+      "hints": [
+        "Ask what shape each gradient must have for the update of that class to work.",
+        "Apply the transpose rule for a product to the row-per-neuron weight gradient, and recall which argument of `np.sum` keeps a reduced axis."
+      ]
+    },
+    {
+      "id": "nn-014-q14",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "7",
+      "est_minutes": 15,
+      "tags": [
+        "two-line-backward",
+        "implementation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Complete `dense_param_grads(X, dL_dZ)` so that it returns the weight gradient and the bias gradient of a dense layer that stores one row of weights per neuron. `X` has shape `(N, n)` and `dL_dZ` has shape `(N, m)`; the results must have shapes `(m, n)` and `(m,)` for any batch size, including 1.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "import numpy as np\n\n\ndef dense_param_grads(X, dL_dZ):\n    \"\"\"Return (dL_dW, dL_db) for a dense layer with one row of weights per neuron.\n\n    X has shape (N, n), one sample per row. dL_dZ has shape (N, m), one row per sample\n    and one column per neuron. dL_dW has shape (m, n) and dL_db has shape (m,).\n    \"\"\"\n    m, n = dL_dZ.shape[1], X.shape[1]\n    dL_dW = np.zeros((m, n))\n    dL_db = np.zeros(m)\n    # TODO: one line for each gradient\n    return dL_dW, dL_db\n",
+      "solution": "import numpy as np\n\n\ndef dense_param_grads(X, dL_dZ):\n    \"\"\"Return (dL_dW, dL_db) for a dense layer with one row of weights per neuron.\n\n    X has shape (N, n), one sample per row. dL_dZ has shape (N, m), one row per sample\n    and one column per neuron. dL_dW has shape (m, n) and dL_db has shape (m,).\n    \"\"\"\n    dL_dW = dL_dZ.T @ X              # (m, N) @ (N, n) = (m, n): the batch axis is contracted\n    dL_db = np.sum(dL_dZ, axis=0)    # one number per neuron\n    return dL_dW, dL_db\n",
+      "tests": "import numpy as np\n\n\ndef slow_reference(X, dL_dZ):\n    N, n = X.shape\n    m = dL_dZ.shape[1]\n    dW = np.zeros((m, n))\n    dB = np.zeros(m)\n    for i in range(N):\n        for k in range(m):\n            dB[k] += dL_dZ[i, k]\n            for j in range(n):\n                dW[k, j] += dL_dZ[i, k] * X[i, j]\n    return dW, dB\n\n\n# One sample: three neurons over four inputs.\nX1 = np.array([[1.0, 2.0, 3.0, 4.0]])\ndZ1 = np.array([[43.2, 43.2, 43.2]])\ndW, dB = dense_param_grads(X1, dZ1)\nassert np.shape(dW) == (3, 4) and np.shape(dB) == (3,), (np.shape(dW), np.shape(dB))\nassert np.allclose(dW, [[43.2, 86.4, 129.6, 172.8]] * 3), dW\nassert np.allclose(dB, [43.2, 43.2, 43.2]), dB\n\nrng = np.random.default_rng(14)\n\n# A batch in which the batch size, the inputs and the neurons are three different numbers.\nX = rng.standard_normal((5, 4))\ndZ = rng.standard_normal((5, 3))\nX_before, dZ_before = X.copy(), dZ.copy()\ndW, dB = dense_param_grads(X, dZ)\nref_W, ref_B = slow_reference(X, dZ)\nassert np.shape(dW) == (3, 4) and np.shape(dB) == (3,), (np.shape(dW), np.shape(dB))\nassert np.allclose(dW, ref_W) and np.allclose(dB, ref_B)\nassert np.array_equal(X, X_before) and np.array_equal(dZ, dZ_before), \"the arguments must not be modified\"\n\n# A batch whose size equals the number of neurons: a missing transpose keeps the shape here.\nX = rng.standard_normal((3, 4))\ndZ = rng.standard_normal((3, 3))\ndW, dB = dense_param_grads(X, dZ)\nref_W, ref_B = slow_reference(X, dZ)\nassert np.allclose(dW, ref_W), \"right shape, wrong numbers: check which axis the product contracts\"\nassert np.allclose(dB, ref_B), \"the bias gradient sums over the batch axis\"\nprint(\"all gradient checks passed\")\n",
+      "expected_output": "all gradient checks passed\n",
+      "explanation": "Section 7 gives the two lines: `dL_dZ.T @ X` contracts the batch axis and leaves $(m, n)$, and `np.sum(dL_dZ, axis=0)` leaves one number per neuron. The tests compare with a triple loop over samples, neurons, and inputs, and the last case sets the batch size equal to the number of neurons, where a missing transpose or `axis=1` would keep the shape and change the values.",
+      "hints": [
+        "Each gradient must come out with the shape of the array it updates, whatever the batch size.",
+        "For the weights, arrange the product so that the batch axis is the inner one; for the biases, sum over the axis that counts the samples."
+      ]
+    },
+    {
+      "id": "nn-014-q15",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4",
+        "o2"
+      ],
+      "section": "8",
+      "est_minutes": 12,
+      "tags": [
+        "convention",
+        "debugging"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The function `backward` is meant for a layer whose weights have shape `(n_inputs, n_neurons)` and whose biases have shape `(1, n_neurons)`. It was copied from code written for the other weight layout and has two bugs, one in each line. Fix both so that each gradient has the shape of the array it updates and holds the right values.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "import numpy as np\n\n\ndef backward(inputs, dvalues):\n    \"\"\"Parameter gradients of a dense layer with one column of weights per neuron.\n\n    inputs has shape (N, n_inputs) and dvalues, the upstream gradient, has shape\n    (N, n_neurons). Returns dweights of shape (n_inputs, n_neurons) and dbiases of\n    shape (1, n_neurons).\n    \"\"\"\n    dweights = dvalues.T @ inputs\n    dbiases = np.sum(dvalues, keepdims=True)\n    return dweights, dbiases\n",
+      "solution": "import numpy as np\n\n\ndef backward(inputs, dvalues):\n    \"\"\"Parameter gradients of a dense layer with one column of weights per neuron.\n\n    inputs has shape (N, n_inputs) and dvalues, the upstream gradient, has shape\n    (N, n_neurons). Returns dweights of shape (n_inputs, n_neurons) and dbiases of\n    shape (1, n_neurons).\n    \"\"\"\n    dweights = inputs.T @ dvalues                       # (n_inputs, N) @ (N, n_neurons)\n    dbiases = np.sum(dvalues, axis=0, keepdims=True)    # sum over the batch axis, keep it as length 1\n    return dweights, dbiases\n",
+      "tests": "import numpy as np\n\n\ndef slow_reference(inputs, dvalues):\n    N, n_inputs = inputs.shape\n    n_neurons = dvalues.shape[1]\n    dW = np.zeros((n_inputs, n_neurons))\n    dB = np.zeros((1, n_neurons))\n    for i in range(N):\n        for k in range(n_neurons):\n            dB[0, k] += dvalues[i, k]\n            for j in range(n_inputs):\n                dW[j, k] += inputs[i, j] * dvalues[i, k]\n    return dW, dB\n\n\nrng = np.random.default_rng(15)\n\n# Three samples, two inputs, four neurons.\ninputs = rng.standard_normal((3, 2))\ndvalues = rng.standard_normal((3, 4))\ndW, dB = backward(inputs, dvalues)\nref_W, ref_B = slow_reference(inputs, dvalues)\nassert np.shape(dW) == (2, 4), f\"dweights has shape {np.shape(dW)}, the weights have shape (2, 4)\"\nassert np.shape(dB) == (1, 4), f\"dbiases has shape {np.shape(dB)}, the biases have shape (1, 4)\"\nassert np.allclose(dW, ref_W) and np.allclose(dB, ref_B)\n\n# A square layer: three inputs and three neurons, where the wrong layout keeps the shape.\ninputs = rng.standard_normal((5, 3))\ndvalues = rng.standard_normal((5, 3))\ndW, dB = backward(inputs, dvalues)\nref_W, ref_B = slow_reference(inputs, dvalues)\nassert np.shape(dW) == (3, 3) and np.shape(dB) == (1, 3)\nassert np.allclose(dW, ref_W), \"right shape, wrong layout: entry (j, k) belongs to input j and neuron k\"\nassert np.allclose(dB, ref_B)\nprint(\"both layouts reconciled\")\n",
+      "expected_output": "both layouts reconciled\n",
+      "explanation": "Section 8 gives the two lines for the column-per-neuron layout: `inputs.T @ dvalues`, of shape $(n, m)$, and `np.sum(dvalues, axis=0, keepdims=True)`, of shape $(1, m)$. The starter's first line returns the transposed gradient, and its second sums every entry into a $(1, 1)$ array because the axis is missing. The square test case shows that a shape check alone would not catch the first bug.",
+      "hints": [
+        "Compare the shape each line returns with the shape of the array it is meant to update.",
+        "The weight gradient of one layout is the transpose of the other, and the bias sum runs over the batch axis only."
+      ]
+    },
+    {
+      "id": "nn-014-q16",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "7",
+      "est_minutes": 4,
+      "tags": [
+        "pipeline",
+        "backward-pass"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Put the steps that lead from a batch of inputs to an update of one dense layer's weights into the order in which they happen. The layer stores one row of weights per neuron.",
+      "items": [
+        {
+          "key": "a",
+          "text": "The product with $\\mathbf{X}$ contracts the batch axis and leaves an $(m, n)$ array."
+        },
+        {
+          "key": "b",
+          "text": "The components after the layer turn $\\mathbf{Z}$ into the loss $L$."
+        },
+        {
+          "key": "c",
+          "text": "The $(m, n)$ array is scaled by the learning rate and subtracted from the weights."
+        },
+        {
+          "key": "d",
+          "text": "The forward pass of the layer computes $\\mathbf{Z}$ from $\\mathbf{X}$, the weights, and the biases."
+        },
+        {
+          "key": "e",
+          "text": "The upstream gradient is transposed, which moves its batch axis to the inside of the product."
+        },
+        {
+          "key": "f",
+          "text": "The backward pass of the later components delivers $\\partial L / \\partial \\mathbf{Z}$, one row per sample."
+        }
+      ],
+      "answer": [
+        "d",
+        "b",
+        "f",
+        "e",
+        "a",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "Sections 3 and 7 fix the order. The forward pass runs first and ends in the loss; the backward pass then returns through the later components and delivers the upstream gradient to the layer. Only then can the layer transpose it, multiply by the inputs it received in the forward pass, and hand the resulting $(m, n)$ array to the update.",
+      "hints": [
+        "Separate the steps that run forward from those that run backward, then order each group."
+      ]
+    },
+    {
+      "id": "nn-014-q17",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2",
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 5,
+      "tags": [
+        "shapes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A batch `X` has shape `(5, 4)` and the upstream gradient `dL_dZ` has shape `(5, 3)`. Match each expression to the shape of its result.",
+      "left": [
+        {
+          "key": "a",
+          "text": "`dL_dZ.T @ X`"
+        },
+        {
+          "key": "b",
+          "text": "`X.T @ dL_dZ`"
+        },
+        {
+          "key": "c",
+          "text": "`np.sum(dL_dZ, axis=0)`"
+        },
+        {
+          "key": "d",
+          "text": "`np.sum(dL_dZ, axis=0, keepdims=True)`"
+        },
+        {
+          "key": "e",
+          "text": "`np.outer(dL_dZ, X)`"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "`(1, 3)`"
+        },
+        {
+          "key": "q",
+          "text": "`(4, 3)`"
+        },
+        {
+          "key": "r",
+          "text": "`(5,)`"
+        },
+        {
+          "key": "s",
+          "text": "`(3, 4)`"
+        },
+        {
+          "key": "t",
+          "text": "`(15, 20)`"
+        },
+        {
+          "key": "u",
+          "text": "`(3,)`"
+        },
+        {
+          "key": "v",
+          "text": "`(5, 3)`"
+        }
+      ],
+      "answer": {
+        "a": "s",
+        "b": "q",
+        "c": "u",
+        "d": "p",
+        "e": "t"
+      },
+      "explanation": "Sections 6 and 8 give the first four: $(3, 5) \\cdot (5, 4) \\rightarrow (3, 4)$ for the row-per-neuron layout, $(4, 5) \\cdot (5, 3) \\rightarrow (4, 3)$ for the column-per-neuron layout, and a sum over the batch axis that leaves 3 numbers, as $(3,)$ or as $(1, 3)$ with `keepdims=True`. Section 10 covers the last: `np.outer` flattens its arguments to lengths 15 and 20, so nothing is summed over the batch. No expression keeps the batch size 5.",
+      "hints": [
+        "For the products, transpose first and then let the inner sizes disappear; for the sums, remove the named axis."
+      ]
+    },
+    {
+      "id": "nn-014-q18",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3",
+        "o1"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "bias-gradient",
+        "batch"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "For a batch, the bias gradient is `np.sum(dL_dZ, axis=0)`: the upstream gradient is added up along the batch axis. Why is a sum over the samples the right operation?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Each bias takes part in the pre-activation of every sample, so it collects one chain-rule term per sample.",
+          "correct": true,
+          "feedback": "Right: $b_k$ appears in $z_{ik}$ for every $i$ with local derivative 1, and the $N$ terms add."
+        },
+        {
+          "key": "b",
+          "text": "The sum normalises the gradient by the batch size, so that large batches do not take larger steps.",
+          "correct": false,
+          "feedback": "A sum does not normalise; it grows with the batch. Any $1/N$ comes from the loss, inside the upstream gradient."
+        },
+        {
+          "key": "c",
+          "text": "The sum is an approximation that avoids a second matrix product; the exact gradient would need the inputs.",
+          "correct": false,
+          "feedback": "The sum is exact. The local derivative of a pre-activation with respect to its bias is 1, so no input value enters."
+        },
+        {
+          "key": "d",
+          "text": "The biases start at zero, so their gradient has to be accumulated before it becomes non-zero.",
+          "correct": false,
+          "feedback": "The initial value of a bias plays no part in the formula. The gradient depends on the upstream gradient only."
+        }
+      ],
+      "explanation": "Section 6 repeats the weight derivation for the bias: $b_k$ appears in $z_{ik}$ for every sample $i$, each appearance has local derivative 1, and the chain rule adds the terms, giving $\\partial L / \\partial b_k = \\sum_i \\partial L / \\partial z_{ik}$. It is the same sum the matrix product performs for the weights, without an input value to scale each term.",
+      "hints": [
+        "Count the pre-activations in which one bias appears when $N$ samples pass through the layer."
+      ]
+    }
+  ]
+}
