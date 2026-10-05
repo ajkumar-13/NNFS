@@ -52,11 +52,13 @@ The bibliography of Neural Networks from Scratch. Every source cited in a post's
 - Krogh, A. and Hertz, J. A., *"A Simple Weight Decay Can Improve Generalization"* (NeurIPS, 1992).
 - Lawson, C., Hanson, R., Kincaid, D., and Krogh, F., *"Basic Linear Algebra Subprograms for FORTRAN Usage"* (ACM Transactions on Mathematical Software, 1979).
 - Leibniz, G. W., *"Nova Methodus pro Maximis et Minimis"* (Acta Eruditorum, 1684).
+- Leshno, M., Lin, V. Ya., Pinkus, A., and Schocken, S., *"Multilayer Feedforward Networks with a Nonpolynomial Activation Function Can Approximate Any Function"* (Neural Networks, 1993).
 - Li, X., Chen, S., Hu, X., and Yang, J., *"Understanding the Disharmony between Dropout and Batch Normalization by Variance Shift"* (CVPR, 2019).
 - Linnainmaa, S., *"The Representation of the Cumulative Rounding Error of an Algorithm as a Taylor Expansion of the Local Rounding Errors"* (Master's thesis, University of Helsinki, 1970).
 - Loshchilov, I. and Hutter, F., *"SGDR: Stochastic Gradient Descent with Warm Restarts"* (ICLR, 2017).
 - Loshchilov, I. and Hutter, F., *"Decoupled Weight Decay Regularization"* (ICLR, 2019). AdamW.
 - McCulloch, W. S. and Pitts, W., *"A Logical Calculus of the Ideas Immanent in Nervous Activity"* (Bulletin of Mathematical Biophysics, 1943).
+- Nair, V. and Hinton, G. E., *"Rectified Linear Units Improve Restricted Boltzmann Machines"* (ICML, 2010).
 - Paszke, A., et al., *"PyTorch: An Imperative Style, High-Performance Deep Learning Library"* (NeurIPS, 2019).
 - Polyak, B. T., *"Some Methods of Speeding up the Convergence of Iteration Methods"* (USSR Computational Mathematics and Mathematical Physics, 1964). The original "heavy ball" paper.
 - Prechelt, L., *"Early Stopping: But When?"* (Neural Networks: Tricks of the Trade, 1998).
