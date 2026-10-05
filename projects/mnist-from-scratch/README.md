@@ -1,174 +1,98 @@
-# Project 01 · MNIST from scratch
+# MNIST from scratch
 
-> **TL;DR.** Train the from-scratch classes built across [the series](../../posts/) on real handwritten digits. A two-hidden-layer network (784 → 128 → 128 → 10) with Adam, L2 weight decay, and dropout reaches roughly **97% test accuracy** on the standard MNIST split using only NumPy. No PyTorch, no TensorFlow, no SciPy beyond `np.random`. The project is split into four runnable files (`data.py`, `nn.py`, `train.py`, `evaluate.py`) plus this writeup, so the training loop, the network definition, and the evaluation are each in their own place rather than wedged into one notebook.
+The series derives every layer, loss and optimiser on a toy spiral of 300 points, which leaves one question open: do the pieces compose into a model that works on real data? This project answers it. It assembles the classes the series builds, with their arithmetic unchanged, into a two-hidden-layer dense network ($784 \to 128 \to 128 \to 10$), trains it on the 60,000 MNIST training digits with Adam, L2 and dropout in mini-batches, and scores it on the 10,000 test digits. From the fixed seed the documented run classifies 9,800 of the 10,000 test images correctly, 98.00 percent, with 118,282 parameters and nothing but NumPy.
 
----
+It is a reference model with a reproducible result, not a library and not a strong digit classifier: it has no convolution, no batch normalisation, no augmentation and no GPU code, on purpose.
 
-## What this project demonstrates
+## Who this is for
 
-- The from-scratch stack composes into a single working model: Dense layers + ReLU + Softmax + cross-entropy + Adam + L2 + Dropout, all imported from `nn.py`.
-- Mini-batch training (introduced in [post 32](../../posts/32-mini-batching/)) is applied here to a real dataset: a compact outer loop in `train.py` shuffles, slices, and iterates the dataset in batches of 128.
-- The train/test discipline from [post 28](../../posts/28-generalization-and-testing/) and the train-vs-test dropout switch from [post 31](../../posts/31-dropout/) carry over directly to a real dataset.
+- Readers of Neural Networks from Scratch who have finished the post on mini-batching (`nn-032`) and want a first real result from the classes they wrote, with every number traceable to a command.
+- Authors who need a dense baseline to measure against. The sibling series Convolutional Neural Networks from Scratch uses this run as that baseline in `cnn-011` and `cnn-012`.
 
-## File layout
+## Quickstart
 
-```
-mnist-from-scratch/
-├── README.md          ← this file
-├── requirements.txt   ← numpy + (optional) scikit-learn
-├── nn.py              ← every class lifted from the series (posts 1–32)
-├── data.py            ← MNIST loading (sklearn or manual download)
-├── train.py           ← training loop + checkpoint
-└── evaluate.py        ← test loss, accuracy, confusion matrix
-```
-
-## Quick start
+You need [uv](https://docs.astral.sh/uv/), which fetches Python 3.13 and the locked packages, and a network connection for the first two commands. From a clone of the series repository:
 
 ```bash
 cd projects/mnist-from-scratch
-pip install -r requirements.txt
-python train.py              # ~20 epochs, ~2-5 min on a modern laptop CPU
-python evaluate.py
+uv sync --frozen
+uv run python scripts/download_mnist.py
+uv run python -m mnist_from_scratch.train
+uv run python -m mnist_from_scratch.evaluate
 ```
 
-The first call to `train.py` (with the default sklearn backend) downloads the dataset via `fetch_openml` and caches it in `~/scikit_learn_data/`. The manual backend (`--backend manual`) downloads the four idx-ubyte.gz files into a local `mnist_cache/` folder and parses them with stdlib only.
+`download_mnist.py` fetches the four MNIST files (11,594,722 bytes in all) into `mnist_cache/` and keeps a file only if its SHA-256 is the expected one. `train` runs 20 epochs from seed 0 and writes `mnist_weights.npz`; `evaluate` loads that file and prints the test loss, the accuracy, the accuracy of each digit and the confusion matrix. The dataset and the weights stay on your machine and are never committed.
 
----
+To check the project itself:
 
-## 1. Why MNIST?
-
-| Property | Value |
-|---|:---:|
-| Input | 784 features (28 × 28 grayscale pixels, flattened) |
-| Classes | 10 (digits 0–9) |
-| Training samples | 60 000 |
-| Test samples | 10 000 |
-| Modern SOTA | > 99.9% (with convolutions, augmentation, ensembles) |
-| Plain-MLP ceiling | ~98% (with the kind of tricks taught in this series) |
-| What this project hits | ~97% (a tuned subset of those tricks) |
-
-MNIST is the natural next step after the spiral dataset from the lectures: a real image dataset, ten classes instead of three, two orders of magnitude more samples, and well-studied baselines so the result can be sanity-checked. It is small enough to train on a CPU in minutes and large enough that overfitting becomes a real concern, which is why dropout earns its keep here in a way it could not on the spiral.
-
-## 2. The architecture
-
-```
-input (784) → Dense(784, 128) → ReLU → Dropout(0.1)
-            → Dense(128, 128) → ReLU → Dropout(0.1)
-            → Dense(128, 10)  → Softmax + categorical cross-entropy
+```bash
+uv run pytest --cov=src --cov-fail-under=95
+uv run ruff check . && uv run ruff format --check .
 ```
 
-Three design choices worth pinning down.
+These are the commands in `project.yaml`, and they were last run from a clean environment on the `verified` date there.
 
-**Two hidden layers, 128 units each.** One hidden layer can fit MNIST but generalises worse; three or four hidden layers help marginally and cost more compute. 128 is a sensible width — enough capacity for ten classes without exploding the parameter count past ~120k.
+## What it does
 
-**Dropout 0.1, not 0.5.** The original dropout paper used 0.5 for hidden layers on much wider networks. With 128-unit hidden layers, dropping half kills too much capacity. 0.1 gives a measurable regularisation benefit without crushing training accuracy. See [post 31, §3](../../posts/31-dropout/) for the rate-vs-capacity discussion.
+- Trains the network from a fixed seed, so that two runs on the same machine give the same weights bit for bit. Both commands print a SHA-256 fingerprint of the weights, which is how you can tell.
+- Scores the saved weights on the standard test split and reports per-digit accuracy and the full confusion matrix, not only the headline figure.
+- Turns the headline into a check: `uv run python -m mnist_from_scratch.evaluate --min-accuracy 0.98` exits with status 1 if the test accuracy is lower.
+- Refuses to start on a dataset that is not byte for byte the published one, and says which command fetches it.
+- Stores weights as plain arrays in an `.npz` file, so loading weights never runs code from the file.
 
-**L2 weight decay of 5e-4.** The small value comes from the rule of thumb in [post 30, §6](../../posts/30-l1-and-l2-regularisation/): low enough that training accuracy is not damaged, high enough that the train/test gap closes.
+`--epochs`, `--batch-size`, `--seed`, `--data-dir` and `--weights` change a run; `--help` on any command lists them. The optimiser settings, the layer sizes, the L2 strength and the dropout rate are fixed in the code, because they are the baseline that other work cites.
 
-Total parameter count:
+## Architecture
 
-| Layer | Weights | Biases | Total |
-|---|:---:|:---:|:---:|
-| Dense(784, 128) | 100 352 | 128 | 100 480 |
-| Dense(128, 128) | 16 384  | 128 | 16 512 |
-| Dense(128, 10)  | 1 280   | 10  | 1 290 |
-| **Sum** |  |  | **118 282** |
+![Four columns joined by arrows: the input of 784 pixels, two hidden blocks of Dense, ReLU and Dropout(0.1) with 100,480 and 16,512 parameters, and an output block of Dense and Softmax with 1,290, totalling 118,282 parameters.](docs/diagrams/architecture.svg)
 
-## 3. The training loop
+Each image is flattened to 784 values in $[0, 1]$. Two hidden layers of 128 units follow, each a dense layer, a ReLU and a dropout layer with drop rate 0.1; a dense layer of 10 units and a softmax produce the class probabilities. The two hidden layers carry an L2 penalty of 0.0005 on their weights. Training is Adam with learning rate 0.001 and decay 0.0001 for 20 epochs, each one 469 mini-batches of at most 128 images drawn in a fresh random order.
 
-`train.py` runs 20 epochs of mini-batch Adam with the following structure (simplified):
+The code is one package, `src/mnist_from_scratch/`, of six small modules: `nn.py` holds the series' classes, `model.py` assembles them and reads and writes the weights, `data.py` checks and parses the dataset, `download.py` fetches it, and `train.py` and `evaluate.py` are the two commands. [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) describes the components and the data flow, and the records under [docs/adr/](docs/adr/) give the reasons for the decisions a maintainer would otherwise have to rediscover.
 
-```python
-for epoch in range(epochs):
-    idx = np.random.permutation(len(X_train))
-    X_shuf, y_shuf = X_train[idx], y_train[idx]
+## Results
 
-    for start in range(0, len(X_train), batch_size):
-        X_batch = X_shuf[start:start + batch_size]
-        y_batch = y_shuf[start:start + batch_size]
+Measured on 2026-10-05 with the quickstart commands, seed 0, on an Intel Core i7-9750H with 7.8 GB of memory, CPU only. [docs/EVALUATION.md](docs/EVALUATION.md) has the full output, the confusion matrix and the limits of the claim.
 
-        # Forward (training=True so dropout is active)
-        # Backward (chain rule through every layer)
-        # Update (optimizer.pre_update_params → update_params per layer → post_update_params)
-```
-
-The full implementation in `train.py` adds:
-
-- L2 regularisation loss computed per layer and added to the data loss
-- A running tally of correct predictions for the epoch
-- Per-epoch logging of loss, training accuracy, and current learning rate
-- A pickle checkpoint at the end so `evaluate.py` does not have to retrain
-
-The whole loop is about 70 lines including the model construction and CLI parsing.
-
-## 4. The evaluation script
-
-`evaluate.py` loads the checkpoint, runs a single forward pass on the full test set (with **`training=False`** so dropout is off), and reports:
-
-- Test loss and accuracy
-- Per-class accuracy (which digits the network finds easy vs hard)
-- A printed 10 × 10 confusion matrix
-- Indices of the first 20 misclassified samples (so you can pull them up in a notebook to inspect)
-
-The most common output looks like:
-
-```
-  loss     0.0892
-  accuracy 0.9714  (9714/10000)
-
-Per-class accuracy:
-  digit 0: 0.9888  (980 samples)
-  digit 1: 0.9885  (1135 samples)
-  digit 2: 0.9670  (1032 samples)
-  digit 3: 0.9663  (1010 samples)
-  ...
-```
-
-Per-class accuracy almost always reveals that 8 and 5 are the hardest digits (they share strokes with several others), and 1 is the easiest.
-
-## 5. Stretch goals
-
-| Goal | Difficulty | Hint |
-|---|---|---|
-| Reach 98% test accuracy | medium | Wider hidden layers (256 instead of 128) or add a 3rd hidden layer |
-| Add early stopping | easy | Track validation loss in `train.py`, halt when it plateaus for N epochs |
-| Switch optimisers and compare | medium | Swap `Optimizer_Adam` for SGD+momentum or RMSProp; compare convergence curves |
-| Plot the loss curve | easy | Append `(epoch, train_loss, train_acc)` to a list each epoch and `matplotlib.pyplot.plot` them |
-| Data augmentation (random shifts) | hard | Shift each image by ±2 pixels in x/y at random; expect ~+0.5% test accuracy |
-| Compare with Fashion-MNIST | easy | Already built as [Project 03](../03-fashion-mnist/) — the same code on a harder dataset, ~8 points lower |
-
-## 6. What this project does *not* do
-
-Things deliberately out of scope so the project stays a faithful demonstration of what the series covers, rather than a from-scratch reproduction of all of deep learning:
-
-- **No convolutional layers.** Convolutions are not in the series; using them here would obscure which improvement comes from the model and which from the architecture family.
-- **No batch normalisation.** Not in the series. Adam + dropout + L2 is enough to hit 97% on a small MLP.
-- **No GPU code.** NumPy on CPU. Training takes a few minutes; that is the point.
-- **No external optimiser libraries.** Adam in `nn.py` is the same class built in [post 27](../../posts/27-adam-optimiser/), to the line.
-
-## 7. Related lectures
-
-| Lecture | Used here for |
+| Figure | Value |
 |---|---|
-| [Part 4 — Dense layer class](../../posts/04-dense-layer-class-and-spiral-data/) | `Layer_Dense` |
-| [Part 6 — Activation functions](../../posts/06-activation-functions-relu-and-softmax/) | `Activation_ReLU` |
-| [Part 19 — Softmax + cross-entropy combined](../../posts/19-softmax-derivatives-and-the-combined-backward-pass/) | `Activation_Softmax_Loss_CategoricalCrossentropy` |
-| [Part 21 — Coding full backpropagation](../../posts/21-coding-the-full-backpropagation/) | The full forward/backward stack |
-| [Part 27 — Adam](../../posts/27-adam-optimiser/) | `Optimizer_Adam` |
-| [Part 28 — Generalisation and testing](../../posts/28-generalization-and-testing/) | Train/test split discipline |
-| [Part 30 — L1 / L2 regularisation](../../posts/30-l1-and-l2-regularisation/) | `weight_regularizer_l2`, `regularization_loss` |
-| [Part 31 — Dropout](../../posts/31-dropout/) | `Layer_Dropout`, train-vs-test switch |
-| [Part 32 — Mini-batching](../../posts/32-mini-batching/) | The epoch × batch training loop in `train.py` |
+| Test accuracy | 98.00 percent (9,800 of 10,000) |
+| Test loss (mean cross-entropy) | 0.0628 |
+| Misclassified test images | 200 |
+| Parameters | 118,282 |
+| Training accuracy in the last epoch, dropout active | 98.47 percent |
+| Training time, 20 epochs | 85.3 s; other runs that day took up to 126.6 s on the same busy laptop |
 
-## 8. Common pitfalls
+| Digit | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Test images | 980 | 1,135 | 1,032 | 1,010 | 982 | 892 | 958 | 1,028 | 974 | 1,009 |
+| Correct | 969 | 1,125 | 1,018 | 992 | 971 | 871 | 940 | 1,005 | 949 | 960 |
+| Accuracy (percent) | 98.88 | 99.12 | 98.64 | 98.22 | 98.88 | 97.65 | 98.12 | 97.76 | 97.43 | 95.14 |
 
-- **Pixel values not normalised to [0, 1].** Adam diverges on raw 0–255 pixel ranges. `data.py` already divides by 255; if you re-implement loading, do the same.
-- **Forgetting `training=False` at evaluation.** Test accuracy becomes the accuracy of a random subnetwork. `evaluate.py` sets this correctly; if you copy the loop manually, be careful.
-- **One huge batch instead of mini-batches.** Adam needs the stochastic noise to escape local minima; full-batch updates on 60k samples both slow training and reduce final accuracy.
-- **Re-initialising the optimiser inside the epoch loop.** The momentum and cache buffers must persist across batches. Construct `Optimizer_Adam(...)` once, outside the loop.
-- **Using `np.random.seed` only at the top of the script.** That seeds the global RNG but not the per-layer dropout masks if you forget to use the same RNG. `train.py` calls `np.random.seed(seed)` once at the start, which is enough as long as no other code paths reseed.
-- **Cheating with the test set.** If a hyperparameter choice was informed by test-set behaviour, that test number is no longer honest. Hold out a separate validation slice from the training set if you want to tune.
+In this run the digit 1 is the easiest and 9 the hardest, and the largest single confusion is 18 nines read as fours.
 
----
+## Limits
 
-> *Built on the foundation of the series. Source: [INDEX.md](../../INDEX.md).*
+- **One seed, one machine.** The headline is the seed 0 run. Seeds 1 and 2 gave 97.91 and 98.01 percent, so the three runs lie within 0.10 percentage points, and the hardest digit changed with the seed (9, then 2, then 9). Quote a per-digit figure with its seed.
+- **Bit-for-bit reproduction needs the locked environment.** The result depends on the linear algebra library inside the NumPy wheel, so NumPy is pinned to 2.3.5. With another NumPy version or on another processor the last digits can differ; the fingerprint tells you whether your run is the documented one.
+- **MNIST is an easy benchmark.** Centred, size-normalised digits flatter a dense network, and 98 percent here says little about harder data. The series' Fashion-MNIST project (`nn-p03`) runs the same network on clothing images.
+- **No validation split.** The run trains on all 60,000 training images and uses the test set only to report. Anyone who changes a setting and compares test accuracy is tuning on the test set, the mistake `nn-029` describes; hold out part of the training data first.
+- **A baseline, not the series' best practice.** The layers start from `0.01 * randn` weights, which `nn-033` shows is a poor choice for deeper networks. It is kept because this run is the documented baseline.
+- **Weights only.** The `.npz` file holds the six parameter arrays and no optimiser state, so a run cannot be resumed. Pickle checkpoints written by the scripts before version 1.0.0 are not loaded.
+
+## Built from
+
+- `nn-016`: `Layer_Dense` and `Activation_ReLU`, each with its backward pass.
+- `nn-019`: the combined softmax and categorical cross-entropy class and its one-line gradient.
+- `nn-027`: `Optimizer_Adam`, with bias correction and learning-rate decay.
+- `nn-030`: the L2 penalty in the dense layer's gradient and in the loss.
+- `nn-031`: `Layer_Dropout` and the switch between training and evaluation.
+- `nn-032`: the epoch and mini-batch loops of the trainer.
+
+## Corrections
+
+The series takes no pull requests or issues. If you find a mistake, send the correction through the series website.
+
+## Licence
+
+Code under MIT, prose and figures under CC BY 4.0, as stated in the series [LICENSE](../../LICENSE). MNIST itself is distributed under CC BY-SA 3.0.

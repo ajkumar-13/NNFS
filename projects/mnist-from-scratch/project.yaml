@@ -1,35 +1,53 @@
 id: nn-p01
 slug: mnist-from-scratch
 title: "MNIST from scratch"
-summary: "A two-hidden-layer dense network written in NumPy alone, with Adam, L2 and dropout, trained in mini-batches on the 60,000 MNIST digits and scored on the 10,000 test images."
+summary: "A two-hidden-layer dense network written in NumPy alone, with Adam, L2 and dropout, trained in mini-batches on the 60,000 MNIST digits and scored on the 10,000 test images. From a fixed seed it reaches 98.00 percent test accuracy with 118,282 parameters, and the locked environment repeats the run bit for bit."
 kind: model
-status: planned
+status: released
 level: intermediate
 after_post: nn-032
 uses: [nn-016, nn-019, nn-027, nn-030, nn-031, nn-032]
-problem: "The series derives every layer, loss and optimiser on a toy spiral dataset, which leaves open whether the pieces compose into a model that works on real data. This project assembles them, unchanged, into a 784-128-128-10 classifier for handwritten digits."
-users: "Readers who have finished Part VIII and want a first real result, and the sibling CNN series, which uses this network as its dense baseline."
-impact: "Trained from the fixed seed with the documented command, the model reaches the test accuracy recorded in docs/EVALUATION.md, and the evaluation script reproduces that figure from a fresh run."
+problem: "The series derives every layer, loss and optimiser on a toy spiral of 300 points, which leaves open whether the pieces compose into a model that works on real data. This project assembles them, with their arithmetic unchanged, into a 784-128-128-10 classifier for handwritten digits, and makes the result a figure that anyone can reproduce and that other work can cite."
+users: "Readers who have finished the post on mini-batching (nn-032) and want a first real result from the classes they wrote, and the sibling series Convolutional Neural Networks from Scratch, which uses this run as its dense baseline in cnn-011 and cnn-012."
+impact: "Trained from seed 0 with the documented command, the 118,282-parameter network classifies 9,800 of the 10,000 MNIST test images correctly, a test accuracy of 98.00 percent. docs/EVALUATION.md records the run, and the eval command exits with an error if a rerun in the locked environment scores below 0.98."
 stack:
   language: python
   frameworks: [numpy]
+runtime:
+  deploy: none
+  targets: []
 commands:
   setup: "uv sync --frozen"
-  test: "uv run pytest --cov=src --cov-fail-under=80"
-  lint: "uv run ruff check ."
+  test: "uv run pytest --cov=src --cov-fail-under=95"
+  lint: "uv run ruff check . && uv run ruff format --check ."
+  run: "uv run python -m mnist_from_scratch.train"
+  eval: "uv run python -m mnist_from_scratch.evaluate --min-accuracy 0.98"
 quality:
-  coverage_min: 80
+  coverage_min: 95
   evaluation: docs/EVALUATION.md
 data:
-  - name: mnist
-    source: assets/registry/datasets.yaml (mnist)
+  - name: mnist-train-images
+    source: scripts/download_mnist.py
     license: CC BY-SA 3.0
+    checksum: "sha256:440fcabf73cc546fa21475e81ea370265605f56be210a4024d2ca8f203523609"
+  - name: mnist-train-labels
+    source: scripts/download_mnist.py
+    license: CC BY-SA 3.0
+    checksum: "sha256:3552534a0a558bbed6aed32b30c495cca23d567ec52cac8be1a0730e8010255c"
+  - name: mnist-test-images
+    source: scripts/download_mnist.py
+    license: CC BY-SA 3.0
+    checksum: "sha256:8d422c7b0a1c1c79245a5bcf07fe86e33eeafee792b84584aec276f5a2dbc4e6"
+  - name: mnist-test-labels
+    source: scripts/download_mnist.py
+    license: CC BY-SA 3.0
+    checksum: "sha256:f7ae60f92e00ec6debd23a6088c31dbd2371eca3ffa0defaefb259924204aec6"
 security:
   secrets: none
   threat_notes: docs/SECURITY.md
   audited: 2026-10-05
 release:
-  version: "0.0.0"
+  version: "1.0.0"
   license: MIT
   registry: null
 maintenance:
