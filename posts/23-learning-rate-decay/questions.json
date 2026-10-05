@@ -1,0 +1,770 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-023",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-023-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "schedule"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "An optimiser follows the schedule $\\alpha_t = \\alpha_0 / (1 + d \\cdot t)$ with $\\alpha_0 = 1.0$ and $d = 10^{-3}$, where $t$ counts the updates already made. Which statement describes the learning rate during training?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It is lowered once, before the first update, and then stays fixed.",
+          "correct": false,
+          "feedback": "That describes a smaller constant rate. In the schedule $t$ grows by 1 at every update, so the denominator and the rate change at every update."
+        },
+        {
+          "key": "b",
+          "text": "It is lowered only at updates where the loss went up.",
+          "correct": false,
+          "feedback": "The formula contains no loss. The rate depends on the update counter alone; a schedule that reacts to the loss is a different method."
+        },
+        {
+          "key": "c",
+          "text": "It is a little smaller at every update and never reaches zero.",
+          "correct": true,
+          "feedback": "Right: the denominator $1 + d \\cdot t$ grows with every update, so the rate falls every time, and a positive number divided by a finite one stays positive."
+        },
+        {
+          "key": "d",
+          "text": "It falls in a straight line and is zero at update $1/d$.",
+          "correct": false,
+          "feedback": "At $t = 1/d$ the denominator is 2, so the rate is half of $\\alpha_0$, not zero. The curve flattens as it falls and never touches zero."
+        }
+      ],
+      "explanation": "Section 2: the rate is $\\alpha_0$ divided by a denominator that grows by $d$ at every update. It therefore decreases at every update, by less each time, and it tends to zero without reaching it. At $t = 1/d$ it stands at one half of $\\alpha_0$.",
+      "hints": [
+        "Evaluate the denominator at $t = 0$, at $t = 1$ and at $t = 1/d$."
+      ]
+    },
+    {
+      "id": "nn-023-q02",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 4,
+      "tags": [
+        "schedule",
+        "arithmetic"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "An optimiser is built as `Optimizer_SGD(learning_rate=0.5, decay=2e-3)` and follows $\\alpha_t = \\alpha_0 / (1 + d \\cdot t)$, with $t = 0$ for the first update. Give the learning rate used by the update with index $t = 250$ and by the update with index $t = 2{,}000$.",
+      "answer": {
+        "parts": [
+          {
+            "label": "rate at t = 250",
+            "value": 0.3333,
+            "tolerance": 0.0005,
+            "unit": ""
+          },
+          {
+            "label": "rate at t = 2,000",
+            "value": 0.1,
+            "tolerance": 0.0005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 2: 0.5 / (1 + 0.002 * 250) = 0.5 / 1.5 and 0.5 / (1 + 0.002 * 2000) = 0.5 / 5. Checked by setting `iterations` on the class of snippets/decay_schedule.py and calling `pre_update_params`.",
+      "explanation": "Section 2: the denominator is $1 + d \\cdot t$. At $t = 250$ it is $1 + 0.002 \\cdot 250 = 1.5$, so the rate is $0.5 / 1.5 = 0.3333$. At $t = 2{,}000$ it is $1 + 4 = 5$, so the rate is $0.5 / 5 = 0.1$. The initial rate scales the whole curve; it does not change when the curve reaches a given fraction.",
+      "hints": [
+        "Compute the product $d \\cdot t$ first, then the denominator."
+      ]
+    },
+    {
+      "id": "nn-023-q03",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 5,
+      "tags": [
+        "choosing-d"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A run makes 4,001 updates, with indices $t = 0$ to $t = 4{,}000$, under the schedule $\\alpha_t = \\alpha_0 / (1 + d \\cdot t)$. The last update is to use 5 percent of the initial learning rate. Which decay rate $d$ achieves that?",
+      "answer": {
+        "value": 0.00475,
+        "tolerance": 6e-05,
+        "unit": ""
+      },
+      "precision_note": "Closed form of section 2.2: d = (k - 1) / T with k = 20 and T = 4000, so d = 19 / 4000 = 0.00475. Checked on the class of snippets/decay_schedule.py: with this decay and `iterations = 4000`, `current_learning_rate` is 0.05 times the initial rate. The tolerance accepts 0.0048 and rejects 20 / 4000 = 0.005.",
+      "explanation": "Section 2.2: a fraction $1/k$ of the initial rate is left when $1 + d \\cdot t = k$, so $d = (k - 1)/T$. Five percent is $1/20$, which gives $d = 19 / 4{,}000 = 0.00475$. Using $k$ in place of $k - 1$ gives 0.005, which leaves $1/21$ of the rate, a little too small.",
+      "hints": [
+        "Write 5 percent as $1/k$ and ask what the denominator of the schedule must equal at the last update.",
+        "The denominator is $1 + d \\cdot t$; set it equal to $k$ at $t = 4{,}000$ and solve for $d$."
+      ]
+    },
+    {
+      "id": "nn-023-q04",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 1,
+      "tags": [
+        "contract"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The optimiser class of the post has three methods that the training loop calls. Which of them increments `iterations`?",
+      "answer": {
+        "model": "`post_update_params`, which the loop calls once per step after every layer has been updated.",
+        "accept": [
+          "^(?![\\s\\S]*(?:\\b(?:not|never|no|neither|nor)\\b|n't)(?:(?!\\bbut\\b)[^.;:,\\n()])*post[_\\s-]*update[_\\s-]*params?)(?![\\s\\S]*post[_\\s-]*update[_\\s-]*params?`?(?:\\(\\))?\\s+(?:does\\s+not|doesn't|never|is\\s+not|isn't|cannot|can't)\\b)(?![\\s\\S]*(?:^|[.;:,\\n()])(?:(?!(?:\\b(?:not|never|no|nor|neither|cannot|reads?|applies|apply|unlike|than|instead)\\b|n't))[^.;:,\\n()])*(?:pre[_\\s-]*update[_\\s-]*params?|(?<!post)(?<!post[_\\s-])(?<!pre)(?<!pre[_\\s-])update[_\\s-]*params?)(?:(?!(?:\\b(?:not|never|no|nor|neither|cannot|reads?|applies|apply|unlike|than|instead)\\b|n't))[^.;:,\\n()])*(?:$|[.;:,\\n()]))(?![\\s\\S]*\\b(?:all\\s+three|all\\s+of\\s+them|every\\s+one|each\\s+of\\s+the)\\b)[\\s\\S]*\\bpost[_\\s-]*update[_\\s-]*params?\\b"
+        ]
+      },
+      "explanation": "Section 4: `post_update_params` holds the single line `self.iterations += 1`. The loop calls it once per training step, after `update_params` has run for every layer, so the counter equals the number of steps made. `pre_update_params` reads the counter and `update_params` does not touch it.",
+      "hints": [
+        "The counter must advance once per training step, however many layers the network has."
+      ]
+    },
+    {
+      "id": "nn-023-q05",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "contract",
+        "counter"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The class of the post increments its update counter in a method of its own, not inside `update_params`. What is the reason?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`update_params` is skipped whenever `decay` is zero, so the counter would stop.",
+          "correct": false,
+          "feedback": "The guard `if self.decay:` sits in `pre_update_params` and skips only the division. `update_params` runs for every layer in every step, with or without decay."
+        },
+        {
+          "key": "b",
+          "text": "`update_params` runs once per layer, so the counter would advance several times per step.",
+          "correct": true,
+          "feedback": "Right: with two dense layers the counter would grow by two per step and the rate would fall as if the decay were twice as large."
+        },
+        {
+          "key": "c",
+          "text": "The counter has to be incremented before the rate is computed, and `update_params` runs too late for that.",
+          "correct": false,
+          "feedback": "It is the other way round: the rate is computed from the counter first and the counter is incremented last, so that the first update uses the initial rate."
+        },
+        {
+          "key": "d",
+          "text": "A method that changes the weights must not change any attribute of the optimiser.",
+          "correct": false,
+          "feedback": "No such rule exists; later optimisers of the series store state from inside `update_params`. The problem is how often the method is called."
+        }
+      ],
+      "explanation": "Section 4: `update_params(layer)` is called once for every trainable layer of a step, and `post_update_params()` once per step. A counter that is meant to count steps therefore belongs in the second. Section 10 measures the mistake on two layers: 20,002 on the counter after 10,001 steps and a last rate of 0.0476 where 0.0909 was intended.",
+      "hints": [
+        "Count how many times each of the three methods is called in one pass through the loop of a network with two dense layers."
+      ]
+    },
+    {
+      "id": "nn-023-q06",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "10",
+      "est_minutes": 6,
+      "tags": [
+        "counter",
+        "bug"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The optimiser below is used with `learning_rate=1.0, decay=1e-3` to train a network with three dense layers. Each training step calls `pre_update_params()` once, then `update_params(layer)` for each of the three layers, then `post_update_params()` once. Which learning rate does the step with index 1,000 (the 1,001st step) use?",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "class Optimizer_SGD:\n\n    def __init__(self, learning_rate=1.0, decay=0.0):\n        self.learning_rate = learning_rate\n        self.current_learning_rate = learning_rate\n        self.decay = decay\n        self.iterations = 0\n\n    def pre_update_params(self):\n        if self.decay:\n            self.current_learning_rate = self.learning_rate / \\\n                (1.0 + self.decay * self.iterations)\n\n    def update_params(self, layer):\n        layer.weights -= self.current_learning_rate * layer.dweights\n        layer.biases -= self.current_learning_rate * layer.dbiases\n        self.iterations += 1\n\n    def post_update_params(self):\n        pass\n"
+      },
+      "answer": {
+        "value": 0.25,
+        "tolerance": 0.001,
+        "unit": ""
+      },
+      "precision_note": "Closed form: after 1,000 steps of three layers the counter is 3,000, so the rate is 1 / (1 + 0.001 * 3000) = 0.25. Confirmed by running this class for 1,001 steps with three layers; the same mistake on two layers is in snippets/what_can_go_wrong.py. The class of the post would use 0.5.",
+      "explanation": "Section 10: the counter is incremented inside `update_params`, which runs once per layer. When the step with index 1,000 computes its rate, 1,000 steps of three layers have passed and the counter stands at 3,000, so the rate is $1/(1 + 10^{-3} \\cdot 3{,}000) = 0.25$. With the counter in `post_update_params` it would stand at 1,000 and the rate would be 0.5: the mistake triples the decay.",
+      "hints": [
+        "Find the value of `iterations` at the moment `pre_update_params` is called for that step.",
+        "The counter grows by one per call of `update_params`, and there are three such calls in every step."
+      ]
+    },
+    {
+      "id": "nn-023-q07",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 6,
+      "tags": [
+        "schedule",
+        "comparison"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Five optimisers follow $\\alpha_t = \\alpha_0 / (1 + d \\cdot t)$ with different settings. Order them by the learning rate they use at the update with index $t = 500$, from the largest rate to the smallest.",
+      "items": [
+        {
+          "key": "a",
+          "text": "$\\alpha_0 = 1.0$, $d = 10^{-2}$"
+        },
+        {
+          "key": "b",
+          "text": "$\\alpha_0 = 0.5$, $d = 10^{-3}$"
+        },
+        {
+          "key": "c",
+          "text": "$\\alpha_0 = 0.2$, $d = 0$"
+        },
+        {
+          "key": "d",
+          "text": "$\\alpha_0 = 2.0$, $d = 10^{-1}$"
+        },
+        {
+          "key": "e",
+          "text": "$\\alpha_0 = 1.0$, $d = 10^{-3}$"
+        }
+      ],
+      "answer": [
+        "e",
+        "b",
+        "c",
+        "a",
+        "d"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 2: the denominators at $t = 500$ are $1 + d \\cdot 500$, that is 6 for $d = 10^{-2}$, 1.5 for $d = 10^{-3}$, 1 for $d = 0$ and 51 for $d = 10^{-1}$. The rates are $1.0/1.5 = 0.667$, $0.5/1.5 = 0.333$, $0.2$, $1.0/6 = 0.167$ and $2.0/51 = 0.039$. The largest initial rate ends last: after 500 updates the decay rate decides more than the starting value.",
+      "hints": [
+        "The rate at a given update depends on both numbers; neither $\\alpha_0$ nor $d$ alone gives the order.",
+        "Compute $1 + d \\cdot 500$ for each setting and divide $\\alpha_0$ by it."
+      ]
+    },
+    {
+      "id": "nn-023-q08",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 5,
+      "tags": [
+        "diagnosis",
+        "plateau"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network is trained with an optimiser that has a decay argument. Match each observation from a training run to its cause.",
+      "left": [
+        {
+          "key": "a",
+          "text": "The loss goes up on thousands of steps, sometimes by more than 0.2 in one step."
+        },
+        {
+          "key": "b",
+          "text": "The loss falls on every step by a tiny amount, the rate is at 1 percent of its start, and the loss falls quickly again once the rate is set back to its start."
+        },
+        {
+          "key": "c",
+          "text": "The loss is flat and stays flat when the rate is set back to its start."
+        },
+        {
+          "key": "d",
+          "text": "The log prints a rate that falls as planned, but the weights have moved as far as with a constant rate."
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "The rate has run out: the decay is too strong for the length of the run."
+        },
+        {
+          "key": "q",
+          "text": "`update_params` multiplies by `learning_rate`, not by `current_learning_rate`."
+        },
+        {
+          "key": "r",
+          "text": "The rate is too large for the valley the optimiser is in."
+        },
+        {
+          "key": "s",
+          "text": "The gradient is near zero: a minimum or a flat region."
+        },
+        {
+          "key": "t",
+          "text": "`pre_update_params` is never called."
+        },
+        {
+          "key": "u",
+          "text": "The counter is incremented once per layer."
+        }
+      ],
+      "answer": {
+        "a": "r",
+        "b": "p",
+        "c": "s",
+        "d": "q"
+      },
+      "explanation": "Sections 7 and 10: a loss that jumps up means steps that overshoot, which is a rate that is too large. A loss that creeps down under a rate that has shrunk to a hundredth, and falls again when the rate is restored, was held back by the rate. A loss that stays flat at a restored rate has no gradient left to follow. A printed rate that falls while the weights move at full speed means the update reads the base rate. A missing `pre_update_params` would print a constant rate, and a counter per layer would make the weights move less, not as far.",
+      "hints": [
+        "Each update is the rate times the gradient. For each observation, ask which of the two factors is the unusual one, or whether the code applies a different rate from the one it prints."
+      ]
+    },
+    {
+      "id": "nn-023-q09",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 4,
+      "tags": [
+        "diagnosis",
+        "plateau"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A run with `learning_rate=1.0, decay=1e-2` shows, after 10,001 epochs: loss 1.0636 on a three-class problem, a fall of 0.00004 over the last 1,000 epochs, a gradient of length 0.0030 where healthy runs of the same network end near 0.5, and `current_learning_rate` at 0.0099. Which conclusion do these numbers support?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The optimiser has reached a local minimum, because the gradient is a hundred times shorter than usual.",
+          "correct": false,
+          "feedback": "A short gradient is necessary for a minimum and not sufficient. The post measured exactly these numbers on a run whose loss fell to 0.7486 after the rate was restored."
+        },
+        {
+          "key": "b",
+          "text": "The backward pass is wrong, because a loss this far from zero cannot have a gradient this short.",
+          "correct": false,
+          "feedback": "It can: near its small initial weights this network sits in a flat region where the loss is close to $\\ln 3$ and the gradient is short. Nothing here points to the code."
+        },
+        {
+          "key": "c",
+          "text": "A larger decay is needed, so that the run settles into the valley it has found.",
+          "correct": false,
+          "feedback": "The run already makes no jumps; it is not overshooting anything. More decay shortens steps that are already too short."
+        },
+        {
+          "key": "d",
+          "text": "None about a minimum yet: the rate has shrunk a hundredfold and must be restored first.",
+          "correct": true,
+          "feedback": "Right: a step is the rate times the gradient, and here both are small. Only training on at the initial rate shows whether the loss can still fall."
+        }
+      ],
+      "explanation": "Section 7.1: the length of the gradient cannot separate a rate that has run out from a point with no gradient left, because the stalled runs of the post have short gradients too. The test is an intervention: restore the rate with a new optimiser object or `iterations = 0` and train on. On all five seeds of the post the loss then fell by 0.12 to 0.32 within 3,000 epochs, so the plateau was the rate.",
+      "hints": [
+        "A step is a product of two numbers. Check how many of them are small here.",
+        "Ask which single change to the run would separate the two explanations."
+      ]
+    },
+    {
+      "id": "nn-023-q10",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "seed-spread",
+        "measurement"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The post trains the spiral classifier for 10,001 epochs on five seeds, once with a constant learning rate of 1.0 and once with `decay=1e-3`. Which effect of the decay appeared on all five seeds?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "A lower loss at the end of the 10,001 epochs.",
+          "correct": false,
+          "feedback": "The decayed run ended with the lower loss on seeds 0 and 2 only. On seeds 1, 3 and 4 the constant rate ended lower."
+        },
+        {
+          "key": "b",
+          "text": "A higher accuracy at the end of the 10,001 epochs.",
+          "correct": false,
+          "feedback": "The accuracy was higher with decay on one seed, equal on one and lower on three, by 5 to 20 points."
+        },
+        {
+          "key": "c",
+          "text": "Much smaller single-step rises of the loss.",
+          "correct": true,
+          "feedback": "Right: the largest rise was 0.0553 to 1.1043 with the constant rate and at most 0.0152 with decay, on every seed."
+        },
+        {
+          "key": "d",
+          "text": "Fewer epochs needed to reach a loss of 0.8.",
+          "correct": false,
+          "feedback": "The post does not measure this, and the decayed steps are shorter than the constant ones, so there is no reason to expect it."
+        }
+      ],
+      "explanation": "Section 6.1: what decay delivered on every seed was a steadier descent. The largest single rise of the loss shrank on all five seeds, and the band the loss moved in during the last 1,000 epochs narrowed from a width between 0.098 and 2.283 to a width between 0.021 and 0.035. The final loss and accuracy were better on a minority of seeds, because the decayed rates add up to 24 percent of the constant ones.",
+      "hints": [
+        "Separate two questions: how smoothly a run descends, and how far it gets in a fixed number of epochs."
+      ]
+    },
+    {
+      "id": "nn-023-q11",
+      "type": "short",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "schedule",
+        "half"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Under the schedule $\\alpha_t = \\alpha_0 / (1 + d \\cdot t)$ with $d > 0$, at which update index $t$ is the learning rate exactly half of $\\alpha_0$? Give $t$ as an expression in $d$.",
+      "answer": {
+        "model": "$t = 1/d$, the update at which $d \\cdot t = 1$ and the denominator equals 2.",
+        "accept": [
+          "^(?![\\s\\S]*(?:\\b(?:not|never)\\b|n't)(?:(?!\\bbut\\b)[^.;,\\n])*(?:(?:(?<![0-9a-z.])1\\s*/\\s*d\\b|\\\\[dt]?frac\\s*\\{\\s*1\\s*\\}\\s*\\{\\s*d\\s*\\}|\\bone\\s+over\\s+d\\b|\\b(?:reciprocal|inverse)\\s+of\\s+d\\b|\\bd\\s*\\^\\s*\\{?\\s*\\(?\\s*-\\s*1\\b\\s*\\)?\\s*\\}?|\\(\\s*2\\s*-\\s*1\\s*\\)\\s*/\\s*d\\b)|\\bd\\s*(?:\\\\cdot|\\\\times|\\*|times|·)?\\s*t\\s*(?:=|equals|is)\\s*1\\b(?!\\.\\d|\\d|\\s*/)))(?![\\s\\S]*(?:[\\d)]\\s*[-+]|[*/]|\\b(?:half|twice|double|quarter|third|times)\\s+(?:of\\s+)?|\\d)\\s*[\\$(]*\\s*(?:(?<![0-9a-z.])1\\s*/\\s*d\\b|\\\\[dt]?frac\\s*\\{\\s*1\\s*\\}\\s*\\{\\s*d\\s*\\}|\\bone\\s+over\\s+d\\b|\\b(?:reciprocal|inverse)\\s+of\\s+d\\b|\\bd\\s*\\^\\s*\\{?\\s*\\(?\\s*-\\s*1\\b\\s*\\)?\\s*\\}?|\\(\\s*2\\s*-\\s*1\\s*\\)\\s*/\\s*d\\b))(?![\\s\\S]*(?:(?<![0-9a-z.])1\\s*/\\s*d\\b|\\\\[dt]?frac\\s*\\{\\s*1\\s*\\}\\s*\\{\\s*d\\s*\\}|\\bone\\s+over\\s+d\\b|\\b(?:reciprocal|inverse)\\s+of\\s+d\\b|\\bd\\s*\\^\\s*\\{?\\s*\\(?\\s*-\\s*1\\b\\s*\\)?\\s*\\}?|\\(\\s*2\\s*-\\s*1\\s*\\)\\s*/\\s*d\\b)\\s*[\\$)]*\\s*(?:[-+]\\s*[\\d(]|[*/^]|\\b(?:squared|times|minus|plus|over)\\b))(?![\\s\\S]*(?<![0-9a-z.])(?:[02-9]|\\d{2,}|\\d*\\.\\d+)\\s*/\\s*d\\b)(?![\\s\\S]*\\b(?:ln|log)\\b)(?![\\s\\S]*/\\s*\\(?\\s*\\d+\\s*d\\b)(?![\\s\\S]*\\bd\\s*/\\s*\\d)(?![\\s\\S]*\\bor\\s+(?:at\\s+)?(?:t\\s*=\\s*)?\\$?(?:d|\\d+\\s*/)\\b)(?![\\s\\S]*\\b(?:wrong|incorrect)\\b)[\\s\\S]*(?:(?:(?<![0-9a-z.])1\\s*/\\s*d\\b|\\\\[dt]?frac\\s*\\{\\s*1\\s*\\}\\s*\\{\\s*d\\s*\\}|\\bone\\s+over\\s+d\\b|\\b(?:reciprocal|inverse)\\s+of\\s+d\\b|\\bd\\s*\\^\\s*\\{?\\s*\\(?\\s*-\\s*1\\b\\s*\\)?\\s*\\}?|\\(\\s*2\\s*-\\s*1\\s*\\)\\s*/\\s*d\\b)|\\bd\\s*(?:\\\\cdot|\\\\times|\\*|times|·)?\\s*t\\s*(?:=|equals|is)\\s*1\\b(?!\\.\\d|\\d|\\s*/))"
+        ]
+      },
+      "explanation": "Section 2: the rate is $\\alpha_0 / k$ when the denominator $1 + d \\cdot t$ equals $k$, that is at $t = (k - 1)/d$. For one half, $k = 2$ and $t = 1/d$: update 1,000 for $d = 10^{-3}$ and update 100 for $d = 10^{-2}$.",
+      "hints": [
+        "The rate is halved when the denominator of the schedule has doubled from its starting value."
+      ]
+    },
+    {
+      "id": "nn-023-q12",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 12,
+      "tags": [
+        "derivation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A schedule is defined by one rule: at every update the reciprocal of the learning rate grows by the same amount, $d/\\alpha_0$, starting from $1/\\alpha_0$ at $t = 0$. Derive the formula for $\\alpha_t$, then the update index at which the rate has fallen to $\\alpha_0/k$, and use it to show that each halving of the rate takes twice as many updates as the halving before it.",
+      "kind": "derive",
+      "solution": "1. The reciprocal starts at $1/\\alpha_0$ and gains $d/\\alpha_0$ per update, so after $t$ updates $1/\\alpha_t = 1/\\alpha_0 + t \\cdot d/\\alpha_0 = (1 + d \\cdot t)/\\alpha_0$.\n2. Turning it over gives $\\alpha_t = \\alpha_0 / (1 + d \\cdot t)$. At $t = 0$ this is $\\alpha_0$, so the first update uses the initial rate.\n3. The rate equals $\\alpha_0/k$ when $1 + d \\cdot t = k$, that is at $t_k = (k - 1)/d$.\n4. The rate is at a half, a quarter and an eighth of $\\alpha_0$ at $t_2 = 1/d$, $t_4 = 3/d$ and $t_8 = 7/d$. In general it is at $\\alpha_0 / 2^n$ at $t = (2^n - 1)/d$.\n5. The $n$-th halving therefore takes $(2^n - 1)/d - (2^{n-1} - 1)/d = 2^{n-1}/d$ updates: $1/d$, then $2/d$, then $4/d$. Each is twice the one before.\n6. Check with $d = 10^{-3}$: halvings at updates 1,000, 3,000 and 7,000, as the script of the post prints.",
+      "rubric": [
+        {
+          "criterion": "Writes the reciprocal after $t$ updates as $1/\\alpha_0 + t \\cdot d/\\alpha_0$ and inverts it to $\\alpha_0/(1 + d \\cdot t)$",
+          "points": 2
+        },
+        {
+          "criterion": "Solves $1 + d \\cdot t = k$ to get $t = (k - 1)/d$",
+          "points": 2
+        },
+        {
+          "criterion": "Gives the times of successive halvings as $(2^n - 1)/d$, or at least the first three",
+          "points": 1
+        },
+        {
+          "criterion": "Takes differences to show that the halvings last $1/d$, $2/d$, $4/d$, each double the last",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 2 states the rule and the formula, and the property that the rate is at $\\alpha_0/k$ when $t = (k - 1)/d$. The doubling of the halving times is what separates this schedule from an exponential one, whose halvings all take the same number of updates (section 3).",
+      "hints": [
+        "Write down the reciprocal of the rate after one, two and three updates before generalising.",
+        "For the halvings, evaluate the time at which the rate is $\\alpha_0/k$ for $k = 2, 4, 8$ and subtract neighbours."
+      ]
+    },
+    {
+      "id": "nn-023-q13",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 15,
+      "tags": [
+        "seed-spread",
+        "critique"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A report on the spiral classifier of the post reads: \"With a constant learning rate of 1.0 the loss after 10,001 epochs is 0.8737. With `decay=1e-3` it is 0.7612. Decay therefore improves the training of this network.\" Both numbers are correct for seed 0. Assess the conclusion using what the post measures on five seeds, and state what can be claimed about decay on this network.",
+      "kind": "critique",
+      "solution": "The two numbers are one draw of the data and the initial weights, and the conclusion generalises from it.\n\nFirst, the five-seed table contradicts it as a general statement. The decayed run has the lower final loss on seeds 0 and 2 and the higher one on seeds 1, 3 and 4. Its accuracy is higher on one seed, equal on one and 5 to 20 points lower on three. The constant rate ends between 0.3943 and 0.9906, the decayed runs between 0.7310 and 0.9107. By the mean loss of the last 1,000 epochs, which does not depend on the stopping epoch, decay is ahead on seed 0 alone.\n\nSecond, the constant-rate number is itself unstable. With a rate of 1.0 the loss rises on 4,154 to 4,765 of the 10,000 steps, and in the last 1,000 epochs it moves inside a band that is 0.098 to 2.283 wide. The value 0.8737 is where epoch 10,000 happened to fall inside that band; another stopping epoch would have reported a different loss.\n\nThird, there is a reason to expect decay to end behind: every decayed step is shorter, and the rates of the run add up to 24 percent of the constant ones.\n\nWhat can be claimed is what holds on every seed: decay at this rate removes the jumps (largest single rise at most 0.0152 against 0.0553 to 1.1043) and makes the final loss repeatable (a last band 0.021 to 0.035 wide). Whether it ends lower depends on the seed, and within 10,001 epochs it did so on two of five.",
+      "rubric": [
+        {
+          "criterion": "States that one seed is a single draw and cannot carry a general claim",
+          "points": 1
+        },
+        {
+          "criterion": "Cites the five-seed result: lower final loss with decay on two seeds, higher on three",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that the constant-rate final loss is a draw from a wide band, because the loss jumps from step to step",
+          "points": 2
+        },
+        {
+          "criterion": "Names the cost of decay: shorter steps, a smaller sum of rates",
+          "points": 1
+        },
+        {
+          "criterion": "States what does hold on every seed: smaller rises and a repeatable end value",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 6.1 runs both settings on seeds 0 to 4. The comparison on seed 0 favours decay, the spread does not: decay trades step length for steadiness, and inside this budget the step length was worth more on three seeds by the final loss, and on four by the mean loss of the last 1,000 epochs. The claim that survives is the one about jumps and repeatability.",
+      "hints": [
+        "Ask how many runs stand behind each of the two numbers.",
+        "Look at how the constant-rate loss behaves in its last 1,000 epochs, and what that means for the single value reported at the end."
+      ]
+    },
+    {
+      "id": "nn-023-q14",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 15,
+      "tags": [
+        "implement",
+        "contract"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Complete the three methods of `Optimizer_SGD` so that the learning rate follows `learning_rate / (1 + decay * iterations)`, the first step uses `learning_rate` itself, and `iterations` counts training steps. The tests drive the class through the update part of a training loop with three layers and compare the rate of every step and the distance the parameters moved with the schedule.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "class Optimizer_SGD:\n    \"\"\"Gradient descent whose rate follows learning_rate / (1 + decay * iterations).\n\n    The training loop calls pre_update_params() once per step, then update_params(layer)\n    once per layer, then post_update_params() once per step.\n    \"\"\"\n\n    def __init__(self, learning_rate=1.0, decay=0.0):\n        self.learning_rate = learning_rate\n        self.current_learning_rate = learning_rate\n        self.decay = decay\n        self.iterations = 0\n\n    def pre_update_params(self):\n        # TODO: set the rate of this step\n        pass\n\n    def update_params(self, layer):\n        # TODO: apply the rate of this step\n        layer.weights -= self.learning_rate * layer.dweights\n        layer.biases -= self.learning_rate * layer.dbiases\n\n    def post_update_params(self):\n        # TODO: count the step\n        pass\n",
+      "solution": "class Optimizer_SGD:\n    \"\"\"Gradient descent whose rate follows learning_rate / (1 + decay * iterations).\n\n    The training loop calls pre_update_params() once per step, then update_params(layer)\n    once per layer, then post_update_params() once per step.\n    \"\"\"\n\n    def __init__(self, learning_rate=1.0, decay=0.0):\n        self.learning_rate = learning_rate\n        self.current_learning_rate = learning_rate\n        self.decay = decay\n        self.iterations = 0\n\n    def pre_update_params(self):\n        # The counter is read before it is incremented, so the first step uses learning_rate.\n        if self.decay:\n            self.current_learning_rate = self.learning_rate / (1.0 + self.decay * self.iterations)\n\n    def update_params(self, layer):\n        layer.weights -= self.current_learning_rate * layer.dweights\n        layer.biases -= self.current_learning_rate * layer.dbiases\n\n    def post_update_params(self):\n        # Once per step, not once per layer.\n        self.iterations += 1\n",
+      "tests": "import numpy as np\n\n\nclass Layer:\n    \"\"\"Stands in for a dense layer: parameters and gradients of fixed values.\"\"\"\n\n    def __init__(self, shape, seed):\n        rng = np.random.default_rng(seed)\n        self.weights = rng.normal(size=shape)\n        self.biases = rng.normal(size=(1, shape[1]))\n        self.dweights = rng.normal(size=shape)\n        self.dbiases = rng.normal(size=(1, shape[1]))\n\n\ndef run(optimizer, layers, steps):\n    \"\"\"The update part of the training loop; returns the rate each step used.\"\"\"\n    rates = []\n    for _ in range(steps):\n        optimizer.pre_update_params()\n        rates.append(optimizer.current_learning_rate)\n        for layer in layers:\n            optimizer.update_params(layer)\n        optimizer.post_update_params()\n    return np.array(rates)\n\n\nSTEPS = 50\nlayers = [Layer((2, 3), 0), Layer((3, 3), 1), Layer((3, 2), 2)]\nstart = [(layer.weights.copy(), layer.biases.copy()) for layer in layers]\noptimizer = Optimizer_SGD(learning_rate=0.5, decay=0.01)\nrates = run(optimizer, layers, STEPS)\nwant = 0.5 / (1.0 + 0.01 * np.arange(STEPS))\n\nassert abs(rates[0] - 0.5) < 1e-12, \"the first step must use the initial rate\"\nassert np.allclose(rates, want, rtol=0, atol=1e-12), \"step t must use learning_rate / (1 + decay * t), with t counted once per step\"\nassert optimizer.iterations == STEPS, \"iterations must equal the number of steps, whatever the number of layers\"\nassert optimizer.learning_rate == 0.5, \"learning_rate is the initial rate and must not be overwritten\"\nfor layer, (weights, biases) in zip(layers, start):\n    assert np.allclose(weights - layer.weights, want.sum() * layer.dweights, rtol=0, atol=1e-10), \"weights must move by the decayed rates\"\n    assert np.allclose(biases - layer.biases, want.sum() * layer.dbiases, rtol=0, atol=1e-10), \"biases must move by the decayed rates\"\n\nplain_layers = [Layer((2, 3), 3)]\nplain_start = plain_layers[0].weights.copy()\nplain = Optimizer_SGD(learning_rate=0.3)\nplain_rates = run(plain, plain_layers, 20)\nassert np.all(plain_rates == 0.3), \"without decay the rate stays at learning_rate\"\nassert plain.iterations == 20, \"the counter runs with or without decay\"\nassert np.allclose(plain_start - plain_layers[0].weights, 20 * 0.3 * plain_layers[0].dweights, rtol=0, atol=1e-10)\nprint(\"all Optimizer_SGD checks passed\")\n",
+      "expected_output": "all Optimizer_SGD checks passed\n",
+      "explanation": "Section 4: `pre_update_params` computes the rate from the counter before the counter moves, so step 0 uses the initial rate. `update_params` multiplies by `current_learning_rate`, the rate of this step, and never by the base rate. `post_update_params` adds one to the counter once per step. The starter fails because its hooks do nothing and its update reads `learning_rate`, which is the constant-rate optimiser.",
+      "hints": [
+        "Each of the three methods needs one statement; decide which method runs once per step and which once per layer.",
+        "The rate of step t is computed from the counter before the counter is incremented, and the update must read the attribute that the first method writes."
+      ]
+    },
+    {
+      "id": "nn-023-q15",
+      "type": "code",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "8",
+      "est_minutes": 20,
+      "tags": [
+        "extend",
+        "step-decay"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Write a second schedule on the same three-method contract. `Optimizer_SGD_Step` multiplies the learning rate by `drop` after every `every` training steps and keeps it constant in between: with `learning_rate=1.0, drop=0.5, every=2500` the steps with indices 0 to 2,499 use 1.0, the next 2,500 use 0.5, and step 10,000 uses 0.0625. Complete the two methods that are left open. The tests run the class through the update part of a training loop with two layers.",
+      "kind": "extend",
+      "language": "python",
+      "starter": "class Optimizer_SGD_Step:\n    \"\"\"Gradient descent with step decay: the rate is multiplied by `drop` after every `every` steps.\n\n    Steps 0 to every - 1 use learning_rate, steps every to 2 * every - 1 use learning_rate * drop,\n    and so on. Same three-method contract as Optimizer_SGD.\n    \"\"\"\n\n    def __init__(self, learning_rate=1.0, drop=0.5, every=2500):\n        self.learning_rate = learning_rate\n        self.current_learning_rate = learning_rate\n        self.drop = drop\n        self.every = every\n        self.iterations = 0\n\n    def pre_update_params(self):\n        # TODO: set current_learning_rate for this step\n        pass\n\n    def update_params(self, layer):\n        layer.weights -= self.current_learning_rate * layer.dweights\n        layer.biases -= self.current_learning_rate * layer.dbiases\n\n    def post_update_params(self):\n        # TODO: count the step\n        pass\n",
+      "solution": "class Optimizer_SGD_Step:\n    \"\"\"Gradient descent with step decay: the rate is multiplied by `drop` after every `every` steps.\n\n    Steps 0 to every - 1 use learning_rate, steps every to 2 * every - 1 use learning_rate * drop,\n    and so on. Same three-method contract as Optimizer_SGD.\n    \"\"\"\n\n    def __init__(self, learning_rate=1.0, drop=0.5, every=2500):\n        self.learning_rate = learning_rate\n        self.current_learning_rate = learning_rate\n        self.drop = drop\n        self.every = every\n        self.iterations = 0\n\n    def pre_update_params(self):\n        # Integer division counts the completed blocks of `every` steps.\n        self.current_learning_rate = self.learning_rate * self.drop ** (self.iterations // self.every)\n\n    def update_params(self, layer):\n        layer.weights -= self.current_learning_rate * layer.dweights\n        layer.biases -= self.current_learning_rate * layer.dbiases\n\n    def post_update_params(self):\n        self.iterations += 1\n",
+      "tests": "import numpy as np\n\n\nclass Layer:\n    \"\"\"Stands in for a dense layer: parameters and gradients of fixed values.\"\"\"\n\n    def __init__(self, shape, seed):\n        rng = np.random.default_rng(seed)\n        self.weights = rng.normal(size=shape)\n        self.biases = rng.normal(size=(1, shape[1]))\n        self.dweights = rng.normal(size=shape)\n        self.dbiases = rng.normal(size=(1, shape[1]))\n\n\ndef run(optimizer, layers, steps):\n    rates = []\n    for _ in range(steps):\n        optimizer.pre_update_params()\n        rates.append(optimizer.current_learning_rate)\n        for layer in layers:\n            optimizer.update_params(layer)\n        optimizer.post_update_params()\n    return np.array(rates)\n\n\nlayers = [Layer((2, 3), 0), Layer((3, 2), 1)]\nstart = [layer.weights.copy() for layer in layers]\noptimizer = Optimizer_SGD_Step(learning_rate=0.8, drop=0.5, every=3)\nrates = run(optimizer, layers, 10)\nwant = np.array([0.8, 0.8, 0.8, 0.4, 0.4, 0.4, 0.2, 0.2, 0.2, 0.1])\nassert np.allclose(rates[:3], 0.8, rtol=0, atol=1e-12), \"the first `every` steps use learning_rate\"\nassert np.allclose(rates, want, rtol=0, atol=1e-12), \"the rate is multiplied by drop after every 3 steps, and is constant in between\"\nassert optimizer.iterations == 10, \"iterations counts steps, not layer updates\"\nassert optimizer.learning_rate == 0.8, \"learning_rate is the initial rate and must not be overwritten\"\nfor layer, weights in zip(layers, start):\n    assert np.allclose(weights - layer.weights, want.sum() * layer.dweights, rtol=0, atol=1e-10), \"weights must move by the stepped rates\"\n\nlong_run = run(Optimizer_SGD_Step(learning_rate=1.0, drop=0.5, every=2500), [], 10001)\nassert abs(long_run[2499] - 1.0) < 1e-12 and abs(long_run[2500] - 0.5) < 1e-12, \"the first drop happens at step 2500\"\nassert abs(long_run[10000] - 0.0625) < 1e-12, \"four drops by step 10000\"\n\nother = run(Optimizer_SGD_Step(learning_rate=1.0, drop=0.1, every=4), [], 9)\nassert np.allclose(other, [1, 1, 1, 1, 0.1, 0.1, 0.1, 0.1, 0.01], rtol=0, atol=1e-12), \"drop and every are arguments, not constants\"\nprint(\"all Optimizer_SGD_Step checks passed\")\n",
+      "expected_output": "all Optimizer_SGD_Step checks passed\n",
+      "explanation": "Sections 3 and 8: a different schedule changes what `pre_update_params` computes and nothing else; the update line, the counter and the training loop stay as they are. The integer division `iterations // every` counts the completed blocks of steps, so the rate is `learning_rate * drop ** blocks`. After 10,001 steps this schedule stands at 0.0625, where the schedule of the post with a decay of 0.001 stands at 0.0909.",
+      "hints": [
+        "Only one method differs from the decay class of the post; the counter works exactly as it does there.",
+        "The number of drops that have happened by step t is a whole number; find the operator that turns t and `every` into it."
+      ]
+    },
+    {
+      "id": "nn-023-q16",
+      "type": "numeric",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 10,
+      "tags": [
+        "mini-batches",
+        "choosing-d"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The run of the post makes one update per epoch, and $d = 10^{-3}$ leaves $1/11$ of the initial rate at the last of its 10,001 updates. The same 300 samples are now trained for 10,001 epochs in mini-batches of 32, so that one epoch is $\\lceil 300/32 \\rceil$ updates, and `iterations` still counts updates. With $\\alpha_0 = 1.0$, give (1) the learning rate of the very last update if $d$ stays at $10^{-3}$, and (2) the decay rate that would again leave $1/11$ of the initial rate at the last update.",
+      "connects": [
+        "nn-032"
+      ],
+      "answer": {
+        "parts": [
+          {
+            "label": "last rate with d = 0.001",
+            "value": 0.0099,
+            "tolerance": 0.0002,
+            "unit": ""
+          },
+          {
+            "label": "d that leaves 1/11",
+            "value": 0.0001,
+            "tolerance": 2e-06,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed forms of sections 2 and 2.2: 10 updates per epoch give 100,010 updates, the last with index 100,009. Rate: 1 / (1 + 0.001 * 100009) = 0.009900. Decay: (11 - 1) / 100009 = 0.00009999. Both checked on the class of snippets/decay_schedule.py. The tolerances reject the values obtained with 300 / 32 = 9.375 updates per epoch (0.01055 and 0.0001067).",
+      "explanation": "Section 2.2 with the epoch of post 32: the counter counts updates, and an epoch of mini-batches holds $\\lceil 300/32 \\rceil = 10$ of them, so the run makes 100,010 updates. With $d = 10^{-3}$ the last one uses $1/(1 + 100.009) = 0.0099$, a ninth of what was intended, and the rate was already at $1/11$ after the first 1,000 epochs. Keeping $1/11$ at the end needs $d = 10/100{,}009 \\approx 10^{-4}$: a decay rate belongs to a number of updates, not to a number of epochs.",
+      "hints": [
+        "Find the number of updates in the whole run first; the schedule knows nothing about epochs.",
+        "Then use the schedule for the last update index, and $d = (k - 1)/T$ with $k = 11$ for the second part."
+      ]
+    },
+    {
+      "id": "nn-023-q17",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "10",
+      "est_minutes": 4,
+      "tags": [
+        "counter",
+        "reuse"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "An object `optimizer = Optimizer_SGD(learning_rate=1.0, decay=1e-3)` of the post's class trains network A for 10,001 steps. The same object is then passed, unchanged, to the training loop of a freshly initialised network B. Which learning rate does B's first update use?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "1.0, because a new network starts the schedule again.",
+          "correct": false,
+          "feedback": "The schedule lives in the optimiser object, which knows nothing about networks. Its counter is still at 10,001."
+        },
+        {
+          "key": "b",
+          "text": "About 0.0909, because the counter still stands at 10,001.",
+          "correct": true,
+          "feedback": "Right: the rate is $1/(1 + 10^{-3} \\cdot 10{,}001) = 0.0909$. A fresh object, or `optimizer.iterations = 0`, starts the schedule again."
+        },
+        {
+          "key": "c",
+          "text": "About 0.0083, because the decay is now applied to the rate that A ended with.",
+          "correct": false,
+          "feedback": "That would require `learning_rate` to have been overwritten during A's run. The class keeps the base rate untouched and writes the decayed rate to `current_learning_rate`."
+        },
+        {
+          "key": "d",
+          "text": "About 0.0476, because the counter advanced once for each of A's two layers.",
+          "correct": false,
+          "feedback": "The counter is incremented in `post_update_params`, once per step, so it stands at 10,001 and not at 20,002."
+        }
+      ],
+      "explanation": "Section 10: `iterations` is an attribute of the optimiser and is never reset by the class. After A's 10,001 steps it stands at 10,001, so B's first `pre_update_params` computes $1/(1 + 10.001) = 0.0909$, and B starts at 9 percent of the intended rate. The base rate `learning_rate` is still 1.0, which is why setting `iterations = 0` restores the whole schedule.",
+      "hints": [
+        "List the attributes of the optimiser and ask which of them A's training changed.",
+        "Then evaluate the schedule with the value the counter has when B's loop begins."
+      ]
+    },
+    {
+      "id": "nn-023-q18",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 10,
+      "tags": [
+        "attributes",
+        "compounding"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The class of the post stores the learning rate twice, as `learning_rate` and as `current_learning_rate`. Suppose it stored it once, and `pre_update_params` were the single line `self.learning_rate = self.learning_rate / (1.0 + self.decay * self.iterations)`, with `update_params` reading `self.learning_rate`. Explain what schedule this produces, compare it with the intended $\\alpha_t = \\alpha_0 / (1 + d \\cdot t)$ for $\\alpha_0 = 1.0$ and $d = 10^{-3}$, and say what else is lost.",
+      "kind": "explain",
+      "solution": "With one attribute, every call divides the rate that the previous call left behind, so the divisions compound: the rate at update $t$ is $\\alpha_0$ divided by the product $(1 + d \\cdot 1)(1 + d \\cdot 2) \\cdots (1 + d \\cdot t)$, not by the single factor $1 + d \\cdot t$.\n\nFor small $d \\cdot t$ the logarithm of that product is close to $d \\, (1 + 2 + \\dots + t) = d \\, t (t + 1)/2$, so the rate falls roughly like $\\exp(-d \\, t^2 / 2)$: far faster than any exponential schedule, let alone the intended one. With $\\alpha_0 = 1.0$ and $d = 10^{-3}$ the first two updates still agree with the intended schedule (1.0 and 0.999001). At update 100 the compounded rate is 0.0075 where 0.9091 is intended, and at update 200 it is about $6 \\times 10^{-9}$ where 0.8333 is intended. Training stops within the first few hundred updates.\n\nTwo more things are lost. The initial rate is no longer stored anywhere, so the schedule cannot be started again by setting `iterations = 0`. And the stalled run would look like a plateau, with a loss that barely changes, although nothing is wrong with the gradient.\n\nThe two attributes of the post prevent this: `learning_rate` is $\\alpha_0$ and is only ever read, and `current_learning_rate` is recomputed from it at every step.",
+      "rubric": [
+        {
+          "criterion": "States that each division acts on the already divided rate, so the factors multiply up",
+          "points": 2
+        },
+        {
+          "criterion": "Writes the resulting rate as $\\alpha_0$ over a product of $(1 + d \\cdot s)$, or describes its much faster fall",
+          "points": 2
+        },
+        {
+          "criterion": "Gives a comparison with the intended schedule, in numbers or orders of magnitude, at one update or more",
+          "points": 1
+        },
+        {
+          "criterion": "Names a further loss: the initial rate is gone, so the schedule cannot be restarted, or the stall imitates a plateau",
+          "points": 1
+        }
+      ],
+      "answer_length": "one or two paragraphs",
+      "explanation": "Section 4: `learning_rate` is the initial rate and is never overwritten, and `current_learning_rate` is what `pre_update_params` writes and `update_params` reads. Computing each rate from the untouched base rate is what makes the formula hold at every update. Overwriting the base rate compounds the divisions; running the one-line version gives 0.0075 at update 100 and about 6e-9 at update 200.",
+      "hints": [
+        "Write out the rate after the calls for t = 1, 2 and 3 with a single attribute, without simplifying.",
+        "Compare the denominator obtained in this way with the single factor of the intended schedule."
+      ]
+    }
+  ]
+}

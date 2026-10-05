@@ -1,8 +1,22 @@
 id: nn-023
 slug: 23-learning-rate-decay
-title: "Part 23 · Learning-rate decay"
+title: "23 - Learning-rate decay"
+summary: "A learning rate that shrinks with the number of updates stops the loss from jumping, at the price of shorter steps. The post derives the schedule, adds it to the optimiser, and measures both effects on five seeds."
 date: 2026-05-29
+updated: 2026-10-05
+status: complete
+part: "Part VI - Optimisers"
+level: intermediate
+reading_time: 22
 tags: [neural-networks, from-scratch, optimisation, learning-rate, scheduling]
 hero: diagrams/01-decay-schedule-and-result.svg
-reading_time: 11
-part: "Part VI — Optimisers"
+prerequisites: [nn-022]
+code: included
+outcomes:
+  - id: o1
+    text: "Derive and explain the decay schedule alpha(t) = alpha_0 / (1 + d t) and choose a sensible decay rate d."
+  - id: o2
+    text: "Extend Optimizer_SGD with pre_update_params, post_update_params and an iterations counter."
+  - id: o3
+    text: "Diagnose whether a plateau is a learning-rate issue or a local-minimum issue."
+compute: cpu
