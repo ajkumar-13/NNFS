@@ -1,0 +1,915 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-030",
+  "next_ordinal": 21,
+  "questions": [
+    {
+      "id": "nn-030-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 1,
+      "tags": [
+        "l2",
+        "penalty"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A layer has weights $w_m$ and a regularisation strength $\\lambda$. Which term does L2 regularisation add to the loss, in the convention of this series?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "$\\lambda \\sum_m |w_m|$",
+          "correct": false,
+          "feedback": "This is the L1 penalty, the sum of the absolute values. L2 squares each weight."
+        },
+        {
+          "key": "b",
+          "text": "$\\lambda \\sum_m w_m^2$",
+          "correct": true,
+          "feedback": "Right: the sum of the squared weights, multiplied by the strength."
+        },
+        {
+          "key": "c",
+          "text": "$\\lambda \\sum_m w_m$",
+          "correct": false,
+          "feedback": "A plain sum lets negative weights cancel positive ones, so large weights of mixed sign would cost nothing. Neither penalty is a plain sum."
+        },
+        {
+          "key": "d",
+          "text": "$2 \\lambda \\sum_m w_m$",
+          "correct": false,
+          "feedback": "The factor 2 belongs to the gradient of the L2 penalty, $2 \\lambda w_m$, which is a derivative with respect to one weight and not a term of the loss."
+        }
+      ],
+      "explanation": "Section 2 defines the L2 penalty as $\\lambda$ times the sum of the squared weights. The sum of absolute values is the L1 penalty, and $2 \\lambda w_m$ is the gradient of the L2 penalty with respect to one weight, not the penalty.",
+      "hints": [
+        "The name refers to the norm whose square is a sum of squares."
+      ]
+    },
+    {
+      "id": "nn-030-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "gradient-size",
+        "l1",
+        "l2"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Two weights of one layer are 0.01 and 10. The data loss does not depend on either, so the penalty is the only gradient. One plain gradient step is taken with the same learning rate and the same $\\lambda$ under L1, and separately under L2. Which statement is correct?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Under L1 both weights move by the same amount; under L2 the weight of 10 moves 1,000 times as far as the weight of 0.01.",
+          "correct": true,
+          "feedback": "Right: a constant gradient gives equal steps, and a gradient proportional to $w$ gives steps in the ratio of the weights."
+        },
+        {
+          "key": "b",
+          "text": "Under L2 both weights move by the same amount; under L1 the weight of 10 moves 1,000 times as far as the weight of 0.01.",
+          "correct": false,
+          "feedback": "This swaps the two penalties. The gradient that contains $w$ is the L2 gradient, $2 \\lambda w$."
+        },
+        {
+          "key": "c",
+          "text": "Under both penalties the larger weight moves further, because a larger weight always has a larger penalty.",
+          "correct": false,
+          "feedback": "The larger weight has the larger penalty under both, but the step depends on the slope of the penalty, and the slope of $\\lambda |w|$ is the same at 0.01 and at 10."
+        },
+        {
+          "key": "d",
+          "text": "Under L1 the weight of 0.01 becomes exactly zero in one step and the weight of 10 does not move.",
+          "correct": false,
+          "feedback": "Both weights move by $\\alpha \\lambda$. Whether the small one lands on zero depends on $\\alpha \\lambda$, and the large one feels the same pull as the small one."
+        }
+      ],
+      "explanation": "Section 3: the L1 gradient is $\\lambda \\, \\text{sign}(w)$, of the same size for every non-zero weight, so both weights move by $\\alpha \\lambda$. The L2 gradient is $2 \\lambda w$, so the step is proportional to the weight: the weight of 10 moves 1,000 times as far as the weight of 0.01, and both are multiplied by the same factor.",
+      "hints": [
+        "Write the gradient of each penalty for one weight and substitute the two values.",
+        "One of the two gradients does not contain the size of the weight at all."
+      ]
+    },
+    {
+      "id": "nn-030-q03",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 4,
+      "tags": [
+        "l1",
+        "exact-zero"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A single weight starts at 0.0105. Only an L1 penalty acts on it, and plain gradient steps `weights -= learning_rate * dweights` are taken with $\\alpha \\lambda = 0.001$, using the `Layer_Dense` of the post. Where is the weight after several hundred steps?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "At exactly zero, where it stays.",
+          "correct": false,
+          "feedback": "0.0105 is not a multiple of the step 0.001, so no step lands on zero, and a weight that did land there would be moved off again because the class uses a sign of $+1$ at zero."
+        },
+        {
+          "key": "b",
+          "text": "Alternating between $0.0005$ and $-0.0005$.",
+          "correct": true,
+          "feedback": "Right: a step of fixed size oversteps zero and the next one steps back."
+        },
+        {
+          "key": "c",
+          "text": "At a small positive value that keeps shrinking by a constant factor per step.",
+          "correct": false,
+          "feedback": "Geometric shrinkage is what L2 does, where the step is proportional to the weight. The L1 step does not shrink with the weight."
+        },
+        {
+          "key": "d",
+          "text": "At $-0.001$, because the sign at zero is $+1$.",
+          "correct": false,
+          "feedback": "The sign at zero matters only for a weight that is exactly zero, and this weight never is: it goes from 0.0005 to $-0.0005$ and back."
+        }
+      ],
+      "explanation": "Section 3 runs this case. Every step moves the weight by $\\alpha \\lambda = 0.001$ towards zero, so after ten steps it is at 0.0005, and the next step of the same size carries it across zero to $-0.0005$. From then on it alternates between the two values. It is within $\\alpha \\lambda$ of zero and never equal to zero.",
+      "hints": [
+        "The step has a fixed size. Ask whether 0.0105 is a multiple of it.",
+        "Follow the weight for twelve steps and look at steps 10, 11 and 12."
+      ]
+    },
+    {
+      "id": "nn-030-q04",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "reported-loss",
+        "test-pass"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network is trained with L2 on its first layer. In the training loop, `loss = data_loss + regularization_loss`. Which loss is reported for a forward-only pass on the test set, and why?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The data loss plus the penalty, so that it can be compared with the training loss the loop prints.",
+          "correct": false,
+          "feedback": "A fair comparison uses the data loss on both sides. Adding the penalty to the test loss mixes a score of predictions with a property of the weights."
+        },
+        {
+          "key": "b",
+          "text": "The data loss alone, because the penalty depends on the weights and not on the test points.",
+          "correct": true,
+          "feedback": "Right: the penalty is a training objective, and the test pass measures predictions."
+        },
+        {
+          "key": "c",
+          "text": "The data loss plus a penalty recomputed from the test inputs.",
+          "correct": false,
+          "feedback": "There is nothing to recompute. The penalty is a sum over weights; no input of any kind enters it."
+        },
+        {
+          "key": "d",
+          "text": "The penalty alone, because the data loss was already minimised in training.",
+          "correct": false,
+          "feedback": "The data loss on unseen points is exactly what a test pass exists to measure; training does not make it known."
+        }
+      ],
+      "explanation": "Section 4: the penalty is part of the objective the optimiser minimises, and it depends on the weights alone. A test pass scores predictions, so it reports the data loss. Adding the same weight-dependent constant to it would say nothing about the test points.",
+      "hints": [
+        "Ask what the penalty is a function of."
+      ]
+    },
+    {
+      "id": "nn-030-q05",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 6,
+      "tags": [
+        "sweep",
+        "seed-spread"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Five strengths of L2 are each trained on five seeds, and validation accuracy is recorded. Which conclusion do the ranges in the table support?",
+      "stimulus": {
+        "kind": "table",
+        "content": "| L2 strength | Training accuracy, percent | Validation accuracy, percent (mean) |\n|---|---|---|\n| 0 | 85 to 98 | 73 to 82 (78.5) |\n| 0.0001 | 95 to 99 | 78 to 88 (84.7) |\n| 0.0005 | 93 to 96 | 81 to 87 (84.4) |\n| 0.001 | 93 to 96 | 81 to 87 (83.5) |\n| 0.01 | 81 to 89 | 76 to 80 (77.3) |"
+      },
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "0.0001 is the best strength, because its mean is the highest.",
+          "correct": false,
+          "feedback": "Its mean leads by 0.3 points while its range spans 10 points. The spread between seeds is far larger than that lead."
+        },
+        {
+          "key": "b",
+          "text": "Strengths from 0.0001 to 0.001 beat no penalty but cannot be ranked among themselves, and 0.01 underfits.",
+          "correct": true,
+          "feedback": "Right: the middle rows overlap, all sit above the first row on average, and the last row loses training accuracy too."
+        },
+        {
+          "key": "c",
+          "text": "0.01 is the best strength, because it gives the most reliable result: its range is the narrowest.",
+          "correct": false,
+          "feedback": "A narrow range around a low value is reliably worse. Its validation mean is the lowest of the table and training accuracy has fallen with it."
+        },
+        {
+          "key": "d",
+          "text": "The penalty makes no difference at any strength, because the range of every row overlaps the range of at least one other row.",
+          "correct": false,
+          "feedback": "Overlapping ranges limit what can be said about neighbours. The middle rows are five to six points above the first on average, and the last row shows a clear loss of fit."
+        }
+      ],
+      "explanation": "Section 8 reads such a sweep. The three middle strengths have means within about one point and ranges that overlap almost entirely, so five seeds cannot rank them; all three lie above the run without a penalty, and the strongest penalty lowers training accuracy as well, which is underfitting. A choice inside the middle decade needs more seeds or a clearer difference.",
+      "hints": [
+        "Compare the difference between neighbouring rows with the width of each row's range.",
+        "Then look at what happens to training accuracy in the last row."
+      ]
+    },
+    {
+      "id": "nn-030-q06",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 4,
+      "tags": [
+        "class-extension"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The network of the post is to be trained with L2 on the weights of `dense1`, using an optimiser from Part VI, and its loop is to report the loss that is being minimised. Which of the following changes are needed? Select all that apply.",
+      "select": "multiple",
+      "options": [
+        {
+          "key": "a",
+          "text": "`Layer_Dense` stores `weight_regularizer_l2` in its constructor.",
+          "correct": true,
+          "feedback": "Needed: both the penalty method and `backward` read the strength from the layer."
+        },
+        {
+          "key": "b",
+          "text": "`Layer_Dense.backward` adds `2 * self.weight_regularizer_l2 * self.weights` to `dweights`.",
+          "correct": true,
+          "feedback": "Needed: without this term the weights never feel the penalty."
+        },
+        {
+          "key": "c",
+          "text": "`Layer_Dense.backward` adds a penalty term to `dinputs`.",
+          "correct": false,
+          "feedback": "The penalty is a function of the weights only, so its derivative with respect to the layer's inputs is zero."
+        },
+        {
+          "key": "d",
+          "text": "The training loop adds `regularization_loss(dense1)` to the data loss.",
+          "correct": true,
+          "feedback": "Needed for the reported loss to be the quantity that is being minimised."
+        },
+        {
+          "key": "e",
+          "text": "The optimiser's `update_params` subtracts an extra term from the weights.",
+          "correct": false,
+          "feedback": "The extra term is already inside `dweights`, so the optimiser's code stays as it was."
+        }
+      ],
+      "explanation": "Sections 4 and 5: the strength is stored on the layer, `backward` adds $2 \\lambda$ times the weights to `dweights`, and the loop adds `regularization_loss` to the data loss it reports. `dinputs` is unchanged because the penalty does not depend on the layer's inputs, and the optimiser is unchanged because it only reads `dweights` and `dbiases`, which now hold the gradient of the total loss.",
+      "hints": [
+        "List what the penalty depends on, then ask which stored gradients that touches.",
+        "The optimisers read two arrays per layer and nothing else."
+      ]
+    },
+    {
+      "id": "nn-030-q07",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "gradient-check",
+        "l1"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A central-difference gradient check with $h = 10^{-5}$ in float64 is run on a layer with `weight_regularizer_l1 = 0.01`, with the penalty included in the loss. Every entry passes with a relative error below $10^{-7}$ except one weight, where the stored gradient exceeds the measured slope by exactly 0.01. What is the most likely cause?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The L1 term is missing from `backward`, so the stored gradient is the data gradient alone.",
+          "correct": false,
+          "feedback": "A missing term would leave a gap of 0.01 on every non-zero weight, with the stored gradient too small at positive weights and too large at negative ones. It would not single out one weight."
+        },
+        {
+          "key": "b",
+          "text": "That weight is exactly zero, where the penalty has a corner.",
+          "correct": true,
+          "feedback": "Right: the symmetric difference sees a slope of 0 at the corner and the class adds $+\\lambda$."
+        },
+        {
+          "key": "c",
+          "text": "The check ran in float32.",
+          "correct": false,
+          "feedback": "Float32 arithmetic would raise the error of every entry to around $10^{-3}$ or worse. It would not single out one weight with a gap equal to $\\lambda$."
+        },
+        {
+          "key": "d",
+          "text": "The step $h$ is too small, so rounding dominates.",
+          "correct": false,
+          "feedback": "Rounding produces small irregular gaps on entries with tiny gradients. A gap of exactly $\\lambda$ on one entry has a structural cause."
+        }
+      ],
+      "explanation": "Section 6: at a weight of exactly zero the absolute value has a corner. The central difference compares $|h|$ with $|-h|$ and measures a slope of 0 for the penalty, while the class uses a sign of $+1$ and adds $\\lambda = 0.01$. The gap is exactly $\\lambda$ on that one weight and reports a function without a derivative there, not a wrong formula.",
+      "hints": [
+        "The size of the gap equals one of the numbers in the prompt.",
+        "Ask at which weight value the L1 penalty has no derivative, and what a symmetric difference measures there."
+      ]
+    },
+    {
+      "id": "nn-030-q08",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 2,
+      "tags": [
+        "underfitting",
+        "strength"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network is trained with an L2 strength that is far too large. Which reading is expected?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Training accuracy stays high and validation accuracy collapses.",
+          "correct": false,
+          "feedback": "High training accuracy with poor validation accuracy is overfitting, the sign of a penalty that is too weak."
+        },
+        {
+          "key": "b",
+          "text": "Training accuracy and validation accuracy are both low.",
+          "correct": true,
+          "feedback": "Right: the weights are too constrained to fit the training data, and the validation data fare no better."
+        },
+        {
+          "key": "c",
+          "text": "Training diverges, with the loss growing without bound.",
+          "correct": false,
+          "feedback": "A large penalty pulls the weights towards zero. It makes the model too simple; it does not make the loss explode at a normal learning rate."
+        },
+        {
+          "key": "d",
+          "text": "Validation accuracy rises above training accuracy by a wide margin.",
+          "correct": false,
+          "feedback": "Nothing in a weight penalty favours unseen points over training points. Both suffer from the lost capacity."
+        }
+      ],
+      "explanation": "Section 8: when the penalty outweighs the data loss, the weights are held too small to fit even the training data, so training accuracy falls and validation accuracy falls with it. That is underfitting. In the sweep of the post this happens at $\\lambda = 10^{-2}$.",
+      "hints": [
+        "Ask what the optimiser gives up when the penalty term dominates the sum."
+      ]
+    },
+    {
+      "id": "nn-030-q09",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 4,
+      "tags": [
+        "penalty",
+        "arithmetic"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A layer has the weights $\\begin{pmatrix} 1 & -3 \\\\ 0.5 & 2 \\end{pmatrix}$, with `weight_regularizer_l1 = 0.01`, `weight_regularizer_l2 = 0.001`, and both bias strengths at 0. What does `regularization_loss` return for this layer?",
+      "answer": {
+        "value": 0.07925,
+        "tolerance": 0.0002,
+        "unit": ""
+      },
+      "precision_note": "Closed form of section 4, 0.01 * 6.5 + 0.001 * 14.25; confirmed by calling regularization_loss of snippets/network.py on this layer.",
+      "explanation": "Section 4: the method adds $\\lambda_1 \\sum |w|$ and $\\lambda_2 \\sum w^2$. Here $\\sum |w| = 1 + 3 + 0.5 + 2 = 6.5$ and $\\sum w^2 = 1 + 9 + 0.25 + 4 = 14.25$, so the penalty is $0.01 \\cdot 6.5 + 0.001 \\cdot 14.25 = 0.065 + 0.01425 = 0.07925$.",
+      "hints": [
+        "Two sums over the four weights, each multiplied by its own strength.",
+        "The sign of a weight matters to neither sum."
+      ]
+    },
+    {
+      "id": "nn-030-q10",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 6,
+      "tags": [
+        "backward",
+        "arithmetic"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A `Layer_Dense` of the post has `weight_regularizer_l1 = 0.01` and `weight_regularizer_l2 = 0.05`. For two of its weights the data gradient, the entry of `np.dot(self.inputs.T, dvalues)`, is 0.3. The first weight is $-2$ and the second is exactly 0. Give the entry of `dweights` that `backward` stores for each.",
+      "answer": {
+        "parts": [
+          {
+            "label": "dweights entry for w = -2",
+            "value": 0.09,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "dweights entry for w = 0",
+            "value": 0.31,
+            "tolerance": 0.001,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 5; confirmed with Layer_Dense.backward of snippets/network.py on a 1 by 2 layer with these weights and a data gradient of 0.3.",
+      "explanation": "Section 5: `backward` adds $\\lambda_1$ times the sign and $2 \\lambda_2 w$ to the data gradient. For $w = -2$ the sign is $-1$, so the entry is $0.3 - 0.01 + 2 \\cdot 0.05 \\cdot (-2) = 0.09$. For $w = 0$ the class uses a sign of $+1$ and the L2 term vanishes, so the entry is $0.3 + 0.01 = 0.31$.",
+      "hints": [
+        "Three contributions per entry: the data gradient and one term from each penalty.",
+        "For the second weight, recall how `dL1` is built: it starts as ones and only negative weights are flipped."
+      ]
+    },
+    {
+      "id": "nn-030-q11",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 6,
+      "tags": [
+        "plain-steps",
+        "decay"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A weight of 2 feels no data gradient. Three plain gradient steps are taken with a learning rate of 0.5 and $\\lambda = 0.1$. Give the weight after the three steps under an L2 penalty, and under an L1 penalty.",
+      "answer": {
+        "parts": [
+          {
+            "label": "weight after three steps under L2",
+            "value": 1.458,
+            "tolerance": 0.002,
+            "unit": ""
+          },
+          {
+            "label": "weight after three steps under L1",
+            "value": 1.85,
+            "tolerance": 0.002,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed forms of section 3: 2 * 0.9**3 and 2 - 3 * 0.05; confirmed with plain_steps of snippets/single_weight.py.",
+      "explanation": "Section 3: under L2 each step multiplies the weight by $1 - 2 \\alpha \\lambda = 1 - 2 \\cdot 0.5 \\cdot 0.1 = 0.9$, so three steps give $2 \\cdot 0.9^3 = 1.458$. Under L1 each step subtracts $\\alpha \\lambda = 0.05$, so three steps give $2 - 0.15 = 1.85$.",
+      "hints": [
+        "One penalty multiplies the weight by a fixed factor per step, the other subtracts a fixed amount per step.",
+        "Work out $2 \\alpha \\lambda$ and $\\alpha \\lambda$ first."
+      ]
+    },
+    {
+      "id": "nn-030-q12",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 1,
+      "tags": [
+        "l2",
+        "gradient"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the convention of this series the L2 penalty is $\\lambda \\sum_m w_m^2$. State its partial derivative with respect to one weight $w_m$.",
+      "answer": {
+        "model": "$2 \\lambda w_m$",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:not|isn't|never)\\s+(?:just\\s+)?(?:\\$|`)?\\s*(?:2|two|twice))[\\s\\S]*(?<![\\d./])(?<![-−+])(?<![-−+]\\s)(?:(?:2|two|twice)\\s*(?:\\*|\\\\cdot|\\\\,|·|x|times)?\\s*(?:\\\\?lambda|λ|lam|(?:self\\.)?weight_regularizer_l2)\\s*(?:\\*|\\\\cdot|\\\\,|·|x|times)?\\s*(?:(?:self\\.)?w(?:eights?)?(?:_m|_\\{m\\})?|the weight)(?![a-z_^²]|\\s*(?:\\^|\\*\\*|squared))|(?:2|two|twice)\\s*(?:\\*|\\\\cdot|\\\\,|·|x|times)?\\s*(?:(?:self\\.)?w(?:eights?)?(?:_m|_\\{m\\})?|the weight)(?![a-z_^²]|\\s*(?:\\^|\\*\\*|squared))\\s*(?:\\*|\\\\cdot|\\\\,|·|x|times)?\\s*(?:\\\\?lambda|λ|lam|(?:self\\.)?weight_regularizer_l2)|(?:\\\\?lambda|λ|lam|(?:self\\.)?weight_regularizer_l2)\\s*(?:\\*|\\\\cdot|\\\\,|·|x|times)?\\s*(?:2|two|twice)\\s*(?:\\*|\\\\cdot|\\\\,|·|x|times)?\\s*(?:(?:self\\.)?w(?:eights?)?(?:_m|_\\{m\\})?|the weight)(?![a-z_^²]|\\s*(?:\\^|\\*\\*|squared)))(?!\\s*/\\s*2)"
+        ]
+      },
+      "explanation": "Section 2: only the term $\\lambda w_m^2$ of the sum contains $w_m$, and the derivative of $w^2$ is $2w$, so the partial derivative is $2 \\lambda w_m$. The factor 2 is kept in this series and not absorbed into $\\lambda$.",
+      "hints": [
+        "Only one term of the sum contains the weight in question; differentiate that term with the power rule."
+      ]
+    },
+    {
+      "id": "nn-030-q13",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 1,
+      "tags": [
+        "loss-class",
+        "attribute"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The combined class `Activation_Softmax_Loss_CategoricalCrossentropy` creates two objects in its constructor and keeps them as attributes. Through which attribute of `loss_activation` does the training loop of the post call `regularization_loss`?",
+      "answer": {
+        "model": "`loss`, as in `loss_activation.loss.regularization_loss(dense1)`.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:not|never|isn't)\\s+(?:(?:the|its|through|via|called|named)\\s+)*`?(?:loss_activation\\s*\\.\\s*|self\\s*\\.\\s*|\\.)?loss\\b)(?![\\s\\S]*\\bor\\b)(?![\\s\\S]*loss_activation\\s*\\.\\s*(?:activation|output|dinputs))(?![\\s\\S]*\\bloss`?\\s*(?:,|and|/|&)\\s*`?(?:the\\s+)?activation\\b)(?:[\\s\\S]*(?:loss_activation|self)\\s*\\.\\s*loss\\b(?!_)|\\W*(?:(?:through|via|by|using|it\\s+is|it's|the\\s+attribute\\s+is|attribute:?)\\s+)?(?:the\\s+|its\\s+)?(?:attribute\\s+)?`?\\.?loss`?(?=\\s*(?:$|[.,;:(]|attribute|member|field))|[\\s\\S]*\\b(?:its|the|named|called|attribute)\\s+`?\\.?loss`?(?=\\s*(?:$|[.,;:(]|attribute|member|field)))"
+        ]
+      },
+      "explanation": "Section 4: `regularization_loss` is a method of the `Loss` base class, and the combined class of post 19 keeps a `Loss_CategoricalCrossentropy`, which inherits it, in its attribute `loss`. The loop therefore calls `loss_activation.loss.regularization_loss(dense1)`. The other attribute, `activation`, holds the softmax, which has no such method.",
+      "hints": [
+        "The method was added to a base class. Ask which of the two stored objects inherits from it."
+      ]
+    },
+    {
+      "id": "nn-030-q14",
+      "type": "short",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "9",
+      "est_minutes": 2,
+      "tags": [
+        "weight-decay"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "With plain gradient descent at learning rate $\\alpha$ and an L2 penalty $\\lambda \\sum w^2$, one update can be written as: multiply each weight by a factor, then take the ordinary step on the data gradient. State the factor in terms of $\\alpha$ and $\\lambda$.",
+      "answer": {
+        "model": "$1 - 2 \\alpha \\lambda$",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:not|never|isn't)\\s+(?:\\$|`|\\()?\\s*1\\s*(?:-|−|minus)\\s*(?:2|two))[\\s\\S]*(?<![\\d.])1\\s*(?:-|−|minus)\\s*(?:2|two)\\s*(?:\\*|\\\\cdot|\\\\,|·|times)?\\s*(?:(?:\\\\?alpha|α|a|lr|learning[_ ]rate|\\\\?eta|η)\\s*(?:\\*|\\\\cdot|\\\\,|·|times)?\\s*(?:\\\\?lambda|λ|lam)|(?:\\\\?lambda|λ|lam)\\s*(?:\\*|\\\\cdot|\\\\,|·|times)?\\s*(?:\\\\?alpha|α|a|lr|learning[_ ]rate|\\\\?eta|η))(?![a-z])(?!\\s*(?:\\^|\\*\\*|²|/|squared))(?!\\s*(?:\\*|\\\\cdot|\\\\,|·|times)?\\s*(?:w|n)\\b)"
+        ]
+      },
+      "explanation": "Section 9: $w \\leftarrow w - \\alpha (\\partial L_{\\text{data}} / \\partial w + 2 \\lambda w) = (1 - 2 \\alpha \\lambda) w - \\alpha \\, \\partial L_{\\text{data}} / \\partial w$. The factor is $1 - 2 \\alpha \\lambda$, slightly below 1, which is why L2 with plain gradient descent is called weight decay.",
+      "hints": [
+        "Substitute the gradient of the total loss into the update and collect the terms that contain $w$."
+      ]
+    },
+    {
+      "id": "nn-030-q15",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 4,
+      "tags": [
+        "formulas"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Match each quantity to its expression. $\\lambda$ is the strength, $\\alpha$ the learning rate, and the steps are plain gradient steps on the penalty alone.",
+      "left": [
+        {
+          "key": "a",
+          "text": "The L1 penalty of a layer"
+        },
+        {
+          "key": "b",
+          "text": "The gradient of the L1 penalty with respect to a non-zero weight $w$"
+        },
+        {
+          "key": "c",
+          "text": "The gradient of the L2 penalty with respect to a weight $w$"
+        },
+        {
+          "key": "d",
+          "text": "A positive weight $w$ after one step under L1"
+        },
+        {
+          "key": "e",
+          "text": "A weight $w$ after one step under L2"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "$(1 - 2 \\alpha \\lambda) \\, w$"
+        },
+        {
+          "key": "q",
+          "text": "$\\lambda \\, \\text{sign}(w)$"
+        },
+        {
+          "key": "r",
+          "text": "$w - \\alpha \\lambda$"
+        },
+        {
+          "key": "s",
+          "text": "$\\lambda \\sum |w|$"
+        },
+        {
+          "key": "t",
+          "text": "$2 \\lambda w$"
+        },
+        {
+          "key": "u",
+          "text": "$\\lambda w$"
+        },
+        {
+          "key": "v",
+          "text": "$(1 - \\alpha \\lambda) \\, w$"
+        }
+      ],
+      "answer": {
+        "a": "s",
+        "b": "q",
+        "c": "t",
+        "d": "r",
+        "e": "p"
+      },
+      "explanation": "Sections 2 and 3: the L1 penalty is $\\lambda \\sum |w|$ with gradient $\\lambda \\, \\text{sign}(w)$, so a plain step subtracts $\\alpha \\lambda$ from a positive weight. The L2 penalty is $\\lambda \\sum w^2$ with gradient $2 \\lambda w$, so a plain step turns $w$ into $(1 - 2 \\alpha \\lambda) w$. The two unused expressions are the L2 gradient of the other convention, $\\lambda w$, and a factor that lacks the 2.",
+      "hints": [
+        "Sort the five quantities into penalties, gradients and results of a step before pairing them."
+      ]
+    },
+    {
+      "id": "nn-030-q16",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "9",
+      "est_minutes": 5,
+      "tags": [
+        "derivation",
+        "weight-decay"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Put the steps of the derivation that turns L2 regularisation under plain gradient descent into weight decay in their logical order.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Collect the terms that contain $w$: $w \\leftarrow (1 - 2 \\alpha \\lambda) \\, w - \\alpha \\, \\partial L_{\\text{data}} / \\partial w$."
+        },
+        {
+          "key": "b",
+          "text": "Write the total loss, $L_{\\text{total}} = L_{\\text{data}} + \\lambda \\sum w^2$."
+        },
+        {
+          "key": "c",
+          "text": "Read the result: every step first shrinks each weight by a fixed factor below 1."
+        },
+        {
+          "key": "d",
+          "text": "Substitute into the update: $w \\leftarrow w - \\alpha (\\partial L_{\\text{data}} / \\partial w + 2 \\lambda w)$."
+        },
+        {
+          "key": "e",
+          "text": "Differentiate with respect to one weight: $\\partial L_{\\text{total}} / \\partial w = \\partial L_{\\text{data}} / \\partial w + 2 \\lambda w$."
+        }
+      ],
+      "answer": [
+        "b",
+        "e",
+        "d",
+        "a",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 9: the derivation starts from the total loss, differentiates it, substitutes the gradient into the update rule, collects the terms in $w$, and only then reads off the factor. Each step uses the result of the one before it, so no other order is a derivation.",
+      "hints": [
+        "The first step states what is being minimised, and the last step is an interpretation, not a calculation.",
+        "A gradient has to exist before it can be substituted into an update."
+      ]
+    },
+    {
+      "id": "nn-030-q17",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 15,
+      "tags": [
+        "implement",
+        "backward"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The starter is the `Layer_Dense` of post 16 with the four regulariser arguments already stored. Complete `backward` so that `dweights` and `dbiases` hold the gradient of the data loss plus the gradient of every penalty whose strength is above zero: L1 and L2, on the weights and on the biases. `dinputs` and the two existing lines must keep their meaning. The tests use weights and biases that are all non-zero.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "import numpy as np\n\n\nclass Layer_Dense:\n\n    def __init__(self, n_inputs, n_neurons,\n                 weight_regularizer_l1=0.0, weight_regularizer_l2=0.0,\n                 bias_regularizer_l1=0.0, bias_regularizer_l2=0.0):\n        self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)\n        self.biases = np.zeros((1, n_neurons))\n\n        self.weight_regularizer_l1 = weight_regularizer_l1\n        self.weight_regularizer_l2 = weight_regularizer_l2\n        self.bias_regularizer_l1 = bias_regularizer_l1\n        self.bias_regularizer_l2 = bias_regularizer_l2\n\n    def forward(self, inputs):\n        self.inputs = inputs\n        self.output = np.dot(inputs, self.weights) + self.biases\n\n    def backward(self, dvalues):\n        self.dweights = np.dot(self.inputs.T, dvalues)\n        self.dbiases = np.sum(dvalues, axis=0, keepdims=True)\n\n        # TODO: add the gradient of each penalty whose strength is above zero,\n        # for the weights and for the biases.\n\n        self.dinputs = np.dot(dvalues, self.weights.T)\n",
+      "solution": "import numpy as np\n\n\nclass Layer_Dense:\n\n    def __init__(self, n_inputs, n_neurons,\n                 weight_regularizer_l1=0.0, weight_regularizer_l2=0.0,\n                 bias_regularizer_l1=0.0, bias_regularizer_l2=0.0):\n        self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)\n        self.biases = np.zeros((1, n_neurons))\n\n        self.weight_regularizer_l1 = weight_regularizer_l1\n        self.weight_regularizer_l2 = weight_regularizer_l2\n        self.bias_regularizer_l1 = bias_regularizer_l1\n        self.bias_regularizer_l2 = bias_regularizer_l2\n\n    def forward(self, inputs):\n        self.inputs = inputs\n        self.output = np.dot(inputs, self.weights) + self.biases\n\n    def backward(self, dvalues):\n        self.dweights = np.dot(self.inputs.T, dvalues)\n        self.dbiases = np.sum(dvalues, axis=0, keepdims=True)\n\n        if self.weight_regularizer_l1 > 0:\n            dL1 = np.ones_like(self.weights)\n            dL1[self.weights < 0] = -1\n            self.dweights += self.weight_regularizer_l1 * dL1\n        if self.weight_regularizer_l2 > 0:\n            self.dweights += 2 * self.weight_regularizer_l2 * self.weights\n        if self.bias_regularizer_l1 > 0:\n            dL1 = np.ones_like(self.biases)\n            dL1[self.biases < 0] = -1\n            self.dbiases += self.bias_regularizer_l1 * dL1\n        if self.bias_regularizer_l2 > 0:\n            self.dbiases += 2 * self.bias_regularizer_l2 * self.biases\n\n        self.dinputs = np.dot(dvalues, self.weights.T)\n",
+      "tests": "import numpy as np\n\nX = np.array([[1.0, -2.0], [0.5, 3.0], [-1.5, 0.25]])\ndvalues = np.array([[0.2, -0.1, 0.4], [-0.3, 0.5, 0.1], [0.6, 0.2, -0.7]])\nW = np.array([[0.5, -2.0, 1.5], [-0.25, 0.1, -3.0]])      # no weight is zero\nb = np.array([[0.4, -0.6, 2.0]])                           # no bias is zero\ndata_dW = X.T @ dvalues\ndata_db = dvalues.sum(axis=0, keepdims=True)\ndata_dX = dvalues @ W.T\n\n\ndef make(**strengths):\n    np.random.seed(0)\n    layer = Layer_Dense(2, 3, **strengths)\n    layer.weights = W.copy()\n    layer.biases = b.copy()\n    layer.forward(X)\n    layer.backward(dvalues)\n    return layer\n\n\n# With no strength set the class is the class of post 16.\nlayer = make()\nassert np.allclose(layer.dweights, data_dW) and np.allclose(layer.dbiases, data_db), \"defaults must leave the data gradient alone\"\n\n# Each penalty on its own.\nlayer = make(weight_regularizer_l2=0.1)\nassert np.allclose(layer.dweights, data_dW + 2 * 0.1 * W), \"L2 on weights: data gradient plus 2 * lambda * weights\"\nassert np.allclose(layer.dbiases, data_db), \"a weight strength must not touch dbiases\"\n\nlayer = make(weight_regularizer_l1=0.1)\nassert np.allclose(layer.dweights, data_dW + 0.1 * np.where(W < 0, -1.0, 1.0)), \"L1 on weights: data gradient plus lambda * sign\"\n\nlayer = make(bias_regularizer_l2=0.1)\nassert np.allclose(layer.dbiases, data_db + 2 * 0.1 * b), \"L2 on biases: data gradient plus 2 * lambda * biases\"\nassert np.allclose(layer.dweights, data_dW), \"a bias strength must not touch dweights\"\n\nlayer = make(bias_regularizer_l1=0.1)\nassert np.allclose(layer.dbiases, data_db + 0.1 * np.where(b < 0, -1.0, 1.0)), \"L1 on biases: data gradient plus lambda * sign\"\n\n# All four together, and a second backward call on the same object.\nlayer = make(weight_regularizer_l1=0.01, weight_regularizer_l2=0.05, bias_regularizer_l1=0.02, bias_regularizer_l2=0.03)\nwant_dW = data_dW + 0.01 * np.where(W < 0, -1.0, 1.0) + 2 * 0.05 * W\nwant_db = data_db + 0.02 * np.where(b < 0, -1.0, 1.0) + 2 * 0.03 * b\nassert np.allclose(layer.dweights, want_dW) and np.allclose(layer.dbiases, want_db), \"the four terms add\"\nlayer.backward(dvalues)\nassert np.allclose(layer.dweights, want_dW) and np.allclose(layer.dbiases, want_db), \"a second call must give the same gradients, not accumulate\"\n\n# The penalty does not depend on the inputs, and the parameters are not changed by backward.\nassert np.allclose(layer.dinputs, data_dX), \"dinputs gets no penalty term\"\nassert np.array_equal(layer.weights, W) and np.array_equal(layer.biases, b), \"backward must not change the parameters\"\nassert layer.dweights.shape == W.shape and layer.dbiases.shape == b.shape\n\n# A strength that is not above zero adds nothing, as in the class of the post.\nlayer = make(weight_regularizer_l1=-0.1, weight_regularizer_l2=-0.1, bias_regularizer_l1=-0.1, bias_regularizer_l2=-0.1)\nassert np.allclose(layer.dweights, data_dW) and np.allclose(layer.dbiases, data_db), \"a negative strength must add no term\"\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "Section 5: the gradient of a sum is the sum of the gradients, so each penalty adds its own term to the array of the parameter it penalises: $\\lambda$ times the sign for L1 and $2 \\lambda$ times the parameter for L2. The data gradient is assigned first and the penalty terms are added to it within the same call, so nothing accumulates across calls, and `dinputs` is untouched because the penalty does not depend on the inputs.",
+      "hints": [
+        "Each of the four strengths guards one added term, and each term has the shape of the parameter array it belongs to.",
+        "The L1 term needs an array of $+1$ and $-1$ with the shape of the parameter; the L2 term needs the parameter itself and a factor."
+      ]
+    },
+    {
+      "id": "nn-030-q18",
+      "type": "long",
+      "track": "intuition",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 12,
+      "tags": [
+        "sparsity",
+        "shrinkage"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Explain, from the size of each penalty's gradient, why L1 is called sparsity-inducing and L2 is said to shrink weights. Then say what plain gradient steps actually leave behind under L1, and why that is not a set of weights equal to zero.",
+      "kind": "explain",
+      "solution": "The gradient of the L1 penalty with respect to a non-zero weight is $\\lambda \\, \\text{sign}(w)$. Its size is $\\lambda$ whatever the size of the weight, so a plain step moves every weight by the same amount, $\\alpha \\lambda$, towards zero. A weight that the data loss barely needs is therefore carried to the neighbourhood of zero in a finite number of steps, however small it already is. That is the sense in which L1 induces sparsity: it removes unneeded weights instead of merely reducing them.\n\nThe gradient of the L2 penalty is $2 \\lambda w$, proportional to the weight. A plain step multiplies the weight by $1 - 2 \\alpha \\lambda$. Large weights lose a lot and small weights lose little, so the weights shrink geometrically and the pull fades as a weight approaches zero. L2 makes weights small without singling any out for removal.\n\nUnder L1 a plain gradient step has the fixed size $\\alpha \\lambda$. Unless the weight is an exact multiple of that size, a step from just above zero lands just below it, and the next step comes back, so the weight oscillates within $\\alpha \\lambda$ of zero. Even a weight that is exactly zero is moved off, because the class uses a sign of $+1$ there. Exact zeros are a property of the minimiser of an L1-penalised loss, which methods that treat the corner explicitly can return; plain gradient steps do not. In the post's runs no weight ended at exactly zero, and sparsity had to be counted with a threshold.",
+      "rubric": [
+        {
+          "criterion": "States that the L1 gradient has constant size $\\lambda$ and the L2 gradient is proportional to the weight",
+          "points": 2
+        },
+        {
+          "criterion": "Concludes that L1 carries small weights to the neighbourhood of zero in finitely many steps, at the same rate as large ones",
+          "points": 2
+        },
+        {
+          "criterion": "Concludes that L2 shrinks weights by a factor per step, so the pull fades and the weight does not arrive at zero",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that a plain L1 step of fixed size $\\alpha \\lambda$ oversteps zero, leaving weights near zero and not equal to it",
+          "points": 2
+        }
+      ],
+      "answer_length": "three short paragraphs",
+      "explanation": "Section 3: the L1 gradient has constant size $\\lambda$, so small weights are pulled to the neighbourhood of zero in finitely many steps, while the L2 gradient $2 \\lambda w$ fades with the weight and only shrinks it geometrically. A plain step of fixed size $\\alpha \\lambda$ oversteps zero, so L1 with gradient steps leaves weights within $\\alpha \\lambda$ of zero and not at zero.",
+      "hints": [
+        "Compare what each gradient does to a weight that is already small.",
+        "For the last part, follow a weight that is closer to zero than one L1 step."
+      ]
+    },
+    {
+      "id": "nn-030-q19",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "9",
+      "est_minutes": 15,
+      "tags": [
+        "adam",
+        "weight-decay"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "With plain gradient descent, an L2 penalty multiplies each weight by a fixed factor at every step. Using what post 27 says about how Adam turns a gradient into a step, explain why the same L2 term inside the gradient does not act as a fixed-factor decay under Adam. Consider a weight on which the penalty is the only gradient, and say how the size of its step depends on $\\lambda$.",
+      "kind": "connect",
+      "connects": [
+        "nn-027",
+        "nn-022"
+      ],
+      "solution": "1. Plain gradient descent (post 22) subtracts $\\alpha$ times the gradient. With the L2 term the update is $w \\leftarrow (1 - 2 \\alpha \\lambda) w - \\alpha \\, \\partial L_{\\text{data}} / \\partial w$, so each step shrinks the weight by the fixed factor $1 - 2 \\alpha \\lambda$, and a larger $\\lambda$ shrinks it faster.\n2. Adam (post 27) keeps a running mean of the gradient and a running mean of the squared gradient, and its step is the learning rate times the first divided by the square root of the second.\n3. The L2 term $2 \\lambda w$ is part of the gradient that enters both averages. For a weight on which it is the only gradient, the first average is close to $2 \\lambda w$ and the square root of the second is close to $|2 \\lambda w|$, so their ratio is close to the sign of $w$: the factor $2 \\lambda$ cancels.\n4. The step is therefore about the learning rate in size, whatever $\\lambda$ is, as long as the gradient is well above Adam's small constant $\\epsilon$. In the post, a weight of 1 under Adam with a learning rate of 0.001 ends at about 0.9018 after 100 steps for $\\lambda$ of 0.0001, 0.01 and 1 alike, while fixed-factor decay would give 0.99998, 0.998 and 0.819.\n5. When a data gradient is present as well, the penalty is one part of what is normalised, so the shrinkage of a weight depends on the history of its whole gradient and is not a fixed factor per step. That is why L2 in the gradient and weight decay are different methods under Adam, the point made by Loshchilov and Hutter (2019), who apply the decay to the weights directly.",
+      "rubric": [
+        {
+          "criterion": "States the fixed factor $1 - 2 \\alpha \\lambda$ for plain gradient descent",
+          "points": 1
+        },
+        {
+          "criterion": "Describes Adam's step as the learning rate times a ratio of a running mean of the gradient to the root of a running mean of its square",
+          "points": 2
+        },
+        {
+          "criterion": "Shows that a constant factor such as $2 \\lambda$ cancels in that ratio when the penalty is the only gradient",
+          "points": 2
+        },
+        {
+          "criterion": "Concludes that the step is about the learning rate in size and nearly independent of $\\lambda$, so it is not a fixed-factor decay",
+          "points": 2
+        },
+        {
+          "criterion": "Notes that with a data gradient present the shrinkage depends on the whole gradient history",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 9: Adam divides the running mean of the gradient by the square root of the running mean of its square, so a gradient that is steadily $2 \\lambda w$ produces a step of about the learning rate, almost independent of $\\lambda$. The decay is then not a multiplication by $1 - 2 \\alpha \\lambda$. The post measures the same end weight, about 0.9018, for strengths of 0.0001, 0.01 and 1.",
+      "hints": [
+        "Write Adam's step as a ratio of two running averages and ask what a constant factor in the gradient does to that ratio.",
+        "Compare with the plain update, where the same constant factor multiplies the step directly."
+      ]
+    },
+    {
+      "id": "nn-030-q20",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8",
+      "est_minutes": 15,
+      "tags": [
+        "procedure",
+        "seed-spread"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A colleague trains the spiral network once without a penalty and once with L2 at $\\lambda = 10^{-3}$, each on one seed, reads test accuracies of 82.3 and 81.0 percent, and concludes that L2 hurts on this problem and should be dropped. Critique the conclusion using what the post measured, and describe a procedure that would support a decision about $\\lambda$.",
+      "kind": "critique",
+      "solution": "The two numbers are single draws from two distributions that overlap. In the post, test accuracy over five seeds ranged from 73.0 to 82.3 percent without a penalty and from 81.0 to 86.7 percent with L2 at $10^{-3}$. The colleague's pair, 82.3 against 81.0, is the best run of the first range set against the worst of the second: it is a possible outcome and says nothing about which setting is better.\n\nThe comparison that the post's data support is paired: with the same seed, hence the same data and the same initial weights, L2 at $5 \\times 10^{-4}$ raised test accuracy on each of the five seeds, and at $10^{-3}$ the mean was 83.5 percent against 78.5 without a penalty. A difference of 1.3 points between single runs is several times smaller than the spread between seeds.\n\nThere is a second flaw. A decision about a hyperparameter read from the test set spends the test set (post 29): once $\\lambda$ has been chosen by test accuracy, that accuracy is no longer an estimate for unseen data.\n\nA sound procedure: fix a list of seeds; for each candidate strength, including zero, in powers of ten, train on every seed with data and initial weights paired across candidates; read validation accuracy and validation data loss, without the penalty in the loss; compare candidates seed by seed and by their ranges; treat candidates whose difference is smaller than the spread between seeds as tied, and add seeds or keep the simpler choice; watch training accuracy to recognise underfitting at large strengths; and read the test set once, for the chosen strength.",
+      "rubric": [
+        {
+          "criterion": "Points out that each number is a single run and that the ranges over seeds of the two settings overlap, so the observed order can arise by chance",
+          "points": 2
+        },
+        {
+          "criterion": "Uses the paired or multi-seed evidence of the post to show that the conclusion is not supported",
+          "points": 2
+        },
+        {
+          "criterion": "Objects to choosing a hyperparameter on the test set",
+          "points": 1
+        },
+        {
+          "criterion": "Proposes several seeds per candidate with data and initial weights paired across candidates",
+          "points": 2
+        },
+        {
+          "criterion": "Proposes comparing candidates on validation data, treating differences below the seed spread as ties, and reading the test set once",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Sections 7 and 8: the spread between seeds was about nine points without a penalty and about six with it, so two single runs on unpaired seeds can show either order. Paired over five seeds, L2 at $5 \\times 10^{-4}$ raised test accuracy on every seed. A decision needs the same seeds for every candidate, several of them, validation data for the choice and the test set once at the end.",
+      "hints": [
+        "Compare the difference the colleague saw with the range of each setting over seeds in the post.",
+        "Then ask which data the comparison of candidates should be read on, and how often the test set may be used."
+      ]
+    }
+  ]
+}

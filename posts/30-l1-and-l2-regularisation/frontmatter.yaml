@@ -1,8 +1,25 @@
 id: nn-030
 slug: 30-l1-and-l2-regularisation
-title: "Part 30 · L1 and L2 regularisation"
+title: "30 - L1 and L2 regularisation"
+summary: "A penalty on weight size adds one term to the loss and one to each weight gradient. The post derives both penalties, adds them to the dense layer, checks the gradients, and measures their effect on the spiral over five seeds."
 date: 2026-05-29
+updated: 2026-10-05
+status: complete
+part: "Part VII - Generalisation and regularisation"
+level: intermediate
+reading_time: 27
 tags: [neural-networks, from-scratch, regularisation, l1, l2, generalisation, weight-decay]
 hero: diagrams/01-l1-vs-l2-penalty.svg
-reading_time: 12
-part: "Part VII — Generalisation and regularisation"
+prerequisites: [nn-016, nn-028]
+code: included
+outcomes:
+  - id: o1
+    text: "Write the L1 and L2 penalties and derive the gradient of each."
+  - id: o2
+    text: "Explain why L1 induces sparsity and L2 shrinkage, from the size of each penalty's gradient."
+  - id: o3
+    text: "Extend Layer_Dense with weight_regularizer_l1 and weight_regularizer_l2 that hook into the existing forward and backward passes."
+  - id: o4
+    text: "Choose a sensible regularisation strength from a sweep read on held-out data over several seeds."
+recommended: [nn-029]
+compute: cpu
