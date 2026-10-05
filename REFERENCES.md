@@ -21,10 +21,12 @@ The bibliography of Neural Networks from Scratch. Every source cited in a post's
 - Stanford CS231n, *Convolutional Neural Networks for Visual Recognition*, course notes, ["Putting it together: Minimal Neural Network Case Study"](https://cs231n.github.io/neural-networks-case-study/).
 - Strang, G., *Calculus* (Wellesley-Cambridge, 2010).
 - Strang, G., *Introduction to Linear Algebra* (Wellesley-Cambridge, 6th edition, 2023).
+- Vapnik, V., *Statistical Learning Theory* (Wiley, 1998).
 
 ## Papers and articles
 
 - Bergstra, J. and Bengio, Y., *"Random Search for Hyper-Parameter Optimization"* (Journal of Machine Learning Research, 2012).
+- Bottou, L., *"Stochastic Gradient Descent Tricks"* (Neural Networks: Tricks of the Trade, 2012).
 - Bottou, L., Curtis, F. E., and Nocedal, J., *"Optimization Methods for Large-Scale Machine Learning"* (SIAM Review, 2018).
 - Bridle, J. S., *"Probabilistic Interpretation of Feedforward Classification Network Outputs"* (Neurocomputing, NATO ASI Series, 1990).
 - Cauchy, A.-L., *"Méthode générale pour la résolution des systèmes d'équations simultanées"* (Comptes rendus de l'Académie des sciences, 1847).
@@ -45,6 +47,7 @@ The bibliography of Neural Networks from Scratch. Every source cited in a post's
 - Hornik, K., *"Approximation Capabilities of Multilayer Feedforward Networks"* (Neural Networks, 1991).
 - Ivakhnenko, A. G. and Lapa, V. G., *"Cybernetic Predicting Devices"* (CCM Information Corporation, 1965).
 - Keskar, N. S., et al., *"On Large-Batch Training for Deep Learning: Generalization Gap and Sharp Minima"* (ICLR, 2017).
+- Kaufman, S., Rosset, S., Perlich, C., and Stitelman, O., *"Leakage in Data Mining: Formulation, Detection, and Avoidance"* (ACM Transactions on Knowledge Discovery from Data, 2012).
 - Kingma, D. P. and Ba, J., *"Adam: A Method for Stochastic Optimization"* (ICLR, 2015). The original Adam paper.
 - Klambauer, G., et al., *"Self-Normalizing Neural Networks"* (NeurIPS, 2017). SELU.
 - Kohavi, R., *"A Study of Cross-Validation and Bootstrap for Accuracy Estimation and Model Selection"* (IJCAI, 1995).

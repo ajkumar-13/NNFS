@@ -107,7 +107,7 @@ Each post opens with a short summary, the prerequisites, and what you will be ab
 ## What is measured
 
 - From post 04 to post 31 every network is run on the same data: the spiral dataset, three classes of 100 points in two dimensions, from the `nnfs` package with its fixed seed. Post 09 adds the package's vertical dataset once, as an easy contrast.
-- Part VI trains all six optimisers on one setup (the spiral data, a $2 \to 64 \to 3$ network, 10,001 epochs, the same initial weights), so the rows of its comparison differ only in the optimiser. In that setup plain gradient descent ends at 64.7 percent training accuracy, momentum at 95.7, AdaGrad at 84.0, RMSProp at 90.0, and Adam at 96.3.
+- Part VI trains all six optimisers on one setup (the spiral data, a $2 \to 64 \to 3$ network, 10,001 epochs, the same initial weights), so the rows of its comparison differ only in the optimiser. On the documented seed plain gradient descent ends at 64.7 percent training accuracy, momentum at 95.7, AdaGrad at 84.0, RMSProp at 90.0, and Adam at 96.3; other seeds order the optimisers differently, and over ten seeds no ranking of the last four holds (post 27).
 - Part VII measures each regulariser by the gap between training accuracy and accuracy on a fresh draw from the same spiral generator.
 - Each project's README gives the commands that train and evaluate it and reports the test result those commands print.
 

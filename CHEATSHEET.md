@@ -80,11 +80,11 @@ self.dinputs = (dvalues - y_true.reshape(-1, 1)) / len(dvalues)
 
 - Softmax alone has a full Jacobian, $\partial \hat{y}_i / \partial z_j = \hat{y}_i(\delta_{ij} - \hat{y}_j)$; combined with cross-entropy it collapses to $(\hat{\mathbf{y}} - \mathbf{y})/N$, so the series always backpropagates through the combined class.
 - Backward order for $2 \to 64 \to 3$: loss and softmax $(N, 3)$, `dense2` (`dweights` $(64, 3)$, `dinputs` $(N, 64)$), ReLU $(N, 64)$, `dense1` (`dweights` $(2, 64)$, `dinputs` $(N, 2)$).
-- Gradient check: perturb one parameter by $\pm h$ and compare $\frac{L(\theta + h) - L(\theta - h)}{2h}$ with the analytic value. The central difference has error of order $h^2$; with $h = 10^{-5}$ in float64 a correct backward pass gives a relative error near $10^{-7}$ or below, and above $10^{-3}$ it is almost certainly a bug. Two cases inflate the error without a bug: gradients that are themselves tiny (with the `0.01` initialisation some bias gradients are near $10^{-8}$, where rounding dominates; check with a larger initial scale or an absolute tolerance), and float32 arrays, which `nnfs.init()` produces.
+- Gradient check: perturb one parameter by $\pm h$ and compare $\frac{L(\theta + h) - L(\theta - h)}{2h}$ with the analytic value. The central difference has error of order $h^2$; with $h = 10^{-5}$ in float64 a correct backward pass gives a relative error near $10^{-7}$ or below, and above $10^{-3}$ it is almost certainly a bug. Three cases inflate the error without a bug: gradients that are themselves tiny (with the `0.01` initialisation the spiral network's gradients are $10^{-4}$ to $10^{-5}$, so read the absolute gap as well); pre-activations within $h$ of zero, where a step crosses a ReLU corner (redraw weights and biases at scale 1 before checking); and float32, which `nnfs.init()` produces, through its `np.dot` as well, so run the check in a process that has not called it.
 
 ## Optimisers
 
-All share one contract: `pre_update_params()` once per step, `update_params(layer)` per layer, `post_update_params()` to count the step. Here $g$ is the gradient and $t$ the update count.
+From post 23 on all share one contract: `pre_update_params()` once per step, `update_params(layer)` per layer, `post_update_params()` to count the step. Here $g$ is the gradient and $t$ the update count.
 
 | Optimiser | Update | Defaults in the series' class |
 |---|---|---|
