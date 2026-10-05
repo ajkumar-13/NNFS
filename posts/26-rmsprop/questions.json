@@ -1,0 +1,840 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-026",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-026-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 2,
+      "tags": [
+        "cache",
+        "moving-average"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "AdaGrad keeps, for every parameter, a cache of squared gradients that can only grow. Which single change turns AdaGrad into RMSProp?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The cache is reset to zero after a fixed number of updates.",
+          "correct": false,
+          "feedback": "A reset throws the whole history away at once and then lets the sum grow again. RMSProp never resets; it lets old squared gradients fade gradually."
+        },
+        {
+          "key": "b",
+          "text": "The cache becomes an exponential moving average of the squared gradients.",
+          "correct": true,
+          "feedback": "Right: $G \\leftarrow \\rho G + (1 - \\rho) g^2$ replaces $G \\leftarrow G + g^2$, and nothing else in the update changes."
+        },
+        {
+          "key": "c",
+          "text": "A velocity is added, so that past gradients steer the direction of the step.",
+          "correct": false,
+          "feedback": "That is momentum, which averages the gradient itself. RMSProp has no memory of direction; the series adds it in Adam."
+        },
+        {
+          "key": "d",
+          "text": "The cache is divided by the number of updates made so far.",
+          "correct": false,
+          "feedback": "That would give the plain mean of all squared gradients, in which a gradient from the first step still counts as much as the newest. RMSProp weights recent gradients more."
+        }
+      ],
+      "explanation": "Section 1 names the flaw, a cache with unbounded memory, and section 2 gives the fix: the running sum of squared gradients is replaced by an exponential moving average, in which old values fade geometrically. The step that divides by the root of the cache is unchanged.",
+      "hints": [
+        "The fix must let old squared gradients lose weight gradually, without ever throwing the history away."
+      ]
+    },
+    {
+      "id": "nn-026-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "rho",
+        "memory-horizon"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "What does the argument `rho` of `Optimizer_RMSprop` control?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "How fast the global learning rate falls as training proceeds.",
+          "correct": false,
+          "feedback": "That is `decay`, which acts on `current_learning_rate` in `pre_update_params`. `rho` never touches the learning rate."
+        },
+        {
+          "key": "b",
+          "text": "How strongly past gradients steer the direction of the next step.",
+          "correct": false,
+          "feedback": "That is the momentum coefficient of post 24, which acts on the gradient itself. `rho` averages squared gradients, and a square has lost the sign that a direction needs."
+        },
+        {
+          "key": "c",
+          "text": "How quickly old squared gradients lose their weight in the cache.",
+          "correct": true,
+          "feedback": "Right: a squared gradient that is $k$ steps old carries $\\rho^k$ times the weight of the newest, so `rho` sets the length of the cache's memory."
+        },
+        {
+          "key": "d",
+          "text": "How far below zero the denominator of the update is allowed to go.",
+          "correct": false,
+          "feedback": "The denominator is a square root plus `epsilon` and is never negative. Keeping it away from zero is the job of `epsilon`."
+        }
+      ],
+      "explanation": "Section 2: in $G_t = \\rho G_{t-1} + (1 - \\rho) g_t^2$ the weight of a squared gradient shrinks by the factor $\\rho$ at every later step. A larger $\\rho$ means a longer memory, about $1 / (1 - \\rho)$ steps, and a cache that changes more slowly.",
+      "hints": [
+        "Look at what multiplies the old cache in the update of the cache."
+      ]
+    },
+    {
+      "id": "nn-026-q03",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "memory-horizon"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Using the rule of thumb for the memory horizon of an exponential moving average, give the horizon in steps for $\\rho = 0.98$ and for $\\rho = 0.995$.",
+      "answer": {
+        "parts": [
+          {
+            "label": "horizon for rho = 0.98",
+            "value": 50,
+            "tolerance": 0.5,
+            "unit": "steps"
+          },
+          {
+            "label": "horizon for rho = 0.995",
+            "value": 200,
+            "tolerance": 0.5,
+            "unit": "steps"
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 2, 1 / (1 - rho): 1 / 0.02 = 50 and 1 / 0.005 = 200. snippets/ema_cache.py prints the same rule for 0.9, 0.99 and 0.999.",
+      "explanation": "Section 2: the horizon is about $1 / (1 - \\rho)$ steps, the age at which a squared gradient's weight has fallen to roughly $1/e$ of the newest. For $\\rho = 0.98$ that is $1 / 0.02 = 50$ steps, and for $\\rho = 0.995$ it is $1 / 0.005 = 200$ steps.",
+      "hints": [
+        "The horizon depends on how far $\\rho$ is from 1."
+      ]
+    },
+    {
+      "id": "nn-026-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 6,
+      "tags": [
+        "cache",
+        "worked-example"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A parameter's gradient is 0.2 at every step. Both caches start at zero. Give the AdaGrad cache and the RMSProp cache with $\\rho = 0.9$ after three steps.",
+      "answer": {
+        "parts": [
+          {
+            "label": "AdaGrad cache after 3 steps",
+            "value": 0.12,
+            "tolerance": 0.0005,
+            "unit": ""
+          },
+          {
+            "label": "RMSProp cache after 3 steps",
+            "value": 0.01084,
+            "tolerance": 0.0002,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed forms of section 3: AdaGrad t * g^2 = 3 * 0.04; RMSProp g^2 * (1 - rho^t) = 0.04 * (1 - 0.729). Checked against adagrad_cache and rmsprop_cache of snippets/ema_cache.py with a stream of three gradients of 0.2.",
+      "explanation": "Section 3: with a constant gradient AdaGrad's cache is $t \\, g^2 = 3 \\cdot 0.04 = 0.12$. RMSProp's is $g^2 (1 - \\rho^t) = 0.04 \\cdot (1 - 0.729) = 0.01084$; step by step it is 0.004, 0.0076 and 0.01084. After three steps the average is still well under its ceiling of 0.04, and the sum has already passed it.",
+      "hints": [
+        "The squared gradient is 0.04 at every step.",
+        "For RMSProp apply $G \\leftarrow 0.9 \\, G + 0.1 \\cdot 0.04$ three times, starting from zero."
+      ]
+    },
+    {
+      "id": "nn-026-q05",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 5,
+      "tags": [
+        "memory-horizon",
+        "recovery"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A parameter's RMSProp cache with $\\rho = 0.9$ stands at 4.0 after a long stretch of gradients of size 2. From now on its gradient has size 0.1. Roughly what is the cache ten steps later?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "About 0.01, the new squared gradient",
+          "correct": false,
+          "feedback": "This treats the horizon of 10 steps as a cut-off. After 10 steps the old level still carries $0.9^{10} \\approx 0.35$ of its weight; the cache needs about a hundred steps to reach 0.01."
+        },
+        {
+          "key": "b",
+          "text": "About 1.4",
+          "correct": true,
+          "feedback": "Right: the gap to the new level shrinks by 0.9 per step, so the cache is $0.01 + 3.99 \\cdot 0.9^{10} \\approx 1.40$."
+        },
+        {
+          "key": "c",
+          "text": "About 3.6",
+          "correct": false,
+          "feedback": "This applies the factor 0.9 once. It is applied at every one of the ten steps, which gives $0.9^{10} \\approx 0.35$ of the old gap."
+        },
+        {
+          "key": "d",
+          "text": "Still 4.0, because a cache never falls",
+          "correct": false,
+          "feedback": "That is AdaGrad's sum. A moving average moves towards the new squared gradient from either side, and here it comes down."
+        }
+      ],
+      "explanation": "Section 2 shows that the gap between the cache and a constant squared gradient shrinks by the factor $\\rho$ per step, and section 3 runs this stream. After ten steps the gap of 3.99 has shrunk to $3.99 \\cdot 0.9^{10} \\approx 1.39$, so the cache is about 1.40. The horizon $1/(1 - \\rho) = 10$ is the age at which a weight has fallen to about $1/e$, not the time by which the past is gone.",
+      "hints": [
+        "Write the gap between the cache and the new squared gradient, and ask what one step does to it.",
+        "The gap is multiplied by 0.9 at each of the ten steps."
+      ]
+    },
+    {
+      "id": "nn-026-q06",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "learning-rate",
+        "defaults"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`Optimizer_SGD` defaults to `learning_rate=1.0` and `Optimizer_RMSprop` to `0.02`. Which property of the RMSProp update makes a rate near 1 unusable for a network whose weights start at a scale of 0.01?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "While a gradient is steady, the step is about as long as the learning rate itself.",
+          "correct": true,
+          "feedback": "Right: the root of the cache settles near $|g|$, so $\\alpha g / \\sqrt{G}$ has a size near $\\alpha$, whatever the gradient's size. A rate of 1 moves every weight by about 1 per update."
+        },
+        {
+          "key": "b",
+          "text": "The moving average multiplies every gradient by $1/(1 - \\rho)$ before the step is taken.",
+          "correct": false,
+          "feedback": "The average does not amplify anything: its weights are non-negative and sum to at most one, so the cache never exceeds the largest squared gradient."
+        },
+        {
+          "key": "c",
+          "text": "The cache grows without bound, so the rate has to start small to leave room for it.",
+          "correct": false,
+          "feedback": "An unbounded cache is AdaGrad's property, and it shrinks the steps, which is why AdaGrad is run with a rate of 1.0. RMSProp's cache is bounded."
+        },
+        {
+          "key": "d",
+          "text": "Epsilon stands outside the square root, which enlarges every step by a factor of $1/\\epsilon$.",
+          "correct": false,
+          "feedback": "Epsilon only matters where the root of the cache is as small as $10^{-7}$. For ordinary gradients it changes the step by a negligible amount."
+        }
+      ],
+      "explanation": "Section 4: while a parameter's gradient keeps a steady size the cache settles at $g^2$, so the step $\\alpha g / (\\sqrt{G} + \\epsilon)$ is close to $\\alpha$ in size. Under RMSProp the learning rate is roughly a distance per update. With a rate of 1.0 the runs of section 11 stand at 40.33 to 58.33 percent after 1,001 epochs, against 63.67 to 74.67 percent with 0.02.",
+      "hints": [
+        "Ask what the root of the cache is close to when the gradient has had the same size for a while."
+      ]
+    },
+    {
+      "id": "nn-026-q07",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "9",
+      "est_minutes": 6,
+      "tags": [
+        "first-step",
+        "predict-output"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Predict the two numbers the script prints, without running it.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "import numpy as np\n\nlearning_rate, rho, epsilon = 0.01, 0.99, 1e-7\nweight, gradient, cache = 0.5, 0.3, 0.0\n\ncache = rho * cache + (1 - rho) * gradient ** 2\nweight -= learning_rate * gradient / (np.sqrt(cache) + epsilon)\nprint(round(cache, 6), round(weight, 4))\n"
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "first printed number (the cache)",
+            "value": 0.0009,
+            "tolerance": 1e-05,
+            "unit": ""
+          },
+          {
+            "label": "second printed number (the weight)",
+            "value": 0.4,
+            "tolerance": 0.0005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Run of the stimulus in float64 prints 0.0009 0.4. Closed form of section 9: the first step is learning_rate / sqrt(1 - rho) = 0.01 / 0.1 = 0.1.",
+      "explanation": "The script is the first update of section 9. The cache starts at zero, so after one step it is $(1 - \\rho) g^2 = 0.01 \\cdot 0.09 = 0.0009$, with root 0.03. The step is $0.01 \\cdot 0.3 / 0.03 = 0.1$, which is $\\alpha / \\sqrt{1 - \\rho}$ and does not depend on the gradient: the weight goes from 0.5 to 0.4. A step of plain gradient descent with the same rate would have been 0.003.",
+      "hints": [
+        "Only the fraction $1 - \\rho$ of the squared gradient enters the cache at the first step.",
+        "The gradient cancels between the numerator and the root of the cache."
+      ]
+    },
+    {
+      "id": "nn-026-q08",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 15,
+      "tags": [
+        "implement",
+        "optimiser-class"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Complete `update_params` of `Optimizer_RMSprop`. The method receives a layer with `weights`, `biases`, `dweights` and `dbiases`, keeps one cache per parameter array on the layer, and updates the parameters in place. The tests compare the result with RMSProp written out for single numbers, over several updates, with learning-rate decay, and on two layers that share one optimiser.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "import numpy as np\n\n\nclass Optimizer_RMSprop:\n\n    def __init__(self, learning_rate=0.02, decay=0.0, epsilon=1e-7, rho=0.9):\n        self.learning_rate = learning_rate\n        self.current_learning_rate = learning_rate\n        self.decay = decay\n        self.epsilon = epsilon\n        self.rho = rho\n        self.iterations = 0\n\n    def pre_update_params(self):\n        if self.decay:\n            self.current_learning_rate = self.learning_rate / (1.0 + self.decay * self.iterations)\n\n    def update_params(self, layer):\n        \"\"\"One RMSProp update of layer.weights and layer.biases, in place.\n\n        The gradients are layer.dweights and layer.dbiases. The caches live on the layer as\n        layer.weight_cache and layer.bias_cache; they are created, filled with zeros, the first\n        time the layer is seen, and kept from one call to the next.\n        \"\"\"\n        # TODO: create the caches if the layer has none, update the caches, update the parameters\n        raise NotImplementedError\n\n    def post_update_params(self):\n        self.iterations += 1\n",
+      "solution": "import numpy as np\n\n\nclass Optimizer_RMSprop:\n\n    def __init__(self, learning_rate=0.02, decay=0.0, epsilon=1e-7, rho=0.9):\n        self.learning_rate = learning_rate\n        self.current_learning_rate = learning_rate\n        self.decay = decay\n        self.epsilon = epsilon\n        self.rho = rho\n        self.iterations = 0\n\n    def pre_update_params(self):\n        if self.decay:\n            self.current_learning_rate = self.learning_rate / (1.0 + self.decay * self.iterations)\n\n    def update_params(self, layer):\n        \"\"\"One RMSProp update of layer.weights and layer.biases, in place.\n\n        The gradients are layer.dweights and layer.dbiases. The caches live on the layer as\n        layer.weight_cache and layer.bias_cache; they are created, filled with zeros, the first\n        time the layer is seen, and kept from one call to the next.\n        \"\"\"\n        if not hasattr(layer, 'weight_cache'):\n            layer.weight_cache = np.zeros_like(layer.weights)\n            layer.bias_cache = np.zeros_like(layer.biases)\n\n        # The cache is a moving average of the squared gradients.\n        layer.weight_cache = self.rho * layer.weight_cache + (1 - self.rho) * layer.dweights ** 2\n        layer.bias_cache = self.rho * layer.bias_cache + (1 - self.rho) * layer.dbiases ** 2\n\n        # The step divides by the root of the new cache; epsilon stands outside the root.\n        layer.weights -= self.current_learning_rate * layer.dweights / (np.sqrt(layer.weight_cache) + self.epsilon)\n        layer.biases -= self.current_learning_rate * layer.dbiases / (np.sqrt(layer.bias_cache) + self.epsilon)\n\n    def post_update_params(self):\n        self.iterations += 1\n",
+      "tests": "import warnings\n\nimport numpy as np\n\n\nclass Layer:\n    \"\"\"Stands in for Layer_Dense: two parameter arrays and their gradients.\"\"\"\n\n    def __init__(self, weights, biases):\n        self.weights = np.array(weights, dtype=np.float64)\n        self.biases = np.array(biases, dtype=np.float64)\n\n\ndef reference(theta, gradients, rates, rho, epsilon):\n    \"\"\"RMSProp for one scalar parameter in plain Python: its final value and its final cache.\"\"\"\n    cache = 0.0\n    for gradient, rate in zip(gradients, rates):\n        cache = rho * cache + (1 - rho) * gradient * gradient\n        theta = theta - rate * gradient / (cache ** 0.5 + epsilon)\n    return theta, cache\n\n\n# 1. One update of one weight, by hand: cache 0.01 * 0.09, step 0.01 * 0.3 / (0.03 + 1e-7).\nlayer = Layer([[0.5]], [[0.0]])\nlayer.dweights, layer.dbiases = np.array([[0.3]]), np.array([[0.0]])\noptimizer = Optimizer_RMSprop(learning_rate=0.01, rho=0.99)\noptimizer.pre_update_params()\noptimizer.update_params(layer)\nassert hasattr(layer, \"weight_cache\") and hasattr(layer, \"bias_cache\"), \"the caches are stored on the layer\"\nassert abs(layer.weight_cache[0, 0] - 0.0009) < 1e-12, \"after one step the cache is (1 - rho) * gradient ** 2\"\nassert abs(layer.weights[0, 0] - (0.5 - 0.003 / (0.03 + 1e-7))) < 1e-12, \"the step divides by sqrt(cache) + epsilon\"\nassert layer.biases[0, 0] == 0.0 and not np.isnan(layer.biases).any(), \"a zero gradient leaves the bias where it was\"\nassert optimizer.iterations == 0, \"update_params does not count the step; post_update_params does\"\n\n# 2. Three updates with decay, two layers of different shapes, one optimiser.\nrng = np.random.default_rng(26)\nfirst = Layer(rng.normal(size=(2, 3)), rng.normal(size=(1, 3)))\nsecond = Layer(rng.normal(size=(3, 2)), rng.normal(size=(1, 2)))\nstart = {id(l): (l.weights.copy(), l.biases.copy()) for l in (first, second)}\nhistory = {id(first): [], id(second): []}\noptimizer = Optimizer_RMSprop(learning_rate=0.05, decay=0.1, rho=0.9, epsilon=1e-7)\nrates = []\nfor step in range(3):\n    for l in (first, second):\n        l.dweights = rng.normal(size=l.weights.shape) * 10.0 ** rng.integers(-3, 2)\n        l.dbiases = rng.normal(size=l.biases.shape)\n        history[id(l)].append((l.dweights.copy(), l.dbiases.copy()))\n    optimizer.pre_update_params()\n    rates.append(0.05 / (1.0 + 0.1 * step))\n    optimizer.update_params(first)\n    optimizer.update_params(second)\n    optimizer.post_update_params()\nassert optimizer.iterations == 3\nfor l in (first, second):\n    assert l.weight_cache.shape == l.weights.shape and l.bias_cache.shape == l.biases.shape, \"one cache entry per parameter\"\n    w0, b0 = start[id(l)]\n    for index in np.ndindex(*l.weights.shape):\n        want, cache = reference(w0[index], [h[0][index] for h in history[id(l)]], rates, 0.9, 1e-7)\n        assert abs(l.weights[index] - want) < 1e-10, \"weights differ from RMSProp after three updates with decay\"\n        assert abs(l.weight_cache[index] - cache) < 1e-12 * max(1.0, cache), \"the weight cache is not the moving average\"\n    for index in np.ndindex(*l.biases.shape):\n        want, cache = reference(b0[index], [h[1][index] for h in history[id(l)]], rates, 0.9, 1e-7)\n        assert abs(l.biases[index] - want) < 1e-10, \"biases differ from RMSProp after three updates with decay\"\n        assert abs(l.bias_cache[index] - cache) < 1e-12 * max(1.0, cache), \"the bias cache is not the moving average\"\n\n# 3. A tiny gradient, where the place of epsilon decides the step.\nlayer = Layer([[1.0]], [[1.0]])\nlayer.dweights, layer.dbiases = np.array([[1e-8]]), np.array([[-1e-8]])\noptimizer = Optimizer_RMSprop(learning_rate=0.02, rho=0.9, epsilon=1e-7)\noptimizer.update_params(layer)\nwant, _ = reference(1.0, [1e-8], [0.02], 0.9, 1e-7)\nassert abs(layer.weights[0, 0] - want) < 1e-12, \"epsilon is added to the root of the cache, outside the square root\"\nassert abs(layer.biases[0, 0] - (2.0 - want)) < 1e-12, \"the bias takes the mirror-image step for the opposite gradient\"\n\n# 4. A gradient of exactly zero with the default epsilon: no warning, no nan, no movement.\nlayer = Layer([[0.25, -0.5]], [[0.1, 0.2]])\nlayer.dweights, layer.dbiases = np.zeros((1, 2)), np.zeros((1, 2))\nwith warnings.catch_warnings():\n    warnings.simplefilter(\"error\")\n    Optimizer_RMSprop().update_params(layer)\nassert np.array_equal(layer.weights, [[0.25, -0.5]]) and np.array_equal(layer.biases, [[0.1, 0.2]])\nprint(\"all Optimizer_RMSprop checks passed\")\n",
+      "expected_output": "all Optimizer_RMSprop checks passed\n",
+      "explanation": "Section 5: the method creates `weight_cache` and `bias_cache` on the layer when they are missing, replaces each cache by `rho * cache + (1 - rho) * gradient ** 2`, and then subtracts `current_learning_rate * gradient / (sqrt(cache) + epsilon)`. The cache is updated before the step, the decayed rate is the one used, and epsilon stands outside the root. Storing the caches on the layer is what lets one optimiser serve layers of different shapes.",
+      "hints": [
+        "The method has three parts in a fixed order: create the caches if needed, update the caches, update the parameters.",
+        "Only the cache statement differs from AdaGrad's: an assignment of a weighted average of the old cache and the squared gradient, where AdaGrad adds.",
+        "Use `self.current_learning_rate`, not `self.learning_rate`, and add `self.epsilon` after taking the square root."
+      ]
+    },
+    {
+      "id": "nn-026-q09",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "training-loop",
+        "call-order"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Put the six events of one training epoch with `Optimizer_RMSprop` in the order in which they happen. `update_params` is shown as its two halves, for one layer.",
+      "items": [
+        {
+          "key": "a",
+          "text": "`update_params` subtracts `current_learning_rate * gradient / (sqrt(cache) + epsilon)` from the layer's parameters"
+        },
+        {
+          "key": "b",
+          "text": "The backward pass stores `dweights` and `dbiases` on the dense layers"
+        },
+        {
+          "key": "c",
+          "text": "`post_update_params` adds 1 to `iterations`"
+        },
+        {
+          "key": "d",
+          "text": "The forward pass computes the loss"
+        },
+        {
+          "key": "e",
+          "text": "`update_params` replaces the layer's cache by `rho * cache + (1 - rho) * gradient ** 2`"
+        },
+        {
+          "key": "f",
+          "text": "`pre_update_params` sets `current_learning_rate` from `decay` and `iterations`"
+        }
+      ],
+      "answer": [
+        "d",
+        "b",
+        "f",
+        "e",
+        "a",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 6: the forward pass comes first and the backward pass leaves the gradients on the layers. Then the three-call contract runs: `pre_update_params` fixes the rate for this step, `update_params` refreshes the cache and only then takes the step, so the step divides by a cache that already contains the current gradient, and `post_update_params` counts the step. Stepping before the cache is refreshed would divide the very first gradient by epsilon alone.",
+      "hints": [
+        "The gradients must exist before the optimiser is called, and the step counter moves last."
+      ]
+    },
+    {
+      "id": "nn-026-q10",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "9",
+      "est_minutes": 4,
+      "tags": [
+        "optimiser-family",
+        "state"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Match each optimiser of Part VI to what it stores for every parameter between updates.",
+      "left": [
+        {
+          "key": "a",
+          "text": "Gradient descent with momentum"
+        },
+        {
+          "key": "b",
+          "text": "AdaGrad"
+        },
+        {
+          "key": "c",
+          "text": "RMSProp"
+        },
+        {
+          "key": "d",
+          "text": "Adam"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "An exponential moving average of the squared gradients, and nothing else"
+        },
+        {
+          "key": "q",
+          "text": "A velocity built from past gradients, and nothing else"
+        },
+        {
+          "key": "r",
+          "text": "The running sum of all squared gradients, and nothing else"
+        },
+        {
+          "key": "s",
+          "text": "A moving average of the gradients and a moving average of the squared gradients"
+        },
+        {
+          "key": "t",
+          "text": "The gradient of the previous update, and nothing else"
+        },
+        {
+          "key": "u",
+          "text": "A moving average of the absolute values of the gradients, and nothing else"
+        }
+      ],
+      "answer": {
+        "a": "q",
+        "b": "r",
+        "c": "p",
+        "d": "s"
+      },
+      "explanation": "Section 9: momentum keeps a velocity, which remembers direction. AdaGrad keeps the sum of squared gradients and RMSProp a moving average of them, both of which have lost the sign. Adam keeps both kinds of memory, a moving average of the gradient and one of its square, and corrects each for its zero start. None of the four stores the previous gradient alone or an average of absolute values.",
+      "hints": [
+        "Sort the four by two questions: is the sign of the gradient remembered, and is the size?"
+      ]
+    },
+    {
+      "id": "nn-026-q11",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "9",
+      "est_minutes": 3,
+      "tags": [
+        "optimiser-family",
+        "bridge"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Which description places RMSProp correctly between AdaGrad and Adam?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It is AdaGrad with a correction for the zero start of its cache; Adam then replaces the running sum by a moving average of squared gradients.",
+          "correct": false,
+          "feedback": "RMSProp has no correction for its zero start, which is why its first step has the size $\\alpha / \\sqrt{1 - \\rho}$. The moving average of squared gradients is RMSProp's own contribution, and the correction is Adam's."
+        },
+        {
+          "key": "b",
+          "text": "It is momentum with a separate learning rate for every parameter; Adam then drops the velocity, keeps the cache and corrects it for its zero start.",
+          "correct": false,
+          "feedback": "RMSProp has no velocity: its step uses the current gradient alone. Adam adds a moving average of the gradient, it does not remove one."
+        },
+        {
+          "key": "c",
+          "text": "It is gradient descent with a decay schedule made per-parameter; Adam then replaces the cache by a velocity and corrects that for its zero start.",
+          "correct": false,
+          "feedback": "The cache follows each parameter's own gradients and can fall as well as rise, so it is not a schedule. Adam keeps the cache as its second moment and adds a first moment beside it."
+        },
+        {
+          "key": "d",
+          "text": "It is AdaGrad's step with the cache filled by a moving average; Adam then adds a moving average of the gradient and a bias correction.",
+          "correct": true,
+          "feedback": "Right: the step is AdaGrad's, the cache is new, and the two things RMSProp lacks, a memory of direction and a correction for the zero start, are what Adam supplies."
+        }
+      ],
+      "explanation": "Section 9: RMSProp keeps from AdaGrad the per-parameter division by the root of a cache of squared gradients, and changes only how the cache is filled. It lacks a memory of direction and does nothing about its zero start. Adam supplies both: a moving average of the gradient itself, and a division of both averages by $1 - \\beta^t$.",
+      "hints": [
+        "List what RMSProp stores, then what Adam stores, and compare."
+      ]
+    },
+    {
+      "id": "nn-026-q12",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "11",
+      "est_minutes": 4,
+      "tags": [
+        "diagnosis",
+        "rho"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A run of the post's spiral network with `Optimizer_RMSprop` prints the losses 1.0986, 10.6379, 10.7454, 10.7454, 10.7454 for its first five epochs and stays at 10.7454. After ten updates every entry of every cache is still exactly 0.0. Which constructor argument explains both observations?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`learning_rate=1.0`",
+          "correct": false,
+          "feedback": "A rate of 1.0 also throws the loss to about 10 at epoch 1, but the caches then fill with squared gradients and the loss keeps changing: section 11 measures 0.90 to 1.21 after 1,000 epochs."
+        },
+        {
+          "key": "b",
+          "text": "`epsilon=0.0`",
+          "correct": false,
+          "feedback": "With no epsilon a zero gradient on a zero cache gives `nan`, not a constant loss, and the caches of all other parameters still fill normally."
+        },
+        {
+          "key": "c",
+          "text": "`rho=1.0`",
+          "correct": true,
+          "feedback": "Right: the new squared gradient gets the weight $1 - \\rho = 0$, so the caches never leave zero and every gradient is divided by epsilon alone."
+        },
+        {
+          "key": "d",
+          "text": "`decay=1.0`",
+          "correct": false,
+          "feedback": "A large decay shrinks the learning rate quickly, which makes the steps small and the loss change slowly. It has no effect on the caches."
+        }
+      ],
+      "explanation": "Section 11: with $\\rho = 1$ the cache update is $G \\leftarrow G + 0 \\cdot g^2$, so the cache keeps its initial zero. The update then multiplies each gradient by $0.02 / 10^{-7} = 200{,}000$, which throws the network to a point where it predicts one class with certainty. The loss 10.7454 is two thirds of $-\\ln 10^{-7}$, the clipped loss of the two classes it gets wrong.",
+      "hints": [
+        "Ask which argument decides how much of a new squared gradient enters the cache.",
+        "A cache that is exactly zero after ten updates has been given a weight of zero for every new value."
+      ]
+    },
+    {
+      "id": "nn-026-q13",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "7",
+      "est_minutes": 5,
+      "tags": [
+        "diagnosis",
+        "loss-spikes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "On the post's documented spiral run, AdaGrad's loss is smooth over the last 1,000 epochs, while RMSProp's climbs from 0.30 to 1.68 and falls back within about twenty epochs. Both optimisers use a learning-rate decay. Which account agrees with the caches the post printed for the two runs?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "RMSProp's caches fell where gradients shrank, so its steps stayed long; AdaGrad's only grew.",
+          "correct": true,
+          "feedback": "Right: among the parameters that still learn, 73 of RMSProp's 201 caches shrank after epoch 1,000 and none of AdaGrad's 183 did; RMSProp's mean update fell 1.7-fold between epochs 100 and 10,000 and AdaGrad's 12.5-fold."
+        },
+        {
+          "key": "b",
+          "text": "RMSProp's decay raises its learning rate late in training, while AdaGrad's decay lowers its rate.",
+          "correct": false,
+          "feedback": "Both decays lower the rate: AdaGrad's from 1.0 to 0.5 and RMSProp's from 0.02 to 0.01818. The rate cannot explain a difference in the other direction."
+        },
+        {
+          "key": "c",
+          "text": "RMSProp's caches have grown past AdaGrad's, so its steps are too small to stay on course.",
+          "correct": false,
+          "feedback": "The opposite was printed: the largest cache at the end is 0.064 under RMSProp and 123 under AdaGrad, and small steps do not produce spikes."
+        },
+        {
+          "key": "d",
+          "text": "RMSProp's epsilon is too large beside its small caches, which adds noise to every single step.",
+          "correct": false,
+          "feedback": "Epsilon is $10^{-7}$ in both runs and makes steps smaller where it matters at all. It is not a source of noise."
+        }
+      ],
+      "explanation": "Section 7: a moving average follows a shrinking gradient down, so the factor $\\alpha / (\\sqrt{G} + \\epsilon)$ rises and the steps do not shrink as the gradients do. That is what keeps RMSProp learning, and steps that stay long can also overshoot. AdaGrad's sum cannot fall, so its steps only get shorter and its curve is smooth. Over ten seeds RMSProp's loss exceeded 1.5 somewhere in the last 1,000 epochs in eight.",
+      "hints": [
+        "Compare what happened to the two sets of caches between epoch 1,000 and epoch 10,000.",
+        "A cache that can fall makes the multiplier of the gradient rise again."
+      ]
+    },
+    {
+      "id": "nn-026-q14",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "11",
+      "est_minutes": 2,
+      "tags": [
+        "rho",
+        "predict-output"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "An `Optimizer_RMSprop` is created with `rho=1.0` and used for 500 updates on a layer whose gradients all have size 0.5. What number does every entry of `layer.weight_cache` hold afterwards?",
+      "answer": {
+        "model": "0 (zero): the cache never leaves its initial value, because each new squared gradient gets the weight 1 - rho = 0.",
+        "accept": [
+          "^(?![\\s\\S]*(?:\\b(?:not|never|non|isn'?t|aren'?t|cannot|can'?t|won'?t)\\b[\\s-]*(?:be\\s+|at\\s+|exactly\\s+|equal\\s+to\\s+|stay\\s+at\\s+|stay\\s+)*(?:zero|0(?:\\.0+)?(?!\\.?\\d))|nonzero))(?![\\s\\S]*\\b(?:near|nearly|almost|approximately|about|roughly|around|above|greater|more|larger|bigger|close)\\b[\\s\\w]{0,12}?(?:zero|\\b0(?:\\.0+)?(?!\\.?\\d)))(?![\\s\\S]*\\b(?:or|nan|inf|infinity|infinite)\\b)\\W*(?:(?:still|exactly|just|always)\\s+)?(?:zero|0(?:\\.0+)?(?!\\.?\\d))(?![\\s\\S]*\\b(?:then|later|grows?|rises?|increases?)\\b)",
+          "^(?![\\s\\S]*(?:\\b(?:not|never|non|isn'?t|aren'?t|cannot|can'?t|won'?t)\\b[\\s-]*(?:be\\s+|at\\s+|exactly\\s+|equal\\s+to\\s+|stay\\s+at\\s+|stay\\s+)*(?:zero|0(?:\\.0+)?(?!\\.?\\d))|nonzero))(?![\\s\\S]*\\b(?:near|nearly|almost|approximately|about|roughly|around|above|greater|more|larger|bigger|close)\\b[\\s\\w]{0,12}?(?:zero|\\b0(?:\\.0+)?(?!\\.?\\d)))(?![\\s\\S]*\\b(?:or|nan|inf|infinity|infinite)\\b)(?!\\W*(?:0?\\.\\d*[1-9]|[1-9]))[\\s\\S]*\\b(?:(?:weight_|bias_)?caches?|entry|entries|it|they|value|values|everything|all|each|every\\s+\\w+)\\b[^.;,]*?\\b(?:stays?|remains?|is|are|holds?|keeps?|equals?)\\s+(?:all\\s+|still\\s+|exactly\\s+|at\\s+|equal\\s+to\\s+|stuck\\s+at\\s+|its\\s+initial\\s+)*(?:zero|0(?:\\.0+)?(?!\\.?\\d))"
+        ]
+      },
+      "explanation": "Section 11: the cache update is $G \\leftarrow \\rho G + (1 - \\rho) g^2$. With $\\rho = 1$ the new squared gradient gets the weight 0 and the old cache the weight 1, so the cache keeps its initial value, which is zero, however many updates are made. Every step then divides by epsilon alone.",
+      "hints": [
+        "Write the cache update with the number 1 in place of `rho` and see what is left."
+      ]
+    },
+    {
+      "id": "nn-026-q15",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "9",
+      "est_minutes": 1,
+      "tags": [
+        "adam",
+        "zero-start"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "RMSProp's cache starts at zero, which makes its first step $\\alpha / \\sqrt{1 - \\rho}$ in size whatever the gradient. What is the name of the step in Adam that cancels this start-up effect?",
+      "answer": {
+        "model": "The bias correction: Adam divides the cache by $1 - \\beta_2^t$.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:not|no|without|except|isn'?t|never|skips?|drops?|removes?|omits?)\\s+(?:the\\s+|a\\s+|any\\s+|its\\s+)?bias)(?![\\s\\S]*\\b(?:or|and|plus)\\s+(?:the\\s+|a\\s+|its\\s+)?(?:momentum|velocity|learning|decay|epsilon|first))(?![\\s\\S]*\\b(?:momentum|velocity|decay|epsilon)\\b\\s*(?:,|and\\b|or\\b|\\+|plus\\b))(?:(?=[\\s\\S]*\\bsecond)|(?![\\s\\S]*\\bfirst[\\s-]moment\\b))[\\s\\S]*\\bbias[\\s-]*correct"
+        ]
+      },
+      "explanation": "Section 9: after the first update the cache holds only the fraction $1 - \\rho$ of the squared gradient, which inflates the first step. Adam's bias correction divides the cache by $1 - \\beta_2^t$, which equals $1 - \\rho$ at the first step and cancels the factor, so Adam's first step has size $\\alpha$.",
+      "hints": [
+        "It is the one piece of Adam that neither momentum nor RMSProp contains."
+      ]
+    },
+    {
+      "id": "nn-026-q16",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 12,
+      "tags": [
+        "derivation",
+        "closed-form"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The squared gradient of a parameter is the same number $c$ at every step, and the RMSProp cache starts at $G_0 = 0$. Derive a closed form for $G_t$, say what it implies about the largest value the cache can reach, and use it to find the first step at which the cache is within 1 percent of $c$ when $\\rho = 0.9$.",
+      "kind": "derive",
+      "solution": "1. The recursion is $G_t = \\rho G_{t-1} + (1 - \\rho) c$.\n2. Subtract $c$ from both sides: $G_t - c = \\rho G_{t-1} - \\rho c = \\rho \\, (G_{t-1} - c)$. The gap to $c$ is multiplied by $\\rho$ at every step.\n3. The gap starts at $G_0 - c = -c$, so after $t$ steps it is $-c \\rho^t$, and $G_t = c \\, (1 - \\rho^t)$.\n4. Since $0 \\le \\rho < 1$, the factor $1 - \\rho^t$ lies between 0 and 1 and grows towards 1. The cache rises towards $c$ and never exceeds it: it is bounded by the squared gradient it is fed, where AdaGrad's sum $t \\, c$ grows without limit.\n5. The cache is within 1 percent of $c$ when $\\rho^t \\le 0.01$, that is $t \\ge \\ln 0.01 / \\ln \\rho$. For $\\rho = 0.9$ this is $t \\ge 4.605 / 0.1054 = 43.7$, so the first such step is $t = 44$ ($0.9^{43} = 0.0108$ and $0.9^{44} = 0.0097$).",
+      "rubric": [
+        {
+          "criterion": "Writes the recursion for a constant squared gradient and rearranges it into a statement about the gap $G_t - c$",
+          "points": 2
+        },
+        {
+          "criterion": "Obtains $G_t = c \\, (1 - \\rho^t)$ using the zero start",
+          "points": 2
+        },
+        {
+          "criterion": "States that the cache approaches $c$ from below and never exceeds it",
+          "points": 1
+        },
+        {
+          "criterion": "Turns the 1 percent condition into $\\rho^t \\le 0.01$ and solves for $t$ with a logarithm",
+          "points": 2
+        },
+        {
+          "criterion": "Gives $t = 44$ for $\\rho = 0.9$",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 2 derives the gap argument and the closed form $G_t = c \\, (1 - \\rho^t)$, and section 3 checks it against a loop: for $c = 0.25$ and $\\rho = 0.9$ the cache is within 1 percent of 0.25 from step 44 on. The same form shows the cost of the zero start: early caches are too small by the factor $1 - \\rho^t$.",
+      "hints": [
+        "Look at the distance between the cache and $c$ rather than at the cache itself.",
+        "That distance is multiplied by $\\rho$ at each step, and it starts at $c$."
+      ]
+    },
+    {
+      "id": "nn-026-q17",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "9",
+      "est_minutes": 15,
+      "tags": [
+        "optimiser-family",
+        "first-step"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "AdaGrad (post 25), RMSProp and Adam (post 27) all divide the step by the root of a cache of squared gradients. Adam keeps $m_t = \\beta_1 m_{t-1} + (1 - \\beta_1) g_t$ and $v_t = \\beta_2 v_{t-1} + (1 - \\beta_2) g_t^2$, both started at zero, divides them by $1 - \\beta_1^t$ and $1 - \\beta_2^t$, and steps by $\\alpha \\hat{m}_t / (\\sqrt{\\hat{v}_t} + \\epsilon)$. For a parameter whose gradient has the same value $g$ at every step, give the size of step $t$ under each of the three optimisers, ignoring $\\epsilon$ and learning-rate decay. Then say which defect of its predecessor each of the two later optimisers removes, and which property of Adam this constant-gradient example cannot show.",
+      "kind": "connect",
+      "solution": "1. AdaGrad: the cache is the sum $G_t = t g^2$, so step $t$ has size $\\alpha |g| / \\sqrt{t g^2} = \\alpha / \\sqrt{t}$. The first step is $\\alpha$ and the steps shrink towards zero without end.\n2. RMSProp: the cache is $G_t = g^2 (1 - \\rho^t)$, so step $t$ has size $\\alpha / \\sqrt{1 - \\rho^t}$. The first step is $\\alpha / \\sqrt{1 - \\rho}$, which is 3.16 $\\alpha$ for $\\rho = 0.9$ and 31.6 $\\alpha$ for $\\rho = 0.999$, and the steps settle at $\\alpha$.\n3. Adam: $m_t = g (1 - \\beta_1^t)$ and $v_t = g^2 (1 - \\beta_2^t)$, so the corrected values are $\\hat{m}_t = g$ and $\\hat{v}_t = g^2$ at every step, and every step has size $\\alpha$.\n4. RMSProp removes AdaGrad's defect: the cache no longer grows with $t$, so the step no longer decays to zero and settles at $\\alpha$.\n5. Adam removes RMSProp's defect: the bias correction cancels the factor $1 - \\rho^t$ that the zero start leaves in the cache, so the first steps are no longer inflated.\n6. What the example cannot show is Adam's memory of direction. With a constant gradient the average $\\hat{m}_t$ equals the gradient itself; the moving average of $g$ only matters when gradients change sign or size from step to step, which is the situation momentum was introduced for in post 24.",
+      "rubric": [
+        {
+          "criterion": "AdaGrad: step size $\\alpha / \\sqrt{t}$, shrinking without end",
+          "points": 2
+        },
+        {
+          "criterion": "RMSProp: step size $\\alpha / \\sqrt{1 - \\rho^t}$, first step $\\alpha / \\sqrt{1 - \\rho}$, settling at $\\alpha$",
+          "points": 2
+        },
+        {
+          "criterion": "Adam: both corrected moments equal $g$ and $g^2$, so every step has size $\\alpha$",
+          "points": 2
+        },
+        {
+          "criterion": "Names the defect RMSProp removes (the ever-shrinking step) and the one Adam removes (the inflated first steps from the zero start)",
+          "points": 2
+        },
+        {
+          "criterion": "States that the averaging of the gradient, Adam's memory of direction, is invisible when the gradient is constant",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Sections 3 and 9 give the two closed forms for AdaGrad and RMSProp, and section 9 states that Adam's correction divides the cache by $1 - \\beta_2^t$ and so cancels the factor the zero start leaves. Put side by side, the three step sizes $\\alpha / \\sqrt{t}$, $\\alpha / \\sqrt{1 - \\rho^t}$ and $\\alpha$ show the chain: each optimiser repairs the step size of the one before.",
+      "hints": [
+        "For each optimiser write the cache after $t$ steps of a constant squared gradient first.",
+        "For Adam, apply the same closed form to both moving averages and then divide by the two correction terms."
+      ],
+      "connects": [
+        "nn-025",
+        "nn-027"
+      ]
+    },
+    {
+      "id": "nn-026-q18",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "11",
+      "est_minutes": 12,
+      "tags": [
+        "hyperparameters",
+        "critique"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network's weights are initialised at a scale of 0.01. A colleague proposes to train it with `Optimizer_RMSprop(learning_rate=0.5, rho=0.999, epsilon=0)`. Assess each of the three values, giving the size of the first step every parameter would take, and propose a setting that avoids the problems found.",
+      "kind": "critique",
+      "solution": "**The learning rate.** Under RMSProp the rate is roughly the distance a parameter moves per update while its gradient is steady, so 0.5 means steps of about 0.5 for weights that start near 0.01. The first step is worse: the cache starts at zero and holds $(1 - \\rho) g^2$ after one update, so every parameter moves by $\\alpha / \\sqrt{1 - \\rho} = 0.5 / \\sqrt{0.001} \\approx 15.8$, about 1,600 times the initial scale, whatever its gradient. The post measured a rate of 1.0 on the spiral: the loss jumped to about 10 at epoch 1 and the runs were well behind a rate of 0.02 after 1,001 epochs in all five seeds.\n\n**Epsilon.** With `epsilon=0` a parameter whose gradient is exactly zero while its cache is zero is updated by $0 / 0$, which NumPy evaluates to `nan` with a warning; the `nan` then spreads through the next forward pass. The weights of a neuron that is dead from the start are such parameters. Epsilon must be positive.\n\n**Rho.** 0.999 is a legitimate choice and is the one the post's documented run uses, but it has two costs. It makes the first-step factor $1 / \\sqrt{1 - \\rho}$ equal to 31.6, against 3.16 for 0.9, and its memory of about 1,000 steps makes the cache slow to follow a gradient that grows; on the spiral it gave the larger late loss spikes in five of five seeds, together with the higher final accuracy.\n\n**A better setting.** `Optimizer_RMSprop(learning_rate=0.02, rho=0.999, epsilon=1e-7)`, the documented one, or the class defaults with `rho=0.9`: a rate of the order of the initial weight scale, a positive epsilon, and a value of rho chosen knowing the trade-off. With 0.02 and 0.999 the first step is 0.632, still large; a smaller rate or a smaller rho reduces it.",
+      "rubric": [
+        {
+          "criterion": "States that under RMSProp the learning rate is about the distance moved per update, so 0.5 is far too large for weights near 0.01",
+          "points": 2
+        },
+        {
+          "criterion": "Computes the first step as $\\alpha / \\sqrt{1 - \\rho} \\approx 15.8$ and notes that it does not depend on the gradient",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that `epsilon=0` turns a zero gradient on a zero cache into `nan`",
+          "points": 2
+        },
+        {
+          "criterion": "Judges `rho=0.999` as usable, naming at least one cost (larger first step, slow cache, larger spikes)",
+          "points": 1
+        },
+        {
+          "criterion": "Proposes a small learning rate and a positive epsilon, with a stated choice of rho",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 4 shows that the step is about $\\alpha$ long while a gradient is steady, section 9 that the first step is $\\alpha / \\sqrt{1 - \\rho}$, and section 11 measures a rate of 1.0, `rho=1.0` and `epsilon=0`. Here the first step would be $0.5 \\cdot 31.6 \\approx 15.8$ per parameter, and any parameter with a zero gradient at its first update would become `nan`.",
+      "hints": [
+        "Start with what the cache holds after the very first update, and what the step then divides by.",
+        "Then ask what the update computes for a parameter whose gradient is exactly zero when there is no epsilon."
+      ]
+    }
+  ]
+}

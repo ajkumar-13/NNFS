@@ -1,8 +1,22 @@
 id: nn-026
 slug: 26-rmsprop
-title: "Part 26 · RMSProp"
+title: "26 - RMSProp"
+summary: "RMSProp replaces AdaGrad's ever-growing sum of squared gradients with an exponential moving average, so the cache can shrink again. The post builds the optimiser and measures it against AdaGrad on the spiral over ten seeds."
 date: 2026-05-29
+updated: 2026-10-05
+status: complete
+part: "Part VI - Optimisers"
+level: intermediate
+reading_time: 24
 tags: [neural-networks, from-scratch, optimisation, rmsprop, adaptive-rates, ema]
 hero: diagrams/01-rmsprop-vs-adagrad-cache.svg
-reading_time: 11
-part: "Part VI — Optimisers"
+prerequisites: [nn-025]
+code: included
+outcomes:
+  - id: o1
+    text: "Explain why an exponential moving average of squared gradients gives a bounded cache and how the decay factor rho sets its memory horizon."
+  - id: o2
+    text: "Implement Optimizer_RMSprop with per-layer caches and sensible defaults for the learning rate, rho and epsilon."
+  - id: o3
+    text: "Place RMSProp between AdaGrad and Adam by naming what it keeps from the first and what the second adds to it."
+compute: cpu
