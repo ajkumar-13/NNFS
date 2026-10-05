@@ -5,56 +5,56 @@
 
   <style><![CDATA[
     :root{
-      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
-      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
-      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
-      --ce-grid:rgba(26,26,26,0.06);
+      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
+      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
+      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+      --nn-grid:rgba(26,26,26,0.06);
     }
     @media (prefers-color-scheme: dark){
       :root{
-        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
-        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
-        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
-        --ce-grid:rgba(241,238,232,0.08);
+        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
+        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
+        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
+        --nn-grid:rgba(241,238,232,0.08);
       }
     }
     text{font-family:Inter,system-ui,sans-serif;}
     .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--ce-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
-    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
-    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
-    .panel-bad{fill:var(--ce-alert);fill-opacity:0.06;stroke:var(--ce-alert);stroke-width:1.5;}
-    .panel-mid{fill:var(--ce-warn);fill-opacity:0.06;stroke:var(--ce-warn);stroke-width:1.5;}
-    .panel-ok {fill:var(--ce-success);fill-opacity:0.07;stroke:var(--ce-success);stroke-width:1.5;}
-    .pill-bad{fill:var(--ce-alert);}
-    .pill-mid{fill:var(--ce-warn);}
-    .pill-ok {fill:var(--ce-success);}
-    .head-bad{font-weight:700;font-size:14px;fill:var(--ce-alert);}
-    .head-mid{font-weight:700;font-size:14px;fill:var(--ce-warn);}
-    .head-ok {font-weight:700;font-size:14px;fill:var(--ce-success);}
-    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
-    .chart{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .axis{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
-    .grid{stroke:var(--ce-grid);stroke-width:0.75;fill:none;}
-    .axis-label{font-size:10px;fill:var(--ce-ink-muted);}
-    .axis-title{font-size:11px;fill:var(--ce-ink-muted);font-style:italic;}
-    .baseline{stroke:var(--ce-ink-subtle);stroke-width:1;fill:none;stroke-dasharray:3 3;}
-    .baseline-label{font-size:9px;fill:var(--ce-ink-subtle);}
-    .loss-bad{stroke:var(--ce-alert);stroke-width:2.2;fill:none;stroke-linecap:round;}
-    .loss-mid{stroke:var(--ce-warn);stroke-width:2.2;fill:none;stroke-linecap:round;}
-    .loss-ok {stroke:var(--ce-success);stroke-width:2.2;fill:none;stroke-linecap:round;}
-    .dot-bad{fill:var(--ce-alert);}
-    .dot-mid{fill:var(--ce-warn);}
-    .dot-ok {fill:var(--ce-success);}
-    .verdict-bad{font-size:11px;font-weight:700;fill:var(--ce-alert);}
-    .verdict-mid{font-size:11px;font-weight:700;fill:var(--ce-warn);}
-    .verdict-ok{font-size:11px;font-weight:700;fill:var(--ce-success);}
-    .verdict-body{font-size:10px;fill:var(--ce-ink-muted);}
-    .rule-band{fill:var(--ce-primary);fill-opacity:0.08;stroke:var(--ce-primary);stroke-width:1.5;}
-    .rule-head{font-weight:700;font-size:13px;fill:var(--ce-primary);}
-    .rule-body{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;fill:var(--ce-ink);font-weight:600;}
-    .rule-note{font-size:11px;fill:var(--ce-ink-muted);}
+    .bg{fill:var(--nn-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
+    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
+    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
+    .panel-bad{fill:var(--nn-alert);fill-opacity:0.06;stroke:var(--nn-alert);stroke-width:1.5;}
+    .panel-mid{fill:var(--nn-warn);fill-opacity:0.06;stroke:var(--nn-warn);stroke-width:1.5;}
+    .panel-ok {fill:var(--nn-success);fill-opacity:0.07;stroke:var(--nn-success);stroke-width:1.5;}
+    .pill-bad{fill:var(--nn-alert);}
+    .pill-mid{fill:var(--nn-warn);}
+    .pill-ok {fill:var(--nn-success);}
+    .head-bad{font-weight:700;font-size:14px;fill:var(--nn-alert);}
+    .head-mid{font-weight:700;font-size:14px;fill:var(--nn-warn);}
+    .head-ok {font-weight:700;font-size:14px;fill:var(--nn-success);}
+    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
+    .chart{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .axis{stroke:var(--nn-ink-muted);stroke-width:1;fill:none;}
+    .grid{stroke:var(--nn-grid);stroke-width:0.75;fill:none;}
+    .axis-label{font-size:10px;fill:var(--nn-ink-muted);}
+    .axis-title{font-size:11px;fill:var(--nn-ink-muted);font-style:italic;}
+    .baseline{stroke:var(--nn-ink-subtle);stroke-width:1;fill:none;stroke-dasharray:3 3;}
+    .baseline-label{font-size:9px;fill:var(--nn-ink-subtle);}
+    .loss-bad{stroke:var(--nn-alert);stroke-width:2.2;fill:none;stroke-linecap:round;}
+    .loss-mid{stroke:var(--nn-warn);stroke-width:2.2;fill:none;stroke-linecap:round;}
+    .loss-ok {stroke:var(--nn-success);stroke-width:2.2;fill:none;stroke-linecap:round;}
+    .dot-bad{fill:var(--nn-alert);}
+    .dot-mid{fill:var(--nn-warn);}
+    .dot-ok {fill:var(--nn-success);}
+    .verdict-bad{font-size:11px;font-weight:700;fill:var(--nn-alert);}
+    .verdict-mid{font-size:11px;font-weight:700;fill:var(--nn-warn);}
+    .verdict-ok{font-size:11px;font-weight:700;fill:var(--nn-success);}
+    .verdict-body{font-size:10px;fill:var(--nn-ink-muted);}
+    .rule-band{fill:var(--nn-primary);fill-opacity:0.08;stroke:var(--nn-primary);stroke-width:1.5;}
+    .rule-head{font-weight:700;font-size:13px;fill:var(--nn-primary);}
+    .rule-body{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;fill:var(--nn-ink);font-weight:600;}
+    .rule-note{font-size:11px;fill:var(--nn-ink-muted);}
   ]]></style>
 
   <rect class="bg" width="960" height="540"/>

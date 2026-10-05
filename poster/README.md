@@ -5,7 +5,7 @@ One scene, in two forms:
 | File | What it is |
 |---|---|
 | `one-page-of-neural-networks-from-scratch.excalidraw` | An Excalidraw scene. Open it at [excalidraw.com](https://excalidraw.com) or in the VS Code Excalidraw extension and edit it directly. |
-| `one-page-of-neural-networks-from-scratch.svg` | The same scene rendered to a self-contained SVG with [roughjs](https://roughjs.com), themed with the repo's `--ce-*` tokens so it works in light and dark mode. |
+| `one-page-of-neural-networks-from-scratch.svg` | The same scene rendered to a self-contained SVG with [roughjs](https://roughjs.com), themed with the repo's `--nn-*` tokens so it works in light and dark mode. |
 
 Thirty-five posts and four projects on one canvas, in eight panels: the forward pass in
 order with a shape against every stage, the four object kinds and the one contract they
@@ -24,20 +24,18 @@ session.
 Four things about it are worth knowing before you edit it.
 
 - **Every number on it is measured, not quoted.** The optimiser figures come from
-  `verify/RESULTS.md` and the project figures from `verify/projects_results.md`, both
-  produced by running the series' own classes under `nnfs.init()` (seed 0). Where a
-  post's prose and the measured value disagree — and in a few places they do — the
-  measured value is the one printed here. Vanilla SGD is 64.7 %, not the 57.3 % some
-  early drafts claimed.
+  running the optimiser classes of posts 22 to 27 on the spiral data under `nnfs.init()`
+  (seed 0), and the project figures from each project's `train.py` and `evaluate.py`.
+  Vanilla SGD is 64.7 %, not the 57.3 % some early drafts claimed.
 
 - **The type is smaller than the per-post figures.** A poster holds four times as much
   text in the same column, and Excalifont runs wide, so the body sits at 12–13 where a
   figure would use 13–14, and table glosses drop to 11.
 
-- **Text on a colored fill uses `--ce-on-accent`,** which is dark ink in both themes, not
-  `--ce-on-fill`. In this palette dark ink wins on every fill: against `--ce-primary`, the
+- **Text on a colored fill uses `--nn-on-accent`,** which is dark ink in both themes, not
+  `--nn-on-fill`. In this palette dark ink wins on every fill: against `--nn-primary`, the
   lightest of the four, it measures 4.34:1 where on-fill measures 3.95, and against
-  `--ce-accent` it is 6.62 against 2.59. The badge glyphs are set at 20, which counts as
+  `--nn-accent` it is 6.62 against 2.59. The badge glyphs are set at 20, which counts as
   large text, so 4.34 clears the 3:1 bar with room left.
 
 - **Panel two's badges are numerals, not initials.** The four object kinds are Layer,
@@ -80,7 +78,7 @@ It writes the SVG next to the scene, inheriting the canvas size, `<title>`, and 
 from the file already there, so an edit does not cost you the accessible description.
 
 **Do not use Excalidraw's own Export to SVG.** It bakes literal hex into every shape, and
-the whole point of the renderer here is that it emits `var(--ce-ink)` and friends so one
+the whole point of the renderer here is that it emits `var(--nn-ink)` and friends so one
 file serves light and dark mode. An exported SVG looks right in whichever mode you
 exported from and wrong in the other.
 
@@ -90,7 +88,7 @@ Two more things worth knowing before you edit:
   and it does not read the scene, it replaces it. Once you start editing by hand, either
   stop running the build script or fold the change back into `poster.js`. For anything
   structural, `poster.js` is the better place to make it.
-- **Colours picked from Excalidraw's palette will not follow the theme.** Only the `--ce-*`
+- **Colours picked from Excalidraw's palette will not follow the theme.** Only the `--nn-*`
   values map back to CSS variables; anything else is baked in as a literal and will be
   wrong in one of the two modes. The renderer warns you and names the offending colours.
 

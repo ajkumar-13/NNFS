@@ -5,49 +5,49 @@
 
   <style><![CDATA[
     :root{
-      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
-      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
-      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
+      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
+      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
     }
     @media (prefers-color-scheme: dark){
       :root{
-        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
-        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
-        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
+        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
+        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
       }
     }
     text{font-family:Inter,system-ui,sans-serif;}
     .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--ce-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
-    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
-    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
-    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .panel-head{font-weight:700;font-size:14px;fill:var(--ce-ink);}
-    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
-    .input-node{fill:var(--ce-primary);fill-opacity:0.16;stroke:var(--ce-primary);stroke-width:1.5;}
-    .input-label{font-weight:600;font-size:12px;fill:var(--ce-ink);}
-    .n1{fill:var(--ce-accent);fill-opacity:0.18;stroke:var(--ce-accent);stroke-width:1.8;}
-    .n2{fill:var(--ce-success);fill-opacity:0.18;stroke:var(--ce-success);stroke-width:1.8;}
-    .n3{fill:var(--ce-primary);fill-opacity:0.18;stroke:var(--ce-primary);stroke-width:1.8;}
-    .n-label{font-weight:600;font-size:12px;fill:var(--ce-ink);}
-    .conn-prim{stroke:var(--ce-primary);stroke-width:1.2;fill:none;opacity:0.75;}
-    .conn1{stroke:var(--ce-accent);stroke-width:1.1;fill:none;opacity:0.65;}
-    .conn2{stroke:var(--ce-success);stroke-width:1.1;fill:none;opacity:0.65;}
-    .conn3{stroke:var(--ce-primary);stroke-width:1.1;fill:none;opacity:0.65;}
-    .out-acc{fill:var(--ce-accent);fill-opacity:0.16;stroke:var(--ce-accent);stroke-width:1.5;}
-    .out-ok{fill:var(--ce-success);fill-opacity:0.16;stroke:var(--ce-success);stroke-width:1.5;}
-    .out-prim{fill:var(--ce-primary);fill-opacity:0.16;stroke:var(--ce-primary);stroke-width:1.5;}
-    .out-label{font-weight:600;font-size:12px;fill:var(--ce-ink);}
-    .badge-1{fill:var(--ce-accent);}
-    .badge-3{fill:var(--ce-primary);}
+    .bg{fill:var(--nn-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
+    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
+    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
+    .panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .panel-head{font-weight:700;font-size:14px;fill:var(--nn-ink);}
+    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
+    .input-node{fill:var(--nn-primary);fill-opacity:0.16;stroke:var(--nn-primary);stroke-width:1.5;}
+    .input-label{font-weight:600;font-size:12px;fill:var(--nn-ink);}
+    .n1{fill:var(--nn-accent);fill-opacity:0.18;stroke:var(--nn-accent);stroke-width:1.8;}
+    .n2{fill:var(--nn-success);fill-opacity:0.18;stroke:var(--nn-success);stroke-width:1.8;}
+    .n3{fill:var(--nn-primary);fill-opacity:0.18;stroke:var(--nn-primary);stroke-width:1.8;}
+    .n-label{font-weight:600;font-size:12px;fill:var(--nn-ink);}
+    .conn-prim{stroke:var(--nn-primary);stroke-width:1.2;fill:none;opacity:0.75;}
+    .conn1{stroke:var(--nn-accent);stroke-width:1.1;fill:none;opacity:0.65;}
+    .conn2{stroke:var(--nn-success);stroke-width:1.1;fill:none;opacity:0.65;}
+    .conn3{stroke:var(--nn-primary);stroke-width:1.1;fill:none;opacity:0.65;}
+    .out-acc{fill:var(--nn-accent);fill-opacity:0.16;stroke:var(--nn-accent);stroke-width:1.5;}
+    .out-ok{fill:var(--nn-success);fill-opacity:0.16;stroke:var(--nn-success);stroke-width:1.5;}
+    .out-prim{fill:var(--nn-primary);fill-opacity:0.16;stroke:var(--nn-primary);stroke-width:1.5;}
+    .out-label{font-weight:600;font-size:12px;fill:var(--nn-ink);}
+    .badge-1{fill:var(--nn-accent);}
+    .badge-3{fill:var(--nn-primary);}
     .badge-text{font-weight:700;font-size:14px;fill:#FFFFFF;}
-    .count-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
-    .count-body{font-size:12px;fill:var(--ce-ink-muted);}
-    .count-num{font-weight:700;font-size:20px;fill:var(--ce-ink);}
-    .count-num-acc{font-weight:700;font-size:20px;fill:var(--ce-accent);}
-    .count-num-prim{font-weight:700;font-size:20px;fill:var(--ce-primary);}
-    .arr-prim{fill:var(--ce-primary);}
+    .count-head{font-weight:700;font-size:13px;fill:var(--nn-ink);}
+    .count-body{font-size:12px;fill:var(--nn-ink-muted);}
+    .count-num{font-weight:700;font-size:20px;fill:var(--nn-ink);}
+    .count-num-acc{font-weight:700;font-size:20px;fill:var(--nn-accent);}
+    .count-num-prim{font-weight:700;font-size:20px;fill:var(--nn-primary);}
+    .arr-prim{fill:var(--nn-primary);}
   ]]></style>
 
   <defs>
@@ -55,10 +55,10 @@
       <path d="M0,0 L10,5 L0,10 z" class="arr-prim"/>
     </marker>
     <marker id="aAcc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" style="fill:var(--ce-accent);"/>
+      <path d="M0,0 L10,5 L0,10 z" style="fill:var(--nn-accent);"/>
     </marker>
     <marker id="aOk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" style="fill:var(--ce-success);"/>
+      <path d="M0,0 L10,5 L0,10 z" style="fill:var(--nn-success);"/>
     </marker>
   </defs>
 
@@ -84,7 +84,7 @@
 
   <circle class="n1" cx="280" cy="290" r="38"/>
   <text class="n-label" x="280" y="286" text-anchor="middle">Σ + b</text>
-  <text class="n-label" x="280" y="302" text-anchor="middle" style="font-size:10px;fill:var(--ce-ink-muted);">neuron</text>
+  <text class="n-label" x="280" y="302" text-anchor="middle" style="font-size:10px;fill:var(--nn-ink-muted);">neuron</text>
 
   <line class="conn-prim" x1="118" y1="200" x2="244" y2="278" marker-end="url(#aPrim)"/>
   <line class="conn-prim" x1="118" y1="260" x2="244" y2="285" marker-end="url(#aPrim)"/>
@@ -132,9 +132,9 @@
   <line class="conn3" x1="556" y1="320" x2="690" y2="372"/>
   <line class="conn3" x1="556" y1="380" x2="690" y2="380"/>
 
-  <line stroke="var(--ce-accent)"  stroke-width="1.8" x1="750" y1="218" x2="786" y2="218" marker-end="url(#aAcc)"/>
-  <line stroke="var(--ce-success)" stroke-width="1.8" x1="750" y1="294" x2="786" y2="294" marker-end="url(#aOk)"/>
-  <line stroke="var(--ce-primary)" stroke-width="1.8" x1="750" y1="370" x2="786" y2="370" marker-end="url(#aPrim)"/>
+  <line stroke="var(--nn-accent)"  stroke-width="1.8" x1="750" y1="218" x2="786" y2="218" marker-end="url(#aAcc)"/>
+  <line stroke="var(--nn-success)" stroke-width="1.8" x1="750" y1="294" x2="786" y2="294" marker-end="url(#aOk)"/>
+  <line stroke="var(--nn-primary)" stroke-width="1.8" x1="750" y1="370" x2="786" y2="370" marker-end="url(#aPrim)"/>
 
   <rect class="out-acc"  x="788" y="200" width="80" height="36" rx="10"/>
   <text class="out-label" x="828" y="223" text-anchor="middle">ŷ₁</text>
@@ -153,7 +153,7 @@
   <text class="count-body" x="386" y="461">(three neurons)</text>
   <text class="count-body" x="520" y="461">→</text>
   <text class="count-head" x="540" y="461">general:</text>
-  <text class="mono" x="610" y="463" style="font-size:13px;fill:var(--ce-ink);">params = m × (n + 1)</text>
+  <text class="mono" x="610" y="463" style="font-size:13px;fill:var(--nn-ink);">params = m × (n + 1)</text>
   <text class="count-body" x="770" y="461">m neurons · n inputs each</text>
 
   <!-- Footer -->

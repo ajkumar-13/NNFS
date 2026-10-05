@@ -5,40 +5,40 @@
 
   <style><![CDATA[
     :root{
-      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
-      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
-      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
+      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
+      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
     }
     @media (prefers-color-scheme: dark){
       :root{
-        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
-        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
-        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
+        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
+        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
       }
     }
     text{font-family:Inter,system-ui,sans-serif;}
     .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--ce-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
-    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
-    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
-    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .axis{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
-    .grid{stroke:var(--ce-grid,rgba(26,26,26,0.06));stroke-width:0.75;fill:none;}
-    .axis-label{font-size:11px;fill:var(--ce-ink-muted);}
-    .axis-title{font-size:13px;font-weight:600;fill:var(--ce-ink);}
-    .pt-c0{fill:var(--ce-primary);}
-    .pt-c1{fill:var(--ce-accent);}
-    .pt-c2{fill:var(--ce-success);}
-    .bad-line{stroke:var(--ce-alert);stroke-width:1.5;stroke-dasharray:5 4;fill:none;}
-    .bad-label{font-size:11px;fill:var(--ce-alert);font-weight:600;}
-    .info-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
-    .info-body{font-size:12px;fill:var(--ce-ink);}
-    .info-muted{font-size:11px;fill:var(--ce-ink-muted);}
-    .pill-prim{fill:var(--ce-primary);}
-    .pill-acc{fill:var(--ce-accent);}
-    .pill-ok{fill:var(--ce-success);}
-    .legend-text{font-size:12px;fill:var(--ce-ink);}
+    .bg{fill:var(--nn-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
+    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
+    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
+    .panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .axis{stroke:var(--nn-ink-muted);stroke-width:1;fill:none;}
+    .grid{stroke:var(--nn-grid,rgba(26,26,26,0.06));stroke-width:0.75;fill:none;}
+    .axis-label{font-size:11px;fill:var(--nn-ink-muted);}
+    .axis-title{font-size:13px;font-weight:600;fill:var(--nn-ink);}
+    .pt-c0{fill:var(--nn-primary);}
+    .pt-c1{fill:var(--nn-accent);}
+    .pt-c2{fill:var(--nn-success);}
+    .bad-line{stroke:var(--nn-alert);stroke-width:1.5;stroke-dasharray:5 4;fill:none;}
+    .bad-label{font-size:11px;fill:var(--nn-alert);font-weight:600;}
+    .info-head{font-weight:700;font-size:13px;fill:var(--nn-ink);}
+    .info-body{font-size:12px;fill:var(--nn-ink);}
+    .info-muted{font-size:11px;fill:var(--nn-ink-muted);}
+    .pill-prim{fill:var(--nn-primary);}
+    .pill-acc{fill:var(--nn-accent);}
+    .pill-ok{fill:var(--nn-success);}
+    .legend-text{font-size:12px;fill:var(--nn-ink);}
   ]]></style>
 
   <rect class="bg" width="960" height="540"/>
@@ -170,19 +170,19 @@
 
   <!-- Properties list -->
   <text class="info-body"  x="592" y="156">Samples:</text>
-  <text class="mono"       x="892" y="156" text-anchor="end" style="font-size:12px;fill:var(--ce-ink);">300</text>
+  <text class="mono"       x="892" y="156" text-anchor="end" style="font-size:12px;fill:var(--nn-ink);">300</text>
   <text class="info-muted" x="592" y="172">(100 per class × 3 classes)</text>
 
   <text class="info-body"  x="592" y="200">Features:</text>
-  <text class="mono"       x="892" y="200" text-anchor="end" style="font-size:12px;fill:var(--ce-ink);">2</text>
+  <text class="mono"       x="892" y="200" text-anchor="end" style="font-size:12px;fill:var(--nn-ink);">2</text>
   <text class="info-muted" x="592" y="216">(X₁, X₂) coordinates in the plane</text>
 
   <text class="info-body"  x="592" y="244">Classes:</text>
-  <text class="mono"       x="892" y="244" text-anchor="end" style="font-size:12px;fill:var(--ce-ink);">3</text>
+  <text class="mono"       x="892" y="244" text-anchor="end" style="font-size:12px;fill:var(--nn-ink);">3</text>
   <text class="info-muted" x="592" y="260">labelled 0, 1, 2 in y</text>
 
   <text class="info-body"  x="592" y="288">Linearly separable?</text>
-  <text class="info-body"  x="892" y="288" text-anchor="end" style="fill:var(--ce-alert);font-weight:600;">no</text>
+  <text class="info-body"  x="892" y="288" text-anchor="end" style="fill:var(--nn-alert);font-weight:600;">no</text>
 
   <text class="info-body"  x="592" y="316">Chance baseline:</text>
   <text class="info-body"  x="892" y="316" text-anchor="end">33.3%</text>
@@ -198,7 +198,7 @@
 
   <!-- Source / code hint -->
   <text class="info-muted" x="592" y="454">Generated with:</text>
-  <text class="mono"       x="592" y="470" style="font-size:11px;fill:var(--ce-ink);">spiral_data(samples=100, classes=3)</text>
+  <text class="mono"       x="592" y="470" style="font-size:11px;fill:var(--nn-ink);">spiral_data(samples=100, classes=3)</text>
 
   <!-- Footer -->
   <text class="footer" x="48"  y="514">A linear model cannot solve this dataset. The series builds one that can, layer by layer.</text>

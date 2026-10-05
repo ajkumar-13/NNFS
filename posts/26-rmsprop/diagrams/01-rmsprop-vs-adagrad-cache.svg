@@ -5,48 +5,48 @@
 
   <style><![CDATA[
     :root{
-      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
-      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
-      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
-      --ce-grid:rgba(26,26,26,0.06);
+      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
+      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
+      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+      --nn-grid:rgba(26,26,26,0.06);
     }
     @media (prefers-color-scheme: dark){
       :root{
-        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
-        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
-        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
-        --ce-grid:rgba(241,238,232,0.08);
+        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
+        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
+        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
+        --nn-grid:rgba(241,238,232,0.08);
       }
     }
     text{font-family:Inter,system-ui,sans-serif;}
     .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--ce-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
-    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
-    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
-    .rule-band-bad{fill:var(--ce-alert);fill-opacity:0.07;stroke:var(--ce-alert);stroke-width:1.5;}
-    .rule-band-ok {fill:var(--ce-success);fill-opacity:0.07;stroke:var(--ce-success);stroke-width:1.5;}
-    .rule-head-bad{font-weight:700;font-size:13px;fill:var(--ce-alert);}
-    .rule-head-ok {font-weight:700;font-size:13px;fill:var(--ce-success);}
-    .rule-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;fill:var(--ce-ink);font-weight:700;}
-    .rule-note{font-size:10.5px;fill:var(--ce-ink-muted);}
-    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .panel-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
-    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
-    .axis{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
-    .grid{stroke:var(--ce-grid);stroke-width:0.75;fill:none;}
-    .axis-label{font-size:10px;fill:var(--ce-ink-muted);}
-    .axis-title{font-size:11px;fill:var(--ce-ink-muted);font-style:italic;}
-    .curve-bad {stroke:var(--ce-alert);stroke-width:2.6;fill:none;stroke-linecap:round;}
-    .curve-ok  {stroke:var(--ce-success);stroke-width:2.6;fill:none;stroke-linecap:round;}
-    .legend-text{font-size:11px;fill:var(--ce-ink);}
-    .legend-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
-    .anno-text{font-size:10.5px;font-style:italic;fill:var(--ce-ink-muted);}
-    .side-head{font-weight:700;font-size:12px;fill:var(--ce-ink);}
-    .side-sub{font-size:10.5px;fill:var(--ce-ink-muted);}
-    .side-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
-    .col-head{font-weight:700;font-size:10.5px;fill:var(--ce-ink-muted);}
-    .row-line{stroke:var(--ce-border);stroke-width:1;fill:none;}
+    .bg{fill:var(--nn-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
+    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
+    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
+    .rule-band-bad{fill:var(--nn-alert);fill-opacity:0.07;stroke:var(--nn-alert);stroke-width:1.5;}
+    .rule-band-ok {fill:var(--nn-success);fill-opacity:0.07;stroke:var(--nn-success);stroke-width:1.5;}
+    .rule-head-bad{font-weight:700;font-size:13px;fill:var(--nn-alert);}
+    .rule-head-ok {font-weight:700;font-size:13px;fill:var(--nn-success);}
+    .rule-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;fill:var(--nn-ink);font-weight:700;}
+    .rule-note{font-size:10.5px;fill:var(--nn-ink-muted);}
+    .panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .panel-head{font-weight:700;font-size:13px;fill:var(--nn-ink);}
+    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
+    .axis{stroke:var(--nn-ink-muted);stroke-width:1;fill:none;}
+    .grid{stroke:var(--nn-grid);stroke-width:0.75;fill:none;}
+    .axis-label{font-size:10px;fill:var(--nn-ink-muted);}
+    .axis-title{font-size:11px;fill:var(--nn-ink-muted);font-style:italic;}
+    .curve-bad {stroke:var(--nn-alert);stroke-width:2.6;fill:none;stroke-linecap:round;}
+    .curve-ok  {stroke:var(--nn-success);stroke-width:2.6;fill:none;stroke-linecap:round;}
+    .legend-text{font-size:11px;fill:var(--nn-ink);}
+    .legend-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--nn-ink);}
+    .anno-text{font-size:10.5px;font-style:italic;fill:var(--nn-ink-muted);}
+    .side-head{font-weight:700;font-size:12px;fill:var(--nn-ink);}
+    .side-sub{font-size:10.5px;fill:var(--nn-ink-muted);}
+    .side-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--nn-ink);}
+    .col-head{font-weight:700;font-size:10.5px;fill:var(--nn-ink-muted);}
+    .row-line{stroke:var(--nn-border);stroke-width:1;fill:none;}
   ]]></style>
 
   <rect class="bg" width="960" height="540"/>
@@ -108,10 +108,10 @@
 
   <!-- AdaGrad cache: G = 0.25 * t  →  straight diagonal on log-log -->
   <line class="curve-bad" x1="80" y1="376" x2="620" y2="216"/>
-  <circle cx="80"  cy="376" r="3" fill="var(--ce-alert)"/>
-  <circle cx="620" cy="216" r="3" fill="var(--ce-alert)"/>
-  <text class="legend-mono" x="610" y="212" text-anchor="end" style="fill:var(--ce-alert);">2 500</text>
-  <text class="legend-mono" x="92"  y="372" style="fill:var(--ce-alert);">0.25</text>
+  <circle cx="80"  cy="376" r="3" fill="var(--nn-alert)"/>
+  <circle cx="620" cy="216" r="3" fill="var(--nn-alert)"/>
+  <text class="legend-mono" x="610" y="212" text-anchor="end" style="fill:var(--nn-alert);">2 500</text>
+  <text class="legend-mono" x="92"  y="372" style="fill:var(--nn-alert);">0.25</text>
 
   <!-- RMSProp cache (ρ=0.9): rises quickly then flat at 0.25 -->
   <path class="curve-ok" d="M 80 416
@@ -122,13 +122,13 @@
                             L 350 376
                             L 485 376
                             L 620 376" />
-  <circle cx="80"  cy="416" r="3" fill="var(--ce-success)"/>
-  <circle cx="620" cy="376" r="3" fill="var(--ce-success)"/>
-  <text class="legend-mono" x="610" y="392" text-anchor="end" style="fill:var(--ce-success);">0.25 (steady)</text>
+  <circle cx="80"  cy="416" r="3" fill="var(--nn-success)"/>
+  <circle cx="620" cy="376" r="3" fill="var(--nn-success)"/>
+  <text class="legend-mono" x="610" y="392" text-anchor="end" style="fill:var(--nn-success);">0.25 (steady)</text>
 
   <!-- Legend -->
   <g transform="translate(384, 200)">
-    <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="0" y="0" width="226" height="50" rx="6"/>
+    <rect fill="var(--nn-surface)" stroke="var(--nn-border)" stroke-width="1" x="0" y="0" width="226" height="50" rx="6"/>
     <line class="curve-bad" x1="12" y1="18" x2="40" y2="18"/>
     <text class="legend-mono" x="48" y="22">AdaGrad · G += g²</text>
     <line class="curve-ok"  x1="12" y1="38" x2="40" y2="38"/>
@@ -136,8 +136,8 @@
   </g>
 
   <!-- Annotations -->
-  <text class="anno-text" x="350" y="244" text-anchor="middle" style="fill:var(--ce-alert);">grows linearly with t — no ceiling</text>
-  <text class="anno-text" x="500" y="370" text-anchor="middle" style="fill:var(--ce-success);">converges to g² steady state</text>
+  <text class="anno-text" x="350" y="244" text-anchor="middle" style="fill:var(--nn-alert);">grows linearly with t — no ceiling</text>
+  <text class="anno-text" x="500" y="370" text-anchor="middle" style="fill:var(--nn-success);">converges to g² steady state</text>
 
   <!-- ============================ Sidebar: numerical comparison ============================ -->
   <rect class="panel" x="664" y="152" width="272" height="320" rx="10"/>
@@ -147,8 +147,8 @@
   <!-- Table header -->
   <line class="row-line" x1="680" y1="206" x2="920" y2="206"/>
   <text class="col-head" x="690"  y="222">t</text>
-  <text class="col-head" x="800"  y="222" text-anchor="end" style="fill:var(--ce-alert);">AdaGrad</text>
-  <text class="col-head" x="910"  y="222" text-anchor="end" style="fill:var(--ce-success);">RMSProp</text>
+  <text class="col-head" x="800"  y="222" text-anchor="end" style="fill:var(--nn-alert);">AdaGrad</text>
+  <text class="col-head" x="910"  y="222" text-anchor="end" style="fill:var(--nn-success);">RMSProp</text>
   <line class="row-line" x1="680" y1="232" x2="920" y2="232"/>
 
   <!-- Table rows -->
@@ -169,13 +169,13 @@
   <text class="side-mono" x="910" y="324" text-anchor="end">0.250</text>
 
   <text class="side-mono" x="690" y="348">10 000</text>
-  <text class="side-mono" x="800" y="348" text-anchor="end" style="fill:var(--ce-alert);font-weight:700;">2 500</text>
-  <text class="side-mono" x="910" y="348" text-anchor="end" style="fill:var(--ce-success);font-weight:700;">0.250</text>
+  <text class="side-mono" x="800" y="348" text-anchor="end" style="fill:var(--nn-alert);font-weight:700;">2 500</text>
+  <text class="side-mono" x="910" y="348" text-anchor="end" style="fill:var(--nn-success);font-weight:700;">0.250</text>
 
   <line class="row-line" x1="680" y1="362" x2="920" y2="362"/>
 
   <!-- Ratio callout -->
-  <rect fill="var(--ce-neutral-1)" stroke="var(--ce-border)" stroke-width="1" x="680" y="378" width="240" height="80" rx="6"/>
+  <rect fill="var(--nn-neutral-1)" stroke="var(--nn-border)" stroke-width="1" x="680" y="378" width="240" height="80" rx="6"/>
   <text class="side-head" x="800" y="398" text-anchor="middle">ratio at t = 10 000</text>
   <text class="side-mono" x="800" y="424" text-anchor="middle" style="font-size:18px;">10 000 ×</text>
   <text class="side-sub" x="800" y="446" text-anchor="middle" style="font-style:italic;">AdaGrad's cache vs RMSProp's</text>

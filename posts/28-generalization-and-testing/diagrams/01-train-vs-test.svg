@@ -5,53 +5,53 @@
 
   <style><![CDATA[
     :root{
-      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
-      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
-      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
+      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
+      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
     }
     @media (prefers-color-scheme: dark){
       :root{
-        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
-        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
-        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
+        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
+        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
       }
     }
     text{font-family:Inter,system-ui,sans-serif;}
-    .bg{fill:var(--ce-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
-    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
-    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
-    .panel-ok {fill:var(--ce-success);fill-opacity:0.08;stroke:var(--ce-success);stroke-width:1.5;}
-    .panel-bad{fill:var(--ce-alert);fill-opacity:0.08;stroke:var(--ce-alert);stroke-width:1.5;}
-    .pill-ok {fill:var(--ce-success);}
-    .pill-bad{fill:var(--ce-alert);}
-    .head-ok {font-weight:700;font-size:16px;fill:var(--ce-success);}
-    .head-bad{font-weight:700;font-size:16px;fill:var(--ce-alert);}
-    .body{font-size:12px;fill:var(--ce-ink);}
-    .body-muted{font-size:11px;fill:var(--ce-ink-muted);}
-    .num-ok {font-weight:700;font-size:14px;fill:var(--ce-success);}
-    .num-bad{font-weight:700;font-size:14px;fill:var(--ce-alert);}
-    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .canvas-frame{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .region-a{fill:var(--ce-primary);fill-opacity:0.16;}
-    .region-b{fill:var(--ce-accent);fill-opacity:0.18;}
-    .boundary-ok {fill:none;stroke:var(--ce-success);stroke-width:2.2;}
-    .boundary-bad{fill:none;stroke:var(--ce-alert);stroke-width:2.2;}
-    .pt-a{fill:var(--ce-primary);stroke:var(--ce-ink);stroke-width:0.6;}
-    .pt-b{fill:var(--ce-accent);stroke:var(--ce-ink);stroke-width:0.6;}
-    .miss-ring{fill:none;stroke:var(--ce-ink);stroke-width:1.2;stroke-dasharray:2 2;}
-    .noise-callout{fill:none;stroke:var(--ce-ink-muted);stroke-width:1;}
-    .noise-text{font-size:10px;fill:var(--ce-ink-muted);font-style:italic;}
-    .legend-text{font-size:10px;fill:var(--ce-ink-muted);}
-    .legend-pt-a{fill:var(--ce-primary);stroke:var(--ce-ink);stroke-width:0.6;}
-    .legend-pt-b{fill:var(--ce-accent);stroke:var(--ce-ink);stroke-width:0.6;}
-    .diag-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
-    .diag-cell{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .diag-cell-active-ok{fill:var(--ce-success);fill-opacity:0.18;stroke:var(--ce-success);stroke-width:1.2;}
-    .diag-cell-active-bad{fill:var(--ce-alert);fill-opacity:0.18;stroke:var(--ce-alert);stroke-width:1.2;}
-    .diag-label-head{font-weight:700;font-size:12px;fill:var(--ce-ink);}
-    .diag-label-sub{font-size:10px;fill:var(--ce-ink-muted);}
-    .axis-label{font-size:10px;fill:var(--ce-ink-muted);}
+    .bg{fill:var(--nn-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
+    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
+    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
+    .panel-ok {fill:var(--nn-success);fill-opacity:0.08;stroke:var(--nn-success);stroke-width:1.5;}
+    .panel-bad{fill:var(--nn-alert);fill-opacity:0.08;stroke:var(--nn-alert);stroke-width:1.5;}
+    .pill-ok {fill:var(--nn-success);}
+    .pill-bad{fill:var(--nn-alert);}
+    .head-ok {font-weight:700;font-size:16px;fill:var(--nn-success);}
+    .head-bad{font-weight:700;font-size:16px;fill:var(--nn-alert);}
+    .body{font-size:12px;fill:var(--nn-ink);}
+    .body-muted{font-size:11px;fill:var(--nn-ink-muted);}
+    .num-ok {font-weight:700;font-size:14px;fill:var(--nn-success);}
+    .num-bad{font-weight:700;font-size:14px;fill:var(--nn-alert);}
+    .panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .canvas-frame{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .region-a{fill:var(--nn-primary);fill-opacity:0.16;}
+    .region-b{fill:var(--nn-accent);fill-opacity:0.18;}
+    .boundary-ok {fill:none;stroke:var(--nn-success);stroke-width:2.2;}
+    .boundary-bad{fill:none;stroke:var(--nn-alert);stroke-width:2.2;}
+    .pt-a{fill:var(--nn-primary);stroke:var(--nn-ink);stroke-width:0.6;}
+    .pt-b{fill:var(--nn-accent);stroke:var(--nn-ink);stroke-width:0.6;}
+    .miss-ring{fill:none;stroke:var(--nn-ink);stroke-width:1.2;stroke-dasharray:2 2;}
+    .noise-callout{fill:none;stroke:var(--nn-ink-muted);stroke-width:1;}
+    .noise-text{font-size:10px;fill:var(--nn-ink-muted);font-style:italic;}
+    .legend-text{font-size:10px;fill:var(--nn-ink-muted);}
+    .legend-pt-a{fill:var(--nn-primary);stroke:var(--nn-ink);stroke-width:0.6;}
+    .legend-pt-b{fill:var(--nn-accent);stroke:var(--nn-ink);stroke-width:0.6;}
+    .diag-head{font-weight:700;font-size:13px;fill:var(--nn-ink);}
+    .diag-cell{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .diag-cell-active-ok{fill:var(--nn-success);fill-opacity:0.18;stroke:var(--nn-success);stroke-width:1.2;}
+    .diag-cell-active-bad{fill:var(--nn-alert);fill-opacity:0.18;stroke:var(--nn-alert);stroke-width:1.2;}
+    .diag-label-head{font-weight:700;font-size:12px;fill:var(--nn-ink);}
+    .diag-label-sub{font-size:10px;fill:var(--nn-ink-muted);}
+    .axis-label{font-size:10px;fill:var(--nn-ink-muted);}
   ]]></style>
 
   <defs>

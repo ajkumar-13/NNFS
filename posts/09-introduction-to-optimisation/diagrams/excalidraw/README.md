@@ -5,7 +5,7 @@ Two scenes, each in two forms:
 | File | What it is |
 |---|---|
 | `NN-name.excalidraw` | An Excalidraw scene. Open it at [excalidraw.com](https://excalidraw.com) or in the VS Code Excalidraw extension and edit it directly. |
-| `NN-name.svg` | The same scene rendered to a self-contained SVG with [roughjs](https://roughjs.com), themed with the repo's `--ce-*` tokens so it works in light and dark mode. |
+| `NN-name.svg` | The same scene rendered to a self-contained SVG with [roughjs](https://roughjs.com), themed with the repo's `--nn-*` tokens so it works in light and dark mode. |
 
 One is an **alternate** to the clean vector figure one directory up. The other is a
 **published figure**: section 1 counts the twenty-one parameters and section 4 argues
@@ -43,7 +43,7 @@ node render-scene.js ../../../posts/09-introduction-to-optimisation/diagrams/exc
 
 Use Excalidraw's own "Export to SVG" instead and you lose the thing that makes
 these files work in dark mode: it bakes literal hex into every shape, where this
-renderer emits `var(--ce-ink)` and friends. A hand edit and a later
+renderer emits `var(--nn-ink)` and friends. A hand edit and a later
 `npm run build:09` will fight over the same file, so fold anything worth keeping
 back into `post09.js`.
 

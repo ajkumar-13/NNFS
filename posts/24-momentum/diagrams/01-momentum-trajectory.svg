@@ -5,60 +5,60 @@
 
   <style><![CDATA[
     :root{
-      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
-      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
-      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
-      --ce-grid:rgba(26,26,26,0.06);
-      --ce-contour:rgba(91,127,191,0.10);
-      --ce-contour-line:rgba(91,127,191,0.35);
+      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
+      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
+      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+      --nn-grid:rgba(26,26,26,0.06);
+      --nn-contour:rgba(91,127,191,0.10);
+      --nn-contour-line:rgba(91,127,191,0.35);
     }
     @media (prefers-color-scheme: dark){
       :root{
-        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
-        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
-        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
-        --ce-grid:rgba(241,238,232,0.08);
-        --ce-contour:rgba(139,168,224,0.10);
-        --ce-contour-line:rgba(139,168,224,0.35);
+        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
+        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
+        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
+        --nn-grid:rgba(241,238,232,0.08);
+        --nn-contour:rgba(139,168,224,0.10);
+        --nn-contour-line:rgba(139,168,224,0.35);
       }
     }
     text{font-family:Inter,system-ui,sans-serif;}
     .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--ce-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
-    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
-    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
-    .panel-bad{fill:var(--ce-alert);fill-opacity:0.05;stroke:var(--ce-alert);stroke-width:1.5;}
-    .panel-ok {fill:var(--ce-success);fill-opacity:0.05;stroke:var(--ce-success);stroke-width:1.5;}
-    .pill-bad{fill:var(--ce-alert);}
-    .pill-ok {fill:var(--ce-success);}
-    .head-bad{font-weight:700;font-size:14px;fill:var(--ce-alert);}
-    .head-ok {font-weight:700;font-size:14px;fill:var(--ce-success);}
-    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
-    .contour-fill{fill:var(--ce-contour);stroke:var(--ce-contour-line);stroke-width:1;}
-    .contour-line{fill:none;stroke:var(--ce-contour-line);stroke-width:1;}
-    .min-dot{fill:var(--ce-ink);}
-    .min-label{font-size:10px;fill:var(--ce-ink-muted);font-style:italic;}
-    .start-dot{fill:var(--ce-ink-subtle);stroke:var(--ce-ink);stroke-width:1.5;}
-    .start-label{font-size:10px;fill:var(--ce-ink-muted);font-style:italic;}
-    .traj-bad{stroke:var(--ce-alert);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
-    .traj-ok {stroke:var(--ce-success);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;}
-    .step-bad{fill:var(--ce-alert);}
-    .step-ok {fill:var(--ce-success);}
-    .stat-num{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;fill:var(--ce-ink);}
-    .stat-lbl{font-size:10px;fill:var(--ce-ink-muted);}
-    .formula-band{fill:var(--ce-primary);fill-opacity:0.08;stroke:var(--ce-primary);stroke-width:1.5;}
-    .formula-head{font-weight:700;font-size:12px;fill:var(--ce-primary);}
-    .formula-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;fill:var(--ce-ink);}
-    .formula-note{font-size:11px;fill:var(--ce-ink-muted);}
+    .bg{fill:var(--nn-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
+    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
+    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
+    .panel-bad{fill:var(--nn-alert);fill-opacity:0.05;stroke:var(--nn-alert);stroke-width:1.5;}
+    .panel-ok {fill:var(--nn-success);fill-opacity:0.05;stroke:var(--nn-success);stroke-width:1.5;}
+    .pill-bad{fill:var(--nn-alert);}
+    .pill-ok {fill:var(--nn-success);}
+    .head-bad{font-weight:700;font-size:14px;fill:var(--nn-alert);}
+    .head-ok {font-weight:700;font-size:14px;fill:var(--nn-success);}
+    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
+    .contour-fill{fill:var(--nn-contour);stroke:var(--nn-contour-line);stroke-width:1;}
+    .contour-line{fill:none;stroke:var(--nn-contour-line);stroke-width:1;}
+    .min-dot{fill:var(--nn-ink);}
+    .min-label{font-size:10px;fill:var(--nn-ink-muted);font-style:italic;}
+    .start-dot{fill:var(--nn-ink-subtle);stroke:var(--nn-ink);stroke-width:1.5;}
+    .start-label{font-size:10px;fill:var(--nn-ink-muted);font-style:italic;}
+    .traj-bad{stroke:var(--nn-alert);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+    .traj-ok {stroke:var(--nn-success);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+    .step-bad{fill:var(--nn-alert);}
+    .step-ok {fill:var(--nn-success);}
+    .stat-num{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;fill:var(--nn-ink);}
+    .stat-lbl{font-size:10px;fill:var(--nn-ink-muted);}
+    .formula-band{fill:var(--nn-primary);fill-opacity:0.08;stroke:var(--nn-primary);stroke-width:1.5;}
+    .formula-head{font-weight:700;font-size:12px;fill:var(--nn-primary);}
+    .formula-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;fill:var(--nn-ink);}
+    .formula-note{font-size:11px;fill:var(--nn-ink-muted);}
   ]]></style>
 
   <defs>
     <marker id="arrow-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-alert)"/>
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--nn-alert)"/>
     </marker>
     <marker id="arrow-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-success)"/>
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--nn-success)"/>
     </marker>
   </defs>
 
@@ -125,8 +125,8 @@
 
   <!-- Stat block (LEFT) -->
   <g transform="translate(44, 396)">
-    <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="0" y="0" width="380" height="44" rx="6"/>
-    <text class="stat-num" x="14"  y="26" style="fill:var(--ce-alert);">13 steps shown</text>
+    <rect fill="var(--nn-surface)" stroke="var(--nn-border)" stroke-width="1" x="0" y="0" width="380" height="44" rx="6"/>
+    <text class="stat-num" x="14"  y="26" style="fill:var(--nn-alert);">13 steps shown</text>
     <text class="stat-lbl" x="120" y="26">~85% of motion is lateral, only ~15% reaches the minimum</text>
   </g>
 
@@ -168,17 +168,17 @@
 
   <!-- Stat block (RIGHT) -->
   <g transform="translate(512, 396)">
-    <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="0" y="0" width="380" height="44" rx="6"/>
-    <text class="stat-num" x="14"  y="26" style="fill:var(--ce-success);">5 steps shown</text>
+    <rect fill="var(--nn-surface)" stroke="var(--nn-border)" stroke-width="1" x="0" y="0" width="380" height="44" rx="6"/>
+    <text class="stat-num" x="14"  y="26" style="fill:var(--nn-success);">5 steps shown</text>
     <text class="stat-lbl" x="120" y="26">lateral bounces cancel, downhill drift reinforces, no oscillation</text>
   </g>
 
   <!-- ============================ Formula band ============================ -->
   <rect class="formula-band" x="24" y="464" width="912" height="56" rx="10"/>
   <text class="formula-head" x="40" y="484">Update rules</text>
-  <text class="formula-mono" x="40" y="506" style="fill:var(--ce-alert);">vanilla:</text>
+  <text class="formula-mono" x="40" y="506" style="fill:var(--nn-alert);">vanilla:</text>
   <text class="formula-mono" x="106" y="506">θ ← θ − α · g</text>
-  <text class="formula-mono" x="320" y="506" style="fill:var(--ce-success);">momentum:</text>
+  <text class="formula-mono" x="320" y="506" style="fill:var(--nn-success);">momentum:</text>
   <text class="formula-mono" x="408" y="506">v ← β·v − α·g,</text>
   <text class="formula-mono" x="556" y="506">then  θ ← θ + v</text>
   <text class="formula-note" x="720" y="506">β = 0.9 (default)</text>

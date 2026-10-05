@@ -1,229 +1,104 @@
-# Notation Guide — Neural Networks from Scratch
+# Notation guide
 
-*Use this when a symbol, shape, or optimizer variable starts to blur together.*
+The symbols, shapes, and code names used across Neural Networks from Scratch. Where a post's maths and its code name the same quantity differently, the maths uses the symbol below and the code uses the identifier in the right-hand column. Bold capitals are batch matrices, bold lowercase letters are vectors, and italic letters are scalars, including single elements such as $z$, $w$, $b$, and $a$ for one neuron.
 
----
+## Forward pass
 
-## 1. Forward-Pass Symbols
-
-| Symbol | Meaning | Typical shape | Code name |
+| Symbol | Meaning | Shape | Code |
 |---|---|---|---|
-| $\mathbf{X}$ | Input batch | `(batch, features)` | `inputs`, `X` |
-| $\mathbf{W}$ | Weights | `(features, neurons)` in the class-based code | `weights` |
-| $\mathbf{b}$ | Biases | `(1, neurons)` | `biases` |
-| $\mathbf{Z}$ | Pre-activation output | `(batch, neurons)` | `z`, dense layer output before activation |
-| $\mathbf{A}$ | Activation output | `(batch, neurons)` | `output`, activation output |
-| $\hat{\mathbf{y}}$ | Predicted probabilities | `(batch, classes)` | `y_pred`, `output`, `probs` |
-| $\mathbf{y}$ | Ground-truth labels | `(batch,)` or `(batch, classes)` | `y_true`, `y` |
-| $L$ | Loss | scalar | `loss` |
+| $\mathbf{X}$ | input batch, one sample per row | $(N, n_\text{inputs})$ | `inputs`, `X` |
+| $\mathbf{W}$ | weights of a dense layer | $(n_\text{inputs}, n_\text{neurons})$ | `weights` |
+| $\mathbf{b}$ | biases of a dense layer | $(1, n_\text{neurons})$ | `biases` |
+| $\mathbf{Z}$ | weighted sums (pre-activation) | $(N, n_\text{neurons})$ | the dense layer's `output` |
+| $\mathbf{A}$ | activation output | $(N, n_\text{neurons})$ | the activation's `output` |
+| $\hat{\mathbf{y}}$ | predicted probabilities | $(N, K)$ | `y_pred`, the softmax `output` |
+| $\mathbf{y}$ | true labels | $(N,)$ class indices or $(N, K)$ one-hot | `y_true`, `y` |
+| $L$ | loss, the mean over the batch | scalar | `loss` |
+| $N$ | batch size (number of samples) | scalar | `samples`, `len(X)` |
+| $K$ | number of classes | scalar | `classes` |
 
-### Core forward equation
+A dense layer computes
 
-$$
-\mathbf{Z} = \mathbf{X}\mathbf{W} + \mathbf{b}
-$$
+$$\mathbf{Z} = \mathbf{X}\mathbf{W} + \mathbf{b}$$
 
-Then an activation is applied:
+and an activation follows, $\mathbf{A} = f(\mathbf{Z})$. The bias row is broadcast to every row of $\mathbf{X}\mathbf{W}$.
 
-$$
-\mathbf{A} = f(\mathbf{Z})
-$$
+**The weight convention changes once.** Posts 01 to 03 store one row of weights per neuron, shape $(n_\text{neurons}, n_\text{inputs})$, and compute `np.dot(inputs, weights.T)`. From Post 04 on, `Layer_Dense` stores $(n_\text{inputs}, n_\text{neurons})$ so that the forward pass is `np.dot(inputs, self.weights)` with no transpose. Both are correct; a formula that looks transposed against an earlier post is usually this change. Post 14, section 8, reconciles the two.
 
----
+## Backward pass
 
-## 2. Backward-Pass Symbols
+The gradient of the loss with respect to a quantity is written $\partial L / \partial (\cdot)$ in maths and with a leading `d` in code. Every gradient has the shape of the quantity it differentiates.
 
-| Symbol | Meaning | Code name |
+| Maths | Meaning | Code |
 |---|---|---|
-| $\frac{\partial L}{\partial \mathbf{Z}}$ | Gradient of loss wrt pre-activation outputs | `dinputs` for an activation layer |
-| $\frac{\partial L}{\partial \mathbf{W}}$ | Gradient of loss wrt weights | `dweights` |
-| $\frac{\partial L}{\partial \mathbf{b}}$ | Gradient of loss wrt biases | `dbiases` |
-| $\frac{\partial L}{\partial \mathbf{X}}$ | Gradient passed to previous layer | `dinputs` for a dense layer |
-| `dvalues` | Incoming gradient from the next layer | `dvalues` |
+| $\partial L / \partial \mathbf{Z}$ | gradient arriving at a dense layer from the component after it | `dvalues` |
+| $\partial L / \partial \mathbf{W}$ | weight gradient | `dweights` |
+| $\partial L / \partial \mathbf{b}$ | bias gradient | `dbiases` |
+| $\partial L / \partial \mathbf{X}$ | gradient passed back to the previous component | `dinputs` |
 
-### Dense-layer backward equations
+`dvalues` is the gradient coming into a component; `dinputs` is the gradient going out of it, and it becomes the previous component's `dvalues`. For a dense layer:
 
-For the class-based implementation used later in the series:
+$$\frac{\partial L}{\partial \mathbf{W}} = \mathbf{X}^\top \frac{\partial L}{\partial \mathbf{Z}}, \qquad \frac{\partial L}{\partial \mathbf{b}} = \sum_{\text{rows}} \frac{\partial L}{\partial \mathbf{Z}}, \qquad \frac{\partial L}{\partial \mathbf{X}} = \frac{\partial L}{\partial \mathbf{Z}} \, \mathbf{W}^\top$$
 
-$$
-\frac{\partial L}{\partial \mathbf{W}} = \mathbf{X}^T \cdot \frac{\partial L}{\partial \mathbf{Z}}
-$$
+In code these are `np.dot(self.inputs.T, dvalues)`, `np.sum(dvalues, axis=0, keepdims=True)`, and `np.dot(dvalues, self.weights.T)`.
 
-$$
-\frac{\partial L}{\partial \mathbf{b}} = \sum_{\text{batch}} \frac{\partial L}{\partial \mathbf{Z}}
-$$
+ReLU passes the gradient where its input was positive and zeroes it elsewhere, because
 
-$$
-\frac{\partial L}{\partial \mathbf{X}} = \frac{\partial L}{\partial \mathbf{Z}} \cdot \mathbf{W}^T
-$$
+$$\frac{d \, \text{ReLU}(z)}{dz} = \begin{cases} 1 & z > 0 \\ 0 & z \le 0 \end{cases}$$
 
----
+The combined softmax and categorical cross-entropy backward, with $\mathbf{y}$ one-hot and $L$ the batch mean, is
 
-## 3. Shape Rules That Matter Most
+$$\frac{\partial L}{\partial \mathbf{Z}} = \frac{\hat{\mathbf{y}} - \mathbf{y}}{N}$$
 
-### Matrix multiplication rule
+and sigmoid with binary cross-entropy gives the same form, $(\hat{y} - y)/N$, for each output.
 
-$$
-(m, n) \cdot (n, p) \rightarrow (m, p)
-$$
+## Shapes
 
-Examples used throughout the course:
+The matrix product rule is $(m, n) \cdot (n, p) \rightarrow (m, p)$: the inner sizes must match and disappear.
 
-| Expression | Meaning | Result |
+| Product | Where | Result |
 |---|---|---|
-| `(batch, features) · (features, neurons)` | Forward pass | `(batch, neurons)` |
-| `(features, batch) · (batch, neurons)` | `X.T · dvalues` | `(features, neurons)` |
-| `(batch, neurons) · (neurons, features)` | `dvalues · W.T` | `(batch, features)` |
+| $(N, n_\text{inputs}) \cdot (n_\text{inputs}, n_\text{neurons})$ | forward, `np.dot(X, W)` | $(N, n_\text{neurons})$ |
+| $(n_\text{inputs}, N) \cdot (N, n_\text{neurons})$ | weight gradient, `np.dot(X.T, dvalues)` | $(n_\text{inputs}, n_\text{neurons})$ |
+| $(N, n_\text{neurons}) \cdot (n_\text{neurons}, n_\text{inputs})$ | input gradient, `np.dot(dvalues, W.T)` | $(N, n_\text{inputs})$ |
 
-### Bias broadcasting
+Biases are stored as $(1, n_\text{neurons})$ so that $(N, n_\text{neurons}) + (1, n_\text{neurons}) \rightarrow (N, n_\text{neurons})$ broadcasts across the batch.
 
-Biases are usually stored as `(1, neurons)` so NumPy can broadcast them across the batch.
+`axis` names the axis that disappears in a reduction. For a $(3, 4)$ array, `np.sum(a, axis=0)` has shape $(4,)$, `np.sum(a, axis=1)` has shape $(3,)$, and `keepdims=True` keeps the reduced axis as size 1: $(1, 4)$ and $(3, 1)$.
 
-$$
-(batch, neurons) + (1, neurons) \rightarrow (batch, neurons)
-$$
+Labels come in two forms: class indices such as `[0, 2, 1]`, shape $(N,)$, or one-hot rows such as `[[1, 0, 0], [0, 0, 1], [0, 1, 0]]`, shape $(N, K)$.
 
-### `keepdims=True`
+## Optimisers
 
-Use `keepdims=True` when you need a reduced result to stay two-dimensional for later broadcasting.
-
-Example:
-
-$$
-\text{np.sum}(X, \text{axis}=1, \text{keepdims}=True)
-$$
-
-If `X` is `(3, 4)`, the result is `(3, 1)`, not `(3,)`.
-
----
-
-## 4. One Important Convention Shift in This Repo
-
-The early conceptual lectures sometimes present weights as:
-
-$$
-\text{weights shape} = (neurons, inputs)
-$$
-
-because that makes it easy to say, "one row of weights per neuron."
-
-Later, in the reusable class-based implementation, the code stores weights as:
-
-$$
-\text{weights shape} = (inputs, neurons)
-$$
-
-so the forward pass becomes:
-
-$$
-\mathbf{X} \cdot \mathbf{W}
-$$
-
-Both conventions are valid. The important thing is to stay consistent within one implementation.
-
-### Practical translation
-
-| Presentation style | Weight shape |
-|---|---|
-| Early conceptual examples | `(neurons, inputs)` |
-| Later class-based code | `(inputs, neurons)` |
-
-If a formula looks "transposed" compared with an earlier lecture, this convention change is usually why.
-
----
-
-## 5. Labels: Class Index vs One-Hot
-
-There are two common ways to represent targets.
-
-| Format | Example | Shape |
+| Symbol | Meaning | Code |
 |---|---|---|
-| Class indices | `[0, 2, 1]` | `(batch,)` |
-| One-hot | `[[1,0,0],[0,0,1],[0,1,0]]` | `(batch, classes)` |
+| $\theta$ | any parameter (a weight or a bias) | `layer.weights`, `layer.biases` |
+| $g$ | its gradient, $\partial L / \partial \theta$ | `layer.dweights`, `layer.dbiases` |
+| $t$ | update counter | `iterations` |
+| $\alpha$ | learning rate; $\alpha_0$ for the initial value under decay | `learning_rate`, `current_learning_rate` |
+| $d$ | learning-rate decay | `decay` |
+| $\beta$ | momentum coefficient | `momentum` |
+| $v$ | momentum velocity | `weight_momentums`, `bias_momentums` |
+| $G$ | cache of squared gradients (AdaGrad, RMSProp) | `weight_cache`, `bias_cache` |
+| $\rho$ | RMSProp cache decay | `rho` |
+| $m$, $v$ | Adam's first and second moment estimates | `weight_momentums`, `weight_cache` (and the bias versions) |
+| $\beta_1$, $\beta_2$ | Adam's decay rates for $m$ and $v$ | `beta_1`, `beta_2` |
+| $\hat{m}$, $\hat{v}$ | bias-corrected moments | `weight_m_hat`, `weight_v_hat` (and the bias versions) |
+| $\epsilon$ | small constant that keeps a denominator above zero | `epsilon` |
 
-For one-hot labels, only one entry is `1` and the rest are `0`.
+In Adam, $v$ is the second moment, not the momentum velocity of Post 24; the code keeps the two apart by name.
 
----
+## Regularisation, initialisation, and outputs
 
-## 6. Optimizer Notation
-
-| Symbol | Meaning | Common code name |
+| Symbol | Meaning | Code |
 |---|---|---|
-| $\alpha$ | Learning rate | `learning_rate`, `current_learning_rate` |
-| decay | Learning-rate decay factor | `decay` |
-| $\beta$ or $\beta_1$ | Momentum coefficient | `momentum`, `beta_1` |
-| $\rho$ or $\beta_2$ | Exponential average coefficient for squared gradients | `rho`, `beta_2` |
-| $\epsilon$ | Small constant for numerical stability | `epsilon` |
-| $\lambda$ | Regularization strength | `lambda`, `weight_regularizer_l2`, etc. |
-| cache | Running store of squared gradients | `weight_cache`, `bias_cache` |
-| velocity / momentum term | Running average of updates | `weight_momentums`, `bias_momentums` |
+| $\lambda$ | regularisation strength | `weight_regularizer_l1`, `weight_regularizer_l2`, `bias_regularizer_l1`, `bias_regularizer_l2` |
+| $p$ | dropout rate, the probability of dropping a neuron | the `rate` argument of `Layer_Dropout`; the class stores the keep rate `1 - rate` |
+| $n_\text{in}$, $n_\text{out}$ | fan-in and fan-out of a layer | `n_inputs`, `n_neurons` |
+| $\sigma(z)$ | sigmoid, $1/(1 + e^{-z})$ | `Activation_Sigmoid`; `Activation_Sigmoid_Loss_BinaryCrossentropy` pairs it with the loss |
 
-### Quick intuition
+## Conventions
 
-- Learning rate: how big each step is.
-- Decay: how the learning rate shrinks over time.
-- Momentum: how much past directions influence the next step.
-- RMSProp / Adam cache: a memory of gradient magnitudes.
-- Epsilon: stops division by zero.
-
----
-
-## 7. Common Confusions
-
-### `axis=0` vs `axis=1`
-
-- `axis=0`: reduce the batch/row dimension.
-- `axis=1`: reduce across columns inside each row.
-
-For a `(3, 4)` array:
-
-- `np.sum(X, axis=0)` returns shape `(4,)`
-- `np.sum(X, axis=1)` returns shape `(3,)`
-
-### `dvalues` vs `dinputs`
-
-- `dvalues` means: gradient coming *into* this layer.
-- `dinputs` means: gradient going *out* of this layer toward the previous layer.
-
-### Why does ReLU backward use a mask?
-
-Because:
-
-$$
-\frac{d\,\text{ReLU}(z)}{dz} =
-\begin{cases}
-1 & z > 0 \\
-0 & z \le 0
-\end{cases}
-$$
-
-So gradients pass through positive inputs and are zeroed elsewhere.
-
----
-
-## 8. Minimal Formula Map
-
-| Step | Formula |
-|---|---|
-| Dense forward | $\mathbf{Z} = \mathbf{X}\mathbf{W} + \mathbf{b}$ |
-| ReLU forward | $\mathbf{A} = \max(0, \mathbf{Z})$ |
-| Softmax | $\hat{y}_k = \frac{e^{z_k}}{\sum_j e^{z_j}}$ |
-| Cross-entropy | $L = -\sum_i y_i \log(\hat{y}_i)$ |
-| Dense backward weights | $\frac{\partial L}{\partial \mathbf{W}} = \mathbf{X}^T \cdot \frac{\partial L}{\partial \mathbf{Z}}$ |
-| Dense backward inputs | $\frac{\partial L}{\partial \mathbf{X}} = \frac{\partial L}{\partial \mathbf{Z}} \cdot \mathbf{W}^T$ |
-| Softmax + CCE backward | $\hat{\mathbf{y}} - \mathbf{y}$ |
-
----
-
-## 9. When to Use This Guide
-
-Open this guide when:
-
-- a shape mismatch error appears,
-- a transpose seems to appear "out of nowhere,"
-- the same symbol means slightly different things across parts,
-- or optimizer variables like $\beta_1$, $\beta_2$, and $\rho$ start blending together.
-
----
-
-*Suggested companions:* [Exercises](exercises.md), [Gradient Checking](gradient_checking.md), and [Softmax Backward Appendix](appendix_softmax_combined_backward.md).
+- Inline maths is written `$...$` and display maths `$$...$$` on its own line.
+- Prose uses British spelling (optimiser, regularisation, initialisation); code uses the American spelling of its class and argument names (`Optimizer_Adam`, `weight_regularizer_l2`), as the reference implementation does.
+- Indices start at 0, as in Python. Axis 0 is the batch axis.

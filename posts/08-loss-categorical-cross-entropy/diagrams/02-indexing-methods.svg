@@ -5,38 +5,38 @@
 
   <style><![CDATA[
     :root{
-      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
-      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
-      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
+      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
+      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
     }
     @media (prefers-color-scheme: dark){
       :root{
-        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
-        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
-        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
+        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
+        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
       }
     }
     text{font-family:Inter,system-ui,sans-serif;}
     .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--ce-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
-    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
-    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
-    .panel-prim{fill:var(--ce-primary);fill-opacity:0.06;stroke:var(--ce-primary);stroke-width:1.5;}
-    .panel-acc {fill:var(--ce-accent);fill-opacity:0.06;stroke:var(--ce-accent);stroke-width:1.5;}
-    .pill-prim{fill:var(--ce-primary);}
-    .pill-acc{fill:var(--ce-accent);}
-    .head-prim{font-weight:700;font-size:15px;fill:var(--ce-primary);}
-    .head-acc{font-weight:700;font-size:15px;fill:var(--ce-accent);}
-    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
-    .code-pill{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .code-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--ce-ink);}
-    .cell-base{fill:var(--ce-neutral-1);stroke:var(--ce-border);stroke-width:1;}
-    .cell-hl{fill:var(--ce-success);fill-opacity:0.30;stroke:var(--ce-success);stroke-width:1.5;}
-    .cell-zero{fill:var(--ce-neutral-1);fill-opacity:0.3;stroke:var(--ce-border);stroke-width:1;}
-    .cell-num{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
-    .label-text{font-size:11px;fill:var(--ce-ink-muted);}
-    .result-pill{fill:var(--ce-success);fill-opacity:0.20;stroke:var(--ce-success);stroke-width:1.5;}
+    .bg{fill:var(--nn-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
+    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
+    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
+    .panel-prim{fill:var(--nn-primary);fill-opacity:0.06;stroke:var(--nn-primary);stroke-width:1.5;}
+    .panel-acc {fill:var(--nn-accent);fill-opacity:0.06;stroke:var(--nn-accent);stroke-width:1.5;}
+    .pill-prim{fill:var(--nn-primary);}
+    .pill-acc{fill:var(--nn-accent);}
+    .head-prim{font-weight:700;font-size:15px;fill:var(--nn-primary);}
+    .head-acc{font-weight:700;font-size:15px;fill:var(--nn-accent);}
+    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
+    .code-pill{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .code-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--nn-ink);}
+    .cell-base{fill:var(--nn-neutral-1);stroke:var(--nn-border);stroke-width:1;}
+    .cell-hl{fill:var(--nn-success);fill-opacity:0.30;stroke:var(--nn-success);stroke-width:1.5;}
+    .cell-zero{fill:var(--nn-neutral-1);fill-opacity:0.3;stroke:var(--nn-border);stroke-width:1;}
+    .cell-num{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--nn-ink);}
+    .label-text{font-size:11px;fill:var(--nn-ink-muted);}
+    .result-pill{fill:var(--nn-success);fill-opacity:0.20;stroke:var(--nn-success);stroke-width:1.5;}
   ]]></style>
 
   <rect class="bg" width="960" height="460"/>
@@ -89,9 +89,9 @@
   <text class="label-text" x="200" y="306" text-anchor="middle">c2</text>
 
   <!-- Index walks: r0,c0  r1,c1  r2,c1 -->
-  <text class="label-text" x="248" y="232" style="fill:var(--ce-success);">(r0, c0) → 0.70</text>
-  <text class="label-text" x="248" y="260" style="fill:var(--ce-success);">(r1, c1) → 0.50</text>
-  <text class="label-text" x="248" y="288" style="fill:var(--ce-success);">(r2, c1) → 0.90</text>
+  <text class="label-text" x="248" y="232" style="fill:var(--nn-success);">(r0, c0) → 0.70</text>
+  <text class="label-text" x="248" y="260" style="fill:var(--nn-success);">(r1, c1) → 0.50</text>
+  <text class="label-text" x="248" y="288" style="fill:var(--nn-success);">(r2, c1) → 0.90</text>
 
   <!-- Result -->
   <rect class="result-pill" x="68" y="330" width="384" height="32" rx="8"/>
@@ -139,9 +139,9 @@
   <text class="label-text" x="510" y="288" text-anchor="end">r2</text>
 
   <!-- Per-row sum -->
-  <text class="label-text" x="690" y="232" style="fill:var(--ce-success);">sum row 0 → 0.70</text>
-  <text class="label-text" x="690" y="260" style="fill:var(--ce-success);">sum row 1 → 0.50</text>
-  <text class="label-text" x="690" y="288" style="fill:var(--ce-success);">sum row 2 → 0.90</text>
+  <text class="label-text" x="690" y="232" style="fill:var(--nn-success);">sum row 0 → 0.70</text>
+  <text class="label-text" x="690" y="260" style="fill:var(--nn-success);">sum row 1 → 0.50</text>
+  <text class="label-text" x="690" y="288" style="fill:var(--nn-success);">sum row 2 → 0.90</text>
 
   <!-- Result -->
   <rect class="result-pill" x="508" y="330" width="384" height="32" rx="8"/>

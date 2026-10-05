@@ -1,11 +1,11 @@
 # References
 
-The master bibliography for *Neural Networks from Scratch — Complete Blog Series*. Every source cited in a post's **Further reading** section is listed here once, alphabetised by first-author surname or organisation. Each post links here so the full citation lives in one place.
+The bibliography of Neural Networks from Scratch. Every source cited in a post's **Further reading** section is listed here once, alphabetised by first-author surname or organisation. Each post links here so the full citation lives in one place.
 
 ## Books and lecture notes
 
 - Bishop, C. M., *Pattern Recognition and Machine Learning* (Springer, 2006).
-- Bishop, C. M., *Deep Learning: Foundations and Concepts* (Springer, 2024).
+- Bishop, C. M. and Bishop, H., *Deep Learning: Foundations and Concepts* (Springer, 2024).
 - Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning* (MIT Press, 2016). Free at deeplearningbook.org.
 - Griewank, A. and Walther, A., *Evaluating Derivatives: Principles and Techniques of Algorithmic Differentiation* (SIAM, 2008).
 - Hastie, T., Tibshirani, R., and Friedman, J., *The Elements of Statistical Learning* (Springer, 2009).

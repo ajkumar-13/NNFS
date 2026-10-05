@@ -5,69 +5,69 @@
 
   <style><![CDATA[
     :root{
-      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
-      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
-      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
-      --ce-grid:rgba(26,26,26,0.06);
-      --ce-contour:rgba(91,127,191,0.10);
-      --ce-contour-line:rgba(91,127,191,0.32);
+      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
+      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
+      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+      --nn-grid:rgba(26,26,26,0.06);
+      --nn-contour:rgba(91,127,191,0.10);
+      --nn-contour-line:rgba(91,127,191,0.32);
     }
     @media (prefers-color-scheme: dark){
       :root{
-        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
-        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
-        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
-        --ce-grid:rgba(241,238,232,0.08);
-        --ce-contour:rgba(139,168,224,0.10);
-        --ce-contour-line:rgba(139,168,224,0.32);
+        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
+        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
+        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
+        --nn-grid:rgba(241,238,232,0.08);
+        --nn-contour:rgba(139,168,224,0.10);
+        --nn-contour-line:rgba(139,168,224,0.32);
       }
     }
     text{font-family:Inter,system-ui,sans-serif;}
-    .bg{fill:var(--ce-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
-    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
-    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
+    .bg{fill:var(--nn-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
+    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
+    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
 
-    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .panel-head{font-weight:700;font-size:14px;fill:var(--ce-ink);}
-    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .panel-head{font-weight:700;font-size:14px;fill:var(--nn-ink);}
+    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
 
-    .contour-fill{fill:var(--ce-contour);stroke:var(--ce-contour-line);stroke-width:1;}
-    .min-dot{fill:var(--ce-ink);}
-    .min-label{font-size:10px;fill:var(--ce-ink-muted);font-style:italic;}
-    .start-dot{fill:var(--ce-ink-subtle);stroke:var(--ce-ink);stroke-width:1.5;}
-    .start-label{font-size:10px;fill:var(--ce-ink-muted);font-style:italic;}
+    .contour-fill{fill:var(--nn-contour);stroke:var(--nn-contour-line);stroke-width:1;}
+    .min-dot{fill:var(--nn-ink);}
+    .min-label{font-size:10px;fill:var(--nn-ink-muted);font-style:italic;}
+    .start-dot{fill:var(--nn-ink-subtle);stroke:var(--nn-ink);stroke-width:1.5;}
+    .start-label{font-size:10px;fill:var(--nn-ink-muted);font-style:italic;}
 
-    .traj-full{stroke:var(--ce-ink-subtle);stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:6 4;}
-    .traj-mini{stroke:var(--ce-success);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;}
-    .traj-sgd {stroke:var(--ce-alert);stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;fill-opacity:0;}
+    .traj-full{stroke:var(--nn-ink-subtle);stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:6 4;}
+    .traj-mini{stroke:var(--nn-success);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+    .traj-sgd {stroke:var(--nn-alert);stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;fill-opacity:0;}
 
-    .dot-full{fill:var(--ce-ink-subtle);}
-    .dot-mini{fill:var(--ce-success);}
-    .dot-sgd {fill:var(--ce-alert);}
+    .dot-full{fill:var(--nn-ink-subtle);}
+    .dot-mini{fill:var(--nn-success);}
+    .dot-sgd {fill:var(--nn-alert);}
 
-    .legend-text{font-size:11px;fill:var(--ce-ink);}
-    .legend-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
+    .legend-text{font-size:11px;fill:var(--nn-ink);}
+    .legend-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--nn-ink);}
 
-    .side-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
-    .side-sub{font-size:10.5px;fill:var(--ce-ink-muted);}
-    .row-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
-    .col-head{font-weight:700;font-size:10.5px;fill:var(--ce-ink-muted);}
-    .row-line{stroke:var(--ce-border);stroke-width:1;fill:none;}
+    .side-head{font-weight:700;font-size:13px;fill:var(--nn-ink);}
+    .side-sub{font-size:10.5px;fill:var(--nn-ink-muted);}
+    .row-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--nn-ink);}
+    .col-head{font-weight:700;font-size:10.5px;fill:var(--nn-ink-muted);}
+    .row-line{stroke:var(--nn-border);stroke-width:1;fill:none;}
 
-    .callout-box{fill:var(--ce-success);fill-opacity:0.06;stroke:var(--ce-success);stroke-width:1.2;}
-    .callout-head{font-weight:700;font-size:11px;fill:var(--ce-success);}
+    .callout-box{fill:var(--nn-success);fill-opacity:0.06;stroke:var(--nn-success);stroke-width:1.2;}
+    .callout-head{font-weight:700;font-size:11px;fill:var(--nn-success);}
   ]]></style>
 
   <defs>
     <marker id="ar-full" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-ink-subtle)"/>
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--nn-ink-subtle)"/>
     </marker>
     <marker id="ar-mini" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-success)"/>
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--nn-success)"/>
     </marker>
     <marker id="ar-sgd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-alert)"/>
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--nn-alert)"/>
     </marker>
   </defs>
 
@@ -131,7 +131,7 @@
 
   <!-- Legend overlay (top-left, away from trajectories) -->
   <g transform="translate(60, 144)">
-    <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="0" y="0" width="186" height="74" rx="6" opacity="0.96"/>
+    <rect fill="var(--nn-surface)" stroke="var(--nn-border)" stroke-width="1" x="0" y="0" width="186" height="74" rx="6" opacity="0.96"/>
     <line class="traj-full" x1="10" y1="18" x2="36" y2="18"/>
     <text class="legend-text" x="44" y="22">full-batch · 4 steps</text>
     <line class="traj-mini" x1="10" y1="38" x2="36" y2="38"/>
@@ -154,7 +154,7 @@
 
   <!-- Row 1: Full-batch -->
   <g transform="translate(0, 170)">
-    <circle cx="688" cy="0" r="5" fill="var(--ce-ink-subtle)"/>
+    <circle cx="688" cy="0" r="5" fill="var(--nn-ink-subtle)"/>
     <text class="row-mono" x="700" y="4">full-batch</text>
     <text class="row-mono" x="820" y="4" text-anchor="middle">60 000</text>
     <text class="row-mono" x="908" y="4" text-anchor="end">1</text>
@@ -162,18 +162,18 @@
   <text class="side-sub" x="700" y="188">smooth, exact gradient · slow</text>
 
   <!-- Row 2: Mini-batch (highlighted) -->
-  <rect fill="var(--ce-success)" fill-opacity="0.06" stroke="var(--ce-success)" stroke-width="1" x="680" y="202" width="240" height="48" rx="6"/>
+  <rect fill="var(--nn-success)" fill-opacity="0.06" stroke="var(--nn-success)" stroke-width="1" x="680" y="202" width="240" height="48" rx="6"/>
   <g transform="translate(0, 222)">
-    <circle cx="688" cy="0" r="5" fill="var(--ce-success)"/>
+    <circle cx="688" cy="0" r="5" fill="var(--nn-success)"/>
     <text class="row-mono" x="700" y="4" style="font-weight:700;">mini-batch</text>
     <text class="row-mono" x="820" y="4" text-anchor="middle" style="font-weight:700;">128</text>
     <text class="row-mono" x="908" y="4" text-anchor="end" style="font-weight:700;">469</text>
   </g>
-  <text class="side-sub" x="700" y="240" style="fill:var(--ce-success);">production default · noise is mild</text>
+  <text class="side-sub" x="700" y="240" style="fill:var(--nn-success);">production default · noise is mild</text>
 
   <!-- Row 3: Pure SGD -->
   <g transform="translate(0, 274)">
-    <circle cx="688" cy="0" r="5" fill="var(--ce-alert)"/>
+    <circle cx="688" cy="0" r="5" fill="var(--nn-alert)"/>
     <text class="row-mono" x="700" y="4">pure SGD</text>
     <text class="row-mono" x="820" y="4" text-anchor="middle">1</text>
     <text class="row-mono" x="908" y="4" text-anchor="end">60 000</text>

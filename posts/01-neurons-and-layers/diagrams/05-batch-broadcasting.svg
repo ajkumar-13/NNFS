@@ -5,41 +5,41 @@
 
   <style><![CDATA[
     :root{
-      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
-      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
-      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
+      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
+      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
     }
     @media (prefers-color-scheme: dark){
       :root{
-        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
-        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
-        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
+        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
+        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
       }
     }
     text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--ce-ink);}
-    .bg{fill:var(--ce-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
-    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
-    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
-    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .label-head{font-weight:700;font-size:12px;fill:var(--ce-ink);}
-    .label-sub {font-size:11px;fill:var(--ce-ink-muted);}
-    .cell-in {fill:var(--ce-primary);fill-opacity:0.12;stroke:var(--ce-primary);stroke-width:1;}
-    .cell-w  {fill:var(--ce-accent);fill-opacity:0.14;stroke:var(--ce-accent);stroke-width:1;}
-    .cell-b  {fill:var(--ce-success);fill-opacity:0.18;stroke:var(--ce-success);stroke-width:1.2;}
-    .cell-raw{fill:var(--ce-neutral-1);stroke:var(--ce-border);stroke-width:1;}
-    .cell-out{fill:var(--ce-accent);fill-opacity:0.18;stroke:var(--ce-accent);stroke-width:1.2;}
-    .cell-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--ce-ink);}
-    .arrow-line{stroke:var(--ce-ink-muted);stroke-width:1.5;fill:none;}
-    .arrow-head{fill:var(--ce-ink-muted);}
-    .arrow-bias{stroke:var(--ce-success);stroke-width:1.2;stroke-dasharray:4 3;fill:none;}
-    .arrow-bias-head{fill:var(--ce-success);}
-    .op-label{font-weight:700;font-size:13px;fill:var(--ce-ink);}
-    .shape-badge{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .shape-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--ce-ink);font-weight:600;}
-    .row-tag{font-size:10px;fill:var(--ce-ink-muted);}
-    .col-tag{font-size:10px;fill:var(--ce-ink-muted);}
+    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--nn-ink);}
+    .bg{fill:var(--nn-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
+    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
+    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
+    .panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .label-head{font-weight:700;font-size:12px;fill:var(--nn-ink);}
+    .label-sub {font-size:11px;fill:var(--nn-ink-muted);}
+    .cell-in {fill:var(--nn-primary);fill-opacity:0.12;stroke:var(--nn-primary);stroke-width:1;}
+    .cell-w  {fill:var(--nn-accent);fill-opacity:0.14;stroke:var(--nn-accent);stroke-width:1;}
+    .cell-b  {fill:var(--nn-success);fill-opacity:0.18;stroke:var(--nn-success);stroke-width:1.2;}
+    .cell-raw{fill:var(--nn-neutral-1);stroke:var(--nn-border);stroke-width:1;}
+    .cell-out{fill:var(--nn-accent);fill-opacity:0.18;stroke:var(--nn-accent);stroke-width:1.2;}
+    .cell-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--nn-ink);}
+    .arrow-line{stroke:var(--nn-ink-muted);stroke-width:1.5;fill:none;}
+    .arrow-head{fill:var(--nn-ink-muted);}
+    .arrow-bias{stroke:var(--nn-success);stroke-width:1.2;stroke-dasharray:4 3;fill:none;}
+    .arrow-bias-head{fill:var(--nn-success);}
+    .op-label{font-weight:700;font-size:13px;fill:var(--nn-ink);}
+    .shape-badge{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .shape-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--nn-ink);font-weight:600;}
+    .row-tag{font-size:10px;fill:var(--nn-ink-muted);}
+    .col-tag{font-size:10px;fill:var(--nn-ink-muted);}
   ]]></style>
 
   <defs>
@@ -181,7 +181,7 @@
 
   <!-- Broadcasting note: a single subtle line under the bias panel makes the point
        without the arrow-clutter that collides with row tags. -->
-  <text class="label-sub" x="650" y="304" text-anchor="middle" style="fill:var(--ce-success);font-weight:600;">broadcast across all rows</text>
+  <text class="label-sub" x="650" y="304" text-anchor="middle" style="fill:var(--nn-success);font-weight:600;">broadcast across all rows</text>
 
   <!-- Code box -->
   <rect class="panel" x="48" y="346" width="864" height="98" rx="12"/>

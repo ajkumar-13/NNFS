@@ -5,56 +5,56 @@
 
   <style><![CDATA[
     :root{
-      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
-      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
-      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
-      --ce-grid:rgba(26,26,26,0.06);
+      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
+      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
+      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+      --nn-grid:rgba(26,26,26,0.06);
     }
     @media (prefers-color-scheme: dark){
       :root{
-        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
-        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
-        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
-        --ce-grid:rgba(241,238,232,0.08);
+        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
+        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
+        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
+        --nn-grid:rgba(241,238,232,0.08);
       }
     }
     text{font-family:Inter,system-ui,sans-serif;}
     .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--ce-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
-    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
-    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
-    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .panel-head{font-weight:700;font-size:14px;fill:var(--ce-ink);}
-    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
+    .bg{fill:var(--nn-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
+    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
+    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
+    .panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .panel-head{font-weight:700;font-size:14px;fill:var(--nn-ink);}
+    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
 
-    .cell-train{fill:var(--ce-success);fill-opacity:0.70;stroke:var(--ce-success);stroke-width:1;}
-    .cell-val  {fill:var(--ce-warn);fill-opacity:0.78;stroke:var(--ce-warn);stroke-width:1;}
-    .cell-test {fill:var(--ce-primary);fill-opacity:0.70;stroke:var(--ce-primary);stroke-width:1;}
-    .cell-muted{fill:var(--ce-success);fill-opacity:0.20;stroke:var(--ce-success);stroke-width:1;}
+    .cell-train{fill:var(--nn-success);fill-opacity:0.70;stroke:var(--nn-success);stroke-width:1;}
+    .cell-val  {fill:var(--nn-warn);fill-opacity:0.78;stroke:var(--nn-warn);stroke-width:1;}
+    .cell-test {fill:var(--nn-primary);fill-opacity:0.70;stroke:var(--nn-primary);stroke-width:1;}
+    .cell-muted{fill:var(--nn-success);fill-opacity:0.20;stroke:var(--nn-success);stroke-width:1;}
 
-    .cell-label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--ce-ink);}
-    .seg-pct{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10.5px;font-weight:600;fill:var(--ce-ink-muted);}
+    .cell-label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--nn-ink);}
+    .seg-pct{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10.5px;font-weight:600;fill:var(--nn-ink-muted);}
 
-    .role-box-train{fill:var(--ce-success);fill-opacity:0.06;stroke:var(--ce-success);stroke-width:1;}
-    .role-box-val  {fill:var(--ce-warn);fill-opacity:0.06;stroke:var(--ce-warn);stroke-width:1;}
-    .role-box-test {fill:var(--ce-primary);fill-opacity:0.06;stroke:var(--ce-primary);stroke-width:1;}
-    .role-head-train{font-weight:700;font-size:11px;fill:var(--ce-success);}
-    .role-head-val  {font-weight:700;font-size:11px;fill:var(--ce-warn);}
-    .role-head-test {font-weight:700;font-size:11px;fill:var(--ce-primary);}
-    .role-body{font-size:10.5px;fill:var(--ce-ink-muted);}
+    .role-box-train{fill:var(--nn-success);fill-opacity:0.06;stroke:var(--nn-success);stroke-width:1;}
+    .role-box-val  {fill:var(--nn-warn);fill-opacity:0.06;stroke:var(--nn-warn);stroke-width:1;}
+    .role-box-test {fill:var(--nn-primary);fill-opacity:0.06;stroke:var(--nn-primary);stroke-width:1;}
+    .role-head-train{font-weight:700;font-size:11px;fill:var(--nn-success);}
+    .role-head-val  {font-weight:700;font-size:11px;fill:var(--nn-warn);}
+    .role-head-test {font-weight:700;font-size:11px;fill:var(--nn-primary);}
+    .role-body{font-size:10.5px;fill:var(--nn-ink-muted);}
 
-    .fold-tag{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--ce-ink-muted);}
-    .acc-col-head{font-weight:700;font-size:10.5px;fill:var(--ce-ink-muted);}
-    .acc-val{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--ce-ink);}
-    .mean-box{fill:var(--ce-warn);fill-opacity:0.10;stroke:var(--ce-warn);stroke-width:1.5;}
-    .mean-head{font-weight:700;font-size:11px;fill:var(--ce-warn);}
-    .mean-val{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;font-weight:700;fill:var(--ce-warn);}
+    .fold-tag{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--nn-ink-muted);}
+    .acc-col-head{font-weight:700;font-size:10.5px;fill:var(--nn-ink-muted);}
+    .acc-val{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--nn-ink);}
+    .mean-box{fill:var(--nn-warn);fill-opacity:0.10;stroke:var(--nn-warn);stroke-width:1.5;}
+    .mean-head{font-weight:700;font-size:11px;fill:var(--nn-warn);}
+    .mean-val{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;font-weight:700;fill:var(--nn-warn);}
 
-    .timeline-line{stroke:var(--ce-ink-subtle);stroke-width:1.5;fill:none;}
-    .timeline-dot {fill:var(--ce-ink-subtle);}
-    .timeline-text{font-size:10.5px;font-style:italic;fill:var(--ce-ink-muted);}
-    .timeline-warn{font-size:10.5px;font-weight:700;font-style:italic;fill:var(--ce-primary);}
+    .timeline-line{stroke:var(--nn-ink-subtle);stroke-width:1.5;fill:none;}
+    .timeline-dot {fill:var(--nn-ink-subtle);}
+    .timeline-text{font-size:10.5px;font-style:italic;fill:var(--nn-ink-muted);}
+    .timeline-warn{font-size:10.5px;font-weight:700;font-style:italic;fill:var(--nn-primary);}
   ]]></style>
 
   <rect class="bg" width="960" height="540"/>
@@ -95,7 +95,7 @@
   <text class="role-head-test" x="52" y="364">Test data  ·  one chance, no take-backs</text>
   <text class="role-body"      x="52" y="380">the final accuracy number reported in the paper / readme / report.</text>
   <text class="role-body"      x="52" y="394">opened exactly ONCE after every design decision is frozen.</text>
-  <text class="role-body"      x="52" y="412" style="font-style:italic;fill:var(--ce-primary);font-weight:600;">re-tuning after seeing test = the most common bench-mark leak.</text>
+  <text class="role-body"      x="52" y="412" style="font-style:italic;fill:var(--nn-primary);font-weight:600;">re-tuning after seeing test = the most common bench-mark leak.</text>
 
   <!-- ============================ RIGHT panel: 5-fold CV ============================ -->
   <rect class="panel" x="480" y="80" width="456" height="380" rx="10"/>
@@ -167,18 +167,18 @@
   <rect class="mean-box" x="496" y="346" width="424" height="76" rx="8"/>
   <text class="mean-head" x="512" y="368">mean validation accuracy = (E₁ + E₂ + E₃ + E₄ + E₅) / 5</text>
   <text class="mean-val"  x="512" y="396">0.893</text>
-  <text class="role-body" x="568" y="396" style="fill:var(--ce-warn);">±0.018 std across folds  →  the score of this hyperparameter candidate</text>
+  <text class="role-body" x="568" y="396" style="fill:var(--nn-warn);">±0.018 std across folds  →  the score of this hyperparameter candidate</text>
   <text class="role-body" x="512" y="414" style="font-style:italic;">every training example takes a turn validating; no data is wasted.</text>
 
   <!-- ============================ Bottom timeline ============================ -->
   <line class="timeline-line" x1="48" y1="490" x2="912" y2="490"/>
 
-  <circle class="timeline-dot" cx="120" cy="490" r="4" fill="var(--ce-success)"/>
+  <circle class="timeline-dot" cx="120" cy="490" r="4" fill="var(--nn-success)"/>
   <text class="timeline-text"  x="120" y="510" text-anchor="middle">train weights (every epoch)</text>
 
-  <circle class="timeline-dot" cx="450" cy="490" r="4" fill="var(--ce-warn)"/>
+  <circle class="timeline-dot" cx="450" cy="490" r="4" fill="var(--nn-warn)"/>
   <text class="timeline-text"  x="450" y="510" text-anchor="middle">tune hyperparameters (many runs against validation)</text>
 
-  <circle class="timeline-dot" cx="840" cy="490" r="5" fill="var(--ce-primary)"/>
+  <circle class="timeline-dot" cx="840" cy="490" r="5" fill="var(--nn-primary)"/>
   <text class="timeline-warn"  x="840" y="510" text-anchor="middle">open test set — once — report the number</text>
 </svg>

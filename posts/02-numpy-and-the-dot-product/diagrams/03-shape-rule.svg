@@ -5,38 +5,38 @@
 
   <style><![CDATA[
     :root{
-      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
-      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
-      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
+      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
+      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
     }
     @media (prefers-color-scheme: dark){
       :root{
-        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
-        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
-        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
+        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
+        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
       }
     }
     text{font-family:Inter,system-ui,sans-serif;}
     .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--ce-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
-    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
-    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
-    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .panel-head{font-weight:700;font-size:14px;fill:var(--ce-ink);}
-    .panel-sub{font-size:12px;fill:var(--ce-ink-muted);}
-    .formula-outer{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:24px;fill:var(--ce-ink);font-weight:700;}
-    .formula-inner{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:24px;font-weight:700;fill:var(--ce-alert);}
-    .formula-result{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:24px;font-weight:700;fill:var(--ce-success);}
-    .arrow-inner{stroke:var(--ce-alert);stroke-width:1.5;fill:none;}
-    .arrow-outer{stroke:var(--ce-success);stroke-width:1.5;fill:none;}
-    .label-inner{font-size:12px;font-weight:700;fill:var(--ce-alert);}
-    .label-outer{font-size:12px;font-weight:700;fill:var(--ce-success);}
-    .label-text{font-size:11px;fill:var(--ce-ink-muted);}
-    .circle-hl{fill:none;stroke:var(--ce-alert);stroke-width:1.5;stroke-dasharray:3 2;}
-    .rule-band{fill:var(--ce-primary);fill-opacity:0.08;stroke:var(--ce-primary);stroke-width:1.5;}
-    .rule-head{font-weight:700;font-size:14px;fill:var(--ce-primary);}
-    .rule-body{font-size:12px;fill:var(--ce-ink);}
+    .bg{fill:var(--nn-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
+    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
+    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
+    .panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .panel-head{font-weight:700;font-size:14px;fill:var(--nn-ink);}
+    .panel-sub{font-size:12px;fill:var(--nn-ink-muted);}
+    .formula-outer{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:24px;fill:var(--nn-ink);font-weight:700;}
+    .formula-inner{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:24px;font-weight:700;fill:var(--nn-alert);}
+    .formula-result{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:24px;font-weight:700;fill:var(--nn-success);}
+    .arrow-inner{stroke:var(--nn-alert);stroke-width:1.5;fill:none;}
+    .arrow-outer{stroke:var(--nn-success);stroke-width:1.5;fill:none;}
+    .label-inner{font-size:12px;font-weight:700;fill:var(--nn-alert);}
+    .label-outer{font-size:12px;font-weight:700;fill:var(--nn-success);}
+    .label-text{font-size:11px;fill:var(--nn-ink-muted);}
+    .circle-hl{fill:none;stroke:var(--nn-alert);stroke-width:1.5;stroke-dasharray:3 2;}
+    .rule-band{fill:var(--nn-primary);fill-opacity:0.08;stroke:var(--nn-primary);stroke-width:1.5;}
+    .rule-head{font-weight:700;font-size:14px;fill:var(--nn-primary);}
+    .rule-body{font-size:12px;fill:var(--nn-ink);}
   ]]></style>
 
   <rect class="bg" width="960" height="420"/>

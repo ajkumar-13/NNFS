@@ -5,61 +5,61 @@
 
   <style><![CDATA[
     :root{
-      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
-      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
-      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
-      --ce-grid:rgba(26,26,26,0.06);
+      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
+      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
+      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+      --nn-grid:rgba(26,26,26,0.06);
     }
     @media (prefers-color-scheme: dark){
       :root{
-        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
-        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
-        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
-        --ce-grid:rgba(241,238,232,0.08);
+        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
+        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
+        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
+        --nn-grid:rgba(241,238,232,0.08);
       }
     }
     text{font-family:Inter,system-ui,sans-serif;}
     .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--ce-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
-    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
-    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
-    .panel-l1{fill:var(--ce-accent);fill-opacity:0.05;stroke:var(--ce-accent);stroke-width:1.5;}
-    .panel-l2{fill:var(--ce-primary);fill-opacity:0.05;stroke:var(--ce-primary);stroke-width:1.5;}
-    .pill-l1{fill:var(--ce-accent);}
-    .pill-l2{fill:var(--ce-primary);}
-    .head-l1{font-weight:700;font-size:14px;fill:var(--ce-accent);}
-    .head-l2{font-weight:700;font-size:14px;fill:var(--ce-primary);}
-    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
-    .formula-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;font-weight:700;fill:var(--ce-ink);}
+    .bg{fill:var(--nn-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
+    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
+    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
+    .panel-l1{fill:var(--nn-accent);fill-opacity:0.05;stroke:var(--nn-accent);stroke-width:1.5;}
+    .panel-l2{fill:var(--nn-primary);fill-opacity:0.05;stroke:var(--nn-primary);stroke-width:1.5;}
+    .pill-l1{fill:var(--nn-accent);}
+    .pill-l2{fill:var(--nn-primary);}
+    .head-l1{font-weight:700;font-size:14px;fill:var(--nn-accent);}
+    .head-l2{font-weight:700;font-size:14px;fill:var(--nn-primary);}
+    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
+    .formula-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;font-weight:700;fill:var(--nn-ink);}
 
-    .axis{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
-    .grid{stroke:var(--ce-grid);stroke-width:0.75;fill:none;}
-    .axis-label{font-size:10px;fill:var(--ce-ink-muted);}
-    .axis-title{font-size:10.5px;font-style:italic;fill:var(--ce-ink-muted);}
+    .axis{stroke:var(--nn-ink-muted);stroke-width:1;fill:none;}
+    .grid{stroke:var(--nn-grid);stroke-width:0.75;fill:none;}
+    .axis-label{font-size:10px;fill:var(--nn-ink-muted);}
+    .axis-title{font-size:10.5px;font-style:italic;fill:var(--nn-ink-muted);}
 
-    .curve-l1{stroke:var(--ce-accent);stroke-width:2.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
-    .curve-l2{stroke:var(--ce-primary);stroke-width:2.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+    .curve-l1{stroke:var(--nn-accent);stroke-width:2.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+    .curve-l2{stroke:var(--nn-primary);stroke-width:2.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
 
-    .pressure-l1{stroke:var(--ce-accent);stroke-width:2;fill:none;}
-    .pressure-l2{stroke:var(--ce-primary);stroke-width:2;fill:none;}
+    .pressure-l1{stroke:var(--nn-accent);stroke-width:2;fill:none;}
+    .pressure-l2{stroke:var(--nn-primary);stroke-width:2;fill:none;}
     .pressure-label{font-size:10px;font-family:"JetBrains Mono",ui-monospace,monospace;font-weight:600;}
 
-    .anno-text{font-size:10.5px;font-style:italic;fill:var(--ce-ink-muted);}
-    .compare-panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .compare-head{font-weight:700;font-size:12px;fill:var(--ce-ink);}
-    .col-head{font-weight:700;font-size:10.5px;fill:var(--ce-ink-muted);}
-    .row-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
-    .takeaway-text{font-size:11px;fill:var(--ce-ink);}
-    .row-line{stroke:var(--ce-border);stroke-width:1;fill:none;}
+    .anno-text{font-size:10.5px;font-style:italic;fill:var(--nn-ink-muted);}
+    .compare-panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .compare-head{font-weight:700;font-size:12px;fill:var(--nn-ink);}
+    .col-head{font-weight:700;font-size:10.5px;fill:var(--nn-ink-muted);}
+    .row-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--nn-ink);}
+    .takeaway-text{font-size:11px;fill:var(--nn-ink);}
+    .row-line{stroke:var(--nn-border);stroke-width:1;fill:none;}
   ]]></style>
 
   <defs>
     <marker id="ar-l1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-accent)"/>
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--nn-accent)"/>
     </marker>
     <marker id="ar-l2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ce-primary)"/>
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--nn-primary)"/>
     </marker>
   </defs>
 
@@ -110,16 +110,16 @@
   <!-- Constant-pressure arrows (3 down-arrows of equal length 28 px) on positive side -->
   <!-- At w=0.5: curve y=0.5 → y_pix=290. Arrow tip at (304, 286), tail at (304, 258). -->
   <line class="pressure-l1" x1="304" y1="258" x2="304" y2="285" marker-end="url(#ar-l1)"/>
-  <text class="pressure-label" x="308" y="254" style="fill:var(--ce-accent);">λ</text>
+  <text class="pressure-label" x="308" y="254" style="fill:var(--nn-accent);">λ</text>
   <!-- At w=1.0: curve y=1 → y_pix=240. Arrow tip at (344, 236), tail at (344, 208). -->
   <line class="pressure-l1" x1="344" y1="208" x2="344" y2="235" marker-end="url(#ar-l1)"/>
-  <text class="pressure-label" x="348" y="204" style="fill:var(--ce-accent);">λ</text>
+  <text class="pressure-label" x="348" y="204" style="fill:var(--nn-accent);">λ</text>
   <!-- At w=1.5: curve y=1.5 → y_pix=190. Arrow tip at (384, 186), tail at (384, 158). -->
   <line class="pressure-l1" x1="384" y1="158" x2="384" y2="185" marker-end="url(#ar-l1)"/>
-  <text class="pressure-label" x="388" y="154" style="fill:var(--ce-accent);">λ</text>
+  <text class="pressure-label" x="388" y="154" style="fill:var(--nn-accent);">λ</text>
 
   <!-- Annotation -->
-  <text class="anno-text" x="246" y="172" text-anchor="middle" style="fill:var(--ce-accent);">three arrows, same length → constant pressure</text>
+  <text class="anno-text" x="246" y="172" text-anchor="middle" style="fill:var(--nn-accent);">three arrows, same length → constant pressure</text>
 
   <!-- ============================ RIGHT panel: L2 ============================ -->
   <!-- Plot maths (RIGHT): center x = 732, 80 px/unit. Y range 0..4 with 45 px/unit. -->
@@ -185,16 +185,16 @@
   <!-- Proportional-pressure arrows on positive side. -->
   <!-- At w=0.5: curve y=0.25 → y_pix = 328.75. Gradient magnitude = 2λ*0.5 = 1·λ. Arrow length 10 px. Tail (772, 314), tip (772, 324). -->
   <line class="pressure-l2" x1="772" y1="314" x2="772" y2="324" marker-end="url(#ar-l2)"/>
-  <text class="pressure-label" x="776" y="312" style="fill:var(--ce-primary);">λ</text>
+  <text class="pressure-label" x="776" y="312" style="fill:var(--nn-primary);">λ</text>
   <!-- At w=1.0: y_pix = 295. Gradient = 2λ. Arrow length 20 px. Tail (812, 270), tip (812, 290). -->
   <line class="pressure-l2" x1="812" y1="270" x2="812" y2="290" marker-end="url(#ar-l2)"/>
-  <text class="pressure-label" x="816" y="268" style="fill:var(--ce-primary);">2λ</text>
+  <text class="pressure-label" x="816" y="268" style="fill:var(--nn-primary);">2λ</text>
   <!-- At w=1.5: y_pix = 238.75. Gradient = 3λ. Arrow length 30 px. Tail (852, 204), tip (852, 234). -->
   <line class="pressure-l2" x1="852" y1="204" x2="852" y2="234" marker-end="url(#ar-l2)"/>
-  <text class="pressure-label" x="856" y="202" style="fill:var(--ce-primary);">3λ</text>
+  <text class="pressure-label" x="856" y="202" style="fill:var(--nn-primary);">3λ</text>
 
   <!-- Annotation -->
-  <text class="anno-text" x="714" y="172" text-anchor="middle" style="fill:var(--ce-primary);">three arrows, growing → pressure scales with weight</text>
+  <text class="anno-text" x="714" y="172" text-anchor="middle" style="fill:var(--nn-primary);">three arrows, growing → pressure scales with weight</text>
 
   <!-- ============================ Compare panel: practical effect ============================ -->
   <rect class="compare-panel" x="24" y="400" width="912" height="116" rx="10"/>
@@ -203,24 +203,24 @@
   <!-- Header row -->
   <line class="row-line" x1="40" y1="430" x2="920" y2="430"/>
   <text class="col-head" x="60"  y="446">|w|</text>
-  <text class="col-head" x="220" y="446" style="fill:var(--ce-accent);">L1 gradient (λ = 0.01)</text>
-  <text class="col-head" x="440" y="446" style="fill:var(--ce-primary);">L2 gradient (λ = 0.01)</text>
+  <text class="col-head" x="220" y="446" style="fill:var(--nn-accent);">L1 gradient (λ = 0.01)</text>
+  <text class="col-head" x="440" y="446" style="fill:var(--nn-primary);">L2 gradient (λ = 0.01)</text>
   <text class="col-head" x="720" y="446">Effect on the weight</text>
   <line class="row-line" x1="40" y1="454" x2="920" y2="454"/>
 
   <!-- Data rows -->
   <text class="row-mono" x="60"  y="470">0.01</text>
-  <text class="row-mono" x="220" y="470" style="fill:var(--ce-accent);">0.0100</text>
-  <text class="row-mono" x="440" y="470" style="fill:var(--ce-primary);">0.0002</text>
-  <text class="takeaway-text" x="720" y="470"><tspan style="fill:var(--ce-accent);">L1 → 0</tspan> · <tspan style="fill:var(--ce-primary);">L2 barely moves</tspan></text>
+  <text class="row-mono" x="220" y="470" style="fill:var(--nn-accent);">0.0100</text>
+  <text class="row-mono" x="440" y="470" style="fill:var(--nn-primary);">0.0002</text>
+  <text class="takeaway-text" x="720" y="470"><tspan style="fill:var(--nn-accent);">L1 → 0</tspan> · <tspan style="fill:var(--nn-primary);">L2 barely moves</tspan></text>
 
   <text class="row-mono" x="60"  y="488">1.0</text>
-  <text class="row-mono" x="220" y="488" style="fill:var(--ce-accent);">0.0100</text>
-  <text class="row-mono" x="440" y="488" style="fill:var(--ce-primary);">0.0200</text>
+  <text class="row-mono" x="220" y="488" style="fill:var(--nn-accent);">0.0100</text>
+  <text class="row-mono" x="440" y="488" style="fill:var(--nn-primary);">0.0200</text>
   <text class="takeaway-text" x="720" y="488">comparable pressure</text>
 
   <text class="row-mono" x="60"  y="506">10</text>
-  <text class="row-mono" x="220" y="506" style="fill:var(--ce-accent);">0.0100</text>
-  <text class="row-mono" x="440" y="506" style="fill:var(--ce-primary);">0.2000</text>
-  <text class="takeaway-text" x="720" y="506"><tspan style="fill:var(--ce-primary);">L2 dominates</tspan> · shrinks large weights hard</text>
+  <text class="row-mono" x="220" y="506" style="fill:var(--nn-accent);">0.0100</text>
+  <text class="row-mono" x="440" y="506" style="fill:var(--nn-primary);">0.2000</text>
+  <text class="takeaway-text" x="720" y="506"><tspan style="fill:var(--nn-primary);">L2 dominates</tspan> · shrinks large weights hard</text>
 </svg>

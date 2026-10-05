@@ -1,142 +1,150 @@
 # Neural Networks from Scratch
 
-A 35-part blog series that builds a neural network by hand, plus 4 hands-on projects that put it to work. No frameworks, no black boxes. Every neuron, layer, activation function, loss function, backpropagation rule, optimiser, and regularisation technique is implemented from first principles using only Python and NumPy.
+A series of 35 posts that builds a neural network by hand in Python and NumPy, with no framework and no automatic differentiation. Every piece of a multi-layer perceptron is written from first principles: the neuron and the dense layer, the forward pass, ReLU and softmax, categorical cross-entropy, the calculus that backpropagation needs, the backward pass of every component, six optimisers from plain gradient descent to Adam, generalisation and validation, L1 and L2 penalties, dropout, mini-batching, weight initialisation, and the sigmoid with binary cross-entropy. Four projects then put the same classes to work on real data.
 
-![Python](https://img.shields.io/badge/Python-3.8%2B-3776AB?logo=python&logoColor=white)
-![NumPy only](https://img.shields.io/badge/dependencies-NumPy%20only-013243?logo=numpy&logoColor=white)
-![Posts](https://img.shields.io/badge/posts-35-5B7FBF)
-![Projects](https://img.shields.io/badge/projects-4-5C9E78)
+It is the entry point of the family's neural-network series: Convolutional Neural Networks from Scratch and Recurrent Neural Networks from Scratch both start where this one ends.
 
----
+## What you will build
 
-## What you'll build
+- `Layer_Dense`, `Activation_ReLU`, and `Activation_Softmax`, each with a forward and a backward pass, and the loss classes that score them.
+- `Activation_Softmax_Loss_CategoricalCrossentropy`, whose backward pass reduces to $(\hat{\mathbf{y}} - \mathbf{y})/N$, derived step by step from the chain rule.
+- Six optimisers on one shared contract: gradient descent, learning-rate decay, momentum, AdaGrad, RMSProp, and Adam.
+- L1 and L2 regularisation and `Layer_Dropout`, with the switch between training and evaluation in place.
+- A mini-batch training loop, He and Glorot initialisation, and a sigmoid output with binary cross-entropy for two-class problems.
 
-By the end of the series you will have a working multi-layer perceptron trained with Adam + L2 regularisation + Dropout, reaching ~97% test accuracy on MNIST, without touching Keras, PyTorch, or TensorFlow.
+## The posts
 
-## What you'll understand
+### Part I - Foundations
 
-- How a neuron computes a weighted sum, and why that is all you need to start.
-- Why matrix multiplication is the right abstraction for an entire layer.
-- How the chain rule turns calculus into an algorithm: backpropagation.
-- Why Adam outperforms vanilla gradient descent, and how each optimiser fixes the last one's flaw.
-- How regularisation and dropout close the gap between training and test accuracy.
+After this part you can code a neuron and a layer, predict the shape of any `np.dot`, and apply NumPy's reduction and broadcasting rules without running the code.
 
----
+1. [Neurons and layers](posts/01-neurons-and-layers/index.md)
+2. [NumPy and the dot product](posts/02-numpy-and-the-dot-product/index.md)
+3. [Stacking layers and the forward pass](posts/03-stacking-layers-and-the-forward-pass/index.md)
+4. [The Dense layer class and spiral data](posts/04-dense-layer-class-and-spiral-data/index.md)
+5. [Array summation, keepdims, and broadcasting](posts/05-array-summation-keepdims-and-broadcasting/index.md)
 
-## Series structure
+### Part II - Activations and forward pass
 
-| Phase | Parts | Topic |
-|---|:---:|---|
-| 1 — Foundations | 1–5 | Neurons, NumPy, dot products, batches, broadcasting |
-| 2 — Forward pass complete | 6–9 | ReLU, Softmax, the forward pass, cross-entropy, optimisation intro |
-| 3 — Calculus | 10–11 | Derivatives, partial derivatives, the chain rule |
-| 4 — Backpropagation | 12–21 | Full backward pass, all gradients, end-to-end pipeline |
-| 5 — Optimisers | 22–27 | SGD → Decay → Momentum → AdaGrad → RMSProp → Adam |
-| 6 — Generalisation & regularisation | 28–31 | Train/test split, validation, L1/L2, Dropout |
-| 7 — Practical training & extensions | 32–35 | Mini-batching, weight init, sigmoid + BCE, what's next |
+After this part you have a complete forward pass from inputs to class probabilities.
 
-*(Phase numbering matches [INDEX.md](INDEX.md).)*
+6. [Activation functions: ReLU and Softmax](posts/06-activation-functions-relu-and-softmax/index.md)
+7. [Coding the complete forward pass](posts/07-coding-the-complete-forward-pass/index.md)
 
-The complete annotated series listing with a guided learning path lives in [INDEX.md](INDEX.md).
+### Part III - Loss and optimisation
 
----
+After this part you can score a batch with cross-entropy and accuracy, and say why random search cannot train a network.
 
-## Requirements
+8. [Loss: categorical cross-entropy](posts/08-loss-categorical-cross-entropy/index.md)
+9. [Introduction to optimisation](posts/09-introduction-to-optimisation/index.md)
 
+### Part IV - Calculus for backpropagation
+
+After this part you can differentiate the functions a network uses, read a gradient component by component, and apply the chain rule to a composition of any depth. No calculus is assumed before it.
+
+10. [Derivatives, partial derivatives, and gradients](posts/10-derivatives-partial-derivatives-and-gradients/index.md)
+11. [The chain rule](posts/11-the-chain-rule/index.md)
+
+### Part V - Backpropagation
+
+After this part every component has a backward pass, and you can derive the three dense-layer gradients and the combined softmax and cross-entropy gradient yourself.
+
+12. [Backpropagation through a single neuron](posts/12-backprop-through-a-single-neuron/index.md)
+13. [Backpropagation through a layer of neurons](posts/13-backprop-through-a-layer/index.md)
+14. [Matrices in backpropagation](posts/14-matrices-in-backpropagation/index.md)
+15. [Gradients with respect to inputs](posts/15-gradients-with-respect-to-inputs/index.md)
+16. [Coding backpropagation](posts/16-coding-backpropagation/index.md)
+17. [Backpropagation through activation functions](posts/17-backpropagation-through-activation-functions/index.md)
+18. [Backpropagation through the loss function](posts/18-backpropagation-through-the-loss-function/index.md)
+19. [Softmax derivatives and the combined backward pass](posts/19-softmax-derivatives-and-the-combined-backward-pass/index.md)
+20. [Assembling full backpropagation](posts/20-assembling-full-backpropagation/index.md)
+21. [Coding the full backpropagation](posts/21-coding-the-full-backpropagation/index.md)
+
+### Part VI - Optimisers
+
+After this part you have six optimisers and can say what each one fixes in the one before it.
+
+22. [Gradient-descent optimiser](posts/22-gradient-descent-optimiser/index.md)
+23. [Learning-rate decay](posts/23-learning-rate-decay/index.md)
+24. [Momentum](posts/24-momentum/index.md)
+25. [AdaGrad](posts/25-adagrad/index.md)
+26. [RMSProp](posts/26-rmsprop/index.md)
+27. [Adam](posts/27-adam-optimiser/index.md)
+
+### Part VII - Generalisation and regularisation
+
+After this part you can measure the gap between training and test performance, choose hyperparameters without touching the test set, and add L1, L2, or dropout to close the gap.
+
+28. [Generalization and testing](posts/28-generalization-and-testing/index.md)
+29. [Validation and hyperparameter tuning](posts/29-validation-and-hyperparameter-tuning/index.md)
+30. [L1 and L2 regularisation](posts/30-l1-and-l2-regularisation/index.md)
+31. [Dropout](posts/31-dropout/index.md)
+
+### Part VIII - Practical training and extensions
+
+After this part you train with mini-batches, initialise for the activation you use, solve two-class problems, and know what convolution, recurrence, attention, and normalisation each add to this stack.
+
+32. [Mini-batching](posts/32-mini-batching/index.md)
+33. [Weight initialisation](posts/33-weight-initialisation/index.md)
+34. [Sigmoid and binary cross-entropy](posts/34-sigmoid-and-binary-cross-entropy/index.md)
+35. [What to read after this series](posts/35-whats-next/index.md)
+
+## The projects
+
+- [MNIST from scratch](projects/mnist-from-scratch/README.md): handwritten digits with a two-hidden-layer network, Adam, L2, dropout, and mini-batches.
+- [Binary classifier on two-moons](projects/binary-classifier/README.md): sigmoid and binary cross-entropy on a two-dimensional problem whose decision boundary can be drawn.
+- [Fashion-MNIST](projects/fashion-mnist/README.md): the MNIST network, unchanged, on clothing images, and where it fails.
+- [California housing regression](projects/california-housing-regression/README.md): the first regression, with mean squared error and a standardised target.
+
+## Before you start
+
+You need to be able to write a Python list, call a function, and use a `for` loop. Nothing else is assumed: NumPy is introduced from its first function, and the calculus (derivatives, partial derivatives, the chain rule) is taught in Part IV from zero. Readers who already use a framework can start at Part II, but should not skip Part V. Everything runs on a laptop CPU.
+
+## How a post is organised
+
+Each post opens with a short summary, the prerequisites, and what you will be able to do afterwards, then works through numbered sections from the question to the code, and closes with what can go wrong, the common pitfalls, further reading, and what to read next. The posts trace the shape of each array before writing the code that produces it. The series website shows each post's questions, with hints and worked explanations, beside the post.
+
+## What is measured
+
+- From post 04 to post 31 every experiment uses the same data: the spiral dataset, three classes of 100 points in two dimensions, from the `nnfs` package with its fixed seed.
+- Part VI trains all six optimisers on one setup (the spiral data, a $2 \to 64 \to 3$ network, 10,001 epochs, the same initial weights), so the rows of its comparison differ only in the optimiser. In that setup plain gradient descent ends at 64.7 percent training accuracy, momentum at 95.7, AdaGrad at 84.0, RMSProp at 90.0, and Adam at 96.3.
+- Part VII measures each regulariser by the gap between training accuracy and accuracy on a fresh draw from the same spiral generator.
+- Each project's README gives the commands that train and evaluate it and reports the test result those commands print.
+
+## The code
+
+Pure Python and NumPy, plus the `nnfs` package, which supplies `spiral_data` and a fixed seed. There is no library to install: the classes are written in the posts, and each project carries its own copy in `nn.py`.
+
+```text
+posts/NN-slug/   the post (index.md) and its figures
+projects/        four applied projects, each with nn.py, data.py, train.py, evaluate.py
+poster/          the whole series on one page, light and dark
 ```
-Python 3.8+
-NumPy
+
+To run the posts' code and a project:
+
+```powershell
+python -m pip install numpy nnfs
+cd projects\mnist-from-scratch
+python -m pip install -r requirements.txt
+python train.py
+python evaluate.py
 ```
 
-No deep-learning framework. No autograd. No automatic differentiation. Just arrays.
+The projects download their datasets on first use; scikit-learn is used only for that download, and each project's `--backend manual` option avoids it.
 
----
+## Reference pages
 
-## Repository layout
+- [Glossary](GLOSSARY.md): the terms the series defines.
+- [Cheatsheet](CHEATSHEET.md): the formulas, shapes, and code on one page.
+- [Notation guide](notation_guide.md): the symbols in the maths and the names in the code.
+- [References](REFERENCES.md): the books, papers, and documentation the posts cite.
+- [Poster](poster/one-page-of-neural-networks-from-scratch.svg): the series in eight panels on one A2 sheet.
 
-```
-posts/                       → 35 blog posts, one directory each
-  NN-slug/
-    index.md                 → the lecture
-    diagrams/                → SVG diagrams shipped with the post
+## Corrections and feedback
 
-poster/                      → the one-page A2 reference sheet, hand-drawn, light and dark
+This repository is the published source of the series and is maintained by its author. It does not take pull requests or issues. If you find a mistake or have a suggestion, send it through the series website.
 
-projects/                    → 4 applied projects, each a standalone README + code
-  01-mnist-from-scratch/     → two-hidden-layer MLP, ~97% MNIST accuracy
-  02-binary-classifier/      → two-moons, sigmoid + BCE
-  03-fashion-mnist/          → 10-class image classification
-  04-california-housing-regression/  → regression with MSE
+## Licence
 
-cheatsheets/                 → four quick-reference sheets (Parts 1–5, 6–9, 10–21, 22–31)
-dashboards/                  → optimiser and regularisation side-by-side comparison tables
-assets/diagrams/             → the generator that draws every hand-drawn figure and the poster
-
-cumulative_notebook.ipynb    → all series code in one runnable notebook
-INDEX.md                     → series index and guided learning path
-REFERENCES.md                → master bibliography for every post
-glossary.md                  → plain-English definitions for every term
-notation_guide.md            → symbols, tensor shapes, and optimiser variables decoded
-exercises.md                 → hands-on experiments for every lecture
-quizzes.md                   → multiple-choice comprehension checks
-gradient_checking.md         → numerically verify your backprop implementation
-common_pitfalls.md           → the most frequent mistakes and how to fix them
-appendix_softmax_combined_backward.md  → full derivation of the combined backward pass
-```
-
----
-
-## Getting started
-
-1. Open [INDEX.md](INDEX.md), the combined series listing and learning pathway.
-2. Start at [Part 1 — Neurons and layers](posts/01-neurons-and-layers/index.md).
-3. Work through each phase in order. Every post ends with a **What to read next** pointer.
-4. Use the [cumulative notebook](cumulative_notebook.ipynb) to run any lecture's code interactively.
-5. When something is unclear, consult the [concept dependency map](INDEX.md#concept-dependency-map) to find which earlier concept to revisit.
-
----
-
-## Supplementary resources
-
-| Resource | Purpose |
-|---|---|
-| [One-page poster](poster/) | The whole series on a single A2 sheet, in eight panels. Hand-drawn, light and dark |
-| [Glossary](glossary.md) | Plain-English definitions for every term in the series |
-| [Notation Guide](notation_guide.md) | Symbols, tensor shapes, and optimiser variables in one place |
-| [References](REFERENCES.md) | Master bibliography of every paper, book, and doc cited |
-| [Exercises](exercises.md) | Hands-on experiments for every lecture |
-| [Quizzes](quizzes.md) | Multiple-choice comprehension checks with explanations |
-| [Gradient Checking](gradient_checking.md) | Numerically verify your backprop before trusting it |
-| [Common Pitfalls](common_pitfalls.md) | The most frequent mistakes and exactly how to fix them |
-| [Softmax Backward Appendix](appendix_softmax_combined_backward.md) | Full derivation of the combined softmax + cross-entropy backward pass |
-
-### Cheat sheets
-
-| Sheet | Covers |
-|---|---|
-| [Foundation](cheatsheets/01_Foundation.md) | Neurons, layers, NumPy, broadcasting (Parts 1–5) |
-| [Activations & Loss](cheatsheets/02_Activations_Loss_Forward.md) | ReLU, Softmax, cross-entropy, forward pass (Parts 6–9) |
-| [Calculus & Backprop](cheatsheets/03_Calculus_Backpropagation.md) | Derivatives, chain rule, full backward pass (Parts 10–21) |
-| [Optimisers & Regularisation](cheatsheets/04_Optimizers_Regularization.md) | SGD through Adam, L1/L2, and Dropout (Parts 22–31) |
-
-### Comparison dashboards
-
-| Dashboard | Description |
-|---|---|
-| [Optimiser Comparison](dashboards/Optimizer_Comparison.md) | SGD vs Decay vs Momentum vs AdaGrad vs RMSProp vs Adam |
-| [Regularisation Comparison](dashboards/Regularization_Comparison.md) | None vs L1 vs L2 vs Dropout vs combined strategies |
-
----
-
-## Projects
-
-| # | Project | Task | Result |
-|:---:|---|---|---|
-| 1 | [MNIST from scratch](projects/01-mnist-from-scratch/README.md) | 10-class classification | ~97% test accuracy |
-| 2 | [Binary classifier on two-moons](projects/02-binary-classifier/README.md) | binary classification | ~98.5% test accuracy with sigmoid + BCE |
-| 3 | [Fashion-MNIST](projects/03-fashion-mnist/README.md) | 10-class classification | ~89% test accuracy; the shirt cluster is hard |
-| 4 | [California housing regression](projects/04-california-housing-regression/README.md) | regression | R² ≈ 0.78, RMSE ~$58k |
-
----
-
-*If you can write a Python loop and do arithmetic, you can follow along. The mathematics is introduced exactly when it is needed, never before.*
+Prose, questions, and figures are licensed under CC BY 4.0. Code is licensed under MIT. See [LICENSE](LICENSE).

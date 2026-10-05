@@ -5,43 +5,43 @@
 
   <style><![CDATA[
     :root{
-      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
-      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
-      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
-      --ce-grid:rgba(26,26,26,0.06);
+      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
+      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
+      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+      --nn-grid:rgba(26,26,26,0.06);
     }
     @media (prefers-color-scheme: dark){
       :root{
-        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
-        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
-        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
-        --ce-grid:rgba(241,238,232,0.08);
+        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
+        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
+        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
+        --nn-grid:rgba(241,238,232,0.08);
       }
     }
     text{font-family:Inter,system-ui,sans-serif;}
     .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--ce-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
-    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
-    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
-    .rule-band{fill:var(--ce-primary);fill-opacity:0.08;stroke:var(--ce-primary);stroke-width:1.5;}
-    .rule-head{font-weight:700;font-size:13px;fill:var(--ce-primary);}
-    .rule-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:16px;fill:var(--ce-ink);font-weight:700;}
-    .rule-note{font-size:11px;fill:var(--ce-ink-muted);}
-    .panel{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .panel-head{font-weight:700;font-size:13px;fill:var(--ce-ink);}
-    .panel-sub{font-size:11px;fill:var(--ce-ink-muted);}
-    .axis{stroke:var(--ce-ink-muted);stroke-width:1;fill:none;}
-    .grid{stroke:var(--ce-grid);stroke-width:0.75;fill:none;}
-    .axis-label{font-size:10px;fill:var(--ce-ink-muted);}
-    .axis-title{font-size:10.5px;fill:var(--ce-ink-muted);font-style:italic;}
-    .curve-base{stroke:var(--ce-ink-subtle);stroke-width:2;fill:none;stroke-linecap:round;stroke-dasharray:5 4;}
-    .curve-ok  {stroke:var(--ce-success);stroke-width:2.6;fill:none;stroke-linecap:round;}
-    .curve-bad {stroke:var(--ce-alert);stroke-width:2.6;fill:none;stroke-linecap:round;}
-    .legend-text{font-size:11px;fill:var(--ce-ink);}
-    .legend-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--ce-ink);}
-    .anno-text{font-size:10.5px;fill:var(--ce-ink-muted);font-style:italic;}
-    .anno-line{stroke:var(--ce-ink-subtle);stroke-width:0.75;fill:none;stroke-dasharray:2 3;}
+    .bg{fill:var(--nn-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
+    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
+    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
+    .rule-band{fill:var(--nn-primary);fill-opacity:0.08;stroke:var(--nn-primary);stroke-width:1.5;}
+    .rule-head{font-weight:700;font-size:13px;fill:var(--nn-primary);}
+    .rule-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:16px;fill:var(--nn-ink);font-weight:700;}
+    .rule-note{font-size:11px;fill:var(--nn-ink-muted);}
+    .panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .panel-head{font-weight:700;font-size:13px;fill:var(--nn-ink);}
+    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
+    .axis{stroke:var(--nn-ink-muted);stroke-width:1;fill:none;}
+    .grid{stroke:var(--nn-grid);stroke-width:0.75;fill:none;}
+    .axis-label{font-size:10px;fill:var(--nn-ink-muted);}
+    .axis-title{font-size:10.5px;fill:var(--nn-ink-muted);font-style:italic;}
+    .curve-base{stroke:var(--nn-ink-subtle);stroke-width:2;fill:none;stroke-linecap:round;stroke-dasharray:5 4;}
+    .curve-ok  {stroke:var(--nn-success);stroke-width:2.6;fill:none;stroke-linecap:round;}
+    .curve-bad {stroke:var(--nn-alert);stroke-width:2.6;fill:none;stroke-linecap:round;}
+    .legend-text{font-size:11px;fill:var(--nn-ink);}
+    .legend-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--nn-ink);}
+    .anno-text{font-size:10.5px;fill:var(--nn-ink-muted);font-style:italic;}
+    .anno-line{stroke:var(--nn-ink-subtle);stroke-width:0.75;fill:none;stroke-dasharray:2 3;}
   ]]></style>
 
   <rect class="bg" width="960" height="540"/>
@@ -121,7 +121,7 @@
 
   <!-- Legend (left panel) -->
   <g transform="translate(280, 218)">
-    <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="0" y="0" width="168" height="68" rx="6"/>
+    <rect fill="var(--nn-surface)" stroke="var(--nn-border)" stroke-width="1" x="0" y="0" width="168" height="68" rx="6"/>
     <line class="curve-base" x1="10" y1="16" x2="36" y2="16"/>
     <text class="legend-mono" x="44" y="20">d = 0</text>
     <text class="legend-text" x="92" y="20">no decay</text>
@@ -189,24 +189,24 @@
                              C 700 238, 800 237, 888 237" />
 
   <!-- Endpoint markers + value labels -->
-  <circle cx="888" cy="300" r="3.5" fill="var(--ce-ink-subtle)"/>
-  <text class="legend-mono" x="883" y="294" text-anchor="end" style="fill:var(--ce-ink-muted);">0.87</text>
+  <circle cx="888" cy="300" r="3.5" fill="var(--nn-ink-subtle)"/>
+  <text class="legend-mono" x="883" y="294" text-anchor="end" style="fill:var(--nn-ink-muted);">0.87</text>
 
-  <circle cx="888" cy="335" r="3.5" fill="var(--ce-success)"/>
-  <text class="legend-mono" x="883" y="350" text-anchor="end" style="fill:var(--ce-success);">0.76</text>
+  <circle cx="888" cy="335" r="3.5" fill="var(--nn-success)"/>
+  <text class="legend-mono" x="883" y="350" text-anchor="end" style="fill:var(--nn-success);">0.76</text>
 
-  <circle cx="888" cy="237" r="3.5" fill="var(--ce-alert)"/>
-  <text class="legend-mono" x="883" y="229" text-anchor="end" style="fill:var(--ce-alert);">1.07</text>
+  <circle cx="888" cy="237" r="3.5" fill="var(--nn-alert)"/>
+  <text class="legend-mono" x="883" y="229" text-anchor="end" style="fill:var(--nn-alert);">1.07</text>
 
   <!-- Legend (right panel) -->
   <g transform="translate(560, 346)">
-    <rect fill="var(--ce-surface)" stroke="var(--ce-border)" stroke-width="1" x="0" y="0" width="176" height="68" rx="6"/>
+    <rect fill="var(--nn-surface)" stroke="var(--nn-border)" stroke-width="1" x="0" y="0" width="176" height="68" rx="6"/>
     <line class="curve-base" x1="10" y1="16" x2="36" y2="16"/>
-    <text class="legend-text" x="44" y="20" style="fill:var(--ce-ink-muted);">baseline · 65% acc</text>
+    <text class="legend-text" x="44" y="20" style="fill:var(--nn-ink-muted);">baseline · 65% acc</text>
     <line class="curve-ok" x1="10" y1="36" x2="36" y2="36"/>
-    <text class="legend-text" x="44" y="40" style="fill:var(--ce-success);font-weight:600;">decay 1e-3 · 65% acc</text>
+    <text class="legend-text" x="44" y="40" style="fill:var(--nn-success);font-weight:600;">decay 1e-3 · 65% acc</text>
     <line class="curve-bad" x1="10" y1="56" x2="36" y2="56"/>
-    <text class="legend-text" x="44" y="60" style="fill:var(--ce-alert);">decay 1e-2 · 40% acc</text>
+    <text class="legend-text" x="44" y="60" style="fill:var(--nn-alert);">decay 1e-2 · 40% acc</text>
   </g>
 
   <!-- ============================ Footer ============================ -->

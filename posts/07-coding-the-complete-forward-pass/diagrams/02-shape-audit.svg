@@ -5,36 +5,36 @@
 
   <style><![CDATA[
     :root{
-      --ce-bg:#FAFAF7;--ce-surface:#FFFFFF;--ce-ink:#1A1A1A;--ce-ink-muted:#5C5C5C;--ce-ink-subtle:#9A9A9A;
-      --ce-border:#D9D9D4;--ce-primary:#5B7FBF;--ce-accent:#D98E5F;
-      --ce-success:#5C9E78;--ce-warn:#B8895A;--ce-alert:#C66B5E;--ce-neutral-1:#EAEAE4;
+      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
+      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
+      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
     }
     @media (prefers-color-scheme: dark){
       :root{
-        --ce-bg:#0E0F12;--ce-surface:#16181C;--ce-ink:#F2F2EE;--ce-ink-muted:#B4B4AE;--ce-ink-subtle:#6E6E68;
-        --ce-border:#2A2D33;--ce-primary:#8BA8E0;--ce-accent:#E8B088;
-        --ce-success:#7FBF9B;--ce-warn:#D4B58A;--ce-alert:#D88880;--ce-neutral-1:#1F2229;
+        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
+        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
+        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
       }
     }
     text{font-family:Inter,system-ui,sans-serif;}
     .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--ce-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--ce-ink);}
-    .subtitle{font-size:13px;fill:var(--ce-ink-muted);}
-    .footer{font-size:11px;fill:var(--ce-ink-subtle);}
-    .shape-card{fill:var(--ce-surface);stroke:var(--ce-border);stroke-width:1;}
-    .shape-tag{font-weight:700;font-size:11px;fill:var(--ce-ink-muted);text-transform:uppercase;letter-spacing:0.06em;}
-    .shape-big{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:18px;font-weight:700;fill:var(--ce-ink);}
-    .shape-desc{font-size:11px;fill:var(--ce-ink-muted);}
-    .dim-batch{font-size:11px;font-weight:700;fill:var(--ce-primary);}
-    .dim-feat{font-size:11px;font-weight:700;fill:var(--ce-accent);}
-    .op-arrow{stroke:var(--ce-ink-muted);stroke-width:1.5;fill:none;}
-    .op-arrow-head{fill:var(--ce-ink-muted);}
-    .op-label{font-size:11px;fill:var(--ce-ink);font-weight:600;}
-    .op-sub{font-size:10px;fill:var(--ce-ink-muted);}
-    .insight-band{fill:var(--ce-primary);fill-opacity:0.08;stroke:var(--ce-primary);stroke-width:1.5;}
-    .insight-head{font-weight:700;font-size:13px;fill:var(--ce-primary);}
-    .insight-body{font-size:11px;fill:var(--ce-ink);}
+    .bg{fill:var(--nn-bg);}
+    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
+    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
+    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
+    .shape-card{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
+    .shape-tag{font-weight:700;font-size:11px;fill:var(--nn-ink-muted);text-transform:uppercase;letter-spacing:0.06em;}
+    .shape-big{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:18px;font-weight:700;fill:var(--nn-ink);}
+    .shape-desc{font-size:11px;fill:var(--nn-ink-muted);}
+    .dim-batch{font-size:11px;font-weight:700;fill:var(--nn-primary);}
+    .dim-feat{font-size:11px;font-weight:700;fill:var(--nn-accent);}
+    .op-arrow{stroke:var(--nn-ink-muted);stroke-width:1.5;fill:none;}
+    .op-arrow-head{fill:var(--nn-ink-muted);}
+    .op-label{font-size:11px;fill:var(--nn-ink);font-weight:600;}
+    .op-sub{font-size:10px;fill:var(--nn-ink-muted);}
+    .insight-band{fill:var(--nn-primary);fill-opacity:0.08;stroke:var(--nn-primary);stroke-width:1.5;}
+    .insight-head{font-weight:700;font-size:13px;fill:var(--nn-primary);}
+    .insight-body{font-size:11px;fill:var(--nn-ink);}
   ]]></style>
 
   <defs>
@@ -90,7 +90,7 @@
   <text class="op-sub"   x="724" y="188" text-anchor="middle">Softmax</text>
 
   <!-- ======= Step 4 ======= -->
-  <rect class="shape-card" x="752" y="120" width="160" height="100" rx="10" style="fill:var(--ce-success);fill-opacity:0.12;stroke:var(--ce-success);"/>
+  <rect class="shape-card" x="752" y="120" width="160" height="100" rx="10" style="fill:var(--nn-success);fill-opacity:0.12;stroke:var(--nn-success);"/>
   <text class="shape-tag"  x="832" y="142" text-anchor="middle">step 4 · ŷ</text>
   <text class="shape-big"  x="832" y="178" text-anchor="middle">(300, 3)</text>
   <text class="shape-desc" x="832" y="202" text-anchor="middle">probabilities</text>
