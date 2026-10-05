@@ -1,8 +1,22 @@
 id: nn-024
 slug: 24-momentum
-title: "Part 24 · Momentum"
+title: "24 - Momentum"
+summary: "Momentum gives gradient descent a velocity per parameter, so opposing parts of consecutive steps cancel and agreeing parts build up. The post derives the rule, adds it to the optimiser class, and measures it on a ravine and on the spiral."
 date: 2026-05-29
+updated: 2026-10-05
+status: complete
+part: "Part VI - Optimisers"
+level: intermediate
+reading_time: 19
 tags: [neural-networks, from-scratch, optimisation, momentum, sgd]
 hero: diagrams/01-momentum-trajectory.svg
-reading_time: 12
-part: "Part VI — Optimisers"
+prerequisites: [nn-022, nn-023]
+code: included
+outcomes:
+  - id: o1
+    text: "Explain momentum as vector cancellation across steps: opposing parts of consecutive steps cancel and agreeing parts add up."
+  - id: o2
+    text: "Implement momentum inside Optimizer_SGD with a per-layer weight_momentums buffer."
+  - id: o3
+    text: "Translate between the two sign conventions of the velocity: learning rate inside and subtracted, or gradient added and the rate applied at the step."
+compute: cpu

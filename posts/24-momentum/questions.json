@@ -1,0 +1,818 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-024",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-024-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "velocity"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "What does momentum add to plain gradient descent?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "A random perturbation of every step, so that the optimiser can escape from flat regions of the loss.",
+          "correct": false,
+          "feedback": "Momentum is deterministic. Given the same gradients it produces the same steps; nothing random is added."
+        },
+        {
+          "key": "b",
+          "text": "A measurement of the curvature of the loss, used to shorten the steps across steep walls.",
+          "correct": false,
+          "feedback": "No second derivative is computed. Momentum uses only the gradients gradient descent already has."
+        },
+        {
+          "key": "c",
+          "text": "A velocity for every parameter: a running sum of past steps in which older steps count less.",
+          "correct": true,
+          "feedback": "This is the velocity of section 2. Each step is the previous velocity times $\\beta$ plus the new gradient step."
+        },
+        {
+          "key": "d",
+          "text": "A separate learning rate for every parameter, scaled by the running history of its squared gradients.",
+          "correct": false,
+          "feedback": "That describes the adaptive optimisers of the posts that follow. Momentum keeps one learning rate and remembers steps, not squared gradients."
+        }
+      ],
+      "explanation": "Section 2: the optimiser keeps a velocity, a running sum of its past steps in which older steps count for less, and moves by that velocity instead of by the latest gradient step alone. Nothing about curvature, noise or per-parameter rates is involved.",
+      "hints": [
+        "Ask what the optimiser remembers from one step to the next."
+      ]
+    },
+    {
+      "id": "nn-024-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "ravine",
+        "cancellation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "On the post's ravine, $L(x, y) = (x^2 + 100y^2)/2$ with a learning rate of 0.019, one run uses no momentum and one uses $\\beta = 0.9$. Which statement matches what is measured after 100 steps?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Momentum removes the bounce: the distance travelled across the ravine falls to a small fraction of what it was.",
+          "correct": false,
+          "feedback": "The distance travelled across is 18.902 with momentum against 18.999 without. The bounce is held still on every second step, not removed."
+        },
+        {
+          "key": "b",
+          "text": "Both runs end at the same loss, because the learning rate and the number of steps are the same.",
+          "correct": false,
+          "feedback": "The same learning rate gives different steps: with momentum the step along the floor grows as consecutive steps agree. The losses are 0.0027 and 1.0784."
+        },
+        {
+          "key": "c",
+          "text": "Momentum ends with the higher loss, because the velocity it has built up overshoots the floor of the ravine.",
+          "correct": false,
+          "feedback": "That is what happens with $\\beta = 0.99$ on this surface. With 0.9 the loss after 100 steps is 400 times lower than without momentum."
+        },
+        {
+          "key": "d",
+          "text": "Momentum ends with a far lower loss by getting much further along the floor; the bounce is still there.",
+          "correct": true,
+          "feedback": "The loss is 400 times lower, and $x$ goes from 10 to 0.0523 instead of 1.4686, while the travel across is almost the same."
+        }
+      ],
+      "explanation": "Section 2: with $\\beta = 0.9$ the loss is 0.0027 against 1.0784, and the gain is in $x$, which falls to 0.0523 instead of 1.4686. The distance travelled across the ravine is almost unchanged (18.902 against 18.999) and the remaining $|y|$ is larger with momentum. The across parts of consecutive steps cancel, so every second across step is zero, while the along parts add up.",
+      "hints": [
+        "Separate the two directions: across the ravine and along its floor.",
+        "Compare the two runs in $x$, in $|y|$ and in the distance travelled across."
+      ]
+    },
+    {
+      "id": "nn-024-q03",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 4,
+      "tags": [
+        "geometric-series",
+        "constant-gradient"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A parameter has the gradient $g = 2$ at every step. The optimiser uses a constant learning rate $\\alpha = 0.1$, a momentum coefficient $\\beta = 0.9$, and a velocity that starts at zero. Give the size $|v|$ of the velocity after 3 steps, and the size it approaches after many steps.",
+      "answer": {
+        "parts": [
+          {
+            "label": "size of the velocity after 3 steps",
+            "value": 0.542,
+            "tolerance": 0.005,
+            "unit": ""
+          },
+          {
+            "label": "size the velocity approaches",
+            "value": 2.0,
+            "tolerance": 0.005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form alpha*g*(1 - beta^n)/(1 - beta) with n = 3 (0.542) and its limit alpha*g/(1 - beta) (2.0); recomputed by iterating the rule in Python.",
+      "explanation": "Section 3: with a constant gradient the velocity is a geometric series. The sizes are $0.2$, then $0.9 \\cdot 0.2 + 0.2 = 0.38$, then $0.9 \\cdot 0.38 + 0.2 = 0.542$, which is $\\alpha g (1 - \\beta^3)/(1 - \\beta)$. The limit is $\\alpha g/(1 - \\beta) = 0.2/0.1 = 2.0$, ten times a plain gradient step.",
+      "hints": [
+        "Apply $v \\leftarrow \\beta v - \\alpha g$ three times from $v = 0$.",
+        "For the limit, set $v$ equal on both sides of the rule and solve for it."
+      ]
+    },
+    {
+      "id": "nn-024-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 7,
+      "tags": [
+        "hand-computation",
+        "cancellation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The loss of a single parameter is $L(\\theta) = 2\\theta^2$, so its gradient is $4\\theta$. Starting from $\\theta_0 = 3$ with a velocity of zero, take two steps of the post's rule with $\\alpha = 0.4$ and $\\beta = 0.5$. Give the velocity $v_2$ of the second step and the parameter $\\theta_2$ after it.",
+      "answer": {
+        "parts": [
+          {
+            "label": "v_2",
+            "value": 0.48,
+            "tolerance": 0.005,
+            "unit": ""
+          },
+          {
+            "label": "theta_2",
+            "value": -1.32,
+            "tolerance": 0.005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Rule of section 3 iterated twice in Python: v_1 = -4.8, theta_1 = -1.8, v_2 = 0.48, theta_2 = -1.32. Plain gradient descent gives theta_2 = 1.08, outside the tolerance.",
+      "explanation": "Section 3: step 1 has $g = 12$, so $v_1 = -4.8$ and $\\theta_1 = -1.8$. Step 2 has $g = 4 \\cdot (-1.8) = -7.2$, so $v_2 = 0.5 \\cdot (-4.8) - 0.4 \\cdot (-7.2) = -2.4 + 2.88 = 0.48$ and $\\theta_2 = -1.8 + 0.48 = -1.32$. Without momentum the second step would be $+2.88$ and would throw the parameter back to $1.08$; half of the first step cancels most of it.",
+      "hints": [
+        "The gradient of each step is taken at the parameter the previous step ended on.",
+        "The first velocity is $-\\alpha g_1$, because the velocity starts at zero. The second is $\\beta v_1 - \\alpha g_2$."
+      ]
+    },
+    {
+      "id": "nn-024-q05",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 1,
+      "tags": [
+        "buffer",
+        "naming"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The post's optimiser is used with `momentum=0.9` on a `Layer_Dense` object called `dense1`. Write the attribute, with the object it belongs to, in which the velocity of that layer's weights is stored.",
+      "answer": {
+        "model": "`dense1.weight_momentums`: the buffer is an attribute of the layer.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:optimi[sz]er|self|opt)\\s*\\.\\s*\\w)(?!(?:(?!\\bnot\\b|\\bthan\\b|\\binstead\\b|n't)[\\s\\S])*\\b(?:on|in|of|inside)\\s+the\\s+optimi[sz]er)(?![\\s\\S]*(?:\\bnot|n't|\\bnever)\\s+(?:in\\s+|on\\s+|at\\s+|under\\s+|called\\s+|named\\s+)?`?(?:dense1\\s*\\.\\s*|layer\\s*\\.\\s*)?weight_momentums)(?![\\s\\S]*\\b(?:weight_cache|bias_cache|dweights|dbiases|dense2|activation\\d*|loss_activation)\\b)(?![\\s\\S]*\\bor\\b)(?![\\s\\S]*\\b(?:holds?|stores?|contains?|is)\\s+(?:the\\s+)?gradients?\\b)[\\s\\S]*(?:(?<![\\w.])(?:dense1|layer)\\s*\\.\\s*weight_momentums\\b|\\bweight_momentums`?,?\\s+(?:is\\s+)?(?:an?\\s+attribute\\s+)?(?:stored\\s+|kept\\s+|living\\s+)?(?:on|of|in|inside|to|belonging\\s+to)\\s+(?:the\\s+)?(?:layer\\s+)?(?:object\\s+)?`?(?:dense1|layer)\\b)"
+        ]
+      },
+      "explanation": "Section 4: the optimiser attaches the velocity to the layer it updates, as `layer.weight_momentums` for the weights and `layer.bias_momentums` for the biases. For the layer `dense1` the weight velocity is therefore `dense1.weight_momentums`, an array with the shape of `dense1.weights`.",
+      "hints": [
+        "The state is per parameter array, and the optimiser object keeps none of it."
+      ]
+    },
+    {
+      "id": "nn-024-q06",
+      "type": "short",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "horizon",
+        "effective-step"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A parameter's gradient keeps the same value for a very long time. With a constant learning rate and `momentum=0.99`, the step grows towards how many times a plain gradient step?",
+      "answer": {
+        "model": "100 times: the factor is $1/(1 - \\beta) = 1/0.01$.",
+        "accept": [
+          "^(?![\\s\\S]*(?:\\bnot|n't|\\bnever)\\s+(?:be\\s+|reach(?:es)?\\s+|to\\s+|by\\s+|grows?\\s+(?:to\\s+|towards\\s+)?)?(?:a\\s+|one\\s+)?(?:100|hundred))(?![\\s\\S]*(?:\\bor\\b|\\bbetween\\b))(?!(?:(?!100|hundred)[\\s\\S])*(?<!not )(?<![\\d.,/^=-])(?:10|50|99|101|200)(?!\\d)(?![.,]\\d))(?![\\s\\S]*(?<![\\d.])\\d{4,})(?![\\s\\S]*\\d,\\d{3})(?![\\s\\S]*1\\s*/\\s*100)(?![\\s\\S]*\\b(?:hundredths?|smaller|shorter|fraction|percent|thousand|shrinks?|initially|squared|unbounded|infinit\\w*)\\b)(?![\\s\\S]*(?:\\bat\\s+first\\b|\\bto\\s+zero\\b|\\b(?:more|less|fewer)\\s+than\\s+(?:a\\s+|one\\s+)?(?:100|hundred)|100\\s*%))[\\s\\S]*(?:(?<![\\d.,/])100(?:\\.0+)?(?![\\d%])(?![.,]\\d)|\\bhundred\\b)"
+        ]
+      },
+      "explanation": "Section 3: with a constant gradient the velocity is the geometric series $\\alpha g (1 + \\beta + \\beta^2 + \\dots)$, which approaches $\\alpha g/(1 - \\beta)$. For $\\beta = 0.99$ the factor is $1/(1 - 0.99) = 100$. The same number is the horizon of the velocity, the sum of the weights $\\beta^k$ of all past gradients.",
+      "hints": [
+        "The velocity is a geometric series when the gradient does not change.",
+        "The sum of $1 + \\beta + \\beta^2 + \\dots$ is $1/(1 - \\beta)$."
+      ]
+    },
+    {
+      "id": "nn-024-q07",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "3.1",
+      "est_minutes": 3,
+      "tags": [
+        "conventions",
+        "translation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "An optimiser written in the other convention, $u \\leftarrow \\beta u + g$ followed by $\\theta \\leftarrow \\theta - \\alpha u$, has run for some steps at a constant learning rate $\\alpha = 0.1$, and one entry of its buffer is $u = 5.0$. Which value must the corresponding entry of the post's buffer `weight_momentums` hold for the two optimisers to continue along the same path?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "$5.0$",
+          "correct": false,
+          "feedback": "The two buffers are not the same quantity. One holds a sum of gradients and the other holds the step, which has the opposite sign and includes the learning rate."
+        },
+        {
+          "key": "b",
+          "text": "$-0.5$",
+          "correct": true,
+          "feedback": "$v = -\\alpha u = -0.1 \\cdot 5.0$. Added to $\\theta$, it is the same step as subtracting $\\alpha u$."
+        },
+        {
+          "key": "c",
+          "text": "$0.5$",
+          "correct": false,
+          "feedback": "The scale is right, but the post's update adds the buffer to the parameter. A positive entry here would move the parameter the wrong way."
+        },
+        {
+          "key": "d",
+          "text": "$-5.0$",
+          "correct": false,
+          "feedback": "The sign is right, but the post's buffer already contains the learning rate. The step would be ten times too long."
+        }
+      ],
+      "explanation": "Section 3.1: at a constant learning rate the translation between the two buffers is $v = -\\alpha u$, a change of sign and of scale. Here $v = -0.1 \\cdot 5.0 = -0.5$. The post's buffer holds the step itself, which is added to the parameter; the other buffer holds a sum of gradients, which is multiplied by the rate and subtracted.",
+      "hints": [
+        "Compare what each convention adds to or subtracts from $\\theta$ in one step."
+      ]
+    },
+    {
+      "id": "nn-024-q08",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "3.1",
+      "est_minutes": 4,
+      "tags": [
+        "conventions",
+        "decay"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The two conventions, $v \\leftarrow \\beta v - \\alpha g$ with $\\theta \\leftarrow \\theta + v$ and $u \\leftarrow \\beta u + g$ with $\\theta \\leftarrow \\theta - \\alpha u$, are run from the same start with the same $\\beta$ and the same decaying learning-rate schedule. What happens?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Different paths: the first keeps each old gradient at the rate of its own step; the second applies the current rate to all.",
+          "correct": true,
+          "feedback": "Unrolled for two steps, the first form moves by $-\\beta \\alpha_1 g_1 - \\alpha_2 g_2$ and the second by $-\\alpha_2 (\\beta g_1 + g_2)$."
+        },
+        {
+          "key": "b",
+          "text": "The same path: the two buffers differ only in sign, so the learning-rate schedule cannot tell the two forms apart.",
+          "correct": false,
+          "feedback": "Even at a constant rate the buffers differ by the factor $-\\alpha$, not only in sign, and under a changing rate the paths themselves differ."
+        },
+        {
+          "key": "c",
+          "text": "Different paths, because the second form leaves the learning rate out of its update and so ignores the schedule altogether.",
+          "correct": false,
+          "feedback": "The second form uses the learning rate in its parameter update, $\\theta \\leftarrow \\theta - \\alpha u$. It only keeps it out of the buffer."
+        },
+        {
+          "key": "d",
+          "text": "The same path as long as $\\beta$ is below 1, because both buffers then forget old gradients at the same geometric rate.",
+          "correct": false,
+          "feedback": "The value of $\\beta$ does not decide this. The paths agree when the learning rate is constant and differ when it changes."
+        }
+      ],
+      "explanation": "Section 3.1: in the first form each gradient is multiplied by the learning rate of its own step before it enters the buffer, so old steps keep their old, larger rates. In the second the whole accumulated history is multiplied by the current rate. With a constant rate the two coincide, with $v = -\\alpha u$; under decay the post's script measures a largest gap of 0.38 between the two paths on the ravine after 100 steps.",
+      "hints": [
+        "Unroll both rules for two steps with two different learning rates $\\alpha_1$ and $\\alpha_2$.",
+        "Look at which learning rate multiplies the first gradient in the second step."
+      ]
+    },
+    {
+      "id": "nn-024-q09",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 15,
+      "tags": [
+        "fix",
+        "velocity-buffer"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The class below is meant to be the post's `Optimizer_SGD`. It runs without an error, but a training run with `momentum=0.9` produces exactly the same parameters as a run with `momentum=0.0`. Find the cause and fix `update_params`. The tests drive the class through a stand-in layer for four steps and compare weights, biases and both buffers with the rule $v \\leftarrow \\beta v - \\alpha g$, $\\theta \\leftarrow \\theta + v$, with and without decay; one test hands the same optimiser a second layer from the second step on.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "import numpy as np\n\n\nclass Optimizer_SGD:\n\n    def __init__(self, learning_rate=1.0, decay=0.0, momentum=0.0):\n        self.learning_rate = learning_rate\n        self.current_learning_rate = learning_rate\n        self.decay = decay\n        self.momentum = momentum\n        self.iterations = 0\n\n    def pre_update_params(self):\n        if self.decay:\n            self.current_learning_rate = self.learning_rate / (1.0 + self.decay * self.iterations)\n\n    def update_params(self, layer):\n        if self.momentum:\n            layer.weight_momentums = np.zeros_like(layer.weights)\n            layer.bias_momentums = np.zeros_like(layer.biases)\n\n            weight_updates = self.momentum * layer.weight_momentums - self.current_learning_rate * layer.dweights\n            layer.weight_momentums = weight_updates\n\n            bias_updates = self.momentum * layer.bias_momentums - self.current_learning_rate * layer.dbiases\n            layer.bias_momentums = bias_updates\n        else:\n            weight_updates = -self.current_learning_rate * layer.dweights\n            bias_updates = -self.current_learning_rate * layer.dbiases\n\n        layer.weights += weight_updates\n        layer.biases += bias_updates\n\n    def post_update_params(self):\n        self.iterations += 1\n",
+      "solution": "import numpy as np\n\n\nclass Optimizer_SGD:\n\n    def __init__(self, learning_rate=1.0, decay=0.0, momentum=0.0):\n        self.learning_rate = learning_rate\n        self.current_learning_rate = learning_rate\n        self.decay = decay\n        self.momentum = momentum\n        self.iterations = 0\n\n    def pre_update_params(self):\n        if self.decay:\n            self.current_learning_rate = self.learning_rate / (1.0 + self.decay * self.iterations)\n\n    def update_params(self, layer):\n        if self.momentum:\n            # Create the buffers once, on the first call for this layer.\n            if not hasattr(layer, 'weight_momentums'):\n                layer.weight_momentums = np.zeros_like(layer.weights)\n                layer.bias_momentums = np.zeros_like(layer.biases)\n\n            weight_updates = self.momentum * layer.weight_momentums - self.current_learning_rate * layer.dweights\n            layer.weight_momentums = weight_updates\n\n            bias_updates = self.momentum * layer.bias_momentums - self.current_learning_rate * layer.dbiases\n            layer.bias_momentums = bias_updates\n        else:\n            weight_updates = -self.current_learning_rate * layer.dweights\n            bias_updates = -self.current_learning_rate * layer.dbiases\n\n        layer.weights += weight_updates\n        layer.biases += bias_updates\n\n    def post_update_params(self):\n        self.iterations += 1\n",
+      "tests": "import numpy as np\n\n\nclass Stand_In:\n    \"\"\"What the optimiser needs of a layer.\"\"\"\n\n    def __init__(self):\n        self.weights = np.array([[1.0, -2.0], [0.5, 3.0]])\n        self.biases = np.array([[0.1, -0.2]])\n\n\nGRADS_W = [np.array([[0.4, -0.2], [1.0, 0.6]]), np.array([[-0.3, 0.5], [0.8, -0.1]]),\n           np.array([[0.2, 0.2], [-0.6, 0.9]]), np.array([[0.7, -0.4], [0.1, 0.3]])]\nGRADS_B = [np.array([[0.3, -0.5]]), np.array([[-0.2, 0.4]]), np.array([[0.6, 0.1]]), np.array([[-0.1, -0.7]])]\n\n\ndef by_formula(learning_rate, decay, momentum):\n    \"\"\"v = beta * v - rate * g, theta = theta + v, with rate = learning_rate / (1 + decay * t).\"\"\"\n    layer = Stand_In()\n    w, b = layer.weights.copy(), layer.biases.copy()\n    vw, vb = np.zeros_like(w), np.zeros_like(b)\n    for t, (gw, gb) in enumerate(zip(GRADS_W, GRADS_B)):\n        rate = learning_rate / (1.0 + decay * t)\n        vw = momentum * vw - rate * gw\n        vb = momentum * vb - rate * gb\n        w, b = w + vw, b + vb\n    return w, b, vw, vb\n\n\ndef by_class(learning_rate, decay, momentum, steps=4):\n    layer = Stand_In()\n    optimizer = Optimizer_SGD(learning_rate=learning_rate, decay=decay, momentum=momentum)\n    for gw, gb in list(zip(GRADS_W, GRADS_B))[:steps]:\n        layer.dweights, layer.dbiases = gw.copy(), gb.copy()\n        optimizer.pre_update_params()\n        optimizer.update_params(layer)\n        optimizer.post_update_params()\n    return layer\n\n\n# The first step is a plain gradient step whatever the momentum is.\nfirst = by_class(0.5, 0.0, 0.9, steps=1)\nassert np.allclose(first.weights, Stand_In().weights - 0.5 * GRADS_W[0]), \"first step is not -rate * gradient\"\nassert np.allclose(first.biases, Stand_In().biases - 0.5 * GRADS_B[0]), \"first bias step is not -rate * gradient\"\n\n# Four steps, without and with decay, against the formula.\nfor learning_rate, decay, momentum in ((0.5, 0.0, 0.9), (0.5, 0.25, 0.9), (0.2, 0.1, 0.5)):\n    layer = by_class(learning_rate, decay, momentum)\n    w, b, vw, vb = by_formula(learning_rate, decay, momentum)\n    assert np.allclose(layer.weights, w), f\"weights differ from the formula for {(learning_rate, decay, momentum)}\"\n    assert np.allclose(layer.biases, b), f\"biases differ from the formula for {(learning_rate, decay, momentum)}\"\n    assert np.allclose(layer.weight_momentums, vw), \"weight_momentums does not hold the latest weight velocity\"\n    assert np.allclose(layer.bias_momentums, vb), \"bias_momentums does not hold the latest bias velocity\"\n\n# The momentum must change the path: it may not equal plain gradient descent.\nplain = by_class(0.5, 0.0, 0.0)\nheavy = by_class(0.5, 0.0, 0.9)\nassert not np.allclose(plain.weights, heavy.weights), \"momentum=0.9 gives the path of momentum=0.0\"\n\n# momentum=0.0 is still the optimiser of post 23.\nw, b, _, _ = by_formula(0.5, 0.25, 0.0)\nplain_decay = by_class(0.5, 0.25, 0.0)\nassert np.allclose(plain_decay.weights, w) and np.allclose(plain_decay.biases, b), \"momentum=0.0 is not plain gradient descent\"\n\n# One optimiser serves several layers, and a layer may be met after the first step.\noptimizer = Optimizer_SGD(learning_rate=0.5, momentum=0.9)\none, two = Stand_In(), Stand_In()\nw_two, vw_two = two.weights.copy(), np.zeros_like(two.weights)\nfor t, (gw, gb) in enumerate(zip(GRADS_W, GRADS_B)):\n    optimizer.pre_update_params()\n    one.dweights, one.dbiases = gw.copy(), gb.copy()\n    optimizer.update_params(one)\n    if t >= 1:\n        two.dweights, two.dbiases = -gw, -gb\n        optimizer.update_params(two)\n        vw_two = 0.9 * vw_two + 0.5 * gw\n        w_two = w_two + vw_two\n    optimizer.post_update_params()\nw, b, vw, vb = by_formula(0.5, 0.0, 0.9)\nassert np.allclose(one.weights, w) and np.allclose(one.weight_momentums, vw), \"a second layer disturbs the first layer's velocity\"\nassert np.allclose(two.weights, w_two) and np.allclose(two.weight_momentums, vw_two), \"a layer first met at the second step does not start from its own zero velocity\"\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "Sections 5 and 10: the starter zeroes both buffers at the top of every call, so the old velocity that the next line multiplies by `self.momentum` is always zero and each step is a plain gradient step. The buffers must be created once per layer, which the post does with a `hasattr` test, and afterwards only read and replaced. Nothing else in the class needs to change.",
+      "hints": [
+        "Follow `layer.weight_momentums` through two consecutive calls of `update_params` and write down what it holds when the velocity line reads it.",
+        "The buffers should be set to zeros only if the layer does not have them yet."
+      ]
+    },
+    {
+      "id": "nn-024-q10",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "7",
+      "est_minutes": 8,
+      "tags": [
+        "run-the-script",
+        "decay"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In `snippets/momentum_sgd.py`, remove the decay from the second optimiser of the `runs` list, so that it reads `Optimizer_SGD(learning_rate=1.0, momentum=0.9)`, and run the script. Report the loss and the accuracy it prints for that run at epoch 10000.",
+      "answer": {
+        "parts": [
+          {
+            "label": "loss at epoch 10000",
+            "value": 0.2821,
+            "tolerance": 0.002,
+            "unit": ""
+          },
+          {
+            "label": "accuracy at epoch 10000",
+            "value": 0.8767,
+            "tolerance": 0.004,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "snippets/momentum_sgd.py with decay removed from the second optimiser, seed 0 (nnfs.init()): the line 'epoch 10000  loss 0.2821  acc 0.8767'. The unmodified script prints 0.1209 and 0.9567, outside the tolerances.",
+      "explanation": "With momentum 0.9 and a constant learning rate of 1.0, the seed 0 run prints a loss of 0.2821 and an accuracy of 0.8767 at epoch 10000, against 0.1209 and 0.9567 with the decay of post 23 left in (section 7). The script also prints a learning rate of 1.0000 at the last epoch instead of 0.0909, which confirms that the schedule is off. This is one seed: it shows that the two arguments act together in the class, not that decay always helps.",
+      "hints": [
+        "Only one argument of one constructor call changes; the label printed above the run stays the same.",
+        "The two numbers are on the line that begins with `epoch 10000` in the second block of output."
+      ]
+    },
+    {
+      "id": "nn-024-q11",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 4,
+      "tags": [
+        "update-order"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "One training step updates a single layer with the post's optimiser, created with a decay and a momentum that are both non-zero. The layer has never been updated before. Put the operations in the order in which they happen.",
+      "items": [
+        {
+          "key": "a",
+          "text": "The new velocity is computed as `momentum` times the buffer minus the current learning rate times the gradient."
+        },
+        {
+          "key": "b",
+          "text": "The step counter `iterations` is increased by one."
+        },
+        {
+          "key": "c",
+          "text": "The current learning rate is computed from the initial rate, the decay and the step counter."
+        },
+        {
+          "key": "d",
+          "text": "The new velocity is stored in the layer's buffer and added to the layer's parameters."
+        },
+        {
+          "key": "e",
+          "text": "Buffers full of zeros are attached to the layer."
+        }
+      ],
+      "answer": [
+        "c",
+        "e",
+        "a",
+        "d",
+        "b"
+      ],
+      "partial_credit": true,
+      "explanation": "Sections 5 and 6: `pre_update_params` sets the current learning rate before any layer is touched. Inside `update_params` the buffers are created if the layer has none, the new velocity is computed from the old one and the gradient, and it is stored and added to the parameters. `post_update_params` counts the step last, once, after every layer has been updated. Each operation reads something the one before it produced, so no other order works.",
+      "hints": [
+        "The three calls of the contract come in a fixed order; three of the five operations are inside the middle call."
+      ]
+    },
+    {
+      "id": "nn-024-q12",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "10",
+      "est_minutes": 5,
+      "tags": [
+        "symptoms",
+        "diagnosis"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Each symptom was produced on the post's ravine by one mistake in the use of momentum. Match each symptom to its cause.",
+      "left": [
+        {
+          "key": "a",
+          "text": "With `momentum=0.9` the path is identical, to the last digit, to the path with `momentum=0.0`."
+        },
+        {
+          "key": "b",
+          "text": "The loss is thousands of times larger after one step and keeps growing."
+        },
+        {
+          "key": "c",
+          "text": "The first step of a new run, with a new optimiser object, is not $-\\alpha g$."
+        },
+        {
+          "key": "d",
+          "text": "After 2,000 steps on a quadratic surface the loss still swings up to above its starting value."
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "The momentum coefficient is 1."
+        },
+        {
+          "key": "q",
+          "text": "The buffers are set to zeros in every call of `update_params`."
+        },
+        {
+          "key": "r",
+          "text": "The velocity line is `v = beta * v + g` and the update line is `weights += v`."
+        },
+        {
+          "key": "s",
+          "text": "The layer object still carries the buffer of an earlier run."
+        },
+        {
+          "key": "t",
+          "text": "The decay is so large that the learning rate is almost zero."
+        },
+        {
+          "key": "u",
+          "text": "The optimiser was created with the default `momentum=0.0`."
+        }
+      ],
+      "answer": {
+        "a": "q",
+        "b": "r",
+        "c": "s",
+        "d": "p"
+      },
+      "explanation": "Section 10 measures all four. Zeroing the buffers in every call reproduces the path without momentum exactly. A velocity line that adds the gradient, paired with an update that adds the velocity, climbs: the loss goes from 100 to 510,250 in one step. A buffer left on a reused layer makes the first step of the next run 0.9 times a foreign velocity plus the gradient step. A coefficient of 1 forgets nothing, so the loss keeps swinging. A decay that is too large and a `momentum` of 0.0 produce none of these four symptoms.",
+      "hints": [
+        "For each symptom, ask what the buffer held when the velocity line read it, and with which sign the result was applied."
+      ]
+    },
+    {
+      "id": "nn-024-q13",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 12,
+      "tags": [
+        "cancellation",
+        "explain"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Two consecutive gradient-descent steps on the post's ravine are $(-0.19, -1.90)$ and $(-0.1864, +1.71)$, written as (along the floor, across the ravine). Use these two steps to explain what momentum with $\\beta = 0.9$ does to the second step, component by component, and state from the post's 100-step measurement what momentum does and does not change about the path.",
+      "kind": "explain",
+      "solution": "The first step with momentum equals the first gradient step, $(-0.19, -1.90)$, because the velocity starts at zero. The second step is $\\beta$ times the first step plus the new gradient step: $0.9 \\cdot (-0.19, -1.90) + (-0.1864, +1.71) = (-0.171 - 0.1864, \\; -1.71 + 1.71) = (-0.3574, 0)$.\n\nAcross the ravine the two contributions have opposite signs, because the first step crossed the floor and the second gradient points back at the wall just left. They cancel, here exactly. Along the floor the two contributions have the same sign, because the slope of the floor has not changed, so they add: the along part is $-0.3574$, nearly twice a single step. Plain gradient descent would take the second step in full, $(-0.1864, +1.71)$, and throw the point back to the other wall.\n\nOver 100 steps the post measures a loss of 0.0027 with momentum against 1.0784 without. The gain is along the floor: $x$ falls from 10 to 0.0523 instead of 1.4686. Momentum does not remove the bounce: the across step reverses 49 times instead of 99, but the distance travelled across is nearly the same (18.902 against 18.999) and the remaining $|y|$ is larger with momentum. What changes is that the agreement between consecutive steps is used, not that the disagreement disappears.",
+      "rubric": [
+        {
+          "criterion": "Writes the second step with momentum as $\\beta$ times the first step plus the second gradient step",
+          "points": 2
+        },
+        {
+          "criterion": "Shows that the across parts have opposite signs and cancel, with the numbers $-1.71$ and $+1.71$",
+          "points": 2
+        },
+        {
+          "criterion": "Shows that the along parts have the same sign and add to about twice one step",
+          "points": 2
+        },
+        {
+          "criterion": "States that the measured gain over 100 steps is along the floor (lower loss, smaller $x$)",
+          "points": 1
+        },
+        {
+          "criterion": "States that the bounce is not removed: the travel across the ravine is almost unchanged",
+          "points": 1
+        }
+      ],
+      "answer_length": "two paragraphs",
+      "explanation": "Section 2: the velocity of the second step is 0.9 times the first step plus the new gradient step. The across parts oppose each other and cancel; the along parts agree and add. Over 100 steps the gain is along the floor, while the travel across the ravine is almost unchanged.",
+      "hints": [
+        "Write the second step with momentum as $\\beta$ times the first step plus the second gradient step, one component at a time.",
+        "For the second half, compare $x$, $|y|$ and the distance travelled across in the two rows of the post's 100-step table."
+      ]
+    },
+    {
+      "id": "nn-024-q14",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "8",
+      "est_minutes": 15,
+      "tags": [
+        "decay",
+        "effective-step"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The learning-rate schedule of post 23 and the momentum coefficient of this post both change how far a step goes. Explain how the two combine in the post's class: give the size that the step along a constant gradient approaches for a current rate $\\alpha_t$ and a coefficient $\\beta$, say what this implies for raising $\\beta$ from 0.9 to 0.99 at an initial learning rate of 1.0, say which learning rate multiplies a gradient that entered the velocity several steps ago, and say how the other convention, $u \\leftarrow \\beta u + g$ with $\\theta \\leftarrow \\theta - \\alpha u$, treats that same gradient.",
+      "kind": "connect",
+      "solution": "1. In the post's class the velocity is $v_t = \\beta v_{t-1} - \\alpha_t g_t$, where $\\alpha_t = \\alpha_0/(1 + d \\cdot t)$ is the current rate of post 23, computed in `pre_update_params` before any layer is updated.\n2. If the gradient keeps the value $g$ and the rate changes slowly, the velocity is close to the geometric series $\\alpha_t g (1 + \\beta + \\beta^2 + \\dots)$, which approaches $\\alpha_t g/(1 - \\beta)$. The step along a consistent direction is therefore up to $1/(1 - \\beta)$ times a plain gradient step: 10 times at $\\beta = 0.9$ and 100 times at $\\beta = 0.99$.\n3. The two hyperparameters therefore act as a product. A learning rate of 1.0 that was chosen for plain steps allows steps of up to 10 at $\\beta = 0.9$ and up to 100 at $\\beta = 0.99$. Raising $\\beta$ at a fixed rate lengthens the step tenfold, which is consistent with the post's sweep: at 0.99 the accuracy is below the decay-only run in all five seeds. A larger $\\beta$ usually needs a smaller $\\alpha_0$.\n4. The decay of post 23 works against this growth, because it lowers $\\alpha_t$ over time, but slowly: with $d = 10^{-3}$ the rate has only halved after 1,000 steps.\n5. Unrolled, $v_t = -\\alpha_t g_t - \\beta \\alpha_{t-1} g_{t-1} - \\beta^2 \\alpha_{t-2} g_{t-2} - \\dots$. A gradient that entered $k$ steps ago is multiplied by $\\beta^k$ and by the rate of its own step, $\\alpha_{t-k}$, not by the current rate. Under decay the old contributions therefore carry larger rates than a new one. In the other convention, $u \\leftarrow \\beta u + g$ and $\\theta \\leftarrow \\theta - \\alpha_t u$, the whole history is multiplied by the current rate, which is why the two conventions agree only at a constant rate.",
+      "rubric": [
+        {
+          "criterion": "States the rule with the current rate $\\alpha_t$ of nn-023 inside the velocity",
+          "points": 1
+        },
+        {
+          "criterion": "Derives or states the limit $\\alpha_t g/(1 - \\beta)$ for a constant gradient",
+          "points": 2
+        },
+        {
+          "criterion": "Concludes that 0.99 allows a step ten times longer than 0.9 at the same rate, and that a larger $\\beta$ calls for a smaller learning rate",
+          "points": 2
+        },
+        {
+          "criterion": "States that an old gradient is multiplied by $\\beta^k$ and by the rate of its own step, not by the current rate",
+          "points": 2
+        },
+        {
+          "criterion": "Notes that the other convention rescales the whole history by the current rate, so the two differ under decay",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Sections 3, 3.1 and 8: a consistent step grows towards $\\alpha/(1 - \\beta)$, so $\\beta$ and the learning rate are not independent, and 0.99 allows a step ten times longer than 0.9 does. In the post's convention each gradient enters the velocity scaled by the rate of its own step.",
+      "hints": [
+        "Start from the geometric series of the velocity under a constant gradient.",
+        "For the last part, unroll $v_t = \\beta v_{t-1} - \\alpha_t g_t$ for two or three steps and look at the factor in front of an old gradient."
+      ],
+      "connects": [
+        "nn-023"
+      ]
+    },
+    {
+      "id": "nn-024-q15",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "7",
+      "est_minutes": 12,
+      "tags": [
+        "seed-spread",
+        "evidence"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A report trains the post's network once, with seed 0, and concludes: \"Momentum raises the accuracy on the spiral from 64.7 to 95.7 percent and makes the loss curve smooth.\" Assess both halves of the sentence against the post's five-seed measurements, and rewrite the claim so that the measurements support it.",
+      "kind": "critique",
+      "solution": "The first half reports one seed as if it were the result. The numbers 64.7 and 95.7 percent are correct for seed 0, and seed 0 is one of the two best of the five. Over seeds 0 to 4 the accuracy with `momentum=0.9` ranges from 68.7 to 98.0 percent, against 58.0 to 69.3 without, and on seed 1 it is slightly lower with momentum (68.7 against 69.3). What does hold in every seed is that momentum ends with the lower loss (0.0865 to 0.5986 against 0.7310 to 0.9107) and is far ahead after 1,000 epochs.\n\nThe second half is not supported. The number of epochs in which the loss rose is lower with momentum on two seeds and higher on three, and the peak loss with momentum is above the starting loss of 1.0986 on every seed, up to 4.690, while the run without momentum never exceeds its starting loss. What momentum does reduce, in four seeds of five, is the number of steps that point against the step before; that is a statement about the direction of the steps, not about the smoothness of the loss curve.\n\nA supported version: \"With the same learning rate, decay and number of epochs, adding `momentum=0.9` gave a lower final loss in each of five seeds and a higher accuracy in four; the accuracy ranged from 68.7 to 98.0 percent against 58.0 to 69.3. The loss curve is not smoother: every momentum run had a spike above its starting loss.\"",
+      "rubric": [
+        {
+          "criterion": "Identifies that the accuracy claim rests on a single seed and gives the five-seed range or the seed on which accuracy is lower",
+          "points": 2
+        },
+        {
+          "criterion": "States what holds in all five seeds: the lower final loss with momentum",
+          "points": 2
+        },
+        {
+          "criterion": "Rejects the smoothness claim with the count of loss rises or the peak loss above the starting loss",
+          "points": 2
+        },
+        {
+          "criterion": "Rewrites the claim with ranges or counts over seeds instead of one run",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 7: over five seeds momentum ends with the lower loss every time, but the accuracy ranges from 68.7 to 98.0 percent and is slightly lower than without momentum on one seed. The loss rose in more epochs with momentum on three seeds of five, and its peak loss exceeded the starting loss on every seed.",
+      "hints": [
+        "Separate what holds in all five seeds from what holds in some of them.",
+        "For the second half, look at the columns that count the epochs in which the loss rose and the peak loss."
+      ]
+    },
+    {
+      "id": "nn-024-q16",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "10",
+      "est_minutes": 3,
+      "tags": [
+        "spike",
+        "diagnosis"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A run with `momentum=0.9` has brought the loss from 1.10 down to about 0.45. Several hundred epochs later the loss jumps above 4, and then falls again to below its earlier value. The same script with `momentum=0.0` never rises above 1.10. Which reading fits the post's measurements?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The backward pass is wrong, since a step along a correctly computed gradient can never raise the loss.",
+          "correct": false,
+          "feedback": "A correct gradient guarantees a fall only for a small enough step. The same backward pass with `momentum=0.0` behaves, and the post's correct runs show the same spikes."
+        },
+        {
+          "key": "b",
+          "text": "The accumulated velocity carried the parameters past a turn of the surface; with momentum that is expected.",
+          "correct": true,
+          "feedback": "All five of the post's momentum runs peak above their starting loss and all recover."
+        },
+        {
+          "key": "c",
+          "text": "The velocity buffers were recreated at that epoch, which reset the optimiser and threw the parameters off.",
+          "correct": false,
+          "feedback": "Recreated buffers turn the optimiser into plain gradient descent, which in this setup never rises above the starting loss. They cannot cause a spike."
+        },
+        {
+          "key": "d",
+          "text": "The decay schedule raised the learning rate at that epoch, which made the steps that followed too long.",
+          "correct": false,
+          "feedback": "The schedule $\\alpha_0/(1 + d \\cdot t)$ only ever lowers the learning rate as the step counter grows."
+        }
+      ],
+      "explanation": "Section 10: a velocity that has built up keeps going when the surface turns. In the post's five seeds the run with momentum peaks between 1.476 and 4.690 while the run without never exceeds its starting loss, and every one of the momentum runs recovers. A spike that does not recover would point to a step limit $\\alpha/(1 - \\beta)$ that is too large.",
+      "hints": [
+        "Ask which quantity is large just before the spike although the current gradient need not be.",
+        "Check whether the post's own momentum runs ever exceed their starting loss."
+      ]
+    },
+    {
+      "id": "nn-024-q17",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "default-argument"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The post's `Optimizer_SGD` is created without a `momentum` argument. What does `update_params` do?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It raises an `AttributeError` on the first call, because the layer has no velocity buffer yet.",
+          "correct": false,
+          "feedback": "The buffer is only read inside the branch that the guard protects. Without momentum that branch never runs."
+        },
+        {
+          "key": "b",
+          "text": "It falls back on a momentum coefficient of 0.9, the customary value, and creates the buffers.",
+          "correct": false,
+          "feedback": "The default in the constructor is 0.0. A coefficient of 0.9 has to be passed explicitly."
+        },
+        {
+          "key": "c",
+          "text": "It takes the plain step, minus the current learning rate times the gradient; no buffer is made.",
+          "correct": true,
+          "feedback": "The guard is false for 0.0, so the `else` branch runs: the update of the decay-only optimiser."
+        },
+        {
+          "key": "d",
+          "text": "It creates buffers of zeros and adds them to the weights, so the weights do not change at all.",
+          "correct": false,
+          "feedback": "No buffer is created without momentum, and the weights do change: the `else` branch applies the plain gradient step."
+        }
+      ],
+      "explanation": "Section 5: the default is `momentum=0.0`, and the guard `if self.momentum:` is false for it. No buffer is created, and the update is minus the current learning rate times the gradient, which is the optimiser of the previous post with its decay schedule intact.",
+      "hints": [
+        "Look at the default value in the constructor and at the first line of `update_params`."
+      ]
+    },
+    {
+      "id": "nn-024-q18",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "3.1",
+      "est_minutes": 8,
+      "tags": [
+        "conventions",
+        "decay",
+        "hand-computation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A parameter starts at $\\theta_0 = 1.0$. Its gradient is $g_1 = 4$ at the first step and $g_2 = 2$ at the second. The learning rate is $0.1$ at the first step and $0.05$ at the second, and $\\beta = 0.5$; both buffers start at zero. Give $\\theta_2$ under the post's convention ($v \\leftarrow \\beta v - \\alpha g$, $\\theta \\leftarrow \\theta + v$) and under the other convention ($u \\leftarrow \\beta u + g$, $\\theta \\leftarrow \\theta - \\alpha u$).",
+      "answer": {
+        "parts": [
+          {
+            "label": "theta_2, post's convention",
+            "value": 0.3,
+            "tolerance": 0.005,
+            "unit": ""
+          },
+          {
+            "label": "theta_2, other convention",
+            "value": 0.4,
+            "tolerance": 0.005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Both rules of section 3.1 iterated twice in Python: 0.3 and 0.4. With a constant rate of 0.1 both give 0.2, outside both tolerances.",
+      "explanation": "Section 3.1. Post's convention: $v_1 = -0.4$, $\\theta_1 = 0.6$; $v_2 = 0.5 \\cdot (-0.4) - 0.05 \\cdot 2 = -0.3$, $\\theta_2 = 0.3$. Other convention: $u_1 = 4$, $\\theta_1 = 0.6$; $u_2 = 0.5 \\cdot 4 + 2 = 4$, $\\theta_2 = 0.6 - 0.05 \\cdot 4 = 0.4$. The first keeps the old gradient at its old rate of 0.1; the second rescales it by the new rate of 0.05. With a constant rate of 0.1 both give 0.2.",
+      "hints": [
+        "The first step is the same in both conventions.",
+        "In the second step, check which learning rate multiplies the contribution of $g_1$ in each convention."
+      ]
+    }
+  ]
+}
