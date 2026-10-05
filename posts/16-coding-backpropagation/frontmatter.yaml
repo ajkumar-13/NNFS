@@ -1,8 +1,23 @@
 id: nn-016
 slug: 16-coding-backpropagation
-title: "Part 16 · Coding backpropagation"
+title: "16 - Coding backpropagation"
+summary: "The gradient formulas of posts 13 to 15 become a backward method on the dense layer and on ReLU: three NumPy lines and a masked copy, each fed by an array cached in the forward pass and checked against central differences."
 date: 2026-05-28
-tags: [neural-networks, from-scratch, backpropagation, code]
+updated: 2026-10-05
+status: complete
+part: "Part V - Backpropagation"
+level: intermediate
+reading_time: 21
+tags: [neural-networks, from-scratch, backpropagation, code, gradient-check]
 hero: diagrams/01-dense-backward-class.svg
-reading_time: 10
-part: "Part V — Backpropagation"
+prerequisites: [nn-014, nn-015]
+code: included
+outcomes:
+  - id: o1
+    text: "Implement Layer_Dense.backward(dvalues) in three NumPy lines and explain what each line computes."
+  - id: o2
+    text: "Implement Activation_ReLU.backward(dvalues) as a masked copy of the upstream gradient."
+  - id: o3
+    text: "Name what each layer caches in forward and say why its backward method needs it."
+recommended: [nn-004]
+compute: cpu

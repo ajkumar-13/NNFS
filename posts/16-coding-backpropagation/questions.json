@@ -1,0 +1,843 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-016",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-016-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 2,
+      "tags": [
+        "dweights",
+        "transpose"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`Layer_Dense` stores its weights with shape `(n_inputs, n_neurons)` and has cached a batch `self.inputs` of shape `(N, n_inputs)`. Which line of `backward` computes the weight gradient from `dvalues`, of shape `(N, n_neurons)`?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`self.dweights = np.dot(self.inputs, dvalues)`",
+          "correct": false,
+          "feedback": "The shapes are $(N, n_\\text{inputs})$ and $(N, n_\\text{neurons})$; the inner sizes do not match unless the batch happens to have $n_\\text{inputs}$ samples, and then the numbers are wrong."
+        },
+        {
+          "key": "b",
+          "text": "`self.dweights = np.dot(dvalues.T, self.inputs)`",
+          "correct": false,
+          "feedback": "This is the line of the row-per-neuron layout of posts 13 and 14. Its result has shape $(n_\\text{neurons}, n_\\text{inputs})$, the transpose of the weights this class stores."
+        },
+        {
+          "key": "c",
+          "text": "`self.dweights = np.dot(self.inputs.T, dvalues)`",
+          "correct": true,
+          "feedback": "Right: $(n_\\text{inputs}, N) \\cdot (N, n_\\text{neurons})$ gives $(n_\\text{inputs}, n_\\text{neurons})$, the shape of the weights, with the batch axis summed inside the product."
+        },
+        {
+          "key": "d",
+          "text": "`self.dweights = self.inputs * dvalues`",
+          "correct": false,
+          "feedback": "`*` multiplies element by element. The weight gradient pairs every input with every neuron and sums over the batch, which is a matrix product."
+        }
+      ],
+      "explanation": "Section 1 lists the three lines in the layout of `Layer_Dense`. The weight gradient is $\\mathbf{X}^{\\top}$ times the upstream gradient: the transpose puts the batch axis on the inside of the product, where it is summed, and leaves a result with the shape of the weights. Section 2.1 explains why the row-per-neuron form of posts 13 and 14 is the transpose of it.",
+      "hints": [
+        "A gradient has the shape of the array it updates; work out the shape each candidate produces."
+      ]
+    },
+    {
+      "id": "nn-016-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 2,
+      "tags": [
+        "dbiases",
+        "batch"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`Layer_Dense.backward` computes `self.dbiases = np.sum(dvalues, axis=0, keepdims=True)`. Why is the upstream gradient added up over axis 0?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Because the loss is an average over the batch, and this sum, followed by a division by the batch size in the optimiser, produces that average.",
+          "correct": false,
+          "feedback": "Neither a layer nor the optimiser divides by the batch size. Where the loss is a mean, the factor $1/N$ is already inside `dvalues` when it arrives."
+        },
+        {
+          "key": "b",
+          "text": "Because each bias is added to every sample's pre-activation with the factor 1, so each sample contributes its upstream value.",
+          "correct": true,
+          "feedback": "Right: one bias reaches the loss through $N$ pre-activations, and the chain rule adds one term per path. Each term is the upstream value times 1."
+        },
+        {
+          "key": "c",
+          "text": "Because the biases start at zero, so their gradient has to be built up from the whole batch.",
+          "correct": false,
+          "feedback": "The initial value of a parameter plays no part in the formula for its gradient. The sum would be the same for any biases."
+        },
+        {
+          "key": "d",
+          "text": "Because `dvalues` has to be reduced to the shape `(N, 1)` before it can be subtracted from the biases.",
+          "correct": false,
+          "feedback": "Axis 0 is the batch axis, so the sum removes $N$ and leaves `(1, n_neurons)`. A result of shape `(N, 1)` would come from `axis=1`, a sum over the neurons."
+        }
+      ],
+      "explanation": "Section 1 reads the line as a sum over the batch because a bias enters every sample's pre-activation with the constant factor 1. Post 14 derives it: $\\partial L / \\partial b_k = \\sum_i \\partial L / \\partial z_{ik}$. Axis 0 is the batch axis, and `keepdims=True` keeps the result in the `(1, n_neurons)` shape of the biases (section 2).",
+      "hints": [
+        "Count the pre-activations in a batch of $N$ samples that one bias takes part in."
+      ]
+    },
+    {
+      "id": "nn-016-q03",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "relu",
+        "mask"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "An `Activation_ReLU` has run `forward` on the inputs `[[2.0, -1.0, 0.0]]`. Its `backward` is then called with `dvalues = [[4.0, 5.0, 6.0]]`. What does `self.dinputs` hold?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`[[4.0, 0.0, 6.0]]`",
+          "correct": false,
+          "feedback": "This masks with `< 0`. The class masks with `<= 0`, so the gradient at an input of exactly 0 is dropped as well."
+        },
+        {
+          "key": "b",
+          "text": "`[[8.0, 0.0, 0.0]]`",
+          "correct": false,
+          "feedback": "This multiplies the gradient by the forward output. ReLU's local derivative is 1 where the gate is open, so an open gate passes the gradient unchanged."
+        },
+        {
+          "key": "c",
+          "text": "`[[1.0, 0.0, 0.0]]`",
+          "correct": false,
+          "feedback": "This is the local derivative of ReLU by itself. `backward` returns the upstream gradient multiplied by it, not the derivative alone."
+        },
+        {
+          "key": "d",
+          "text": "`[[4.0, 0.0, 0.0]]`",
+          "correct": true,
+          "feedback": "Right: the gradient passes unchanged where the cached input was positive and is replaced by 0 where it was negative or exactly 0."
+        }
+      ],
+      "explanation": "Section 4 defines the backward step as $\\partial L / \\partial z = \\partial L / \\partial a \\cdot \\mathbb{1}[z > 0]$ and implements it as a copy of `dvalues` with zeros written where `self.inputs <= 0`. Only the first input is positive, so only the 4 survives. Section 8 runs the case of an input that is exactly 0.",
+      "hints": [
+        "Decide for each position whether the cached input was positive."
+      ]
+    },
+    {
+      "id": "nn-016-q04",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "8",
+      "est_minutes": 4,
+      "tags": [
+        "cache",
+        "stale-inputs"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A training step calls `dense1.forward(X_train)` and computes the loss. Before the backward pass, the same layer is used to score a validation batch of the same shape with `dense1.forward(X_val)`. Then `dense1.backward(dvalues)` runs with the gradient that belongs to the training batch. What is the result?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`dweights` has the right shape and the wrong numbers, and no error is raised.",
+          "correct": true,
+          "feedback": "Right: the layer holds one set of cached inputs, those of its latest `forward`, and `backward` multiplies whatever is there by the gradient it is given."
+        },
+        {
+          "key": "b",
+          "text": "An `AttributeError`, because the cache was invalidated by the second `forward` call.",
+          "correct": false,
+          "feedback": "Nothing invalidates the cache. The second call simply rebinds `self.inputs` to the validation batch. An `AttributeError` appears only when `forward` has never run."
+        },
+        {
+          "key": "c",
+          "text": "The correct training gradient, because `dvalues` was computed from the training batch and carries the information needed.",
+          "correct": false,
+          "feedback": "`dvalues` is only one of the two factors. The weight gradient is the cached inputs, transposed, times `dvalues`, and the cached inputs are now the validation batch."
+        },
+        {
+          "key": "d",
+          "text": "A `ValueError` from `np.dot`, because the cached inputs and `dvalues` come from different batches.",
+          "correct": false,
+          "feedback": "NumPy checks shapes, not origins. Both batches have the same shape, so the product is computed without complaint."
+        }
+      ],
+      "explanation": "Section 5 states the rule: a layer keeps the inputs of its most recent `forward` call only, so every `backward` belongs to the `forward` immediately before it. Section 8 runs this mistake and prints a weight gradient of the right shape whose numbers pair the second batch with the first batch's upstream gradient.",
+      "hints": [
+        "Ask what `self.inputs` refers to when `backward` starts.",
+        "Then ask whether anything in `np.dot(self.inputs.T, dvalues)` can tell that the two factors come from different batches."
+      ]
+    },
+    {
+      "id": "nn-016-q05",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4.1",
+      "est_minutes": 3,
+      "tags": [
+        "copy",
+        "alias"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A ReLU `backward` is written as `self.dinputs = dvalues` followed by `self.dinputs[self.inputs <= 0] = 0`. Which test exposes the mistake?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Comparing `self.dinputs` with the expected masked gradient.",
+          "correct": false,
+          "feedback": "`self.dinputs` holds exactly the right numbers in both versions, so this comparison passes with or without the copy."
+        },
+        {
+          "key": "b",
+          "text": "Comparing the shape of `self.dinputs` with the shape of `self.inputs`.",
+          "correct": false,
+          "feedback": "The shapes agree in both versions. An alias has the shape of the array it names."
+        },
+        {
+          "key": "c",
+          "text": "Running `backward` twice and checking that the second result equals the first.",
+          "correct": false,
+          "feedback": "The second call masks an array that is already masked at the same places, so it returns the same numbers again."
+        },
+        {
+          "key": "d",
+          "text": "Comparing the array passed in with a copy of it made before the call.",
+          "correct": true,
+          "feedback": "Right: without `.copy()` the method writes its zeros into the caller's array, so that array no longer equals what was passed in."
+        }
+      ],
+      "explanation": "Section 4.1 explains that `self.dinputs = dvalues` gives a second name to the caller's array instead of creating one, so the masking line changes the array the caller still holds. Section 8 runs both versions: `dinputs` is `[[5. 0. 7.]]` in each, and only the caller's array differs, `[[5. 6. 7.]]` with the copy and `[[5. 0. 7.]]` without.",
+      "hints": [
+        "Work out which arrays exist after the first line, and which names refer to each."
+      ]
+    },
+    {
+      "id": "nn-016-q06",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 8,
+      "tags": [
+        "dense-backward",
+        "hand-computation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A `Layer_Dense(2, 2)` has weights `[[1.0, 2.0], [3.0, 4.0]]`. It runs `forward` on `X = [[1.0, 2.0], [3.0, -1.0]]` and then `backward` with `dvalues = [[1.0, 0.0], [2.0, 1.0]]`. Counting rows and columns from 1, give the entry of `dweights` in row 1, column 2, the entry of `dweights` in row 2, column 1, the second entry of `dbiases`, and the entry of `dinputs` in row 2, column 2.",
+      "answer": {
+        "parts": [
+          {
+            "label": "dweights row 1, column 2",
+            "value": 3,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "dweights row 2, column 1",
+            "value": 0,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "dbiases, second entry",
+            "value": 1,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "dinputs row 2, column 2",
+            "value": 10,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form, the three lines of Layer_Dense.backward: dweights = X.T dvalues = [[7, 3], [0, -1]], dbiases = [[3, 1]], dinputs = dvalues W.T = [[1, 3], [4, 10]]. Recomputed with the class of snippets/backward_classes.py.",
+      "explanation": "With the three lines of section 2: `dweights` is $\\mathbf{X}^{\\top}$ times `dvalues`, so its row 1, column 2 entry pairs input 1 with neuron 2 over the batch, $1 \\cdot 0 + 3 \\cdot 1 = 3$, and its row 2, column 1 entry pairs input 2 with neuron 1, $2 \\cdot 1 + (-1) \\cdot 2 = 0$. `dbiases` sums each column of `dvalues`, giving $[3, 1]$. `dinputs` is `dvalues` times $\\mathbf{W}^{\\top}$, so its row 2, column 2 entry is $2 \\cdot 3 + 1 \\cdot 4 = 10$. Section 3 follows the same steps on the batch of post 14.",
+      "hints": [
+        "Write down the shape of each of the three results before computing any entry.",
+        "Entry $(j, k)$ of `dweights` sums, over the samples, input $j$ times the upstream value of neuron $k$; entry $(i, j)$ of `dinputs` sums, over the neurons, the upstream value of sample $i$ times the weight from input $j$ to that neuron."
+      ]
+    },
+    {
+      "id": "nn-016-q07",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 4,
+      "tags": [
+        "shapes",
+        "predict-output"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The class is the `Layer_Dense` of the post. Predict the three numbers that the last line prints.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "layer = Layer_Dense(5, 7)\nlayer.forward(np.ones((10, 5)))\nlayer.backward(np.ones((10, 7)))\nprint(layer.dweights[0, 0], layer.dbiases[0, 0], layer.dinputs.size)\n"
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "dweights[0, 0]",
+            "value": 10,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "dbiases[0, 0]",
+            "value": 10,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "dinputs.size",
+            "value": 50,
+            "tolerance": 0,
+            "unit": "entries"
+          }
+        ]
+      },
+      "precision_note": "Run with the Layer_Dense class of snippets/backward_classes.py: prints 10.0 10.0 50. Neither of the first two values depends on the random weights.",
+      "explanation": "Every entry of `dweights` sums, over the 10 samples, an input of 1 times an upstream value of 1, which is 10. Every entry of `dbiases` sums a column of ten 1s, also 10. `dinputs` has the shape of the inputs, $(10, 5)$, so it has 50 entries; their values depend on the random weights, their number does not. Section 2 gives the three lines and the shape each one produces.",
+      "hints": [
+        "Two of the three results sum over the batch; the third keeps one row per sample."
+      ]
+    },
+    {
+      "id": "nn-016-q08",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 1,
+      "tags": [
+        "cache"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Which array must `Layer_Dense.forward` keep on the layer so that `backward` can compute `dweights`?",
+      "answer": {
+        "model": "The inputs it received, stored as self.inputs.",
+        "accept": [
+          "^\\s*(?:(?:it|forward|the\\s+layer)\\s+)?(?:(?:must|has\\s+to|should|needs\\s+to)\\s+)?(?:(?:keep|cache|store|save)s?\\s+)?(?:(?:the|its|a|that)\\s+)?(?:(?:whole\\s+)?(?:batch|array|matrix)\\s+of\\s+)?(?:(?:cached|layer's|same|original|forward)\\s+)*(?:self\\.)?(?:inputs?(?:\\.T)?|x)\\b(?!\\s*(?:,|and|or|/|\\+|\\s)\\s*(?:(?:the|its)\\s+)?(?:self\\.)?(?:outputs?|weights|biases|dvalues|dinputs|dweights|dbiases|(?:upstream\\s+)?gradients?)\\b)(?!\\s+(?:is|are)\\s+not\\b)(?!\\s+(?:isn't|aren't)\\b)|^\\s*(?:(?:the|its)\\s+)?(?:batch|data|array)\\s+(?:(?:that\\s+)?(?:it|forward|the\\s+layer)\\s+(?:was\\s+given|received|saw|was\\s+passed|was\\s+handed)|(?:passed|given|fed|handed)\\s+(?:in)?to\\s+(?:it|forward|the\\s+layer))\\b",
+          "^(?![\\s\\S]*\\b(?:not|never|neither|nor|isn't|weights|biases|dvalues|dinputs|dweights|dbiases)\\b)[\\s\\S]*\\b(?:outputs?|activations?)\\s+of\\s+the\\s+(?:previous|preceding|earlier)\\s+(?:layer|component)\\b",
+          "^(?![\\s\\S]*\\b(?:not|never|neither|nor|isn't|weights|biases|dvalues|dinputs|dweights|dbiases)\\b)[\\s\\S]*\\b(?:previous|preceding|earlier)\\s+(?:layer|component)(?:'s)?\\s+(?:outputs?|activations?)\\b"
+        ]
+      },
+      "explanation": "Section 5 lists what each class caches. The weight gradient is the transposed inputs times the upstream gradient, and `forward` has returned long before `backward` runs, so `forward` stores the batch it was given as `self.inputs`. The weights are needed too, for `dinputs`, but they are already on the layer.",
+      "hints": [
+        "Look at the two factors of the first line of `backward` and ask which of them arrives as an argument."
+      ]
+    },
+    {
+      "id": "nn-016-q09",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "8",
+      "est_minutes": 1,
+      "tags": [
+        "cache",
+        "exception"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A new `Layer_Dense` is created and `backward` is called on it at once, before any `forward`. Which Python exception type is raised?",
+      "answer": {
+        "model": "AttributeError: the layer has no attribute inputs yet.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:no|not|never|isn't|without|rather\\s+than|instead\\s+of)\\s+(?:an?\\s+|the\\s+|any\\s+)?attribute\\s*error)(?:(?!\\b(?:value|type|key|index|name|runtime|import|assertion|zerodivision|shape)\\s*error\\b)[\\s\\S])*?\\battribute\\s*error\\b(?![\\s\\S]*\\b(?:or|and)\\s+(?:an?\\s+|then\\s+an?\\s+)?(?:value|type|key|index|name|runtime|import|assertion|zerodivision|shape)\\s*error\\b)"
+        ]
+      },
+      "explanation": "Section 8 runs the call: `AttributeError: 'Layer_Dense' object has no attribute 'inputs'`. The cache is created by the assignment `self.inputs = inputs` inside `forward`, so until `forward` has run once the first line of `backward` looks up an attribute that does not exist. Leaving that assignment out of `forward` gives the same error.",
+      "hints": [
+        "The first line of `backward` reads `self.inputs`. Ask where that name is first assigned."
+      ]
+    },
+    {
+      "id": "nn-016-q10",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 12,
+      "tags": [
+        "dense-backward",
+        "shapes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A `Layer_Dense(2, 64)` receives a batch of 300 samples. For each of the three lines of its `backward`, give the shapes of the two operands and of the result, and say in one or two sentences what the line computes and who reads the result.",
+      "kind": "explain",
+      "solution": "The cached inputs have shape $(300, 2)$, the weights $(2, 64)$, and `dvalues` has the shape of the layer's output, $(300, 64)$.\n\n1. `self.dweights = np.dot(self.inputs.T, dvalues)`: $(2, 300) \\cdot (300, 64) \\rightarrow (2, 64)$. Entry $(j, k)$ adds, over the 300 samples, input $j$ times the upstream gradient of neuron $k$. The batch axis is the inner axis of the product, so the sum over samples needs no loop. The result has the shape of the weights and is read by the optimiser.\n2. `self.dbiases = np.sum(dvalues, axis=0, keepdims=True)`: $(300, 64) \\rightarrow (1, 64)$. Each bias is added to all 300 pre-activations of its neuron with factor 1, so its gradient is the column sum of the upstream gradient. `keepdims=True` keeps the shape of the biases. It is read by the optimiser.\n3. `self.dinputs = np.dot(dvalues, self.weights.T)`: $(300, 64) \\cdot (64, 2) \\rightarrow (300, 2)$. Row $i$ adds, over the 64 neurons, the upstream gradient of sample $i$ times the weight that connects each input to that neuron. The batch axis is on the outside and survives, so there is one row per sample. The result has the shape of the inputs and is read by the component before the layer as its `dvalues`; for a first layer nothing reads it.",
+      "rubric": [
+        {
+          "criterion": "States the shapes of the cached inputs, the weights and dvalues correctly: (300, 2), (2, 64), (300, 64)",
+          "points": 1
+        },
+        {
+          "criterion": "Weight gradient: (2, 300) times (300, 64) gives (2, 64); pairs inputs with upstream gradients and sums over the batch",
+          "points": 2
+        },
+        {
+          "criterion": "Bias gradient: sum over axis 0 gives (1, 64); justified by the bias entering every sample with factor 1",
+          "points": 2
+        },
+        {
+          "criterion": "Input gradient: (300, 64) times (64, 2) gives (300, 2); sums over the neurons and keeps one row per sample",
+          "points": 2
+        },
+        {
+          "criterion": "Names the readers: the optimiser for dweights and dbiases, the previous component for dinputs",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 1 gives the one-sentence reading of each line and section 2.1 the shape arithmetic: $(n, N) \\cdot (N, m) \\rightarrow (n, m)$ for the weights and $(N, m) \\cdot (m, n) \\rightarrow (N, n)$ for the inputs. The two parameter gradients sum over the batch and have the shapes of their parameters; the input gradient keeps the batch axis because each sample has its own inputs.",
+      "hints": [
+        "Start from the shape of `dvalues`: it is the shape of the layer's output.",
+        "For each product, write the two shapes side by side and see which axis is on the inside; that axis is the one summed away."
+      ]
+    },
+    {
+      "id": "nn-016-q11",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 15,
+      "tags": [
+        "gradient-check",
+        "diagnosis"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A gradient check of a Dense, ReLU, Dense chain reports relative errors near $10^{-11}$ for `dense2.dweights` and `dense2.dbiases`, and near 1 for `dense1.dweights`, `dense1.dbiases` and `dense1.dinputs`. Every array has the right shape and no error was raised. Where can the bug be, where can it not be, and what should be inspected next? Then say how the diagnosis would change if instead a single entry of `dense1.dinputs` failed with a relative error of $10^{-6}$ and everything else passed.",
+      "kind": "critique",
+      "solution": "**Where it cannot be.** The forward pass is trusted by construction, since the numerical gradient uses nothing else. `dense2.dweights` and `dense2.dbiases` pass, so the first upstream gradient, `dense2`'s cached inputs and its first two lines are right.\n\n**Where it can be.** Everything computed after those two gradients in the backward order: the third line of `dense2.backward` (its `dinputs`), the ReLU's `backward`, or `dense1`. The failure of `dense1.dbiases` narrows it. That line is a column sum of the array `dense1` is handed and uses neither its cache nor its weights, so `activation1.dinputs` was already wrong when it arrived, unless all three lines of `dense1` are wrong independently. The bug is therefore in `dense2`'s `dinputs` line or in the ReLU. Typical causes with correct shapes are a ReLU `backward` that forgets the mask or masks from a stale or wrong array, and a `dinputs` line that uses the wrong weights (for a square layer, `self.weights` without the transpose). A stale cache in `dense1` is ruled out: it would spoil `dense1.dweights` alone.\n\n**What to inspect.** Compare `activation1.dinputs` with `dense2.dinputs`: they must be equal where `dense1.output` is positive and the former must be 0 elsewhere. If the ReLU is right, check `dense2.dinputs` against a central difference on `activation1.output`. Only if both pass is `dense1` read line by line.\n\n**The second case.** One entry failing at $10^{-6}$ while the rest agree to many digits is not this bug. A wrong backward step is wrong by a relative error of order 1 on most entries. The likely cause is an entry whose gradient is itself tiny, so that an ordinary rounding error of about $10^{-11}$ is divided by a very small number. Checking the absolute gap and the size of that entry confirms it. A step that crosses a ReLU corner is the other cause to rule out, by looking at the smallest pre-activation in size.",
+      "rubric": [
+        {
+          "criterion": "Uses the backward order: the passing gradients of dense2 clear the upstream gradient and dense2's first two lines",
+          "points": 2
+        },
+        {
+          "criterion": "Places the bug in dense2's dinputs line or the ReLU backward, using the failure of dense1.dbiases to clear dense1 and its cache, and names at least one concrete cause with correct shapes",
+          "points": 2
+        },
+        {
+          "criterion": "Proposes a concrete next inspection, such as comparing activation1.dinputs with dense2.dinputs under the mask",
+          "points": 2
+        },
+        {
+          "criterion": "Second case: identifies a tiny gradient entry divided into a rounding-size gap, not a bug, and says how to confirm it",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 7 runs this failure with a ReLU that forgets its mask: the two gradients of `dense2` still pass, because they are computed before the ReLU's `backward` is called, and the three gradients after it fail with errors of 1.0 to 1.8. The same section shows the other pattern on seed 2, where correct code reaches $4.8 \\times 10^{-6}$ on one entry of size $2.58 \\times 10^{-6}$ with an absolute gap of $1.2 \\times 10^{-11}$.",
+      "hints": [
+        "List the five gradients in the order the backward pass computes them.",
+        "A gradient that passes clears everything it was computed from. For the second case, compare the size of the failing entry with the size of the gap."
+      ]
+    },
+    {
+      "id": "nn-016-q12",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "8",
+      "est_minutes": 12,
+      "tags": [
+        "broadcasting",
+        "dbiases"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Use the broadcasting rules of post 05 to explain what happens to a layer's biases, of shape `(1, 3)`, under the update `biases = biases - 0.1 * dbiases` when the bias gradient of a `(2, 3)` upstream gradient is computed as (a) `np.sum(dvalues, axis=0)`, (b) `np.sum(dvalues)`, and (c) `np.sum(dvalues, axis=1, keepdims=True)`. For each, give the shape of `dbiases`, the shape of the updated biases, and whether the numbers are right.",
+      "kind": "connect",
+      "connects": [
+        "nn-005"
+      ],
+      "solution": "Broadcasting compares shapes from the last axis backwards, pads the shorter shape with 1s on the left, and stretches every axis of size 1.\n\n**(a)** `dbiases` has shape `(3,)`. Against `(1, 3)` it is padded to `(1, 3)`, so it acts as a row and lines up with the three biases. The updated biases have shape `(1, 3)` and the numbers are right. The only fault is that the gradient no longer has the shape of its parameter.\n\n**(b)** With no axis the sum runs over every entry and returns a single number, shape `()`. A scalar broadcasts against anything, so the update raises no error and the biases keep the shape `(1, 3)`. The numbers are wrong: every bias is moved by the total over all neurons and all samples instead of by its own column sum.\n\n**(c)** Axis 1 is the neuron axis, so this sums each sample's row and gives shape `(2, 1)`. Against `(1, 3)` both size-1 axes stretch and the result has shape `(2, 3)`: the bias row has become one row per sample, each shifted by that sample's total. The shape and the numbers are both wrong, and no error is raised here. The next forward pass adds a `(2, 3)` array to its output, which raises an error only when the batch has three or more samples; a batch of one broadcasts and returns two rows.\n\nThe correct line, `np.sum(dvalues, axis=0, keepdims=True)`, gives `(1, 3)` directly, and comparing `dbiases.shape` with `biases.shape` detects all three variants.",
+      "rubric": [
+        {
+          "criterion": "States the broadcasting rule used: align from the last axis, pad with 1s on the left, stretch size-1 axes",
+          "points": 1
+        },
+        {
+          "criterion": "(a): shape (3,), acts as a row, updated biases (1, 3) with correct numbers",
+          "points": 2
+        },
+        {
+          "criterion": "(b): a scalar, no error, shape (1, 3) kept, every bias moved by the grand total",
+          "points": 2
+        },
+        {
+          "criterion": "(c): shape (2, 1), updated biases become (2, 3), wrong numbers and wrong shape without an error at the update",
+          "points": 2
+        },
+        {
+          "criterion": "Names a check that detects the variants, such as comparing the gradient's shape with the parameter's",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 8 runs the correct line and these three variants on a $(2, 3)$ upstream gradient with biases $[0.1, 0.2, 0.3]$. Variant (a) gives the correct $[-0.4, -0.5, -0.6]$, variant (b) subtracts $0.1 \\cdot 21$ from every bias, and variant (c) returns a $(2, 3)$ array. The rules that decide each case are those of post 05: a 1-D array always acts as a row, a scalar fits any shape, and two size-1 axes both stretch.",
+      "hints": [
+        "Write the shape of `dbiases` for each variant first.",
+        "Then align each shape with `(1, 3)` from the right and see which axes have size 1."
+      ]
+    },
+    {
+      "id": "nn-016-q13",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "2",
+      "est_minutes": 15,
+      "tags": [
+        "dense-backward",
+        "implement"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Complete `Layer_Dense` so that `forward` keeps what `backward` needs and `backward` stores `self.dweights`, `self.dbiases` and `self.dinputs`, each with the shape of the array it differentiates. `backward` must leave `dvalues` unchanged.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "import numpy as np\n\n\nclass Layer_Dense:\n\n    def __init__(self, n_inputs, n_neurons):\n        self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)\n        self.biases = np.zeros((1, n_neurons))\n\n    def forward(self, inputs):\n        # TODO: keep what backward will need\n        self.output = np.dot(inputs, self.weights) + self.biases\n\n    def backward(self, dvalues):\n        # TODO: store self.dweights, self.dbiases and self.dinputs\n        pass\n",
+      "solution": "import numpy as np\n\n\nclass Layer_Dense:\n\n    def __init__(self, n_inputs, n_neurons):\n        self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)\n        self.biases = np.zeros((1, n_neurons))\n\n    def forward(self, inputs):\n        self.inputs = inputs                                    # cached for backward\n        self.output = np.dot(inputs, self.weights) + self.biases\n\n    def backward(self, dvalues):\n        self.dweights = np.dot(self.inputs.T, dvalues)          # shape of weights\n        self.dbiases = np.sum(dvalues, axis=0, keepdims=True)   # shape of biases\n        self.dinputs = np.dot(dvalues, self.weights.T)          # shape of inputs\n",
+      "tests": "np.random.seed(0)\n\n# The batch of section 3.\nX = np.array([[1.0, 2.0, 3.0, 2.5], [2.0, 5.0, -1.0, 2.0], [-1.5, 2.7, 3.3, -0.8]])\ndvalues = np.array([[1.0, 1.0, 1.0], [2.0, 2.0, 2.0], [3.0, 3.0, 3.0]])\nlayer = Layer_Dense(4, 3)\nlayer.weights = np.array([[0.1, 0.5, 0.9], [0.2, 0.6, 1.0], [0.3, 0.7, 1.1], [0.4, 0.8, 1.2]])\nlayer.forward(X)\nkept = dvalues.copy()\nlayer.backward(dvalues)\nassert np.array_equal(dvalues, kept), \"backward must not change dvalues\"\nassert layer.dweights.shape == (4, 3), layer.dweights.shape\nassert layer.dbiases.shape == (1, 3), \"dbiases must have the shape of the biases\"\nassert layer.dinputs.shape == (3, 4), layer.dinputs.shape\nassert np.allclose(layer.dweights, np.array([[0.5, 20.1, 10.9, 4.1]] * 3).T)\nassert np.allclose(layer.dbiases, [[6.0, 6.0, 6.0]])\nassert np.allclose(layer.dinputs, np.outer([1.0, 2.0, 3.0], [1.5, 1.8, 2.1, 2.4]))\n\n# A second pass on the same layer: the cache follows the latest forward and nothing accumulates.\nlayer.forward(2.0 * X)\nlayer.backward(dvalues)\nassert np.allclose(layer.dweights, 2.0 * np.array([[0.5, 20.1, 10.9, 4.1]] * 3).T), \"dweights must belong to the latest forward call alone\"\nassert np.allclose(layer.dbiases, [[6.0, 6.0, 6.0]]), \"dbiases must not accumulate\"\n\n# A non-square layer against central differences, with the loss L = sum(output * G).\nX = np.random.randn(6, 5)\nG = np.random.randn(6, 2)\nlayer = Layer_Dense(5, 2)\nlayer.weights = np.random.randn(5, 2)\nlayer.biases = np.random.randn(1, 2)\n\n\ndef loss():\n    layer.forward(X)\n    return np.sum(layer.output * G)\n\n\nloss()\nlayer.backward(G)\nh = 1e-5\nfor array, analytic in ((layer.weights, layer.dweights), (layer.biases, layer.dbiases), (X, layer.dinputs)):\n    assert analytic.shape == array.shape\n    for index in np.ndindex(array.shape):\n        saved = array[index]\n        array[index] = saved + h\n        plus = loss()\n        array[index] = saved - h\n        minus = loss()\n        array[index] = saved\n        assert abs((plus - minus) / (2 * h) - analytic[index]) < 1e-7, index\nprint(\"Layer_Dense.backward passes\")\n",
+      "expected_output": "Layer_Dense.backward passes\n",
+      "explanation": "Section 2 gives the class: one line in `forward` to cache the inputs and three lines in `backward`. The tests repeat the batch of section 3, whose results are the transpose of post 14's weight gradient, bias gradients of 6, and multiples of $[1.5, 1.8, 2.1, 2.4]$, and then compare all three gradients of a non-square layer with central differences at $h = 10^{-5}$, as section 7 does. The second test uses the loss $\\sum \\text{output} \\cdot G$, whose gradient with respect to the output is $G$.",
+      "hints": [
+        "The first line of `backward` needs an array that only `forward` ever sees.",
+        "Each of the three results has the shape of weights, biases, and inputs in turn; choose the transposes and the axis of the sum so that the shapes come out that way."
+      ]
+    },
+    {
+      "id": "nn-016-q14",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4.1",
+      "est_minutes": 10,
+      "tags": [
+        "relu",
+        "copy",
+        "fix"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "This `Activation_ReLU.backward` returns the right `dinputs`, yet a later component that reads the gradient passed in finds zeros it did not compute. Find and fix the bug without changing what `dinputs` holds.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "import numpy as np\n\n\nclass Activation_ReLU:\n\n    def forward(self, inputs):\n        self.inputs = inputs\n        self.output = np.maximum(0, inputs)\n\n    def backward(self, dvalues):\n        self.dinputs = dvalues\n        self.dinputs[self.inputs <= 0] = 0\n",
+      "solution": "import numpy as np\n\n\nclass Activation_ReLU:\n\n    def forward(self, inputs):\n        self.inputs = inputs\n        self.output = np.maximum(0, inputs)\n\n    def backward(self, dvalues):\n        self.dinputs = dvalues.copy()                           # the caller's array stays intact\n        self.dinputs[self.inputs <= 0] = 0\n",
+      "tests": "relu = Activation_ReLU()\nrelu.forward(np.array([[1.0, -2.0, 3.0], [0.0, 4.0, -5.0]]))\nupstream = np.array([[5.0, 6.0, 7.0], [8.0, 9.0, 10.0]])\nkept = upstream.copy()\nrelu.backward(upstream)\nassert np.array_equal(relu.dinputs, [[5.0, 0.0, 7.0], [0.0, 9.0, 0.0]]), relu.dinputs\nassert np.array_equal(upstream, kept), \"backward wrote into the array it was handed\"\nassert relu.dinputs is not upstream\nassert relu.dinputs.shape == relu.inputs.shape\nassert np.array_equal(relu.inputs, [[1.0, -2.0, 3.0], [0.0, 4.0, -5.0]]), \"the cached inputs must not change\"\nprint(\"Activation_ReLU.backward passes\")\n",
+      "expected_output": "Activation_ReLU.backward passes\n",
+      "explanation": "Section 4.1 describes the bug: `self.dinputs = dvalues` gives a second name to the caller's array, and the masking line then writes zeros into it. Starting from `dvalues.copy()` leaves the caller's array as it was and costs one allocation. The mask itself, `self.inputs <= 0`, is right and stays, so an input of exactly 0 still passes no gradient (section 8).",
+      "hints": [
+        "The numbers in `dinputs` are right, so look at what else the method changes.",
+        "Count the arrays that exist after the first line of `backward` has run."
+      ]
+    },
+    {
+      "id": "nn-016-q15",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "chain",
+        "call-order"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network is `dense1`, then `activation1` (ReLU), then `dense2`, and `dloss` is the gradient of the loss with respect to the output of `dense2`. Put the six calls of one forward and backward pass in the order in which they must run.",
+      "items": [
+        {
+          "key": "a",
+          "text": "`activation1.backward(dense2.dinputs)`"
+        },
+        {
+          "key": "b",
+          "text": "`dense2.forward(activation1.output)`"
+        },
+        {
+          "key": "c",
+          "text": "`dense1.backward(activation1.dinputs)`"
+        },
+        {
+          "key": "d",
+          "text": "`dense1.forward(X)`"
+        },
+        {
+          "key": "e",
+          "text": "`dense2.backward(dloss)`"
+        },
+        {
+          "key": "f",
+          "text": "`activation1.forward(dense1.output)`"
+        }
+      ],
+      "answer": [
+        "d",
+        "f",
+        "b",
+        "e",
+        "a",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 6 writes the pass out. The forward calls run left to right, each reading the `output` of the component before it and filling its own cache. The backward calls run right to left, each reading the `dinputs` of the component after it. No other order works: an argument such as `dense2.dinputs` does not exist until `dense2.backward` has run, and every `backward` needs the cache its own `forward` left behind (section 5).",
+      "hints": [
+        "Each call's argument names the attribute that must already exist."
+      ]
+    },
+    {
+      "id": "nn-016-q16",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "shapes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A `Layer_Dense(5, 7)` has run `forward` on a batch of 10 samples and then `backward`. Match each array to its shape.",
+      "left": [
+        {
+          "key": "a",
+          "text": "`dvalues`, the argument of `backward`"
+        },
+        {
+          "key": "b",
+          "text": "`self.dweights`"
+        },
+        {
+          "key": "c",
+          "text": "`self.dbiases`"
+        },
+        {
+          "key": "d",
+          "text": "`self.dinputs`"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "`(10, 5)`"
+        },
+        {
+          "key": "q",
+          "text": "`(5, 7)`"
+        },
+        {
+          "key": "r",
+          "text": "`(7, 5)`"
+        },
+        {
+          "key": "s",
+          "text": "`(1, 7)`"
+        },
+        {
+          "key": "t",
+          "text": "`(10, 7)`"
+        },
+        {
+          "key": "u",
+          "text": "`(10, 1)`"
+        }
+      ],
+      "answer": {
+        "a": "t",
+        "b": "q",
+        "c": "s",
+        "d": "p"
+      },
+      "explanation": "Every gradient has the shape of the array it differentiates (section 2). `dvalues` is the gradient with respect to the layer's output, $(10, 7)$. `dweights` has the shape of the weights, $(5, 7)$; $(7, 5)$ is the row-per-neuron layout of posts 13 and 14, which this class does not use. `dbiases` has the shape of the biases, $(1, 7)$, kept by `keepdims=True`, and `dinputs` has the shape of the inputs, $(10, 5)$.",
+      "hints": [
+        "Name, for each gradient, the array of the forward pass that it differentiates."
+      ]
+    },
+    {
+      "id": "nn-016-q17",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2.1",
+      "est_minutes": 4,
+      "tags": [
+        "weight-layout",
+        "transpose"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A reader copies the weight-gradient line of the row-per-neuron layout into `Layer_Dense.backward` as `self.dweights = np.dot(dvalues.T, self.inputs)`. The layer is `Layer_Dense(4, 3)` and the batch has 8 samples. A training step then runs `layer.weights -= 0.1 * layer.dweights`. What happens?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`np.dot` raises a `ValueError` inside `backward`, because the inner sizes of the product do not match.",
+          "correct": false,
+          "feedback": "The product is $(3, 8) \\cdot (8, 4)$, whose inner sizes are both 8, so it is computed without complaint."
+        },
+        {
+          "key": "b",
+          "text": "The subtraction runs, and the weights end up holding the transposed layout.",
+          "correct": false,
+          "feedback": "An in-place subtraction never changes the shape of the array it writes to, and shapes $(4, 3)$ and $(3, 4)$ do not broadcast."
+        },
+        {
+          "key": "c",
+          "text": "The subtraction raises a `ValueError`, because `(3, 4)` cannot be broadcast onto `(4, 3)`.",
+          "correct": true,
+          "feedback": "Right: `backward` itself succeeds and stores a gradient of shape $(3, 4)$, the transpose of the weights, and the update is the first place the shapes meet."
+        },
+        {
+          "key": "d",
+          "text": "The step runs and is correct, because the two lines hold the same twelve numbers.",
+          "correct": false,
+          "feedback": "They do hold the same twelve numbers, but in transposed positions. The entry for input $j$ and neuron $k$ must sit at row $j$, column $k$ to match the weights."
+        }
+      ],
+      "explanation": "Section 2.1 notes that `dL_dZ.T @ X` is the weight gradient for weights stored one row per neuron, with shape $(m, n)$, and that it is the transpose of the line this class needs. Here the product $(3, 8) \\cdot (8, 4)$ succeeds and gives $(3, 4)$, so the mistake surfaces at the update, where $(4, 3)$ and $(3, 4)$ cannot be combined. With a square layer nothing would be raised at all and the weights would be updated with the transposed gradient.",
+      "hints": [
+        "Compute the shape of the product first.",
+        "Then compare that shape with the shape of `layer.weights`."
+      ]
+    },
+    {
+      "id": "nn-016-q18",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "accumulation",
+        "assignment"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A training loop calls `layer.forward(X)` and `layer.backward(dvalues)` on the `Layer_Dense` of the post five times in a row, with the same `X` and the same `dvalues`, and never resets anything between the calls. How does `layer.dweights` after the fifth call compare with `layer.dweights` after the first?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It is five times as large, because each call adds its gradient to the stored one.",
+          "correct": false,
+          "feedback": "That would need `+=`. The line is `self.dweights = np.dot(...)`, an assignment, so each call replaces the stored array."
+        },
+        {
+          "key": "b",
+          "text": "It is the same, because each call assigns a fresh array.",
+          "correct": true,
+          "feedback": "Right: none of the three lines accumulates, so the gradients of one call never mix with those of the next and there is nothing to reset."
+        },
+        {
+          "key": "c",
+          "text": "It is the average of the five gradients, because the layer smooths repeated calls.",
+          "correct": false,
+          "feedback": "The layer keeps no history of earlier calls. Running averages of gradients appear later, inside some optimisers, not in `backward`."
+        },
+        {
+          "key": "d",
+          "text": "It is undefined, because the cache is cleared after the first `backward`.",
+          "correct": false,
+          "feedback": "`backward` reads `self.inputs` and does not clear it, and every `forward` call sets it again anyway."
+        }
+      ],
+      "explanation": "Section 2 points out that each of the three lines of `backward` is a plain assignment. The stored gradients always belong to the latest call, and a loop needs no step that sets them to zero first. A design that adds each new gradient to the stored one would need such a reset, but that is not how these classes are written.",
+      "hints": [
+        "Look at the operator between `self.dweights` and `np.dot` in the method."
+      ]
+    }
+  ]
+}
