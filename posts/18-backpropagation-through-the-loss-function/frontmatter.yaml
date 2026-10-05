@@ -1,8 +1,23 @@
 id: nn-018
 slug: 18-backpropagation-through-the-loss-function
-title: "Part 18 · Backpropagation through the loss function"
+title: "18 - Backpropagation through the loss function"
+summary: "The backward pass starts at the loss. The post derives the gradient of categorical cross-entropy with respect to the predictions, codes it for both label formats, and shows why it is divided by the batch size exactly once."
 date: 2026-05-28
+updated: 2026-10-05
+status: complete
+part: "Part V - Backpropagation"
+level: intermediate
+reading_time: 14
 tags: [neural-networks, from-scratch, backpropagation, cross-entropy]
 hero: diagrams/01-cross-entropy-backward.svg
-reading_time: 10
-part: "Part V — Backpropagation"
+prerequisites: [nn-008, nn-016]
+code: included
+outcomes:
+  - id: o1
+    text: "Derive the cross-entropy gradient -y / y-hat from the definition of the loss."
+  - id: o2
+    text: "Implement Loss_CategoricalCrossentropy.backward for integer and one-hot labels."
+  - id: o3
+    text: "Explain why the gradient is divided by the batch size."
+recommended: [nn-017]
+compute: cpu

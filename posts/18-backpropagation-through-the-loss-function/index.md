@@ -1,69 +1,85 @@
-# Part 18 · Backpropagation through the loss function
+# 18 - Backpropagation through the loss function
 
-> **TL;DR.** Backpropagation starts at the loss function, where the gradient of $L$ with respect to the network's output is the first upstream gradient every other layer's `backward` will consume. This post derives that gradient for categorical cross-entropy, the element-wise division $-\mathbf{y} / \hat{\mathbf{y}}$, and implements it as the `backward` method on `Loss_CategoricalCrossentropy`.
+> **TL;DR.** The backward pass starts at the loss: the gradient of the batch loss $L$ with respect to the predictions $\hat{\mathbf{y}}$ is the first upstream gradient, and every other `backward` consumes something derived from it. For categorical cross-entropy it is the element-wise division $-\mathbf{y} / \hat{\mathbf{y}}$, divided once by the batch size $N$ because $L$ is a mean, so with one-hot labels each row holds a single non-zero entry, $-1/(N \hat{y}_{i,c_i})$. `Loss_CategoricalCrossentropy.backward` computes it in two lines for integer or one-hot labels and agrees with a central difference to better than $10^{-9}$. The division returns `nan` or `-inf` on an exact zero in the predictions, and the clip inside `forward` does not prevent that.
 >
-> **After reading this you will be able to:**
-> - Derive the cross-entropy gradient $-\mathbf{y} / \hat{\mathbf{y}}$ from the loss definition.
-> - Implement `Loss_CategoricalCrossentropy.backward` that handles both integer and one-hot labels.
-> - Explain why the gradient is divided by the batch size and what would go wrong without it.
+> **Prerequisites:** [Post 08](../08-loss-categorical-cross-entropy/index.md), [Post 16](../16-coding-backpropagation/index.md).
+> **Safe to skip?** Skip it if the reader can already derive $\partial L / \partial \hat{y}_{i,k} = -y_{i,k} / (N \hat{y}_{i,k})$ from the definition of the loss, code it for both label formats, and say where the $1/N$ comes from.
+>
+> **After reading, you will be able to:**
+>
+> - Derive the cross-entropy gradient -y / y-hat from the definition of the loss.
+> - Implement Loss_CategoricalCrossentropy.backward for integer and one-hot labels.
+> - Explain why the gradient is divided by the batch size.
 
-![Cross-entropy backward: element-wise division by the prediction, normalised by the batch size. Only the correct class gets a non-zero gradient per row.](diagrams/01-cross-entropy-backward.svg)
-*Backprop starts at the loss. With one-hot labels, only one entry per row survives the division; the rest are zero.*
+![A worked batch of three samples. A one-hot label matrix is divided element-wise by the predictions 0.7, 0.2, 0.1; 0.1, 0.6, 0.3; 0.2, 0.3, 0.5 and scaled by minus 1 over N with N = 3. The result has one non-zero entry per row: -0.476, -0.556 and -0.667. A side panel works row 1 through and shows the two lines of code.](diagrams/01-cross-entropy-backward.svg)
+
+*The backward pass starts at the loss. With one-hot labels a single entry per row survives the division; the rest are zero.*
 
 ---
 
-## 1. Where backprop starts
+## 1. The question: where does the first gradient come from?
 
-The classification pipeline from [Part 07](../07-coding-the-complete-forward-pass/index.md) is:
+The classification pipeline of post 07, with the loss of post 08 on the end, is
 
-$$\text{inputs} \to (\text{Dense} + \text{ReLU})^{*} \to \text{Softmax} \to \hat{\mathbf{y}} \to \text{Cross-Entropy} \to L.$$
+$$\text{inputs} \to \text{Dense} \to \text{ReLU} \to \text{Dense} \to \text{Softmax} \to \hat{\mathbf{y}} \to \text{cross-entropy} \to L.$$
 
-Backpropagation walks this pipeline right to left. The very first gradient is $\partial L / \partial \hat{\mathbf{y}}$: the loss's local derivative with respect to its own input. Every other class's `backward` method will receive this gradient (or something derived from it) as its `dvalues`. Without a correct gradient at the loss, nothing further downstream produces meaningful updates.
+Backpropagation walks this pipeline from right to left. Post 16 gave `Layer_Dense` and `Activation_ReLU` a `backward(dvalues)` method, and each of them needs to be handed `dvalues`, the gradient of the loss with respect to its own output. Something has to produce the first such gradient without being handed one. That is the loss: its local derivative, $\partial L / \partial \hat{\mathbf{y}}$, is the upstream gradient of the softmax, and everything further left receives something derived from it. If it is wrong, every weight update in the network is wrong.
 
-This post derives that first gradient for categorical cross-entropy, implements it as `Loss_CategoricalCrossentropy.backward`, and prepares the upstream for softmax (Part 19).
+This post derives $\partial L / \partial \hat{\mathbf{y}}$ for categorical cross-entropy and adds it to the loss class of post 08 as a `backward` method.
 
 ---
 
 ## 2. The gradient, from the definition
 
-For a single sample $i$ with one-hot true label $\mathbf{y}_i$ and predicted probabilities $\hat{\mathbf{y}}_i$, the categorical cross-entropy loss is:
+Post 08 defined the loss of one sample $i$, with one-hot label row $\mathbf{y}_i$ and predicted probabilities $\hat{\mathbf{y}}_i$ over $K$ classes, as
 
-$$L_i = -\sum_{j=1}^{C} y_{ij} \ln(\hat{y}_{ij}).$$
+$$L_i = -\sum_{k} y_{i,k} \log \hat{y}_{i,k}.$$
 
-The partial derivative with respect to a single predicted probability $\hat{y}_{ij}$:
+The partial derivative with respect to one prediction $\hat{y}_{i,k}$ holds the other predictions fixed (post 10). Only one term of the sum contains $\hat{y}_{i,k}$, and its label $y_{i,k}$ is a constant factor, so the whole calculation is the derivative of a logarithm.
 
-$$\frac{\partial L_i}{\partial \hat{y}_{ij}} = -\frac{y_{ij}}{\hat{y}_{ij}}.$$
+### 2.1. The derivative of the logarithm
 
-Two facts make this small and clean.
+For $f(x) = \log x$, the difference quotient of post 10 is
 
-**Only the correct-class entry contributes.** Because $\mathbf{y}_i$ is one-hot, $y_{ij}$ is $1$ at the true class and $0$ everywhere else. Every term in the gradient row except the correct-class one is zero.
+$$\frac{\log(x + h) - \log x}{h} = \frac{\log(1 + h/x)}{h} = \frac{1}{x} \cdot \frac{\log(1 + u)}{u}, \qquad u = \frac{h}{x}.$$
 
-**The non-zero entry is $-1/\hat{y}_{ij^{\star}}$** where $j^{\star}$ is the correct class. The smaller the predicted probability, the larger (more negative) the gradient. A confident-but-wrong prediction triggers a very large gradient pull, which is exactly the training signal cross-entropy is designed for.
+The first step is the rule of post 08, that the logarithm of a product is the sum of the logarithms, read backwards: a difference of two logarithms is the logarithm of the quotient, here $(x + h)/x = 1 + h/x$. The second writes $h$ as $u x$. As $h$ shrinks, so does $u$, and $\log(1 + u) / u$ tends to 1: near 1 the natural logarithm rises at exactly the rate of its argument, which is the property that singles out the base $e$. The limit is therefore
 
-### 2.1. Worked example (single sample)
+$$\frac{d}{dx} \log x = \frac{1}{x}, \qquad \frac{d}{dx} \bigl[-\log x\bigr] = -\frac{1}{x}.$$
 
-True label: $[1, 0, 0]$. Prediction: $[0.7, 0.2, 0.1]$.
+A central difference agrees: at $x = 0.3$ the measured slope of $-\log x$ is $-3.33333$, which is $-1/0.3$ (`snippets/what_can_go_wrong.py`, part 2). This is the slope of the curve in post 08's hero figure: nearly flat close to 1 and steep close to 0.
 
-$$\frac{\partial L}{\partial \hat{\mathbf{y}}} = -\frac{[1, 0, 0]}{[0.7, 0.2, 0.1]} = [-1.43,\ 0,\ 0].$$
+### 2.2. The gradient of one sample
 
-The first entry is $-1 / 0.7 \approx -1.43$; the other two are $0 / x = 0$ regardless of $x$. The gradient row has the same shape as the prediction row but only one meaningful number.
+Applying the rule to the one term that contains $\hat{y}_{i,k}$:
+
+$$\frac{\partial L_i}{\partial \hat{y}_{i,k}} = -\frac{y_{i,k}}{\hat{y}_{i,k}}.$$
+
+In array form the row of partial derivatives is the element-wise division $-\mathbf{y}_i / \hat{\mathbf{y}}_i$. Two facts follow from the label being one-hot.
+
+**Only the true-class entry is non-zero.** $y_{i,k}$ is 1 at the true class $c_i$ and 0 everywhere else, so every other entry of the row is $-0 / \hat{y}_{i,k} = 0$.
+
+**The non-zero entry is $-1/\hat{y}_{i,c_i}$.** It is negative, because raising the probability on the true class lowers the loss, and its size grows without bound as that probability falls: $-1.43$ at 0.7, $-10$ at 0.1, $-100$ at 0.01. A confident wrong prediction is a small $\hat{y}_{i,c_i}$, so it sends the largest signal.
+
+For the label $[1, 0, 0]$ and the prediction $[0.7, 0.2, 0.1]$:
+
+$$\frac{\partial L_i}{\partial \hat{\mathbf{y}}_i} = -\frac{[1, 0, 0]}{[0.7, 0.2, 0.1]} = [-1.429,\ 0,\ 0].$$
+
+The row has the shape of the prediction and one meaningful number. The zeros do not say that the wrong-class probabilities are free to take any value. The derivation treated the $K$ predictions as independent variables, and they are not: a softmax row sums to 1. That coupling belongs to the softmax, and its backward pass (post 19) is where the single entry is spread over all $K$ logits.
 
 ---
 
 ## 3. Batch behaviour
 
-For a batch of $N$ samples, the loss in [Part 08](../08-loss-categorical-cross-entropy/index.md) was defined as the **mean** of per-sample losses:
+Post 08 defined the loss of a batch of $N$ samples as the mean of the per-sample losses,
 
-$$L = \frac{1}{N} \sum_{i=1}^{N} L_i.$$
+$$L = \frac{1}{N} \sum_{i} L_i.$$
 
-Differentiating through the $1/N$ factor:
+The prediction $\hat{y}_{i,k}$ appears in $L_i$ and in no other sample's loss, so differentiating the mean leaves one term and its factor $1/N$:
 
-$$\frac{\partial L}{\partial \hat{y}_{ij}} = -\frac{y_{ij}}{\hat{y}_{ij} \cdot N}.$$
+$$\frac{\partial L}{\partial \hat{y}_{i,k}} = \frac{1}{N} \frac{\partial L_i}{\partial \hat{y}_{i,k}} = -\frac{y_{i,k}}{N \, \hat{y}_{i,k}}.$$
 
-Two consequences:
-
-- **The gradient is per-sample.** Each row has its own one-hot mask and its own division; samples do not interact in this formula.
-- **The gradient is scaled by $1/N$.** Without this scaling, the total gradient magnitude would grow linearly with batch size, and the learning rate would have to shrink proportionally. With the scaling, the same learning rate works for any batch size.
+The gradient is an $(N, K)$ array, the shape of $\hat{\mathbf{y}}$. Each row depends on its own label and its own prediction only, and every row carries the same factor $1/N$.
 
 ### 3.1. Worked batch example
 
@@ -74,30 +90,28 @@ y_true = np.array([[1, 0, 0],
 
 y_pred = np.array([[0.7, 0.2, 0.1],
                    [0.1, 0.6, 0.3],
-                   [0.0, 0.0, 1.0]])
+                   [0.2, 0.3, 0.5]])
 
-N = 3
+N = len(y_pred)
 dinputs = (-y_true / y_pred) / N
 print(dinputs)
 ```
 
-**Output (illustrative):**
+**Output:**
 
+```text
+[[-0.47619048  0.          0.        ]
+ [ 0.         -0.55555556  0.        ]
+ [ 0.          0.         -0.66666667]]
 ```
-[[-0.476  0.     0.   ]
- [ 0.    -0.556  0.   ]
- [ 0.     0.    -0.333]]
-```
 
-Each row has exactly one non-zero entry: $-1/(N \cdot \hat{y}_{ij^{\star}})$ at the correct class. The non-zero entries get larger (more negative) as the predicted correct-class probability gets smaller; sample 3 happens to predict $1.0$ for the correct class, so its gradient is the smallest in magnitude.
-
-Wait, sample 3's prediction has a `0.0` for two of the three classes, which would explode `-y_true / y_pred` to `-inf`. The `0.0`s are in the *wrong* positions, where `y_true` is also `0`, so the division is `0 / 0 = nan` in pure NumPy, not what the example shows. The lecture's snippet glosses over a real-world subtlety: production code clips the predictions before this division for exactly this reason. The full `backward` method in §5 handles it cleanly.
+Each row has one non-zero entry, $-1/(N \hat{y}_{i,c_i})$: $-1/(3 \times 0.7)$, $-1/(3 \times 0.6)$, and $-1/(3 \times 0.5)$. The third sample has the smallest probability on its true class and the largest gradient. These are the numbers of the figure at the top of the post.
 
 ---
 
-## 4. Handling integer labels
+## 4. Integer labels
 
-Datasets often ship class labels as integer indices (e.g. `[0, 1, 2]`) rather than one-hot vectors. The cross-entropy gradient formula is written for one-hot, so the implementation has to either convert or handle integer labels directly. The conversion is one line:
+The formula is written for one-hot labels, and `spiral_data` returns integer class indices (post 08, section 5). The conversion is one line:
 
 ```python
 y_true_indices = np.array([0, 1, 2])
@@ -106,82 +120,116 @@ n_labels = y_pred.shape[1]                  # number of classes
 y_true_onehot = np.eye(n_labels)[y_true_indices]
 ```
 
-`np.eye(n)` produces the identity matrix of size $n$. Indexing by an integer row picks out that row, which is a one-hot vector with a `1` at position `[index]`. Stacking across the batch gives the full one-hot matrix.
-
-The production class checks the rank of `y_true` at runtime: if it is 1-D, it converts; if it is 2-D, it assumes one-hot and proceeds directly.
+`np.eye(n)` is the $n \times n$ identity matrix. Indexing it with an array of integers picks one row per label, and row $c$ of the identity is the one-hot vector of class $c$, so the result is the $(N, K)$ one-hot matrix; here it is the `y_true` of section 3.1. The method below checks the number of dimensions of `y_true`, as `forward` does: one dimension is converted, two are taken as one-hot.
 
 ---
 
 ## 5. The complete `backward` method
 
+The class of post 08 keeps its `forward` and gains a `backward`:
+
 ```python
-class Loss_CategoricalCrossentropy:
-
-    def forward(self, y_pred, y_true):
-        samples = len(y_pred)
-        y_pred_clipped = np.clip(y_pred, 1e-7, 1 - 1e-7)
-
-        if len(y_true.shape) == 1:
-            correct = y_pred_clipped[range(samples), y_true]
-        else:
-            correct = np.sum(y_pred_clipped * y_true, axis=1)
-
-        return -np.log(correct)
-
     def backward(self, dvalues, y_true):
         samples = len(dvalues)
         labels  = len(dvalues[0])
 
-        # Convert integer labels to one-hot if needed.
+        # Integer labels become one-hot rows.
         if len(y_true.shape) == 1:
             y_true = np.eye(labels)[y_true]
 
-        # Element-wise gradient, normalised by batch size.
+        # The gradient of each sample's loss, then the 1/N of the batch mean.
         self.dinputs = -y_true / dvalues
         self.dinputs = self.dinputs / samples
 ```
 
-Three details deserve naming.
+The two assignments are sections 2 and 3: the division $-\mathbf{y} / \hat{\mathbf{y}}$, then the factor $1/N$. The result is stored as `self.dinputs`, the gradient with respect to the input of the loss, which is the softmax output; the softmax's `backward` receives it as its `dvalues`. Nothing is cached in `forward`, because both things the derivative needs arrive as arguments.
 
-**The label-format check is the same one `forward` uses.** Backward must support whichever format was passed in; the conversion is cheap.
+![Two panels. Left, every other class: backward takes dvalues, a gradient arriving from the layer to its right, multiplies it by its own local derivative and passes the product on. Right, the loss class: backward takes dvalues and y_true, the box to its right is empty, and dvalues holds the predictions, because the derivative of the loss with respect to itself is 1.](diagrams/02-where-backprop-starts.svg)
 
-![Every other class has a layer to its right sending a gradient; the loss class has a dashed empty box instead.](diagrams/02-where-backprop-starts.svg)
-*The loss is the only class in the series with nothing downstream of it, which is why its `dvalues` is not a gradient.*
+*The loss is the one class with nothing after it, which is why its `dvalues` is not a gradient.*
 
-**`dvalues` is the prediction array.** This is the loss-layer special case: elsewhere in the series `dvalues` means the incoming gradient from the next layer, but the loss sits at the top of the chain, so the only thing flowing in is the predictions themselves. The upstream gradient is the loss with respect to itself (a scalar `1`), so the implementation skips the explicit upstream multiplication and goes straight to the local gradient $-\mathbf{y} / \hat{\mathbf{y}}$. The chain-rule "× upstream" step is implicit because the upstream is `1`.
+**`dvalues` here is the prediction array.** Everywhere else in the series `dvalues` is the gradient arriving from the next component. The loss has no next component. Its upstream gradient is $\partial L / \partial L = 1$, so the chain-rule multiplication by the upstream is a multiplication by 1 and is left out, and the argument slot carries the predictions that the local derivative needs. The name is kept so that every `backward` in the series has the same first argument.
 
-**Clipping appears in `forward`, not in `backward`.** The gradient formula has $\hat{y}$ in the denominator, so if any value in `dvalues` is zero, the result is `inf`. Two defences exist: clip inside `backward`, or trust that `forward` was called first and the clipped predictions are what reach `backward`. The class in [Part 16](../16-coding-backpropagation/index.md) uses the latter pattern; production code often does both for safety.
+**`backward` does not clip.** The `forward` of post 08 clips a copy of the predictions and leaves the caller's array as it was, so the array handed to `backward` is the unclipped softmax output and the division sees whatever zeros it contains. Section 8 measures what happens then.
 
 ---
 
 ## 6. Why divide by the batch size
 
-A short subsection because the question comes up every time.
+The division by `samples` is the derivative of the `np.mean` in `Loss.calculate`. `forward` returns $N$ per-sample losses, `calculate` averages them into the one number that is reported and minimised, and the backward pass has to differentiate that number, so the $1/N$ of the mean appears in the gradient.
 
-The `forward` in §5 returns the per-sample loss vector `-np.log(correct)`; the averaging into a single scalar happens one level up, in the base `Loss.calculate` wrapper that applies `np.mean` to that vector (the pattern from [Part 08](../08-loss-categorical-cross-entropy/index.md)). So `backward` would in principle need to differentiate through whatever post-processing reduced the per-sample losses to a scalar. For a mean-loss pipeline, that post-processing is `(1/N) * sum(per_sample_losses)`. Differentiating through the `(1/N)` factor produces the `(1/N)` in the gradient.
+The division happens in this method and nowhere else. The dense layer of post 16 turns its `dvalues` into parameter gradients by summing over the rows (`np.dot(self.inputs.T, dvalues)` and `np.sum(dvalues, axis=0, keepdims=True)`), and a sum over $N$ rows that each carry $1/N$ is an average over the batch. `snippets/gradient_check.py` repeats the batch of section 3.1 ten and a hundred times, which changes $N$ and nothing else:
 
-If the loss were instead summed (not averaged), the gradient would not be divided by `N`. The learning rate would then have to be `N` times smaller for the same training dynamics; matching one batch size to another would require manual rescaling. Averaging makes the loss and its gradient invariant to batch size, which is the conventional choice.
+```text
+N =   3  loss 0.5202  entry [0, 0]: -0.476190  summed over rows with 1/N: [-0.4762 -0.5556 -0.6667]  without: [-1.43 -1.67 -2.  ]
+N =  30  loss 0.5202  entry [0, 0]: -0.047619  summed over rows with 1/N: [-0.4762 -0.5556 -0.6667]  without: [-14.29 -16.67 -20.  ]
+N = 300  loss 0.5202  entry [0, 0]: -0.004762  summed over rows with 1/N: [-0.4762 -0.5556 -0.6667]  without: [-142.86 -166.67 -200.  ]
+```
 
----
+The loss is 0.5202 at every size, as a mean should be. A single entry of the gradient shrinks in proportion to $1/N$, and the sum over the rows, which is what reaches the parameters, does not move. Without the division that sum grows in proportion to $N$: 100 times larger at 300 samples than at 3.
 
-## 7. What this post is *not*
-
-A boundary section.
-
-- **It is not the full softmax + cross-entropy backward.** The clean shortcut that pairs them together (the famous $\hat{y} - y$ formula) lives in [Part 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md). This post derives only the loss's contribution; Part 19 multiplies it by the softmax Jacobian and watches things cancel.
-- **It is not the only loss backward.** Squared-error backward is in Part 12; binary cross-entropy and mean absolute error have their own derivations not covered in this series.
-- **It does not handle label smoothing.** Soft labels (where `y_true` is not strictly one-hot) work with the same formula but with the additional gradient terms surviving. The implementation in §5 already handles that case because it uses the general $-\mathbf{y} / \hat{\mathbf{y}}$ form, not the correct-class shortcut.
-- **It is not where the learning rate is set.** The `1/N` normalisation is per-sample averaging, not learning-rate tuning. Both happen; both matter; they are different knobs.
+The summed version is the gradient of the summed loss, so it points in the same direction, and a learning rate $N$ times smaller would produce the same step. The cost is that the learning rate then means something different at every batch size. This is the dependence that post 08 said a summed loss would bring.
 
 ---
 
-## 8. Anticipated questions
+## 7. Make it run: the backward method against a central difference
 
-- **What if `y_pred` contains a literal zero at the correct-class position?** `forward`'s clipping (`np.clip(y_pred, 1e-7, 1 - 1e-7)`) makes this impossible *before* the log. By the time `backward` runs, the same clipped values should be passed in — provided the calling code does not re-feed the original unclipped predictions.
-- **Why does the backward formula not include a `log`?** Because the derivative of `-log(x)` is `-1/x`. The log is in the forward formula; its derivative shows up as the reciprocal in the backward formula.
-- **Can the `if` be skipped by always one-hot-encoding?** Yes, at a small cost. `np.eye(n_labels)[y_true]` allocates a temporary `(N, C)` matrix. For small `N` and `C` that is fine; for very large `C` (image classification with thousands of classes) it can be wasteful. The branch in §5 keeps both paths cheap.
-- **Is `(-y_true / dvalues) / samples` numerically identical to `-y_true / dvalues / samples`?** Yes, both produce the same array. Splitting the division across two lines is a readability choice; some people prefer to see the normalisation as a separate step.
-- **What is `dinputs` here, exactly?** The gradient of the loss with respect to the inputs of the loss function — which is the softmax output (`y_pred`). Softmax's `backward` will receive `self.dinputs` from this class as its own `dvalues`.
+`snippets/loss_backward.py` holds the code blocks of sections 3 to 5 in order, with the two classes of post 08 around the new method. It needs NumPy only and runs in under a second from the series root with `python posts/18-backpropagation-through-the-loss-function/snippets/loss_backward.py`. Its last lines call the class on the batch of section 3.1 with integer labels and then with one-hot labels:
+
+```text
+loss: 0.5202159160882228
+[[-0.47619048 -0.         -0.        ]
+ [-0.         -0.55555556 -0.        ]
+ [-0.         -0.         -0.66666667]]
+same array from one-hot labels: True
+shape: (3, 3)  non-zero entries per row: [1 1 1]
+```
+
+The array is that of section 3.1 for both label formats. The `-0.` entries are the floating-point negative zero, the result of negating the float zeros that `np.eye` produces; it compares equal to 0.
+
+A `backward` method is a claim about a derivative, and post 10 gave the test: a central difference with $h = 10^{-5}$ in float64. `snippets/gradient_check.py` draws five rows of four probabilities from a seeded generator, nudges each of the 20 predictions up and down by $h$ in turn, with the other 19 held fixed, and divides the change in `loss_fn.calculate` by $2h$:
+
+```text
+labels: [2 0 2 2 3]  loss: 1.362287
+integer labels: largest |backward - central difference| = 8.07e-10
+one-hot labels: largest |backward - central difference| = 8.07e-10
+sample 0, true class 2: prediction 0.202537, backward -0.987476, central difference -0.987476
+1/N left out: backward / central difference = [5. 5. 5. 5. 5.]
+```
+
+The largest disagreement over the 20 entries is $8 \times 10^{-10}$ for either label format. For sample 0 the value is $-1/(5 \times 0.202537) = -0.987476$. The check differentiates `calculate`, the mean, so it also tests the $1/N$: with the division left out, every true-class entry is $N = 5$ times the measured slope, to the four decimals printed. The script runs in under a second, as does `snippets/what_can_go_wrong.py`, which prints the numbers of the next section.
+
+---
+
+## 8. What can go wrong?
+
+`snippets/what_can_go_wrong.py` calls the method on four inputs it was not written for. Its first three parts print:
+
+```text
+1. exact zeros in the predictions
+   forward, per sample: [3.56674944e-01 1.00000005e-07 1.61180957e+01]
+   backward: [[-0.47619048 -0.         -0.        ]
+   backward:  [        nan         nan -0.33333333]
+   backward:  [       -inf -0.         -0.        ]]
+   raised:   RuntimeWarning: divide by zero encountered in divide
+   raised:   RuntimeWarning: invalid value encountered in divide
+   clipped:  [[      -0.4762        0.            0.    ]
+   clipped:   [       0.            0.           -0.3333]
+   clipped:   [-3333333.3333        0.            0.    ]]
+2. what the clip does to the gradient: one sample, true class 0
+   prediction 0.3: loss 1.2040, its slope by central difference -3.33333, backward -3.33333, clipped backward -3.33333
+   prediction 1e-09: loss 16.1181, its slope by central difference 0, backward -1e+09, clipped backward -1e+07
+3. a soft label
+   backward:                       [[-1.2857 -0.5    -0.25  ]]
+   slopes of the cross-entropy:    [[-1.2857 -0.5    -0.25  ]]  value 0.5166
+   slopes of what forward returns: [[-1.3953 -0.0775 -0.0775]]  value 0.4385
+```
+
+- **A prediction is exactly zero.** Post 08 showed that a softmax output can underflow to exactly 0. In part 1 the second row has zeros on its two wrong classes and the third has a zero on its true class. `forward` returns three finite losses, because it clips. `backward` divides by the raw array: a zero on a wrong class is $-0/0$, which is `nan`, and a zero on the true class is $-1/0$, which is `-inf`. NumPy raises warnings, not errors, and a `nan` contaminates every sum it enters, so it spreads into the parameter gradients. Clipping in `forward` does not protect `backward`.
+- **The clip is added to `backward`.** Dividing by `np.clip(dvalues, 1e-7, 1 - 1e-7)`, the bounds of post 08, turns the same two rows into finite numbers, the `clipped` lines of part 1. Part 2 puts three quantities side by side for one sample. An ordinary prediction is untouched. Below the lower bound the three quantities part. The clipped loss is flat at 16.118 there, so its slope is 0; the unclipped formula returns $-10^{9}$; the clipped division returns $-10^{7}$, which is $-1/10^{-7}$. The clip therefore caps the size of the gradient at $10^{7}/N$ per entry and keeps its sign. It is a guard, not the derivative of the clipped loss. The series does not rely on it: the combined class of post 19 removes the division altogether.
+- **A soft label is passed.** Part 3 takes the label $[0.9, 0.05, 0.05]$ and the prediction $[0.7, 0.1, 0.2]$ of post 08. `backward` uses the general form $-\mathbf{y} / \hat{\mathbf{y}}$, so all three entries are non-zero and they are the measured slopes of the cross-entropy $-\sum_k y_k \log \hat{y}_k$. They are not the slopes of the number `forward` reports, because post 08's multiply-and-sum path computes $-\log \sum_k y_k \hat{y}_k$, which is guaranteed to equal the cross-entropy only for one-hot rows. With soft labels this class would report one function and descend another. The series uses hard labels only.
+- **Integer labels arrive as a column.** Labels of shape $(N, 1)$ have two dimensions, are taken as one-hot, and broadcast. For the labels 0, 1, 2 on the batch of section 3.1 the method returns a first row of zeros, a second row of $-3.333, -0.556, -1.111$ and a third of $-3.333, -2.222, -1.333$, with no error (part 4 of the script); `y.ravel()` restores the array of section 3.1.
+- **The division by $N$ is missing, or done twice.** Leaving it out makes every entry $N$ times too large (section 7). Adding a second division in a layer or an optimiser, on the grounds that the gradient should be averaged, makes every parameter gradient $N$ times too small: the first entry of section 3.1 would be $-0.1587$ in place of $-0.4762$. Neither mistake raises an error or changes the direction of the step, so each shows up only as a learning rate that seems to need retuning whenever the batch size changes.
 
 ---
 
@@ -189,43 +237,39 @@ A boundary section.
 
 | Concept | Takeaway |
 |---|---|
-| Backprop starts at the loss | $\partial L / \partial \hat{\mathbf{y}}$ is the first gradient in the chain |
-| Cross-entropy gradient | $\partial L_i / \partial \hat{y}_{ij} = -y_{ij} / \hat{y}_{ij}$; element-wise division |
-| One-hot collapse | Only the correct-class entry of each row is non-zero |
-| Batch normalisation | Divide by $N$ so the gradient magnitude is independent of batch size |
-| Two label formats | Integer labels convert to one-hot via `np.eye`; one-hot pass through directly |
-| Clipping | Forward clipping prevents zero denominators downstream |
+| Where the backward pass starts | $\partial L / \partial \hat{\mathbf{y}}$ is the first gradient; the loss computes it without receiving one |
+| Derivative of the logarithm | $\frac{d}{dx}[-\log x] = -1/x$ |
+| Cross-entropy gradient | $\partial L_i / \partial \hat{y}_{i,k} = -y_{i,k} / \hat{y}_{i,k}$, an element-wise division |
+| One-hot labels | One non-zero entry per row, $-1/\hat{y}_{i,c_i}$ at the true class |
+| Batch mean | $L$ is a mean, so the gradient is divided by $N$ once, in the loss |
+| Two label formats | Integer labels become one-hot rows with `np.eye(labels)[y_true]` |
+| Exact zeros | `forward` clips a copy; `backward` divides by the raw predictions and returns `nan` or `-inf` |
 
 ---
 
 ## Common pitfalls
 
-- **Forgetting the `1/N`.** Without it, the gradient is `N` times too large, and the learning rate has to be shrunk to compensate. Always divide.
-- **Skipping the label-format check.** Passing integer labels to a backward that expects one-hot (or vice versa) silently produces wrong gradients.
-- **Computing the gradient on unclipped predictions.** If any `y_pred` value is zero at a position where `y_true` is non-zero, the division blows up. Always use the clipped version.
-- **Treating the loss `backward` as if it needs an upstream `dvalues`.** Unlike intermediate layers, the loss is the top of the chain; its "upstream" is just `1`. The code goes straight to the local gradient.
-- **Forgetting that the gradient row is mostly zero.** This is a feature, not a bug. The one-hot label kills every entry except the correct class; softmax's backward in Part 19 will redistribute the signal across all classes.
-- **Using the same name `samples` for two different things.** `samples` here means `N = len(y_pred)`. In some textbooks it means the per-sample loss; mixing them up wastes hours.
-- **Coding `dinputs = -y_true / dvalues / samples` and reading the order wrong.** Python evaluates left-to-right, so `-y_true / dvalues / samples` is `((-y_true) / dvalues) / samples`, which is what is wanted. Parentheses help readability.
+1. **Forgetting the division by $N$.** The gradient is then $N$ times too large and the usable learning rate depends on the batch size.
+2. **Dividing by $N$ a second time.** The loss already averages; the layers that receive its gradient only sum over the rows.
+3. **Assuming the clip in `forward` protects `backward`.** It clips a local copy. An exact zero in the predictions still gives `nan` or `-inf` in the gradient.
+4. **Reading `dvalues` as a gradient in the loss class.** It holds the predictions; the upstream gradient of the loss is 1.
+5. **Passing integer labels as an $(N, 1)$ column.** The method treats them as one-hot and returns a wrong array without an error. Integer labels must have shape $(N,)$.
+6. **Treating the zeros in each row as a bug.** One non-zero entry per row is correct for one-hot labels; the softmax backward of post 19 spreads it over all the logits.
 
 ---
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6.2.2 (Maximum Likelihood) and chapter 6.5 (Back-Propagation) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 18 (2020).
-- Murphy, K. P., *Probabilistic Machine Learning: An Introduction*, chapter 10 (Classification) (MIT Press, 2022).
+- Bishop, C. M., *Pattern Recognition and Machine Learning*, section 4.3.4 (Springer, 2006).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, sections 6.2.2 and 6.5 (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 9 (2020).
+- Murphy, K. P., *Probabilistic Machine Learning: An Introduction*, chapter 10 (MIT Press, 2022).
 
-Full citations in [REFERENCES.md](../../REFERENCES.md).
+Full citations are in [REFERENCES.md](../../REFERENCES.md).
 
 ---
 
 ## What to read next
 
-- **[Part 19 — Softmax derivatives and the combined backward pass](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)**: the softmax Jacobian, and the clean cancellation that turns `softmax + cross-entropy` into `(ŷ − y)/N`.
-- **[Part 20 — Assembling full backpropagation](../20-assembling-full-backpropagation/index.md)**: every `backward` method snapping together for the first time.
-- **[Part 21 — Coding the full backpropagation](../21-coding-the-full-backpropagation/index.md)**: the complete training loop that actually moves the spiral classifier off the chance baseline.
-
----
-
-> **Try it yourself:** Hands-on exercises and quizzes for this lecture live in [Exercises](../../exercises.md) and [Quizzes](../../quizzes.md).
+- **[Post 19 - Softmax derivatives and the combined backward pass](../19-softmax-derivatives-and-the-combined-backward-pass/index.md):** the softmax Jacobian, and the cancellation that turns this division into $(\hat{\mathbf{y}} - \mathbf{y})/N$.
+- **[Post 34 - Sigmoid and binary cross-entropy](../34-sigmoid-and-binary-cross-entropy/index.md):** the same derivation for the two-term loss of a yes-or-no output.

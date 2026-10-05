@@ -1,0 +1,804 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-018",
+  "next_ordinal": 18,
+  "questions": [
+    {
+      "id": "nn-018-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2.2",
+      "est_minutes": 2,
+      "tags": [
+        "gradient",
+        "true-class"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "One sample has a one-hot label with true class $c$, and the network gives that class the probability $\\hat{y}_c$. What is the partial derivative of the sample's categorical cross-entropy with respect to $\\hat{y}_c$?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "$-\\log \\hat{y}_c$",
+          "correct": false,
+          "feedback": "This is the loss of the sample itself, not its derivative. Differentiating the logarithm removes it and leaves a reciprocal."
+        },
+        {
+          "key": "b",
+          "text": "$-1/\\hat{y}_c$",
+          "correct": true,
+          "feedback": "The derivative of $-\\log x$ is $-1/x$, and the label contributes the factor $y_c = 1$."
+        },
+        {
+          "key": "c",
+          "text": "$\\hat{y}_c - 1$",
+          "correct": false,
+          "feedback": "This is the derivative with respect to the logit of the true class, after the softmax has been differentiated as well. The question asks about the probability."
+        },
+        {
+          "key": "d",
+          "text": "$1/\\hat{y}_c$",
+          "correct": false,
+          "feedback": "The sign is wrong. Raising the probability on the true class lowers the loss, so the derivative is negative."
+        }
+      ],
+      "explanation": "Section 2.2: only the term $-y_c \\log \\hat{y}_c$ contains $\\hat{y}_c$, the label $y_c$ is 1, and the derivative of $-\\log x$ is $-1/x$. The result is negative and grows in size as the probability on the true class falls.",
+      "hints": [
+        "Only one term of the sum over classes contains this probability; differentiate that term."
+      ]
+    },
+    {
+      "id": "nn-018-q02",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2.2",
+      "est_minutes": 4,
+      "tags": [
+        "gradient",
+        "single-sample"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A single sample has the one-hot label $[0, 1, 0]$ and the prediction $[0.1, 0.4, 0.5]$. Give the three entries of $\\partial L_i / \\partial \\hat{\\mathbf{y}}_i$, the gradient of this sample's loss with respect to its predictions.",
+      "answer": {
+        "parts": [
+          {
+            "label": "entry for class 0",
+            "value": 0.0,
+            "tolerance": 1e-09,
+            "unit": ""
+          },
+          {
+            "label": "entry for class 1",
+            "value": -2.5,
+            "tolerance": 0.005,
+            "unit": ""
+          },
+          {
+            "label": "entry for class 2",
+            "value": 0.0,
+            "tolerance": 1e-09,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form -y / y_hat of section 2.2: -0/0.1, -1/0.4, -0/0.5; recomputed with NumPy as [0, -2.5, 0].",
+      "explanation": "Section 2.2: the row is the element-wise division $-\\mathbf{y}_i / \\hat{\\mathbf{y}}_i$. The label is 0 at classes 0 and 2, so those entries are 0 whatever the prediction, and the true-class entry is $-1/0.4 = -2.5$. The largest prediction, 0.5 on class 2, does not appear in the row at all.",
+      "hints": [
+        "Divide the label by the prediction entry by entry, and put a minus sign in front."
+      ]
+    },
+    {
+      "id": "nn-018-q03",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "3.1",
+      "est_minutes": 7,
+      "tags": [
+        "batch",
+        "worked-example"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A batch of four samples has the predictions $[0.5, 0.3, 0.2]$, $[0.1, 0.8, 0.1]$, $[0.25, 0.25, 0.5]$, and $[0.2, 0.4, 0.4]$, with integer labels 0, 1, 0, 2. The loss is the batch mean of the categorical cross-entropy. Give the one non-zero entry in each row of $\\partial L / \\partial \\hat{\\mathbf{y}}$.",
+      "answer": {
+        "parts": [
+          {
+            "label": "row 1, class 0",
+            "value": -0.5,
+            "tolerance": 0.006,
+            "unit": ""
+          },
+          {
+            "label": "row 2, class 1",
+            "value": -0.3125,
+            "tolerance": 0.006,
+            "unit": ""
+          },
+          {
+            "label": "row 3, class 0",
+            "value": -1.0,
+            "tolerance": 0.006,
+            "unit": ""
+          },
+          {
+            "label": "row 4, class 2",
+            "value": -0.625,
+            "tolerance": 0.006,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form -1 / (N * y_hat at the true class) with N = 4, the procedure of snippets/loss_backward.py; recomputed with the post's backward method as -0.5, -0.3125, -1.0, -0.625.",
+      "explanation": "Section 3: each non-zero entry is $-1/(N \\hat{y}_{i,c_i})$ with $N = 4$. The true-class probabilities are 0.5, 0.8, 0.25, and 0.4, so the entries are $-1/2$, $-1/3.2$, $-1/1$, and $-1/1.6$. The third sample has the smallest probability on its true class and the largest gradient.",
+      "hints": [
+        "Pick the probability on the true class of each row first.",
+        "Each entry is minus one over the product of the batch size and that probability."
+      ]
+    },
+    {
+      "id": "nn-018-q04",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "dvalues",
+        "interface"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the call `loss_fn.backward(dvalues, y_true)` on `Loss_CategoricalCrossentropy`, what does the array passed as `dvalues` hold?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The gradient of the loss with respect to the softmax output, handed over by the component after the loss.",
+          "correct": false,
+          "feedback": "No component comes after the loss, so nothing can hand it a gradient. That gradient is what this method produces, not what it receives."
+        },
+        {
+          "key": "b",
+          "text": "The clipped predictions that `forward` stored on the object.",
+          "correct": false,
+          "feedback": "`forward` clips a local copy and stores nothing; `backward` works on the array it is given as an argument."
+        },
+        {
+          "key": "c",
+          "text": "The predictions, which are the softmax output.",
+          "correct": true,
+          "feedback": "The loss has no upstream gradient other than 1, so the argument carries the predictions that the local derivative divides by."
+        },
+        {
+          "key": "d",
+          "text": "The per-sample losses returned by `forward`.",
+          "correct": false,
+          "feedback": "The per-sample losses have shape $(N,)$ and are not needed by the derivative, which divides the labels by the $(N, K)$ predictions."
+        }
+      ],
+      "explanation": "Section 5: everywhere else `dvalues` is the gradient arriving from the next component, but the loss is the last component. Its upstream gradient is $\\partial L / \\partial L = 1$, the multiplication by it is left out, and the argument holds the predictions $\\hat{\\mathbf{y}}$ that $-\\mathbf{y} / \\hat{\\mathbf{y}}$ needs.",
+      "hints": [
+        "Ask which component could send a gradient to the loss."
+      ]
+    },
+    {
+      "id": "nn-018-q05",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "batch-mean"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`Loss_CategoricalCrossentropy.backward` ends by dividing by `samples`. That division is the derivative of one operation in the computation of the reported loss. Name the operation.",
+      "answer": {
+        "model": "The mean over the batch: the np.mean in Loss.calculate that averages the per-sample losses.",
+        "accept": [
+          "^(?![\\s\\S]*(?:\\bnot|n't|\\bnever|\\binstead\\s+of|\\brather\\s+than|\\bno)\\s+(?:(?!sum\\b|but\\b)\\w+\\s+){0,3}(?:mean|averag))(?![\\s\\S]*\\b(?:mean|averag\\w*)\\s+(?:(?:over|of|across|along|within|in)\\s+)?(?:(?:the|all|each|every|its|a)\\s+)*(?:class\\w*|weights?\\b|predictions?\\b|probabilit\\w+|logits?\\b|row\\b|squared?\\b|columns?\\b|axis\\s*=?\\s*1\\b|k\\b))(?![\\s\\S]*\\b(?:mean|sum|log|clip|softmax)\\b[\\s,;/]*(?:(?:and|or)\\s+)?(?:np\\.)?(?:sum|log|clip|softmax)\\b)(?![\\s\\S]*\\b(?:softmax|np\\.eye|one-?hot)\\b)(?:(?:\\bnot|n't|\\bnever|\\binstead\\s+of|\\brather\\s+than)\\s+(?:(?:the|a|an|its|their)\\s+)?(?:np\\.)?\\w+|(?!\\b(?:clip\\w*|np\\.log|np\\.sum|logarithm|log|sum|dot)\\b)[\\s\\S])*?\\b(?:(?:np\\.)?mean\\b|averag\\w*)",
+          "^(?![\\s\\S]*(?:\\bnot|n't|\\bnever|\\binstead\\s+of|\\brather\\s+than|\\bno)\\s+(?:(?!sum\\b|but\\b)\\w+\\s+){0,3}(?:mean|averag))(?![\\s\\S]*\\b(?:softmax|np\\.eye|one-?hot)\\b)(?![\\s\\S]*\\b(?:clip\\w*|logarithm|np\\.log|class\\w*)\\b)[\\s\\S]*\\bsum\\b[^.\\n]{0,60}?(?:divided\\s+by|/)\\s*(?:n\\b|the\\s+(?:number|batch)|samples\\b|len\\b)"
+        ]
+      },
+      "explanation": "Section 6: `forward` returns $N$ per-sample losses and `Loss.calculate` reduces them with `np.mean`. The backward pass differentiates the number that is reported, and the derivative of a mean of $N$ terms with respect to one of them is $1/N$.",
+      "hints": [
+        "Look at what `calculate` does with the array that `forward` returns."
+      ]
+    },
+    {
+      "id": "nn-018-q06",
+      "type": "short",
+      "track": "workout",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2.1",
+      "est_minutes": 2,
+      "tags": [
+        "logarithm",
+        "derivative"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Write the derivative of $-\\log x$ with respect to $x$, where $\\log$ is the natural logarithm, as an expression in $x$.",
+      "answer": {
+        "model": "-1/x",
+        "accept": [
+          "^(?![\\s\\S]*(?:\\bnot|n't|\\bnever)\\W+(?:\\w+\\s+)?(?:-|\u2212|minus|negative))(?![\\s\\S]*x\\s*\\}?\\s*\\)?\\s*(?:\\^|\\*\\*)\\s*\\{?\\s*\\(?\\s*[2-9])(?:[\\s\\S]{0,300}?(?:\\bis|=|:|\\bequals|\\bgives)\\s*)?[\\s$(]*(?:(?:-|\u2212|minus\\s+|negative\\s+)\\s*\\(?\\s*(?:1|one)\\s*(?:/|over|divided\\s+by)\\s*\\(?\\s*x\\b|\\(\\s*(?:-|\u2212)\\s*1\\s*\\)\\s*/\\s*\\(?\\s*x\\b|(?:-|\u2212)\\s*\\\\[dt]?frac\\s*\\{?\\s*1\\s*\\}?\\s*\\{?\\s*x\\s*\\}?|(?:-|\u2212)\\s*x\\s*(?:\\^|\\*\\*)\\s*\\{?\\s*\\(?\\s*(?:-|\u2212)\\s*1\\b\\s*\\)?\\s*\\}?|\\\\[dt]?frac\\s*\\{\\s*(?:-|\u2212)\\s*1\\s*\\}\\s*\\{\\s*x\\s*\\})(?!\\s*\\)?\\s*(?:[-+*/^]|\u2212|squared|cubed|times|plus|minus|over|log|ln|\\\\log|\\\\ln|\\\\cdot|\\\\times|\\d|[xynk]\\b))"
+        ]
+      },
+      "explanation": "Section 2.1: the difference quotient of $\\log x$ is $\\frac{1}{x} \\cdot \\frac{\\log(1 + u)}{u}$ with $u = h/x$, and the second factor tends to 1, so $\\frac{d}{dx} \\log x = 1/x$ and the minus sign carries through. This reciprocal is the whole reason the gradient of the loss is a division by the prediction.",
+      "hints": [
+        "Differentiate $\\log x$ first, then carry the minus sign."
+      ]
+    },
+    {
+      "id": "nn-018-q07",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "8",
+      "est_minutes": 4,
+      "tags": [
+        "zeros",
+        "nan"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The post's `backward` is called on one sample with the float64 prediction `[[0.0, 0.0, 1.0]]` and the one-hot label `[[0, 0, 1]]`. What is stored in `dinputs`?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`[[0, 0, -1]]`, because the label is zero on the first two classes.",
+          "correct": false,
+          "feedback": "A zero label does not rescue the entry: $-0/0$ is not 0 in floating point. NumPy evaluates it as `nan`."
+        },
+        {
+          "key": "b",
+          "text": "`[[nan, nan, -1]]`, with a warning and no exception.",
+          "correct": true,
+          "feedback": "The two wrong-class entries are $-0/0$, which NumPy evaluates as `nan` with a RuntimeWarning, and the true-class entry is $-1/1$."
+        },
+        {
+          "key": "c",
+          "text": "`[[-inf, -inf, -1]]`, with a warning and no exception.",
+          "correct": false,
+          "feedback": "`-inf` is what a non-zero numerator over zero gives. Here both the numerator and the denominator are zero, which is `nan`."
+        },
+        {
+          "key": "d",
+          "text": "`[[0, 0, -1]]`, because the predictions were clipped to `[1e-7, 1 - 1e-7]`.",
+          "correct": false,
+          "feedback": "The clip is applied inside `forward` to a local copy. `backward` divides by the array it is handed, zeros included."
+        },
+        {
+          "key": "e",
+          "text": "Nothing: the division raises `ZeroDivisionError`.",
+          "correct": false,
+          "feedback": "Plain Python floats raise that exception; NumPy arrays return `nan` or `inf` and emit a RuntimeWarning."
+        }
+      ],
+      "explanation": "Section 8: `backward` does not clip, so the zeros on the two wrong classes meet the zeros of the label and give $-0/0$, which is `nan`. NumPy raises a RuntimeWarning (invalid value encountered in divide) and continues, and the `nan` then spreads into every sum it enters.",
+      "hints": [
+        "Work out numerator and denominator of each of the three divisions separately.",
+        "Zero over zero and one over zero are different cases in floating point."
+      ]
+    },
+    {
+      "id": "nn-018-q08",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "8",
+      "est_minutes": 4,
+      "tags": [
+        "clipping",
+        "gradient"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A variant of `backward` divides by `np.clip(dvalues, 1e-7, 1 - 1e-7)` in place of `dvalues`. For one sample ($N = 1$) whose true class has the prediction $10^{-9}$, what does the variant return at the true class, and what is the slope of the clipped loss of `forward` at that prediction?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It returns $-10^{9}$, and the slope of the clipped loss is $-10^{9}$.",
+          "correct": false,
+          "feedback": "$-10^{9}$ is what the unclipped division returns. The clip replaces the denominator by $10^{-7}$, and the clipped loss does not change at all below its lower bound."
+        },
+        {
+          "key": "b",
+          "text": "It returns $-10^{7}$, and the slope of the clipped loss is 0.",
+          "correct": true,
+          "feedback": "The denominator is raised to $10^{-7}$, giving $-10^{7}$, while the loss is constant at 16.118 below the bound, so its slope is 0."
+        },
+        {
+          "key": "c",
+          "text": "It returns 0, and the slope of the clipped loss is 0.",
+          "correct": false,
+          "feedback": "The clip changes the denominator, not the label in the numerator, so the entry is $-1/10^{-7}$ and not 0. Only the slope of the clipped loss is 0."
+        },
+        {
+          "key": "d",
+          "text": "It returns $-10^{7}$, and the slope of the clipped loss is $-10^{7}$.",
+          "correct": false,
+          "feedback": "The clipped loss is flat below $10^{-7}$: every prediction there gives 16.118, so a small change in the prediction changes nothing."
+        }
+      ],
+      "explanation": "Section 8: the clipped division returns $-1/10^{-7} = -10^{7}$, a capped value with the right sign. The loss that `forward` computes is constant at $-\\log 10^{-7} = 16.118$ for every prediction below the bound, so its measured slope is 0. The clip in `backward` is therefore a guard on the size of the gradient and not the derivative of the clipped loss.",
+      "hints": [
+        "Apply the clip to the denominator and carry out the division.",
+        "For the slope, ask what `forward` returns at $10^{-9}$ and at a slightly different prediction that is also below $10^{-7}$."
+      ]
+    },
+    {
+      "id": "nn-018-q09",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 15,
+      "tags": [
+        "implementation",
+        "numpy"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "implement",
+      "language": "python",
+      "prompt": "Implement `cross_entropy_backward(y_pred, y_true)` as one function. It receives an $(N, K)$ array of probabilities and labels that are either $(N,)$ integer class indices or $(N, K)$ one-hot rows, and returns the $(N, K)$ gradient of the batch-mean categorical cross-entropy with respect to the predictions. No clipping is required.",
+      "starter": "import numpy as np\n\n\ndef cross_entropy_backward(y_pred, y_true):\n    \"\"\"Gradient of the mean categorical cross-entropy with respect to y_pred.\n\n    y_pred: (N, K) array of probabilities, one row per sample.\n    y_true: (N,) integer class indices, or (N, K) one-hot rows.\n    Returns an (N, K) array.\n    \"\"\"\n    raise NotImplementedError\n",
+      "solution": "import numpy as np\n\n\ndef cross_entropy_backward(y_pred, y_true):\n    \"\"\"Gradient of the mean categorical cross-entropy with respect to y_pred.\n\n    y_pred: (N, K) array of probabilities, one row per sample.\n    y_true: (N,) integer class indices, or (N, K) one-hot rows.\n    Returns an (N, K) array.\n    \"\"\"\n    y_pred = np.asarray(y_pred, dtype=float)\n    y_true = np.asarray(y_true)\n    samples, labels = y_pred.shape\n    if y_true.ndim == 1:\n        y_true = np.eye(labels)[y_true]\n    return -y_true / y_pred / samples\n",
+      "tests": "import numpy as np\n\npred = np.array([[0.7, 0.2, 0.1], [0.1, 0.6, 0.3], [0.2, 0.3, 0.5]])\nidx = np.array([0, 1, 2])\nwant = np.array([[-1 / 2.1, 0, 0], [0, -1 / 1.8, 0], [0, 0, -1 / 1.5]])\n\n# 1. The worked batch, both label formats.\na = cross_entropy_backward(pred, idx)\nb = cross_entropy_backward(pred, np.eye(3, dtype=int)[idx])\nassert a.shape == (3, 3), a.shape\nassert np.allclose(a, want, atol=1e-12), a\nassert np.allclose(b, want, atol=1e-12), b\n\n# 2. The 1/N: repeating the batch ten times divides every entry by ten.\nbig = cross_entropy_backward(np.tile(pred, (10, 1)), np.tile(idx, 10))\nassert big.shape == (30, 3), big.shape\nassert np.allclose(big[:3], want / 10, atol=1e-12), big[:3]\nassert np.allclose(big.sum(axis=0), want.sum(axis=0), atol=1e-12)\n\n# 3. A non-square batch, so rows and columns cannot be confused.\np = np.array([[0.25, 0.25, 0.4, 0.1], [0.05, 0.05, 0.1, 0.8]])\ng = cross_entropy_backward(p, np.array([3, 0]))\nassert g.shape == (2, 4), g.shape\nassert np.allclose(g, [[0, 0, 0, -5.0], [-10.0, 0, 0, 0]], atol=1e-12), g\n\n# 4. Against a central difference of the mean loss on random batches.\ndef mean_loss(q, y):\n    return float(np.mean(-np.log(q[np.arange(len(q)), y])))\n\nrng = np.random.default_rng(18)\nfor n, k in [(5, 4), (2, 6), (7, 3)]:\n    raw = rng.random((n, k)) + 0.1\n    q = raw / raw.sum(axis=1, keepdims=True)\n    y = rng.integers(0, k, size=n)\n    num = np.zeros_like(q)\n    for i in range(n):\n        for j in range(k):\n            up, down = q.copy(), q.copy()\n            up[i, j] += 1e-5\n            down[i, j] -= 1e-5\n            num[i, j] = (mean_loss(up, y) - mean_loss(down, y)) / 2e-5\n    assert np.max(np.abs(cross_entropy_backward(q, y) - num)) < 1e-6, (n, k)\nprint(\"all tests passed\")\n",
+      "explanation": "The solution is section 5's method as a function: read $N$ and $K$ from the predictions, turn one-dimensional labels into one-hot rows with `np.eye`, divide the negated labels by the predictions, and divide once by $N$. The tests check the worked batch in both label formats, that repeating the batch ten times divides each entry by ten and leaves the sum over rows alone, a non-square batch, and a central difference of the mean loss with $h = 10^{-5}$.",
+      "hints": [
+        "Bring both label formats to the same $(N, K)$ form before doing any arithmetic.",
+        "The gradient of one sample's loss is an element-wise division; the mean over the batch contributes one more factor."
+      ]
+    },
+    {
+      "id": "nn-018-q10",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "3",
+      "est_minutes": 12,
+      "tags": [
+        "derivation",
+        "batch"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "derive",
+      "prompt": "Starting from the per-sample loss $L_i = -\\sum_k y_{i,k} \\log \\hat{y}_{i,k}$ and the batch loss $L = \\frac{1}{N} \\sum_i L_i$, derive $\\partial L / \\partial \\hat{y}_{i,k}$. State which rule of differentiation each step uses, and say what the result becomes at the true class and at the other classes when the label is one-hot.",
+      "answer_length": "half a page",
+      "solution": "1. **Isolate the sample.** The prediction $\\hat{y}_{i,k}$ belongs to sample $i$. No other sample's loss contains it, so in $L = \\frac{1}{N} \\sum_j L_j$ only the term $j = i$ has a non-zero derivative: $\\partial L / \\partial \\hat{y}_{i,k} = \\frac{1}{N} \\, \\partial L_i / \\partial \\hat{y}_{i,k}$. This is the sum rule, with the constant factor $1/N$ carried through.\n2. **Isolate the class.** A partial derivative holds the other predictions fixed. In $L_i = -\\sum_m y_{i,m} \\log \\hat{y}_{i,m}$ only the term $m = k$ contains $\\hat{y}_{i,k}$; the others are constants and differentiate to 0.\n3. **Differentiate the logarithm.** The label $y_{i,k}$ is a constant factor, and $\\frac{d}{dx}[-\\log x] = -1/x$, so $\\partial L_i / \\partial \\hat{y}_{i,k} = -y_{i,k} / \\hat{y}_{i,k}$.\n4. **Combine.** $\\partial L / \\partial \\hat{y}_{i,k} = -\\dfrac{y_{i,k}}{N \\, \\hat{y}_{i,k}}$.\n5. **One-hot labels.** At the true class $c_i$ the label is 1 and the entry is $-1/(N \\hat{y}_{i,c_i})$. At every other class the label is 0 and the entry is 0. Each row of the $(N, K)$ gradient therefore has one non-zero entry.",
+      "rubric": [
+        {
+          "criterion": "States that only sample $i$'s loss depends on $\\hat{y}_{i,k}$, so the mean contributes exactly the factor $1/N$",
+          "points": 2
+        },
+        {
+          "criterion": "States that only the term of class $k$ in the sum over classes depends on $\\hat{y}_{i,k}$",
+          "points": 1
+        },
+        {
+          "criterion": "Uses $\\frac{d}{dx}[-\\log x] = -1/x$ with the label as a constant factor to get $-y_{i,k}/\\hat{y}_{i,k}$",
+          "points": 2
+        },
+        {
+          "criterion": "Arrives at $-y_{i,k} / (N \\hat{y}_{i,k})$",
+          "points": 2
+        },
+        {
+          "criterion": "Gives $-1/(N \\hat{y}_{i,c_i})$ at the true class and 0 elsewhere for a one-hot label",
+          "points": 1
+        }
+      ],
+      "explanation": "Sections 2 and 3: the partial derivative isolates one term of the sum over classes, the derivative of $-\\log x$ is $-1/x$, and the batch mean adds the factor $1/N$ because each prediction appears in one sample's loss only. With one-hot labels a single entry per row survives, $-1/(N \\hat{y}_{i,c_i})$.",
+      "hints": [
+        "Deal with the two sums one at a time: first the sum over samples, then the sum over classes.",
+        "In each sum, count how many terms contain the one prediction being varied."
+      ]
+    },
+    {
+      "id": "nn-018-q11",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "8",
+      "est_minutes": 15,
+      "tags": [
+        "clipping",
+        "nan",
+        "debugging"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "critique",
+      "prompt": "A training script calls `loss_fn.calculate(softmax_output, y)` and then `loss_fn.backward(softmax_output, y)` with the class of this post, in float32. One epoch prints a finite loss, and after the following update every weight of the network is `nan`. A colleague rules out the loss class on the grounds that it clips to `[1e-7, 1 - 1e-7]` and so cannot produce anything that is not finite. Assess that argument: say what the clip does and does not cover, name the two ways an exact zero in `softmax_output` damages the gradient, explain how a finite loss and a broken gradient can come from the same array, and propose a fix.",
+      "answer_length": "half a page",
+      "solution": "1. **What the clip covers.** `forward` computes `y_pred_clipped = np.clip(y_pred, 1e-7, 1 - 1e-7)`, a new local array, and takes its logarithm. That bounds each per-sample loss by $-\\log 10^{-7} = 16.118$, so the reported loss is finite. The caller's array is not modified.\n2. **What it does not cover.** `backward` receives `softmax_output` again as `dvalues` and computes `-y_true / dvalues` on it directly. Nothing in `backward` clips.\n3. **The two failures.** A softmax output can underflow to exactly 0 in float32 once a logit sits far enough below the largest logit of its row (post 08). If the zero is on a wrong class, the entry is $-0/0$, which is `nan`. If it is on the true class, the entry is $-1/0$, which is `-inf`. NumPy emits a RuntimeWarning in both cases and continues.\n4. **Finite loss, broken gradient.** The wrong-class case is the quiet one: a row such as $[0, 0, 1]$ with true class 2 is a confident correct prediction with a loss near $10^{-7}$, and its gradient row is `[nan, nan, -1/N]`. The loss looks excellent while the gradient is already unusable.\n5. **How it reaches every weight.** Each later backward step forms sums and products that include the bad entries, and any sum containing `nan` is `nan`. The parameter gradients become `nan` and the update writes them into the weights.\n6. **A fix.** Divide by `np.clip(dvalues, 1e-7, 1 - 1e-7)` inside `backward`: wrong-class zeros then give 0 and a true-class zero gives the capped value $-10^{7}/N$. The capped value is a guard and not the slope of the clipped loss, which is 0 below the bound. The cleaner fix is to differentiate softmax and the loss together, which removes the division.",
+      "rubric": [
+        {
+          "criterion": "States that `forward` clips a local copy, which bounds the loss and leaves the caller's array unchanged",
+          "points": 2
+        },
+        {
+          "criterion": "States that `backward` divides by the unclipped array it is handed",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies $-0/0$ as `nan` for a zero on a wrong class and $-1/0$ as `-inf` for a zero on the true class",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that a confident correct row with wrong-class zeros has a tiny loss and a `nan` gradient",
+          "points": 1
+        },
+        {
+          "criterion": "Proposes clipping the denominator in `backward` or removing the division by combining softmax with the loss",
+          "points": 1
+        }
+      ],
+      "explanation": "Section 8: the clip in `forward` protects the logarithm and nothing else, because it acts on a local copy. `backward` divides by the raw predictions, so a zero on a wrong class gives `nan` and a zero on the true class gives `-inf`, with warnings and no exception. Clipping the denominator caps the entry at $10^{7}/N$ in size.",
+      "hints": [
+        "Follow the array `softmax_output` through both calls and note where a clipped version of it exists.",
+        "Evaluate $-y/\\hat{y}$ for a zero prediction twice: once with $y = 0$ and once with $y = 1$."
+      ]
+    },
+    {
+      "id": "nn-018-q12",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 15,
+      "tags": [
+        "batch-size",
+        "dense-layer"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "connect",
+      "connects": [
+        "nn-016",
+        "nn-008"
+      ],
+      "prompt": "Post 16's `Layer_Dense.backward` computes `self.dweights = np.dot(self.inputs.T, dvalues)` and `self.dbiases = np.sum(dvalues, axis=0, keepdims=True)`, with no division by the number of samples. A reviewer proposes adding `/ len(dvalues)` to both lines, so that the weight gradient becomes an average over the batch. Using the loss of post 08 and the backward method of this post, explain why the proposal is wrong, by what factor it changes every parameter gradient, what would happen to `dweights` under the original code if a batch were replaced by ten copies of itself, and how the mistake would show up in training.",
+      "answer_length": "half a page",
+      "solution": "1. **Where the average already is.** Post 08's `Loss.calculate` reports the mean of the $N$ per-sample losses. This post's `backward` differentiates that mean, which puts a factor $1/N$ on every entry of `dinputs`.\n2. **The factor survives the trip back.** Every backward step between the loss and a dense layer is linear in its `dvalues`, so each row of the `dvalues` that reaches the layer still carries the $1/N$.\n3. **The layer sums.** `np.dot(self.inputs.T, dvalues)` and `np.sum(dvalues, axis=0)` add the contributions of the $N$ rows. A sum of $N$ terms that each carry $1/N$ is already the average over the batch. The proposal divides a second time.\n4. **The factor.** Every weight and bias gradient becomes $N$ times too small: 300 times on the full spiral data.\n5. **Ten copies of the batch.** Under the original code each row's gradient is divided by $10N$ in place of $N$ and there are ten times as many rows, so `dweights` is unchanged, as the gradient of a mean should be. Under the proposal it would shrink by a further factor of ten.\n6. **How it shows.** No error is raised and the direction of the step is the same. Training is slower by the factor $N$, a learning rate $N$ times larger hides it, and the right learning rate then changes whenever the batch size does.",
+      "rubric": [
+        {
+          "criterion": "Locates the single $1/N$ in the loss's backward as the derivative of the mean in `Loss.calculate`",
+          "points": 2
+        },
+        {
+          "criterion": "States that the dense layer sums over the rows, so sum times $1/N$ is already an average",
+          "points": 2
+        },
+        {
+          "criterion": "States that the proposal makes every parameter gradient $N$ times too small",
+          "points": 1
+        },
+        {
+          "criterion": "Shows that ten copies of the batch leave `dweights` unchanged under the original code",
+          "points": 2
+        },
+        {
+          "criterion": "Describes the symptom: no error, same direction, a learning rate that depends on the batch size",
+          "points": 1
+        }
+      ],
+      "explanation": "Section 6: the division by $N$ is the derivative of the batch mean and happens once, in the loss. The dense layer of post 16 sums over the rows, and a sum of $N$ rows that each carry $1/N$ is an average, which is why the sum over rows stays the same when the batch is repeated. A second division makes every parameter gradient $N$ times too small.",
+      "hints": [
+        "Find every place where the forward computation of the reported loss divides by $N$; the backward pass needs one division for each.",
+        "Count rows and per-row factors when the batch is repeated ten times."
+      ]
+    },
+    {
+      "id": "nn-018-q13",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "backward-method",
+        "steps"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`loss_fn.backward(softmax_output, y)` is called with integer labels `y`. Put the steps in the order in which the method of this post performs them, ending with what happens to the result.",
+      "items": [
+        {
+          "key": "a",
+          "text": "`samples` and `labels` are read from the shape of `dvalues`."
+        },
+        {
+          "key": "b",
+          "text": "`len(y_true.shape) == 1` is found to be true."
+        },
+        {
+          "key": "c",
+          "text": "`np.eye(labels)[y_true]` replaces the labels by one-hot rows."
+        },
+        {
+          "key": "d",
+          "text": "`-y_true / dvalues` is stored in `self.dinputs`."
+        },
+        {
+          "key": "e",
+          "text": "`self.dinputs` is divided by `samples`."
+        },
+        {
+          "key": "f",
+          "text": "The softmax's `backward` receives `self.dinputs` as its `dvalues`."
+        }
+      ],
+      "answer": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 5: the method reads $N$ and $K$, checks the number of dimensions of the labels, converts integer labels with `np.eye`, forms the element-wise division $-\\mathbf{y} / \\hat{\\mathbf{y}}$, and applies the $1/N$ of the batch mean. The stored `dinputs` is then the upstream gradient of the softmax.",
+      "hints": [
+        "The conversion needs the number of classes, and the division needs one-hot labels."
+      ]
+    },
+    {
+      "id": "nn-018-q14",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "batch-size",
+        "scaling"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A batch with one-hot labels is replaced by ten copies of itself, so that $N$ becomes $10N$ and nothing else changes. Match each quantity with what happens to it.",
+      "left": [
+        {
+          "key": "a",
+          "text": "One true-class entry of `dinputs` from the post's `backward`"
+        },
+        {
+          "key": "b",
+          "text": "The sum over the rows of `dinputs` from the post's `backward`"
+        },
+        {
+          "key": "c",
+          "text": "The sum over the rows of `-y_true / dvalues`, with the division by `samples` left out"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "divided by 100"
+        },
+        {
+          "key": "q",
+          "text": "divided by 10"
+        },
+        {
+          "key": "r",
+          "text": "unchanged"
+        },
+        {
+          "key": "s",
+          "text": "multiplied by 10"
+        },
+        {
+          "key": "t",
+          "text": "multiplied by 100"
+        }
+      ],
+      "answer": {
+        "a": "q",
+        "b": "r",
+        "c": "s"
+      },
+      "explanation": "Section 6: each entry is $-1/(N \\hat{y}_{i,c_i})$, so ten times the samples divides it by 10. The sum over rows has ten times as many terms, each a tenth of the size, and does not move. Without the $1/N$ the entries stay the same and there are ten times as many of them, so the sum grows tenfold.",
+      "hints": [
+        "Write one entry as a formula in $N$, then count how many rows are summed."
+      ]
+    },
+    {
+      "id": "nn-018-q15",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 6,
+      "tags": [
+        "batch-size",
+        "predict-output"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The script uses the `Loss_CategoricalCrossentropy` class of this post. Give the two numbers it prints, to four decimals.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "import numpy as np\n\ny_pred = np.tile(np.array([[0.7, 0.2, 0.1],\n                           [0.1, 0.6, 0.3],\n                           [0.2, 0.3, 0.5]]), (20, 1))\ny_true = np.tile(np.array([0, 1, 2]), 20)\n\nloss_fn = Loss_CategoricalCrossentropy()\nloss_fn.backward(y_pred, y_true)\nprint(loss_fn.dinputs[0, 0])\nprint(loss_fn.dinputs.sum())\n"
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "dinputs[0, 0]",
+            "value": -0.0238,
+            "tolerance": 0.0002,
+            "unit": ""
+          },
+          {
+            "label": "dinputs.sum()",
+            "value": -1.6984,
+            "tolerance": 0.0005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed forms -1/(60 * 0.7) and -(1/0.7 + 1/0.6 + 1/0.5)/3; the stimulus was run with the class of snippets/loss_backward.py and printed -0.02380952380952381 and -1.6984126984126986.",
+      "explanation": "Section 6: the batch has $N = 60$ rows, so the first entry is $-1/(60 \\times 0.7) = -0.0238$, a twentieth of the $-0.4762$ of the three-sample batch. The sum of all entries is the same as for three samples, $-(1/0.7 + 1/0.6 + 1/0.5)/3 = -1.6984$, because twenty times as many rows each carry a twentieth of the weight.",
+      "hints": [
+        "Count the rows of the tiled batch before computing anything.",
+        "For the sum, compare with the three-sample batch: how many times does each of its entries appear, and how is each scaled?"
+      ]
+    },
+    {
+      "id": "nn-018-q16",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "batch-mean",
+        "reason"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Why does `Loss_CategoricalCrossentropy.backward` divide its result by the number of samples?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Because each row of predictions sums to 1 and the gradient has to be renormalised to match.",
+          "correct": false,
+          "feedback": "The division is by the number of rows, not by anything computed within a row. The sum-to-1 constraint belongs to the softmax and is handled in its own backward pass."
+        },
+        {
+          "key": "b",
+          "text": "Because the dense layers average their gradients over the batch and the loss has to do the same.",
+          "correct": false,
+          "feedback": "The dense layers sum over the rows and do not divide. The loss is the only place where the average enters."
+        },
+        {
+          "key": "c",
+          "text": "Because the reported loss is a mean over the samples, and differentiating a mean gives $1/N$.",
+          "correct": true,
+          "feedback": "The backward pass differentiates the number that `calculate` returns, which is `np.mean` of the per-sample losses."
+        },
+        {
+          "key": "d",
+          "text": "Because small predictions make the entries large and the division keeps them from overflowing.",
+          "correct": false,
+          "feedback": "Large entries from small predictions are a matter for the clip. The division by $N$ is applied to every entry alike and has nothing to do with their size."
+        }
+      ],
+      "explanation": "Section 6: `forward` returns $N$ per-sample losses, `Loss.calculate` averages them, and the gradient of an average of $N$ terms with respect to one of them carries $1/N$. The dense layers that receive this gradient sum over the rows, so this one division is what makes every parameter gradient an average over the batch.",
+      "hints": [
+        "Compare what `forward` returns with what `calculate` returns."
+      ]
+    },
+    {
+      "id": "nn-018-q17",
+      "type": "numeric",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "8",
+      "est_minutes": 5,
+      "tags": [
+        "soft-labels",
+        "general-form"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A single sample ($N = 1$) has the soft label $[0.8, 0.2, 0]$ and the prediction $[0.5, 0.25, 0.25]$. Give the three entries that the post's `backward` stores in `dinputs`.",
+      "answer": {
+        "parts": [
+          {
+            "label": "entry for class 0",
+            "value": -1.6,
+            "tolerance": 0.005,
+            "unit": ""
+          },
+          {
+            "label": "entry for class 1",
+            "value": -0.8,
+            "tolerance": 0.005,
+            "unit": ""
+          },
+          {
+            "label": "entry for class 2",
+            "value": 0.0,
+            "tolerance": 1e-09,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form -y / y_hat with N = 1: -0.8/0.5, -0.2/0.25, -0/0.25; recomputed with the backward method of snippets/loss_backward.py as [-1.6, -0.8, 0].",
+      "explanation": "Section 8: the method uses the general form $-\\mathbf{y} / \\hat{\\mathbf{y}}$, so every class with a non-zero label gets an entry: $-0.8/0.5 = -1.6$ and $-0.2/0.25 = -0.8$, with 0 where the label is 0. These are the slopes of the cross-entropy $-\\sum_k y_k \\log \\hat{y}_k$, although not of the number post 08's `forward` reports for a soft label.",
+      "hints": [
+        "The method never looks for a true class; it divides the whole label row by the whole prediction row.",
+        "With one sample the division by the batch size changes nothing."
+      ]
+    }
+  ]
+}
