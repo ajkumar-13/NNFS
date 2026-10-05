@@ -1,0 +1,839 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-021",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-021-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "gradient-arrays"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The four backward calls of the script have just run for the first time. Which gradient arrays now exist on the four objects?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`dweights` and `dbiases` on `dense2` only; the first layer receives its gradients when an optimiser asks for them.",
+          "correct": false,
+          "feedback": "All four backward calls ran, and `dense1.backward` stored its three arrays like `dense2.backward` did. No gradient is computed on request later."
+        },
+        {
+          "key": "b",
+          "text": "`dweights`, `dbiases` and `dinputs` on both dense layers, and `dinputs` on the other two objects.",
+          "correct": true,
+          "feedback": "Each dense layer stores three arrays, and the two objects without parameters store `dinputs` alone, which the next call reads."
+        },
+        {
+          "key": "c",
+          "text": "`dweights` and `dbiases` on all four objects, because every object takes part in the backward pass.",
+          "correct": false,
+          "feedback": "Only `Layer_Dense` has weights and biases. The ReLU and the combined class have no parameters, so they store `dinputs` and nothing else."
+        },
+        {
+          "key": "d",
+          "text": "`dweights` and `dbiases` on both dense layers and nothing more; `dinputs` is a temporary that each call discards.",
+          "correct": false,
+          "feedback": "`dinputs` is stored on the object, and it has to be: no `backward` returns anything, so the next call reads it from there."
+        }
+      ],
+      "explanation": "Section 6 lists what the backward pass leaves behind: one `dinputs` per object, with the shape of that object's input, and `dweights` and `dbiases` on the two dense layers. The four parameter gradients together hold 21 numbers.",
+      "hints": [
+        "Ask which objects have parameters, and how one backward call passes its result to the next."
+      ]
+    },
+    {
+      "id": "nn-021-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "first-loss"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A freshly initialised three-class classifier of this series prints a first loss of 1.0986. What does that number establish?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The predictions are close to uniform, so the forward pass and the loss are plausible.",
+          "correct": true,
+          "feedback": "A uniform guess over three classes costs $\\ln 3 \\approx 1.0986$, and weights of size 0.01 give nearly uniform predictions."
+        },
+        {
+          "key": "b",
+          "text": "The backward pass is correct, because a wrong gradient would have moved the loss away from this value.",
+          "correct": false,
+          "feedback": "The loss is computed by the forward pass, before any `backward` is called. No gradient can influence it."
+        },
+        {
+          "key": "c",
+          "text": "The network has converged, because the loss sits at a known constant and can fall no further.",
+          "correct": false,
+          "feedback": "$\\ln 3$ is the loss of a network that has learned nothing. A trained classifier scores well below it."
+        },
+        {
+          "key": "d",
+          "text": "The loss class has a bug, because an untrained network should begin with a loss close to zero.",
+          "correct": false,
+          "feedback": "A loss of zero needs probability 1 on the true class of every sample. An untrained network spreads its probability evenly."
+        }
+      ],
+      "explanation": "Section 5: with every prediction near $1/3$ the mean cross-entropy is near $-\\ln(1/3) = \\ln 3$. The match tests the forward pass and the loss; it says nothing about the gradients, which is why the post goes on to two further tests.",
+      "hints": [
+        "Compute the cross-entropy of a prediction that gives each of three classes the same probability."
+      ]
+    },
+    {
+      "id": "nn-021-q03",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "script",
+        "forward-pass"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Eight of the twelve statements of the script are method calls on the four objects. Exactly one of the eight returns a value that the script keeps in a variable. Which call is it, and what does it return?",
+      "answer": {
+        "model": "`loss_activation.forward(dense2.output, y)`, which returns the loss, the mean cross-entropy of the batch.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:not|never|isn't)\\s+(?:the\\s+)?(?:call\\s+)?(?:loss_activation\\s*\\.\\s*forward|(?:last|fourth|final)\\s+forward))(?![\\s\\S]*\\bloss_activation\\s*\\.\\s*backward(?:\\([^)]*\\))?\\s*(?:,?\\s*(?:which|it|that))?\\s*(?:returns?|gives?|hands?\\s+back|yields?|produces?|outputs?)\\s+(?:the\\s+)?(?:mean\\s+)?(?:loss|cross))(?![\\s\\S]*\\b\\w+\\s*\\.\\s*(?:forward|backward)(?:\\([^)]*\\))?\\s+(?:or|and)\\s+(?:the\\s+)?\\w+\\s*\\.\\s*(?:forward|backward)\\b[^.;]*\\b(?:returns?|gives?|hands?\\s+back|yields?|produces?|outputs?))(?![\\s\\S]*\\b(?:all|every|each)\\s+(?:four\\s+|of\\s+the\\s+)?(?:forward|calls?|eight)\\b)(?![\\s\\S]*(?:\\bloss_activation\\s*\\.\\s*forward(?:\\([^)]*\\))?|\\b(?:last|fourth|final)\\s+forward(?:\\s+call)?|\\b(?:combined|softmax)\\b[^.;]{0,40}?\\bforward(?:\\s+(?:call|method))?)\\s*,?\\s*(?:(?:which|it|that|and)\\s+)?(?:only\\s+)?(?:returns?|gives?|hands?\\s+back|yields?|produces?|outputs?)\\s+(?:the\\s+|an?\\s+|only\\s+)?(?:predictions?|probabilit\\w+|gradients?|nothing|none|accuracy|outputs?|logits|dinputs|softmax|derivatives?))(?![\\s\\S]*\\bnot\\s+(?:the\\s+)?(?:mean\\s+)?loss\\b)(?![\\s\\S]*\\b(?:gradient|derivative)s?\\s+of\\s+the\\s+loss\\b)(?=[\\s\\S]*(?:\\bloss_activation\\s*\\.\\s*forward\\b|\\b(?:last|fourth|final)\\s+forward\\b|\\bforward\\s+(?:call\\s+|method\\s+|pass\\s+)?(?:of|on)\\s+(?:the\\s+)?(?:combined|loss_activation|softmax)|\\b(?:combined|softmax|loss_activation)\\b[^.;]{0,50}?\\bforward\\b))[\\s\\S]*\\b(?:loss|cross[\\s-]?entropy)\\b"
+        ]
+      },
+      "explanation": "Section 5: `loss_activation.forward` takes the logits and the labels and returns the mean cross-entropy, which the script stores as `loss`. The other seven calls return nothing; they store their results on the objects as `output` or as gradient arrays.",
+      "hints": [
+        "Look for the one statement of the script that has an equals sign in front of a method call."
+      ]
+    },
+    {
+      "id": "nn-021-q04",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 1,
+      "tags": [
+        "shapes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A layer is created as `Layer_Dense(5, 7)` and is run forward and backward on a batch of 40 samples. What is the shape of its `dweights`?",
+      "answer": {
+        "model": "`(5, 7)`, the shape of `weights`.",
+        "accept": [
+          "^(?:(?!\\d\\s*(?:,|x|×|by|\\*|rows\\s*(?:and|by|,))\\s*\\d)[\\s\\S])*?(?<!not )(?<!not \\()(?<!\\d)(?<![\\d,]\\s)\\(?\\s*5\\s*(?:,|x|×|by|\\*|rows\\s*(?:and|by|,))\\s*7\\b(?!\\s*(?:,|x|×|by|\\*)\\s*\\d)(?:(?!\\d\\s*(?:,|x|×|by|\\*|rows\\s*(?:and|by|,))\\s*\\d)(?!\\bor\\b)[\\s\\S])*(?:\\b(?:not|than|instead\\s+of|never|unlike)\\b[\\s\\S]*)?$"
+        ]
+      },
+      "explanation": "Section 7: a gradient array has the shape of its parameter, because entry $(j, k)$ of `dweights` is the derivative of the loss with respect to entry $(j, k)$ of `weights`. `Layer_Dense(5, 7)` has weights of shape `(5, 7)`. The batch size appears in `dinputs`, never in `dweights`.",
+      "hints": [
+        "The answer does not depend on the number of samples."
+      ]
+    },
+    {
+      "id": "nn-021-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 4,
+      "tags": [
+        "shapes",
+        "counting"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network is built as `dense1 = Layer_Dense(4, 8)`, a ReLU, `dense2 = Layer_Dense(8, 5)` and the combined softmax and loss class, and one forward and one backward pass are run on 50 samples. How many numbers does `dense1.dweights` hold, how many does `dense2.dbiases` hold, and how many do the four parameter gradients hold together?",
+      "answer": {
+        "parts": [
+          {
+            "label": "entries of dense1.dweights",
+            "value": 32,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "entries of dense2.dbiases",
+            "value": 5,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "entries of all four parameter gradients",
+            "value": 85,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 4: each gradient has the shape of its parameter, so the count is 4*8 + 8 + 8*5 + 5 = 85; confirmed by running the classes of snippets/forward_backward.py with these sizes.",
+      "explanation": "Sections 4 and 7: every gradient array has the shape of its parameter, so the counts are those of the parameters. `dense1.dweights` is `(4, 8)` with 32 entries, `dense1.dbiases` is `(1, 8)`, `dense2.dweights` is `(8, 5)` with 40 entries and `dense2.dbiases` is `(1, 5)`: $32 + 8 + 40 + 5 = 85$. The 50 samples change no count.",
+      "hints": [
+        "Write down the shapes of the four parameter arrays first.",
+        "A `Layer_Dense(n, m)` has weights of shape `(n, m)` and biases of shape `(1, m)`."
+      ]
+    },
+    {
+      "id": "nn-021-q06",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "shape-test"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Which of these mistakes changes the shape of at least one of the four parameter gradients of the script, so that comparing gradient shapes with parameter shapes reveals it?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The line `self.dinputs /= samples` is missing from the combined class.",
+          "correct": false,
+          "feedback": "The missing division makes every gradient $N$ times too large and leaves every shape as it was."
+        },
+        {
+          "key": "b",
+          "text": "The ReLU's `backward` stores `dvalues.copy()` and never applies the mask.",
+          "correct": false,
+          "feedback": "An unmasked copy has the same shape as a masked one, so every array after it keeps its shape."
+        },
+        {
+          "key": "c",
+          "text": "`dense2.backward` is handed the scalar `loss` as its argument.",
+          "correct": true,
+          "feedback": "With a scalar, `np.dot(self.inputs.T, dvalues)` returns an array of shape `(3, 300)`, which is not the `(3, 3)` of `dense2.weights`."
+        },
+        {
+          "key": "d",
+          "text": "`loss_activation.backward` is handed the logits in place of the predictions.",
+          "correct": false,
+          "feedback": "Logits and predictions both have shape `(300, 3)`. Every gradient gets a wrong value in an array of the right shape."
+        }
+      ],
+      "explanation": "Section 7: the shape test catches a wrong argument such as a scalar, because the products inside `Layer_Dense.backward` then come out with other shapes. Section 11 shows that it is blind to wrong values: without the division by the number of samples every shape is right. That blindness is the reason for the gradient check.",
+      "hints": [
+        "For each mistake, ask whether an array changes its number of rows or columns, or only its entries."
+      ]
+    },
+    {
+      "id": "nn-021-q07",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "7",
+      "est_minutes": 6,
+      "tags": [
+        "bias-gradient",
+        "class-balance"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A three-class network of the post's kind has all its weights and biases set to zero, so it predicts exactly $1/3$ for every class of every sample. It is run forward and backward on a batch of 12 samples, of which 6 have label 0, 4 have label 1 and 2 have label 2. Give the three entries of `dense2.dbiases`.",
+      "answer": {
+        "parts": [
+          {
+            "label": "entry for class 0",
+            "value": -0.1667,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "entry for class 1",
+            "value": 0.0,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "entry for class 2",
+            "value": 0.1667,
+            "tolerance": 0.001,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form from section 7: entry c is 1/3 - n_c/N, so 1/3 - 6/12, 1/3 - 4/12 and 1/3 - 2/12; confirmed by running the classes of snippets/forward_backward.py with zero weights on such a batch.",
+      "explanation": "Section 7: `dense2.dbiases` is the sum of $(\\hat{\\mathbf{y}} - \\mathbf{y})/N$ down each column. Column $c$ holds $1/(3N)$ in every row and an extra $-1/N$ in the $n_c$ rows whose label is $c$, so its sum is $1/3 - n_c/N$: $-1/6$, $0$ and $1/6$. The entry vanishes for the class that makes up exactly a third of the batch, which is what happens to all three entries on the balanced spiral data.",
+      "hints": [
+        "Write one row of $(\\hat{\\mathbf{y}} - \\mathbf{y})/N$ for a sample of each class.",
+        "Sum one column over the 12 rows: every row contributes $1/36$, and the rows of that class contribute $-1/12$ more."
+      ]
+    },
+    {
+      "id": "nn-021-q08",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "9",
+      "est_minutes": 4,
+      "tags": [
+        "gradient-check",
+        "cost"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network is built as `Layer_Dense(4, 10)`, a ReLU, `Layer_Dense(10, 3)` and the combined softmax and loss class. A gradient check with central differences measures the gradient of every parameter once. How many parameters are there, and how many forward passes does the measuring side of the check need?",
+      "answer": {
+        "parts": [
+          {
+            "label": "parameters",
+            "value": 83,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "forward passes",
+            "value": 166,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 9: 4*10 + 10 + 10*3 + 3 = 83 parameters and two forward passes for each, as gradient_check.py counts for its own network (42 for 21).",
+      "explanation": "Section 9: a central difference needs the loss at $\\theta + h$ and at $\\theta - h$, two forward passes for each parameter. The network has $40 + 10 + 30 + 3 = 83$ parameters, so 166 forward passes, against four backward calls for the analytic side. The cost grows with the number of parameters, which is why the check is a test on a small case.",
+      "hints": [
+        "Count the entries of the two weight arrays and the two bias arrays.",
+        "Each parameter is moved twice."
+      ]
+    },
+    {
+      "id": "nn-021-q09",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "script",
+        "call-order"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The script runs once on fresh objects. Put these seven results in the order in which they first come into existence.",
+      "items": [
+        {
+          "key": "a",
+          "text": "`loss_activation.dinputs`"
+        },
+        {
+          "key": "b",
+          "text": "`activation1.output`"
+        },
+        {
+          "key": "c",
+          "text": "`dense1.dbiases`"
+        },
+        {
+          "key": "d",
+          "text": "the variable `loss`"
+        },
+        {
+          "key": "e",
+          "text": "`dense1.inputs`"
+        },
+        {
+          "key": "f",
+          "text": "`activation1.dinputs`"
+        },
+        {
+          "key": "g",
+          "text": "`dense2.dweights`"
+        }
+      ],
+      "answer": [
+        "e",
+        "b",
+        "d",
+        "a",
+        "g",
+        "f",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "Sections 5 and 6: `dense1.forward` caches its inputs, `activation1.forward` stores its output, and the last forward call returns the loss. The backward pass then runs through the same objects in the opposite order: the combined class stores its `dinputs`, `dense2.backward` stores `dweights`, the ReLU stores its masked `dinputs`, and `dense1.backward` comes last with `dbiases`.",
+      "hints": [
+        "Assign each result to the one call that creates it, then order the calls."
+      ]
+    },
+    {
+      "id": "nn-021-q10",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "11",
+      "est_minutes": 4,
+      "tags": [
+        "gradient-check",
+        "diagnosis"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A gradient check in float64, on a batch of 50 samples and with weights and biases of ordinary size, reports a largest relative error of 0.98 on each of the four parameter gradients. Which single mistake fits that output?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The ReLU's `backward` does not apply its mask.",
+          "correct": false,
+          "feedback": "The gradients of `dense2` are computed before the ReLU's `backward` runs, so they would still pass. Only the two arrays of `dense1` would fail."
+        },
+        {
+          "key": "b",
+          "text": "The combined class does not divide by the number of samples.",
+          "correct": true,
+          "feedback": "Every analytic gradient is then 50 times the measured one, and $|50n - n| / |50n| = 1 - 1/50 = 0.98$ on every entry."
+        },
+        {
+          "key": "c",
+          "text": "The step $h = 10^{-5}$ is too small for float64 arithmetic.",
+          "correct": false,
+          "feedback": "Post 10 found $h = 10^{-5}$ to be the best step for a central difference in float64. It leaves relative errors near $10^{-10}$, not near 1."
+        },
+        {
+          "key": "d",
+          "text": "Some gradients are tiny, so that rounding dominates their relative error.",
+          "correct": false,
+          "feedback": "The parameters are of ordinary size, and rounding would give irregular errors far below 1, not the same 0.98 on all four arrays."
+        }
+      ],
+      "explanation": "Section 11: without the division by $N$ every gradient is $N$ times too large, since each of them is linear in the array the combined class hands back. The relative error is then $1 - 1/N$ on every entry of every array, here $0.98$ for $N = 50$. The same error on all four arrays is the signature of a missing or doubled mean.",
+      "hints": [
+        "A relative error just below 1 means that one of the two numbers is much larger than the other.",
+        "Find the factor $k$ for which $1 - 1/k = 0.98$, and look for it in the setup."
+      ]
+    },
+    {
+      "id": "nn-021-q11",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "9",
+      "est_minutes": 5,
+      "tags": [
+        "gradient-check",
+        "diagnosis"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A gradient check of the post's network, set up as the post recommends, reports relative errors near $10^{-10}$ for `dense2.dweights` and `dense2.dbiases`, and near 1 for both `dense1.dweights` and `dense1.dbiases`. Assuming a single bug, where is it?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "In the `backward` of the combined class, which starts the backward pass.",
+          "correct": false,
+          "feedback": "Both gradients of `dense2` are computed directly from what the combined class stores. They pass, so that array is right."
+        },
+        {
+          "key": "b",
+          "text": "In the `dweights` line of `dense1.backward`, which multiplies by the cached inputs.",
+          "correct": false,
+          "feedback": "`dense1.dbiases` does not use that line or the cached inputs, and it fails as well."
+        },
+        {
+          "key": "c",
+          "text": "In the `dinputs` line of `dense2.backward`, or in the `backward` of the ReLU.",
+          "correct": true,
+          "feedback": "These two steps lie between the last gradients that pass and the first that fail, and both failing arrays depend on them."
+        },
+        {
+          "key": "d",
+          "text": "In `dense1.forward`, which stores the inputs that `backward` reads later.",
+          "correct": false,
+          "feedback": "A wrong cache would spoil `dense1.dweights` alone. `dense1.dbiases` is a column sum of the array handed in and never reads the cache."
+        }
+      ],
+      "explanation": "Section 9: the gradients of `dense1` are right only if everything before them in the backward pass is right. `dense2.dweights` and `dense2.dbiases` pass, so the combined class is right. Both arrays of `dense1` fail, so the fault is in what `dense1.backward` is handed: the array `dense2.dinputs`, or what the ReLU makes of it. Post 16 measured the ReLU case.",
+      "hints": [
+        "List the backward steps in the order in which they run, and mark which results passed.",
+        "A fault lies after the last result that passes and before the first that fails."
+      ]
+    },
+    {
+      "id": "nn-021-q12",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "11",
+      "est_minutes": 3,
+      "tags": [
+        "float32",
+        "nnfs-init"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A script calls `nnfs.init()` and later runs a gradient check. Before the check, the data and all four parameter arrays are converted with `.astype(np.float64)`, and the check still fails as a single-precision one does. Which NumPy function is responsible, and what does it do after `nnfs.init()`?",
+      "answer": {
+        "model": "`np.dot`: `nnfs.init()` replaces it with a version that returns float32 whatever it is given.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:not|isn't|never)\\s+(?:the\\s+)?(?:np\\s*\\.\\s*|numpy\\s*\\.\\s*)?dot\\b)(?![\\s\\S]*\\bdot\\b[^;]{0,60}?\\b(?:unaffected|untouched|unchanged|innocent|not\\s+(?:affected|changed|replaced|involved|responsible))\\b)(?![\\s\\S]*\\b(?:not|n't|never|no\\s+longer)\\s+(?:returns?|gives?|produces?|outputs?|yields?|casts?|converts?)\\w*\\s+(?:(?:an?|the|its|to)\\s+)*(?:results?\\s+(?:to\\s+)?)?(?:array\\s+of\\s+)?(?:float\\s*-?32|single))(?![\\s\\S]*\\bdot\\b[^.;]*(?<!not )(?<!n't )(?<!longer )(?<!never )\\b(?:returns?|gives?|outputs?|produces?|yields?)\\s+(?:an?\\s+)?(?:array\\s+of\\s+)?(?:float\\s*-?64|double)\\b)(?![\\s\\S]*\\b(?:inputs?|arguments?|operands?)\\s+(?:in)?to\\s+(?:float\\s*-?32|single))[\\s\\S]*\\bdot\\b(?:(?!\\b(?:zeros|randn|eye|sum|maximum|exp|mean|log|clip|argmax|seed\\w*)\\b)[\\s\\S]){0,160}?\\b(?:returns?|returned|returning|gives?|outputs?|produces?|yields?|hands?\\s+back|casts?|converts?|converted|results?|rounds?|truncates?|downcasts?)\\b(?:(?!\\b(?:zeros|randn|eye|sum|maximum|exp|mean|log|clip|argmax|seed\\w*)\\b)[\\s\\S]){0,80}?(?:float\\s*-?32|single[\\s-]precision|32[\\s-]bit)"
+        ]
+      },
+      "explanation": "Section 11: `nnfs.init()` replaces `np.dot` by a version that returns float32 whatever it is given. Every `forward` of `Layer_Dense` calls it, so the layer outputs and the loss lose their extra digits even when all the arrays are float64, and the measured relative error stays near $2.0 \\times 10^{-3}$. The check belongs in a process that has not called `nnfs.init()`.",
+      "hints": [
+        "`nnfs.init()` changes three array-creating functions and one function that multiplies arrays.",
+        "Which function does `Layer_Dense.forward` call?"
+      ]
+    },
+    {
+      "id": "nn-021-q13",
+      "type": "match",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "11",
+      "est_minutes": 5,
+      "tags": [
+        "gradient-check",
+        "diagnosis"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Each line describes the output of a gradient check with $h = 10^{-5}$ on the post's network, where $\\mathbf{Z}_1$ is the output of the first dense layer and $N$ the number of samples. Match each output to its cause.",
+      "left": [
+        {
+          "key": "a",
+          "text": "All four arrays fail with the same relative error, $1 - 1/N$."
+        },
+        {
+          "key": "b",
+          "text": "Both arrays of `dense2` pass; both arrays of `dense1` fail with relative errors near 1."
+        },
+        {
+          "key": "c",
+          "text": "Relative errors near $10^{-6}$ with absolute gaps near $10^{-11}$, on gradients of size $10^{-5}$."
+        },
+        {
+          "key": "d",
+          "text": "Relative errors between about $10^{-2}$ and $10^{-1}$ on the four arrays, and the loss is printed as a `float32`."
+        },
+        {
+          "key": "e",
+          "text": "An absolute gap of $10^{-5}$ on `dense1.dbiases`, while some entries of $\\mathbf{Z}_1$ are smaller than $h$ in size."
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "A step of $h$ carries a pre-activation across the corner of a ReLU."
+        },
+        {
+          "key": "q",
+          "text": "The check runs after `nnfs.init()`."
+        },
+        {
+          "key": "r",
+          "text": "The learning rate is too large."
+        },
+        {
+          "key": "s",
+          "text": "The division by the number of samples is missing."
+        },
+        {
+          "key": "t",
+          "text": "The gradients are tiny, so rounding is a visible fraction of them."
+        },
+        {
+          "key": "u",
+          "text": "The ReLU mask is missing from the backward pass."
+        },
+        {
+          "key": "v",
+          "text": "The labels are integers where one-hot rows are expected."
+        }
+      ],
+      "answer": {
+        "a": "s",
+        "b": "u",
+        "c": "t",
+        "d": "q",
+        "e": "p"
+      },
+      "explanation": "Section 11: a missing mean scales every gradient by $N$; a missing mask spoils only what is computed after the ReLU's `backward`; a gap at the rounding level of $10^{-11}$ on a very small gradient is the tiny-gradient caveat; float32 arithmetic ruins the measurement itself; and a gap far above rounding next to pre-activations within $h$ of zero is a ReLU corner. No learning rate occurs in a single pass, and the combined class accepts both label formats.",
+      "hints": [
+        "Sort the five outputs into bugs in the backward pass and faults of the measurement.",
+        "For each output, look at which arrays fail and at the size of the absolute gap."
+      ]
+    },
+    {
+      "id": "nn-021-q14",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "9",
+      "est_minutes": 20,
+      "tags": [
+        "implement",
+        "gradient-check"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Complete `largest_relative_errors(loss_fn, pairs, h=1e-5)`, the measuring side of a gradient check. `loss_fn()` reruns the forward pass and returns the loss. For each `(parameter, analytic)` pair, measure the gradient of the loss with respect to every entry of `parameter` by a central difference with step `h`, and return one number per pair: the largest entry-wise relative error $|a - n| / \\max(|a|, |n|)$, where an entry with $a = n = 0$ counts as 0. Every parameter must hold its original values when the function returns.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "import numpy as np\n\n\ndef largest_relative_errors(loss_fn, pairs, h=1e-5):\n    \"\"\"Check analytic gradients against central differences.\n\n    loss_fn() takes no arguments, reruns the forward pass and returns the loss.\n    pairs is a list of (parameter, analytic) arrays of equal shape; analytic is what the\n    backward pass stored for that parameter. Returns a list with one number per pair: the\n    largest entry-wise |a - n| / max(|a|, |n|), where n is the central difference with step h\n    and an entry with a = n = 0 counts as 0. Every parameter is restored before returning.\n    \"\"\"\n    errors = []\n    for parameter, analytic in pairs:\n        numeric = np.zeros_like(parameter)\n        # TODO: fill numeric, moving one entry of parameter at a time by +h and by -h\n        # TODO: append the largest relative error between analytic and numeric\n    return errors\n",
+      "solution": "import numpy as np\n\n\ndef largest_relative_errors(loss_fn, pairs, h=1e-5):\n    \"\"\"Check analytic gradients against central differences.\n\n    loss_fn() takes no arguments, reruns the forward pass and returns the loss.\n    pairs is a list of (parameter, analytic) arrays of equal shape; analytic is what the\n    backward pass stored for that parameter. Returns a list with one number per pair: the\n    largest entry-wise |a - n| / max(|a|, |n|), where n is the central difference with step h\n    and an entry with a = n = 0 counts as 0. Every parameter is restored before returning.\n    \"\"\"\n    errors = []\n    for parameter, analytic in pairs:\n        numeric = np.zeros_like(parameter)\n        for index in np.ndindex(parameter.shape):\n            saved = parameter[index]\n            parameter[index] = saved + h\n            plus = loss_fn()\n            parameter[index] = saved - h\n            minus = loss_fn()\n            parameter[index] = saved                    # restore before the next entry\n            numeric[index] = (plus - minus) / (2 * h)\n        scale = np.maximum(np.abs(analytic), np.abs(numeric))\n        gap = np.abs(analytic - numeric)\n        errors.append(float(np.max(np.divide(gap, scale, out=np.zeros_like(gap), where=scale > 0))))\n    return errors\n",
+      "tests": "import numpy as np\n\nnp.random.seed(0)\nX = np.random.randn(6, 4)\nX[:, 2] = 0.0                                   # one input is always zero: a row of exact zeros in dW\nG = np.random.randn(6, 3)\nW = np.random.randn(4, 3)\nb = np.random.randn(1, 3)\n\n\ndef loss_fn():\n    return float(np.sum(np.tanh(np.dot(X, W) + b) * G))\n\n\ndZ = (1 - np.tanh(np.dot(X, W) + b) ** 2) * G\ndW = np.dot(X.T, dZ)\ndb = np.sum(dZ, axis=0, keepdims=True)\nassert np.all(dW[2] == 0), \"the test needs entries that are exactly zero\"\n\nW_before, b_before, dW_before = W.copy(), b.copy(), dW.copy()\nerrors = largest_relative_errors(loss_fn, [(W, dW), (b, db)])\nassert errors is not None and len(errors) == 2, \"one number for each pair\"\nassert all(np.isfinite(e) for e in errors), \"an entry where both gradients are 0 must count as 0\"\nassert errors[0] < 1e-7 and errors[1] < 1e-7, f\"correct gradients must pass: {errors}\"\nassert np.array_equal(W, W_before) and np.array_equal(b, b_before), \"every parameter must be restored exactly\"\nassert np.array_equal(dW, dW_before), \"the analytic gradient must not be changed\"\n\n# A gradient that is five times too large has a relative error of 1 - 1/5 on every entry that is not zero.\nerrors = largest_relative_errors(loss_fn, [(W, 5 * dW), (b, db)])\nassert abs(errors[0] - 0.8) < 1e-6, f\"a gradient 5 times too large must give 0.8, got {errors[0]}\"\nassert errors[1] < 1e-7, \"the second pair is still correct\"\n\n# The step h is used: for L = sum(w**3) the central difference is 3 w**2 + h**2.\nw = np.array([[1.0, 2.0]])\nerrors = largest_relative_errors(lambda: float(np.sum(w ** 3)), [(w, 3 * w ** 2)], h=1e-2)\nassert abs(errors[0] - 1e-4 / (3 + 1e-4)) < 1e-9, f\"with h = 1e-2 the error must be about 3.3e-5, got {errors[0]}\"\nassert np.array_equal(w, [[1.0, 2.0]])\n\n# The saved value itself is put back: (v - h) + h is not v when v is much smaller than h.\nv = np.array([[1e-9, -2.5e-12, 4e-10]])\nv_before = v.copy()\nerrors = largest_relative_errors(lambda: float(np.sum(3.0 * v)), [(v, np.full_like(v, 3.0))])\nassert errors[0] < 1e-7, f\"correct gradients must pass: {errors}\"\nassert np.array_equal(v, v_before), \"put the saved value back; adding h to the moved entry does not restore it exactly\"\nprint(\"all gradient-check tests passed\")\n",
+      "expected_output": "all gradient-check tests passed\n",
+      "explanation": "Section 9: one entry is moved by $+h$ and by $-h$, the loss is recomputed both times, and the difference is divided by $2h$. The entry is restored before the next one is moved, or every later measurement is taken at the wrong point. The relative error divides by the larger of the two sizes, and entries where both are exactly zero are counted as agreeing, so that a parameter the loss does not depend on produces no division by zero.",
+      "hints": [
+        "Loop over `np.ndindex(parameter.shape)` and keep the entry's value in a variable before changing it.",
+        "Two loss evaluations per entry, then put the saved value back.",
+        "`np.divide(gap, scale, out=np.zeros_like(gap), where=scale > 0)` leaves 0 where both gradients are 0."
+      ]
+    },
+    {
+      "id": "nn-021-q15",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "7",
+      "est_minutes": 12,
+      "tags": [
+        "bias-gradient",
+        "derivation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "An untrained three-class network predicts exactly $1/3$ for every class of every sample. It is run on a batch of $N$ samples, of which $n_c$ have label $c$. Derive entry $c$ of `dense2.dbiases`. Then use the result to explain why the script of this post, on the spiral data, prints entries of about $10^{-5}$, while a batch of four samples with the labels 0, 1, 2, 1 gives entries near $0.083$ and $-0.167$.",
+      "kind": "derive",
+      "solution": "1. The combined class stores $(\\hat{\\mathbf{y}} - \\mathbf{y})/N$. In a row whose label is $c$, column $c$ holds $(1/3 - 1)/N = -2/(3N)$; in every other row, column $c$ holds $1/(3N)$.\n2. `dense2.dbiases` is the sum of that array down each column. Column $c$ has $n_c$ rows of the first kind and $N - n_c$ rows of the second, so entry $c$ is $n_c \\cdot (-2/(3N)) + (N - n_c) \\cdot 1/(3N) = 1/3 - n_c/N$.\n3. The entry is the predicted share of class $c$ minus its share among the labels. It is zero exactly when the class makes up a third of the batch.\n4. The spiral data has $n_c = 100$ and $N = 300$ for all three classes, so all three entries vanish in this idealisation. The real predictions differ from $1/3$ by up to $6.8 \\times 10^{-5}$, and those deviations, summed down a column and divided by $N$, leave entries of at most $2.0 \\times 10^{-5}$.\n5. In the batch with the labels 0, 1, 2, 1, $N = 4$ and the counts are 1, 2, 1. The entries are $1/3 - 1/4 = 1/12 \\approx 0.083$ for classes 0 and 2, and $1/3 - 2/4 = -1/6 \\approx -0.167$ for class 1. The batch is unbalanced, so nothing cancels.\n6. The three entries always add up to zero, because $\\sum_c (1/3 - n_c/N) = 1 - 1 = 0$.",
+      "rubric": [
+        {
+          "criterion": "States the two values of a column entry of $(\\hat{\\mathbf{y}} - \\mathbf{y})/N$: $-2/(3N)$ in rows of that class and $1/(3N)$ elsewhere",
+          "points": 2
+        },
+        {
+          "criterion": "Sums the column over the batch and arrives at $1/3 - n_c/N$ or an equivalent form",
+          "points": 2
+        },
+        {
+          "criterion": "Explains the spiral case: balanced classes make the idealised entries zero, and the printed $10^{-5}$ comes from the predictions' small distance from $1/3$",
+          "points": 2
+        },
+        {
+          "criterion": "Computes $1/12$ and $-1/6$ for the four-sample batch from its class counts",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 7 does this sum for the spiral data, $100 \\cdot (-2/900) + 200 \\cdot (1/900) = 0$, and names what is left over. The general form $1/3 - n_c/N$ shows that the size of the last layer's bias gradient at the start is a statement about class balance, not about the quality of the code, and the four-sample batch is the one post 20 used.",
+      "hints": [
+        "Start from one row of $(\\hat{\\mathbf{y}} - \\mathbf{y})/N$ for a sample of class $c$ and one for a sample of another class.",
+        "Count how many rows of each kind a column has."
+      ]
+    },
+    {
+      "id": "nn-021-q16",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "11",
+      "est_minutes": 15,
+      "tags": [
+        "gradient-check",
+        "critique"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A gradient check of the script is run in float64 directly on the script's own initialisation: weights at scale 0.01, biases zero, $h = 10^{-5}$, spiral data. It reports a relative error of $10^{-1}$ for `dense1.dbiases` with an absolute gap of $10^{-5}$, and of $6 \\times 10^{-7}$ for `dense2.dbiases` with an absolute gap of $7 \\times 10^{-12}$. Both lines miss the pass mark of $10^{-7}$, and the author of the check concludes that the `backward` method of `Layer_Dense` is wrong. Assess that conclusion: name the cause of each of the two numbers, say how the output tells the two causes apart, and describe how the check should be set up.",
+      "kind": "critique",
+      "solution": "The conclusion does not follow. Both numbers are produced by the measurement, and a correct backward pass gives exactly this output.\n\nThe line of `dense2.dbiases` has an absolute gap of $7 \\times 10^{-12}$. That is the rounding level of a central difference with $h = 10^{-5}$ in float64, the same size of gap that a passing check shows. The gradient itself is only about $10^{-5}$, because the classes are balanced and the bias gradient of the last layer nearly cancels. A rounding error of $10^{-11}$ divided by a gradient of $10^{-5}$ is a relative error near $10^{-6}$. This is the tiny-gradient caveat: the pass mark of $10^{-7}$ holds for gradients that are not themselves tiny.\n\nThe line of `dense1.dbiases` has an absolute gap of $10^{-5}$, a million times the rounding level, so it has another cause. With weights of 0.01 and inputs inside the unit circle, every pre-activation of the first layer is below 0.02 in size, and with zero biases each neuron's pre-activation changes sign on a line through the origin. For the few samples that happen to lie close to such a line it is within $h$ of zero. Moving a bias by $h$ carries such a pre-activation across the corner of its ReLU. The central difference then mixes the slope of the closed gate with that of the open gate and matches neither, while the backward pass uses one of the two.\n\nThe absolute gap tells the causes apart: at the rounding level it is the tiny-gradient effect, far above it something else is happening. For the second cause the number of entries of $\\mathbf{Z}_1$ within $h$ of zero can be counted, and leaving those samples out brings the gap back to $10^{-11}$.\n\nThe check should be run in float64 with $h = 10^{-5}$, on the same classes, data and calls, but with weights and biases redrawn at ordinary size, for example from a standard normal distribution. The gradients are then not tiny, non-zero biases move the pre-activations away from zero, and it should be confirmed that no entry of $\\mathbf{Z}_1$ lies within $h$ of zero. Several seeds make the result independent of one draw.",
+      "rubric": [
+        {
+          "criterion": "States that the conclusion is unjustified: a correct backward pass can produce both numbers",
+          "points": 1
+        },
+        {
+          "criterion": "Attributes the `dense2.dbiases` line to a tiny gradient: the gap is at the rounding level and the gradient is about $10^{-5}$",
+          "points": 2
+        },
+        {
+          "criterion": "Attributes the `dense1.dbiases` line to ReLU corners: small weights and zero biases leave pre-activations within $h$ of zero, and a step crosses the corner",
+          "points": 2
+        },
+        {
+          "criterion": "Uses the absolute gap, or the count of pre-activations within $h$ of zero, to separate the two causes",
+          "points": 1
+        },
+        {
+          "criterion": "Prescribes a check in float64 with weights and biases redrawn at ordinary size",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 11 runs exactly this check and prints these numbers. With the ten samples that have a pre-activation within $h$ of zero left out, every absolute gap returns to about $10^{-11}$, and the lines that still fail do so on small gradients alone. Section 9 passes on ten seeds once weights and biases are redrawn at scale 1.",
+      "hints": [
+        "Compare each absolute gap with the gaps of a check that passes.",
+        "Ask how large the pre-activations of the first layer can be with weights of 0.01, and what a step of $h$ on a bias does to the smallest of them."
+      ]
+    },
+    {
+      "id": "nn-021-q17",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "11",
+      "est_minutes": 15,
+      "tags": [
+        "float32",
+        "step-size"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Post 10 split the error of a central difference into a truncation part, which falls as $h^2$, and a rounding part, which is about the uncertainty of one function value divided by $h$. This post's check passes in float64 with $h = 10^{-5}$ and absolute gaps near $10^{-11}$; after `nnfs.init()` it reports relative errors of $1.9 \\times 10^{-1}$ with $h = 10^{-5}$ and $1.5 \\times 10^{-4}$ with $h = 10^{-2}$. Use the split to account for all three results, and say whether some other step could bring a float32 check below the pass mark of $10^{-7}$.",
+      "connects": [
+        "nn-010"
+      ],
+      "kind": "connect",
+      "solution": "The loss of the check is a number of size about 1 to 2, and the gradients checked are between about $10^{-2}$ and $1$.\n\n**Float64, $h = 10^{-5}$.** A float64 value carries about 16 digits, so a loss near 1 is uncertain by about $10^{-16}$. The rounding part is about $10^{-16} / 10^{-5} = 10^{-11}$. The truncation part is of order $h^2 = 10^{-10}$ times a third derivative of modest size. Both are near $10^{-11}$ to $10^{-10}$, which is the absolute gap the check prints, and relative to gradients of $10^{-1}$ that is far below $10^{-7}$.\n\n**Float32, $h = 10^{-5}$.** A float32 value carries about 7 digits (machine epsilon $1.2 \\times 10^{-7}$), so the loss is uncertain by about $10^{-7}$. The rounding part is about $10^{-7} / 10^{-5} = 10^{-2}$, as large as many of the gradients themselves. Relative errors of order $10^{-1}$ are what this predicts. Truncation plays no role.\n\n**Float32, $h = 10^{-2}$.** The rounding part falls to about $10^{-7} / 10^{-2} = 10^{-5}$, and the truncation part rises to the order of $h^2 = 10^{-4}$ times a factor below one. An absolute error of $10^{-5}$ on gradients of $10^{-1}$ is a relative error near $10^{-4}$, as measured.\n\n**Another step.** The two parts meet where $h^2$ is about $10^{-7} / h$, that is at $h$ near $5 \\times 10^{-3}$, and the error there is about $h^2 \\approx 2 \\times 10^{-5}$. Post 10 measured a best float32 error of $8.4 \\times 10^{-5}$ on its own example. No step brings a float32 central difference near $10^{-7}$ in relative terms on gradients of this size: a smaller step raises the rounding part and a larger one raises the truncation part. The check has to be run in float64, in a process in which `np.dot` has not been replaced.",
+      "rubric": [
+        {
+          "criterion": "Estimates the float64 rounding part as about $10^{-16}/10^{-5} = 10^{-11}$ and matches it to the printed absolute gaps",
+          "points": 2
+        },
+        {
+          "criterion": "Estimates the float32 rounding part at $h = 10^{-5}$ as about $10^{-7}/10^{-5} = 10^{-2}$ and relates it to a relative error of order $10^{-1}$",
+          "points": 2
+        },
+        {
+          "criterion": "Explains the improvement at $h = 10^{-2}$ by a rounding part of $10^{-5}$ with a truncation part of order $10^{-4}$ or below",
+          "points": 2
+        },
+        {
+          "criterion": "Concludes that no step reaches $10^{-7}$ in float32, by balancing the two parts or by citing the best error post 10 measured",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 11 prints the three results, and post 10, section 6.1, gives the split: rounding error about the uncertainty of one function value over $h$, truncation error falling as $h^2$, and the best step where the two meet. In float64 that step is $10^{-5}$; in float32 the uncertainty of a value is a billion times larger, and the best reachable error stays far above the pass mark.",
+      "hints": [
+        "Estimate how uncertain one loss value is in float64 and in float32.",
+        "Divide that uncertainty by $h$ for each of the three runs, and compare with $h^2$."
+      ]
+    },
+    {
+      "id": "nn-021-q18",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "6",
+      "est_minutes": 5,
+      "tags": [
+        "relu-mask",
+        "bias-gradient"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The code below repeats, on a batch of two samples, what `activation1.backward` and the `dbiases` line of `dense1.backward` do in the script. Give the first number it prints and the three entries of the array it prints after it.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "import numpy as np\n\nZ1 = np.array([[ 0.2, -0.1, 0.0],\n               [-0.3,  0.4, 0.5]])      # what activation1.forward was given\ndA1 = np.array([[1.0, 2.0, 3.0],\n                [4.0, 5.0, 6.0]])       # what dense2.backward stored as dinputs\n\ndZ1 = dA1.copy()\ndZ1[Z1 <= 0] = 0\nprint(np.sum(dZ1 == 0), np.sum(dZ1, axis=0, keepdims=True))\n"
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "zeros in the masked array",
+            "value": 3,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "first entry of the column sums",
+            "value": 1,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "second entry of the column sums",
+            "value": 5,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "third entry of the column sums",
+            "value": 6,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Output of the stimulus code, run as written: 3 [[1. 5. 6.]]. The two lines are those of Activation_ReLU.backward and the dbiases line of Layer_Dense.backward in snippets/forward_backward.py.",
+      "explanation": "Section 6: the ReLU's `backward` copies the gradient it is handed and sets it to zero wherever its input was not positive, and that includes an input of exactly 0. Three of the six inputs are not positive, so three entries become zero, which leaves the rows $[1, 0, 0]$ and $[0, 5, 6]$. `dbiases` is the sum down each column: $[1, 5, 6]$. In the script the same count reads 456 closed gates and 456 zeros.",
+      "hints": [
+        "Mark the entries of `Z1` that are not greater than zero.",
+        "Sum each column of the masked array."
+      ]
+    }
+  ]
+}
