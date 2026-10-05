@@ -1,0 +1,901 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-005",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-005-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2.2",
+      "est_minutes": 2,
+      "tags": [
+        "axis",
+        "np-sum"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "What does `print(np.sum(np.array([[1, 2], [3, 4]]), axis=0))` show?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`[3 7]`",
+          "correct": false,
+          "feedback": "These are the sums of each row, 1 + 2 and 3 + 4, which is what `axis=1` returns. `axis=0` removes the row axis instead."
+        },
+        {
+          "key": "b",
+          "text": "`[4 6]`",
+          "correct": true,
+          "feedback": "Right. `axis=0` collapses the rows and leaves one sum per column: 1 + 3 = 4 and 2 + 4 = 6."
+        },
+        {
+          "key": "c",
+          "text": "`10`",
+          "correct": false,
+          "feedback": "That is the sum of all four entries, which `np.sum` returns when no axis is given."
+        },
+        {
+          "key": "d",
+          "text": "`[[4 6]]`",
+          "correct": false,
+          "feedback": "The numbers are right but the shape is not: two pairs of brackets mean shape `(1, 2)`, which needs `keepdims=True`. Without it the reduced axis is dropped and the result is 1-D."
+        }
+      ],
+      "explanation": "Section 2.2 reads `axis=0` as the axis that disappears: the two rows collapse and each column is summed, giving the 1-D array `[4 6]` of shape `(2,)`. Summing each row instead is `axis=1`, and the single number 10 comes from leaving the axis out.",
+      "hints": [
+        "Decide which axis disappears, then add the entries that were lined up along it."
+      ]
+    },
+    {
+      "id": "nn-005-q02",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "axis",
+        "keepdims",
+        "shape-diary"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "An array `c` has shape `(2, 5)`. Match each call with the shape of its result.",
+      "left": [
+        {
+          "key": "a",
+          "text": "`np.sum(c)`"
+        },
+        {
+          "key": "b",
+          "text": "`np.sum(c, axis=0)`"
+        },
+        {
+          "key": "c",
+          "text": "`np.sum(c, axis=1)`"
+        },
+        {
+          "key": "d",
+          "text": "`np.sum(c, axis=0, keepdims=True)`"
+        },
+        {
+          "key": "e",
+          "text": "`np.sum(c, axis=1, keepdims=True)`"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "`()`"
+        },
+        {
+          "key": "q",
+          "text": "`(5,)`"
+        },
+        {
+          "key": "r",
+          "text": "`(2,)`"
+        },
+        {
+          "key": "s",
+          "text": "`(1, 5)`"
+        },
+        {
+          "key": "t",
+          "text": "`(2, 1)`"
+        },
+        {
+          "key": "u",
+          "text": "`(5, 1)`"
+        },
+        {
+          "key": "v",
+          "text": "`(1, 2)`"
+        },
+        {
+          "key": "w",
+          "text": "`(1, 1)`"
+        }
+      ],
+      "answer": {
+        "a": "p",
+        "b": "q",
+        "c": "r",
+        "d": "s",
+        "e": "t"
+      },
+      "explanation": "The axis named in the call disappears, so `axis=0` leaves the 5 columns, `(5,)`, and `axis=1` leaves the 2 rows, `(2,)`. With `keepdims=True` the reduced axis stays with size 1, giving `(1, 5)` and `(2, 1)`. With no axis every element is added into one scalar, whose shape is the empty tuple `()`. Section 6 lays out the same five calls for a general $(N, n_\\text{features})$ array.",
+      "hints": [
+        "Start from `(2, 5)` and ask, for each call, which of the two sizes belongs to the axis that is reduced.",
+        "A reduced axis is either dropped from the shape or, with `keepdims=True`, left in place with a different size."
+      ]
+    },
+    {
+      "id": "nn-005-q03",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 4,
+      "tags": [
+        "axis",
+        "np-sum",
+        "worked-example"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Let `m = np.array([[2, 0, 1], [5, 3, 4]])`. Give the number of entries in `np.sum(m, axis=0)` and its last entry, the number of entries in `np.sum(m, axis=1)` and its last entry, and the value of `np.sum(m)`.",
+      "answer": {
+        "parts": [
+          {
+            "label": "entries in np.sum(m, axis=0)",
+            "value": 3,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "last entry of np.sum(m, axis=0)",
+            "value": 5,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "entries in np.sum(m, axis=1)",
+            "value": 2,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "last entry of np.sum(m, axis=1)",
+            "value": 12,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "np.sum(m)",
+            "value": 15,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Recomputed with NumPy: np.sum(m, axis=0) is [7 3 5], np.sum(m, axis=1) is [3 12], np.sum(m) is 15. By hand: 1 + 4 = 5, 5 + 3 + 4 = 12, and 3 + 12 = 15.",
+      "explanation": "`m` has shape `(2, 3)`. `axis=0` removes the row axis and leaves one sum per column, `[7 3 5]`: three entries, the last being 1 + 4 = 5. `axis=1` removes the column axis and leaves one sum per row, `[3 12]`: two entries, the last being 5 + 3 + 4 = 12. With no axis all six entries are added, giving 15. Sections 2.1 to 2.3 do the same on a 3-by-3 array.",
+      "hints": [
+        "Write down the shape of `m` first; the axis named in each call is the one that disappears.",
+        "The number of entries left is the size of the axis that was not named."
+      ]
+    },
+    {
+      "id": "nn-005-q04",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "keepdims",
+        "shape"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "An array `a` has shape `(4, 7)`, and `np.max(a, axis=1)` has shape `(4,)`. What is the shape of `np.max(a, axis=1, keepdims=True)`?",
+      "answer": {
+        "model": "`(4, 1)`: the reduced axis is kept with size 1 instead of being dropped, so the result is a column with one maximum per row.",
+        "accept": [
+          "^(?![\\s\\S]*(?:\\bnot\\b|\\bnever\\b|n['\\u2019]t\\b|\\bthan\\b|\\binstead\\b)(?:(?!\\bbut\\b)[^.,;:\\n(\\[]){0,20}(?:[\\(\\[]\\s*4\\s*,\\s*1\\s*[\\)\\]]|(?<![\\d,(\\[])(?<![\\d,(\\[]\\s)\\b4\\s*,\\s*1(?![\\w-])(?!\\s*,)|\\b4\\s*(?:x|by|\\u00d7)\\s*1\\b|\\b(?:4|four)\\s+rows?\\b[^.;\\n]{0,25}\\b(?:1|one)\\s+columns?\\b))(?!(?:(?!(?:\\bnot\\b|\\bnever\\b|n['\\u2019]t\\b|\\bthan\\b|\\binstead\\b))[\\s\\S])*?(?:[\\(\\[]\\s*1\\s*,\\s*4\\s*[\\)\\]]|\\b1\\s*(?:x|by|\\u00d7)\\s*4\\b|\\b(?:1|one)\\s+rows?\\b[^.;\\n]{0,25}\\b(?:4|four)\\s+columns?\\b))(?![\\s\\S]*[\\)\\]]\\s*(?:\\bor\\b|/)\\s*(?:maybe\\s+|perhaps\\s+|possibly\\s+)?[\\(\\[])(?=[\\s\\S]*(?:[\\(\\[]\\s*4\\s*,\\s*1\\s*[\\)\\]]|(?<![\\d,(\\[])(?<![\\d,(\\[]\\s)\\b4\\s*,\\s*1(?![\\w-])(?!\\s*,)|\\b4\\s*(?:x|by|\\u00d7)\\s*1\\b|\\b(?:4|four)\\s+rows?\\b[^.;\\n]{0,25}\\b(?:1|one)\\s+columns?\\b))"
+        ]
+      },
+      "explanation": "Section 3: `keepdims=True` keeps the reduced axis as a dimension of length 1 instead of dropping it. Axis 1, of size 7, is the one reduced, so `(4, 7)` becomes `(4, 1)`, a column that lines up with the rows of `a`.",
+      "hints": [
+        "The reduced axis is not removed; ask what size it is left with."
+      ]
+    },
+    {
+      "id": "nn-005-q05",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "broadcasting",
+        "compatibility"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "An array of shape `(5, 3)` is added to an array of shape `(5,)`. What happens?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The result has shape `(5, 3)`: each of the 5 values is added along one row.",
+          "correct": false,
+          "feedback": "NumPy does not look for the axis whose length matches. Shapes are aligned from the last axis, so the 5 is compared with the 3."
+        },
+        {
+          "key": "b",
+          "text": "NumPy raises a `ValueError`.",
+          "correct": true,
+          "feedback": "Right. `(5,)` is left-padded to `(1, 5)`, and the last sizes, 3 and 5, are neither equal nor 1."
+        },
+        {
+          "key": "c",
+          "text": "The result has shape `(5, 5)`.",
+          "correct": false,
+          "feedback": "A `(5, 5)` result needs a size-1 axis to stretch, as in `(5, 1)` with `(5,)`. Here the last axis of the first array has size 3, which cannot stretch."
+        },
+        {
+          "key": "d",
+          "text": "The result has shape `(5,)`: the 2-D array is summed down to match.",
+          "correct": false,
+          "feedback": "Broadcasting only stretches axes of size 1; it never reduces an array. A reduction happens only when a function such as `np.sum` is called."
+        }
+      ],
+      "explanation": "Section 4: rule 1 pads `(5,)` to `(1, 5)`, and rule 2 compares the aligned sizes, 3 with 5 and 5 with 1. The first pair is neither equal nor contains a 1, so NumPy raises `ValueError: operands could not be broadcast together with shapes (5,3) (5,)`. A `(3,)` or a `(5, 1)` array would have worked.",
+      "hints": [
+        "Write the shorter shape under the longer one, aligned at the right-hand end, before comparing sizes."
+      ]
+    },
+    {
+      "id": "nn-005-q06",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 4,
+      "tags": [
+        "broadcasting",
+        "compatibility"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Which of these shapes can be added to an array of shape `(3, 5)` without an error? Select every one that broadcasts.",
+      "select": "multiple",
+      "options": [
+        {
+          "key": "a",
+          "text": "`(5,)`",
+          "correct": true,
+          "feedback": "Padded to `(1, 5)`: the pairs are 3 with 1 and 5 with 5, both compatible. The result is `(3, 5)`."
+        },
+        {
+          "key": "b",
+          "text": "`(1, 5)`",
+          "correct": true,
+          "feedback": "Already 2-D: 3 with 1 stretches and 5 equals 5. It behaves exactly as `(5,)` does."
+        },
+        {
+          "key": "c",
+          "text": "`(3, 1)`",
+          "correct": true,
+          "feedback": "3 equals 3 and the size-1 axis stretches across the 5 columns. This is the column that `keepdims=True` produces for a per-row reduction."
+        },
+        {
+          "key": "d",
+          "text": "`(3,)`",
+          "correct": false,
+          "feedback": "Padded to `(1, 3)`, so its 3 is compared with the 5 columns, not with the 3 rows. 5 and 3 are neither equal nor 1."
+        },
+        {
+          "key": "e",
+          "text": "`(4,)`",
+          "correct": false,
+          "feedback": "Padded to `(1, 4)`: 5 and 4 are neither equal nor 1. Four values cannot be lined up with the 3 rows or with the 5 columns of a `(3, 5)` array."
+        },
+        {
+          "key": "f",
+          "text": "`(5, 3)`",
+          "correct": false,
+          "feedback": "The same two numbers in the other order do not help: 3 is compared with 5 and 5 with 3, and neither pair is compatible. A transpose would be needed first."
+        }
+      ],
+      "explanation": "Section 4's rules pad the shorter shape on the left and then require each aligned pair of sizes to be equal or to contain a 1. `(5,)`, `(1, 5)` and `(3, 1)` pass and give `(3, 5)`; `(3,)`, `(4,)` and `(5, 3)` each put a size other than 1 or 5 against the 5 columns, and NumPy raises a `ValueError` for all three.",
+      "hints": [
+        "Right-align each shape under `(3, 5)` and pad with 1s on the left.",
+        "A pair of aligned sizes passes only when the two are equal or one of them is 1."
+      ]
+    },
+    {
+      "id": "nn-005-q07",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 6,
+      "tags": [
+        "broadcasting",
+        "rules",
+        "higher-dimensions"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Arrays of shapes `(8, 1, 6, 1)` and `(7, 1, 5)` are added. Give the number of dimensions of the result, the size of each of its axes in order, and its total number of elements.",
+      "answer": {
+        "parts": [
+          {
+            "label": "number of dimensions",
+            "value": 4,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "size of axis 0",
+            "value": 8,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "size of axis 1",
+            "value": 7,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "size of axis 2",
+            "value": 6,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "size of axis 3",
+            "value": 5,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "number of elements",
+            "value": 1680,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "broadcast_shape((8, 1, 6, 1), (7, 1, 5)) from snippets/broadcasting.py returns (8, 7, 6, 5), and np.broadcast_shapes agrees; 8 * 7 * 6 * 5 = 1680.",
+      "explanation": "Rule 1 pads `(7, 1, 5)` to `(1, 7, 1, 5)`. Rule 2 checks the pairs 8 with 1, 1 with 7, 6 with 1, and 1 with 5: every pair contains a 1. Rule 3 takes the larger size along each axis, so the result is `(8, 7, 6, 5)`, with $8 \\cdot 7 \\cdot 6 \\cdot 5 = 1{,}680$ elements. Both operands are stretched, as in the `(3, 1)` with `(3,)` row of section 4's table.",
+      "hints": [
+        "Pad the shorter shape with 1s on the left until both have four entries.",
+        "Along each axis the result takes the larger of the two sizes, provided the pair is equal or contains a 1."
+      ]
+    },
+    {
+      "id": "nn-005-q08",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "8",
+      "est_minutes": 3,
+      "tags": [
+        "broadcasting",
+        "silent-bug",
+        "outer-difference"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`y_pred` has shape `(100, 1)` and `y_true` has shape `(100,)`. What does `np.mean((y_pred - y_true) ** 2)` average?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "100 squared differences, one for each sample.",
+          "correct": false,
+          "feedback": "That is what was intended, and what `(100, 1)` minus `(100, 1)` would give. With a 1-D `y_true` the subtraction produces far more than 100 entries."
+        },
+        {
+          "key": "b",
+          "text": "10,000 squared differences, every prediction paired with every label.",
+          "correct": true,
+          "feedback": "Right. `(100,)` is padded to `(1, 100)`; the column stretches across and the row stretches down, so the difference has shape `(100, 100)`."
+        },
+        {
+          "key": "c",
+          "text": "Nothing: the subtraction raises a `ValueError` because the shapes differ.",
+          "correct": false,
+          "feedback": "Differing shapes are not an error by themselves. The aligned pairs are 100 with 1 and 1 with 100, and a pair that contains a 1 is always compatible."
+        },
+        {
+          "key": "d",
+          "text": "100 squared differences, because NumPy treats the 1-D `y_true` as a column to match `y_pred`.",
+          "correct": false,
+          "feedback": "A 1-D array is padded on the left, so it becomes a row of shape `(1, 100)`. NumPy never turns it into a column on its own."
+        }
+      ],
+      "explanation": "Section 8 runs this case for 4 samples: `(4, 1)` minus `(4,)` has shape `(4, 4)`. The same rules give `(100, 100)` here, so the mean is taken over 10,000 entries, 9,900 of which pair a prediction with another sample's label, and no error is raised. Reshaping `y_true` to `(100, 1)` restores the 100 intended differences.",
+      "hints": [
+        "Pad the 1-D shape on the left, then look at which axis has size 1 in each operand."
+      ]
+    },
+    {
+      "id": "nn-005-q09",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "3.2",
+      "est_minutes": 6,
+      "tags": [
+        "keepdims",
+        "silent-bug",
+        "predict-output"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The code is meant to divide each row of `s` by that row's sum. Give the four numbers it prints, and the value the entry in row 0, column 1 would have had if the row sums had been taken with `keepdims=True`.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "import numpy as np\n\ns = np.array([[2.0, 1.0],\n              [1.0, 4.0]])\np = s / np.sum(s, axis=1)\nprint(p)"
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "printed row 0, column 0",
+            "value": 0.6667,
+            "tolerance": 0.005,
+            "unit": ""
+          },
+          {
+            "label": "printed row 0, column 1",
+            "value": 0.2,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "printed row 1, column 0",
+            "value": 0.3333,
+            "tolerance": 0.005,
+            "unit": ""
+          },
+          {
+            "label": "printed row 1, column 1",
+            "value": 0.8,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "intended row 0, column 1",
+            "value": 0.3333,
+            "tolerance": 0.005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Recomputed by running the stimulus with NumPy: it prints [[0.66666667 0.2] [0.33333333 0.8]]; with keepdims=True the entry at row 0, column 1 is 1/3.",
+      "explanation": "`np.sum(s, axis=1)` is `[3. 5.]` with shape `(2,)`, which broadcasts as a row: column 0 is divided by 3 and column 1 by 5, giving `[[0.6667, 0.2], [0.3333, 0.8]]`. The intended division uses a `(2, 1)` column, 3 for row 0 and 5 for row 1, so the entry at row 0, column 1 should be $1/3$. No error is raised because `s` is square, the silent case of section 3.2; the rows of the printed result sum to 0.8667 and 1.1333 instead of 1.",
+      "hints": [
+        "Find the shape of `np.sum(s, axis=1)` before dividing.",
+        "A 1-D array of two values lines up with the two columns, so each column gets its own divisor."
+      ]
+    },
+    {
+      "id": "nn-005-q10",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "3.2",
+      "est_minutes": 12,
+      "tags": [
+        "keepdims",
+        "silent-bug",
+        "debugging",
+        "numpy"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "fix",
+      "language": "python",
+      "prompt": "`standardise_rows` should give every row of a 2-D array zero mean and unit standard deviation. On a `(5, 3)` input it raises a `ValueError`; on a `(4, 4)` input it returns without error, but the rows of the result do not have zero mean. Fix the function so that it is correct for any 2-D input.",
+      "starter": "import numpy as np\n\n\ndef standardise_rows(x):\n    \"\"\"Return x with every row shifted to mean 0 and scaled to standard deviation 1.\"\"\"\n    centred = x - np.mean(x, axis=1)\n    return centred / np.std(x, axis=1)\n",
+      "solution": "import numpy as np\n\n\ndef standardise_rows(x):\n    \"\"\"Return x with every row shifted to mean 0 and scaled to standard deviation 1.\"\"\"\n    centred = x - np.mean(x, axis=1, keepdims=True)\n    return centred / np.std(x, axis=1, keepdims=True)\n",
+      "tests": "import numpy as np\n\nrng = np.random.default_rng(5)\nfor shape in [(4, 4), (5, 3), (2, 6), (1, 4)]:\n    x = rng.standard_normal(shape) * 3.0 + 1.0\n    out = standardise_rows(x)\n    assert out.shape == x.shape, (out.shape, x.shape)\n    assert np.allclose(out.mean(axis=1), 0.0, atol=1e-10), \"a row does not have mean 0 for shape \" + str(shape)\n    assert np.allclose(out.std(axis=1), 1.0, atol=1e-10), \"a row does not have standard deviation 1 for shape \" + str(shape)\n    for i in range(shape[0]):\n        expected = (x[i] - x[i].mean()) / x[i].std()\n        assert np.allclose(out[i], expected), \"row \" + str(i) + \" is wrong for shape \" + str(shape)\nprint(\"all tests passed\")\n",
+      "explanation": "Both reductions return a 1-D array of shape `(N,)`, which broadcasts as a row. With 5 rows and 3 columns it cannot line up and NumPy raises; with 4 rows and 4 columns it lines up with the columns, so column $j$ is shifted and scaled by the statistics of row $j$. Passing `keepdims=True` to both calls makes them `(N, 1)` columns that stretch across each row. This is the bug of section 3.1 with `np.mean` and `np.std` in place of `np.max`, the case section 8 warns about, and it is silent whenever the shapes happen to fit, as on the square input here (section 3.2).",
+      "hints": [
+        "Print the shape of `np.mean(x, axis=1)` for a `(5, 3)` input and compare it with the shape that would line up with the rows.",
+        "Each per-row statistic has to be a column of shape `(N, 1)` before it meets `x`; one extra argument to the reduction does that.",
+        "Both reductions need the change, not only the first."
+      ]
+    },
+    {
+      "id": "nn-005-q11",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "3.2",
+      "est_minutes": 12,
+      "tags": [
+        "keepdims",
+        "silent-bug",
+        "broadcasting-rules"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "explain",
+      "prompt": "The line `shifted = z - np.max(z, axis=1)` is meant to subtract each row's maximum from that row. Explain, by applying the broadcasting rules to the shapes, why it raises an error when `z` has shape `(300, 3)` and why it returns a wrong result without any error when `z` has shape `(3, 3)`. Then give the corrected line and name one check that would have exposed the silent case.",
+      "answer_length": "one or two paragraphs",
+      "solution": "1. **The reduction.** `np.max(z, axis=1)` removes axis 1, so it has shape `(N,)`: `(300,)` in the first case and `(3,)` in the second.\n2. **The loud case.** Broadcasting pads a 1-D shape on the left, so `(300, 3)` meets `(1, 300)`. The last sizes are 3 and 300, neither equal nor 1, and NumPy raises `ValueError: operands could not be broadcast together with shapes (300,3) (300,)`.\n3. **The silent case.** `(3, 3)` meets `(1, 3)`: the pairs are 3 with 1 and 3 with 3, both compatible, so no error is raised. But the three maxima now sit along the columns: the maximum of row $j$ is subtracted from column $j$ of every row, instead of the maximum of row $i$ from every entry of row $i$. For `[[1, 2, 3], [4, 5, 6], [7, 8, 9]]` the result is `[[-2, -4, -6], [1, -1, -3], [4, 2, 0]]` instead of three rows of `[-2, -1, 0]`.\n4. **Why it is silent.** The number of rows equals the number of columns, so the 1-D result happens to fit along the wrong axis. The silence is a property of the shape, not of the code.\n5. **The fix.** `shifted = z - np.max(z, axis=1, keepdims=True)`. The maxima keep shape `(N, 1)`, a column that stretches across the columns of each row, for any $N$.\n6. **A check.** Assert that the reduced array has shape `(N, 1)`, or test a property of the result: after the subtraction the largest entry of every row must be 0.",
+      "rubric": [
+        {
+          "criterion": "States that the reduction has shape `(N,)` and that broadcasting pads it on the left to `(1, N)`, a row",
+          "points": 2
+        },
+        {
+          "criterion": "Shows that the `(300, 3)` case fails because the aligned sizes 3 and 300 are neither equal nor 1",
+          "points": 2
+        },
+        {
+          "criterion": "Shows that the `(3, 3)` case passes the compatibility check and that the maxima are then applied along the columns instead of the rows",
+          "points": 2
+        },
+        {
+          "criterion": "Gives the corrected line with `keepdims=True`, or an equivalent reshape of the maxima to `(N, 1)`",
+          "points": 1
+        },
+        {
+          "criterion": "Names a valid check: the shape of the reduced array, or a property such as every row of the result having maximum 0",
+          "points": 1
+        }
+      ],
+      "explanation": "Section 3.2 shows that the missing `keepdims` is loud on a non-square array and silent on a square one: the 1-D result of the reduction is always treated as a row, which either cannot line up with the columns or lines up with them by accident. Section 3.1 gives the wrong and the right output for the 3-by-3 case, and section 8 lists the shape assertion and the property check.",
+      "hints": [
+        "Start from the shape that `np.max(z, axis=1)` returns in each case.",
+        "Apply rule 1 to that shape, then compare the last sizes of the two operands."
+      ]
+    },
+    {
+      "id": "nn-005-q12",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "5",
+      "est_minutes": 4,
+      "tags": [
+        "forward-pass",
+        "bias",
+        "broadcasting"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A layer receives a batch `X` of shape `(32, 4)` and has weights `W` of shape `(4, 8)` and biases `b` of shape `(1, 8)`. For `out = np.dot(X, W) + b`, give the number of rows and columns of `out`, the number of rows the bias is stretched to, and the number of elements an explicit `np.tile` copy of the stretched bias would hold.",
+      "answer": {
+        "parts": [
+          {
+            "label": "rows of out",
+            "value": 32,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "columns of out",
+            "value": 8,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "rows the bias is stretched to",
+            "value": 32,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "elements in the np.tile copy",
+            "value": 256,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form from section 5: (32, 4) by (4, 8) gives (32, 8); (32, 8) + (1, 8) broadcasts to (32, 8); 32 * 8 = 256. Confirmed with NumPy on zero arrays of these shapes.",
+      "explanation": "The matrix product of `(32, 4)` and `(4, 8)` has shape `(32, 8)`. Adding `(1, 8)` leaves the last sizes equal, 8 and 8, and stretches the size-1 axis to 32, so the same 8 bias values are added to each of the 32 rows and `out` keeps shape `(32, 8)`. An explicit copy, `np.tile(b, (32, 1))`, would hold $32 \\cdot 8 = 256$ numbers; broadcasting works from the 8 stored ones. Section 5 traces the same addition for `(300, 3)` and `(1, 3)`.",
+      "hints": [
+        "Find the shape of `np.dot(X, W)` first with the inner-dimension rule of post 02.",
+        "Then align `(1, 8)` under that shape and see which axis has size 1."
+      ]
+    },
+    {
+      "id": "nn-005-q13",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "forward-pass",
+        "bias",
+        "broadcasting"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In `out = np.dot(X, W) + b`, the product has shape `(300, 3)` and `b` has shape `(1, 3)`. Which statement describes what the addition does?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It adds a separate bias to each of the 300 samples, so `b` should really be stored with shape `(300, 1)`.",
+          "correct": false,
+          "feedback": "A bias belongs to a neuron, not to a sample. There are 3 neurons and so 3 bias values; a `(300, 1)` array would add one number per sample across all three neurons."
+        },
+        {
+          "key": "b",
+          "text": "It adds `b[0, j]` to column `j` of every row, so each neuron's bias reaches all 300 samples.",
+          "correct": true,
+          "feedback": "Right. The size-1 row axis of `b` is stretched to 300, so the same three values are added to every row."
+        },
+        {
+          "key": "c",
+          "text": "It first builds a `(300, 3)` copy of `b` in memory and then adds the two arrays entry by entry.",
+          "correct": false,
+          "feedback": "The stretch is virtual. `np.broadcast_to(b, (300, 3))` shares its memory with the three stored numbers, and the 300 rows are never written out."
+        },
+        {
+          "key": "d",
+          "text": "It works only because `b` is 2-D; a bias of shape `(3,)` would raise a `ValueError` here.",
+          "correct": false,
+          "feedback": "A `(3,)` array is padded to `(1, 3)` and broadcasts in exactly the same way, as the `(300, 3)` with `(3,)` row of section 4's table shows."
+        }
+      ],
+      "explanation": "Section 5: `(300, 3) + (1, 3)` broadcasts to `(300, 3)` by stretching the bias row down the batch axis. Every sample gets the same three bias values, one per neuron, with no loop, no `np.tile`, and no copy of the row.",
+      "hints": [
+        "Ask which axis of `b` has size 1, and what stretching it means for the rows of the product."
+      ]
+    },
+    {
+      "id": "nn-005-q14",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "8",
+      "est_minutes": 15,
+      "tags": [
+        "bias",
+        "in-place",
+        "keepdims",
+        "backward-pass"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "connect",
+      "connects": [
+        "nn-004",
+        "nn-016"
+      ],
+      "prompt": "Post 04 stores a layer's biases with shape `(1, n_neurons)`. Post 16 computes the gradient of the loss with respect to the biases as `dbiases = np.sum(dvalues, axis=0, keepdims=True)`, where `dvalues` has shape `(N, n_neurons)`, and an optimiser then updates in place with `biases -= learning_rate * dbiases`. Take `N = 300` and `n_neurons = 3`. (a) Give the shape of `dbiases` with and without `keepdims=True`, and say from the shapes alone why the sum runs over axis 0 and not axis 1. (b) For each of the four combinations of a bias stored as `(3,)` or `(1, 3)` and a gradient of shape `(3,)` or `(1, 3)`, say whether the in-place update runs. (c) Explain the one combination that fails, and name one way to avoid it.",
+      "answer_length": "half a page",
+      "solution": "1. **Shapes.** `dvalues` is `(300, 3)`. Summing over axis 0 removes the batch axis: `(3,)` without `keepdims`, `(1, 3)` with it.\n2. **Why axis 0.** The gradient must have one entry per bias, that is, one per neuron, one per column. The axis to remove is therefore the batch axis, axis 0, which leaves the 3 columns. Summing over axis 1 would leave one number per sample, shape `(300,)`, which matches nothing the layer stores. (Post 16 derives why the per-sample contributions are added; here only the shape matters.)\n3. **The four updates.** An in-place operator has to store the broadcast result in its left operand, so the left shape must already be the broadcast shape.\n   - bias `(1, 3)`, gradient `(1, 3)`: equal shapes; runs.\n   - bias `(1, 3)`, gradient `(3,)`: the gradient is padded to `(1, 3)`, the broadcast shape is `(1, 3)`; runs.\n   - bias `(3,)`, gradient `(3,)`: equal shapes; runs.\n   - bias `(3,)`, gradient `(1, 3)`: the bias is padded to `(1, 3)`, the broadcast shape is `(1, 3)`, and that is not the shape of the left operand, so NumPy raises `ValueError: non-broadcastable output operand with shape (3,) doesn't match the broadcast shape (1,3)`.\n4. **Reading.** The out-of-place expression `biases - learning_rate * dbiases` runs in all four cases; only the in-place form insists that the left operand already has room for the result. Storing the bias as `(1, 3)` and computing its gradient with `keepdims=True` keeps the two shapes identical, so nothing has to be padded or stretched.",
+      "rubric": [
+        {
+          "criterion": "Gives `(3,)` without `keepdims` and `(1, 3)` with it",
+          "points": 1
+        },
+        {
+          "criterion": "Justifies axis 0 from the shapes: one value per neuron is needed, so the batch axis is the one removed; axis 1 would leave one value per sample",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies that three combinations run and that only a `(3,)` bias with a `(1, 3)` gradient fails",
+          "points": 2
+        },
+        {
+          "criterion": "Explains the failure: the broadcast shape `(1, 3)` differs from the left operand's shape `(3,)`, and an in-place operation cannot change the shape of its target",
+          "points": 2
+        },
+        {
+          "criterion": "Notes that identical `(1, 3)` shapes, or the out-of-place form, avoid the problem",
+          "points": 1
+        }
+      ],
+      "explanation": "Section 8 runs the failing combination: a `(3,)` bias cannot take a `(1, 3)` gradient in place, while the `(1, 3)` bias of `Layer_Dense` can. Section 4.1 gives the rule, that the left operand of an in-place operation must already have the shape of the result, and sections 2 and 3 give the two shapes of the reduction. The bias gradient itself is derived in post 16; only its shape is needed here.",
+      "hints": [
+        "Work out the two possible shapes of a sum of `dvalues` over axis 0 first.",
+        "For each update, find the broadcast shape of the two operands and compare it with the shape of the array on the left of `-=`."
+      ]
+    },
+    {
+      "id": "nn-005-q15",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4.1",
+      "est_minutes": 3,
+      "tags": [
+        "broadcasting",
+        "in-place"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`a` has shape `(3, 3)` and `row` has shape `(3,)`. The expression `a + row` runs. Does the statement `row += a` run as well? Answer yes or no and give the reason in one sentence.",
+      "answer": {
+        "model": "No. The broadcast result has shape `(3, 3)`, and an in-place operation must store it in `row`, whose shape `(3,)` cannot hold it, so NumPy raises a `ValueError`.",
+        "accept": [
+          "^\\s*no\\b(?!\\s*,?\\s*(?:errors?|problems?|issues?|exceptions?|failures?|reason|trouble|difficulty|difference)\\b)(?![\\s\\S]*(?:\\b(?:runs|works)\\s+(?:fine|too|as well|correctly|without|anyway)|\\bboth\\s+(?:run|work)\\b))(?=[\\s\\S]*(?:in-?\\s?place|shape|stor|hold|fit|grow|room|output|left|broadcast|[\\(\\[]\\s*3\\s*,\\s*3\\s*[\\)\\]]|[\\(\\[]\\s*3\\s*,\\s*[\\)\\]]|\\b3\\s*(?:x|by|\\u00d7)\\s*3\\b|\\b[12]-?\\s?d\\b|bigger|larger|smaller|too small|big enough|resiz|\\bsize|dimension|element|entries|slots?\\b|\\bnine\\b|\\b9\\b|writ|assign|expand))",
+          "^(?!\\s*(?:yes|yep|yeah|sure)\\b)(?!\\s*no\\s*,?\\s*(?:errors?|problems?|issues?|exceptions?|failures?|reason|trouble|difficulty|difference)\\b)(?![\\s\\S]*(?:\\bno\\b|\\bnot\\b|\\bwithout\\b|\\bnever\\b|n['\\u2019]t\\b|\\bcannot\\b)[\\s,]+(?:an?\\s+|any\\s+)?(?:errors?|raises?|fails?|exceptions?|failures?|crash|throw))(?![\\s\\S]*\\berror-?\\s?free\\b)(?![\\s\\S]*(?:\\b(?:runs|works)\\s+(?:fine|too|as well|correctly|without|anyway)|\\bboth\\s+(?:run|work)\\b))(?=[\\s\\S]*\\b(?:raises?|fails?|errors?|cannot|can['\\u2019]t|does not run|doesn['\\u2019]t run|will not run|won['\\u2019]t run|valueerror)\\b)(?=[\\s\\S]*(?:in-?\\s?place|shape|stor|hold|fit|grow|room|output|left|broadcast|[\\(\\[]\\s*3\\s*,\\s*3\\s*[\\)\\]]|[\\(\\[]\\s*3\\s*,\\s*[\\)\\]]|\\b3\\s*(?:x|by|\\u00d7)\\s*3\\b|\\b[12]-?\\s?d\\b|bigger|larger|smaller|too small|big enough|resiz|\\bsize|dimension|element|entries|slots?\\b|\\bnine\\b|\\b9\\b|writ|assign|expand))"
+        ]
+      },
+      "explanation": "Section 4.1: operand order does not change the broadcast shape, so `a + row` and `row + a` are both `(3, 3)`. An in-place operator, however, writes the result into its left operand, and a `(3,)` array cannot hold a `(3, 3)` result. Section 8 quotes the error: `non-broadcastable output operand with shape (3,) doesn't match the broadcast shape (3,3)`.",
+      "hints": [
+        "Find the shape of the result first, then ask where `+=` has to put it."
+      ]
+    },
+    {
+      "id": "nn-005-q16",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 15,
+      "tags": [
+        "broadcasting-rules",
+        "higher-dimensions",
+        "keepdims",
+        "batch-normalisation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "connect",
+      "connects": [
+        "cnn-014"
+      ],
+      "prompt": "Batch normalisation for images (`cnn-014`, Convolutional Neural Networks from Scratch) works on a batch `X` of shape `(8, 3, 6, 6)`: 8 images, 3 channels, 6 rows, 6 columns. It has to subtract from every entry the mean of that entry's channel, and it computes the means with `mu = X.mean(axis=(0, 2, 3))`. (a) Give the shape of `mu`. (b) Apply the broadcasting rules to `X - mu` and say what happens. (c) Say what would happen instead if the images had 6 rows and 3 columns, so that `X` had shape `(8, 3, 6, 3)`. (d) Give two ways to make the subtraction act per channel.",
+      "answer_length": "half a page",
+      "solution": "1. **Shape of `mu`.** The named axes 0, 2 and 3 disappear and only the channel axis is left, so `mu` has shape `(3,)`.\n2. **`X - mu` for `(8, 3, 6, 6)`.** Rule 1 pads `(3,)` to `(1, 1, 1, 3)`. Rule 2 compares from the right: 6 with 3 is neither equal nor contains a 1, so NumPy raises `ValueError: operands could not be broadcast together with shapes (8,3,6,6) (3,)`. The three means were lined up with the last axis, the image columns, not with the channel axis.\n3. **`X - mu` for `(8, 3, 6, 3)`.** The padded shape `(1, 1, 1, 3)` now meets a last axis of size 3. The pairs are 8 with 1, 3 with 1, 6 with 1, and 3 with 3, all compatible. No error is raised and the result has shape `(8, 3, 6, 3)`, but mean $j$ has been subtracted from image column $j$ of every channel, not from channel $j$. This is the silent case of section 3.2 in four dimensions: the size of the reduced result happens to equal the size of the last axis.\n4. **Two fixes.** Either reshape the means so that the 3 sits on the channel axis, `X - mu.reshape(1, 3, 1, 1)`, or keep the reduced axes when computing them, `X.mean(axis=(0, 2, 3), keepdims=True)`, which has shape `(1, 3, 1, 1)` directly. Both give the pairs 8 with 1, 3 with 3, 6 with 1, and 6 with 1, and a result of shape `(8, 3, 6, 6)`.",
+      "rubric": [
+        {
+          "criterion": "Gives `(3,)` for `mu`, because every named axis disappears",
+          "points": 1
+        },
+        {
+          "criterion": "Pads `(3,)` to `(1, 1, 1, 3)` and shows that the `(8, 3, 6, 6)` case raises because 6 and 3 are incompatible",
+          "points": 2
+        },
+        {
+          "criterion": "Shows that the `(8, 3, 6, 3)` case runs without error and explains that the means are applied along the last axis, not the channel axis",
+          "points": 3
+        },
+        {
+          "criterion": "Gives a correct fix by reshaping the means to `(1, 3, 1, 1)`",
+          "points": 1
+        },
+        {
+          "criterion": "Gives a correct fix with `keepdims=True`, whose result has shape `(1, 3, 1, 1)`",
+          "points": 1
+        }
+      ],
+      "explanation": "The rules of section 4 do not change with the number of dimensions: the shorter shape is padded on the left, so a 1-D array always meets the last axis. Section 3.2's distinction between the loud and the silent case carries over: the mistake raises unless the last axis happens to have the same size as the reduced result. `keepdims=True` (section 3) leaves size-1 axes exactly where the reduced ones were, which is what lets the result broadcast back.",
+      "hints": [
+        "A reduction over several axes removes every one of them; count what is left.",
+        "A 1-D array is padded on the left, so decide which axis of `X` its 3 values are compared with.",
+        "For the fix, the 3 has to sit in the second position of a four-entry shape."
+      ]
+    },
+    {
+      "id": "nn-005-q17",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "7",
+      "est_minutes": 15,
+      "tags": [
+        "broadcasting-rules",
+        "implementation",
+        "python"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "extend",
+      "language": "python",
+      "prompt": "The post's `broadcast_shape(left, right)`, given in the starter, applies the broadcasting rules to two shapes. Extend it to any number of shapes: implement `broadcast_shapes(*shapes)`, which returns the shape that results from combining arrays of all the given shapes, and raises `ValueError` if some pair of aligned sizes is neither equal nor contains a 1. Called with no arguments it returns the empty tuple `()`, the shape of a scalar. The function must not call NumPy.",
+      "starter": "def broadcast_shape(left, right):\n    \"\"\"Return the shape NumPy gives two operands of these shapes, or raise ValueError.\"\"\"\n    # Rule 1: left-pad the shorter shape with 1s until both have the same length.\n    ndim = max(len(left), len(right))\n    left = (1,) * (ndim - len(left)) + tuple(left)\n    right = (1,) * (ndim - len(right)) + tuple(right)\n    result = []\n    for m, n in zip(left, right):\n        # Rule 2: two aligned sizes must be equal, or one of them must be 1.\n        if m != n and m != 1 and n != 1:\n            raise ValueError(f\"sizes {m} and {n} differ and neither is 1\")\n        # Rule 3: a size of 1 stretches to the other size.\n        result.append(n if m == 1 else m)\n    return tuple(result)\n\n\ndef broadcast_shapes(*shapes):\n    \"\"\"Return the broadcast shape of any number of shapes, or raise ValueError.\"\"\"\n    raise NotImplementedError\n",
+      "solution": "def broadcast_shape(left, right):\n    \"\"\"Return the shape NumPy gives two operands of these shapes, or raise ValueError.\"\"\"\n    # Rule 1: left-pad the shorter shape with 1s until both have the same length.\n    ndim = max(len(left), len(right))\n    left = (1,) * (ndim - len(left)) + tuple(left)\n    right = (1,) * (ndim - len(right)) + tuple(right)\n    result = []\n    for m, n in zip(left, right):\n        # Rule 2: two aligned sizes must be equal, or one of them must be 1.\n        if m != n and m != 1 and n != 1:\n            raise ValueError(f\"sizes {m} and {n} differ and neither is 1\")\n        # Rule 3: a size of 1 stretches to the other size.\n        result.append(n if m == 1 else m)\n    return tuple(result)\n\n\ndef broadcast_shapes(*shapes):\n    \"\"\"Return the broadcast shape of any number of shapes, or raise ValueError.\"\"\"\n    result = ()                                  # the shape of a scalar: compatible with everything\n    for shape in shapes:\n        result = broadcast_shape(result, shape)  # fold each shape into the running result\n    return result\n",
+      "tests": "import itertools\n\nimport numpy as np\n\nassert broadcast_shapes() == ()\nassert broadcast_shapes((3, 4)) == (3, 4)\nassert broadcast_shapes((8, 1, 6, 1), (7, 1, 5)) == (8, 7, 6, 5)\nassert broadcast_shapes((3, 1), (3,), (2, 1, 1)) == (2, 3, 3)\nassert broadcast_shapes((300, 3), (1, 3), (3,), ()) == (300, 3)\nfor bad in [((3, 3), (2, 3)), ((5, 3), (5,)), ((2, 1), (3,), (4,))]:\n    try:\n        broadcast_shapes(*bad)\n    except ValueError:\n        pass\n    else:\n        raise AssertionError(\"expected ValueError for \" + str(bad))\n\n# Every triple of shapes with 0 to 2 axes of size 1, 2 or 3, against NumPy.\nsmall = [shape for ndim in range(3) for shape in itertools.product((1, 2, 3), repeat=ndim)]\nfor trio in itertools.product(small, repeat=3):\n    try:\n        expected = np.broadcast_shapes(*trio)\n    except ValueError:\n        expected = \"error\"\n    try:\n        got = broadcast_shapes(*trio)\n    except ValueError:\n        got = \"error\"\n    assert got == expected, (trio, got, expected)\nprint(\"all tests passed\")\n",
+      "explanation": "Broadcasting several operands is the two-operand rule applied repeatedly: the result of the first two is combined with the third, and so on, starting from `()`, the shape of a scalar, which is compatible with everything and changes nothing. Each step pads, checks and stretches exactly as section 4 describes, so an incompatible pair of sizes anywhere raises. The tests compare the function with NumPy on every triple of small shapes.",
+      "hints": [
+        "Three shapes can be combined two at a time.",
+        "Find a starting shape that broadcasts with every shape without changing it, then fold each argument into a running result with `broadcast_shape`."
+      ]
+    },
+    {
+      "id": "nn-005-q18",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "2.5",
+      "est_minutes": 2,
+      "tags": [
+        "one-dimensional",
+        "row-vector",
+        "column-vector"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A reduction returns an array of shape `(3,)`. When it is subtracted from a 2-D array of shape `(3, 3)`, does NumPy treat it as a row or as a column?",
+      "answer": {
+        "model": "As a row: the 1-D shape is left-padded to `(1, 3)`, so its three values are spread across the columns and repeated down the rows. It is never treated as a column.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:depends?|depending|either|both|sometimes|neither)\\b)(?![\\s\\S]*\\brow\\b\\s*(?:/|\\bor\\b)\\s*(?:as\\s+)?(?:a\\s+)?column\\b)(?![\\s\\S]*\\bcolumn\\b\\s*(?:/|\\bor\\b)\\s*(?:as\\s+)?(?:a\\s+)?row\\b)(?!\\W*(?:row\\W+column|column\\W+row)\\W*$)(?!\\W*(?:as\\s+)?(?:a\\s+)?column\\b)(?![\\s\\S]*(?:\\bnot\\b|\\bnever\\b|n['\\u2019]t\\b)(?:(?!\\b(?:but|columns?)\\b)[^.;:\\n]){0,25}\\brow\\b)(?!(?:(?!(?:\\bnot\\b|\\bnever\\b|n['\\u2019]t\\b|\\bthan\\b|\\binstead\\b)|(?:^\\W*(?:as\\s+)?row\\b|\\b(?:a|as|one|single)\\s+row\\b|\\brow[- ]vector\\b|[\\(\\[]\\s*1\\s*,\\s*3\\s*[\\)\\]]|\\b1\\s*(?:x|by|\\u00d7)\\s*3\\b))[\\s\\S])*?(?:\\b(?:as|is|['\\u2019]s|like|be|becomes?|into)\\s+a\\s+column\\b|\\bcolumn[- ]vector\\b|[\\(\\[]\\s*3\\s*,\\s*1\\s*[\\)\\]]|\\b3\\s*(?:x|by|\\u00d7)\\s*1\\b))(?=[\\s\\S]*(?:^\\W*(?:as\\s+)?row\\b|\\b(?:a|as|one|single)\\s+row\\b|\\brow[- ]vector\\b|[\\(\\[]\\s*1\\s*,\\s*3\\s*[\\)\\]]|\\b1\\s*(?:x|by|\\u00d7)\\s*3\\b))"
+        ]
+      },
+      "explanation": "Section 2.5 and rule 1 of section 4: a 1-D shape is padded with a 1 on the left, so `(3,)` becomes `(1, 3)`, a row, whichever axis the reduction removed. Its values line up with the columns of the 2-D array and are repeated down the rows. Only an explicit `(3, 1)` shape, from `keepdims=True` or a reshape, acts as a column.",
+      "hints": [
+        "Apply the padding rule to `(3,)` and read the padded shape as rows by columns."
+      ]
+    }
+  ]
+}

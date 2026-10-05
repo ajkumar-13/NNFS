@@ -1,8 +1,25 @@
 id: nn-005
 slug: 05-array-summation-keepdims-and-broadcasting
-title: "Part 05 · Array summation, keepdims, and broadcasting"
+title: "05 - Array summation, keepdims, and broadcasting"
+summary: "How the axis argument removes one dimension from a NumPy reduction, how keepdims keeps it at size 1, and the broadcasting rules that decide which shapes combine, including the row-for-column mistake that raises no error."
 date: 2026-05-26
-tags: [neural-networks, from-scratch, numpy, broadcasting, foundations]
+updated: 2026-10-05
+status: complete
+part: "Part I - Foundations"
+level: beginner
+reading_time: 22
+tags: [neural-networks, from-scratch, numpy, broadcasting, keepdims, foundations]
 hero: diagrams/01-axis-summation.svg
-reading_time: 12
-part: "Part I — Foundations"
+prerequisites: [nn-002]
+code: included
+outcomes:
+  - id: o1
+    text: "Predict the shape of np.sum(a, axis=k, keepdims=...) for any 2-D array a."
+  - id: o2
+    text: "Decide from two shapes alone whether they broadcast, and give the shape of the result."
+  - id: o3
+    text: "Spot the silent bug where a 1-D (n,) array broadcasts as a row when a column was intended."
+  - id: o4
+    text: "Trace how a (1, n) bias row is broadcast across the N rows of a layer's output in a forward pass."
+recommended: [nn-004]
+compute: cpu
