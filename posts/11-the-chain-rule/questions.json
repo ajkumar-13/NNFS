@@ -1,0 +1,877 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-011",
+  "next_ordinal": 20,
+  "questions": [
+    {
+      "id": "nn-011-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "chain-rule",
+        "statement"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "For a composition $y = f(g(x))$, which expression equals $dy/dx$?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "$f'(g(x)) \\cdot g'(x)$",
+          "correct": true,
+          "feedback": "Right: the outer slope at the value the inner function produced, times the inner slope at $x$."
+        },
+        {
+          "key": "b",
+          "text": "$f'(x) \\cdot g'(x)$",
+          "correct": false,
+          "feedback": "Both slopes are taken at $x$ here. The outer function never receives $x$; it receives $g(x)$, and its slope must be taken there."
+        },
+        {
+          "key": "c",
+          "text": "$f'(g(x)) + g'(x)$",
+          "correct": false,
+          "feedback": "Two rescalings in a row multiply. A sum of slopes is what the sum rule gives for $f(x) + g(x)$, which is not a composition."
+        },
+        {
+          "key": "d",
+          "text": "$f(g'(x))$",
+          "correct": false,
+          "feedback": "This applies the outer function to the inner slope. No derivative of $f$ appears in it at all."
+        }
+      ],
+      "explanation": "Section 2 states the rule: the derivative of a composition is the derivative of the outer function, evaluated at the value the inner function produced, times the derivative of the inner function. A nudge in $x$ is rescaled by $g'(x)$ and the result is rescaled again by $f'(g(x))$.",
+      "hints": [
+        "Follow a small nudge in $x$ through $g$ and then through $f$."
+      ]
+    },
+    {
+      "id": "nn-011-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2.2",
+      "est_minutes": 3,
+      "tags": [
+        "chain-rule",
+        "product-rule"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Which of these functions is a composition, so that differentiating it without expanding requires the chain rule?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "$x^7 + x^2 + 1$",
+          "correct": false,
+          "feedback": "This is a sum of monomials in $x$ itself. The power and sum rules of post 10 are enough."
+        },
+        {
+          "key": "b",
+          "text": "$(x^2 + 1)^7$",
+          "correct": true,
+          "feedback": "Right: the seventh power is applied to the value of $x^2 + 1$, so one function sits inside another."
+        },
+        {
+          "key": "c",
+          "text": "$x^2 \\cdot (2x + 1)$",
+          "correct": false,
+          "feedback": "This is a product of two functions of the same variable. It calls for the product rule, which gives a sum of two terms."
+        },
+        {
+          "key": "d",
+          "text": "$7x^2$",
+          "correct": false,
+          "feedback": "A constant times a power of $x$ itself is a single use of the power rule; nothing is nested."
+        }
+      ],
+      "explanation": "Section 2.2 separates composition from multiplication. In $(x^2 + 1)^7$ the outer function $z^7$ is applied to the inner value $z = x^2 + 1$, and the chain rule gives $7(x^2 + 1)^6 \\cdot 2x$. The other three need only the power, sum, or product rule.",
+      "hints": [
+        "Ask whether one function is applied to the output of another, or whether two functions of $x$ are added or multiplied."
+      ]
+    },
+    {
+      "id": "nn-011-q03",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 5,
+      "tags": [
+        "chain-rule",
+        "polynomial"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Let $y = (4x + 1)^3$, with inner function $g(x) = 4x + 1$ and outer function $f(z) = z^3$. Give the value of the outer local derivative $f'(z)$ at the inner value reached when $x = 1$, and the slope $dy/dx$ at $x = 1$.",
+      "answer": {
+        "parts": [
+          {
+            "label": "f'(z) at z = g(1)",
+            "value": 75,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "dy/dx at x = 1",
+            "value": 300,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form dy/dx = 3(4x + 1)^2 * 4 = 12(4x + 1)^2, the three-step method of section 4; a central difference with h = 1e-5 gives 300.0000 at x = 1.",
+      "explanation": "The inner value is $z = g(1) = 5$. The local derivatives are $f'(z) = 3z^2$ and $g'(x) = 4$, so $f'(5) = 3 \\cdot 25 = 75$ and $dy/dx = 75 \\cdot 4 = 300$. In general $dy/dx = 12(4x + 1)^2$, by the three steps of section 4.",
+      "hints": [
+        "Find the value the inner function hands to the outer one before differentiating anything.",
+        "The outer derivative is $3z^2$; the inner derivative is a constant."
+      ]
+    },
+    {
+      "id": "nn-011-q04",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2.1",
+      "est_minutes": 4,
+      "tags": [
+        "chain-rule",
+        "polynomial"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "What is the slope of $y = (2x + 1)^3$ at $x = 1$?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "6",
+          "correct": false,
+          "feedback": "This is $3x^2 \\cdot 2$ at $x = 1$: the outer derivative was taken at $x$ where it belongs at the inner value $2x + 1 = 3$."
+        },
+        {
+          "key": "b",
+          "text": "18",
+          "correct": false,
+          "feedback": "This is $3 \\cdot 3 \\cdot 2$: the exponent came down and the inner factor is there, but the remaining power should be $z^2 = 9$, not $z = 3$."
+        },
+        {
+          "key": "c",
+          "text": "27",
+          "correct": false,
+          "feedback": "This is the outer factor $3(2x + 1)^2$ alone. The inner factor $g'(x) = 2$ has been dropped."
+        },
+        {
+          "key": "d",
+          "text": "54",
+          "correct": true,
+          "feedback": "Right: $3(2x + 1)^2 \\cdot 2 = 6 \\cdot 9 = 54$."
+        }
+      ],
+      "explanation": "With $g(x) = 2x + 1$ and $f(z) = z^3$ the local derivatives are $g'(x) = 2$ and $f'(z) = 3z^2$. At $x = 1$ the inner value is $z = 3$, so the slope is $3 \\cdot 9 \\cdot 2 = 54$. Section 2.1 works the same pattern for $(2x + 1)^2$.",
+      "hints": [
+        "Name the inner and the outer function, then differentiate each on its own."
+      ]
+    },
+    {
+      "id": "nn-011-q05",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "chain-rule",
+        "evaluation-point"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the chain rule for $y = f(g(x))$ the inner derivative $g'$ is taken at $x$. At which value is the outer derivative $f'$ taken?",
+      "answer": {
+        "model": "At $z = g(x)$, the value the inner function produced and the outer function received.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:nor|neither|or|both)\\b)(?![\\s\\S]*\\b(?:not|never|isn't)\\b(?!\\s+(?:at\\s+)?(?:the\\s+)?(?:original\\s+|bare\\s+|point\\s+|input\\s+)?\\$?x\\b(?!\\s*\\()))(?![\\s\\S]*\\b(?:at|is)\\s+\\$?(?:f\\s*\\(\\s*g|g\\s*'|f\\s*\\(\\s*x))(?![\\s\\S]*\\bat\\s+(?:the\\s+)?(?:inner\\s+(?:function's\\s+)?)?(?:derivative|slope)\\b)(?=(?:(?:\\b(?:not|never|instead\\s+of|rather\\s+than|than)\\s+(?:at\\s+)?(?:the\\s+)?(?:original\\s+|bare\\s+|point\\s+|input\\s+)?\\$?x|(?:\\bg\\s*'|\\binner\\s+(?:derivative|slope|one))\\$?\\s+(?:is\\s+)?(?:taken\\s+|evaluated\\s+)?at\\s+\\$?x|\\b(?:g|inner(?:\\s+function)?)\\$?\\s+(?:is\\s+)?(?:evaluated\\s+|taken\\s+)?at\\s+\\$?x|\\b(?:returns|produces|gives)\\s+for\\s+\\$?x|\\bmaps\\s+\\$?x)|(?!(?<![a-z0-9_\\\\(])(?<!\\(\\s)x(?![a-z0-9_])(?!\\s*\\)))[\\s\\S])*$)(?=[\\s\\S]*(?:(?<!f\\()(?<!f\\(\\s)(?<!f\\s\\()(?<![a-z'])g\\s*\\(\\s*x\\s*\\)|(?<![a-z])z\\b(?!\\s*\\^)(?!')|\\b(?:output|value|result)\\s+(?:of|from)\\s+(?:the\\s+)?(?:inner(?:\\s+function)?|g)\\b(?!')|\\binner(?:\\s+function)?(?:'s)?\\s+(?:output|value|result)\\b|\\bintermediate\\s+value\\b|\\b(?:input|argument)\\s+(?:of|to)\\s+(?:the\\s+)?(?:outer(?:\\s+function)?|f)\\b(?!')|\\b(?:outer(?:\\s+function)?|f)'s\\s+(?:own\\s+)?(?:input|argument)\\b|\\b(?:what|whatever|value|number|point)\\s+(?:that\\s+)?(?:the\\s+)?(?:inner(?:\\s+function)?|g)\\s+(?:produced|produces|returns|returned|outputs|gives|gave|hands)\\b|\\b(?:what|whatever|value|number|point)\\s+(?:that\\s+)?(?:the\\s+)?(?:outer(?:\\s+function)?|f)\\s+(?:actually\\s+)?(?:received|receives|gets|got|takes)\\b|\\b(?:handed|passed|given|fed)\\s+to\\s+(?:the\\s+)?(?:outer(?:\\s+function)?|f)\\b(?!')|\\b(?:receives|received|gets|got|comes|came)\\s+from\\s+(?:the\\s+)?(?:inner(?:\\s+function)?|g)\\b(?!')|\\b(?:inner(?:\\s+function)?|g)\\s+maps\\s+\\$?x\\$?\\s+to\\b|\\b(?:inner(?:\\s+function)?|g)\\$?\\s+(?:is\\s+)?(?:evaluated\\s+|taken\\s+)?at\\s+\\$?x\\b))"
+        ]
+      },
+      "explanation": "Section 2 makes the point of evaluation part of the rule: $dy/dx = f'(g(x)) \\cdot g'(x)$. The outer function never sees $x$, only $z = g(x)$, so its slope is taken at that value. Section 4 shows the cost of the mistake: 60 in place of 960 for $3(2x^2)^5$ at $x = 1$.",
+      "hints": [
+        "Ask which number the outer function actually receives as its input."
+      ]
+    },
+    {
+      "id": "nn-011-q06",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 6,
+      "tags": [
+        "extended-chain-rule"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Let $y = f(g(h(x)))$ with $h(x) = x^2$, $g(u) = 2u + 1$, and $f(v) = v^3$. At $x = 1$, give the outermost local derivative $f'(v)$ at the value $v$ that $f$ receives, and the slope $dy/dx$.",
+      "answer": {
+        "parts": [
+          {
+            "label": "f'(v)",
+            "value": 27,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "dy/dx at x = 1",
+            "value": 108,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form: y = (2x^2 + 1)^3, dy/dx = 3(2x^2 + 1)^2 * 4x = 108 at x = 1; the product of the three local derivatives 27 * 2 * 2 gives the same, and a central difference with h = 1e-5 gives 108.0000.",
+      "explanation": "The values along the chain are $u = h(1) = 1$ and $v = g(1) = 3$. The local derivatives are $h'(1) = 2$, $g'(u) = 2$, and $f'(3) = 3 \\cdot 9 = 27$, and section 5 multiplies them: $27 \\cdot 2 \\cdot 2 = 108$. Three functions give three factors, each evaluated at the value its function received.",
+      "hints": [
+        "Run the chain forward first and write down $u$ and $v$.",
+        "There is one local derivative per function: $2x$, a constant, and $3v^2$."
+      ]
+    },
+    {
+      "id": "nn-011-q07",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "network",
+        "backward-order"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A two-layer classifier computes $\\mathbf{z}_1 = \\mathbf{x}\\mathbf{W}_1 + \\mathbf{b}_1$, $\\mathbf{a}_1 = \\text{ReLU}(\\mathbf{z}_1)$, $\\mathbf{z}_2 = \\mathbf{a}_1\\mathbf{W}_2 + \\mathbf{b}_2$, and a loss $L$ from $\\mathbf{z}_2$ by softmax with cross-entropy. Put the four local derivatives in the order in which a backward pass meets them on its way from the loss to $\\mathbf{W}_1$.",
+      "items": [
+        {
+          "key": "a",
+          "text": "$\\partial \\mathbf{a}_1 / \\partial \\mathbf{z}_1$"
+        },
+        {
+          "key": "b",
+          "text": "$\\partial \\mathbf{z}_1 / \\partial \\mathbf{W}_1$"
+        },
+        {
+          "key": "c",
+          "text": "$\\partial L / \\partial \\mathbf{z}_2$"
+        },
+        {
+          "key": "d",
+          "text": "$\\partial \\mathbf{z}_2 / \\partial \\mathbf{a}_1$"
+        }
+      ],
+      "answer": [
+        "c",
+        "d",
+        "a",
+        "b"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 6 writes $\\partial L / \\partial \\mathbf{W}_1$ as the product $\\partial L / \\partial \\mathbf{z}_2 \\cdot \\partial \\mathbf{z}_2 / \\partial \\mathbf{a}_1 \\cdot \\partial \\mathbf{a}_1 / \\partial \\mathbf{z}_1 \\cdot \\partial \\mathbf{z}_1 / \\partial \\mathbf{W}_1$. The backward pass starts at the loss and passes the functions in the reverse of the forward order: softmax with cross-entropy, the second dense layer, ReLU, the first dense layer.",
+      "hints": [
+        "List the functions in forward order, then reverse the list."
+      ]
+    },
+    {
+      "id": "nn-011-q08",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "network",
+        "local-derivative"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "For the two-layer classifier with $\\mathbf{z}_1 = \\mathbf{x}\\mathbf{W}_1 + \\mathbf{b}_1$, $\\mathbf{a}_1 = \\text{ReLU}(\\mathbf{z}_1)$, and $\\mathbf{z}_2 = \\mathbf{a}_1\\mathbf{W}_2 + \\mathbf{b}_2$, match each local derivative to what its table of numbers holds.",
+      "left": [
+        {
+          "key": "a",
+          "text": "$\\partial \\mathbf{z}_1 / \\partial \\mathbf{W}_1$"
+        },
+        {
+          "key": "b",
+          "text": "$\\partial \\mathbf{a}_1 / \\partial \\mathbf{z}_1$"
+        },
+        {
+          "key": "c",
+          "text": "$\\partial \\mathbf{z}_2 / \\partial \\mathbf{a}_1$"
+        },
+        {
+          "key": "d",
+          "text": "$\\partial L / \\partial \\mathbf{z}_2$"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "The entries of $\\mathbf{W}_2$"
+        },
+        {
+          "key": "q",
+          "text": "The values of the sample $\\mathbf{x}$, and zeros"
+        },
+        {
+          "key": "r",
+          "text": "A single row: the response of the loss to each logit"
+        },
+        {
+          "key": "s",
+          "text": "A 1 or a 0 for each hidden neuron, on the diagonal"
+        },
+        {
+          "key": "t",
+          "text": "The entries of $\\mathbf{W}_1$"
+        },
+        {
+          "key": "u",
+          "text": "The learning rate, repeated for each weight"
+        }
+      ],
+      "answer": {
+        "a": "q",
+        "b": "s",
+        "c": "p",
+        "d": "r"
+      },
+      "explanation": "The table of section 6 and the measured tables of section 8.2 show each factor. A weighted sum responds to one of its own weights by the input that weight multiplies, so $\\partial \\mathbf{z}_1 / \\partial \\mathbf{W}_1$ holds the inputs. ReLU's slope is 1 or 0 per neuron. Each logit responds to a hidden activation by the weight that joins them, an entry of $\\mathbf{W}_2$. The loss is one number, so its factor is one row. The entries of $\\mathbf{W}_1$ would be the derivative of $\\mathbf{z}_1$ with respect to $\\mathbf{x}$, which is not in this chain, and the learning rate is no derivative at all.",
+      "hints": [
+        "For each factor, ask what multiplies the quantity in the denominator inside the function concerned."
+      ]
+    },
+    {
+      "id": "nn-011-q09",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6.1",
+      "est_minutes": 3,
+      "tags": [
+        "factor-count"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the two-layer classifier (dense, ReLU, dense, then softmax with cross-entropy counted as one function), how many local-derivative factors does the chain rule give for $\\partial L / \\partial \\mathbf{W}_2$?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "1",
+          "correct": false,
+          "feedback": "The loss factor alone gives $\\partial L / \\partial \\mathbf{z}_2$. The dense layer that holds $\\mathbf{W}_2$ contributes a factor of its own, $\\partial \\mathbf{z}_2 / \\partial \\mathbf{W}_2$."
+        },
+        {
+          "key": "b",
+          "text": "2",
+          "correct": true,
+          "feedback": "Right: one factor for the second dense layer, in which $\\mathbf{W}_2$ sits, and one for the loss function after it."
+        },
+        {
+          "key": "c",
+          "text": "3",
+          "correct": false,
+          "feedback": "Three would count softmax and cross-entropy as separate functions, and the prompt counts them as one."
+        },
+        {
+          "key": "d",
+          "text": "4",
+          "correct": false,
+          "feedback": "Four is the count for $\\mathbf{W}_1$. ReLU and the first dense layer come before $\\mathbf{W}_2$ enters and add no factor for it."
+        }
+      ],
+      "explanation": "Section 6.1 gives the counting rule: one factor for the function the parameter sits in and one for every function after it, up to and including the loss. After $\\mathbf{W}_2$ enters there are two functions, so $\\partial L / \\partial \\mathbf{W}_2 = \\partial L / \\partial \\mathbf{z}_2 \\cdot \\partial \\mathbf{z}_2 / \\partial \\mathbf{W}_2$.",
+      "hints": [
+        "Count the functions the value passes through from the point where $\\mathbf{W}_2$ is used until the loss."
+      ]
+    },
+    {
+      "id": "nn-011-q10",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6.1",
+      "est_minutes": 5,
+      "tags": [
+        "factor-count",
+        "depth"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network has four dense layers, a ReLU after each of the first three, and a combined softmax and cross-entropy counted as one function at the end. How many local-derivative factors does the gradient of the loss have for a weight in layer 1, and for a weight in layer 3?",
+      "answer": {
+        "parts": [
+          {
+            "label": "factors for a weight in layer 1",
+            "value": 8,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "factors for a weight in layer 3",
+            "value": 4,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 6.1: 2(K - k) + 2 with K = 4, giving 8 for k = 1 and 4 for k = 3; the same counts follow from listing the functions.",
+      "explanation": "Section 6.1 counts one factor per function from the parameter to the loss. A weight in layer 1 is followed by dense 1, ReLU, dense 2, ReLU, dense 3, ReLU, dense 4, and the loss: 8 functions. A weight in layer 3 is followed by dense 3, ReLU, dense 4, and the loss: 4. The formula $2(K - k) + 2$ with $K = 4$ gives the same two numbers.",
+      "hints": [
+        "Write the forward pass as a list of functions.",
+        "Start counting at the dense layer that holds the weight and stop after the loss."
+      ]
+    },
+    {
+      "id": "nn-011-q11",
+      "type": "numeric",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "9",
+      "est_minutes": 5,
+      "tags": [
+        "relu",
+        "evaluation-point"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Let $f(x) = \\text{ReLU}(2x - 1)$. Using the chain rule, give the slope $df/dx$ at $x = 0.2$ and at $x = 2$.",
+      "answer": {
+        "parts": [
+          {
+            "label": "df/dx at x = 0.2",
+            "value": 0,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "df/dx at x = 2",
+            "value": 2,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Chain rule with the ReLU slope taken at the inner value 2x - 1 (-0.6 and 3); snippets/chain_rule_checks.py prints the same pattern at x = 0, 1 and 2 (0, 2, 2), with matching central differences.",
+      "explanation": "The inner function $2x - 1$ has slope 2 everywhere. The ReLU slope is taken at the inner value, not at $x$: at $x = 0.2$ the inner value is $-0.6$, the ReLU slope is 0, and the product is 0, even though $x$ itself is positive. At $x = 2$ the inner value is 3, the ReLU slope is 1, and the product is 2. Section 9 treats the same function.",
+      "hints": [
+        "The sign that matters is the sign of what ReLU receives.",
+        "Compute $2x - 1$ at each point before choosing the ReLU slope."
+      ]
+    },
+    {
+      "id": "nn-011-q12",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 10,
+      "tags": [
+        "chain-rule",
+        "derivation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Differentiate $y = 5(3x^2 + 1)^4$ with the chain rule. Name the inner and the outer function, give both local derivatives, state the point at which each is evaluated, write $dy/dx$ as a function of $x$, and give its value at $x = 1$.",
+      "kind": "derive",
+      "solution": "1. Inner function: $g(x) = 3x^2 + 1$. Outer function: $f(z) = 5z^4$, applied to $z = g(x)$.\n2. Local derivatives, each by the power rule: $g'(x) = 6x$ and $f'(z) = 20z^3$.\n3. Points of evaluation: $g'$ at $x$, and $f'$ at the inner value $z = 3x^2 + 1$.\n4. Product: $dy/dx = f'(g(x)) \\cdot g'(x) = 20(3x^2 + 1)^3 \\cdot 6x = 120x(3x^2 + 1)^3$.\n5. At $x = 1$ the inner value is $z = 4$, so $f'(4) = 20 \\cdot 64 = 1{,}280$ and $g'(1) = 6$, and the slope is $1{,}280 \\cdot 6 = 7{,}680$.",
+      "rubric": [
+        {
+          "criterion": "Names the inner function $3x^2 + 1$ and the outer function $5z^4$",
+          "points": 1
+        },
+        {
+          "criterion": "Gives both local derivatives, $6x$ and $20z^3$",
+          "points": 2
+        },
+        {
+          "criterion": "States that the outer derivative is evaluated at $z = 3x^2 + 1$ and the inner one at $x$",
+          "points": 1
+        },
+        {
+          "criterion": "Multiplies to $120x(3x^2 + 1)^3$ or an equivalent form",
+          "points": 2
+        },
+        {
+          "criterion": "Evaluates the slope at $x = 1$ as 7,680",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "The three steps of section 4 apply unchanged: split into $g(x) = 3x^2 + 1$ and $f(z) = 5z^4$, differentiate each to $6x$ and $20z^3$, and multiply with $f'$ taken at the inner value. The result is $120x(3x^2 + 1)^3$, which is $120 \\cdot 64 = 7{,}680$ at $x = 1$.",
+      "hints": [
+        "Decide first which function is applied last; that one is the outer function.",
+        "Each local derivative is one use of the power rule; the constant 1 inside the bracket contributes nothing to $g'$."
+      ]
+    },
+    {
+      "id": "nn-011-q13",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o5",
+        "o1"
+      ],
+      "section": "9",
+      "est_minutes": 12,
+      "tags": [
+        "gradient-check",
+        "dropped-factor"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A function is meant to return the derivative of $y = (3x + 2)^4$. At $x = 1$ it returns 500, while a central difference of $y$ with $h = 10^{-5}$ gives 1500.0000. At $x = 0$ it returns 32 and the central difference gives 96.0000. Diagnose the error from these numbers, give the corrected derivative, say which of the two results is to be trusted and why, and explain why a check of this kind on a network gradient has to compare every entry and not a sample of entries.",
+      "kind": "critique",
+      "solution": "1. The ratio of the measured slope to the returned value is $1500 / 500 = 3$ at $x = 1$ and $96 / 32 = 3$ at $x = 0$: the same constant at both points.\n2. The correct derivative is $f'(g(x)) \\cdot g'(x) = 4(3x + 2)^3 \\cdot 3$. The returned values, 500 and 32, equal $4(3x + 2)^3$ alone ($4 \\cdot 125$ and $4 \\cdot 8$), so the code computes the outer factor at the right point and has dropped the inner factor $g'(x) = 3$.\n3. The central difference is the one to trust. It never uses the split into inner and outer functions; it evaluates the whole expression at two nearby points, so it cannot share the mistake. Its own error at $h = 10^{-5}$ is far below the gap of a factor of 3.\n4. The fix is to multiply by the missing local derivative, giving $12(3x + 2)^3$: 1,500 at $x = 1$ and 96 at $x = 0$.\n5. In a network a dropped factor need not rescale every entry. If the ReLU factor is left out, the entries that belong to active neurons, whose ReLU slope is 1, are still right, and only the entries of switched-off neurons are wrong. A check on a few entries can therefore pass by luck; comparing every entry, or the largest gap over all of them, cannot.",
+      "rubric": [
+        {
+          "criterion": "Observes that the two results differ by the same factor of 3 at both points",
+          "points": 1
+        },
+        {
+          "criterion": "Identifies the missing factor as the inner derivative $g'(x) = 3$, with the outer factor $4(3x + 2)^3$ present and correctly evaluated",
+          "points": 2
+        },
+        {
+          "criterion": "Trusts the central difference and justifies it: it is computed from the whole function and does not depend on the decomposition",
+          "points": 2
+        },
+        {
+          "criterion": "States the corrected derivative $12(3x + 2)^3$",
+          "points": 1
+        },
+        {
+          "criterion": "Explains that in a network a dropped factor can leave some entries correct (a factor equal to 1 for active ReLU neurons), so every entry has to be compared",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "A constant ratio between a measured and a computed slope is the signature of a dropped constant factor (section 9): here the inner derivative 3, since $4(3x + 2)^3$ gives 500 and 32. The central difference is independent of the decomposition, which is what makes it a check (section 8.1). In the network of section 8.2, dropping the ReLU factor leaves four of the six entries of the gradient correct, so only a comparison of all entries exposes it.",
+      "hints": [
+        "Divide the measured slope by the returned value at both points.",
+        "Write the chain as an explicit product of two factors and see which one reproduces 500 and 32 on its own.",
+        "For the network part, think about what a factor equal to 1 does to a product when it is left out."
+      ]
+    },
+    {
+      "id": "nn-011-q14",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o5",
+        "o1"
+      ],
+      "section": "8.1",
+      "est_minutes": 15,
+      "tags": [
+        "chain-rule",
+        "central-difference"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`chain_derivative(functions, derivatives, x)` should return the derivative at `x` of the composition that applies `functions[0]` first, given the matching list of derivative functions. The version below multiplies the right number of factors but gives 60 in place of 960 for $3(2x^2)^5$ at $x = 1$. Fix it so that it agrees with a central difference of the whole composition.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "def chain_derivative(functions, derivatives, x):\n    \"\"\"Derivative at x of the composition that applies functions[0] first.\n\n    functions[i] and derivatives[i] are a function of one number and its derivative.\n    \"\"\"\n    product = 1.0\n    for derivative in derivatives:\n        product *= derivative(x)\n    return product\n",
+      "solution": "def chain_derivative(functions, derivatives, x):\n    \"\"\"Derivative at x of the composition that applies functions[0] first.\n\n    functions[i] and derivatives[i] are a function of one number and its derivative.\n    \"\"\"\n    value = x\n    product = 1.0\n    for function, derivative in zip(functions, derivatives):\n        product *= derivative(value)  # local slope, at the value this function receives\n        value = function(value)       # then move one function along the chain\n    return product\n",
+      "tests": "def central_difference(f, x, h=1e-5):\n    return (f(x + h) - f(x - h)) / (2 * h)\n\n\ndef compose(functions):\n    def composed(x):\n        for function in functions:\n            x = function(x)\n        return x\n    return composed\n\n\n# (2x + 1)^2 at x = 1.5: slope 16\nfs = [lambda x: 2 * x + 1, lambda z: z * z]\nds = [lambda x: 2.0, lambda z: 2 * z]\nassert abs(chain_derivative(fs, ds, 1.5) - 16.0) < 1e-9, chain_derivative(fs, ds, 1.5)\n\n# 3(2x^2)^5 at x = 1: slope 960, and 60 if the outer derivative is taken at x\nfs = [lambda x: 2 * x * x, lambda z: 3 * z ** 5]\nds = [lambda x: 4 * x, lambda z: 15 * z ** 4]\nassert abs(chain_derivative(fs, ds, 1.0) - 960.0) < 1e-9, \"take each local derivative at the value its function receives\"\n\n# three functions, 2((3x + 1)^2)^3 at x = 1: slope 36864\nfs = [lambda x: 3 * x + 1, lambda u: u * u, lambda v: 2 * v ** 3]\nds = [lambda x: 3.0, lambda u: 2 * u, lambda v: 6 * v * v]\nassert abs(chain_derivative(fs, ds, 1.0) - 36864.0) < 1e-6\n\n# the product must agree with a central difference of the whole composition at several points\nfor x in (-0.7, 0.3, 1.2):\n    measured = central_difference(compose(fs), x)\n    computed = chain_derivative(fs, ds, x)\n    assert abs(measured - computed) <= 1e-6 * max(1.0, abs(measured)), (x, measured, computed)\n\n# a single function is a chain of length one\nassert abs(chain_derivative([lambda x: x ** 3], [lambda x: 3 * x * x], 2.0) - 12.0) < 1e-9\nprint(\"all chain-rule checks passed\")\n",
+      "expected_output": "all chain-rule checks passed\n",
+      "explanation": "The starter evaluates every local derivative at $x$. Section 2 requires each one at the value its own function receives, so the fix carries a running value forward through the chain: record the local slope at the current value, then apply the function to move on (section 8.1). The tests compare the product with the closed forms 16, 960, and 36,864 and with a central difference of the whole composition at three points.",
+      "hints": [
+        "Only the first function of the chain receives $x$ itself.",
+        "Keep a running value: use it to evaluate the current derivative, then update it with the current function before the next turn of the loop."
+      ]
+    },
+    {
+      "id": "nn-011-q15",
+      "type": "mcq",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "9",
+      "est_minutes": 5,
+      "tags": [
+        "relu",
+        "corner",
+        "central-difference"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A backward pass built on the chain rule returns 0 for the derivative of $\\text{ReLU}(2x - 1)$ at $x = 0.5$. A central difference with $h = 10^{-5}$ at the same point returns 1.0. At $x = 1$ both return 2. What is the right reading of the disagreement at $x = 0.5$?",
+      "select": "single",
+      "connects": [
+        "nn-010"
+      ],
+      "options": [
+        {
+          "key": "a",
+          "text": "The backward pass has dropped the inner factor of 2 from its product.",
+          "correct": false,
+          "feedback": "A dropped factor of 2 would also show at $x = 1$, where the backward pass would return 1 and not 2. The two agree there."
+        },
+        {
+          "key": "b",
+          "text": "The step is too small, and rounding error has spoiled the central difference.",
+          "correct": false,
+          "feedback": "At $h = 10^{-5}$ in float64 the rounding error of a central difference is near $10^{-10}$ (post 10). It cannot produce a gap of 1."
+        },
+        {
+          "key": "c",
+          "text": "The point is ReLU's corner, where no derivative exists; 0 is the convention of the code.",
+          "correct": true,
+          "feedback": "Right: the inner value is exactly 0 there, the one-sided slopes are 0 and 2, and the central difference returns their average."
+        },
+        {
+          "key": "d",
+          "text": "The central difference is exact, so the true derivative is 1 and the backward pass is wrong.",
+          "correct": false,
+          "feedback": "The value 1 is the slope of a straight line through one point on each side of the corner. Neither side of the function has that slope."
+        }
+      ],
+      "explanation": "At $x = 0.5$ the inner function $2x - 1$ is exactly 0, which is ReLU's corner. Section 9 describes this case: the convention of post 10 gives $0 \\cdot 2 = 0$, and a central difference that straddles the corner returns 1, the average of the one-sided slopes 0 and 2. The agreement at $x = 1$ rules out a dropped factor. A check that lands on a corner disagrees with a correct backward pass.",
+      "hints": [
+        "Work out what value ReLU receives at $x = 0.5$.",
+        "Compare the slope just to the left of that point with the slope just to the right."
+      ]
+    },
+    {
+      "id": "nn-011-q16",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o4",
+        "o3"
+      ],
+      "section": "6.2",
+      "est_minutes": 15,
+      "tags": [
+        "backpropagation",
+        "reuse",
+        "cost"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The 21-parameter classifier of post 09 has parameter arrays $\\mathbf{W}_1$, $\\mathbf{b}_1$, $\\mathbf{W}_2$, and $\\mathbf{b}_2$, and post 10 found that a numerical gradient of it costs 42 evaluations of the network. For one sample, write the chain-rule product for the gradient of the loss with respect to each of the four arrays, mark the factors that the products have in common, use them to explain why a pass that starts at the loss needs each shared factor only once, and contrast that with the way the numerical gradient spends its 42 evaluations. Count softmax with cross-entropy as one function.",
+      "kind": "connect",
+      "connects": [
+        "nn-009",
+        "nn-010"
+      ],
+      "solution": "1. The forward pass is $\\mathbf{z}_1 = \\mathbf{x}\\mathbf{W}_1 + \\mathbf{b}_1$, $\\mathbf{a}_1 = \\text{ReLU}(\\mathbf{z}_1)$, $\\mathbf{z}_2 = \\mathbf{a}_1\\mathbf{W}_2 + \\mathbf{b}_2$, and $L$ from $\\mathbf{z}_2$.\n2. Second layer, two factors each: $\\partial L / \\partial \\mathbf{W}_2 = \\partial L / \\partial \\mathbf{z}_2 \\cdot \\partial \\mathbf{z}_2 / \\partial \\mathbf{W}_2$ and $\\partial L / \\partial \\mathbf{b}_2 = \\partial L / \\partial \\mathbf{z}_2 \\cdot \\partial \\mathbf{z}_2 / \\partial \\mathbf{b}_2$.\n3. First layer, four factors each: $\\partial L / \\partial \\mathbf{W}_1 = \\partial L / \\partial \\mathbf{z}_2 \\cdot \\partial \\mathbf{z}_2 / \\partial \\mathbf{a}_1 \\cdot \\partial \\mathbf{a}_1 / \\partial \\mathbf{z}_1 \\cdot \\partial \\mathbf{z}_1 / \\partial \\mathbf{W}_1$, and the same with $\\partial \\mathbf{z}_1 / \\partial \\mathbf{b}_1$ as the last factor for $\\mathbf{b}_1$.\n4. Shared factors: all four products begin with $\\partial L / \\partial \\mathbf{z}_2$. The two first-layer products also share the next two factors, so they share the whole partial product $\\partial L / \\partial \\mathbf{z}_2 \\cdot \\partial \\mathbf{z}_2 / \\partial \\mathbf{a}_1 \\cdot \\partial \\mathbf{a}_1 / \\partial \\mathbf{z}_1$, which is $\\partial L / \\partial \\mathbf{z}_1$.\n5. A pass that starts at the loss computes $\\partial L / \\partial \\mathbf{z}_2$ once, uses it for $\\mathbf{W}_2$ and $\\mathbf{b}_2$, multiplies it by the next two factors to get $\\partial L / \\partial \\mathbf{z}_1$ once, and uses that for $\\mathbf{W}_1$ and $\\mathbf{b}_1$. Each array then needs only its own last factor. The running product is always a single row, because $L$ is one number.\n6. The numerical gradient shares nothing: each of the 21 parameters is nudged up and down and the whole network is recomputed, 42 evaluations. The backward pass obtains all 21 partial derivatives from one forward pass, which supplies the values at which the factors are evaluated, and one walk back through the four functions.",
+      "rubric": [
+        {
+          "criterion": "Writes the two-factor products for $\\mathbf{W}_2$ and $\\mathbf{b}_2$",
+          "points": 2
+        },
+        {
+          "criterion": "Writes the four-factor products for $\\mathbf{W}_1$ and $\\mathbf{b}_1$",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies $\\partial L / \\partial \\mathbf{z}_2$ as common to all four products",
+          "points": 1
+        },
+        {
+          "criterion": "Identifies the three-factor partial product (the gradient with respect to $\\mathbf{z}_1$) as common to the two first-layer products",
+          "points": 1
+        },
+        {
+          "criterion": "Explains the reuse: a running product built from the loss is computed once and handed to every parameter further in",
+          "points": 2
+        },
+        {
+          "criterion": "Contrasts with the 42 evaluations of the numerical gradient, which recomputes the whole network for each parameter",
+          "points": 1
+        }
+      ],
+      "answer_length": "one page",
+      "explanation": "Section 6.1 gives two factors for the second layer and four for the first, and section 6.2 points out that every product begins with $\\partial L / \\partial \\mathbf{z}_2$. A pass that starts from the loss keeps a running product, the gradient of the loss with respect to the value it has reached, and each parameter array multiplies it by one last factor of its own. The numerical gradient of post 10 instead spends two evaluations of the network on each of the 21 parameters.",
+      "hints": [
+        "Count the functions between each array and the loss before writing any product.",
+        "Line the four products up with the loss factor on the left and look for common beginnings.",
+        "Ask what the product of the first three factors of the first-layer gradients is the gradient of."
+      ]
+    },
+    {
+      "id": "nn-011-q17",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5.1",
+      "est_minutes": 4,
+      "tags": [
+        "two-paths",
+        "partial-derivative"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A loss is $L = u + v$ with $u = 3x$ and $v = x^3$, so $x$ reaches $L$ along two paths. What is $\\partial L / \\partial x$ at $x = 2$?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "3",
+          "correct": false,
+          "feedback": "This is the path through $u$ alone, $1 \\cdot 3$. The path through $v$ also carries a change in $x$ to $L$."
+        },
+        {
+          "key": "b",
+          "text": "12",
+          "correct": false,
+          "feedback": "This is the path through $v$ alone, $1 \\cdot 3x^2$. The path through $u$ has been left out."
+        },
+        {
+          "key": "c",
+          "text": "15",
+          "correct": true,
+          "feedback": "Right: the two paths contribute $1 \\cdot 3$ and $1 \\cdot 3x^2 = 12$, and contributions of separate paths add."
+        },
+        {
+          "key": "d",
+          "text": "36",
+          "correct": false,
+          "feedback": "This multiplies the two path contributions, $3 \\cdot 12$. Factors along one path multiply; separate paths add."
+        }
+      ],
+      "explanation": "Section 5.1 treats a variable that reaches the output along two paths: each path is a chain of its own, and the results are summed. Here $\\partial L / \\partial x = 1 \\cdot 3 + 1 \\cdot 3x^2 = 3 + 12 = 15$ at $x = 2$, the same as differentiating $3x + x^3$ directly.",
+      "hints": [
+        "Treat each route from $x$ to $L$ as its own chain.",
+        "Decide whether the results of the two chains are added or multiplied."
+      ]
+    },
+    {
+      "id": "nn-011-q18",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3",
+        "o4"
+      ],
+      "section": "6.2",
+      "est_minutes": 3,
+      "tags": [
+        "shared-factor",
+        "backpropagation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the two-layer classifier, the chain-rule products for $\\partial L / \\partial \\mathbf{W}_1$ and $\\partial L / \\partial \\mathbf{W}_2$ have one local derivative in common. Which one?",
+      "answer": {
+        "model": "$\\partial L / \\partial \\mathbf{z}_2$, the derivative of the loss with respect to the logits, supplied by the combined softmax and cross-entropy.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:nor|neither|none|or|isn't|never)\\b)(?=(?:\\bnot\\s+(?:the\\s+)?(?:relu|weights?|bias(?:es)?|hidden|activations?|probabilit\\w+|first\\s+(?:dense\\s+)?layer)\\b|(?!\\b(?:relu|weights?|bias(?:es)?|hidden|activations?|probabilit\\w+|first\\s+(?:dense\\s+)?layer)\\b|\\bnot\\b)[\\s\\S])*$)(?![\\s\\S]*z\\}?_?\\{?2\\}?\\s*\\$?\\s*/)(?![\\s\\S]*(?:a|z)\\}?_?\\{?1)(?![\\s\\S]*W\\}?_?\\{?[12])(?![\\s\\S]*\\bsoftmax\\s+outputs?\\b)(?![\\s\\S]*\\b(?:with\\s+respect\\s+to|w\\.?r\\.?t\\.?)\\s+(?!(?:(?:the\\s+)?(?:logits?\\b|\\$?(?:\\\\mathbf\\{)?z\\}?_?\\{?2|(?:outputs?|weighted\\s+sums?)\\s+of\\s+the\\s+(?:second|last|output)\\s+(?:dense\\s+)?layer\\b|second\\s+(?:dense\\s+)?layer's\\s+outputs?\\b|output\\s+layer's\\s+(?:weighted\\s+)?sums?\\b))))(?=[\\s\\S]*(?:d|∂|\\\\partial)\\s*L\\s*/\\s*(?:d|∂|\\\\partial)\\s*(?:\\\\mathbf\\{)?z\\}?_?\\{?2)",
+          "^(?![\\s\\S]*\\b(?:nor|neither|none|or|isn't|never)\\b)(?=(?:\\bnot\\s+(?:the\\s+)?(?:relu|weights?|bias(?:es)?|hidden|activations?|probabilit\\w+|first\\s+(?:dense\\s+)?layer)\\b|(?!\\b(?:relu|weights?|bias(?:es)?|hidden|activations?|probabilit\\w+|first\\s+(?:dense\\s+)?layer)\\b|\\bnot\\b)[\\s\\S])*$)(?![\\s\\S]*z\\}?_?\\{?2\\}?\\s*\\$?\\s*/)(?![\\s\\S]*(?:a|z)\\}?_?\\{?1)(?![\\s\\S]*W\\}?_?\\{?[12])(?![\\s\\S]*\\bsoftmax\\s+outputs?\\b)(?![\\s\\S]*\\b(?:with\\s+respect\\s+to|w\\.?r\\.?t\\.?)\\s+(?!(?:(?:the\\s+)?(?:logits?\\b|\\$?(?:\\\\mathbf\\{)?z\\}?_?\\{?2|(?:outputs?|weighted\\s+sums?)\\s+of\\s+the\\s+(?:second|last|output)\\s+(?:dense\\s+)?layer\\b|second\\s+(?:dense\\s+)?layer's\\s+outputs?\\b|output\\s+layer's\\s+(?:weighted\\s+)?sums?\\b))))(?=[\\s\\S]*\\b(?:loss|L)\\b[\\s\\S]*\\b(?:(?:with\\s+respect\\s+to|w\\.?r\\.?t\\.?)|in|by)\\s+(?:(?:the\\s+)?(?:logits?\\b|\\$?(?:\\\\mathbf\\{)?z\\}?_?\\{?2|(?:outputs?|weighted\\s+sums?)\\s+of\\s+the\\s+(?:second|last|output)\\s+(?:dense\\s+)?layer\\b|second\\s+(?:dense\\s+)?layer's\\s+outputs?\\b|output\\s+layer's\\s+(?:weighted\\s+)?sums?\\b)))",
+          "^(?![\\s\\S]*\\b(?:nor|neither|none|or|isn't|never)\\b)(?=(?:\\bnot\\s+(?:the\\s+)?(?:relu|weights?|bias(?:es)?|hidden|activations?|probabilit\\w+|first\\s+(?:dense\\s+)?layer)\\b|(?!\\b(?:relu|weights?|bias(?:es)?|hidden|activations?|probabilit\\w+|first\\s+(?:dense\\s+)?layer)\\b|\\bnot\\b)[\\s\\S])*$)(?![\\s\\S]*z\\}?_?\\{?2\\}?\\s*\\$?\\s*/)(?![\\s\\S]*(?:a|z)\\}?_?\\{?1)(?![\\s\\S]*W\\}?_?\\{?[12])(?![\\s\\S]*\\bsoftmax\\s+outputs?\\b)(?![\\s\\S]*\\b(?:with\\s+respect\\s+to|w\\.?r\\.?t\\.?)\\s+(?!(?:(?:the\\s+)?(?:logits?\\b|\\$?(?:\\\\mathbf\\{)?z\\}?_?\\{?2|(?:outputs?|weighted\\s+sums?)\\s+of\\s+the\\s+(?:second|last|output)\\s+(?:dense\\s+)?layer\\b|second\\s+(?:dense\\s+)?layer's\\s+outputs?\\b|output\\s+layer's\\s+(?:weighted\\s+)?sums?\\b))))(?=[\\s\\S]*(?:\\b(?:derivative|gradient|factor|term|slope|one)\\s+(?:of|from|for)\\s+(?:the\\s+)?(?:combined\\s+)?(?:loss|softmax|cross[- ]entropy)\\b|\\b(?:loss|softmax|cross[- ]entropy)(?:\\s+function)?(?:'s)?\\s+(?:own\\s+)?(?:local\\s+)?(?:factor|term|derivative|gradient)\\b|\\bloss\\s+(?:responds|reacts)\\s+to\\s+(?:each\\s+|the\\s+|a\\s+)?logits?\\b|\\b(?:sensitivity|response)\\s+of\\s+the\\s+loss\\s+to\\s+(?:each\\s+|the\\s+)?logits?\\b))"
+        ]
+      },
+      "explanation": "Section 6.1 writes $\\partial L / \\partial \\mathbf{W}_2$ with two factors and $\\partial L / \\partial \\mathbf{W}_1$ with four, and both begin with $\\partial L / \\partial \\mathbf{z}_2$, the factor of the combined softmax and cross-entropy. Section 6.2 uses this: a pass that starts at the loss computes the shared factor once.",
+      "hints": [
+        "Write both products with the factor nearest the loss first."
+      ]
+    },
+    {
+      "id": "nn-011-q19",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "8.1",
+      "est_minutes": 6,
+      "tags": [
+        "central-difference",
+        "gradient-check"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Let $y = (3x - 1)^3$. Give the slope at $x = 1$ from the chain rule, the central difference $\\bigl(y(x + h) - y(x - h)\\bigr) / (2h)$ at $x = 1$ with the coarse step $h = 0.1$, and the absolute gap between the two.",
+      "answer": {
+        "parts": [
+          {
+            "label": "chain-rule slope at x = 1",
+            "value": 36,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "central difference with h = 0.1",
+            "value": 36.27,
+            "tolerance": 0.005,
+            "unit": ""
+          },
+          {
+            "label": "absolute gap",
+            "value": 0.27,
+            "tolerance": 0.005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed forms: chain rule 3(3x - 1)^2 * 3 = 36 at x = 1; central difference (2.3^3 - 1.7^3) / 0.2 = (12.167 - 4.913) / 0.2 = 36.27; for (ax + b)^3 the gap is exactly a^3 h^2 = 27 * 0.01 = 0.27. Recomputed in Python; a forward difference gives 41.67.",
+      "explanation": "The chain rule gives $3(3x - 1)^2 \\cdot 3 = 36$ at $x = 1$. The central difference evaluates the whole expression at $x = 1.1$ and $x = 0.9$: $(2.3^3 - 1.7^3) / 0.2 = (12.167 - 4.913) / 0.2 = 36.27$. The gap of 0.27 is the truncation error of the coarse step, which falls as $h^2$ (post 10). At the step $h = 10^{-5}$ used in section 8 it is about $2.7 \\times 10^{-9}$, which is why the two columns there agree to many digits.",
+      "hints": [
+        "Compute the two slopes separately: one from the two local derivatives, one from two evaluations of the whole expression.",
+        "The central difference needs $y$ at $x = 1.1$ and at $x = 0.9$, that is $2.3^3$ and $1.7^3$."
+      ]
+    }
+  ]
+}

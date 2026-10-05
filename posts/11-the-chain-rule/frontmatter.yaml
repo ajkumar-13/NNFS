@@ -1,8 +1,26 @@
 id: nn-011
 slug: 11-the-chain-rule
-title: "Part 11 · The chain rule"
+title: "11 - The chain rule"
+summary: "The chain rule turns the derivative of a composition into a product of local derivatives, one per function. The post works it on polynomials and a two-layer network and checks each result with finite differences."
 date: 2026-05-28
+updated: 2026-10-05
+status: complete
+part: "Part IV - Calculus for backpropagation"
+level: beginner
+reading_time: 18
 tags: [neural-networks, from-scratch, calculus, chain-rule, backpropagation]
 hero: diagrams/01-chain-rule.svg
-reading_time: 11
-part: "Part IV — Calculus for backpropagation"
+prerequisites: [nn-010]
+code: included
+outcomes:
+  - id: o1
+    text: "State the chain rule in one sentence, including the point at which each local derivative is evaluated."
+  - id: o2
+    text: "Apply the chain rule to a polynomial composition without expanding it."
+  - id: o3
+    text: "Identify the local derivative of each function in a small neural-network composition."
+  - id: o4
+    text: "Predict how many local-derivative factors appear in the gradient for a weight in any given layer."
+  - id: o5
+    text: "Check a chain-rule result against a central difference taken through the whole composition."
+compute: cpu
