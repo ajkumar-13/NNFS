@@ -1,8 +1,22 @@
 id: nn-027
 slug: 27-adam-optimiser
-title: "Part 27 · Adam"
+title: "27 - Adam"
+summary: "Adam keeps a moving average of the gradient and one of its square, corrects both for their zero start, and steps by their ratio. The post builds the class, measures the bias correction, and runs all six optimisers over five seeds."
 date: 2026-05-29
-tags: [neural-networks, from-scratch, optimisation, adam, default-optimizer]
+updated: 2026-10-05
+status: complete
+part: "Part VI - Optimisers"
+level: intermediate
+reading_time: 24
+tags: [neural-networks, from-scratch, optimisation, adam, bias-correction]
 hero: diagrams/01-adam-pipeline.svg
-reading_time: 13
-part: "Part VI — Optimisers"
+prerequisites: [nn-024, nn-026]
+code: included
+outcomes:
+  - id: o1
+    text: "Decompose the Adam update into its first-moment average, its second-moment average and its bias correction, and say what each contributes."
+  - id: o2
+    text: "Implement Optimizer_Adam with two buffers per parameter array and reproduce the documented spiral run."
+  - id: o3
+    text: "Reason about when Adam is the wrong default, from the measured seed spread and the published cases."
+compute: cpu

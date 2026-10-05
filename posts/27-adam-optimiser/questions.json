@@ -1,0 +1,801 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-027",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-027-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 2,
+      "tags": [
+        "synthesis"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Adam keeps two moving averages per parameter. Which statement says where each one enters the update $\\theta \\leftarrow \\theta - \\alpha \\, \\hat{m} / (\\sqrt{\\hat{v}} + \\epsilon)$?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The average of the gradient is on top and the root of the average squared gradient underneath.",
+          "correct": true,
+          "feedback": "This is the split of section 1: the idea of momentum on top, the cache of RMSProp underneath."
+        },
+        {
+          "key": "b",
+          "text": "The average of the squared gradient is the numerator and the average of the gradient the denominator.",
+          "correct": false,
+          "feedback": "A squared gradient carries no sign, so it could not give the direction of the step. It belongs under the root, in the denominator."
+        },
+        {
+          "key": "c",
+          "text": "Both averages are added together and the sum multiplies the learning rate.",
+          "correct": false,
+          "feedback": "The two are never added: they have different units, $g$ and $g^2$. The update divides one by the root of the other."
+        },
+        {
+          "key": "d",
+          "text": "The average of the gradient replaces the learning rate and the other average replaces the gradient.",
+          "correct": false,
+          "feedback": "The learning rate $\\alpha$ stays in the update as its own factor; neither average replaces it."
+        }
+      ],
+      "explanation": "Section 1: momentum changes what stands in the numerator and RMSProp what stands in the denominator, and Adam keeps both. $m$ is an average of the gradient and gives the direction; $v$ is an average of the squared gradient and scales the step of each parameter.",
+      "hints": [
+        "Ask which of the two averages can be negative."
+      ]
+    },
+    {
+      "id": "nn-027-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3.2",
+      "est_minutes": 3,
+      "tags": [
+        "bias-correction",
+        "step-size"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "With the default $\\beta_1 = 0.9$ and $\\beta_2 = 0.999$, the two bias-correction lines are deleted from Adam and nothing else is changed. Compared with the corrected optimiser, what happens to the size of the first updates?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "They are about ten times smaller, because $m_1$ is a tenth of the gradient.",
+          "correct": false,
+          "feedback": "This looks at the numerator alone. The denominator $\\sqrt{v_1}$ is short by a larger factor, about 31.6, so the ratio grows."
+        },
+        {
+          "key": "b",
+          "text": "They are about 3.2 times larger, because $\\sqrt{v_1}$ falls short by more than $m_1$ does.",
+          "correct": true,
+          "feedback": "$(1 - \\beta_1) / \\sqrt{1 - \\beta_2} = 0.1 / 0.0316 = 3.162$: the denominator is short by more than the numerator."
+        },
+        {
+          "key": "c",
+          "text": "They are unchanged, because the two missing factors cancel in the ratio.",
+          "correct": false,
+          "feedback": "They would cancel only if $1 - \\beta_1^t$ equalled $\\sqrt{1 - \\beta_2^t}$. With the defaults the two are 0.1 and 0.0316 at $t = 1$."
+        },
+        {
+          "key": "d",
+          "text": "They are about a thousand times larger, because $v_1$ is a thousandth of the squared gradient.",
+          "correct": false,
+          "feedback": "The step divides by the square root of $v$, which is short by $\\sqrt{1000} \\approx 31.6$, and the numerator is short by 10 as well."
+        }
+      ],
+      "explanation": "Section 3.2: the step uses $m / \\sqrt{v}$. At the first update $m$ is short by a factor of 10 and $\\sqrt{v}$ by a factor of $\\sqrt{1000} \\approx 31.6$, so the uncorrected step is $0.1 / \\sqrt{0.001} = 3.162$ times the corrected one, and the ratio rises to 6.569 at the twelfth update before it falls back to 1.",
+      "hints": [
+        "The step is a ratio. Ask how short the numerator is and how short the denominator is.",
+        "The denominator contains a square root of the second moment."
+      ]
+    },
+    {
+      "id": "nn-027-q03",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3.1",
+      "est_minutes": 4,
+      "tags": [
+        "bias-correction"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "With $\\beta_1 = 0.9$ and $\\beta_2 = 0.999$, give the factor $1 / (1 - \\beta^t)$ by which Adam multiplies the first moment, and the factor by which it multiplies the second moment, at the third update ($t = 3$).",
+      "answer": {
+        "parts": [
+          {
+            "label": "factor for the first moment",
+            "value": 3.69,
+            "tolerance": 0.01,
+            "unit": ""
+          },
+          {
+            "label": "factor for the second moment",
+            "value": 333.67,
+            "tolerance": 0.5,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form 1 / (1 - beta^t) with t = 3: 1 / 0.271 = 3.6900 and 1 / 0.002997001 = 333.667. Same formula as the first table of snippets/bias_correction.py.",
+      "explanation": "Section 3.1: $0.9^3 = 0.729$, so the first moment is divided by $0.271$, a factor of 3.690. $0.999^3 = 0.997003$, so the second moment is divided by $0.002997$, a factor of 333.67. The second factor is close to $1000 / t$ while $t$ is small.",
+      "hints": [
+        "Each factor uses its own decay rate raised to the number of the update."
+      ]
+    },
+    {
+      "id": "nn-027-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 10,
+      "tags": [
+        "update-rule",
+        "by-hand"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "One parameter starts at $\\theta_0 = 1.0$ with $m_0 = v_0 = 0$. Adam runs with $\\alpha = 0.1$, $\\beta_1 = 0.9$, $\\beta_2 = 0.999$ and an $\\epsilon$ small enough to ignore. The gradient is $g_1 = 2$ at the first update and $g_2 = -1$ at the second. Give $\\theta_1$ and $\\theta_2$.",
+      "answer": {
+        "parts": [
+          {
+            "label": "theta after the first update",
+            "value": 0.9,
+            "tolerance": 0.0005,
+            "unit": ""
+          },
+          {
+            "label": "theta after the second update",
+            "value": 0.8734,
+            "tolerance": 0.0005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "The five lines of section 2 applied twice; recomputed with the Optimizer_Adam class of snippets/adam.py on a one-weight stub (learning_rate=0.1): 0.9000000 and 0.8733662.",
+      "explanation": "Section 2, line by line. Update 1: $m_1 = 0.2$, $v_1 = 0.004$, $\\hat{m}_1 = 0.2 / 0.1 = 2$, $\\hat{v}_1 = 0.004 / 0.001 = 4$, step $0.1 \\cdot 2 / 2 = 0.1$, so $\\theta_1 = 0.9$. Update 2: $m_2 = 0.18 - 0.1 = 0.08$, $v_2 = 0.003996 + 0.001 = 0.004996$, $\\hat{m}_2 = 0.08 / 0.19 = 0.42105$, $\\hat{v}_2 = 0.004996 / 0.001999 = 2.49925$, step $0.1 \\cdot 0.42105 / 1.58090 = 0.02663$, so $\\theta_2 = 0.87337$. The second gradient points the other way, but the corrected first moment is still positive, so the parameter keeps falling, only more slowly.",
+      "hints": [
+        "Work through the five lines in order for $t = 1$, then again for $t = 2$ with the stored $m_1$ and $v_1$.",
+        "The denominators of the two corrections at $t = 2$ are $1 - 0.81$ and $1 - 0.998001$."
+      ]
+    },
+    {
+      "id": "nn-027-q05",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 1,
+      "tags": [
+        "buffers"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`Optimizer_Adam` stores four buffers on every dense layer. Which attribute of the layer holds the moving average of the squared weight gradients?",
+      "answer": {
+        "model": "`layer.weight_cache`.",
+        "accept": [
+          "^(?![\\s\\S]*\\bnot\\s+(?:in\\s+|the\\s+|called\\s+)?`?(?:layer\\.)?weight[_ ]cache)(?![\\s\\S]*\\b(?:or|either)\\b)(?![\\s\\S]*(?:\\band\\b|,|/|&|\\+)\\s*(?:the\\s+)?`?(?:layer\\.)?(?:weight[_ ]momentums?|bias[_ ]cache|bias[_ ]momentums?))(?:(?!weight[_ ]momentums?|bias[_ ]cache|bias[_ ]momentums?)[\\s\\S])*?\\bweight[_ ]cache\\b",
+          "^\\W*(?:it\\s+is\\s+)?not\\s+(?:in\\s+|the\\s+|called\\s+)?`?(?:layer\\.)?(?:weight[_ ]momentums?|bias[_ ]cache|bias[_ ]momentums?)`?\\s*(?:[:;,.]|\\bbut\\b|\\brather\\b)+\\s*(?:but\\s+|rather\\s+)?(?:it\\s+is\\s+)?(?:in\\s+|the\\s+|called\\s+)?`?(?:layer\\.)?weight[_ ]cache`?\\W*$"
+        ]
+      },
+      "explanation": "Section 4: Adam stores its second moment under the name RMSProp used for its cache, `weight_cache`, and its first moment under the name momentum used, `weight_momentums`. `bias_cache` and `bias_momentums` are the same two buffers for the biases.",
+      "hints": [
+        "It is the name the cache of posts 25 and 26 already had."
+      ]
+    },
+    {
+      "id": "nn-027-q06",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "12",
+      "est_minutes": 3,
+      "tags": [
+        "step-counter",
+        "nan"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In `update_params`, the line `t = self.iterations + 1` is changed to `t = self.iterations`. The layers hold NumPy arrays. What does the first call of `update_params` do?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It raises a `ZeroDivisionError` and training stops on that line.",
+          "correct": false,
+          "feedback": "A Python float divided by zero raises, but a NumPy array divided by zero does not: it warns and returns infinities and NaN."
+        },
+        {
+          "key": "b",
+          "text": "It emits warnings and leaves every weight of the layer as NaN.",
+          "correct": true,
+          "feedback": "Both corrections divide by $1 - \\beta^0 = 0$, the quotient of two non-finite arrays is NaN, and nothing is raised."
+        },
+        {
+          "key": "c",
+          "text": "It makes a first step that is exactly ten times too large.",
+          "correct": false,
+          "feedback": "A factor of ten is the correction of the first moment at $t = 1$. At $t = 0$ the divisor is zero, not 0.1."
+        },
+        {
+          "key": "d",
+          "text": "It leaves the weights unchanged, because the correction is skipped at step zero.",
+          "correct": false,
+          "feedback": "Nothing in the class skips a step. The division by zero is carried out and its result is written into the weights."
+        }
+      ],
+      "explanation": "Section 12: with $t = 0$ both denominators are $1 - \\beta^0 = 0$. Dividing a NumPy array by zero gives infinities and NaN with a warning, not an exception, and the update then turns every weight of the layer into NaN. The script of that section counts 128 NaN weights out of 128.",
+      "hints": [
+        "Work out $1 - \\beta_1^t$ for the value of $t$ the first call would use."
+      ]
+    },
+    {
+      "id": "nn-027-q07",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 15,
+      "tags": [
+        "implement",
+        "update-rule"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Complete `adam_step` so that it performs one Adam update of one parameter array and returns the new parameters, the new first moment and the new second moment. It is `update_params` of the post with the layer and the optimiser object removed: the moments come in and go out as arguments, and `t` counts the updates from 1. The tests compare three updates with values computed by the class of the post.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "import numpy as np\n\n\ndef adam_step(param, grad, m, v, t, learning_rate=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-7):\n    \"\"\"One Adam update of one parameter array.\n\n    param, grad, m and v are arrays of one shape. m and v are the stored first and second\n    moments, zeros before the first update, and t is the number of this update, counting from 1.\n    Returns the new param, the new m and the new v, in that order. The arguments are not changed.\n    \"\"\"\n    # TODO: the five lines of the update rule\n    return param, m, v\n",
+      "solution": "import numpy as np\n\n\ndef adam_step(param, grad, m, v, t, learning_rate=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-7):\n    \"\"\"One Adam update of one parameter array.\n\n    param, grad, m and v are arrays of one shape. m and v are the stored first and second\n    moments, zeros before the first update, and t is the number of this update, counting from 1.\n    Returns the new param, the new m and the new v, in that order. The arguments are not changed.\n    \"\"\"\n    m = beta_1 * m + (1 - beta_1) * grad              # first moment\n    v = beta_2 * v + (1 - beta_2) * grad ** 2         # second moment\n    m_hat = m / (1 - beta_1 ** t)                     # bias corrections: temporary values,\n    v_hat = v / (1 - beta_2 ** t)                     # the stored moments stay uncorrected\n    param = param - learning_rate * m_hat / (np.sqrt(v_hat) + epsilon)\n    return param, m, v\n",
+      "tests": "import numpy as np\n\nstart = np.array([[0.5, -1.0], [2.0, 0.0]])\ngrads = [np.array([[0.2, -3.0], [0.0, 1e-3]]),\n         np.array([[-0.4, -1.0], [0.5, 2e-3]]),\n         np.array([[0.1, 4.0], [0.5, -1e-3]])]\n\n# 1. The first update moves every parameter with a non-zero gradient by the learning rate.\nparam, m, v = adam_step(start.copy(), grads[0], np.zeros((2, 2)), np.zeros((2, 2)), 1, learning_rate=0.01)\nassert param.shape == (2, 2), \"the parameter array must keep its shape\"\nassert np.allclose(param - start, [[-0.01, 0.01], [0.0, -0.01]], atol=5e-6), \"first step is not the learning rate against the sign\"\nassert np.allclose(m, 0.1 * grads[0]) and np.allclose(v, 0.001 * grads[0] ** 2), \"the stored moments must be the uncorrected ones\"\n\n# 2. Three updates with the defaults, against values computed with the class of the post.\nparam, m, v = start.copy(), np.zeros((2, 2)), np.zeros((2, 2))\nfor t, grad in enumerate(grads, 1):\n    param, m, v = adam_step(param, grad, m, v, t)\nassert np.allclose(param, np.array([[0.49950279452266383, -0.9982129054992144], [1.9983974010413155, -0.0023850806062365383]]), rtol=0, atol=1e-9), \"parameters after three updates\"\nassert np.allclose(m, np.array([[-0.009799999999999996, 0.06699999999999995], [0.09499999999999997, 0.00016099999999999996]]), rtol=1e-9, atol=1e-12), \"first moment after three updates\"\nassert np.allclose(v, np.array([[0.00020976004000000022, 0.02598100900000002], [0.0004997500000000004, 5.994001000000004e-09]]), rtol=1e-9, atol=1e-15), \"second moment after three updates\"\n\n# 3. Two updates with other settings: every argument must be used.\nparam, m, v = start.copy(), np.zeros((2, 2)), np.zeros((2, 2))\nfor t, grad in enumerate(grads[:2], 1):\n    param, m, v = adam_step(param, grad, m, v, t, learning_rate=0.05, beta_1=0.5, beta_2=0.9, epsilon=1e-3)\nassert np.allclose(param, np.array([[0.4812871107792657, -0.9119559885393205], [1.954179489257151, -0.05697859056884644]]), rtol=0, atol=1e-9), \"parameters with non-default settings\"\nassert np.allclose(m, np.array([[-0.15000000000000002, -1.25], [0.25, 0.00125]]), rtol=1e-9, atol=1e-12), \"first moment with non-default settings\"\nassert np.allclose(v, np.array([[0.0196, 0.9099999999999998], [0.024999999999999994, 4.899999999999999e-07]]), rtol=1e-9, atol=1e-15), \"second moment with non-default settings\"\n\n# 4. The arguments are left as they were.\np_in, g_in, m_in, v_in = start.copy(), grads[1].copy(), 0.1 * grads[0], 0.001 * grads[0] ** 2\ncopies = [a.copy() for a in (p_in, g_in, m_in, v_in)]\nadam_step(p_in, g_in, m_in, v_in, 2)\nassert all(np.array_equal(a, b) for a, b in zip((p_in, g_in, m_in, v_in), copies)), \"an argument was changed in place\"\nprint(\"all tests passed\")\n",
+      "explanation": "Section 4: the function is the body of `update_params` for one array. The two moments are updated first and returned uncorrected, because the next update continues from them; the corrected values are temporary and are used in the last line only, with $\\epsilon$ added outside the square root. The tests fail when the correction is missing or uses the wrong $t$, when the corrected moments are stored, when $\\epsilon$ is inside the root, and when an argument is changed in place.",
+      "hints": [
+        "Write the five lines of the update rule in the order of section 2.",
+        "What is returned as `m` and `v` must be the values before the division by $1 - \\beta^t$.",
+        "`param - step` builds a new array; `param -= step` changes the caller's array."
+      ]
+    },
+    {
+      "id": "nn-027-q08",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 4,
+      "tags": [
+        "contract",
+        "call-order"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network with one dense layer is trained with `Optimizer_Adam` and a non-zero `decay`. Put the six things that happen in one update, after the backward pass, in the order in which they happen.",
+      "items": [
+        {
+          "key": "a",
+          "text": "`weight_v_hat` is computed from the updated `weight_cache`, with `t = self.iterations + 1`."
+        },
+        {
+          "key": "b",
+          "text": "`self.iterations` is raised by 1."
+        },
+        {
+          "key": "c",
+          "text": "`current_learning_rate` is set from `learning_rate`, `decay` and `iterations`."
+        },
+        {
+          "key": "d",
+          "text": "The weights and biases are changed."
+        },
+        {
+          "key": "e",
+          "text": "The four buffers are created as zeros if the layer does not have them yet."
+        },
+        {
+          "key": "f",
+          "text": "`weight_momentums` is updated from `dweights`."
+        }
+      ],
+      "answer": [
+        "c",
+        "e",
+        "f",
+        "a",
+        "d",
+        "b"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 4: `pre_update_params` runs first and sets the rate from the counter; `update_params` then creates the buffers if the layer has none, updates the first moment, updates the cache and corrects it with $t$ equal to the counter plus 1, and changes the parameters; `post_update_params` raises the counter last. The corrections need the updated moments, and the parameter change needs the corrected values, so no other order works.",
+      "hints": [
+        "Three methods are called, in the order of their names: pre, update, post.",
+        "Inside `update_params`, each line uses the result of the line before it."
+      ]
+    },
+    {
+      "id": "nn-027-q09",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3.3",
+      "est_minutes": 4,
+      "tags": [
+        "defaults",
+        "hyperparameters"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Match each argument of `Optimizer_Adam`, at its default value, to what it does.",
+      "left": [
+        {
+          "key": "a",
+          "text": "`beta_1 = 0.9`"
+        },
+        {
+          "key": "b",
+          "text": "`beta_2 = 0.999`"
+        },
+        {
+          "key": "c",
+          "text": "`epsilon = 1e-7`"
+        },
+        {
+          "key": "d",
+          "text": "`decay = 0.0`"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "Keeps the denominator of the step above zero."
+        },
+        {
+          "key": "q",
+          "text": "Averages the squared gradient over about the last 1,000 updates."
+        },
+        {
+          "key": "r",
+          "text": "Leaves the learning rate the same at every update."
+        },
+        {
+          "key": "s",
+          "text": "Averages the gradient over about the last 10 updates."
+        },
+        {
+          "key": "t",
+          "text": "Multiplies the first step by ten."
+        },
+        {
+          "key": "u",
+          "text": "Sets the strength of a penalty on large weights."
+        }
+      ],
+      "answer": {
+        "a": "s",
+        "b": "q",
+        "c": "p",
+        "d": "r"
+      },
+      "explanation": "Section 3.3: an average with decay rate $\\beta$ remembers about $1 / (1 - \\beta)$ steps, so `beta_1 = 0.9` gives the direction a memory of about 10 gradients and `beta_2 = 0.999` gives the scale a memory of about 1,000. `epsilon` is added to the root in the denominator, and `decay`, zero by default, would shrink the learning rate as in post 23. Nothing in the class multiplies the first step by a fixed factor, and no argument weights a penalty.",
+      "hints": [
+        "Two of the arguments are decay rates of moving averages; the closer to 1, the longer the memory."
+      ]
+    },
+    {
+      "id": "nn-027-q10",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "seed-spread",
+        "comparison"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Posts 22 to 27 train the six optimisers of Part VI on the spiral with seeds 0 to 4, each with its documented settings, and this post collects the thirty final training accuracies in one table. Which statement do they support?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Adam ends with the highest accuracy on every one of the five seeds.",
+          "correct": false,
+          "feedback": "It does so on seed 0 only. On seeds 1 and 4 it is second and on seeds 2 and 3 third."
+        },
+        {
+          "key": "b",
+          "text": "Adam is the best of the six on one seed, and RMSProp has the highest mean.",
+          "correct": true,
+          "feedback": "Four different optimisers hold the best figure of at least one seed, and the means are 90.6 percent for RMSProp and 89.0 for Adam."
+        },
+        {
+          "key": "c",
+          "text": "SGD with momentum ends below Adam on every one of the five seeds.",
+          "correct": false,
+          "feedback": "On seed 4 momentum ends at 98.0 percent and Adam at 96.3. Adam is ahead on the other four."
+        },
+        {
+          "key": "d",
+          "text": "The order of the six optimisers is the same on every seed, only the levels shift.",
+          "correct": false,
+          "feedback": "The order changes: the best optimiser is Adam, RMSProp, RMSProp, AdaGrad and momentum on seeds 0 to 4."
+        }
+      ],
+      "explanation": "Section 7: Adam has the highest final accuracy on seed 0 (96.3 percent) and on no other seed; RMSProp is best on seeds 1 and 2, AdaGrad on seed 3 and momentum on seed 4. On these five seeds RMSProp has the highest mean, 90.6 percent against Adam's 89.0, and the narrowest range; five further seeds remove both leads. The ranking of the single documented run is a property of that seed.",
+      "hints": [
+        "Look at which optimiser holds the best figure of each seed, not at seed 0 alone."
+      ]
+    },
+    {
+      "id": "nn-027-q11",
+      "type": "numeric",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "9",
+      "est_minutes": 3,
+      "tags": [
+        "memory"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A model has 50 million parameters stored as float32 (4 bytes each). How much memory, in MB with 1 MB $= 10^6$ bytes, do the optimiser's buffers need under Adam, and how much under SGD with momentum?",
+      "answer": {
+        "parts": [
+          {
+            "label": "Adam",
+            "value": 400,
+            "tolerance": 1,
+            "unit": "MB"
+          },
+          {
+            "label": "SGD with momentum",
+            "value": 200,
+            "tolerance": 1,
+            "unit": "MB"
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 9: buffers per parameter (2 for Adam, 1 for momentum) times 5e7 parameters times 4 bytes, divided by 1e6.",
+      "explanation": "Section 9: Adam keeps two extra numbers per parameter, a first and a second moment, so $2 \\cdot 5 \\cdot 10^7 \\cdot 4$ bytes $= 400$ MB. Momentum keeps one velocity per parameter, 200 MB. Plain gradient descent keeps none.",
+      "hints": [
+        "Count the buffers each optimiser stores per parameter array."
+      ]
+    },
+    {
+      "id": "nn-027-q12",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3.2",
+      "est_minutes": 5,
+      "tags": [
+        "epsilon",
+        "first-step"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`Optimizer_Adam()` with its defaults ($\\alpha = 0.001$, $\\epsilon = 10^{-7}$) makes its first update. One weight has a gradient of $5$ and another a gradient of $2 \\cdot 10^{-7}$. By how much does each weight move?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "By $0.005$ and by $2 \\cdot 10^{-10}$.",
+          "correct": false,
+          "feedback": "These are $\\alpha g$, the steps of plain gradient descent. Adam divides by $\\sqrt{\\hat{v}}$, which removes the size of the gradient."
+        },
+        {
+          "key": "b",
+          "text": "By $0.001$ and by $0.001$.",
+          "correct": false,
+          "feedback": "True for the first weight. For the second, $\\epsilon = 10^{-7}$ is half the size of the gradient and cannot be ignored in the denominator."
+        },
+        {
+          "key": "c",
+          "text": "By $0.001$ and by about $0.00067$.",
+          "correct": true,
+          "feedback": "$0.001 \\cdot 5 / (5 + 10^{-7}) = 0.001$ and $0.001 \\cdot 2 \\cdot 10^{-7} / (3 \\cdot 10^{-7}) = 6.67 \\cdot 10^{-4}$."
+        },
+        {
+          "key": "d",
+          "text": "By $0.001$ and by $0$.",
+          "correct": false,
+          "feedback": "A small gradient is not rounded to zero. Its step is reduced by the factor $|g| / (|g| + \\epsilon)$, here two thirds."
+        }
+      ],
+      "explanation": "Section 3.2: at the first update $\\hat{m}_1 = g_1$ and $\\hat{v}_1 = g_1^2$, so the step is $\\alpha \\, |g_1| / (|g_1| + \\epsilon)$. For $g_1 = 5$ the fraction is 1 to seven digits and the step is 0.001. For $g_1 = 2 \\cdot 10^{-7}$ it is $2 / 3$, and the step is $6.67 \\cdot 10^{-4}$. Only a gradient of the size of $\\epsilon$ itself is slowed.",
+      "hints": [
+        "Write the first step with $\\hat{m}_1 = g_1$ and $\\hat{v}_1 = g_1^2$, and keep $\\epsilon$ in the denominator.",
+        "Compare each gradient with $\\epsilon$."
+      ]
+    },
+    {
+      "id": "nn-027-q13",
+      "type": "short",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3.1",
+      "est_minutes": 2,
+      "tags": [
+        "bias-correction",
+        "horizon"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "With the default decay rates, which of Adam's two moments, the first or the second, keeps a bias-correction factor noticeably above 1 for more updates?",
+      "answer": {
+        "model": "The second moment, the average of the squared gradient with $\\beta_2 = 0.999$.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:both|neither|same|equal(?:ly)?|either)\\b)(?![\\s\\S]*(?:\\bnot|n't|\\bnever)\\s+(?:the\\s+)?(?:second|v\\b|beta[_ ]?2))(?![\\s\\S]*\\b(?:first|second|m|v)\\s+or\\b)(?![\\s\\S]*\\bfirst\\b[^.;,]*\\b(?:longer|slower|later|more\\s+(?:steps|updates)|lasts?)\\b)(?![\\s\\S]*\\b(?:second|v|beta[_ ]?2)\\b[^.;,]*\\b(?:faster|sooner|quick(?:er|ly)?|shorter|fewer|earlier)\\b)(?!\\W*(?:the\\s+)?first\\b\\W*(?:and\\s+)?(?:the\\s+)?second\\W*$)[\\s\\S]*(?:\\bsecond\\b|\\bv(?:_t)?\\b|\\bbeta[_ ]?2\\b|squared[- ]gradient|\\bcache\\b)"
+        ]
+      },
+      "explanation": "Section 3.1: the factor is $1 / (1 - \\beta^t)$, and $0.999^t$ falls far more slowly than $0.9^t$. The factor of the first moment is 1.005 after 50 updates, while that of the second moment is still 10.5 after 100 updates and 1.58 after 1,000.",
+      "hints": [
+        "Compare how fast $0.9^t$ and $0.999^t$ go to zero."
+      ]
+    },
+    {
+      "id": "nn-027-q14",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3.2",
+      "est_minutes": 6,
+      "tags": [
+        "run-the-script",
+        "bias-correction"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In `snippets/bias_correction.py`, change the first assignment so that `beta_2` is `0.99` instead of `0.999`, and run the script. From the two lines under the table of step sizes, report the largest uncorrected step, in learning rates, and the last update at which the uncorrected step is still above 1.1 learning rates.",
+      "answer": {
+        "parts": [
+          {
+            "label": "largest uncorrected step",
+            "value": 2.131,
+            "tolerance": 0.002,
+            "unit": "learning rates"
+          },
+          {
+            "label": "last update above 1.1",
+            "value": 174,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "snippets/bias_correction.py with beta_2 = 0.99 (float64, no randomness in these lines): largest uncorrected step 2.131 at t = 13; above 1.1 until t = 174. The unchanged script prints 6.569 and 1750.",
+      "explanation": "With $\\beta_2 = 0.99$ the second moment warms up ten times faster, so the denominator of the uncorrected step is short for a much shorter time. The script prints a largest uncorrected step of 2.131 learning rates, at $t = 13$, against 6.569 with the default, and the step is above 1.1 learning rates until $t = 174$ instead of 1,750. The size and the length of the early overshoot depend on the two decay rates, which is what section 3.2 says the correction removes.",
+      "hints": [
+        "Only the line that assigns `beta_1, beta_2, epsilon` changes.",
+        "The two values are on the lines that begin `largest uncorrected step` and `uncorrected step still above`."
+      ]
+    },
+    {
+      "id": "nn-027-q15",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "3.2",
+      "est_minutes": 3,
+      "tags": [
+        "first-step"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`Optimizer_Adam(learning_rate=0.005)` makes its very first update on a weight whose value is $0.300$ and whose gradient is $-250$. Give the value of the weight after the update, to three decimal places.",
+      "answer": {
+        "value": 0.305,
+        "tolerance": 0.0002,
+        "unit": ""
+      },
+      "precision_note": "Closed form of section 3.2: weight - learning_rate * g / (|g| + epsilon) = 0.300 + 0.005 * 250 / (250 + 1e-7). Recomputed with Optimizer_Adam of snippets/adam.py on a stub: 0.305000.",
+      "explanation": "Section 3.2: at the first update the corrected moments are $g_1$ and $g_1^2$, so the step has the size of the learning rate and goes against the sign of the gradient. The gradient is negative, so the weight rises by 0.005 to 0.305. Plain gradient descent with the same rate would have moved it by $0.005 \\cdot 250 = 1.25$.",
+      "hints": [
+        "The size of the first step does not depend on the size of the gradient."
+      ]
+    },
+    {
+      "id": "nn-027-q16",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 12,
+      "tags": [
+        "derivation",
+        "bias-correction"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A parameter receives the same gradient $g$ at every update, and $m_0 = v_0 = 0$. (a) Derive closed forms for $m_t$ and $v_t$. (b) Show that the corrected moments equal $g$ and $g^2$ at every update. (c) Ignoring $\\epsilon$, give the size of the step with the correction and without it, and evaluate the uncorrected step at $t = 1$ for $\\beta_1 = 0.9$ and $\\beta_2 = 0.999$.",
+      "kind": "derive",
+      "solution": "1. Unrolling the recursion from $m_0 = 0$: $m_t = (1 - \\beta_1) \\sum_{k=0}^{t-1} \\beta_1^k \\, g$. The geometric sum is $(1 - \\beta_1^t) / (1 - \\beta_1)$, so $m_t = (1 - \\beta_1^t) \\, g$.\n2. The second moment obeys the same recursion with $\\beta_2$ and the constant $g^2$, so $v_t = (1 - \\beta_2^t) \\, g^2$.\n3. The corrections divide by exactly the factors found: $\\hat{m}_t = m_t / (1 - \\beta_1^t) = g$ and $\\hat{v}_t = v_t / (1 - \\beta_2^t) = g^2$, at every $t \\ge 1$.\n4. With the correction the step is $\\alpha \\, \\hat{m}_t / \\sqrt{\\hat{v}_t} = \\alpha \\, g / |g|$: its size is $\\alpha$ and it points against the gradient.\n5. Without the correction the step is $\\alpha \\, m_t / \\sqrt{v_t} = \\alpha \\, \\dfrac{1 - \\beta_1^t}{\\sqrt{1 - \\beta_2^t}} \\cdot \\dfrac{g}{|g|}$.\n6. At $t = 1$ with the defaults the factor is $0.1 / \\sqrt{0.001} = 0.1 / 0.03162 = 3.162$. The uncorrected first step is about 3.2 learning rates: the root of the second moment is short by more than the first moment is, so leaving the correction out makes the early steps larger.",
+      "rubric": [
+        {
+          "criterion": "Unrolls the recursion into a geometric sum and obtains $m_t = (1 - \\beta_1^t) g$",
+          "points": 3
+        },
+        {
+          "criterion": "States $v_t = (1 - \\beta_2^t) g^2$ by the same argument",
+          "points": 1
+        },
+        {
+          "criterion": "Shows that the corrected moments are $g$ and $g^2$ for every $t \\ge 1$",
+          "points": 2
+        },
+        {
+          "criterion": "Gives the corrected step as $\\alpha$ and the uncorrected step as $\\alpha (1 - \\beta_1^t) / \\sqrt{1 - \\beta_2^t}$",
+          "points": 2
+        },
+        {
+          "criterion": "Evaluates the uncorrected step at $t = 1$ as about $3.16 \\alpha$ and says that it is larger than the corrected one",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 3: unrolling the recursion gives a geometric sum, $m_t = (1 - \\beta_1^t) g$, and the same with $\\beta_2$ and $g^2$. Dividing by $1 - \\beta^t$ returns $g$ and $g^2$, so the corrected step is exactly $\\alpha$. Without the correction the step is $\\alpha (1 - \\beta_1^t) / \\sqrt{1 - \\beta_2^t}$, which is $3.162 \\alpha$ at $t = 1$: larger, not smaller.",
+      "hints": [
+        "Unroll $m_t = \\beta_1 m_{t-1} + (1 - \\beta_1) g$ for two or three steps and look for a geometric sum.",
+        "$\\sum_{k=0}^{t-1} \\beta^k = (1 - \\beta^t) / (1 - \\beta)$."
+      ]
+    },
+    {
+      "id": "nn-027-q17",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 12,
+      "tags": [
+        "seed-spread",
+        "critique"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A report on the spiral classifier reads: \\\"Adam reached 96.3 percent and SGD with momentum 95.7 percent, so Adam is the better optimiser for this problem and should replace momentum.\\\" Both figures are the final training accuracies of one run each, on the same seed, with each optimiser at the settings its post documents. Assess the conclusion, using what the post measured over five seeds, and say what a comparison would need before it could support a choice between the two.",
+      "kind": "critique",
+      "solution": "The conclusion does not follow from the two numbers.\n\n**What the report has.** One run per optimiser on one seed. The gap is 0.6 points, which is 2 of the 300 training samples.\n\n**What the five seeds show.** With the same settings, Adam ends between 81.3 and 96.3 percent (mean 89.0) and momentum between 68.7 and 98.0 (mean 83.4). The spread from seed to seed is 15 points for Adam and 29 for momentum, many times the gap in the report. Adam ends above momentum on four of the five seeds and below it on seed 4 (96.3 against 98.0). So there is some evidence that Adam is the safer of the two with these settings, and none that a gap of 0.6 points means anything. RMSProp, which the report ignores, has the highest mean (90.6) and the narrowest range on these five seeds, a lead that five further seeds remove.\n\n**What else is missing.** The settings were not tuned: each optimiser runs at one documented learning rate, and for Adam a rate of 0.1 gives a mean of 94.8 percent where 0.02 gives 89.0, so the comparison is between two settings, not two methods. The figures are training accuracies, and a choice of optimiser for a model that will be used should rest on held-out data.\n\n**What a comparison needs.** Several seeds per optimiser, with the data and the initial weights both varied; a learning rate chosen for each optimiser by the same procedure; the result reported as a range or a mean with its spread; and accuracy on data the network was not trained on.",
+      "rubric": [
+        {
+          "criterion": "States that one run per optimiser on one seed cannot support the ranking",
+          "points": 2
+        },
+        {
+          "criterion": "Compares the 0.6 point gap with the measured seed-to-seed ranges of the two optimisers",
+          "points": 3
+        },
+        {
+          "criterion": "Reports what the five seeds do show: Adam ahead on four of five, behind on one",
+          "points": 2
+        },
+        {
+          "criterion": "Notes that the settings were not tuned, or that training accuracy is not the quantity of interest",
+          "points": 2
+        },
+        {
+          "criterion": "Names what a sound comparison needs: several seeds, comparable tuning, a spread, held-out data",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 7: the two figures are real and they are the seed-0 row. Over seeds 0 to 4 Adam ends between 81.3 and 96.3 percent and momentum between 68.7 and 98.0, so a gap of 0.6 points, two of 300 samples, is far inside the spread from one seed to the next. Adam is ahead on four of the five seeds and behind on seed 4, RMSProp has a higher mean than both, and neither learning rate was tuned. The figures are also training accuracies, which say nothing yet about unseen data.",
+      "hints": [
+        "Compare the size of the gap in the report with the range each optimiser shows from one seed to the next.",
+        "Ask what was held fixed that a fair comparison would vary, and what was measured that a user of the model does not care about."
+      ]
+    },
+    {
+      "id": "nn-027-q18",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "3.2",
+      "est_minutes": 15,
+      "tags": [
+        "schedule",
+        "bias-correction"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Post nn-023 multiplies the learning rate by a schedule, $1 / (1 + d t)$. Show that Adam's bias correction can be read as a schedule as well: write the corrected step as the uncorrected step times a factor that depends only on $t$, describe how that factor behaves over training for the default decay rates, and contrast its direction with the decay of nn-023. Then use it to explain why, on the spiral, the runs without the correction, at the documented learning rate of 0.02, ended with the lower loss on all five seeds.",
+      "kind": "connect",
+      "solution": "**The factor.** The corrected step is $\\alpha \\, \\hat{m}_t / \\sqrt{\\hat{v}_t}$ with $\\hat{m}_t = m_t / (1 - \\beta_1^t)$ and $\\hat{v}_t = v_t / (1 - \\beta_2^t)$. Leaving $\\epsilon$ aside,\n\n$$\\alpha \\, \\frac{\\hat{m}_t}{\\sqrt{\\hat{v}_t}} = \\alpha \\, s_t \\, \\frac{m_t}{\\sqrt{v_t}}, \\qquad s_t = \\frac{\\sqrt{1 - \\beta_2^t}}{1 - \\beta_1^t}.$$\n\nThe factor $s_t$ depends on the update number and the two decay rates only, not on the gradients. Adam with the correction is therefore Adam without it, run at the learning rate $\\alpha \\, s_t$.\n\n**Its shape.** For $\\beta_1 = 0.9$ and $\\beta_2 = 0.999$, $s_1 = \\sqrt{0.001} / 0.1 = 0.316$. The numerator grows slowly and the denominator quickly, so $s_t$ first falls, to $1 / 6.569 = 0.152$ at $t = 12$, and then climbs back: $1 / 3.241 = 0.309$ at $t = 100$, $1 / 1.258 = 0.795$ at $t = 1000$, and it is within ten percent of 1 from about $t = 1750$.\n\n**Contrast with nn-023.** The decay $1 / (1 + d t)$ starts at 1 and only falls: large steps first, small steps later. The factor $s_t$ does the reverse at the start, small steps first and full steps later, which is a warm-up. The class applies both: the decay to `current_learning_rate`, the warm-up through the two corrections.\n\n**The spiral runs.** Removing the correction removes the warm-up, so the first two thousand or so updates are made at up to 6.6 times the stated rate. On this problem larger steps help: at a rate of 0.1 instead of 0.02 the corrected optimiser has the higher final accuracy on four of the five seeds and a mean of 94.8 percent against 89.0. The uncorrected runs benefit in the same way, which is why they end with the lower loss on every seed. The benefit belongs to that rate: at 0.1 the uncorrected runs end between 41.7 and 52.0 percent, behind the corrected ones on every seed. That is a statement about the learning rate of the documented run being low for this problem, not a reason to delete the correction: without it the early step size depends on $\\beta_1$ and $\\beta_2$ instead of being $\\alpha$.",
+      "rubric": [
+        {
+          "criterion": "Derives the factor $\\sqrt{1 - \\beta_2^t} / (1 - \\beta_1^t)$ and notes that it does not depend on the gradients",
+          "points": 3
+        },
+        {
+          "criterion": "Describes its course: about 0.32 at the first update, lower for some updates, back to 1 after a few thousand",
+          "points": 2
+        },
+        {
+          "criterion": "Contrasts it with the decay of nn-023: a warm-up that rises to 1 against a schedule that falls from 1",
+          "points": 2
+        },
+        {
+          "criterion": "Explains the uncorrected runs by their larger early steps and connects this with the better results at a higher learning rate",
+          "points": 2
+        },
+        {
+          "criterion": "Says why the result is not an argument for removing the correction",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 3.2: $\\hat{m}_t / \\sqrt{\\hat{v}_t}$ equals $m_t / \\sqrt{v_t}$ times $\\sqrt{1 - \\beta_2^t} / (1 - \\beta_1^t)$, a factor that starts at 0.316, falls to 0.152 at the twelfth update and returns to 1 over about two thousand updates. It is a warm-up, the opposite of the decay of nn-023, which starts at 1 and falls. Removing it gives larger early steps, and section 7 shows that this problem also does better at a learning rate of 0.1 than at 0.02.",
+      "hints": [
+        "Divide the corrected step by the uncorrected one; everything that depends on the gradients cancels.",
+        "Evaluate the factor at $t = 1$ and for large $t$, and compare with a schedule that starts at 1 and falls."
+      ],
+      "connects": [
+        "nn-023"
+      ]
+    }
+  ]
+}
