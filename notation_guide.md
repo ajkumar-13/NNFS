@@ -34,6 +34,7 @@ The gradient of the loss with respect to a quantity is written $\partial L / \pa
 | Maths | Meaning | Code |
 |---|---|---|
 | $\partial L / \partial \mathbf{Z}$ | gradient arriving at a dense layer from the component after it | `dvalues` |
+| $\partial L / \partial \mathbf{A}$ | gradient arriving at an activation; its `dinputs` is $\partial L / \partial \mathbf{Z}$ | `dvalues` |
 | $\partial L / \partial \mathbf{W}$ | weight gradient | `dweights` |
 | $\partial L / \partial \mathbf{b}$ | bias gradient | `dbiases` |
 | $\partial L / \partial \mathbf{X}$ | gradient passed back to the previous component | `dinputs` |
@@ -103,4 +104,4 @@ In Adam, $v$ is the second moment, not the momentum velocity of Post 24; the cod
 
 - Inline maths is written `$...$` and display maths `$$...$$` on its own line.
 - Prose uses British spelling (optimiser, regularisation, initialisation); code uses the American spelling of its class and argument names (`Optimizer_Adam`, `weight_regularizer_l2`), as the reference implementation does.
-- Code indices start at 0, as in Python, and the maths counts from 1: `inputs[0]` is $x_1$, and layer 1 is the first dense layer. Post 12 is the exception and numbers its inputs and weights from 0, as its code does. Axis 0 is the batch axis.
+- Code indices start at 0, as in Python, and the maths counts from 1: `inputs[0]` is $x_1$, and layer 1 is the first dense layer. Axis 0 is the batch axis.

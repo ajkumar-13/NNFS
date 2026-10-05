@@ -72,7 +72,7 @@ if len(y_true.shape) == 2:
     y_true = np.argmax(y_true, axis=1)
 self.dinputs = dvalues.copy()
 self.dinputs[range(samples), y_true] -= 1
-self.dinputs = self.dinputs / samples
+self.dinputs /= samples
 
 # Activation_Sigmoid_Loss_BinaryCrossentropy.backward: (y_hat - y) / N
 self.dinputs = (dvalues - y_true.reshape(-1, 1)) / len(dvalues)

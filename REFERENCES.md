@@ -51,6 +51,7 @@ The bibliography of Neural Networks from Scratch. Every source cited in a post's
 - Krizhevsky, A., Sutskever, I., and Hinton, G., *"ImageNet Classification with Deep Convolutional Neural Networks"* (NeurIPS, 2012).
 - Krogh, A. and Hertz, J. A., *"A Simple Weight Decay Can Improve Generalization"* (NeurIPS, 1992).
 - Lawson, C., Hanson, R., Kincaid, D., and Krogh, F., *"Basic Linear Algebra Subprograms for FORTRAN Usage"* (ACM Transactions on Mathematical Software, 1979).
+- LeCun, Y., Bottou, L., Orr, G. B., and Müller, K.-R., *"Efficient BackProp"* (Neural Networks: Tricks of the Trade, 1998).
 - Leibniz, G. W., *"Nova Methodus pro Maximis et Minimis"* (Acta Eruditorum, 1684).
 - Leshno, M., Lin, V. Ya., Pinkus, A., and Schocken, S., *"Multilayer Feedforward Networks with a Nonpolynomial Activation Function Can Approximate Any Function"* (Neural Networks, 1993).
 - Li, X., Chen, S., Hu, X., and Yang, J., *"Understanding the Disharmony between Dropout and Batch Normalization by Variance Shift"* (CVPR, 2019).
