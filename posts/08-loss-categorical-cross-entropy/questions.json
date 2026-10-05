@@ -1,0 +1,812 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-008",
+  "next_ordinal": 18,
+  "questions": [
+    {
+      "id": "nn-008-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 1,
+      "tags": [
+        "neg-log",
+        "perfect-prediction"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network gives the true class of a sample a probability of exactly 1. Ignoring the clip, what is the categorical cross-entropy of that sample?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "0",
+          "correct": true,
+          "feedback": "Right. $-\\log(1) = 0$, and a probability of 1 on the true class is the only prediction that costs nothing."
+        },
+        {
+          "key": "b",
+          "text": "1",
+          "correct": false,
+          "feedback": "The loss is not the probability itself. It is the negative logarithm of the probability, and the logarithm of 1 is 0."
+        },
+        {
+          "key": "c",
+          "text": "$-1$",
+          "correct": false,
+          "feedback": "The loss is never negative: for $p$ in $(0, 1]$ the logarithm is at most 0, so its negative is at least 0."
+        },
+        {
+          "key": "d",
+          "text": "Infinite",
+          "correct": false,
+          "feedback": "That is the other end of the curve. The loss grows without bound as the probability on the true class goes to 0, not to 1."
+        }
+      ],
+      "explanation": "Section 3 states that $\\log(1) = 0$, so $-\\log(1) = 0$, and that this is the only probability with zero loss. With the clip of section 6 the class reports about $10^{-7}$ in place of an exact 0, which changes nothing in practice.",
+      "hints": [
+        "Evaluate $-\\log(p)$ at $p = 1$."
+      ]
+    },
+    {
+      "id": "nn-008-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "neg-log",
+        "steepness"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Two samples improve by the same amount of probability on the true class: one goes from 0.01 to 0.10, the other from 0.90 to 0.99. How do the two reductions in categorical cross-entropy compare?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "They are equal, because the probability rose by 0.09 in both cases.",
+          "correct": false,
+          "feedback": "That would hold for a straight-line loss such as $1 - p$. The logarithm depends on the ratio of the two probabilities, not on their difference."
+        },
+        {
+          "key": "b",
+          "text": "The first is about 24 times the second.",
+          "correct": true,
+          "feedback": "Right. The reductions are $\\ln(0.10 / 0.01) = 2.303$ and $\\ln(0.99 / 0.90) = 0.095$."
+        },
+        {
+          "key": "c",
+          "text": "The second is larger, because the sample ends closer to a perfect prediction.",
+          "correct": false,
+          "feedback": "The curve is nearly flat close to 1, so the last few hundredths of probability are worth very little loss."
+        },
+        {
+          "key": "d",
+          "text": "The first is exactly 10 times the second, because the probability rose tenfold.",
+          "correct": false,
+          "feedback": "A tenfold rise in probability removes $\\ln 10 = 2.303$ of loss; the second step removes $\\ln 1.1 = 0.095$, which is about a twenty-fourth of that, not a tenth."
+        }
+      ],
+      "explanation": "Section 3 gives both steps: the first removes $\\ln 10 = 2.303$ of loss and the second $\\ln 1.1 = 0.095$, a ratio of about 24. The curve is steep near 0 and nearly flat near 1, so the samples the network gets most wrong dominate the mean. A straight-line loss such as $1 - p$ would pay 0.09 for either step.",
+      "hints": [
+        "A difference of two logarithms is the logarithm of a ratio.",
+        "Compare $0.10 / 0.01$ with $0.99 / 0.90$."
+      ]
+    },
+    {
+      "id": "nn-008-q03",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 6,
+      "tags": [
+        "batch-loss",
+        "worked-example"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Three samples all have true class 0. Their softmax outputs are $[0.9, 0.05, 0.05]$, $[0.6, 0.2, 0.2]$, and $[0.33, 0.34, 0.33]$. Give the categorical cross-entropy of each sample and the loss of the batch, using the natural logarithm.",
+      "answer": {
+        "parts": [
+          {
+            "label": "loss of sample 1",
+            "value": 0.105,
+            "tolerance": 0.002,
+            "unit": ""
+          },
+          {
+            "label": "loss of sample 2",
+            "value": 0.511,
+            "tolerance": 0.002,
+            "unit": ""
+          },
+          {
+            "label": "loss of sample 3",
+            "value": 1.109,
+            "tolerance": 0.002,
+            "unit": ""
+          },
+          {
+            "label": "batch loss",
+            "value": 0.575,
+            "tolerance": 0.002,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form: -ln(0.9), -ln(0.6), -ln(0.33) and their mean, the procedure of snippets/worked_example.py; recomputed with NumPy as 0.1054, 0.5108, 1.1087, mean 0.5750.",
+      "explanation": "Only the probability on the true class enters: $-\\ln 0.9 = 0.105$, $-\\ln 0.6 = 0.511$, $-\\ln 0.33 = 1.109$. The batch loss is their mean, $1.725 / 3 = 0.575$, as in the worked example of section 4. The third sample is nearly a uniform guess and costs slightly more than $\\ln 3 = 1.099$; it is also the only one whose top prediction is wrong, since 0.34 on class 1 beats 0.33.",
+      "hints": [
+        "Pick one number from each row before doing any arithmetic.",
+        "Take the negative natural logarithm of each picked number, then average the three results."
+      ]
+    },
+    {
+      "id": "nn-008-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "clipping",
+        "bounds"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`Loss_CategoricalCrossentropy.forward` clips its predictions with `np.clip(y_pred, 1e-7, 1 - 1e-7)`. For true class 0 and float64 inputs, give the per-sample loss it returns for the prediction $[0, 0, 1]$ and for the prediction $[1, 0, 0]$.",
+      "answer": {
+        "parts": [
+          {
+            "label": "loss for [0, 0, 1]",
+            "value": 16.118,
+            "tolerance": 0.01,
+            "unit": ""
+          },
+          {
+            "label": "loss for [1, 0, 0]",
+            "value": 1e-07,
+            "tolerance": 5e-08,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Printed by snippets/clipping.py: -log(1e-7) = 16.118 and -log(1 - 1e-7) = 1.000e-07 in float64 (1.192e-07 in float32, inside the tolerance).",
+      "explanation": "Section 6: the clip raises the 0 on the true class to $10^{-7}$, so the first loss is $-\\ln(10^{-7}) = 7 \\ln 10 = 16.118$, the largest value the class can return. It lowers the 1 to $1 - 10^{-7}$, so the second loss is $-\\ln(1 - 10^{-7}) \\approx 10^{-7}$ in place of an exact 0.",
+      "hints": [
+        "Apply the clip to the entry at the true class first, then take the negative logarithm."
+      ]
+    },
+    {
+      "id": "nn-008-q05",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "clipping",
+        "log-zero"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The clip is removed from the loss class, and one sample of a batch of 300 has a probability of exactly 0 on its true class. What value does that sample's loss take, and what does the reported batch loss become?",
+      "answer": {
+        "model": "The sample's loss is infinite (inf), and because the batch loss is the mean of the per-sample losses, the batch loss is infinite too.",
+        "accept": [
+          "^(?![\\s\\S]*\\bnan\\b)(?![\\s\\S]*\\b(?:is|are|stays?|remains?|but|be|becomes?)\\s+(?:(?!not\\b|longer\\b)\\w+\\s+)?finite\\b)(?![\\s\\S]*(?:\\bnot|n't|\\bnever|\\bno)\\s+(?:\\w+\\s+){0,2}(?:inf|\\u221e))(?![\\s\\S]*\\b(?:tiny|small|barely|hardly|slightly|negligibl\\w*|unaffected|unchanged|diluted)\\b)(?:(?=[\\s\\S]*(?:inf|\\u221e)[\\s\\S]*(?:inf|\\u221e))|(?=[\\s\\S]*(?:inf|\\u221e))(?=[\\s\\S]*\\b(?:both|too|also|as well|likewise)\\b))"
+        ]
+      },
+      "explanation": "Section 6: $-\\log(0)$ evaluates to `inf` in NumPy, with a divide-by-zero warning, and the mean of 300 numbers of which one is infinite is infinite. One bad sample therefore destroys the reported number, which is what the lower bound of the clip prevents by capping the sample at 16.118.",
+      "hints": [
+        "Ask what the logarithm does as its argument goes to 0, then what a mean does with that value."
+      ]
+    },
+    {
+      "id": "nn-008-q06",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8.1",
+      "est_minutes": 2,
+      "tags": [
+        "baseline",
+        "uniform-guess"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A classifier over $K$ balanced classes gives every class the same probability for every sample. Write its categorical cross-entropy as an expression in $K$.",
+      "answer": {
+        "model": "ln K, the natural logarithm of K, which is the same as -log(1/K).",
+        "accept": [
+          "^[\\s$(]*(?:[a-z][a-z' \\-]{0,60}?(?:\\bis|=|\\bequals?|:)\\s*)?[\\s$]*(?:the\\s+)?(?:natural\\s+)?\\\\?(?:ln|log(?:arithm)?(?:_\\{?e\\}?)?)(?:\\s+of)?\\s*[({]?\\s*k\\b(?!\\s*[)}]?\\s*[/*^])",
+          "^(?![\\s\\S]*(?:\\bnot|n't)\\s+(?:\\w+\\s+)?(?:[-\\u2212]|minus|negative))[\\s\\S]*(?:[-\\u2212]|\\bminus\\s+|\\bnegative\\s+)\\s*(?:the\\s+)?(?:natural\\s+)?\\\\?(?:ln|log(?:arithm)?)(?:\\s+of)?\\s*[({]?\\s*(?:1\\s*/\\s*k\\b|\\\\frac\\s*\\{?\\s*1\\s*\\}?\\s*\\{?\\s*k\\b)"
+        ]
+      },
+      "explanation": "Section 8.1: a uniform guess puts $1/K$ on the true class of every sample, so every per-sample loss, and therefore the mean, is $-\\log(1/K) = \\ln K$. For the three-class spiral data that is 1.0986, the value the untrained network prints.",
+      "hints": [
+        "Find the probability a uniform guess puts on the true class, then apply the per-sample formula."
+      ]
+    },
+    {
+      "id": "nn-008-q07",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "9",
+      "est_minutes": 4,
+      "tags": [
+        "label-shape",
+        "broadcasting"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Integer class labels are loaded as a column, an array of shape $(300, 1)$, and passed with a $(300, 3)$ softmax output to `Loss_CategoricalCrossentropy.forward` as written in this post. What happens?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The indexing path raises `IndexError`, because the labels are not one-dimensional.",
+          "correct": false,
+          "feedback": "The indexing path is never reached: an array of shape $(300, 1)$ has two dimensions, so the class takes its other branch."
+        },
+        {
+          "key": "b",
+          "text": "The class returns the correct losses, because broadcasting lines the column up with the rows.",
+          "correct": false,
+          "feedback": "Broadcasting does line the shapes up, which is the problem: each row is multiplied by its label value, not by a one-hot row."
+        },
+        {
+          "key": "c",
+          "text": "The one-hot path runs and returns wrong losses without an error.",
+          "correct": true,
+          "feedback": "Right. Each row sum becomes the label value itself, so the losses are `inf`, 0 or negative depending on the label."
+        },
+        {
+          "key": "d",
+          "text": "The multiplication raises `ValueError`, because $(300, 3)$ and $(300, 1)$ do not broadcast.",
+          "correct": false,
+          "feedback": "They do broadcast: a size-1 axis stretches to match 3. The error appears for labels of shape $(300,)$ in a hand-written multiply path, not here."
+        }
+      ],
+      "explanation": "Section 9: the class looks only at `len(y_true.shape)`. A column has two dimensions, so it takes the one-hot path, where the $(300, 1)$ labels broadcast across each row and the row sum becomes the label value times about 1. The negative logarithm of that is `inf` for label 0, 0 for label 1 and $-0.693$ for label 2, with no exception. Flattening the labels to shape $(300,)$ fixes it.",
+      "hints": [
+        "Decide which branch of the `if` a two-dimensional label array selects.",
+        "In that branch, work out what a $(300, 3)$ array times a $(300, 1)$ array is, and what each row then sums to."
+      ]
+    },
+    {
+      "id": "nn-008-q08",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8.2",
+      "est_minutes": 3,
+      "tags": [
+        "accuracy",
+        "baseline"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The untrained spiral network prints `Accuracy: 0.340` and `predictions per class: [  8   0 292]`. Each of the three classes holds 100 of the 300 points. What does the accuracy show?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The network has started to learn, since 0.340 is above one third.",
+          "correct": false,
+          "feedback": "No weight has been updated. The 102 are 99 class-2 points predicted as class 2 and 3 of the 8 rows that fall to class 0 on an exact tie, which is no sign of anything learned."
+        },
+        {
+          "key": "b",
+          "text": "It is the score of one fixed answer: nearly all predictions are one class.",
+          "correct": true,
+          "feedback": "Right. Answering class 2 every time gives 100 of 300; the network's 102 of 300 is that, give or take the 8 tied rows."
+        },
+        {
+          "key": "c",
+          "text": "The network guesses each sample independently at random, which gives about one third.",
+          "correct": false,
+          "feedback": "Independent random guesses would spread over the classes roughly 100, 100, 100. The counts 8, 0, 292 show almost one answer throughout."
+        },
+        {
+          "key": "d",
+          "text": "The accuracy is wrong, because a loss of 1.0986 corresponds to an accuracy of exactly $1/3$.",
+          "correct": false,
+          "feedback": "The loss does not determine the accuracy. A near-uniform output fixes the loss near $\\ln 3$, while the accuracy depends on which entry is largest in each row."
+        }
+      ],
+      "explanation": "Section 8.2: 292 of the 300 predictions are class 2, and a single fixed answer on three balanced classes is right 100 times in 300. The network gets 102, so its accuracy is the score of answering one class, the accuracy counterpart of the loss sitting at $\\ln 3$.",
+      "hints": [
+        "Work out what always answering class 2 would score on this data."
+      ]
+    },
+    {
+      "id": "nn-008-q09",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "clipping",
+        "upper-bound"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The clip `np.clip(y_pred, 1e-7, 1 - 1e-7)` has an upper bound as well as a lower one. Which statement about the upper bound in `Loss_CategoricalCrossentropy` is correct?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It keeps the gradient of the combined softmax and cross-entropy backward pass from being exactly zero.",
+          "correct": false,
+          "feedback": "The combined backward pass of post 19 uses the unclipped softmax output, so the clip inside the loss's forward method cannot change that gradient."
+        },
+        {
+          "key": "b",
+          "text": "It prevents a negative loss, which a probability of exactly 1 would otherwise produce.",
+          "correct": false,
+          "feedback": "A probability of exactly 1 gives $-\\log(1) = 0$, not a negative number. Negative losses come from values above 1, which a softmax never outputs."
+        },
+        {
+          "key": "c",
+          "text": "It guards nothing in this class; it keeps the clip symmetric.",
+          "correct": true,
+          "feedback": "Right. Its only effect here is that a perfect prediction scores about $10^{-7}$ in place of 0."
+        },
+        {
+          "key": "d",
+          "text": "It stops `np.exp` from overflowing when a logit is very large.",
+          "correct": false,
+          "feedback": "Overflow in the exponential is handled inside softmax by subtracting the row maximum (post 06). The clip acts later, on probabilities."
+        }
+      ],
+      "explanation": "Section 6: only the lower bound guards against $\\log(0)$ here, because this class takes the logarithm of the true-class probability alone and $\\log(1) = 0$ is harmless. The upper bound follows the reference implementation, which clips both sides by the same amount, and it turns a loss of exactly 0 into about $10^{-7}$. It becomes necessary in binary cross-entropy, where $\\log(1 - \\hat{y})$ is also taken.",
+      "hints": [
+        "List which values this class takes the logarithm of.",
+        "Ask which input value would make each of $\\log(\\hat{y})$ and $\\log(1 - \\hat{y})$ blow up."
+      ]
+    },
+    {
+      "id": "nn-008-q10",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 20,
+      "tags": [
+        "implementation",
+        "numpy",
+        "clipping"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "implement",
+      "language": "python",
+      "prompt": "Implement `categorical_cross_entropy(y_pred, y_true)` as one function. It receives an $(N, K)$ array of probabilities and labels that are either $(N,)$ integer class indices or $(N, K)$ one-hot rows, clips the predictions to $[10^{-7}, 1 - 10^{-7}]$, and returns the mean of the per-sample losses as a single float.",
+      "starter": "import numpy as np\n\n\ndef categorical_cross_entropy(y_pred, y_true):\n    \"\"\"Mean categorical cross-entropy of a batch.\n\n    y_pred: (N, K) array of probabilities, one row per sample.\n    y_true: (N,) integer class indices, or (N, K) one-hot rows.\n    Predictions are clipped to [1e-7, 1 - 1e-7] before the logarithm.\n    Returns one float, the mean of the N per-sample losses.\n    \"\"\"\n    raise NotImplementedError\n",
+      "solution": "import numpy as np\n\n\ndef categorical_cross_entropy(y_pred, y_true):\n    \"\"\"Mean categorical cross-entropy of a batch.\n\n    y_pred: (N, K) array of probabilities, one row per sample.\n    y_true: (N,) integer class indices, or (N, K) one-hot rows.\n    Predictions are clipped to [1e-7, 1 - 1e-7] before the logarithm.\n    Returns one float, the mean of the N per-sample losses.\n    \"\"\"\n    y_pred = np.asarray(y_pred, dtype=float)\n    y_true = np.asarray(y_true)\n    clipped = np.clip(y_pred, 1e-7, 1 - 1e-7)\n    if y_true.ndim == 1:\n        confidences = clipped[np.arange(len(clipped)), y_true]\n    else:\n        confidences = np.sum(clipped * y_true, axis=1)\n    return float(np.mean(-np.log(confidences)))\n",
+      "tests": "import warnings\n\nimport numpy as np\n\nprobs = np.array([[0.7, 0.1, 0.2], [0.1, 0.5, 0.4], [0.02, 0.9, 0.08]])\nlabels = np.array([0, 1, 1])\nonehot = np.array([[1, 0, 0], [0, 1, 0], [0, 1, 0]])\n\n# 1. The worked batch of section 4, both label formats.\na = categorical_cross_entropy(probs, labels)\nb = categorical_cross_entropy(probs, onehot)\nassert np.ndim(a) == 0, \"the result must be one number, not an array\"\nassert abs(a - 0.3850608800521680) < 1e-9, a\nassert abs(b - 0.3850608800521680) < 1e-9, b\n\n# 2. The mean, not the sum: repeating the batch must not change the loss.\nassert abs(categorical_cross_entropy(np.tile(probs, (10, 1)), np.tile(labels, 10)) - a) < 1e-9\n\n# 3. A zero on the true class is capped by the clip, with no warning.\nwith warnings.catch_warnings():\n    warnings.simplefilter(\"error\")\n    c = categorical_cross_entropy(np.array([[0.0, 1.0, 0.0]]), np.array([0]))\n    d = categorical_cross_entropy(np.array([[1.0, 0.0, 0.0]]), np.array([0]))\nassert np.isfinite(c) and abs(c - 16.11809565095832) < 1e-6, c\nassert 0 < d < 2e-7, d\n\n# 4. Random batches against a plain loop, integer and one-hot labels.\nrng = np.random.default_rng(8)\nfor n, k in [(5, 3), (7, 4), (3, 3), (1, 6)]:\n    raw = rng.random((n, k)) + 0.05\n    p = raw / raw.sum(axis=1, keepdims=True)\n    y = rng.integers(0, k, size=n)\n    want = sum(-np.log(p[i, y[i]]) for i in range(n)) / n\n    assert abs(categorical_cross_entropy(p, y) - want) < 1e-9, (n, k)\n    assert abs(categorical_cross_entropy(p, np.eye(k, dtype=int)[y]) - want) < 1e-9, (n, k)\nprint(\"all tests passed\")\n",
+      "explanation": "The solution is section 7's two classes folded into one function: clip, pick the probability on the true class by advanced indexing for one-dimensional labels or by multiply-and-sum for one-hot rows, take the negative logarithm, and average. The tests check the worked batch of section 4 in both formats (0.385061), that repeating the batch leaves the loss unchanged, that a zero on the true class gives 16.118 with no warning, and random batches against a loop.",
+      "hints": [
+        "Decide the label format from the number of dimensions of `y_true`.",
+        "Both formats should end in the same 1-D array: one probability per sample.",
+        "Clip before the logarithm, and reduce with a mean so the result does not grow with the batch."
+      ]
+    },
+    {
+      "id": "nn-008-q11",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2.1",
+      "est_minutes": 12,
+      "tags": [
+        "likelihood",
+        "derivation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "derive",
+      "prompt": "A model gives sample $i$ a probability $\\hat{y}_{i,c_i}$ on its true class $c_i$, and the $N$ samples of a batch are treated as independent. Starting from the probability the model assigns to the whole set of observed labels, derive the batch loss $L$ of categorical cross-entropy, and say what each of the three ingredients (the logarithm, the minus sign, the division by $N$) is for.",
+      "answer_length": "half a page",
+      "solution": "1. **Likelihood of one sample.** Reading the output row as a distribution over classes, the probability the model gives to the label that was observed is $\\hat{y}_{i,c_i}$.\n2. **Likelihood of the batch.** For independent samples the probabilities multiply: $P = \\prod_i \\hat{y}_{i,c_i}$.\n3. **The logarithm.** $\\log P = \\sum_i \\log \\hat{y}_{i,c_i}$. The logarithm is increasing, so the weights that maximise $P$ also maximise $\\log P$; and a sum of moderate numbers can be stored where the product cannot. For 300 samples at $1/3$ each the product is $7.3 \\times 10^{-144}$, which is 0 in float32, while the sum is $-329.58$.\n4. **The minus sign.** Each $\\log \\hat{y}_{i,c_i}$ is at most 0. Negating gives a non-negative quantity, and maximising $\\log P$ becomes minimising $-\\log P$, which is the direction an optimiser works in.\n5. **The division by $N$.** $L = -\\frac{1}{N} \\sum_i \\log \\hat{y}_{i,c_i}$. The minimiser is unchanged by a constant factor, and the mean makes the number comparable between batches of different sizes.\n6. **Conclusion.** $\\log P = -N L$, so minimising categorical cross-entropy is maximum-likelihood estimation, and the per-sample term is $L_i = -\\log \\hat{y}_{i,c_i}$.",
+      "rubric": [
+        {
+          "criterion": "Identifies $\\hat{y}_{i,c_i}$ as the likelihood of one sample and writes the batch likelihood as a product over independent samples",
+          "points": 2
+        },
+        {
+          "criterion": "Takes the logarithm to obtain a sum and notes that the maximiser is unchanged because the logarithm is increasing",
+          "points": 2
+        },
+        {
+          "criterion": "Explains the minus sign as turning maximisation into minimisation of a non-negative quantity",
+          "points": 1
+        },
+        {
+          "criterion": "Explains the division by $N$ as making the loss independent of batch size without moving the minimiser",
+          "points": 1
+        },
+        {
+          "criterion": "States the result $L = -\\frac{1}{N} \\sum_i \\log \\hat{y}_{i,c_i}$, or equivalently $\\log P = -N L$",
+          "points": 2
+        }
+      ],
+      "explanation": "Section 2.1 reads the true-class probability as the likelihood of one sample, multiplies over independent samples, and takes the logarithm to turn the product into a sum, $\\log \\prod_i \\hat{y}_{i,c_i} = -N L$. Maximising the likelihood is therefore minimising $L$. The section's numbers show why the sum is the usable form: 300 probabilities of $1/3$ multiply to $7.3 \\times 10^{-144}$, which float32 stores as 0.",
+      "hints": [
+        "Write the probability of all $N$ observed labels as one expression before taking any logarithm.",
+        "Use $\\log(ab) = \\log a + \\log b$, then decide which direction an optimiser moves."
+      ]
+    },
+    {
+      "id": "nn-008-q12",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "9",
+      "est_minutes": 15,
+      "tags": [
+        "soft-labels",
+        "one-hot-path"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "critique",
+      "prompt": "A colleague wants to train with label smoothing and passes the soft label $[0.9, 0.05, 0.05]$, with the prediction $[0.7, 0.1, 0.2]$, to `Loss_CategoricalCrossentropy.forward` unchanged, arguing that a soft label is a two-dimensional label array like a one-hot one. Compute what the class returns and what the cross-entropy $-\\sum_k y_k \\log \\hat{y}_k$ is, explain why the two agree for one-hot rows and not here, say which is larger in general, and give the one-line change that fixes the class.",
+      "answer_length": "half a page",
+      "solution": "1. **What the class computes.** The label array is two-dimensional, so the one-hot path runs: $\\sum_k y_k \\hat{y}_k = 0.9 \\cdot 0.7 + 0.05 \\cdot 0.1 + 0.05 \\cdot 0.2 = 0.645$, and the class returns $-\\ln 0.645 = 0.4385$.\n2. **The cross-entropy.** $-(0.9 \\ln 0.7 + 0.05 \\ln 0.1 + 0.05 \\ln 0.2) = 0.3210 + 0.1151 + 0.0805 = 0.5166$.\n3. **Why one-hot rows agree.** With a 1 at class $c$ and 0 elsewhere, the sum inside the logarithm is the single number $\\hat{y}_c$, and the sum of logarithms has the single term $\\log \\hat{y}_c$. Both expressions are $-\\log \\hat{y}_c$.\n4. **Why soft rows differ.** The class takes the logarithm of a weighted average of the probabilities; the cross-entropy takes the weighted average of their logarithms. The logarithm is concave, so the logarithm of an average is at least the average of the logarithms, and after negation the class's value is never larger than the cross-entropy: the shortcut under-reports the loss, here by 0.078.\n5. **Consequence.** No error is raised and the number looks plausible, so the mistake is silent; it also pays too little attention to the small probabilities on the non-target classes, which is the part label smoothing is meant to control.\n6. **The fix.** In the two-dimensional branch, return `-np.sum(y_true * np.log(y_pred_clipped), axis=1)` directly. The clip is then essential: without it a zero prediction at a class whose label is 0 gives $0 \\times (-\\infty)$, which is `nan`.",
+      "rubric": [
+        {
+          "criterion": "Computes the class's value as $-\\ln 0.645 = 0.4385$",
+          "points": 2
+        },
+        {
+          "criterion": "Computes the cross-entropy as 0.5166",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that a one-hot row leaves a single term, so the two expressions coincide",
+          "points": 1
+        },
+        {
+          "criterion": "States that the shortcut is the logarithm of an average and is never larger than the cross-entropy",
+          "points": 2
+        },
+        {
+          "criterion": "Gives the full-sum fix on clipped predictions",
+          "points": 1
+        }
+      ],
+      "explanation": "Section 9: the one-hot path computes $-\\log \\sum_k y_k \\hat{y}_k$, the logarithm of a weighted average, where the cross-entropy is a weighted average of logarithms. They coincide for every prediction only when one weight is 1 and the rest are 0. Here the class returns 0.4385 and the cross-entropy is 0.5166, the numbers printed by `snippets/pitfalls.py`.",
+      "hints": [
+        "Write out exactly what `np.sum(y_pred_clipped * y_true, axis=1)` followed by `-np.log` computes for this row.",
+        "Compare the logarithm of an average with the average of logarithms, first for a one-hot row and then for a general one."
+      ]
+    },
+    {
+      "id": "nn-008-q13",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o4",
+        "o2"
+      ],
+      "section": "8.1",
+      "est_minutes": 15,
+      "tags": [
+        "baseline",
+        "initialisation",
+        "debugging"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "connect",
+      "connects": [
+        "nn-007",
+        "nn-004",
+        "nn-006"
+      ],
+      "prompt": "Post 07's network is rebuilt for the ten-class spiral data, `spiral_data(samples=100, classes=10)`, as `Layer_Dense(2, 3)` followed by `Layer_Dense(3, 10)`, with the `0.01 * np.random.randn` initialisation of post 04. Predict the loss and the accuracy it should print before any training, to three decimals for the loss. Then a second run prints a first loss of 14.1 and raises no error. Explain why that number cannot come from a near-uniform output, name the mistake covered in this post that produces a first loss of that size, say what two other mistakes of this post would print instead (integer labels passed as an $(N, 1)$ column, and a sum in place of the mean), and say why 2.5 would also be a warning sign.",
+      "answer_length": "half a page",
+      "solution": "1. **Prediction.** Weights scaled by 0.01 make the logits tiny, so softmax returns about $1/10$ for every class (posts 04, 06 and 07). Every per-sample loss is close to $-\\log(1/10)$, so the batch loss is $\\ln 10 = 2.303$. The accuracy is about $1/10$: the predictions collapse onto very few classes, and one fixed answer on ten balanced classes is right a tenth of the time.\n2. **Why 14.1 cannot come from this output.** A mean loss $L$ corresponds to a typical true-class probability of $e^{-L}$, and $e^{-14.1}$ is about $7.5 \\times 10^{-7}$. An output within a hair of $1/10$ everywhere cannot average to that.\n3. **The mistake: logits passed to the loss.** If `dense2.output` is handed over in place of the softmax output, the clip maps every logit that is zero or negative to $10^{-7}$, a loss of 16.118, and leaves the tiny positive ones, a few times $10^{-4}$ at most, as they are, a loss of about 9 or more. Every per-sample loss then lies between about 9 and 16.118, and so does the mean, with no error. The three-class network of this post returns 14.35 that way and the ten-class one 14.10.\n4. **What the other two mistakes print.** Integer labels as an $(N, 1)$ column take the one-hot path, where each row sum becomes the label value: the 100 samples of class 0 give $-\\log(0)$, so the mean is `inf`, with a divide-by-zero warning, and the other classes give 0 or negative values. A sum in place of the mean gives about $1000 \\times 2.303 = 2303$. Neither prints 14.1.\n5. **Why 2.5 is also suspicious.** It is close to the baseline but above it, which a freshly initialised network with 0.01-scaled weights does not produce: its loss matches $\\ln 10$ to several decimals. A value of 2.5 suggests larger initial weights than intended or a subtle error, and is worth checking before training.",
+      "rubric": [
+        {
+          "criterion": "Predicts a loss of $\\ln 10 = 2.303$ from near-equal logits and a near-uniform softmax output",
+          "points": 2
+        },
+        {
+          "criterion": "Predicts an accuracy of about one tenth and relates it to balanced classes",
+          "points": 1
+        },
+        {
+          "criterion": "Shows 14.1 is inconsistent with a near-uniform output, for instance through $e^{-L}$",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies logits passed to the loss and explains the size through the clip: 16.118 for every logit that is zero or negative, about 9 or more for the tiny positive ones",
+          "points": 2
+        },
+        {
+          "criterion": "States that the label column gives a mean of `inf` and that the sum gives about 2,303, so neither prints 14.1",
+          "points": 1
+        },
+        {
+          "criterion": "Explains that a first loss should match the baseline closely, so 2.5 also deserves a check",
+          "points": 1
+        }
+      ],
+      "explanation": "Section 8.1 gives the uniform-guess loss as $\\ln K$, 2.303 for ten classes, and says a first loss far from it points at a bug. Post 04's small weights make every logit nearly equal, post 06's softmax turns equal logits into $1/K$, and the loss follows. Section 2.2 shows the size of the error when logits reach the loss: 14.35 where 1.0986 is right. Section 9 covers the label column, whose mean is `inf`, and the summed loss.",
+      "hints": [
+        "Follow the sizes of the numbers from the initial weights to the logits to the softmax output.",
+        "Convert a loss into a typical true-class probability with $e^{-L}$ and ask whether the forward pass could produce it."
+      ]
+    },
+    {
+      "id": "nn-008-q14",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "loss-class",
+        "pipeline"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`loss_fn.calculate(activation2.output, y)` is called with integer labels. Put the steps in the order the two classes of this post perform them.",
+      "items": [
+        {
+          "key": "a",
+          "text": "`Loss.calculate` calls `self.forward(output, y)`."
+        },
+        {
+          "key": "b",
+          "text": "The predictions are clipped to `[1e-7, 1 - 1e-7]`."
+        },
+        {
+          "key": "c",
+          "text": "`len(y_true.shape) == 1` selects the indexing path."
+        },
+        {
+          "key": "d",
+          "text": "`y_pred_clipped[range(samples), y_true]` picks one probability per sample."
+        },
+        {
+          "key": "e",
+          "text": "The negative logarithm of those probabilities is returned as an array of shape $(N,)$."
+        },
+        {
+          "key": "f",
+          "text": "`np.mean` reduces the array to the scalar `data_loss`."
+        }
+      ],
+      "answer": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 7: `calculate` in the base class calls `forward`, which clips the predictions, inspects the number of dimensions of the labels, extracts one probability per sample, and returns the negative logarithms; control then returns to `calculate`, which takes the mean and returns it.",
+      "hints": [
+        "The base-class method runs first and last; everything else happens inside the call it makes."
+      ]
+    },
+    {
+      "id": "nn-008-q15",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4",
+        "o3"
+      ],
+      "section": "8.1",
+      "est_minutes": 4,
+      "tags": [
+        "reference-values"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Match each situation with the per-sample categorical cross-entropy it produces.",
+      "left": [
+        {
+          "key": "a",
+          "text": "A uniform guess over 3 classes"
+        },
+        {
+          "key": "b",
+          "text": "A uniform guess over 10 classes"
+        },
+        {
+          "key": "c",
+          "text": "A probability of exactly 0 on the true class, after the clip"
+        },
+        {
+          "key": "d",
+          "text": "A probability of 0.9 on the true class"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "0.105"
+        },
+        {
+          "key": "q",
+          "text": "0.693"
+        },
+        {
+          "key": "r",
+          "text": "1.099"
+        },
+        {
+          "key": "s",
+          "text": "2.303"
+        },
+        {
+          "key": "t",
+          "text": "4.605"
+        },
+        {
+          "key": "u",
+          "text": "16.118"
+        }
+      ],
+      "answer": {
+        "a": "r",
+        "b": "s",
+        "c": "u",
+        "d": "p"
+      },
+      "explanation": "Section 8.1 gives $\\ln 3 = 1.099$ and $\\ln 10 = 2.303$ for uniform guesses, section 3 gives $-\\ln 0.9 = 0.105$, and section 6 gives $-\\ln(10^{-7}) = 16.118$ as the cap the clip imposes. The two unused values are $\\ln 100 = 4.605$ and $\\ln 2 = 0.693$, the uniform guesses over 100 and over 2 classes.",
+      "hints": [
+        "Two of the six values belong to class counts that are not in the list."
+      ]
+    },
+    {
+      "id": "nn-008-q16",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "8.1",
+      "est_minutes": 6,
+      "tags": [
+        "accuracy",
+        "baseline",
+        "predict-output"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Predict the two numbers the script prints, the accuracy and the mean loss. All ten samples have true class 0.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "import numpy as np\n\nbatch = np.vstack([np.tile([0.9, 0.05, 0.05], (9, 1)),\n                   [[1e-6, 0.5, 0.5 - 1e-6]]])\ntruth = np.zeros(10, dtype=int)\n\nprint(np.mean(np.argmax(batch, axis=1) == truth))\nprint(np.mean(-np.log(batch[range(10), truth])))"
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "accuracy",
+            "value": 0.9,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "mean loss",
+            "value": 1.476,
+            "tolerance": 0.005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "snippets/pitfalls.py, block 6, prints accuracy 0.9 and loss 1.476 for this batch; the stimulus itself prints 0.9 and 1.4763.",
+      "explanation": "Section 8.1 uses this batch. Nine rows have their largest entry at class 0 and the tenth does not, so the accuracy is 0.9. The losses are nine times $-\\ln 0.9 = 0.105$ and once $-\\ln(10^{-6}) = 13.816$, with mean $(0.948 + 13.816)/10 = 1.476$. That is above $\\ln 3 = 1.099$ although nine predictions in ten are right: a loss above the baseline does not show that the top predictions are at chance.",
+      "hints": [
+        "Count the rows whose largest entry sits at class 0.",
+        "Nine of the per-sample losses are equal; the tenth is the logarithm of a power of ten."
+      ]
+    },
+    {
+      "id": "nn-008-q17",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "5.1",
+      "est_minutes": 2,
+      "tags": [
+        "advanced-indexing"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`softmax_outputs` holds the rows `[0.7, 0.1, 0.2]`, `[0.1, 0.5, 0.4]`, and `[0.02, 0.9, 0.08]`. What does `softmax_outputs[range(3), [0, 1, 1]]` return?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`[0.7 0.1 0.1]`",
+          "correct": false,
+          "feedback": "That reads columns 0, 1, 1 of the first row only. The row index advances too: each pair is one row and one column."
+        },
+        {
+          "key": "b",
+          "text": "`[0.7 0.5 0.9]`",
+          "correct": true,
+          "feedback": "Right. The pairs are (0, 0), (1, 1) and (2, 1)."
+        },
+        {
+          "key": "c",
+          "text": "A $(3, 3)$ array holding columns 0, 1 and 1 of every row",
+          "correct": false,
+          "feedback": "That is what a slice for the rows would give, as in `softmax_outputs[:, [0, 1, 1]]`. Two index lists are paired, not combined."
+        },
+        {
+          "key": "d",
+          "text": "`[0.7 0.5 0.4]`",
+          "correct": false,
+          "feedback": "The third pair is row 2, column 1, which holds 0.9. The value 0.4 sits in row 1, column 2."
+        }
+      ],
+      "explanation": "Section 5.1: advanced indexing pairs the row indices 0, 1, 2 element-wise with the column indices 0, 1, 1, giving the entries at (0, 0), (1, 1) and (2, 1). The result is the 1-D array of probabilities on the true classes, `[0.7 0.5 0.9]`.",
+      "hints": [
+        "Pair the first list with the second, one position at a time."
+      ]
+    }
+  ]
+}

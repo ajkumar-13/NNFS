@@ -1,8 +1,25 @@
 id: nn-008
 slug: 08-loss-categorical-cross-entropy
-title: "Part 08 · Loss: categorical cross-entropy"
+title: "08 - Loss: categorical cross-entropy"
+summary: "Categorical cross-entropy scores a prediction as the negative log of the probability given to the true class. The post covers the formula, both label formats, clipping, the two loss classes, the uniform-guess baseline, and accuracy."
 date: 2026-05-28
+updated: 2026-10-05
+status: complete
+part: "Part III - Loss and optimisation"
+level: beginner
+reading_time: 22
 tags: [neural-networks, from-scratch, loss, cross-entropy, classification]
 hero: diagrams/01-cross-entropy-curve.svg
-reading_time: 12
-part: "Part III — Loss and optimisation"
+prerequisites: [nn-006, nn-007]
+code: included
+outcomes:
+  - id: o1
+    text: "Compute the categorical cross-entropy of a batch of softmax outputs against integer or one-hot labels."
+  - id: o2
+    text: "Explain in one sentence why the negative logarithm is the right function for turning a probability into a loss."
+  - id: o3
+    text: "State why predictions are clipped to [1e-7, 1 - 1e-7] before the logarithm is taken."
+  - id: o4
+    text: "Interpret a loss value using the uniform-guess baseline ln K and the accuracy reported beside it."
+recommended: [nn-005]
+compute: cpu
