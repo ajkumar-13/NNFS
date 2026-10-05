@@ -1,8 +1,24 @@
 id: nn-029
 slug: 29-validation-and-hyperparameter-tuning
-title: "Part 29 · Validation and hyperparameter tuning"
+title: "29 - Validation and hyperparameter tuning"
+summary: "The three-way split and k-fold cross-validation, measured on the spiral: what tuning on the test set does to the reported accuracy, how steady a 5-fold mean is, which settings a search can separate, and how a leak inflates a score."
 date: 2026-05-29
+updated: 2026-10-05
+status: complete
+part: "Part VII - Generalisation and regularisation"
+level: intermediate
+reading_time: 24
 tags: [neural-networks, from-scratch, validation, hyperparameters, cross-validation, generalisation]
 hero: diagrams/01-three-way-split-and-kfold.svg
-reading_time: 11
-part: "Part VII — Generalisation and regularisation"
+prerequisites: [nn-028]
+code: included
+outcomes:
+  - id: o1
+    text: "State why the test set is touched exactly once and what reusing it for tuning does to the reported number."
+  - id: o2
+    text: "Implement k_fold_split in NumPy so that every sample is validated exactly once."
+  - id: o3
+    text: "Compare hyperparameter candidates by their k-fold scores and read the result against its spread."
+  - id: o4
+    text: "Recognise the common forms of data leakage and state the preprocessing rules that prevent them."
+compute: cpu

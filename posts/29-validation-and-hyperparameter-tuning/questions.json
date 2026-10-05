@@ -1,0 +1,814 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-029",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-029-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "three-way-split"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the three-way split, what is the validation set used for?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Computing the gradients that update the weights and biases.",
+          "correct": false,
+          "feedback": "That is the training set. Validation data is only ever run forward; it never feeds a backward pass."
+        },
+        {
+          "key": "b",
+          "text": "Comparing hyperparameter candidates and choosing among them.",
+          "correct": true,
+          "feedback": "Each candidate is trained on the training set and scored on the validation set, and the best score decides."
+        },
+        {
+          "key": "c",
+          "text": "Producing the one accuracy that is reported at the end.",
+          "correct": false,
+          "feedback": "That is the test set. A validation score has taken part in the choice, so it cannot also be the report."
+        },
+        {
+          "key": "d",
+          "text": "Drawing the initial values of the weights.",
+          "correct": false,
+          "feedback": "The initial weights come from a random draw and involve no data at all."
+        }
+      ],
+      "explanation": "Section 2: the weights are learned from the training set, the hyperparameters are chosen by comparing validation scores, and the test set gives one final report after every decision is frozen.",
+      "hints": [
+        "Each of the three slices answers a different question; this one answers \"which setting?\"."
+      ]
+    },
+    {
+      "id": "nn-029-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "k-fold"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A dataset of 300 samples is scored by 5-fold cross-validation with a correct split. Over the five runs, how often does a given sample serve as validation data, and how often as training data?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Once as validation data and four times as training data.",
+          "correct": true,
+          "feedback": "The sample lies in exactly one fold. That fold is the validation slot in one run and part of the training data in the other four."
+        },
+        {
+          "key": "b",
+          "text": "Five times as validation data and never as training data.",
+          "correct": false,
+          "feedback": "That would describe a held-out test sample. In k-fold every sample trains in all runs but one."
+        },
+        {
+          "key": "c",
+          "text": "Once as validation data and five times as training data.",
+          "correct": false,
+          "feedback": "In the run in which its fold is the validation slot the sample is not trained on, otherwise the score would not be a held-out score."
+        },
+        {
+          "key": "d",
+          "text": "A random number of times, because the folds are drawn by a shuffle.",
+          "correct": false,
+          "feedback": "The shuffle decides which fold a sample lands in, and it happens once. After that the counts are fixed."
+        }
+      ],
+      "explanation": "Section 3: the data is shuffled once and cut into five folds, and each fold is the validation slot in exactly one of the five runs. Every sample is therefore validated once, by a model that did not train on it, and trained on four times.",
+      "hints": [
+        "Count the runs in which the sample's own fold is held out."
+      ]
+    },
+    {
+      "id": "nn-029-q03",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "leakage"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A team has 2,000 labelled rows. Which of the following procedures leak information from held-out data into training or model choice? Select every one that does.",
+      "select": "multiple",
+      "options": [
+        {
+          "key": "a",
+          "text": "The features are standardised with the mean and standard deviation of all 2,000 rows, and the rows are then split into training, validation and test parts.",
+          "correct": true,
+          "feedback": "The statistics were estimated with the validation and test rows included. They belong to the training part alone."
+        },
+        {
+          "key": "b",
+          "text": "The rows are split first; the 50 features that correlate best with the label are then chosen on the training part and the same 50 columns are kept in the validation and test parts.",
+          "correct": false,
+          "feedback": "This is the correct order: the selection is fitted on the training part and only applied to the other two."
+        },
+        {
+          "key": "c",
+          "text": "Three dropout rates are trained, the one with the best test accuracy is kept, and that test accuracy is reported.",
+          "correct": true,
+          "feedback": "The test set has influenced a model choice, so it has become a validation set and its number is biased upward."
+        },
+        {
+          "key": "d",
+          "text": "Inside each fold of a 5-fold loop a vocabulary is built from that fold's training rows and applied to its validation rows.",
+          "correct": false,
+          "feedback": "Refitting the preprocessor inside the loop on each fold's training part is exactly the rule for k-fold."
+        },
+        {
+          "key": "e",
+          "text": "In a model that forecasts tomorrow's demand, one feature is a seven-day average centred on the day being forecast.",
+          "correct": true,
+          "feedback": "A centred average includes the three days after the forecast day. That is a look-ahead feature and cannot exist when the model is used."
+        }
+      ],
+      "explanation": "Section 6: leakage is any path by which validation or test data influences training or model choice. Fitting a preprocessing step on all rows, tuning on the test set and a look-ahead feature are such paths. Fitting on the training part and applying the result elsewhere, also inside each fold, is the rule that prevents the first of them.",
+      "hints": [
+        "For each procedure ask: has anything been estimated, chosen or computed with rows that are meant to be held out, or with values from the future?"
+      ]
+    },
+    {
+      "id": "nn-029-q04",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 4,
+      "tags": [
+        "spread",
+        "ranking"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A 5-fold comparison on 300 samples gives learning rate A a mean validation accuracy of 0.770 and learning rate B a mean of 0.773. For each of them the five fold accuracies have a standard deviation of about 0.05. A second seed, with new data, puts A ahead by 0.02. What is the sound conclusion?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "B is the better learning rate, because its mean is higher on the first seed.",
+          "correct": false,
+          "feedback": "The lead of 0.003 is one validation sample out of 300 and far inside the spread across folds, and the second seed reverses it."
+        },
+        {
+          "key": "b",
+          "text": "A is the better learning rate, because the second seed shows the larger lead.",
+          "correct": false,
+          "feedback": "A lead of 0.02 is still smaller than the spread across folds, and the two seeds disagree. One of two contradictory runs is not evidence."
+        },
+        {
+          "key": "c",
+          "text": "The runs do not separate A and B; either may be used, and the report should say so.",
+          "correct": true,
+          "feedback": "Both leads are smaller than the spread across folds and they point in opposite directions, so the data does not distinguish the two settings."
+        },
+        {
+          "key": "d",
+          "text": "The cross-validation is faulty, because a correct one gives the same ranking on every seed.",
+          "correct": false,
+          "feedback": "A correct k-fold is still a noisy measurement. Rankings of close candidates are expected to change between seeds."
+        }
+      ],
+      "explanation": "Section 5: a lead has to be read against the spread across folds and across seeds. A difference of 0.003 is a single validation sample out of 300, while fold accuracies of one candidate differ by about 0.05, and a second seed that reverses the order confirms that the comparison is inside the noise. The honest result is that the two settings are not separated.",
+      "hints": [
+        "Convert the lead of 0.003 into a number of validation samples.",
+        "Compare each lead with the standard deviation across folds, then compare the two seeds with each other."
+      ]
+    },
+    {
+      "id": "nn-029-q05",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "test-set"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A model's test accuracy disappoints, so the learning rate is changed and the model is tested again on the same test set. In the vocabulary of the three-way split, what role is that test set now playing?",
+      "answer": {
+        "model": "It has become a second validation set: it is now used for choosing a hyperparameter.",
+        "accept": [
+          "^(?![\\s\\S]*(?:\\b(?:not|cannot|never|neither|nor|no|rather than|instead of|different from)\\b|n't)(?:(?!\\btest)[^.;,]){0,40}\\bvalidation)(?![\\s\\S]*\\b(?:still|stays?|remains?)\\s+(?:a |an |the )?(?:\\w+ )?test\\b)(?![\\s\\S]*\\b(?:unaffected|unchanged)\\b)(?![\\s\\S]*\\btraining\\b)[\\s\\S]*\\bvalidation\\b"
+        ]
+      },
+      "explanation": "Section 2: the moment a test number leads to a change of the model, the test set has been used for tuning. A set that hyperparameters are chosen on is a validation set, whatever it was called before, and its accuracy for the chosen setting is biased upward.",
+      "hints": [
+        "Name the slice whose job is choosing between settings."
+      ]
+    },
+    {
+      "id": "nn-029-q06",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "reproducibility"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The post's `k_fold_split` shuffles the indices with `np.random.default_rng(seed)` and a fixed default seed. In one or two sentences: what does a fixed split seed guarantee when several hyperparameter candidates are compared?",
+      "answer": {
+        "model": "Every candidate is scored on the same folds, so a difference between two candidates cannot come from one of them having received easier folds.",
+        "accept": [
+          "^(?=[\\s\\S]*(?:\\b(?:same|identical)(?:\\s+[\\w/-]+){0,3}?\\s+(?:folds?|splits?|partitions?|shuffles?|validation (?:sets?|parts?|data|samples|rows|points))\\b|\\b(?:folds?|splits?|partitions?|shuffles?)\\b[^.;,]{0,30}\\b(?:is|are|stays?|remains?|being)\\s+(?:exactly\\s+|always\\s+)?(?:the\\s+)?(?:same|identical)\\b))(?![\\s\\S]*(?:\\b(?:not|never|no)\\b|n't)[^.;,]{0,25}\\b(?:same|identical)\\b)(?![\\s\\S]*\\b(?:same|identical)\\s+(?:validation\\s+)?(?:accurac|scores?\\b|results?\\b|weights\\b))(?![\\s\\S]*\\baccurac\\w+\\s+identical\\b)"
+        ]
+      },
+      "explanation": "Section 4: the shuffle has its own generator and a fixed seed, so a second call returns the same folds. All candidates are then scored on identical folds, and a difference between them cannot be an effect of the split. Sections 3 and 10 give the size of what is lost otherwise: the shuffle alone moved one setting's 5-fold mean between 0.723 and 0.800.",
+      "hints": [
+        "Think of two candidates that are scored on two different shuffles.",
+        "Say what is equal for all candidates when the seed is fixed."
+      ]
+    },
+    {
+      "id": "nn-029-q07",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 4,
+      "tags": [
+        "array-split"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The post's `k_fold_indices` is called as below. Give the size of the largest validation fold, the size of the smallest validation fold, and the size of the training part that goes with the smallest validation fold.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "folds = list(k_fold_indices(103, k=5))\nprint([len(val_idx) for train_idx, val_idx in folds])\nprint([len(train_idx) for train_idx, val_idx in folds])"
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "largest validation fold",
+            "value": 21,
+            "tolerance": 0,
+            "unit": "samples"
+          },
+          {
+            "label": "smallest validation fold",
+            "value": 20,
+            "tolerance": 0,
+            "unit": "samples"
+          },
+          {
+            "label": "training part beside the smallest validation fold",
+            "value": 83,
+            "tolerance": 0,
+            "unit": "samples"
+          }
+        ]
+      },
+      "precision_note": "np.array_split(idx, 5) on 103 indices gives sizes [21, 21, 21, 20, 20]; confirmed by running k_fold_indices of snippets/kfold.py, which prints validation sizes [21, 21, 21, 20, 20] and training sizes [82, 82, 82, 83, 83].",
+      "explanation": "Section 4: `np.array_split` gives the first $N \\bmod k$ folds one sample more. $103 = 5 \\cdot 20 + 3$, so three folds have 21 samples and two have 20. The training part is everything else: $103 - 20 = 83$ beside a fold of 20.",
+      "hints": [
+        "Divide 103 by 5 and look at the remainder.",
+        "Training and validation parts of one fold add up to all 103 samples."
+      ]
+    },
+    {
+      "id": "nn-029-q08",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 5,
+      "tags": [
+        "noise",
+        "standard-error"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A model has a true accuracy of 0.90 on unseen data. Using the formula the post uses for the noise of a measured accuracy, give the standard deviation of its measured accuracy on a test set of 400 points and on a test set of 100 points.",
+      "answer": {
+        "parts": [
+          {
+            "label": "400 points",
+            "value": 0.015,
+            "tolerance": 0.0006,
+            "unit": ""
+          },
+          {
+            "label": "100 points",
+            "value": 0.03,
+            "tolerance": 0.0012,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 2: sqrt(p (1 - p) / n) with p = 0.9: sqrt(0.09 / 400) = 0.015 and sqrt(0.09 / 100) = 0.030. The tolerance accepts a correct rounding and rejects the variance (0.000225, 0.0009) and the form without the square root of n.",
+      "explanation": "Section 2: an accuracy measured on $n$ points scatters around the true accuracy $p$ with standard deviation $\\sqrt{p(1-p)/n}$. With $p = 0.9$: $\\sqrt{0.09/400} = 0.015$ and $\\sqrt{0.09/100} = 0.030$. A test set four times smaller is twice as noisy, which is why choosing by test accuracy inflated the report more on 60 points than on 300.",
+      "hints": [
+        "The post computes the same quantity for a true accuracy of 0.8 on 300 points.",
+        "The formula is $\\sqrt{p(1-p)/n}$."
+      ]
+    },
+    {
+      "id": "nn-029-q09",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "8",
+      "est_minutes": 5,
+      "tags": [
+        "grid-search",
+        "cost"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A grid search takes 4 learning rates, 3 hidden widths and 2 decay values, and scores every combination by 5-fold cross-validation. The winner is then retrained once on all the training data and evaluated once on the test set. Give the number of candidates and the total number of trainings.",
+      "answer": {
+        "parts": [
+          {
+            "label": "candidates",
+            "value": 24,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "trainings",
+            "value": 121,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 8: 4 * 3 * 2 = 24 candidates, 24 * 5 = 120 fold trainings, plus 1 final training = 121. The test evaluation is a forward pass and not a training.",
+      "explanation": "Section 8: a grid scores every combination, so the candidates multiply: $4 \\cdot 3 \\cdot 2 = 24$. Each needs 5 trainings, one per fold, which gives 120, and the retraining of the winner on all the training data adds one. The evaluation on the test set is forward only.",
+      "hints": [
+        "The numbers of values multiply; they do not add.",
+        "Each candidate costs one training per fold, and the winner is trained once more."
+      ]
+    },
+    {
+      "id": "nn-029-q10",
+      "type": "numeric",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6",
+      "est_minutes": 6,
+      "tags": [
+        "leakage",
+        "duplicates"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A classifier is right on 70 percent of rows it has never seen and, because it memorises its training data, right on every row it was trained on. By mistake, 10 percent of the rows of the test set are copies of training rows. Give the accuracy the test set is expected to report, and the amount by which that overstates the accuracy on unseen rows.",
+      "answer": {
+        "parts": [
+          {
+            "label": "expected reported accuracy",
+            "value": 0.73,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "overstatement",
+            "value": 0.03,
+            "tolerance": 0.001,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form: 0.10 * 1.0 + 0.90 * 0.70 = 0.73, and 0.73 - 0.70 = 0.03.",
+      "explanation": "Section 6 defines leakage as any path by which held-out data influences training. A row that sits in both the training set and the test set is such a path, because the held-out score then partly measures memory. Here a tenth of the test rows are answered from memory and the rest at the true rate: $0.1 \\cdot 1 + 0.9 \\cdot 0.7 = 0.73$, which is 0.03 above the 0.70 that the model reaches on unseen rows.",
+      "hints": [
+        "Split the test set into the copied rows and the rest.",
+        "Weight the two accuracies by the shares 0.1 and 0.9."
+      ]
+    },
+    {
+      "id": "nn-029-q11",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "8",
+      "est_minutes": 4,
+      "tags": [
+        "protocol"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Put the steps of a hyperparameter search with k-fold cross-validation and a held-out test set in the order in which they are carried out.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Retrain the winning setting on all the data that is not in the test set."
+        },
+        {
+          "key": "b",
+          "text": "Set the test set aside."
+        },
+        {
+          "key": "c",
+          "text": "Evaluate the final model on the test set and report that number."
+        },
+        {
+          "key": "d",
+          "text": "Train and score every candidate on each of the folds."
+        },
+        {
+          "key": "e",
+          "text": "Shuffle the remaining data once and cut it into the folds."
+        },
+        {
+          "key": "f",
+          "text": "Choose the candidate with the best mean validation score."
+        }
+      ],
+      "answer": [
+        "b",
+        "e",
+        "d",
+        "f",
+        "a",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "Sections 2 and 8: the test set leaves first, so that nothing later can touch it. The folds are fixed before any candidate is scored, so that all candidates meet the same folds. The mean scores decide the winner, the winner is retrained on everything outside the test set, and only then is the test set opened, once.",
+      "hints": [
+        "Whatever must stay untouched until the end has to be removed at the start.",
+        "The folds must exist before a candidate can be scored on them."
+      ]
+    },
+    {
+      "id": "nn-029-q12",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "leakage"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Match each situation to the rule that prevents the leak in it.",
+      "left": [
+        {
+          "key": "a",
+          "text": "A scaler's mean and standard deviation are computed from all rows before the split."
+        },
+        {
+          "key": "b",
+          "text": "Daily sales records are shuffled, and a random 20 percent of the days becomes the test set."
+        },
+        {
+          "key": "c",
+          "text": "A feature \"refund issued\" is used to predict whether an order will be returned."
+        },
+        {
+          "key": "d",
+          "text": "The weight-penalty strength with the best test accuracy is kept and that accuracy is reported."
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "Choose on validation data and open the test set once, after the choice."
+        },
+        {
+          "key": "q",
+          "text": "Split by time: train on the past, test on the future."
+        },
+        {
+          "key": "r",
+          "text": "Fit the preprocessing step on the training part only, then apply it to the other parts."
+        },
+        {
+          "key": "s",
+          "text": "Remove features that only exist once the outcome is known."
+        },
+        {
+          "key": "t",
+          "text": "Use a larger number of folds."
+        },
+        {
+          "key": "u",
+          "text": "Train for more epochs."
+        }
+      ],
+      "answer": {
+        "a": "r",
+        "b": "q",
+        "c": "s",
+        "d": "p"
+      },
+      "explanation": "Section 6: a preprocessing step is fitted on the training part alone; sequential data is split by time, because a shuffled split lets the model train on days after the ones it is tested on; a feature that exists only after the outcome stands in for the label; and section 2 gives the rule for the last case. More folds or more epochs prevent no leak.",
+      "hints": [
+        "For each situation, name what the model learns from that it could not have at the moment of use."
+      ]
+    },
+    {
+      "id": "nn-029-q13",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "10",
+      "est_minutes": 15,
+      "tags": [
+        "fix",
+        "k-fold"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The function below is meant to yield, for each of $k$ folds, the training and validation indices of a k-fold split, with every sample validated exactly once. It is correct for 300 samples and $k = 5$ and wrong for 300 samples and $k = 7$. Fix it. Keep the single shuffle with `np.random.default_rng(seed)`, so that the same seed gives the same folds and NumPy's global random stream is not touched; fold sizes may differ by at most one.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "import numpy as np\n\n\ndef k_fold_indices(n, k=5, seed=0):\n    \"\"\"Yield (train_idx, val_idx) for each of the k folds of n samples.\"\"\"\n    idx = np.arange(n)\n    np.random.default_rng(seed).shuffle(idx)\n\n    fold_size = n // k\n    for i in range(k):\n        val_idx = idx[i * fold_size:(i + 1) * fold_size]\n        train_idx = np.concatenate([idx[:i * fold_size], idx[(i + 1) * fold_size:]])\n        yield train_idx, val_idx\n",
+      "solution": "import numpy as np\n\n\ndef k_fold_indices(n, k=5, seed=0):\n    \"\"\"Yield (train_idx, val_idx) for each of the k folds of n samples.\"\"\"\n    idx = np.arange(n)\n    np.random.default_rng(seed).shuffle(idx)\n\n    folds = np.array_split(idx, k)          # sizes differ by at most one\n    for i in range(k):\n        val_idx = folds[i]\n        train_idx = np.concatenate([folds[j] for j in range(k) if j != i])\n        yield train_idx, val_idx\n",
+      "tests": "import numpy as np\n\nfor n, k in ((300, 5), (300, 7), (23, 4), (10, 3), (7, 7)):\n    folds = [(np.asarray(t), np.asarray(v)) for t, v in k_fold_indices(n, k)]\n    assert len(folds) == k, f\"n={n}, k={k}: expected {k} folds, got {len(folds)}\"\n    validated = np.concatenate([v for t, v in folds])\n    counts = np.bincount(validated, minlength=n)\n    assert len(counts) == n and np.all(counts == 1), \\\n        f\"n={n}, k={k}: every sample must be validated exactly once; {int(np.sum(counts != 1))} are not\"\n    sizes = [len(v) for t, v in folds]\n    assert max(sizes) - min(sizes) <= 1, f\"n={n}, k={k}: fold sizes {sizes} differ by more than one\"\n    for t, v in folds:\n        assert len(np.intersect1d(t, v)) == 0, f\"n={n}, k={k}: a sample is in training and validation at once\"\n        assert len(t) + len(v) == n and len(np.unique(np.concatenate([t, v]))) == n, \\\n            f\"n={n}, k={k}: training and validation parts must together hold every sample once\"\n\nfirst = [v for t, v in k_fold_indices(300, 5, seed=0)]\nagain = [v for t, v in k_fold_indices(300, 5, seed=0)]\nother = [v for t, v in k_fold_indices(300, 5, seed=1)]\nassert all(np.array_equal(a, b) for a, b in zip(first, again)), \"the same seed must give the same folds\"\nassert not all(np.array_equal(a, b) for a, b in zip(first, other)), \"another seed must give other folds\"\nassert not np.array_equal(np.sort(first[0]), np.arange(60)), \"the indices must be shuffled before the cut\"\n\nstate = np.random.get_state()[1].copy()\nlist(k_fold_indices(300, 7))\nassert np.array_equal(state, np.random.get_state()[1]), \"the global random stream must stay untouched\"\nprint(\"all checks passed\")\n",
+      "expected_output": "all checks passed",
+      "explanation": "Section 10: a fold size of `n // k` drops the remainder, so with 300 samples and $k = 7$ six samples are never validated and sit in every training part. Section 4 cuts the shuffled index array with `np.array_split`, which gives the first $N \\bmod k$ folds one sample more, and builds each training part from the other folds, so the folds partition the data for every $N$ and $k$.",
+      "hints": [
+        "Count how many samples the $k$ validation slices cover when $k$ does not divide $n$.",
+        "Cut the shuffled index array into $k$ parts whose sizes may differ by one, and take the training indices from the other parts."
+      ]
+    },
+    {
+      "id": "nn-029-q14",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "10",
+      "est_minutes": 3,
+      "tags": [
+        "shuffle"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`spiral_data(samples=100, classes=3)` returns 300 samples sorted by class. A 5-fold split is made with no shuffle. What do the validation folds look like, and what happens to the score?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Each fold holds 20 samples of every class, and the score is unaffected.",
+          "correct": false,
+          "feedback": "That is what stratification would give. Consecutive slices of sorted data hold one or two classes each."
+        },
+        {
+          "key": "b",
+          "text": "Each fold holds only one or two classes, and the accuracy collapses.",
+          "correct": true,
+          "feedback": "The first fold is 60 samples of class 0, the second 40 of class 0 and 20 of class 1, and so on. The post measures a mean accuracy of 0.120 against 0.770 with the shuffle."
+        },
+        {
+          "key": "c",
+          "text": "The folds overlap, so some samples are validated twice and the score is too high.",
+          "correct": false,
+          "feedback": "Consecutive slices of one index array cannot overlap, shuffled or not. The partition is intact; its content is the problem."
+        },
+        {
+          "key": "d",
+          "text": "NumPy raises an error, because a fold without all three classes cannot be scored.",
+          "correct": false,
+          "feedback": "Nothing is raised. Accuracy is computed for any set of labels, which is why this mistake goes unnoticed."
+        }
+      ],
+      "explanation": "Section 10: without the shuffle the folds are consecutive slices of class-sorted data, with class counts such as 60, 0, 0. Each validation fold is a stretch of one or two spiral arms that is missing from the training data, and the setting that scores 0.770 on shuffled folds scores 0.120. No error is raised.",
+      "hints": [
+        "Write down which sample numbers the first fold of 60 contains, and which class they have."
+      ]
+    },
+    {
+      "id": "nn-029-q15",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "preprocessing",
+        "k-fold"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A feature standardiser is to be used together with 5-fold cross-validation. On which rows is its mean and standard deviation fitted, and how many times is it fitted in one 5-fold run of one candidate?",
+      "answer": {
+        "model": "On the training rows of each fold only, so it is fitted five times, once inside each pass of the fold loop, and then applied to that fold's validation rows.",
+        "accept": [
+          "^(?=[\\s\\S]*(?:\\b(?:on|from|using|with|of)\\s+(?:(?:only|just|the|each|every|its|that|all|full|whole|own|fold's|folds'|four|4|other|remaining|\\d+)\\s+){0,4}train(?:ing)?\\b|^\\W*(?:(?:only|just|the|each|every|its|full|four|4|other|fold's|folds')\\s+){0,3}train(?:ing)?\\b))(?=[\\s\\S]*(?:\\b(?:five|5)\\b(?!\\s*-?\\s*fold)|\\b(?:each|every|per)\\s+(?:fold|pass|iteration|split)\\b|\\binside\\s+(?:the\\s+)?(?:fold\\s+)?loop))(?![\\s\\S]*(?<!not )(?<!never )(?<!than )(?<!nor )\\b(?:on|from|using)\\s+(?:(?:the|each|every|its|that|all|fold's)\\s+){0,3}(?:validation|test|held[- ]out)\\b)(?![\\s\\S]*(?<!not on )(?<!never on )(?<!than on )(?<!than )(?<!not )\\b(?:all|whole|entire|full)\\s+(?:(?:the|of|\\d+)\\s+){0,2}(?:data(?:\\s?set)?|rows|samples|points|folds)\\b)(?![\\s\\S]*\\b(?:once|one time|a single time)\\b(?!\\s+(?:per|in each|in every|for each|for every|inside|on each|on every|within each)))(?![\\s\\S]*\\btraining and (?:the )?validation rows together)(?![\\s\\S]*(?:\\b(?:not|never)\\b|n't)[^.;,]{0,20}\\btrain)"
+        ]
+      },
+      "explanation": "Section 6: every preprocessor is fitted on the training part only, and in k-fold that means inside the loop, on each fold's training part. A 5-fold run therefore fits the standardiser five times, and each fitted version is applied unchanged to its own fold's validation rows.",
+      "hints": [
+        "A step fitted before the loop has seen every fold's validation rows.",
+        "Count the passes of the fold loop."
+      ]
+    },
+    {
+      "id": "nn-029-q16",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "3",
+      "est_minutes": 12,
+      "tags": [
+        "steadiness",
+        "variance"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The post reshuffles one dataset of 300 points eight times and finds that a single validation split of 60 gives accuracies with a standard deviation of 0.064, while the 5-fold mean has a standard deviation of 0.025. Explain (a) what factor independent fold accuracies would give, how the measured factor compares with it, and why the folds are not independent, and (b) which source of uncertainty about the model's accuracy on unseen data this measurement leaves out.",
+      "kind": "explain",
+      "solution": "(a) The mean of five independent numbers with a common standard deviation $\\sigma$ has standard deviation $\\sigma/\\sqrt{5}$, a reduction by $\\sqrt{5} \\approx 2.24$. With $\\sigma = 0.064$ that would give about 0.029. The five fold accuracies are not independent: any two of the five models share three of their four training folds, and the five validation folds together are exactly the 300 points, so a fold that happens to receive the easy points leaves the harder ones to the other four. The factor therefore has to be measured, and the measured one is $0.064 / 0.025 \\approx 2.6$, itself a rough figure because it rests on eight means.\n\n(b) All eight 5-fold means are computed on the same 300 points. The measurement varies only the shuffle, so it shows how much of the score is an accident of the partition. It says nothing about the accident of having drawn these 300 points and not another 300 from the same source: a different dataset would give a different mean, and no reshuffling of one dataset can reveal or remove that. Nor does it vary the initial weights, which were held fixed. The spread of 0.025 is therefore a lower bound on the uncertainty of the score as an estimate of accuracy on unseen data.",
+      "rubric": [
+        {
+          "criterion": "States that averaging five independent values shrinks the standard deviation by $\\sqrt{5} \\approx 2.24$",
+          "points": 1
+        },
+        {
+          "criterion": "Gives a reason why the fold accuracies are dependent: shared training data, or validation folds that together form one fixed dataset",
+          "points": 2
+        },
+        {
+          "criterion": "Compares with the measured ratio of about 2.6",
+          "points": 1
+        },
+        {
+          "criterion": "Identifies that only the shuffle was varied, so the luck of the particular 300 points is not included",
+          "points": 2
+        },
+        {
+          "criterion": "Concludes that the measured spread understates the full uncertainty of the score",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 3: independence would give a factor of $\\sqrt{5}$, the folds share training data and partition one fixed dataset, and the measured factor of 2.59 counts only the noise of the shuffle. All eight means are scored on the same 300 points, so the luck of that draw stays in every one of them.",
+      "hints": [
+        "Start from the standard deviation of a mean of independent values.",
+        "List what changed between the eight runs, and then what stayed the same in all of them."
+      ]
+    },
+    {
+      "id": "nn-029-q17",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o3",
+        "o1"
+      ],
+      "section": "7",
+      "est_minutes": 15,
+      "tags": [
+        "critique",
+        "reporting"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A report reads: \"Twelve settings were compared by 5-fold cross-validation on 300 training points, one seed. Setting 7 won with a mean validation accuracy of 0.812, against 0.806 for the runner-up; the standard deviation across folds was about 0.05. Setting 7 therefore reaches an accuracy of 81.2 percent, and it is clearly the best setting.\" Critique the two claims of the last sentence, and say what the authors should have done and reported instead.",
+      "kind": "critique",
+      "solution": "**The claim \"clearly the best\".** The lead is 0.006, which is about two validation samples out of 300, while the fold accuracies of one setting scatter with a standard deviation of about 0.05. A lead that small is inside the noise of the measurement. The comparison was also run on one seed only; the post's own search shows the order of close candidates changing from seed to seed. The sound statement is that settings 7 and the runner-up are not separated by this data. What the search can establish is which settings are far behind.\n\n**The claim \"reaches 81.2 percent\".** The number 0.812 is the highest of twelve noisy means, and it was used to make the choice. The highest of several noisy scores is biased upward, for the same reason that the best of several test accuracies is: the choice favours the setting whose noise happened to be favourable. In the other direction, a k-fold score describes models trained on four fifths of the data, and the final model, trained on all of it, is usually a little better. The two biases pull in opposite directions and neither is known, so the winner's k-fold mean is a tool for choosing and is not an estimate to report.\n\n**What to do instead.** Set a test set aside before the search. Run the search with fixed folds, preferably for several seeds, and report the means with their spread. Choose a setting, retrain it on all the training data, and evaluate that one model on the test set, once. Report that test accuracy as the accuracy, and report the comparison as a tie between the leading settings. If the test number disappoints, the search is not reopened on the same test set.",
+      "rubric": [
+        {
+          "criterion": "Compares the lead of 0.006 with the spread across folds and concludes that the two leading settings are not separated",
+          "points": 2
+        },
+        {
+          "criterion": "Notes that one seed is not enough to rank close candidates",
+          "points": 1
+        },
+        {
+          "criterion": "Explains that the winner's score is the highest of several noisy scores and is therefore biased upward",
+          "points": 2
+        },
+        {
+          "criterion": "Mentions that the k-fold score describes models trained on less data than the final model",
+          "points": 1
+        },
+        {
+          "criterion": "Prescribes a held-out test set, opened once after the choice, as the source of the reported accuracy",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Sections 5 and 7: a lead smaller than the spread across folds and seeds is reported as a tie, and the winner's k-fold score is itself a selected number, biased upward by the selection and downward by the smaller training sets. Section 8 gives the remedy: retrain the winner and report the one test accuracy measured afterwards.",
+      "hints": [
+        "Express the lead of 0.006 as a number of validation samples and set it beside the standard deviation across folds.",
+        "Ask what role the number 0.812 played in the search, and what section 2 says about a number in that role.",
+        "Name the measurement that is missing from the report altogether."
+      ]
+    },
+    {
+      "id": "nn-029-q18",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o1",
+        "o4"
+      ],
+      "section": "2",
+      "est_minutes": 15,
+      "tags": [
+        "early-stopping",
+        "test-set"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Post 28 evaluates the trained spiral classifier on fresh data with a forward-only pass and reads the gap between training and test accuracy. Suppose that pass is run on the test set after every 100 epochs, training is stopped at the epoch with the highest test accuracy, and that highest value is reported as the model's test accuracy. Using this post, explain what is wrong with the reported number, in which direction it is off and what makes the error larger, and redesign the procedure so that the stopping epoch can still be chosen from held-out data.",
+      "kind": "connect",
+      "connects": [
+        "nn-028"
+      ],
+      "solution": "**What is wrong.** The number of epochs is a hyperparameter, and the procedure chooses it by test accuracy. Each of the evaluated epochs is one candidate, so with, say, 10,000 epochs there are 100 candidates, and the reported number is the highest of 100 test accuracies. The test set has been used for tuning, which makes it a validation set, and the choice itself is a leak in the sense of this post: test data has influenced a model choice.\n\n**Direction and size.** Every measured accuracy is the true accuracy at that epoch plus the noise of the particular test points, about $\\sqrt{p(1-p)/n}$. Taking the maximum picks, in part, the epoch at which the noise was most favourable, so the reported number is too high on average. The post measured an average inflation of up to 1.8 percentage points on test sets of 300 points and up to 5.0 on test sets of 60, for eight candidates. The error grows when the test set is small, when many epochs are compared, and when the accuracies at the compared epochs are close together, which they are late in training, where the curve is nearly flat.\n\n**Redesign.** Keep three sets. Train on the training set; run the forward-only pass of post 28 on a validation set every 100 epochs and choose the stopping epoch there; then evaluate the model of that epoch on the test set, once, and report that accuracy together with the gap to the training accuracy. With as few as 300 points, the stopping epoch can be chosen by k-fold cross-validation on the training data instead of a single validation slice. If the test number disappoints, the choice is not repeated on the same test set.",
+      "rubric": [
+        {
+          "criterion": "Identifies the stopping epoch as a hyperparameter that is being chosen on the test set",
+          "points": 2
+        },
+        {
+          "criterion": "States that the reported maximum is biased upward and explains it by the choice favouring favourable noise",
+          "points": 2
+        },
+        {
+          "criterion": "Names at least two things that enlarge the bias: a small test set, many compared epochs, closely spaced accuracies",
+          "points": 2
+        },
+        {
+          "criterion": "Redesigns with a validation set (or k-fold) for choosing the epoch and a test set that is evaluated once afterwards",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 2: a number that helped to choose cannot serve as the report, and the best of several test accuracies is too high on average, the more so the smaller the test set and the closer the candidates. The stopping epoch is a hyperparameter like any other (Common pitfalls), so it is chosen on validation data and the test set is opened once afterwards, with the forward-only pass of post 28.",
+      "hints": [
+        "Decide whether the number of epochs is a parameter or a hyperparameter.",
+        "Count how many test accuracies the reported one was picked from.",
+        "Assign each of the two jobs, choosing the epoch and reporting the accuracy, to its own set."
+      ]
+    }
+  ]
+}
