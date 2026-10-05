@@ -1,0 +1,961 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-006",
+  "next_ordinal": 21,
+  "questions": [
+    {
+      "id": "nn-006-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 2,
+      "tags": [
+        "linear-collapse",
+        "depth"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Two `Layer_Dense` objects are stacked with nothing between them: the output of the first is passed straight to the second. Which statement about the function this stack computes is correct?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It can follow curved class boundaries, because two layers hold more parameters than one.",
+          "correct": false,
+          "feedback": "Counting parameters misleads here. The small network of section 1.1 has 10 parameters and still computes the straight line $x - 2$; without a non-linearity the extra parameters are redundant."
+        },
+        {
+          "key": "b",
+          "text": "It is the function of one dense layer, with weight $\\mathbf{W}_1 \\mathbf{W}_2$ and bias $\\mathbf{b}_1 \\mathbf{W}_2 + \\mathbf{b}_2$.",
+          "correct": true,
+          "feedback": "Right. Multiplying out $(\\mathbf{X}\\mathbf{W}_1 + \\mathbf{b}_1)\\mathbf{W}_2 + \\mathbf{b}_2$ leaves one matrix and one bias row, so the second layer adds parameters and no new capability."
+        },
+        {
+          "key": "c",
+          "text": "It becomes non-linear once the first layer has enough neurons.",
+          "correct": false,
+          "feedback": "Width does not help. However many neurons the first layer has, its output is multiplied by $\\mathbf{W}_2$, and the product $\\mathbf{W}_1 \\mathbf{W}_2$ is still one matrix."
+        },
+        {
+          "key": "d",
+          "text": "It is linear only while both bias rows are zero; non-zero biases make it non-linear.",
+          "correct": false,
+          "feedback": "The biases merge as well: $\\mathbf{b}_1 \\mathbf{W}_2 + \\mathbf{b}_2$ is one constant row. A bias shifts the output and never bends it."
+        }
+      ],
+      "explanation": "Section 1 expands the two-layer forward pass $(\\mathbf{X}\\mathbf{W}_1 + \\mathbf{b}_1)\\mathbf{W}_2 + \\mathbf{b}_2$ into $\\mathbf{X}(\\mathbf{W}_1 \\mathbf{W}_2) + (\\mathbf{b}_1 \\mathbf{W}_2 + \\mathbf{b}_2)$, which is the formula of a single dense layer. Depth, width, and biases change the numbers in that one matrix and one row, not the kind of function.",
+      "hints": [
+        "Substitute the first layer's output into the second layer's formula and multiply out."
+      ]
+    },
+    {
+      "id": "nn-006-q02",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 1,
+      "tags": [
+        "non-linearity"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Two dense layers collapse into a single dense layer unless the function placed between them has one particular property. Name the property.",
+      "answer": {
+        "model": "It must be non-linear, that is, not of the form $az + b$.",
+        "accept": [
+          "^(?![\\s\\S]*(?:\\bnot|n't)\\s+(?:be\\s+)?non-?\\s?linear)(?![\\s\\S]*\\b(?:must|should|has to|needs to|have to)\\s+be\\s+(?:a\\s+)?linear)(?![\\s\\S]*(?<!if it )(?<!that )(?<!which )(?<!if the function )\\bis\\s+(?:a\\s+)?linear)(?![\\s\\S]*non-?\\s?linear(?:ity)?\\s+(?:is|are)\\s+(?:not|un))(?![\\s\\S]*(?<!non)(?<!non-)(?<!non )\\blinear(?:ity)?\\s*,)(?=[\\s\\S]*(?:non-?\\s?linear|\\b(?:not|cannot|never|cant)\\s+(?:be\\s+)?(?:a\\s+)?linear|(?:n't|\\bcan\\s+not)\\s+(?:be\\s+)?(?:a\\s+)?linear|\\bother\\s+than\\s+(?:a\\s+)?linear|\\bnot\\s+of\\s+the\\s+form|\\bnot\\s+(?:be\\s+)?affine|non-?affine))"
+        ]
+      },
+      "explanation": "Section 1 defines a non-linearity as a function that is not of the form $az + b$ and shows why it is needed: a linear function between the layers can be multiplied into the weights, so the two matrices merge, while a non-linear one stands between $\\mathbf{W}_1$ and $\\mathbf{W}_2$ and cannot be multiplied out.",
+      "hints": [
+        "Ask what kind of function could be absorbed into the weight matrices on either side of it."
+      ]
+    },
+    {
+      "id": "nn-006-q03",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1.1",
+      "est_minutes": 8,
+      "tags": [
+        "linear-collapse",
+        "relu",
+        "worked-example"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network has one input feature, two hidden neurons, and one output neuron, with weights in the $(n_\\text{inputs}, n_\\text{neurons})$ layout: $\\mathbf{W}_1 = [[1, 1]]$, $\\mathbf{b}_1 = [[0, -1]]$, $\\mathbf{W}_2 = [[1], [-2]]$, $\\mathbf{b}_2 = [[0]]$. Give the weight and the bias of the single layer it collapses into when there is no activation, then the network's output at $x = 0.5$ and at $x = -1$, each without an activation and with a ReLU between the two layers.",
+      "answer": {
+        "parts": [
+          {
+            "label": "collapsed weight",
+            "value": -1,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "collapsed bias",
+            "value": 2,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "x = 0.5, no activation",
+            "value": 1.5,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "x = 0.5, with ReLU",
+            "value": 0.5,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "x = -1, no activation",
+            "value": 3,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "x = -1, with ReLU",
+            "value": 0,
+            "tolerance": 0.001,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form: $\\mathbf{W}_\\ast = \\mathbf{W}_1 \\mathbf{W}_2$, $\\mathbf{b}_\\ast = \\mathbf{b}_1 \\mathbf{W}_2 + \\mathbf{b}_2$, and $\\max(0, z)$ on the two hidden sums; the computation of snippets/why_nonlinearity.py with these four arrays.",
+      "explanation": "The collapsed weight is $1 \\cdot 1 + 1 \\cdot (-2) = -1$ and the collapsed bias $0 \\cdot 1 + (-1)(-2) + 0 = 2$, so without an activation the network is the line $2 - x$: 1.5 at $x = 0.5$ and 3 at $x = -1$. With the ReLU the hidden sums $x$ and $x - 1$ are $0.5$ and $-0.5$ at $x = 0.5$, which become $0.5$ and $0$ and give $0.5$; at $x = -1$ both sums are negative, both become 0, and the output is 0. As in section 1.1, the same weights give a straight line or a bent one depending only on the activation.",
+      "hints": [
+        "Multiply the two weight matrices for the collapsed weight, and pass the first bias row through the second layer for the collapsed bias.",
+        "With the ReLU, work out the two hidden weighted sums $x$ and $x - 1$ first and replace each negative one by 0 before applying $\\mathbf{W}_2$."
+      ]
+    },
+    {
+      "id": "nn-006-q04",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2.3",
+      "est_minutes": 2,
+      "tags": [
+        "relu",
+        "numpy"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Which line computes ReLU for every entry of a NumPy array `inputs` of any shape?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`np.max(inputs)`",
+          "correct": false,
+          "feedback": "This reduces the whole array to its single largest entry: one number where an array of the same shape is needed."
+        },
+        {
+          "key": "b",
+          "text": "`np.abs(inputs)`",
+          "correct": false,
+          "feedback": "The absolute value turns $-2$ into 2. ReLU turns it into 0: negative inputs are removed, not mirrored."
+        },
+        {
+          "key": "c",
+          "text": "`np.maximum(0, inputs)`",
+          "correct": true,
+          "feedback": "Right. `np.maximum` compares entry by entry and keeps the larger of 0 and each entry, so the shape is preserved."
+        },
+        {
+          "key": "d",
+          "text": "`np.max(0, inputs)`",
+          "correct": false,
+          "feedback": "`np.max` takes an array and an axis, so this call tries to use `inputs` as an axis and raises a `TypeError`."
+        },
+        {
+          "key": "e",
+          "text": "`np.clip(inputs, 0, 1)`",
+          "correct": false,
+          "feedback": "Clipping to the range from 0 to 1 also caps positive inputs at 1, while ReLU passes every positive input through unchanged."
+        }
+      ],
+      "explanation": "Section 2.3 implements ReLU as `np.maximum(0, inputs)`, an element-wise comparison that returns an array of the same shape with every negative entry replaced by zero, and contrasts it with `np.max`, which collapses the array to one scalar.",
+      "hints": [
+        "ReLU needs one output per input entry, and it must leave an input such as 5 untouched."
+      ]
+    },
+    {
+      "id": "nn-006-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2.3",
+      "est_minutes": 3,
+      "tags": [
+        "relu",
+        "by-hand"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The batch `inputs = np.array([[-2, 0, 3], [-0.5, 7, -1]])` is passed to `Activation_ReLU.forward`. Give the sum of all entries of the stored output, the number of its entries that are zero, and, for contrast, the value of `np.max(inputs)`.",
+      "answer": {
+        "parts": [
+          {
+            "label": "sum of the output",
+            "value": 10,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "zero entries in the output",
+            "value": 4,
+            "tolerance": 0,
+            "unit": "entries"
+          },
+          {
+            "label": "np.max(inputs)",
+            "value": 7,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form $\\max(0, z)$ per entry, giving [[0, 0, 3], [0, 7, 0]]; checked with np.maximum and np.max.",
+      "explanation": "ReLU replaces $-2$, $-0.5$, and $-1$ by 0 and leaves 0, 3, and 7 as they are, so the output is $[[0, 0, 3], [0, 7, 0]]$: its entries sum to 10 and four of the six are zero. `np.max(inputs)` is a different operation, described in section 2.3: it returns the single largest entry, 7, and no array.",
+      "hints": [
+        "Apply $\\max(0, z)$ to each of the six entries separately, keeping the two rows."
+      ]
+    },
+    {
+      "id": "nn-006-q06",
+      "type": "code",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2.3",
+      "est_minutes": 8,
+      "tags": [
+        "relu",
+        "implementation",
+        "numpy"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "implement",
+      "language": "python",
+      "prompt": "Implement the class `Activation_ReLU` in the pattern of `Layer_Dense`: a `forward(self, inputs)` method that stores $\\max(0, z)$ for every entry $z$ of `inputs` in `self.output`, returns nothing, keeps the shape of `inputs`, and leaves the caller's array unchanged.",
+      "starter": "import numpy as np\n\n\nclass Activation_ReLU:\n\n    def forward(self, inputs):\n        \"\"\"Store max(0, z) for every entry z of inputs in self.output.\"\"\"\n        raise NotImplementedError\n",
+      "solution": "import numpy as np\n\n\nclass Activation_ReLU:\n\n    def forward(self, inputs):\n        \"\"\"Store max(0, z) for every entry z of inputs in self.output.\"\"\"\n        self.output = np.maximum(0, inputs)\n",
+      "tests": "import numpy as np\n\nrelu = Activation_ReLU()\n\n# 1. The five-element example of the post.\nx = np.array([1, -2, 3, -0.5, 0])\nresult = relu.forward(x)\nassert result is None, \"forward stores its result on self.output and returns nothing\"\nassert np.array_equal(relu.output, [1, 0, 3, 0, 0]), relu.output\n\n# 2. A batch keeps its shape, and the caller's array is not modified.\nbatch = np.array([[1.5, -0.3, 0.0], [-2.0, 4.0, -0.1]])\nbefore = batch.copy()\nrelu.forward(batch)\nassert relu.output.shape == (2, 3), relu.output.shape\nassert np.array_equal(relu.output, [[1.5, 0.0, 0.0], [0.0, 4.0, 0.0]]), relu.output\nassert np.array_equal(batch, before), \"forward must not change its input in place\"\n\n# 3. Random batches against the definition.\nrng = np.random.default_rng(6)\nfor shape in [(1, 1), (4, 3), (300, 3), (2, 5)]:\n    z = rng.standard_normal(shape)\n    relu.forward(z)\n    assert relu.output.shape == shape, (relu.output.shape, shape)\n    assert np.all(relu.output >= 0)\n    assert np.array_equal(relu.output, np.where(z > 0, z, 0.0))\nprint(\"all tests passed\")\n",
+      "explanation": "Section 2.3 writes the whole class in one line, `self.output = np.maximum(0, inputs)`. `np.maximum` builds a new array, so the caller's batch is untouched, and it works entry by entry, so the shape is kept. The class needs no `__init__` because an activation owns no weights, and like `Layer_Dense.forward` the method returns nothing. The tests check the stored output, the shape, the untouched input, and random batches.",
+      "hints": [
+        "The method needs one NumPy call that compares every entry with 0 and keeps the larger of the two.",
+        "`np.maximum(0, inputs)` returns a new array of the same shape; assign it to `self.output` and return nothing."
+      ]
+    },
+    {
+      "id": "nn-006-q07",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "output-layer",
+        "relu",
+        "probabilities"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A three-class classifier ends in a dense layer with three neurons. Why is ReLU the wrong activation to put on the output of that layer?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Some of its outputs are negative, and a probability can never be below zero.",
+          "correct": false,
+          "feedback": "ReLU never returns a negative number. The trouble is at the other end: nothing bounds its outputs above or ties the entries of a row together."
+        },
+        {
+          "key": "b",
+          "text": "It works on one sample at a time and cannot process the rows of a batch together.",
+          "correct": false,
+          "feedback": "ReLU is element-wise and accepts an array of any shape; the batch is not the obstacle."
+        },
+        {
+          "key": "c",
+          "text": "Its outputs have no upper limit, and a row of them need not sum to 1 as probabilities must.",
+          "correct": true,
+          "feedback": "Right. Classification needs outputs between 0 and 1 that sum to 1 across the classes, and ReLU guarantees neither."
+        },
+        {
+          "key": "d",
+          "text": "It costs more to compute than softmax, which matters most on the last layer.",
+          "correct": false,
+          "feedback": "ReLU is one comparison per entry, cheaper than the exponentials of softmax. Cost is not the reason."
+        }
+      ],
+      "explanation": "Section 3 lists what a classifier's output needs and ReLU lacks: values in $[0, 1]$, rows that sum to 1, and so a reading as confidence. ReLU's outputs are non-negative numbers of any size, so a row of them is not a probability distribution; softmax supplies all three properties.",
+      "hints": [
+        "List the properties a row of class probabilities must have, then test a row of ReLU outputs against each."
+      ]
+    },
+    {
+      "id": "nn-006-q08",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 1,
+      "tags": [
+        "softmax",
+        "uniform"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A row of logits for a four-class problem is $[7, 7, 7, 7]$. What probability does softmax give each class?",
+      "answer": {
+        "model": "$1/4 = 0.25$ for every class: equal logits give equal exponentials, so the row is uniform.",
+        "accept": [
+          "^(?![\\s\\S]*\\bnot\\s+(?:0?\\.25|1\\s*/\\s*4|25|a\\s+quarter))(?=[\\s\\S]*(?:(?<![\\d.])0?\\.250*(?!\\d)|(?<![\\d./])1\\s*/\\s*4(?![\\d.])|(?<![\\d.])25(?:\\.0+)?\\s*(?:%|percent|per\\s+cent)|\\b(?:one|a)[\\s-]quarter\\b|\\b(?:one|a)[\\s-]fourth\\b))"
+        ]
+      },
+      "explanation": "Section 4 notes that when all the logits of a row are equal every exponential is the same, so each probability is exactly $1/K$ whatever the common value. With $K = 4$ that is 0.25 per class; the 7 plays no part.",
+      "hints": [
+        "Every numerator is the same number; count how many of them make up the denominator."
+      ]
+    },
+    {
+      "id": "nn-006-q09",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3",
+        "o4"
+      ],
+      "section": "4.2",
+      "est_minutes": 6,
+      "tags": [
+        "softmax",
+        "shift",
+        "by-hand"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Compute the softmax of the row of logits $[501, 500, 502]$ by hand, to three decimal places. A pocket calculator reports an error for $e^{501}$, so the definition cannot be evaluated as it is written.",
+      "answer": {
+        "parts": [
+          {
+            "label": "probability of the first class",
+            "value": 0.245,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "probability of the second class",
+            "value": 0.09,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "probability of the third class",
+            "value": 0.665,
+            "tolerance": 0.001,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form $e^{z_k - 502} / (e^{-1} + e^{-2} + 1)$ with $e^{-1} = 0.36788$ and $e^{-2} = 0.13534$, sum 1.50321; the same three values that snippets/softmax.py prints for [1000, 1001, 999], in another order.",
+      "explanation": "Section 4.2 shows that subtracting the same constant from every logit of a row leaves the softmax unchanged. Subtracting the maximum, 502, gives $[-1, -2, 0]$, whose exponentials are $0.368$, $0.135$, and $1$ with sum $1.503$. Dividing gives $0.245$, $0.090$, and $0.665$. The largest logit keeps the largest probability, and no number larger than 1 is ever exponentiated.",
+      "hints": [
+        "Softmax depends only on the differences between the logits of a row.",
+        "Subtract the largest logit from all three, exponentiate the results, and divide each by their sum."
+      ]
+    },
+    {
+      "id": "nn-006-q10",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "4.2",
+      "est_minutes": 3,
+      "tags": [
+        "softmax",
+        "numerical-stability"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`Activation_Softmax.forward` subtracts each row's maximum from that row's logits before calling `np.exp`. What is this step for?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It is what makes each row of the output sum to 1.",
+          "correct": false,
+          "feedback": "The division by the row's sum of exponentials does that, with or without the shift."
+        },
+        {
+          "key": "b",
+          "text": "It makes the largest probability larger, so the prediction is more confident.",
+          "correct": false,
+          "feedback": "The shift cancels between numerator and denominator, so no probability changes. Sharpening a row takes a temperature below 1, a different operation."
+        },
+        {
+          "key": "c",
+          "text": "It removes negative logits, which the exponential cannot handle.",
+          "correct": false,
+          "feedback": "The exponential of a negative number is a small positive number, and after the shift every logit except the largest is negative or zero."
+        },
+        {
+          "key": "d",
+          "text": "It stops `np.exp` overflowing on large logits without changing any probability.",
+          "correct": true,
+          "feedback": "Right. After the shift the largest exponent is 0, so no exponential exceeds 1, and the common factor cancels in the ratio."
+        },
+        {
+          "key": "e",
+          "text": "The definition of softmax requires it; without it the function is undefined.",
+          "correct": false,
+          "feedback": "The definition has no shift, and in exact arithmetic the two versions are equal. The step is there for floating-point safety only."
+        }
+      ],
+      "explanation": "Section 4.2 gives the reason: `np.exp` returns `inf` above 709.78 in `float64` and above 88.72 in `float32`, and `inf / inf` is `nan`. Subtracting the row maximum makes the largest exponent exactly 0, and because $e^{-c}$ multiplies numerator and denominator alike, the probabilities are those of the definition. It is a numerical safeguard, not a mathematical necessity.",
+      "hints": [
+        "Compare what `np.exp` returns for 1000 with what it returns for 0, and ask whether the ratio in the formula can tell that a constant was subtracted."
+      ]
+    },
+    {
+      "id": "nn-006-q11",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "4.2",
+      "est_minutes": 5,
+      "tags": [
+        "softmax",
+        "shift-invariance",
+        "temperature"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A batch of logits has shape $(N, K)$ with $N > 1$ and $K > 1$. In exact arithmetic, which of these changes to the logits leave the softmax output unchanged for every such batch? Select all that apply.",
+      "select": "multiple",
+      "options": [
+        {
+          "key": "a",
+          "text": "Adding 5 to every logit in the batch.",
+          "correct": true,
+          "feedback": "A constant added to every entry of a row multiplies numerator and denominator by the same factor $e^{5}$, which cancels."
+        },
+        {
+          "key": "b",
+          "text": "Multiplying every logit by 2.",
+          "correct": false,
+          "feedback": "Scaling doubles the gaps between the logits, and softmax depends on exactly those gaps. This is a temperature of 0.5, and it sharpens every row that is not uniform."
+        },
+        {
+          "key": "c",
+          "text": "Subtracting from each row that row's own maximum.",
+          "correct": true,
+          "feedback": "This is the shift the class performs: a different constant for each row, and the same constant for every entry within a row."
+        },
+        {
+          "key": "d",
+          "text": "Subtracting from each column that column's maximum.",
+          "correct": false,
+          "feedback": "This takes a different number off each entry of a row, which changes the gaps inside the row. A missing `keepdims=True` on a square batch does the same kind of damage."
+        },
+        {
+          "key": "e",
+          "text": "Subtracting from every logit the largest logit of the whole batch.",
+          "correct": true,
+          "feedback": "One number for the whole batch is still a constant within each row, so nothing changes. In floating point it protects less, because rows far below that maximum can underflow."
+        },
+        {
+          "key": "f",
+          "text": "Dividing every logit by a temperature $T = 10$.",
+          "correct": false,
+          "feedback": "Dividing shrinks every gap by a factor of 10 and pushes each row towards uniform, as the $T = 10$ line of section 4.4 shows."
+        }
+      ],
+      "explanation": "Section 4.2 proves that softmax is unchanged when the same constant is subtracted from every logit of a row, because $e^{-c}$ cancels. Any change that is constant within each row qualifies: a global constant, the row's own maximum, or the batch maximum. Section 4.4 gives the contrast: multiplying or dividing the logits changes the gaps between them, and with them every probability. A per-column shift also changes the gaps inside a row.",
+      "hints": [
+        "For each change, ask whether every entry of one row is altered by the same added amount.",
+        "A different amount for each row is harmless; a different amount for each entry of a row, or any rescaling, is not."
+      ]
+    },
+    {
+      "id": "nn-006-q12",
+      "type": "numeric",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "4.2",
+      "est_minutes": 6,
+      "tags": [
+        "overflow",
+        "float32",
+        "float64"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`np.exp` returns `inf` for inputs above 709.78 in `float64` and above 88.72 in `float32`. A row of logits is $[a, a + 1, a + 2]$ with $a$ a whole number, and its softmax is computed from the definition, with no shift. For each of the two types, give the largest $a$ for which the three probabilities are still finite numbers. The sum in the denominator must not overflow either.",
+      "answer": {
+        "parts": [
+          {
+            "label": "largest a in float64",
+            "value": 707,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "largest a in float32",
+            "value": 86,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form $a + 2 + \\ln(1 + e^{-1} + e^{-2}) \\le \\ln(\\text{largest float})$, with $\\ln 1.503 = 0.41$ and the limits 709.78 and 88.72 of snippets/softmax.py item 4; confirmed by running the unshifted formula at $a = 707, 708$ in float64 and $a = 86, 87$ in float32.",
+      "explanation": "The largest exponential is $e^{a + 2}$, and the denominator is $e^{a + 2}(1 + e^{-1} + e^{-2}) \\approx 1.503\\, e^{a + 2}$, which is $e^{a + 2.41}$. Both must stay below the largest float, so $a + 2.41 \\le 709.78$ gives $a \\le 707$ in `float64` and $a + 2.41 \\le 88.72$ gives $a \\le 86$ in `float32`. One step further, $e^{a + 2}$ itself is `inf` and the row becomes `nan`. With the maximum subtracted as in section 4.2, the exponents are $-2$, $-1$, and $0$ for every $a$, and the limit disappears.",
+      "hints": [
+        "The largest of the three exponentials decides first: find the largest whole number that $a + 2$ may be.",
+        "Then check the denominator, which is the largest exponential times $1 + e^{-1} + e^{-2} \\approx 1.503$; that product has to stay below the largest float as well."
+      ]
+    },
+    {
+      "id": "nn-006-q13",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o3",
+        "o4"
+      ],
+      "section": "4.3",
+      "est_minutes": 15,
+      "tags": [
+        "softmax",
+        "implementation",
+        "numerical-stability",
+        "numpy"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "implement",
+      "language": "python",
+      "prompt": "Implement the class `Activation_Softmax`: a `forward(self, inputs)` method that takes a batch of logits of shape $(N, K)$ and stores in `self.output` an array of the same shape whose every row is the softmax of the matching row of `inputs`. It must give finite probabilities, without a NumPy warning, for rows whose logits are in the thousands, positive or negative, and it must work in `float32` as well as `float64`.",
+      "starter": "import numpy as np\n\n\nclass Activation_Softmax:\n\n    def forward(self, inputs):\n        \"\"\"Store the softmax of every row of inputs, shape (N, K), in self.output.\"\"\"\n        raise NotImplementedError\n",
+      "solution": "import numpy as np\n\n\nclass Activation_Softmax:\n\n    def forward(self, inputs):\n        \"\"\"Store the softmax of every row of inputs, shape (N, K), in self.output.\"\"\"\n        # Subtract the per-row max for stability.\n        shifted = inputs - np.max(inputs, axis=1, keepdims=True)\n        # Exponentiate and normalise per row.\n        exp_values = np.exp(shifted)\n        self.output = exp_values / np.sum(exp_values, axis=1, keepdims=True)\n",
+      "tests": "import warnings\n\nimport numpy as np\n\nsoftmax = Activation_Softmax()\n\n# 1. The row worked by hand in the post.\nresult = softmax.forward(np.array([[1.0, 2.0, 3.0]]))\nassert result is None, \"forward stores its result on self.output and returns nothing\"\nassert softmax.output.shape == (1, 3), softmax.output.shape\nassert np.allclose(softmax.output, [[0.09003057, 0.24472847, 0.66524096]]), softmax.output\n\n# 2. Each row is normalised on its own.\nbatch = np.array([[1.0, 2.0, 3.0], [2.0, 2.0, 2.0], [0.0, 5.0, 0.0], [3.0, 1.0, 2.0]])\nsoftmax.forward(batch)\nassert softmax.output.shape == (4, 3), softmax.output.shape\nassert np.allclose(np.sum(softmax.output, axis=1), 1.0), np.sum(softmax.output, axis=1)\nassert np.allclose(softmax.output[1], 1 / 3), softmax.output[1]\nassert np.allclose(softmax.output[3], [0.66524096, 0.09003057, 0.24472847]), softmax.output[3]\nassert np.all(softmax.output > 0) and np.all(softmax.output < 1)\n\n# 3. Large and very negative logits: no overflow, no 0 / 0, and no warning.\nwith warnings.catch_warnings():\n    warnings.simplefilter(\"error\")\n    for row in ([1000.0, 1001.0, 999.0], [-1000.0, -999.0, -1001.0]):\n        softmax.forward(np.array([row, [1.0, 2.0, 3.0]]))\n        assert np.all(np.isfinite(softmax.output)), softmax.output\n        assert np.allclose(softmax.output[0], [0.24472847, 0.66524096, 0.09003057]), softmax.output[0]\n        assert np.allclose(softmax.output[1], [0.09003057, 0.24472847, 0.66524096]), softmax.output[1]\n    # float32, where np.exp overflows above 88.72\n    softmax.forward(np.array([[90.0, 91.0, 89.0]], dtype=np.float32))\n    assert np.allclose(softmax.output, [[0.24472847, 0.66524096, 0.09003057]], atol=1e-6), softmax.output\n    # logits far apart inside one row: only a shift by the row maximum keeps every exponent at or below 0\n    softmax.forward(np.array([[0.0, 1000.0, -1000.0], [1.0, 2.0, 3.0]]))\n    assert np.allclose(softmax.output[0], [0.0, 1.0, 0.0]), softmax.output[0]\n    assert np.allclose(softmax.output[1], [0.09003057, 0.24472847, 0.66524096]), softmax.output[1]\n\n# 4. Random batches, one of them square, against a slow per-row reference.\nrng = np.random.default_rng(6)\nfor shape in [(1, 4), (5, 2), (300, 3), (3, 3)]:\n    z = 10 * rng.standard_normal(shape)\n    softmax.forward(z)\n    assert softmax.output.shape == shape, (softmax.output.shape, shape)\n    for i in range(shape[0]):\n        e = np.exp(z[i] - z[i].max())\n        assert np.allclose(softmax.output[i], e / e.sum()), (shape, i)\nprint(\"all tests passed\")\n",
+      "explanation": "Section 4.3 gives the class: subtract each row's maximum, kept as a column with `axis=1, keepdims=True`, exponentiate, and divide by each row's sum, kept as a column in the same way. The shift makes the largest exponent 0, so rows such as $[1000, 1001, 999]$ cannot overflow and rows such as $[-1000, -999, -1001]$ cannot give $0 / 0$. The tests also pair a huge row with an ordinary one, which a shift by the maximum of the whole batch would fail, and include a square batch, where a missing `keepdims` runs silently. A row whose logits are 2000 apart, $[0, 1000, -1000]$, rules out a shift by the row's minimum or mean, which overflows on it.",
+      "hints": [
+        "The definition overflows for large logits; use the fact that a constant subtracted from a whole row cancels.",
+        "Both reductions, the maximum and the sum, run along `axis=1`, and each must come back as a column of shape `(N, 1)`.",
+        "Subtract `np.max(inputs, axis=1, keepdims=True)`, apply `np.exp`, and divide by `np.sum(..., axis=1, keepdims=True)`."
+      ]
+    },
+    {
+      "id": "nn-006-q14",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4.3",
+      "est_minutes": 3,
+      "tags": [
+        "softmax",
+        "forward-pass"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Put the steps of `Activation_Softmax.forward` in the order in which the class performs them on a batch of logits.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Take the largest logit of each row with `np.max(inputs, axis=1, keepdims=True)`."
+        },
+        {
+          "key": "b",
+          "text": "Subtract that column of maxima from `inputs`, so that the largest entry of every row becomes 0."
+        },
+        {
+          "key": "c",
+          "text": "Apply `np.exp` to the shifted logits."
+        },
+        {
+          "key": "d",
+          "text": "Add up the exponentials of each row with `np.sum(exp_values, axis=1, keepdims=True)`."
+        },
+        {
+          "key": "e",
+          "text": "Divide every exponential by the sum of its own row."
+        },
+        {
+          "key": "f",
+          "text": "Store the resulting probabilities in `self.output`."
+        }
+      ],
+      "answer": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 4.3 shifts first and exponentiates second, which is the whole point of the stability trick of section 4.2: the maximum has to be removed before `np.exp` sees the logits. The exponentials are then summed per row, each is divided by its row's sum, and the result is stored on the object for the next component to read.",
+      "hints": [
+        "The step that protects `np.exp` has to come before `np.exp` is called."
+      ]
+    },
+    {
+      "id": "nn-006-q15",
+      "type": "mcq",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4.3",
+      "est_minutes": 5,
+      "tags": [
+        "keepdims",
+        "broadcasting",
+        "silent-bug"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "connects": [
+        "nn-005"
+      ],
+      "prompt": "In `Activation_Softmax.forward`, `keepdims=True` is deleted from the `np.max` call only; the `np.sum` call keeps it. The class is then run on the $(300, 3)$ spiral batch and on a $(3, 3)$ batch whose rows have different maxima. What happens?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It runs on both batches and returns wrong probabilities on both.",
+          "correct": false,
+          "feedback": "The $(300, 3)$ case cannot run: broadcasting $(300, 3)$ against $(300,)$ compares 3 with 300, neither is 1, and NumPy raises."
+        },
+        {
+          "key": "b",
+          "text": "A `ValueError` on both batches, since a reduction without `keepdims` can never be subtracted from its source.",
+          "correct": false,
+          "feedback": "It can whenever the shapes happen to fit. A $(3,)$ array broadcasts against $(3, 3)$ as a row, which is exactly why the square case is dangerous."
+        },
+        {
+          "key": "c",
+          "text": "A `ValueError` on the $(300, 3)$ batch; on the $(3, 3)$ batch it runs, and its rows sum to 1 but hold wrong probabilities.",
+          "correct": true,
+          "feedback": "Right. The maxima come back with shape $(N,)$ and line up with the columns: 300 values cannot meet 3 columns, 3 values can, and each column then loses a different row's maximum."
+        },
+        {
+          "key": "d",
+          "text": "It runs on both batches and the output is unchanged, because softmax ignores a shift of the logits.",
+          "correct": false,
+          "feedback": "Softmax ignores a shift that is the same for every entry of a row. Here each column is shifted by a different amount, which changes the gaps inside every row."
+        },
+        {
+          "key": "e",
+          "text": "On the $(3, 3)$ batch it runs, but the rows no longer sum to 1, so the fault shows at once.",
+          "correct": false,
+          "feedback": "The division still uses a per-row sum kept as a column, so every row sums to 1. That is what makes this version of the bug hard to notice."
+        }
+      ],
+      "explanation": "Section 4.3 states the two outcomes and section 7 runs them. Without `keepdims` the row maxima have shape $(N,)$, which post 05 shows broadcasts as a row. Against 3 columns that fails for $N = 300$ and succeeds for $N = 3$, where column $j$ loses the maximum of row $j$. The later division by a properly shaped row sum makes every row sum to 1, so the wrong result looks valid: the rows $[1, 2, 3]$, $[3, 2, 1]$, $[0, 0, 5]$ give a first row of $[0.212, 0.576, 0.212]$ where $[0.090, 0.245, 0.665]$ is correct.",
+      "hints": [
+        "Write down the shape `np.max(inputs, axis=1)` returns for each batch and apply the broadcasting rules to the subtraction.",
+        "For the batch on which the subtraction runs, ask which number is taken off each column, and whether the later division can repair that."
+      ]
+    },
+    {
+      "id": "nn-006-q16",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "5.1",
+      "est_minutes": 3,
+      "tags": [
+        "default-pattern",
+        "output-layer"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Match each layer position with the activation that the default pattern of this series puts there.",
+      "left": [
+        {
+          "key": "a",
+          "text": "A hidden layer of a classifier"
+        },
+        {
+          "key": "b",
+          "text": "The output layer of a classifier with three or more classes"
+        },
+        {
+          "key": "c",
+          "text": "The output layer of a regression network"
+        },
+        {
+          "key": "d",
+          "text": "The output layer of a two-class classifier with a single output unit"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "ReLU"
+        },
+        {
+          "key": "q",
+          "text": "Softmax"
+        },
+        {
+          "key": "r",
+          "text": "No activation (the identity)"
+        },
+        {
+          "key": "s",
+          "text": "Sigmoid"
+        },
+        {
+          "key": "t",
+          "text": "ReLU followed by softmax"
+        },
+        {
+          "key": "u",
+          "text": "Softmax followed by ReLU"
+        }
+      ],
+      "answer": {
+        "a": "p",
+        "b": "q",
+        "c": "r",
+        "d": "s"
+      },
+      "explanation": "The table of section 5.1 gives the pattern: ReLU on every hidden layer for a cheap non-linearity, softmax on a multi-class output for a probability distribution, nothing on a regression output because the prediction must be free to take any real value, and a sigmoid on a single-unit binary output. Neither chained option is used: a ReLU in front of the softmax discards negative logits, and a ReLU after it changes nothing useful, since probabilities are already positive.",
+      "hints": [
+        "Two of the six answers combine two activations; decide first whether any layer position calls for that."
+      ]
+    },
+    {
+      "id": "nn-006-q17",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "4.2",
+      "est_minutes": 15,
+      "tags": [
+        "softmax",
+        "derivation",
+        "numerical-stability"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "derive",
+      "prompt": "Show that subtracting the same constant $c$ from every logit of a row leaves its softmax unchanged. Then say which constant `Activation_Softmax` uses, what the largest exponent and the smallest possible denominator are after the subtraction, and which two failures of the unshifted formula this prevents, giving an example row of logits for each failure.",
+      "answer_length": "half a page",
+      "solution": "1. **The identity.** $\\frac{e^{z_k - c}}{\\sum_j e^{z_j - c}} = \\frac{e^{-c}\\, e^{z_k}}{e^{-c} \\sum_j e^{z_j}} = \\frac{e^{z_k}}{\\sum_j e^{z_j}}$. The factor $e^{-c}$ is the same in the numerator and in every term of the denominator, so it cancels. Softmax depends only on the differences between the logits of a row.\n2. **The constant.** The class uses the row's own maximum, $c = \\max_j z_j$, computed for all rows at once with `np.max(inputs, axis=1, keepdims=True)`.\n3. **After the shift.** The largest logit of each row is exactly 0 and the others are negative or zero. The largest exponential is therefore $e^0 = 1$ and every other one lies between 0 and 1. The denominator contains that 1, so it is at least 1 (and at most $K$): the division can neither overflow nor divide by zero.\n4. **Failure one, overflow.** For $[1000, 1001, 999]$ every $e^{z_j}$ is beyond the largest float (`np.exp` returns `inf` above 709.78 in `float64` and above 88.72 in `float32`), so the formula computes `inf / inf`, which is `nan`. Shifted, the exponents are $-1$, $0$, $-2$ and the result is $[0.245, 0.665, 0.090]$.\n5. **Failure two, underflow.** For $[-1000, -999, -1001]$ every exponential rounds to 0, the denominator is 0, and `0 / 0` is `nan`. Shifted, the exponents are again $-1$, $0$, $-2$, with the same result.\n6. **Why it matters.** NumPy raises no exception in either case, only `RuntimeWarning` lines, so the `nan` values pass into everything computed from them.",
+      "rubric": [
+        {
+          "criterion": "Factors $e^{-c}$ out of the numerator and of every term of the denominator and cancels it",
+          "points": 2
+        },
+        {
+          "criterion": "Names the per-row maximum as the constant the class subtracts",
+          "points": 1
+        },
+        {
+          "criterion": "States that the largest exponent becomes 0, so the largest exponential is 1 and the denominator is at least 1",
+          "points": 2
+        },
+        {
+          "criterion": "Describes overflow to `inf` and `inf / inf = nan`, with a row of large positive logits",
+          "points": 1
+        },
+        {
+          "criterion": "Describes underflow of every exponential to 0 and `0 / 0 = nan`, with a row of very negative logits",
+          "points": 1
+        }
+      ],
+      "explanation": "Section 4.2 derives the cancellation of $e^{-c}$, chooses $c$ as the row maximum so that the largest exponent is exactly 0, and runs both failures of the unshifted formula: overflow on $[1000, 1001, 999]$ and underflow on $[-1000, -999, -1001]$, each of which the shifted version turns into $[0.245, 0.665, 0.090]$.",
+      "hints": [
+        "Write $e^{z_k - c}$ as a product of two exponentials and look for a factor common to the numerator and the denominator.",
+        "For the failures, ask what `np.exp` returns for 1000 and for $-1000$, and what the division then computes."
+      ]
+    },
+    {
+      "id": "nn-006-q18",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o5"
+      ],
+      "section": "5.1",
+      "est_minutes": 20,
+      "tags": [
+        "output-layer",
+        "relu",
+        "critique"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "critique",
+      "prompt": "A colleague builds a three-class classifier as Dense, ReLU, Dense, ReLU, Softmax, arguing that ReLU after every dense layer is the default and that it keeps the logits positive, which is tidier. Critique the design. Use the rows of logits $[-2, -1, -3]$ and $[2, -1, -3]$ to show what the second ReLU does to the output, say what the network can no longer express once its logits cannot go below 0, and state the pattern the layers should follow.",
+      "answer_length": "half a page",
+      "solution": "1. **What the default says.** ReLU belongs after every hidden layer. The last dense layer is the output layer: its values are the logits and they go to softmax directly. The reason for ReLU is to keep two neighbouring dense layers from collapsing into one, and after the last dense layer there is no further dense layer to keep apart, so that reason does not apply.\n2. **First row.** The softmax of $[-2, -1, -3]$ is the softmax of $[-1, 0, -2]$: exponentials $0.368$, $1$, $0.135$, sum $1.503$, probabilities $[0.245, 0.665, 0.090]$. With the extra ReLU the logits become $[0, 0, 0]$ and the output is $[1/3, 1/3, 1/3]$. A clear preference for the second class has been erased.\n3. **Second row.** The softmax of $[2, -1, -3]$ is $[0.946, 0.047, 0.006]$. After the ReLU the logits are $[2, 0, 0]$, the exponentials $7.389$, $1$, $1$, and the output $[0.787, 0.107, 0.107]$: the winner loses confidence, and the two other classes, which the network had ranked, are made equal.\n4. **What is lost.** Softmax reads only the gaps between logits. If no logit can go below 0, every class that the last dense layer scores below zero is tied at 0. The network cannot rank those classes against each other, and once a class's logit is at 0 its probability can be lowered further only by raising the logits of the others.\n5. **A further risk.** An output neuron whose weighted sum is negative for every sample is a dead neuron: it outputs 0 everywhere and its slope is 0, so no correction reaches its weights, and while it stays dead that class can never be preferred.\n6. **The pattern.** Dense, ReLU, Dense, Softmax. Negative logits are not untidy; softmax accepts any real number, and the max subtraction keeps the arithmetic safe.",
+      "rubric": [
+        {
+          "criterion": "States that the ReLU default applies to hidden layers and that logits go to softmax directly",
+          "points": 1
+        },
+        {
+          "criterion": "Computes $[-2, -1, -3]$ both ways: about $[0.245, 0.665, 0.090]$ against uniform after the ReLU",
+          "points": 2
+        },
+        {
+          "criterion": "Computes $[2, -1, -3]$ both ways: about $[0.946, 0.047, 0.006]$ against $[0.787, 0.107, 0.107]$",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that classes scored below zero are tied at 0, so their ranking and the gaps between them are lost",
+          "points": 2
+        },
+        {
+          "criterion": "Gives the corrected pattern Dense, ReLU, Dense, Softmax",
+          "points": 1
+        }
+      ],
+      "explanation": "Section 5.1 gives the placement rule, the logits get softmax and never ReLU and then softmax, and section 7 runs both rows of this question: $[-2, -1, -3]$ falls from $[0.245, 0.665, 0.090]$ to uniform and $[2, -1, -3]$ from $[0.946, 0.047, 0.006]$ to $[0.787, 0.107, 0.107]$. Because softmax depends only on the gaps between logits (section 4.2), flooring them at 0 removes every distinction among the classes the network scores below zero.",
+      "hints": [
+        "Apply ReLU to each row of logits first and compare the softmax of the result with the softmax of the original row.",
+        "Softmax sees only the gaps between logits; ask which gaps survive when every negative logit becomes 0.",
+        "Ask which pair of dense layers the second ReLU would be keeping apart."
+      ]
+    },
+    {
+      "id": "nn-006-q19",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o5",
+        "o4"
+      ],
+      "section": "5.1",
+      "est_minutes": 15,
+      "tags": [
+        "sigmoid",
+        "two-class",
+        "shift-invariance"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "connect",
+      "connects": [
+        "nn-034"
+      ],
+      "prompt": "Post 34 ends a two-class network with a single output unit and a sigmoid, $\\sigma(z) = 1/(1 + e^{-z})$, where this post would use two output units and softmax. Show that the softmax of two logits $[z_1, z_2]$ gives the first class the probability $\\sigma(z_1 - z_2)$. Relate that result to what happens to a softmax when a constant is added to both logits, and explain why one output unit is therefore enough for two classes.",
+      "answer_length": "half a page",
+      "solution": "1. **Two-class softmax.** $\\hat{y}_1 = \\frac{e^{z_1}}{e^{z_1} + e^{z_2}}$. Dividing numerator and denominator by $e^{z_1}$ gives $\\hat{y}_1 = \\frac{1}{1 + e^{z_2 - z_1}} = \\frac{1}{1 + e^{-(z_1 - z_2)}} = \\sigma(z_1 - z_2)$.\n2. **The other class.** $\\hat{y}_2 = 1 - \\hat{y}_1 = \\sigma(z_2 - z_1)$, since the two probabilities sum to 1.\n3. **Only the difference matters.** The result contains $z_1$ and $z_2$ only through $d = z_1 - z_2$. Adding a constant $c$ to both logits leaves $d$, and so the output, unchanged. This is the shift invariance of section 4.2 in its smallest case, and it means that one of the two logits carries no information of its own.\n4. **One unit is enough.** A network can therefore output the single number $d$ and apply the sigmoid: $\\sigma(d)$ is the probability of one class and $1 - \\sigma(d)$ that of the other. This is the two-unit softmax with the second logit fixed at 0, and it represents exactly the same family of outputs with one output neuron fewer.\n5. **A check.** For the logits $[1, 0]$ the softmax is $e / (e + 1) = 0.731$ and $0.269$, and $\\sigma(1) = 1 / (1 + e^{-1}) = 0.731$.",
+      "rubric": [
+        {
+          "criterion": "Derives $\\hat{y}_1 = \\sigma(z_1 - z_2)$ by dividing through by $e^{z_1}$ or an equivalent step",
+          "points": 3
+        },
+        {
+          "criterion": "Gives the second class as the complement, so the two probabilities sum to 1",
+          "points": 1
+        },
+        {
+          "criterion": "Links the dependence on the difference alone to the invariance of softmax under a constant added to every logit",
+          "points": 2
+        },
+        {
+          "criterion": "Concludes that one logit is redundant, so a single unit with a sigmoid is the two-unit softmax with one logit fixed at 0",
+          "points": 2
+        }
+      ],
+      "explanation": "Section 5.1 lists the sigmoid as the output activation for binary classification, and section 4.2 shows that softmax depends only on the differences between logits. With two classes there is one difference, and the softmax of $[z_1, z_2]$ reduces to $\\sigma(z_1 - z_2)$, which is why post 34 needs a single output unit.",
+      "hints": [
+        "Write out $\\hat{y}_1$ for $K = 2$ and divide the numerator and the denominator by $e^{z_1}$.",
+        "Count how many independent numbers the two-class softmax output depends on."
+      ]
+    },
+    {
+      "id": "nn-006-q20",
+      "type": "code",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 10,
+      "tags": [
+        "softmax",
+        "axis",
+        "debugging",
+        "numpy"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "kind": "fix",
+      "language": "python",
+      "prompt": "The function below is meant to return the softmax of every row of a batch of logits of shape $(N, K)$. It runs without an error or a warning on ordinary batches, yet the rows of its result do not sum to 1. Find the fault and fix it.",
+      "starter": "import numpy as np\n\n\ndef softmax(logits):\n    \"\"\"Return the softmax of every row of logits, shape (N, K).\"\"\"\n    exp_values = np.exp(logits - np.max(logits))\n    return exp_values / np.sum(exp_values)\n",
+      "solution": "import numpy as np\n\n\ndef softmax(logits):\n    \"\"\"Return the softmax of every row of logits, shape (N, K).\"\"\"\n    exp_values = np.exp(logits - np.max(logits, axis=1, keepdims=True))\n    return exp_values / np.sum(exp_values, axis=1, keepdims=True)\n",
+      "tests": "import numpy as np\n\ntall = np.array([[1.0, 2.0, 3.0], [3.0, 2.0, 1.0], [0.0, 0.0, 5.0], [2.0, 2.0, 2.0]])\nout = softmax(tall)\nassert out.shape == (4, 3), out.shape\nassert np.allclose(np.sum(out, axis=1), 1.0), \"every row must sum to 1, got \" + str(np.sum(out, axis=1))\nassert np.allclose(out[0], [0.09003057, 0.24472847, 0.66524096]), out[0]\nassert np.allclose(out[3], 1 / 3), out[3]\n\n# A square batch: a reduction that comes back as a row instead of a column runs silently here.\nsquare = tall[:3]\nout = softmax(square)\nfor i in range(3):\n    e = np.exp(square[i] - square[i].max())\n    assert np.allclose(out[i], e / e.sum()), (i, out[i])\n\n# Large logits in one row must not disturb another row.\nout = softmax(np.array([[1000.0, 1001.0, 999.0], [1.0, 2.0, 3.0]]))\nassert np.all(np.isfinite(out)), out\nassert np.allclose(out[1], [0.09003057, 0.24472847, 0.66524096]), out[1]\nprint(\"all tests passed\")\n",
+      "explanation": "Both reductions lack `axis=1, keepdims=True`, so `np.max` and `np.sum` run over the whole batch and the function normalises it as if it were one long row: all the entries together sum to 1. Section 7 runs this version on a batch of 4 rows and gets row sums of 0.13, 0.13, 0.646, and 0.095, with no error. The fix reduces along `axis=1` and keeps each result as a column of shape `(N, 1)`, so that it broadcasts back across its own row.",
+      "hints": [
+        "Add up every entry of the faulty result, not only one row, and see what that total is.",
+        "Check which entries `np.max(logits)` and `np.sum(exp_values)` reduce over when no axis is given, and what shape each reduction must have to line up with the rows."
+      ]
+    }
+  ]
+}

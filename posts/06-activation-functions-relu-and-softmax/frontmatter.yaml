@@ -1,8 +1,27 @@
 id: nn-006
 slug: 06-activation-functions-relu-and-softmax
-title: "Part 06 · Activation functions: ReLU and Softmax"
+title: "06 - Activation functions: ReLU and Softmax"
+summary: "Why dense layers need a non-linear activation between them, and the two the series uses: ReLU after every hidden layer and softmax on a classifier's output, with the max subtraction that stops its exponentials overflowing."
 date: 2026-05-27
+updated: 2026-10-05
+status: complete
+part: "Part II - Activations and forward pass"
+level: beginner
+reading_time: 25
 tags: [neural-networks, from-scratch, relu, softmax, activations]
 hero: diagrams/01-why-nonlinearity.svg
-reading_time: 13
-part: "Part II — Activations and forward pass"
+prerequisites: [nn-003, nn-005]
+code: included
+outcomes:
+  - id: o1
+    text: "State in one sentence why dense layers need a non-linear activation between them."
+  - id: o2
+    text: "Implement an Activation_ReLU class whose forward method follows the Layer_Dense pattern."
+  - id: o3
+    text: "Implement an Activation_Softmax class that turns each row of logits into probabilities that sum to 1."
+  - id: o4
+    text: "Explain why softmax subtracts the per-row maximum before exponentiating, and what goes wrong without that step."
+  - id: o5
+    text: "Explain why hidden layers use ReLU while the output layer of a classifier uses softmax."
+recommended: [nn-004]
+compute: cpu
