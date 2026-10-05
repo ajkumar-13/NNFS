@@ -1,8 +1,23 @@
 id: nn-022
 slug: 22-gradient-descent-optimiser
-title: "Part 22 · Gradient-descent optimiser"
+title: "22 - Gradient-descent optimiser"
+summary: "The simplest optimiser, a class that subtracts the learning rate times the gradient from every parameter, and the full training loop around it. On the spiral data ten seeds end between 43 and 87 percent after 10,001 epochs."
 date: 2026-05-29
+updated: 2026-10-05
+status: complete
+part: "Part VI - Optimisers"
+level: intermediate
+reading_time: 20
 tags: [neural-networks, from-scratch, optimisation, gradient-descent, sgd]
 hero: diagrams/01-sgd-update-and-lr.svg
-reading_time: 11
-part: "Part VI — Optimisers"
+prerequisites: [nn-021]
+code: included
+outcomes:
+  - id: o1
+    text: "Implement Optimizer_SGD and use it to update any layer that stores weights, biases and their gradients."
+  - id: o2
+    text: "Write a complete training loop (forward, backward, update, log) for the spiral classifier."
+  - id: o3
+    text: "Explain why the accuracy vanilla gradient descent reaches on the spiral is a limit of the optimiser and its budget, not of the data."
+recommended: [nn-009]
+compute: cpu

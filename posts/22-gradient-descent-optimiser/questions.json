@@ -1,0 +1,793 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-022",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-022-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 2,
+      "tags": [
+        "learning-rate"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the update $\\theta \\leftarrow \\theta - \\alpha g$, with $g$ the gradient of the loss with respect to the parameter $\\theta$, what does the learning rate $\\alpha$ do?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It multiplies the gradient, and so sets how far each parameter moves in one update.",
+          "correct": true,
+          "feedback": "The step is $\\alpha g$: the gradient gives the direction and the relative size, the learning rate scales it."
+        },
+        {
+          "key": "b",
+          "text": "It sets how many updates the training loop makes before it stops.",
+          "correct": false,
+          "feedback": "That is the number of epochs in the `for` statement. The learning rate changes the size of an update, not the number of updates."
+        },
+        {
+          "key": "c",
+          "text": "It sets how many of the 300 samples go into each gradient.",
+          "correct": false,
+          "feedback": "That would be a batch size. The post's loop uses all 300 samples for every gradient, whatever the learning rate is."
+        },
+        {
+          "key": "d",
+          "text": "It rescales the loss before the backward pass, so the layers store a different gradient.",
+          "correct": false,
+          "feedback": "The backward pass does not know the learning rate. The layers store the same gradients for any $\\alpha$, and the optimiser scales them when it updates."
+        }
+      ],
+      "explanation": "Section 1: the rule subtracts $\\alpha$ times the gradient from every parameter, so $\\alpha$ scales the step and nothing else. The number of updates is set by the loop, the number of samples per gradient by what the loop feeds forward, and the gradient itself by the backward pass.",
+      "hints": [
+        "Look at what $\\alpha$ is multiplied by in the rule."
+      ]
+    },
+    {
+      "id": "nn-022-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "contract"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Which arrays of a layer does `Optimizer_SGD.update_params(layer)` read, and which does it change?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It reads `dinputs` and changes `weights` and `biases`.",
+          "correct": false,
+          "feedback": "`dinputs` is the gradient with respect to the layer's input. It is handed to the component before the layer and is never used for an update."
+        },
+        {
+          "key": "b",
+          "text": "It reads `weights` and `biases` and changes `dweights` and `dbiases`.",
+          "correct": false,
+          "feedback": "This is the wrong way round: the gradients are written by `backward`, and the optimiser only reads them."
+        },
+        {
+          "key": "c",
+          "text": "It reads `dweights` and `dbiases` and changes `weights` and `biases`.",
+          "correct": true,
+          "feedback": "Each parameter array is moved against the gradient array stored beside it, in place."
+        },
+        {
+          "key": "d",
+          "text": "It reads `dweights` and `dbiases`, changes `weights` and `biases`, and sets both gradients to zero.",
+          "correct": false,
+          "feedback": "The class leaves the gradients as they are. The next `backward` assigns new ones, so there is nothing to clear."
+        }
+      ],
+      "explanation": "Section 2: the two lines of the method are `layer.weights -= self.learning_rate * layer.dweights` and the same for the biases. The parameter gradients are read, the parameters are changed in place, and nothing else on the layer is touched.",
+      "hints": [
+        "The method has two lines, one for each kind of parameter."
+      ]
+    },
+    {
+      "id": "nn-022-q03",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 1,
+      "tags": [
+        "epoch",
+        "full-batch"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The loop of the post hands all 300 spiral samples to the network in every epoch. How many times is each parameter updated during one epoch?",
+      "answer": {
+        "model": "Once: with the full batch, one epoch is one update.",
+        "accept": [
+          "^(?![\\s\\S]*(?<!not )(?<!than )\\b(300|three hundred|64|387)\\s*(times|updates|steps)?\\s*$)(?![\\s\\S]*(?<!not )(?<!than )\\b(300|three hundred|64|387)\\s*(times|updates|steps)\\b)(?![\\s\\S]*(?<!not )(?<!than )(?<!instead of )(?<!not once )(?<!not one )(?<!than once )(?<!not updated )(?<!not updated once )\\bper\\s+((individual|single|data|training|spiral)\\s+)*(sample|point|row|example)\\b)(?![\\s\\S]*(?<!not )(?<!than )(?<!instead of )(?<!not once )(?<!not one )(?<!than once )(?<!not updated )(?<!not updated once )\\bfor\\s+(each|every)\\s+((one\\s+)?of\\s+the\\s+)?(300\\s+)?((individual|single|data|training|spiral)\\s+)*(sample|point|row|example)s?\\b(?!\\s+separately))(?![\\s\\S]*\\b(twice|several|many|multiple|zero|never)\\b)(?![\\s\\S]*\\b(two|2|three|3)\\s+(times|updates|steps)\\b)(?![\\s\\S]*\\bmore than (once|one|1)\\b)(?![\\s\\S]*\\b(not|n't)\\s+(just\\s+|only\\s+)?(once|one|1|a single)\\b(?!\\s+(per|for\\s+each|for\\s+every)\\b))[\\s\\S]*\\b(once|one|1|single)\\b"
+        ]
+      },
+      "explanation": "Section 3: an epoch is one pass over the whole training set, and the loop makes one forward pass, one backward pass and one update on all 300 samples together. One epoch is therefore one update of every parameter. With mini-batches an epoch would be several updates.",
+      "hints": [
+        "Count the `update_params` calls that reach one layer in one turn of the loop."
+      ]
+    },
+    {
+      "id": "nn-022-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "update-rule"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A layer holds one weight, $0.8$, whose gradient is $-0.4$, and one bias, $-0.3$, whose gradient is $0.6$. `Optimizer_SGD(learning_rate=0.5).update_params(layer)` is called once. Give the new weight and the new bias.",
+      "answer": {
+        "parts": [
+          {
+            "label": "new weight",
+            "value": 1.0,
+            "tolerance": 0.0005,
+            "unit": ""
+          },
+          {
+            "label": "new bias",
+            "value": -0.6,
+            "tolerance": 0.0005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form $\\theta - \\alpha g$: $0.8 - 0.5 \\cdot (-0.4) = 1.0$ and $-0.3 - 0.5 \\cdot 0.6 = -0.6$; confirmed with the class of snippets/optimizer_sgd.py. Adding the gradient instead gives 0.6 and 0.0.",
+      "explanation": "Section 2: each parameter moves against its own gradient by the learning rate times that gradient. The weight becomes $0.8 - 0.5 \\cdot (-0.4) = 1.0$: a negative gradient means the loss falls as the weight grows, so the weight grows. The bias becomes $-0.3 - 0.5 \\cdot 0.6 = -0.6$.",
+      "hints": [
+        "Apply $\\theta \\leftarrow \\theta - \\alpha g$ to each number separately.",
+        "Subtracting a negative gradient increases the parameter."
+      ]
+    },
+    {
+      "id": "nn-022-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 4,
+      "tags": [
+        "parameter-count",
+        "loop"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The hidden layer of the post's network is widened: `dense1 = Layer_Dense(2, 128)` and `dense2 = Layer_Dense(128, 3)`, with everything else unchanged. Give the number of parameters of this network, and the number of `update_params` calls the loop makes in its 10,001 epochs.",
+      "answer": {
+        "parts": [
+          {
+            "label": "parameters",
+            "value": 771,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "update_params calls",
+            "value": 20002,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed forms: $2 \\cdot 128 + 128 + 128 \\cdot 3 + 3 = 771$ (the formula of section 3 with 128 in place of 64) and $2 \\cdot 10{,}001 = 20{,}002$; the first confirmed by summing the sizes of the four arrays of the classes in snippets/optimizer_sgd.py.",
+      "explanation": "Section 3: a dense layer has inputs times neurons weights and one bias per neuron, so the count is $2 \\cdot 128 + 128 + 128 \\cdot 3 + 3 = 771$. The loop calls `update_params` once for each layer that has parameters in every epoch, which is two calls per epoch and $2 \\cdot 10{,}001 = 20{,}002$ in all. The number of calls depends on the number of layers, not on their width.",
+      "hints": [
+        "Count weights and biases layer by layer, as the post does for 64 hidden neurons.",
+        "Only the two dense layers are handed to the optimiser, once each per epoch."
+      ]
+    },
+    {
+      "id": "nn-022-q06",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 4,
+      "tags": [
+        "loop",
+        "call-order"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Put the steps of one epoch of the post's training loop in the order in which they must run.",
+      "items": [
+        {
+          "key": "a",
+          "text": "`dense2.backward(loss_activation.dinputs)`"
+        },
+        {
+          "key": "b",
+          "text": "`optimizer.update_params(dense1)` and `optimizer.update_params(dense2)`"
+        },
+        {
+          "key": "c",
+          "text": "`loss = loss_activation.forward(dense2.output, y)`"
+        },
+        {
+          "key": "d",
+          "text": "`dense1.backward(activation1.dinputs)`"
+        },
+        {
+          "key": "e",
+          "text": "`dense1.forward(X)`, `activation1.forward(dense1.output)`, `dense2.forward(activation1.output)`"
+        },
+        {
+          "key": "f",
+          "text": "`loss_activation.backward(loss_activation.output, y)`"
+        },
+        {
+          "key": "g",
+          "text": "`activation1.backward(dense2.dinputs)`"
+        }
+      ],
+      "answer": [
+        "e",
+        "c",
+        "f",
+        "a",
+        "g",
+        "d",
+        "b"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 3: the forward pass runs from the data to the loss, the backward pass visits the same objects in the opposite order, each call reading what the call before it stored, and the optimiser is called when both dense layers hold their gradients. Every step reads something that only the step before it creates, so no other order of these seven items works.",
+      "hints": [
+        "Forward first, then the same objects in reverse, then the optimiser."
+      ]
+    },
+    {
+      "id": "nn-022-q07",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 4,
+      "tags": [
+        "learning-rate",
+        "measurement"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The post trains the spiral network for 10,001 epochs with several constant learning rates, from five seeds each. Match each rate to what was measured in all five runs.",
+      "left": [
+        {
+          "key": "a",
+          "text": "0.001"
+        },
+        {
+          "key": "b",
+          "text": "0.1"
+        },
+        {
+          "key": "c",
+          "text": "1"
+        },
+        {
+          "key": "d",
+          "text": "10"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "The loss rises on more than four updates in ten and ends between 0.39 and 0.99."
+        },
+        {
+          "key": "q",
+          "text": "The loss becomes `nan` within 110 epochs."
+        },
+        {
+          "key": "r",
+          "text": "The loss is still within 0.0003 of its starting value after 10,000 updates."
+        },
+        {
+          "key": "s",
+          "text": "Every hidden neuron is dead within 79 epochs, and the accuracy stays at one third."
+        },
+        {
+          "key": "t",
+          "text": "The loss never rises and ends between 1.00 and 1.06."
+        },
+        {
+          "key": "u",
+          "text": "The loss falls on every update and ends below 0.2."
+        }
+      ],
+      "answer": {
+        "a": "r",
+        "b": "t",
+        "c": "p",
+        "d": "s"
+      },
+      "explanation": "Section 5: at 0.001 the loss ends between 1.0984 and 1.0985, next to its start of 1.0986; at 0.1 it never rises and ends between 1.0014 and 1.0583; at 1 it rises on 4,154 to 4,765 of 10,000 updates and ends between 0.3943 and 0.9906; at 10 all 64 hidden neurons are dead by epoch 79 at the latest. A `nan` belongs to the sign error of section 8, and no rate in the table ends below 0.2.",
+      "hints": [
+        "Order the four rates from crawling to destroying the network."
+      ]
+    },
+    {
+      "id": "nn-022-q08",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "seed-spread",
+        "reading-a-result"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The documented run of the post prints an accuracy of 64.7 percent at epoch 10,000. Which reading of that number do the post's measurements support?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It is the level this optimiser reaches on the spiral: a run from another seed would end within a point or two of it.",
+          "correct": false,
+          "feedback": "Ten seeds ended between 43.0 and 87.0 percent, a spread of 44 points."
+        },
+        {
+          "key": "b",
+          "text": "Training has converged: the loss has settled near 0.87, and further epochs would leave the accuracy where it is.",
+          "correct": false,
+          "feedback": "The loss was rising on about every second update when the run stopped, and the same seed reaches 90.7 percent at epoch 50,000."
+        },
+        {
+          "key": "c",
+          "text": "It is one reading of a bouncing curve from one seed; ten seeds end between 43.0 and 87.0 percent.",
+          "correct": true,
+          "feedback": "Both the epoch at which the run stops and the seed it starts from move the number by many points."
+        },
+        {
+          "key": "d",
+          "text": "It is about what a hidden layer of 64 neurons can fit on 300 spiral points, so a better optimiser could not raise it much.",
+          "correct": false,
+          "feedback": "The same network on the same kind of data ends at 87.0 percent from seed 3, and above 90 percent in four of five runs of 50,001 epochs."
+        }
+      ],
+      "explanation": "Section 4: the loss of the run rose on 4,628 of its 10,000 updates, the accuracy moved between 56.3 and 65.3 percent within the last thousand epochs, and the same run from ten seeds ended between 43.0 and 87.0 percent. The printed value is one sample of a bouncing curve from one seed, not a level the optimiser settles at.",
+      "hints": [
+        "Ask what the run did between the logged epochs, and what other seeds did."
+      ]
+    },
+    {
+      "id": "nn-022-q09",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 4,
+      "tags": [
+        "dead-neurons",
+        "learning-rate"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "With a learning rate of 10 the post's network scores exactly 100 of 300 correct from about epoch 80 to the end of every run, while the logged loss keeps changing. Which explanation fits both observations?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The weights have overflowed to `nan`, and `argmax` of a row of `nan` returns class 0 for every sample.",
+          "correct": false,
+          "feedback": "A `nan` in the weights makes the loss `nan` as well, and a `nan` does not keep changing. This is what the sign error of the post produces, not a rate of 10."
+        },
+        {
+          "key": "b",
+          "text": "All hidden neurons output zero for every sample; only the output biases still get a gradient.",
+          "correct": true,
+          "feedback": "With a hidden output of zeros every sample gets the same logits, which explains the constant accuracy, and the three biases that still move explain the changing loss."
+        },
+        {
+          "key": "c",
+          "text": "The steps are so long that the network jumps between two good solutions, and both happen to score 100 of 300.",
+          "correct": false,
+          "feedback": "A solution that separates the classes at all scores above one third. Exactly 100 of 300 on balanced classes means one class is predicted for every point."
+        },
+        {
+          "key": "d",
+          "text": "Every probability is clipped at $10^{-7}$, so the gradient is zero and no parameter moves any more.",
+          "correct": false,
+          "feedback": "A fully clipped loss would be near 16.1 and constant. The measured loss ends between 1.19 and 1.93 and keeps changing, so some parameters still move."
+        }
+      ],
+      "explanation": "Section 5: at a rate of 10 all 64 hidden neurons are dead by epoch 79 at the latest. The hidden output is then zero for every sample, so every sample receives the same logits, the three output biases, and one class is predicted for all 300 points. Those biases are the only parameters that still receive a gradient, which is why the loss still moves. The loss stays finite, between 1.19 and 1.93 at the end.",
+      "hints": [
+        "Exactly one third on three balanced classes means every sample gets the same prediction.",
+        "Ask which parameters still have a non-zero gradient when the hidden layer outputs only zeros."
+      ]
+    },
+    {
+      "id": "nn-022-q10",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "8",
+      "est_minutes": 4,
+      "tags": [
+        "debugging",
+        "loop"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A copy of the post's loop runs without an error at a learning rate of 1. Its loss falls on every single update, never rising once, and after 10,001 epochs it stands at 1.07 with 43 percent correct. Which mistake fits these symptoms?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The update adds the gradient: `+=` stands where `-=` should.",
+          "correct": false,
+          "feedback": "Then the loss climbs from the first update, reaches 10.7454 by epoch 50 and is `nan` soon after epoch 100."
+        },
+        {
+          "key": "b",
+          "text": "`update_params` is called on `activation1` as well as on the two dense layers.",
+          "correct": false,
+          "feedback": "That call raises an `AttributeError` in the first epoch, because an activation has no `weights`."
+        },
+        {
+          "key": "c",
+          "text": "The line `optimizer.update_params(dense1)` is missing.",
+          "correct": true,
+          "feedback": "The hidden layer keeps its initial weights, the output layer alone learns, and the run is smooth, slow and stuck above 1.06."
+        },
+        {
+          "key": "d",
+          "text": "Nothing is wrong: a smooth, slow fall is how the correct loop behaves at this rate.",
+          "correct": false,
+          "feedback": "At a rate of 1 the correct loop raises the loss on 4,154 to 4,765 of 10,000 updates and ends below 1.0 in all five seeds."
+        }
+      ],
+      "explanation": "Section 8: with `dense1` left out of the update the loss never rises and ends between 1.0682 and 1.0825 over five seeds, because only the output layer learns, on top of hidden features that stay random. The correct loop at this rate looks worse from step to step, rising on more than four updates in ten, and ends far lower, between 0.3943 and 0.9906.",
+      "hints": [
+        "Compare the symptoms with how the correct loop behaves at this learning rate.",
+        "A loop in which only part of the network learns can be smoother and still end much higher."
+      ]
+    },
+    {
+      "id": "nn-022-q11",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "8",
+      "est_minutes": 1,
+      "tags": [
+        "exception",
+        "contract"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`optimizer.update_params(activation1)` is called by mistake, where `activation1` is an `Activation_ReLU`. Python raises an exception on the first line of the method. Name the exception class.",
+      "answer": {
+        "model": "`AttributeError`: an `Activation_ReLU` object has no attribute `weights`.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(not|never|no|isn't|rather than|instead of)\\s+(an?\\s+)?`?attribute[\\s_]*error)(?![\\s\\S]*(?<!not )(?<!not a )(?<!not an )(?<!than )(?<!than a )(?<!than an )\\b(type|value|index|key|name|zero\\s*division|runtime)[\\s_]*error)[\\s\\S]*\\battribute[\\s_]*error\\b"
+        ]
+      },
+      "explanation": "Section 8: the first line of `update_params` reads `layer.weights`, and an `Activation_ReLU` object has no such attribute, so Python raises `AttributeError: 'Activation_ReLU' object has no attribute 'weights'`. The optimiser is handed only objects that store `weights`, `biases`, `dweights` and `dbiases`.",
+      "hints": [
+        "The method asks the object for something a ReLU does not have."
+      ]
+    },
+    {
+      "id": "nn-022-q12",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 2,
+      "tags": [
+        "budget"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The 10,001-epoch runs of the post end between 43.0 and 87.0 percent correct. With the data, the network, the optimiser and the learning rate all left as they are, what single change made four of five seeds end above 90 percent?",
+      "answer": {
+        "model": "More epochs: 50,001 instead of 10,001.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(fewer|less|shorter|reduc\\w*|decreas\\w*|halv\\w*|stop\\w* (early|earlier|sooner))\\b)(?![\\s\\S]*\\b(not|n't|without|instead of)\\s+(\\w+\\s+){0,3}(more|longer|additional|extra)\\b)(?![\\s\\S]*\\b(step|update)\\s*(size|length)s?\\b)(?![\\s\\S]*\\b(longer|larger|bigger)\\s+(steps?|updates?)\\b)(?![\\s\\S]*\\b(higher|larger|bigger|lower|smaller|different|another|increas\\w*|decreas\\w*|rais\\w*|lower\\w*|chang\\w*|decay\\w*)\\s+(the\\s+)?(learning\\s+)?rate\\b)(?![\\s\\S]*\\b(learning\\s+)?rate\\s+decay\\b)(?![\\s\\S]*\\b(more|wider|larger|bigger)\\s+(\\w+\\s+)?(neurons?|layers?|data|samples|parameters)\\b)[\\s\\S]*(?:\\b(more|longer|additional|extra|further)\\s+(of\\s+)?(the\\s+)?((training|gradient|full-batch|descent)\\s+){0,2}(epochs?|updates?|steps?|iterations?|training|run|runs|budget)\\b|\\b(train\\w*|run\\w*|runs|ran|continu\\w*|kept|keep\\w*)\\s+(\\w+\\s+){0,4}(longer|further|on)\\b|\\b50[,.\\s]?00[01]\\b|\\b(five|5)\\s*(times|x)\\s+(\\w+\\s+){0,3}(epochs?|updates?|steps?|iterations?|budget|long\\w*)\\b|\\bincreas\\w*\\s+(\\w+\\s+){0,4}(epochs?|updates?|iterations?|budget)\\b|\\b(larger|bigger|greater|higher)\\s+((number|count|budget)\\s+of\\s+)?(epochs?|updates?|iterations?|budget)\\b|\\b(epochs?|updates?|iterations?|budget)\\s+(\\w+\\s+){0,3}(increas\\w*|rais\\w*|extend\\w*)\\b)"
+        ]
+      },
+      "explanation": "Section 6: the same runs continued to 50,001 epochs end higher in every one of the five seeds, and above 90 percent in four of them. Nothing but the number of updates changed, which is why the post calls the earlier results a limit of the rule and its budget and not of the data.",
+      "hints": [
+        "The change is to the `for` statement of the loop."
+      ]
+    },
+    {
+      "id": "nn-022-q13",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 20,
+      "tags": [
+        "implement",
+        "optimiser",
+        "training-loop"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Complete `Optimizer_SGD.update_params` and the function `train`, which trains the post's four objects on the full batch for a given number of epochs and returns the loss of every epoch. The tests supply the layer, activation and loss classes of the post, check the optimiser on an object that holds only the four arrays, and compare the losses and the final parameters with the same training written on loose arrays.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "class Optimizer_SGD:\n\n    def __init__(self, learning_rate=1.0):\n        self.learning_rate = learning_rate\n\n    def update_params(self, layer):\n        # TODO: move layer.weights and layer.biases against their gradients\n        pass\n\n\ndef train(dense1, activation1, dense2, loss_activation, optimizer, X, y, epochs):\n    \"\"\"Full-batch training for `epochs` epochs.\n\n    dense1 and dense2 are Layer_Dense objects, activation1 is an Activation_ReLU and\n    loss_activation is an Activation_Softmax_Loss_CategoricalCrossentropy, as in the post.\n    Returns a list with one loss per epoch, each taken from that epoch's forward pass,\n    which is the loss before that epoch's update.\n    \"\"\"\n    losses = []\n    # TODO: forward pass, backward pass, update and log, `epochs` times\n    return losses\n",
+      "solution": "class Optimizer_SGD:\n\n    def __init__(self, learning_rate=1.0):\n        self.learning_rate = learning_rate\n\n    def update_params(self, layer):\n        layer.weights -= self.learning_rate * layer.dweights\n        layer.biases -= self.learning_rate * layer.dbiases\n\n\ndef train(dense1, activation1, dense2, loss_activation, optimizer, X, y, epochs):\n    \"\"\"Full-batch training for `epochs` epochs.\n\n    dense1 and dense2 are Layer_Dense objects, activation1 is an Activation_ReLU and\n    loss_activation is an Activation_Softmax_Loss_CategoricalCrossentropy, as in the post.\n    Returns a list with one loss per epoch, each taken from that epoch's forward pass,\n    which is the loss before that epoch's update.\n    \"\"\"\n    losses = []\n    for epoch in range(epochs):\n        # Forward pass.\n        dense1.forward(X)\n        activation1.forward(dense1.output)\n        dense2.forward(activation1.output)\n        loss = loss_activation.forward(dense2.output, y)\n\n        # Backward pass.\n        loss_activation.backward(loss_activation.output, y)\n        dense2.backward(loss_activation.dinputs)\n        activation1.backward(dense2.dinputs)\n        dense1.backward(activation1.dinputs)\n\n        # Update: one call for each layer that has parameters.\n        optimizer.update_params(dense1)\n        optimizer.update_params(dense2)\n\n        # Log.\n        losses.append(loss)\n    return losses\n",
+      "tests": "from types import SimpleNamespace\n\nimport numpy as np\n\n\nclass Layer_Dense:\n    def __init__(self, n_inputs, n_neurons):\n        self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)\n        self.biases = np.zeros((1, n_neurons))\n\n    def forward(self, inputs):\n        self.inputs = inputs\n        self.output = np.dot(inputs, self.weights) + self.biases\n\n    def backward(self, dvalues):\n        self.dweights = np.dot(self.inputs.T, dvalues)\n        self.dbiases = np.sum(dvalues, axis=0, keepdims=True)\n        self.dinputs = np.dot(dvalues, self.weights.T)\n\n\nclass Activation_ReLU:\n    def forward(self, inputs):\n        self.inputs = inputs\n        self.output = np.maximum(0, inputs)\n\n    def backward(self, dvalues):\n        self.dinputs = dvalues.copy()\n        self.dinputs[self.inputs <= 0] = 0\n\n\nclass Activation_Softmax_Loss_CategoricalCrossentropy:\n    def forward(self, inputs, y_true):\n        exp_values = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))\n        self.output = exp_values / np.sum(exp_values, axis=1, keepdims=True)\n        confidences = np.clip(self.output[range(len(inputs)), y_true], 1e-7, 1 - 1e-7)\n        return np.mean(-np.log(confidences))\n\n    def backward(self, dvalues, y_true):\n        samples = len(dvalues)\n        self.dinputs = dvalues.copy()\n        self.dinputs[range(samples), y_true] -= 1\n        self.dinputs /= samples\n\n\n# 1. The optimiser alone, on an object that has nothing but the four arrays.\nassert Optimizer_SGD().learning_rate == 1.0, \"the default learning rate of the series is 1.0\"\nlayer = SimpleNamespace(weights=np.array([[1.0, -2.0, 0.5]]), biases=np.array([[0.2, 0.0, -0.4]]),\n                        dweights=np.array([[0.5, -1.0, 0.0]]), dbiases=np.array([[-2.0, 4.0, 1.0]]))\nOptimizer_SGD(learning_rate=0.1).update_params(layer)\nassert np.allclose(layer.weights, [[0.95, -1.9, 0.5]], rtol=0, atol=1e-12), \"weights must become weights - learning_rate * dweights\"\nassert np.allclose(layer.biases, [[0.4, -0.4, -0.5]], rtol=0, atol=1e-12), \"biases must become biases - learning_rate * dbiases\"\nassert np.allclose(layer.dweights, [[0.5, -1.0, 0.0]]) and np.allclose(layer.dbiases, [[-2.0, 4.0, 1.0]]), \"the gradients are read, not changed\"\n\n\ndef reference(X, y, W1, b1, W2, b2, learning_rate, epochs):\n    \"\"\"The same training on loose arrays: the losses before each update, and the final parameters.\"\"\"\n    losses = []\n    for epoch in range(epochs):\n        Z1 = X @ W1 + b1\n        A1 = np.maximum(0, Z1)\n        Z2 = A1 @ W2 + b2\n        E = np.exp(Z2 - Z2.max(axis=1, keepdims=True))\n        P = E / E.sum(axis=1, keepdims=True)\n        losses.append(np.mean(-np.log(np.clip(P[range(len(y)), y], 1e-7, 1 - 1e-7))))\n        dZ2 = P.copy()\n        dZ2[range(len(y)), y] -= 1\n        dZ2 /= len(y)\n        dZ1 = (dZ2 @ W2.T) * (Z1 > 0)\n        W2 = W2 - learning_rate * A1.T @ dZ2\n        b2 = b2 - learning_rate * dZ2.sum(axis=0, keepdims=True)\n        W1 = W1 - learning_rate * X.T @ dZ1\n        b1 = b1 - learning_rate * dZ1.sum(axis=0, keepdims=True)\n    return losses, W1, b1, W2, b2\n\n\n# 2. The loop, against the same training written on loose arrays.\nfor seed, (n_in, n_hidden, n_out, n_samples), learning_rate, epochs in [(1, (2, 5, 3, 12), 0.5, 25),\n                                                                        (2, (3, 6, 4, 10), 0.1, 40),\n                                                                        (3, (2, 4, 2, 8), 1.0, 1)]:\n    rng = np.random.default_rng(seed)\n    X = rng.normal(size=(n_samples, n_in))\n    y = rng.integers(0, n_out, size=n_samples)\n    dense1, activation1 = Layer_Dense(n_in, n_hidden), Activation_ReLU()\n    dense2, loss_activation = Layer_Dense(n_hidden, n_out), Activation_Softmax_Loss_CategoricalCrossentropy()\n    dense1.weights = rng.normal(scale=0.5, size=(n_in, n_hidden))\n    dense1.biases = rng.normal(scale=0.5, size=(1, n_hidden))\n    dense2.weights = rng.normal(scale=0.5, size=(n_hidden, n_out))\n    dense2.biases = rng.normal(scale=0.5, size=(1, n_out))\n    want_losses, *want = reference(X, y, dense1.weights.copy(), dense1.biases.copy(),\n                                   dense2.weights.copy(), dense2.biases.copy(), learning_rate, epochs)\n    gates = (X @ dense1.weights + dense1.biases) > 0\n    assert gates.any() and not gates.all(), \"the test batch must open some ReLU gates and close others\"\n\n    losses = train(dense1, activation1, dense2, loss_activation,\n                   Optimizer_SGD(learning_rate=learning_rate), X, y, epochs)\n\n    assert losses is not None and len(losses) == epochs, \"train must return one loss per epoch\"\n    assert abs(losses[0] - want_losses[0]) < 1e-9, \"the first loss is that of the untrained network, measured before any update\"\n    assert np.allclose(losses, want_losses, rtol=0, atol=1e-9), \"the losses do not follow gradient descent on all four parameter arrays\"\n    for name, got, expected in zip((\"dense1.weights\", \"dense1.biases\", \"dense2.weights\", \"dense2.biases\"),\n                                   (dense1.weights, dense1.biases, dense2.weights, dense2.biases), want):\n        assert got.shape == expected.shape, name + \" changed shape\"\n        assert np.allclose(got, expected, rtol=0, atol=1e-9), name + \" is not what \" + str(epochs) + \" updates leave\"\nprint(\"all optimiser and training-loop checks passed\")\n",
+      "expected_output": "all optimiser and training-loop checks passed\n",
+      "explanation": "The optimiser is the two lines of section 2, and `train` is the loop of section 3 without the accuracy: four forward calls, four backward calls, one `update_params` call for each dense layer, and the loss of the forward pass appended once per epoch. The tests fail if the gradient is added, if the biases or one of the layers are left out of the update, if the learning rate is ignored, if the loss is logged after the update, or if the loop makes one update too few or too many.",
+      "hints": [
+        "The optimiser needs one line for the weights and one for the biases; both subtract.",
+        "Inside the loop the order is forward, backward, update, and the loss to append is the one the forward pass returned. Only `dense1` and `dense2` are handed to the optimiser."
+      ]
+    },
+    {
+      "id": "nn-022-q14",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 10,
+      "tags": [
+        "learning-rate",
+        "run-it"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Run the documented run of the post, `snippets/train_sgd.py` (seed 0, 10,001 epochs), with one change: `Optimizer_SGD(learning_rate=0.1)`. Give the loss logged at epoch 10,000, and the number of updates, out of 10,000, on which the loss rose.",
+      "answer": {
+        "parts": [
+          {
+            "label": "loss at epoch 10,000",
+            "value": 1.0226,
+            "tolerance": 0.002,
+            "unit": ""
+          },
+          {
+            "label": "updates on which the loss rose",
+            "value": 0,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "`train(0, learning_rate=0.1)` of snippets/seed_spread.py after `nnfs.init()`: `losses[-1]` is 1.0226 and `np.sum(np.diff(losses) > 0)` is 0. The rate of 1 gives 0.8737 and 4,628; a rate of 0.01 gives 1.0867.",
+      "explanation": "Section 5: at a rate of 0.1 the loss never rose in any of the five seeds, and seed 0 ends at 1.0226 with 44.3 percent correct, against 0.8737 at a rate of 1. Every step went downhill and the budget ran out first: the steady rate is the slow one. Post 09 lists the same 1.0226 for these steps written without classes.",
+      "hints": [
+        "Only the argument of the optimiser changes; the count of rises is `np.sum(np.diff(losses) > 0)` on the script's list of losses.",
+        "Expect a final loss between the 0.8737 of the rate of 1 and the 1.0986 of the untrained network, much nearer the second."
+      ]
+    },
+    {
+      "id": "nn-022-q15",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "8",
+      "est_minutes": 5,
+      "tags": [
+        "clipping",
+        "sign-error"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A loop with a sign error has driven a four-class network to give class 0 a probability of 1 for every sample. The training set has 100 samples of each class, and the loss clips every probability to the range from $10^{-7}$ to $1 - 10^{-7}$, as in the post. What mean loss does the loop log?",
+      "answer": {
+        "value": 12.0886,
+        "tolerance": 0.005,
+        "unit": ""
+      },
+      "precision_note": "Closed form $\\tfrac{3}{4}(-\\ln 10^{-7}) + \\tfrac{1}{4}(-\\ln(1 - 10^{-7})) = 12.0886$, the four-class version of the $2/3 \\cdot 16.1181 = 10.7454$ printed by snippets/what_can_go_wrong.py. The unweighted 16.1181 and the three-class 10.7454 lie outside the tolerance.",
+      "explanation": "Section 8 does this arithmetic for three classes. A sample whose true class has probability 0 is clipped to $10^{-7}$ and costs $-\\ln 10^{-7} = 16.1181$; a sample of class 0 costs $-\\ln(1 - 10^{-7}) \\approx 10^{-7}$. Three quarters of the samples are of the first kind, so the mean is $0.75 \\cdot 16.1181 = 12.0886$. A loss stuck at such a value is the signature of a network that predicts one class with certainty.",
+      "hints": [
+        "Split the samples into those the network happens to get right and those it gets wrong, and find the loss of one sample of each kind.",
+        "The clipped loss of a wrong sample is $-\\ln 10^{-7}$; the share of wrong samples is three in four."
+      ]
+    },
+    {
+      "id": "nn-022-q16",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 15,
+      "tags": [
+        "dead-neurons",
+        "backward-pass"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "At a learning rate of 10 every hidden neuron of the post's network ends up with a negative pre-activation for all 300 samples. Using the `backward` methods of `Layer_Dense` and `Activation_ReLU` from post 16 and the account of a dead neuron in post 17, show which of the four parameter gradients are then exactly zero and which is not, and explain why no later update can bring a hidden neuron back.",
+      "kind": "connect",
+      "connects": [
+        "nn-016",
+        "nn-017"
+      ],
+      "solution": "1. Forward pass: every entry of $\\mathbf{Z}_1 = \\mathbf{X}\\mathbf{W}_1 + \\mathbf{b}_1$ is negative, so $\\mathbf{A}_1 = \\max(0, \\mathbf{Z}_1)$ is a matrix of zeros and $\\mathbf{Z}_2 = \\mathbf{A}_1 \\mathbf{W}_2 + \\mathbf{b}_2 = \\mathbf{b}_2$ for every sample. All 300 samples get the same logits and the same prediction.\n2. The combined class stores $\\partial L / \\partial \\mathbf{Z}_2 = (\\hat{\\mathbf{y}} - \\mathbf{y})/N$, which is not zero, since the predictions do not equal the one-hot labels.\n3. `dense2.backward` computes `dweights` as $\\mathbf{A}_1^{\\top} \\, \\partial L / \\partial \\mathbf{Z}_2$, which is zero because $\\mathbf{A}_1$ is zero; `dbiases` as the column sums of $\\partial L / \\partial \\mathbf{Z}_2$, which are in general not zero; and `dinputs` as $(\\partial L / \\partial \\mathbf{Z}_2)\\,\\mathbf{W}_2^{\\top}$.\n4. `activation1.backward` copies that array and sets it to zero wherever its input was not positive, which is everywhere. Its `dinputs` is all zeros.\n5. `dense1.backward` computes `dweights` as $\\mathbf{X}^{\\top}$ times that zero array and `dbiases` as its column sums: both are zero.\n6. So three of the four gradients are exactly zero, those of $\\mathbf{W}_1$, $\\mathbf{b}_1$ and $\\mathbf{W}_2$, and only the gradient of $\\mathbf{b}_2$ is not. The update changes $\\mathbf{b}_2$ and nothing else.\n7. Whether a hidden neuron is dead is decided by $\\mathbf{Z}_1$, which depends on $\\mathbf{X}$, $\\mathbf{W}_1$ and $\\mathbf{b}_1$ only. None of the three changes any more, so the next forward pass finds the same negative $\\mathbf{Z}_1$, and by the same steps so does every pass after it, whatever the learning rate is from then on. With one prediction for all samples and three balanced classes the accuracy is 100 of 300.",
+      "rubric": [
+        {
+          "criterion": "States that the hidden output is zero for every sample, so every sample gets the same logits",
+          "points": 1
+        },
+        {
+          "criterion": "Shows that `dense2.dweights` is zero because it is the zero hidden output transposed times the incoming gradient",
+          "points": 2
+        },
+        {
+          "criterion": "Shows that `dense2.dbiases`, the column sums of the gradient at the logits, is the one gradient that is not zero",
+          "points": 1
+        },
+        {
+          "criterion": "Shows that the ReLU mask zeroes the whole gradient handed back, so both gradients of `dense1` are zero",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that the hidden pre-activations depend only on the data and on `dense1`'s parameters, which no longer change, so the neurons stay dead",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 5 states the result: once the hidden layer outputs only zeros, `dense2.dweights` is zero, nothing reaches `dense1`, and only the three biases of `dense2` still move. The derivation is the backward pass of post 16 with $\\mathbf{A}_1 = 0$ and a mask that is closed everywhere, and the hidden layer cannot recover because the pre-activations depend only on the data and on parameters that no longer change.",
+      "hints": [
+        "Write what each `backward` method computes, and put in a hidden output that is zero everywhere.",
+        "For the last part, ask which arrays decide whether a hidden neuron is dead, and whether any of them still changes."
+      ]
+    },
+    {
+      "id": "nn-022-q17",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 15,
+      "tags": [
+        "critique",
+        "seed-spread",
+        "budget"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A report on the post's setup reads: \"Vanilla gradient descent reaches 64.7 percent on the spiral after 10,001 epochs. The data are evidently too hard for a hidden layer of 64 neurons. Optimiser B reached 70.3 percent in the same number of epochs, so B is the better optimiser.\" Each sentence rests on one run of each optimiser. Using the measurements of the post, say what is wrong with each of the three sentences and what the report would have to measure to support its last one.",
+      "kind": "critique",
+      "solution": "**First sentence.** 64.7 percent is the accuracy of one seed at one epoch. Within the last thousand epochs of that run the accuracy moved between 56.3 and 65.3 percent, because the loss rose on 4,628 of the 10,000 updates, and the same run from ten seeds ended between 43.0 and 87.0 percent. The optimiser does not reach a level; it produces a wide range.\n\n**Second sentence.** The data are not the limit. On the same kind of data and the same architecture seed 3 ends at 87.0 percent, and when the runs are continued to 50,001 epochs every one of five seeds ends higher, four of them above 90 percent. A network of 64 hidden neurons can fit the spiral; the rule with a constant rate is slow at finding the fit.\n\n**Third sentence.** A lead of 5.6 points from one run each is much smaller than the 44 points by which gradient descent differs from itself across seeds, and smaller than the nine points the documented run moves within its last thousand epochs. Optimiser B could be better, equal or worse.\n\n**What to measure.** Both optimisers on the same setup (data, architecture, initialisation, epochs) from the same list of several seeds; for each run a summary that does not hang on one epoch, such as the mean accuracy or the lowest loss over the last thousand epochs; and the range of that summary over the seeds for each optimiser. The claim that B is better is supported if B is ahead in every seed, or nearly every seed, or if the two ranges do not overlap.",
+      "rubric": [
+        {
+          "criterion": "Notes that the last epoch is one point of a bouncing curve, citing the band of the last thousand epochs or the count of rises",
+          "points": 2
+        },
+        {
+          "criterion": "Cites the spread over seeds, 43.0 to 87.0 percent, against the single 64.7",
+          "points": 2
+        },
+        {
+          "criterion": "Refutes the claim about the data with the 87.0 percent of another seed or the results at 50,001 epochs",
+          "points": 2
+        },
+        {
+          "criterion": "States that 5.6 points between single runs lies inside the spread and so decides nothing",
+          "points": 1
+        },
+        {
+          "criterion": "Proposes a comparison over several seeds on one setup, with a summary steadier than the last epoch",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Sections 4 and 6 hold the three measurements the report ignores: the accuracy moves by nine points within the last thousand epochs of the documented run and by 44 points across ten seeds, and the same network passes 90 percent in four of five runs of 50,001 epochs. A difference of 5.6 points between two single runs is far inside that spread, so it shows nothing until both optimisers are run from several seeds.",
+      "hints": [
+        "Take the sentences one at a time: what does the post measure about the last epoch, about other seeds, and about longer runs?",
+        "For the comparison, set the 5.6 points between the two optimisers beside the spread of one optimiser over ten seeds."
+      ]
+    },
+    {
+      "id": "nn-022-q18",
+      "type": "long",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 8,
+      "tags": [
+        "contract",
+        "design"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Explain why the series puts the update rule into an optimiser object and not into `Layer_Dense.backward`, and state the contract between a layer and the optimiser: what each side provides, and when `update_params` may be called.",
+      "kind": "explain",
+      "solution": "Two questions are kept apart. What the gradient of an operation is depends on the operation, so it is answered inside each component's `backward`. How a gradient is turned into a new parameter, and with which learning rate, is the same question for every layer, so it is answered once, in the optimiser. If the subtraction stood inside `Layer_Dense.backward`, every layer would have to know the learning rate, a change of the rule would mean rewriting the layers, and the backward pass could not be run without changing the parameters, for instance for a gradient check.\n\nThe contract is four attributes and one rule about order. A layer with parameters stores `weights` and `biases`, and its `backward` stores `dweights` and `dbiases`, each with the shape of its parameter. The optimiser's `update_params(layer)` reads the two gradients and changes the two parameters in place; it knows nothing about how the gradients were computed and works on any object that has the four arrays. It is called once for each layer that has parameters, after the backward pass is complete, so that every gradient it reads belongs to the current forward pass. Components without parameters, the ReLU and the combined softmax and loss class, are never handed to it.\n\nThe gain is that the optimiser can be replaced by another one that keeps the same call, while the layers stay as they are.",
+      "rubric": [
+        {
+          "criterion": "Separates the two concerns: `backward` computes gradients, the optimiser decides how they change the parameters",
+          "points": 2
+        },
+        {
+          "criterion": "Names the four attributes and which side writes which: the layer stores `weights`, `biases`, `dweights`, `dbiases`; the optimiser reads the gradients and changes the parameters",
+          "points": 2
+        },
+        {
+          "criterion": "States when `update_params` is called: once per layer with parameters, after the backward pass, never on a component without parameters",
+          "points": 2
+        },
+        {
+          "criterion": "Gives a consequence of the split, such as changing the rule without changing the layers",
+          "points": 1
+        }
+      ],
+      "answer_length": "two paragraphs",
+      "explanation": "Section 1.1: a component's `backward` knows what its gradient is, the optimiser knows how a gradient becomes a new parameter, and the two meet in four attributes. Because the optimiser reads only `dweights` and `dbiases` and writes only `weights` and `biases`, the rule can be changed without touching a layer, which is what the rest of Part VI does.",
+      "hints": [
+        "Ask what a layer knows that the optimiser does not need, and the other way round.",
+        "List the four attributes involved and say which side writes each of them."
+      ]
+    }
+  ]
+}
