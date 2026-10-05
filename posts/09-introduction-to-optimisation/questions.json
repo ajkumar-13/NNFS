@@ -1,0 +1,764 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-009",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-009-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "random-selection"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Random selection draws all 21 parameters afresh 10,000 times at a scale of 0.05 and keeps the best set. The best loss goes from 1.0986 to 1.0981, and the best set gets 104 of 300 spiral points right. Which reading of that result is correct?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The search is close to the lowest loss this network can reach, so it has nearly converged.",
+          "correct": false,
+          "feedback": "Random perturbation reaches 1.0435 on the same network in the same number of iterations, so 1.0981 is not near the floor."
+        },
+        {
+          "key": "b",
+          "text": "Every draw is a near-uniform guesser, so the search has learned nothing useful.",
+          "correct": true,
+          "feedback": "Tiny parameters give tiny logits and outputs near one third per class; all 10,000 losses lie within about 0.01 of $\\ln 3$."
+        },
+        {
+          "key": "c",
+          "text": "The loss barely moved but 104 of 300 is above 100, so the network has started to learn the spiral.",
+          "correct": false,
+          "feedback": "The count wandered between 100 and 118 during the search and chance is 100 of 300; four extra points is noise."
+        },
+        {
+          "key": "d",
+          "text": "The search needs a smaller scale than 0.05 so that its draws stop overshooting the minimum.",
+          "correct": false,
+          "feedback": "Random selection does not step from one point to the next, so it has nothing to overshoot; a smaller scale makes the draws even more alike."
+        }
+      ],
+      "explanation": "Section 2 shows that parameters drawn at scale 0.05 give outputs close to $1/3$ per class whatever the input, so every candidate has a loss near $\\ln 3 \\approx 1.0986$. The search picks the best of 10,000 nearly identical guessers.",
+      "hints": [
+        "Compare the two numbers with what a network that always answers one third per class would score."
+      ]
+    },
+    {
+      "id": "nn-009-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "random-selection",
+        "cross-entropy"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "When the 21 parameters are drawn at scale 10.0 in place of 0.05, none of 10,000 draws has a loss below $\\ln 3$, and the best loss found is 1.6709. Why do larger random parameters make the loss worse and not better?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Large logits overflow inside the exponential of softmax, and the overflow shows up as a large loss.",
+          "correct": false,
+          "feedback": "The softmax of post 06 subtracts the row maximum before exponentiating, so large logits do not overflow."
+        },
+        {
+          "key": "b",
+          "text": "The clip to $10^{-7}$ inside the loss class replaces most predictions and inflates the mean.",
+          "correct": false,
+          "feedback": "The clip only limits how large a single loss can get, to about 16.1; it does not create the confident wrong predictions."
+        },
+        {
+          "key": "c",
+          "text": "Large parameters give confident outputs, and a randomly confident network is wrong on most points.",
+          "correct": true,
+          "feedback": "Cross-entropy charges $-\\log$ of the probability given to the true class, which is large whenever a confident prediction is wrong."
+        },
+        {
+          "key": "d",
+          "text": "Large weights push every hidden ReLU to zero, so the network can no longer produce any output.",
+          "correct": false,
+          "feedback": "A dead hidden layer leaves the output biases, which still produce a prediction; and most draws do not kill every neuron."
+        }
+      ],
+      "explanation": "Section 2 explains that larger parameters make the softmax output confident. With random parameters the confident class is wrong for roughly two points in three, and the negative log of a small true-class probability is large, so the mean loss rises above the $\\ln 3$ of a uniform guess.",
+      "hints": [
+        "Think about what softmax returns when one logit is far larger than the others.",
+        "Then ask what cross-entropy charges when that confident class is the wrong one."
+      ]
+    },
+    {
+      "id": "nn-009-q03",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "scaling"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "As an illustration, suppose a good region of parameter space requires nothing more than each parameter landing in the correct half of its range, independently of the others. For a network with 21 parameters, one random draw in how many lands in that region, on average?",
+      "answer": {
+        "value": 2097152,
+        "tolerance": 1000,
+        "unit": "draws"
+      },
+      "precision_note": "Closed form of section 4: the chance is (1/2)^21, so one draw in 2^21 = 2,097,152.",
+      "explanation": "Section 4: each parameter is in the correct half with probability $1/2$, and 21 independent parameters are all correct with probability $(1/2)^{21} = 1/2{,}097{,}152$, about one draw in two million. Every added parameter doubles the number of draws needed.",
+      "hints": [
+        "Independent events multiply their probabilities."
+      ]
+    },
+    {
+      "id": "nn-009-q04",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "random-perturbation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Random perturbation cannot tell which way is downhill until it has tried a step and measured the loss. What two-word term does the post use for this property of the method?",
+      "answer": {
+        "model": "Direction-blind: it has no information about which direction lowers the loss before it steps.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(not|never|isn't)\\s+(\\w+\\s+)?(direction[- ]?blind|blind (to|about)))[\\s\\S]*direction[- ]?blind",
+          "^(?![\\s\\S]*\\b(not|never|isn't)\\s+(\\w+\\s+)?(direction[- ]?blind|blind (to|about)))[\\s\\S]*blind (to|about) (the |its )?direction"
+        ]
+      },
+      "explanation": "Section 3 calls random perturbation direction-blind: each proposal costs a full forward pass and returns one fact, better or worse, about one random direction.",
+      "hints": [
+        "The term describes what the method cannot see before it moves."
+      ]
+    },
+    {
+      "id": "nn-009-q05",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 4,
+      "tags": [
+        "capacity",
+        "comparison"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "On the 21-parameter network and the spiral data, 10,000 iterations of random perturbation end at a loss of 1.0435. From the same start, 10,000 steps of gradient descent end at 1.0776 with a learning rate of 1 and at 1.0797 with a learning rate of 0.1. What do these numbers support?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Knowing the gradient is of no real use on the spiral data, whatever the network or the budget.",
+          "correct": false,
+          "feedback": "On the 387-parameter network gradient descent reaches 0.8737 and the random walk 1.0730, and with 100,000 steps it is ahead on 21 parameters too."
+        },
+        {
+          "key": "b",
+          "text": "Within this budget, knowing the downhill direction gave no advantage on the small network.",
+          "correct": true,
+          "feedback": "Same network, same start, same number of iterations, and the blind walk ends lower than gradient descent at either learning rate."
+        },
+        {
+          "key": "c",
+          "text": "Random perturbation is the better optimiser for this network, however long both are run.",
+          "correct": false,
+          "feedback": "With 100,000 iterations each, gradient descent reaches 1.0049 and the walk 1.0403; the ranking depends on the budget."
+        },
+        {
+          "key": "d",
+          "text": "The walk has found the lowest loss that three hidden neurons can have on the spiral data.",
+          "correct": false,
+          "feedback": "Gradient descent later reaches 1.0049 on the same network, so 1.0435 is where this run stopped, not a floor."
+        }
+      ],
+      "explanation": "Section 4 gives a blind method and a gradient method the same network, start and budget. On 21 parameters and 10,000 iterations the walk ends at 1.0435 and gradient descent at 1.0776 or 1.0797, so blindness was not what limited the walk in that budget. The table says nothing about the lowest reachable loss: with ten times the steps gradient descent reaches 1.0049. On 387 parameters only gradient descent goes lower.",
+      "hints": [
+        "Compare what the runs share with what differs between them.",
+        "Ask what runs with one budget each can show, and what would need a further experiment."
+      ]
+    },
+    {
+      "id": "nn-009-q06",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 5,
+      "tags": [
+        "scaling",
+        "comparison"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The table gives the final loss on the spiral data after 10,000 iterations, as printed by the post's scripts (gradient descent with a learning rate of 1). For each method, give the change in the final loss when the network is widened from 21 to 387 parameters, as the 387-parameter loss minus the 21-parameter loss, so that a negative number is an improvement.",
+      "stimulus": {
+        "kind": "table",
+        "content": "| Parameters | Random perturbation | Gradient descent |\n|---|---|---|\n| 21 | 1.0435 | 1.0776 |\n| 387 | 1.0730 | 0.8737 |"
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "random perturbation",
+            "value": 0.0295,
+            "tolerance": 0.0002,
+            "unit": ""
+          },
+          {
+            "label": "gradient descent",
+            "value": -0.2039,
+            "tolerance": 0.0002,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Outputs of snippets/random_perturbation.py and snippets/gradient_descent_preview.py: 1.0730 - 1.0435 = 0.0295 and 0.8737 - 1.0776 = -0.2039.",
+      "explanation": "Section 4: the random walk's final loss goes up by $1.0730 - 1.0435 = 0.0295$ when parameters are added, and that of gradient descent goes down by $1.0776 - 0.8737 = 0.2039$. The post's seeds run shows the walk ending between 1.0321 and 1.0793 on 21 parameters and between 1.0442 and 1.0666 on 387 over 20 streams of nudges, so a change of 0.03 is within its spread: the walk gained nothing reliable, and only the method that knows the downhill direction used the extra room.",
+      "hints": [
+        "Subtract within each column, not across a row.",
+        "The two changes have opposite signs."
+      ]
+    },
+    {
+      "id": "nn-009-q07",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "update-rule"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the update rule $\\theta \\leftarrow \\theta - \\alpha \\, \\nabla L$, what is the job of $\\alpha$?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It is the loss, the number that the rule is trying to make smaller.",
+          "correct": false,
+          "feedback": "The loss is $L$; $\\alpha$ multiplies its gradient."
+        },
+        {
+          "key": "b",
+          "text": "It sets the size of the step taken against the gradient.",
+          "correct": true,
+          "feedback": "$\\alpha$ is the learning rate, a small positive number that scales every component of the step."
+        },
+        {
+          "key": "c",
+          "text": "It chooses the direction of the step, uphill or downhill.",
+          "correct": false,
+          "feedback": "The direction comes from $\\nabla L$ and the minus sign; $\\alpha$ is positive and only scales."
+        },
+        {
+          "key": "d",
+          "text": "It counts how many parameters the network has.",
+          "correct": false,
+          "feedback": "The number of parameters is the number of components of $\\theta$ and of $\\nabla L$, 21 in the post's network."
+        }
+      ],
+      "explanation": "Section 5 names the symbols: $\\theta$ is the parameters, $\\nabla L$ the vector of slopes of the loss, the minus sign makes the step go downhill, and the learning rate $\\alpha$ sets how large the step is.",
+      "hints": [
+        "Three things appear on the right-hand side; decide which one is a plain positive number chosen by the user."
+      ]
+    },
+    {
+      "id": "nn-009-q08",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5.1",
+      "est_minutes": 3,
+      "tags": [
+        "update-rule",
+        "one-parameter"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A loss with one parameter is $f(w) = w^2$, whose slope at $w$ is $2w$. Starting from $w = 3$, one step of gradient descent is taken with learning rate $\\alpha = 0.25$. What are the new $w$ and the new loss?",
+      "answer": {
+        "parts": [
+          {
+            "label": "w after the step",
+            "value": 1.5,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "f(w) after the step",
+            "value": 2.25,
+            "tolerance": 0.001,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 5.1: w - alpha * 2w = 3 - 0.25 * 6 = 1.5 and 1.5^2 = 2.25.",
+      "explanation": "Section 5.1: the slope at $w = 3$ is 6, the step is $-0.25 \\cdot 6 = -1.5$, so $w$ becomes 1.5 and the loss falls from 9 to $1.5^2 = 2.25$.",
+      "hints": [
+        "Compute the slope at the starting point first."
+      ]
+    },
+    {
+      "id": "nn-009-q09",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5.1",
+      "est_minutes": 4,
+      "tags": [
+        "learning-rate",
+        "one-parameter"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Gradient descent is run on $f(w) = w^2$ (slope $2w$) from $w = 5$ with learning rate $\\alpha = 0.2$. What is $w$ after three steps?",
+      "answer": {
+        "value": 1.08,
+        "tolerance": 0.001,
+        "unit": ""
+      },
+      "precision_note": "Closed form of section 5.1: each step multiplies w by 1 - 2 * 0.2 = 0.6, so 5 * 0.6^3 = 1.08.",
+      "explanation": "Section 5.1: each step replaces $w$ by $(1 - 2\\alpha)\\,w = 0.6\\,w$, so the iterates are 3, 1.8, 1.08. After three steps $w = 5 \\cdot 0.6^3 = 1.08$.",
+      "hints": [
+        "Write one step as $w$ times a single factor.",
+        "The factor is $1 - 2\\alpha$; apply it three times to 5."
+      ]
+    },
+    {
+      "id": "nn-009-q10",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5.1",
+      "est_minutes": 4,
+      "tags": [
+        "learning-rate",
+        "oscillation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Gradient descent is run on $f(w) = w^2$ (slope $2w$) from $w = 5$ with learning rate $\\alpha = 0.75$. What does $w$ do over many steps?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It grows without bound, because 0.75 is above the value 0.5 that lands on the minimum in one step.",
+          "correct": false,
+          "feedback": "Overshooting the minimum is not divergence; the size of $w$ grows only when $|1 - 2\\alpha|$ exceeds 1, that is for $\\alpha > 1$."
+        },
+        {
+          "key": "b",
+          "text": "It jumps between $5$ and $-5$ for ever.",
+          "correct": false,
+          "feedback": "That is the case $\\alpha = 1$, where the factor per step is exactly $-1$."
+        },
+        {
+          "key": "c",
+          "text": "It shrinks towards 0 while staying positive.",
+          "correct": false,
+          "feedback": "The factor $1 - 2\\alpha = -0.5$ is negative, so $w$ changes sign on every step."
+        },
+        {
+          "key": "d",
+          "text": "It shrinks towards 0 while changing sign on every step.",
+          "correct": true,
+          "feedback": "The factor per step is $-0.5$: the iterates are $-2.5$, $1.25$, $-0.625$, and so on."
+        }
+      ],
+      "explanation": "Section 5.1: each step multiplies $w$ by $1 - 2\\alpha$. For $\\alpha = 0.75$ the factor is $-0.5$, whose size is below 1, so $w$ converges to 0, and whose sign is negative, so $w$ lands on alternate sides of the minimum.",
+      "hints": [
+        "Find the single number that each step multiplies $w$ by.",
+        "Look at its sign and at whether its size is below 1."
+      ]
+    },
+    {
+      "id": "nn-009-q11",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5.1",
+      "est_minutes": 8,
+      "tags": [
+        "update-rule",
+        "sign-bug"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The function below is meant to run gradient descent on a one-parameter loss, given a function that returns the slope. On $f(w) = w^2$ from $w = 5$ with a learning rate of 0.1 its loss rises on every step. Fix it so that it applies the update rule, and keep the signature.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "def gradient_descent(slope, w, learning_rate, steps):\n    for _ in range(steps):\n        w = w + learning_rate * slope(w)\n    return w\n",
+      "solution": "def gradient_descent(slope, w, learning_rate, steps):\n    for _ in range(steps):\n        w = w - learning_rate * slope(w)\n    return w\n",
+      "tests": "square_slope = lambda w: 2 * w\nassert abs(gradient_descent(square_slope, 5.0, 0.1, 1) - 4.0) < 1e-12\nassert abs(gradient_descent(square_slope, 5.0, 0.1, 3) - 2.56) < 1e-12\nassert abs(gradient_descent(square_slope, 5.0, 0.1, 100)) < 1e-8\nassert abs(gradient_descent(square_slope, 5.0, 1.0, 100) - 5.0) < 1e-12\nshifted_slope = lambda w: 2 * (w - 3)\nassert abs(gradient_descent(shifted_slope, -5.0, 0.1, 200) - 3.0) < 1e-8\nassert gradient_descent(square_slope, 5.0, 0.1, 0) == 5.0\nprint('all tests passed')\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "Section 5.1 and section 10: the gradient points uphill, so adding it climbs. The fix is the minus sign of the update rule, $w \\leftarrow w - \\alpha \\cdot \\text{slope}(w)$. The last tests use $(w - 3)^2$, whose slope is $2(w - 3)$ and whose minimum is at $w = 3$.",
+      "hints": [
+        "A loss that rises on every iteration is the symptom of one specific mistake.",
+        "Compare the line inside the loop with the update rule, character by character."
+      ]
+    },
+    {
+      "id": "nn-009-q12",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "update-rule",
+        "training-step"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Put the parts of one gradient-descent iteration on the spiral classifier in the order in which they are carried out.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Replace every parameter by itself minus the learning rate times its slope."
+        },
+        {
+          "key": "b",
+          "text": "Run the forward pass on the data to get the predicted probabilities."
+        },
+        {
+          "key": "c",
+          "text": "Compute the slope of that loss number with respect to every parameter."
+        },
+        {
+          "key": "d",
+          "text": "Turn the predictions and the labels into one loss number."
+        }
+      ],
+      "answer": [
+        "b",
+        "d",
+        "c",
+        "a"
+      ],
+      "partial_credit": true,
+      "explanation": "Sections 5 and 9: the loss needs the predictions, the gradient is the slope of that loss, and the update needs the gradient, so the order is forward pass, loss, gradient, update. The preview script prints the loss on four steps only, because its gradient lines work from the predictions and the labels directly; what they compute is still the slope of that loss.",
+      "hints": [
+        "Each part consumes what the part before it produced."
+      ]
+    },
+    {
+      "id": "nn-009-q13",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "roadmap"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Match each thing the update rule still lacks at the end of this post with the posts of the series that supply it.",
+      "left": [
+        {
+          "key": "a",
+          "text": "The language of slopes: derivatives, partial derivatives, the gradient"
+        },
+        {
+          "key": "b",
+          "text": "The rule for composing slopes through a stack of functions"
+        },
+        {
+          "key": "c",
+          "text": "A backward method on every class"
+        },
+        {
+          "key": "d",
+          "text": "Better step rules such as momentum and Adam"
+        }
+      ],
+      "right": [
+        {
+          "key": "a",
+          "text": "Posts 22 to 27"
+        },
+        {
+          "key": "b",
+          "text": "Post 10"
+        },
+        {
+          "key": "c",
+          "text": "Posts 16 to 21"
+        },
+        {
+          "key": "d",
+          "text": "Post 11"
+        },
+        {
+          "key": "e",
+          "text": "Post 08"
+        }
+      ],
+      "answer": {
+        "a": "b",
+        "b": "d",
+        "c": "c",
+        "d": "a"
+      },
+      "explanation": "Section 7 lays out the road: post 10 gives derivatives and the gradient, post 11 the chain rule, posts 12 to 15 derive backpropagation and posts 16 to 21 code it as backward methods, and posts 22 to 27 build the optimisers. Post 08 built the loss and is behind this post.",
+      "hints": [
+        "The calculus comes first, then the backward pass, then the optimisers."
+      ]
+    },
+    {
+      "id": "nn-009-q14",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "roadmap",
+        "backpropagation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The update rule needs $\\nabla L$ for a network of several layers. Which posts derive and code the algorithm that computes it?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Posts 10 and 11, the calculus posts.",
+          "correct": false,
+          "feedback": "They supply derivatives and the chain rule, the tools the algorithm is built from, but not the algorithm for a network."
+        },
+        {
+          "key": "b",
+          "text": "Posts 12 to 21, the backpropagation posts.",
+          "correct": true,
+          "feedback": "Posts 12 to 15 derive the gradients layer by layer and posts 16 to 21 turn them into code."
+        },
+        {
+          "key": "c",
+          "text": "Posts 22 to 27, the optimiser posts.",
+          "correct": false,
+          "feedback": "Optimisers use a gradient that has already been computed; they decide how to step with it."
+        },
+        {
+          "key": "d",
+          "text": "Post 32, the mini-batching post.",
+          "correct": false,
+          "feedback": "Mini-batching changes which samples the gradient is computed on, not how it is computed."
+        }
+      ],
+      "explanation": "Section 7: backpropagation, the algorithm that computes $\\nabla L$ through the layers, is derived in posts 12 to 15 and coded in posts 16 to 21. The calculus before it and the optimisers after it are separate stages.",
+      "hints": [
+        "Separate three stages: the mathematics of slopes, computing the gradient of a network, and using the gradient."
+      ]
+    },
+    {
+      "id": "nn-009-q15",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 12,
+      "tags": [
+        "comparison",
+        "capacity",
+        "critique"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A report states: \"Random perturbation reached only 41 percent on the spiral data with the 2-3-3 network after 10,000 iterations, which proves that random search cannot train a network; gradient descent would have solved the problem.\" Critique this conclusion using measurements a careful experimenter would need, and say what experiments would support the claim the report wants to make.",
+      "kind": "critique",
+      "answer_length": "one or two paragraphs",
+      "solution": "The evidence does not support the conclusion, because the report tests one method in one configuration and assumes the outcome of the comparison.\n\n1. On the same 21-parameter network, from the same start and with the same budget, gradient descent ends at a loss of 1.0776 and 115 of 300 correct with a learning rate of 1 (1.0797 with 0.1), against 1.0435 and 122 of 300 for random perturbation. In that budget the gradient method does not solve the problem either, and over 20 other streams of nudges the walk ends below 1.0776 in 16.\n\n2. Random perturbation is not useless in general: on the three side-by-side clusters it reaches a loss of 0.1714 and 279 of 300, as good as two hand-placed cuts.\n\n3. The claim needs a larger budget or a larger network. With 100,000 iterations on the same small network gradient descent reaches 1.0049 and the walk 1.0403. With 64 hidden neurons (387 parameters) and 10,000 iterations gradient descent reaches 0.8737 and 194 of 300, while random perturbation reaches 1.0730 and 129 of 300, keeping 37 of its 10,000 nudges, and stays above 1.04 in all 20 other streams. That is the evidence that the blind search cannot use added parameters.\n\n4. The comparison must score both methods alike and state its settings: the walk's final loss is its lowest, while gradient descent at a learning rate of 1 bounces (its loss rose on 4,628 of 10,000 steps on the wide network), so final and lowest differ.\n\nThe supported statement is narrower: random perturbation works on small problems and fails to scale, because it learns one fact per forward pass about one random direction.",
+      "rubric": [
+        {
+          "criterion": "States that the report compares nothing: the same network, start and budget must be given to gradient descent",
+          "points": 2
+        },
+        {
+          "criterion": "States that on the 21-parameter network and 10,000 iterations gradient descent does no better than the walk",
+          "points": 3
+        },
+        {
+          "criterion": "Proposes a larger budget or a larger network, with equal budgets and the same start, as the experiment that separates the methods",
+          "points": 3
+        },
+        {
+          "criterion": "Notes that random perturbation succeeds on an easy problem, or that the scoring and settings of the comparison must be stated",
+          "points": 2
+        }
+      ],
+      "explanation": "Section 4 runs exactly this control. Given the same small network, start and budget, the walk is not behind gradient descent (below its 1.0776 in 16 of 20 streams of nudges); gradient descent pulls away only with ten times the steps (1.0049 against 1.0403) or on 387 parameters (0.8737 against 1.0730), which is the evidence for the scaling argument.",
+      "hints": [
+        "Ask what the report would need to measure before it could say what gradient descent would have done.",
+        "Think of the control experiment on the same network, and then of what to change so that the two methods separate."
+      ]
+    },
+    {
+      "id": "nn-009-q16",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o3",
+        "o4"
+      ],
+      "section": "pitfalls",
+      "est_minutes": 12,
+      "tags": [
+        "differentiability",
+        "loss",
+        "accuracy"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Post 08 (`nn-008`) reports two numbers for the untrained spiral classifier, a cross-entropy loss and an accuracy. Explain why gradient descent is applied to the loss and cannot be applied to the accuracy, although random perturbation could be run on either, and name what post 22 (`nn-022`) still has to add before the rule can train the network.",
+      "kind": "connect",
+      "connects": [
+        "nn-008",
+        "nn-022"
+      ],
+      "answer_length": "one or two paragraphs",
+      "solution": "Gradient descent moves each parameter by $-\\alpha$ times the slope of the objective with respect to that parameter, so it needs an objective whose value changes smoothly when a parameter changes a little.\n\nCross-entropy has that property: it is the mean of $-\\log$ of the probability given to the true class, and that probability moves continuously with every weight and bias, so a small change in a parameter gives a small, proportional change in the loss and a usable slope.\n\nAccuracy is the fraction of points whose largest output is the true class. A small change in a parameter almost never changes which output is largest, so the accuracy stays exactly the same and its slope is zero; when a prediction does flip, the accuracy jumps by $1/300$ at once. A gradient that is zero almost everywhere gives the rule no direction, and $\\theta \\leftarrow \\theta - \\alpha \\cdot 0$ never moves.\n\nRandom perturbation only compares two values of the objective, so it can run on accuracy; it needs no slope. That is also why it is blind.\n\nBefore the rule can train the network, the gradient itself must be computed, which is backpropagation (posts 12 to 21), and post 22 wraps the rule in an optimiser class and a training loop that repeats forward pass, loss, backward pass and update.",
+      "rubric": [
+        {
+          "criterion": "States that the update rule needs the slope of the objective with respect to each parameter",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that cross-entropy changes smoothly with the parameters while accuracy is flat between jumps, so its gradient is zero almost everywhere",
+          "points": 4
+        },
+        {
+          "criterion": "Explains that random perturbation only compares objective values and so needs no slope",
+          "points": 2
+        },
+        {
+          "criterion": "Names what post 22 adds: the optimiser class and training loop that apply the rule with gradients from backpropagation",
+          "points": 2
+        }
+      ],
+      "explanation": "The last common pitfall states that the rule needs a loss with a slope, which accuracy does not have: it is flat and then jumps. Section 7 places the missing pieces: backpropagation in posts 12 to 21 and the optimiser of post 22.",
+      "hints": [
+        "Look at what the update rule multiplies the learning rate by, and ask what that quantity is for accuracy.",
+        "Nudge one weight by a tiny amount and ask whether each of the two numbers changes."
+      ]
+    },
+    {
+      "id": "nn-009-q17",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "10",
+      "est_minutes": 2,
+      "tags": [
+        "sign-bug",
+        "debugging"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "An update is coded with a plus sign, `w = w + learning_rate * gradient`, and a small learning rate. What does the loss do from one iteration to the next?",
+      "answer": {
+        "model": "The loss rises on every iteration, because the step goes along the gradient, uphill.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:not|never|doesn't|won't)\\s+(?:\\w+\\s+)?(?:ris\\w*|increas\\w*|grow\\w*|climb\\w*|go(?:es)? up|gets? (?:larger|bigger|higher|worse)))(?=(?:(?:not|n't|never|instead of|rather than)\\s+(?:fall\\w*|decreas\\w*|drop\\w*|shrink\\w*|go(?:es|ing)? down|lower)|(?!\\b(?:fall\\w*|decreas\\w*|drop\\w*|shrink\\w*|go(?:es|ing)? down|lower)\\b)[\\s\\S])*$)[\\s\\S]*\\b(?:ris\\w*|increas\\w*|grow\\w*|climb\\w*|go(?:es)? up|gets? (?:larger|bigger|higher|worse))"
+        ]
+      },
+      "explanation": "Section 10: the gradient points in the direction of steepest ascent, so adding it climbs the loss. On $f(w) = w^2$ from $w = 5$ with $\\alpha = 0.1$ the loss goes 36, 51.84, 74.65 on the first three steps.",
+      "hints": [
+        "Recall which way the gradient itself points."
+      ]
+    },
+    {
+      "id": "nn-009-q18",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o4"
+      ],
+      "section": "5",
+      "est_minutes": 1,
+      "tags": [
+        "backpropagation",
+        "vocabulary"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "What is the name of the algorithm, derived later in the series, that computes the gradient of the loss with respect to every parameter of a layered network efficiently?",
+      "answer": {
+        "model": "Backpropagation.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(not|isn't|never)\\s+(\\w+\\s+)?back)[\\s\\S]*back[- ]?prop(agation)?"
+        ]
+      },
+      "explanation": "Section 5: Rumelhart, Hinton, and Williams (1986) paired gradient descent with backpropagation, the algorithm that computes $\\nabla L$ through the layers; posts 12 to 21 derive and code it.",
+      "hints": [
+        "Its name describes the direction in which the slopes are passed through the layers."
+      ]
+    }
+  ]
+}

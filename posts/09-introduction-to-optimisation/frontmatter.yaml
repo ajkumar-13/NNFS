@@ -1,8 +1,24 @@
 id: nn-009
 slug: 09-introduction-to-optimisation
-title: "Part 09 · Introduction to optimisation"
+title: "09 - Introduction to optimisation"
+summary: "Two blind ways of lowering a loss, drawing fresh parameters and nudging them at random, are run on the spiral classifier and measured against gradient descent, whose update rule is then stated and tried on one parameter."
 date: 2026-05-28
-tags: [neural-networks, from-scratch, optimisation, gradient-descent]
+updated: 2026-10-05
+status: complete
+part: "Part III - Loss and optimisation"
+level: beginner
+reading_time: 25
+tags: [neural-networks, from-scratch, optimisation, gradient-descent, random-search, learning-rate]
 hero: diagrams/01-strategies-compared.svg
-reading_time: 12
-part: "Part III — Loss and optimisation"
+prerequisites: [nn-008]
+code: included
+outcomes:
+  - id: o1
+    text: "Explain why random selection fails to lower the loss of a 21-parameter classifier."
+  - id: o2
+    text: "Explain why random perturbation solves easy data and keeps pace with gradient descent on a small network and short budget, yet cannot use added parameters."
+  - id: o3
+    text: "State the gradient-descent update rule, say what each symbol means, and predict what a given learning rate does on a one-parameter loss."
+  - id: o4
+    text: "Name which later posts supply the calculus, the backward pass, and the optimisers that the update rule relies on."
+compute: cpu
