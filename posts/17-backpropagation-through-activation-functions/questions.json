@@ -1,0 +1,834 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-017",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-017-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "relu",
+        "mask"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A ReLU neuron had the input $z = -2$ in the forward pass. In the backward pass the gradient $\\partial L / \\partial a = 6$ arrives at its output. What gradient does it pass back to its input?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "6",
+          "correct": false,
+          "feedback": "That is what a positive input would pass back. At $z = -2$ the slope of ReLU is 0, so nothing of the 6 gets through."
+        },
+        {
+          "key": "b",
+          "text": "0",
+          "correct": true,
+          "feedback": "Right: the slope of ReLU is 0 for $z \\le 0$, and $6 \\cdot 0 = 0$."
+        },
+        {
+          "key": "c",
+          "text": "-2",
+          "correct": false,
+          "feedback": "That is the input value itself. The backward step multiplies the incoming gradient by the slope at the input, not by the input."
+        },
+        {
+          "key": "d",
+          "text": "-6",
+          "correct": false,
+          "feedback": "ReLU never flips the sign of a gradient. Its slope is 0 or 1, never $-1$."
+        }
+      ],
+      "explanation": "Section 2 writes the ReLU backward as $\\partial L / \\partial z_k = \\partial L / \\partial a_k$ for $z_k > 0$ and 0 for $z_k \\le 0$. The input was negative, so the slope is 0 and the gradient passed back is 0, whatever arrived. This is neuron 2 of the worked example in section 2.1.",
+      "hints": [
+        "Ask what the slope of ReLU is at a negative input."
+      ]
+    },
+    {
+      "id": "nn-017-q02",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2.1",
+      "est_minutes": 4,
+      "tags": [
+        "relu",
+        "worked-example"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A ReLU layer of five neurons had the forward inputs $[-1, 2, 0, 3, -0.5]$ for one sample. The gradient arriving at its output is $[0.5, 0.3, 0.1, 0.8, 0.2]$. Give the five entries of `dinputs`, using the series' convention at the corner.",
+      "answer": {
+        "parts": [
+          {
+            "label": "neuron 1",
+            "value": 0,
+            "tolerance": 1e-09,
+            "unit": ""
+          },
+          {
+            "label": "neuron 2",
+            "value": 0.3,
+            "tolerance": 1e-09,
+            "unit": ""
+          },
+          {
+            "label": "neuron 3",
+            "value": 0,
+            "tolerance": 1e-09,
+            "unit": ""
+          },
+          {
+            "label": "neuron 4",
+            "value": 0.8,
+            "tolerance": 1e-09,
+            "unit": ""
+          },
+          {
+            "label": "neuron 5",
+            "value": 0,
+            "tolerance": 1e-09,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form: dvalues with zeros where the input is <= 0; the Activation_ReLU class of snippets/relu_backward.py returns [0, 0.3, 0, 0.8, 0] on these arrays.",
+      "explanation": "The mask of section 2.2 zeroes every position whose input was not positive: neurons 1 and 5 (negative inputs) and neuron 3, whose input is exactly 0 and takes the slope 0 by the convention of section 2. Neurons 2 and 4 had positive inputs and pass 0.3 and 0.8 unchanged.",
+      "hints": [
+        "Decide for each neuron whether its input was positive.",
+        "An input of exactly 0 is treated like a negative one."
+      ]
+    },
+    {
+      "id": "nn-017-q03",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2.3",
+      "est_minutes": 3,
+      "tags": [
+        "relu",
+        "mask"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "For plain ReLU the backward mask can be written with the cached input, `self.inputs <= 0`, or with the cached output, `self.output <= 0`. How do the two masks compare?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "They differ only where the input is exactly 0.",
+          "correct": false,
+          "feedback": "At $z = 0$ the output is 0 as well, so both tests are true there. There is no position at which they disagree."
+        },
+        {
+          "key": "b",
+          "text": "They select the same positions for every input.",
+          "correct": true,
+          "feedback": "Right: $\\max(0, z) \\le 0$ holds exactly when $z \\le 0$, the corner included."
+        },
+        {
+          "key": "c",
+          "text": "The output test zeroes fewer positions.",
+          "correct": false,
+          "feedback": "The output is never negative, but it is 0 wherever the input was not positive, and `<= 0` is true at 0."
+        },
+        {
+          "key": "d",
+          "text": "The output test zeroes every position.",
+          "correct": false,
+          "feedback": "Where the input was positive the output equals it and is positive, so the test is false there and the gradient is kept."
+        }
+      ],
+      "explanation": "Section 2.3 argues it and counts it: the output $\\max(0, z)$ is 0 exactly when $z \\le 0$ and positive otherwise, so the two tests are the same statement. On the $4 \\times 5$ batch of the script both masks zero 7 entries and differ at 0 positions. The series tests the input because that is how the derivative is written.",
+      "hints": [
+        "Write down the output of ReLU for a negative input, for 0, and for a positive input, and apply `<= 0` to each."
+      ]
+    },
+    {
+      "id": "nn-017-q04",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3.1",
+      "est_minutes": 2,
+      "tags": [
+        "sigmoid",
+        "caching"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "`Activation_Sigmoid.forward` caches two arrays, its input and its output. Which of the two does `backward` use to compute the slope?",
+      "answer": {
+        "model": "The output: the slope is $\\sigma(z)(1 - \\sigma(z))$, so backward computes `dvalues * self.output * (1 - self.output)`.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:inputs?|pre-?activations?|both|either)\\b)(?![\\s\\S]*\\b(?:not|neither|nor|isn't|never)\\b)(?=[\\s\\S]*\\boutputs?\\b)",
+          "^(?![\\s\\S]*\\b(?:not|neither|nor|isn't|never)\\s+(?:\\w+\\s+){0,2}(?:self\\.)?outputs?\\b)(?![\\s\\S]*\\boutputs?\\b(?:\\s+\\w+){0,2}\\s+(?:is\\s+not|isn't|not|never)\\b)(?![\\s\\S]*\\b(?:both|either|also|too|but|however|though|although)\\b)(?![\\s\\S]*\\bas\\s+well\\b)(?![\\s\\S]*\\boutputs?\\s+of\\s+the\\s+(?:dense|previous|layer)\\b)(?![\\s\\S]*\\boutputs?\\W+(?:self\\.)?inputs?\\b)(?![\\s\\S]*\\b(?:and|or|plus)\\s+(?:\\w+\\s+){0,2}(?:self\\.)?inputs?\\b)\\W*(?:(?:it\\s+is|it's|it\\s+uses|it\\s+reads|the|its|uses?|reads?|from|cached)\\W+)*(?:self\\.)?outputs?\\b"
+        ]
+      },
+      "explanation": "Section 3.1 derives $\\sigma'(z) = \\sigma(z)(1 - \\sigma(z))$: the slope is written in terms of the function's own value, so `backward` reads the cached output and needs no new exponential. Section 7 shows what happens when the formula is applied to the input instead: the result has the right shape and is off by as much as 2.59.",
+      "hints": [
+        "Look at which quantity appears in the formula for the sigmoid's slope."
+      ]
+    },
+    {
+      "id": "nn-017-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3.1",
+      "est_minutes": 5,
+      "tags": [
+        "sigmoid",
+        "tanh"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A sigmoid neuron has the cached output $a = 0.8$ and a tanh neuron has the cached output $a = 0.6$. Each receives the upstream gradient $\\partial L / \\partial a = 5$. What does each pass back as $\\partial L / \\partial z$?",
+      "answer": {
+        "parts": [
+          {
+            "label": "sigmoid",
+            "value": 0.8,
+            "tolerance": 1e-06,
+            "unit": ""
+          },
+          {
+            "label": "tanh",
+            "value": 3.2,
+            "tolerance": 1e-06,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed forms of section 3.1: 5 * 0.8 * (1 - 0.8) = 0.8 and 5 * (1 - 0.6^2) = 3.2; the two backward lines of snippets/elementwise_backward.py give the same values.",
+      "explanation": "The element-wise backward multiplies the upstream gradient by the slope, and section 3.1 writes both slopes through the output: $a(1 - a) = 0.8 \\cdot 0.2 = 0.16$ for sigmoid and $1 - a^2 = 1 - 0.36 = 0.64$ for tanh. The results are $5 \\cdot 0.16 = 0.8$ and $5 \\cdot 0.64 = 3.2$.",
+      "hints": [
+        "Each slope can be computed from the cached output alone.",
+        "Use $a(1 - a)$ for sigmoid and $1 - a^2$ for tanh, then multiply by the upstream gradient."
+      ]
+    },
+    {
+      "id": "nn-017-q06",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "3",
+      "est_minutes": 4,
+      "tags": [
+        "backward",
+        "pattern"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Match each activation to the line that computes its `dinputs` for one sample. Here `a` is the activation's cached output, `z` its cached input, and `J` a matrix built from `a`.",
+      "left": [
+        {
+          "key": "a",
+          "text": "ReLU"
+        },
+        {
+          "key": "b",
+          "text": "Sigmoid"
+        },
+        {
+          "key": "c",
+          "text": "Tanh"
+        },
+        {
+          "key": "d",
+          "text": "Softmax"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "`dvalues * (1 - a ** 2)`"
+        },
+        {
+          "key": "q",
+          "text": "`dvalues @ J`, with `J` full"
+        },
+        {
+          "key": "r",
+          "text": "a copy of `dvalues` with zeros where `z <= 0`"
+        },
+        {
+          "key": "s",
+          "text": "`dvalues * a * (1 - a)`"
+        },
+        {
+          "key": "t",
+          "text": "`dvalues * z * (1 - z)`"
+        },
+        {
+          "key": "u",
+          "text": "`dvalues * (1 - a)`"
+        }
+      ],
+      "answer": {
+        "a": "r",
+        "b": "s",
+        "c": "p",
+        "d": "q"
+      },
+      "explanation": "The table of section 3 lists the three element-wise slopes: 0 or 1 for ReLU, $a(1 - a)$ for sigmoid, and $1 - a^2$ for tanh, each multiplied into `dvalues`. Softmax is the coupled case of section 4 and needs the product with its full Jacobian. `dvalues * z * (1 - z)` is the wrong-array slip of section 7, and `dvalues * (1 - a)` is no activation's slope here.",
+      "hints": [
+        "Three of the four are one multiplication by a slope; write down the three slopes first."
+      ]
+    },
+    {
+      "id": "nn-017-q07",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3.3",
+      "est_minutes": 3,
+      "tags": [
+        "relu",
+        "sigmoid",
+        "cost"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The `backward` methods of `Activation_ReLU` and `Activation_Sigmoid` have the same shape: one line of work on `dvalues`. Why does ReLU's line need less arithmetic per element than the sigmoid's?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "ReLU's Jacobian is diagonal and the sigmoid's is full.",
+          "correct": false,
+          "feedback": "Both are element-wise, so both Jacobians are diagonal. The full Jacobian belongs to softmax."
+        },
+        {
+          "key": "b",
+          "text": "ReLU's backward needs nothing cached by the forward pass.",
+          "correct": false,
+          "feedback": "It needs the cached input to know where the input was positive. Sigmoid needs its cached output. Both cache one array."
+        },
+        {
+          "key": "c",
+          "text": "ReLU's slope is 0 or 1, so one comparison keeps or zeroes each entry.",
+          "correct": true,
+          "feedback": "Right: no multiplication touches the gradient, while the sigmoid line costs a subtraction and two multiplications per element."
+        },
+        {
+          "key": "d",
+          "text": "ReLU's backward skips the entries of neurons that were inactive.",
+          "correct": false,
+          "feedback": "The mask still visits every element to test it. The saving is in the arithmetic per element, not in the number of elements."
+        }
+      ],
+      "explanation": "Section 3.3 compares the arithmetic inside the shared line. ReLU's slope is 0 or 1, so one comparison per element decides whether an entry of `dvalues` is kept or replaced by 0. Sigmoid multiplies by $a(1 - a)$, a subtraction and two multiplications per element, and its forward pass needs an exponential.",
+      "hints": [
+        "Compare what each line has to compute per element once the cached array is in hand."
+      ]
+    },
+    {
+      "id": "nn-017-q08",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3.3",
+      "est_minutes": 4,
+      "tags": [
+        "sigmoid",
+        "relu",
+        "gradient-size"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A gradient entry of 1 travels back through three activations in a row; the dense layers between them are ignored. In case A all three are sigmoids sitting at $z = 0$, where the sigmoid slope is largest. In case B all three are ReLUs with positive inputs. What arrives in each case?",
+      "answer": {
+        "parts": [
+          {
+            "label": "case A, three sigmoids",
+            "value": 0.015625,
+            "tolerance": 0.0005,
+            "unit": ""
+          },
+          {
+            "label": "case B, three ReLUs",
+            "value": 1,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form: 0.25^3 = 0.015625 and 1^3 = 1; snippets/elementwise_backward.py prints the sigmoid slope 2.50e-01 at z = 0.",
+      "explanation": "Each element-wise backward multiplies by the local slope. The sigmoid slope at $z = 0$ is $0.5 \\cdot 0.5 = 0.25$, its largest value (section 3.1), so three of them leave $0.25^3 = 1/64 = 0.015625$. The ReLU slope on the active side is exactly 1, so the entry arrives unchanged (section 3.3).",
+      "hints": [
+        "Each activation multiplies the entry by its slope at its own input."
+      ]
+    },
+    {
+      "id": "nn-017-q09",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 1,
+      "tags": [
+        "softmax",
+        "jacobian"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Of ReLU, sigmoid, tanh, and softmax, which one has a Jacobian with non-zero entries off the diagonal?",
+      "answer": {
+        "model": "Softmax.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:relu|sigmoid|tanh|gelu)\\b)(?![\\s\\S]*\\b(?:not|neither|nor|isn't|except)\\s+(?:\\w+\\s+){0,2}(?<![a-z0-9])soft[- ]?max(?![a-z0-9]))(?![\\s\\S]*(?<![a-z0-9])soft[- ]?max(?![a-z0-9])(?:\\s+\\w+){0,2}\\s+(?:is\\s+not|isn't|does\\s+not|doesn't|not)\\b)(?![\\s\\S]*\\b(?:neither|nor|except|none|both|also|too|including|includes|excluded|excluding|every\\s+(?:activation|one)|all\\s+(?:of\\s+them|four|activations|(?:of\\s+)?the\\s+activations))\\b)(?![\\s\\S]*(?<![a-z0-9])soft[- ]?max(?![a-z0-9])\\s*(?:,|and|or|plus)\\s+(?:the\\s+)?(?:others?|rest)\\b)(?=[\\s\\S]*(?<![a-z0-9])soft[- ]?max(?![a-z0-9]))",
+          "^(?![\\s\\S]*\\b(?:not|neither|nor|isn't|except)\\s+(?:\\w+\\s+){0,2}(?<![a-z0-9])soft[- ]?max(?![a-z0-9]))(?![\\s\\S]*(?<![a-z0-9])soft[- ]?max(?![a-z0-9])(?:\\s+\\w+){0,2}\\s+(?:is\\s+not|isn't|does\\s+not|doesn't|not)\\b)(?![\\s\\S]*\\b(?:also|too|both|as\\s+well)\\b)\\W*(?:(?:it\\s+is|it's|the|only|just)\\W+)*(?:activation_)?(?<![a-z0-9])soft[- ]?max(?![a-z0-9])(?=[\\s\\S]*\\b(?:not|unlike|whereas|while)\\b[\\s\\S]*\\b(?:relu|sigmoid|tanh)\\b)"
+        ]
+      },
+      "explanation": "Section 4: each softmax output depends on every input through the shared denominator, so $\\partial a_k / \\partial z_j = -a_k a_j$ is non-zero for $k \\ne j$. ReLU, sigmoid, and tanh are element-wise, and their Jacobians are diagonal (section 3.2).",
+      "hints": [
+        "Look for the activation whose outputs must sum to 1."
+      ]
+    },
+    {
+      "id": "nn-017-q10",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "softmax",
+        "coupling"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Why does the line `dinputs = dvalues * f_prime(Z)` not give the right gradient for softmax?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Softmax contains exponentials, which have no slope per element.",
+          "correct": false,
+          "feedback": "Sigmoid and tanh contain exponentials too and are handled by the one-line pattern. The exponential is not the obstacle."
+        },
+        {
+          "key": "b",
+          "text": "Softmax is the last activation, so no upstream gradient reaches it.",
+          "correct": false,
+          "feedback": "The loss comes after softmax and sends it a gradient, which post 18 derives. Position in the network is not the reason."
+        },
+        {
+          "key": "c",
+          "text": "Softmax has a slope of zero wherever its output is close to 0 or 1.",
+          "correct": false,
+          "feedback": "Saturation makes entries small, as it does for sigmoid. It does not change which entries of the Jacobian exist."
+        },
+        {
+          "key": "d",
+          "text": "Each softmax output depends on every input, so the Jacobian is full.",
+          "correct": true,
+          "feedback": "Right: the terms with $k \\ne j$ in the chain-rule sum are not zero, and the one-line pattern drops them."
+        }
+      ],
+      "explanation": "Section 1 writes the backward step as a sum over all outputs $k$. For an element-wise activation only the $k = j$ term is non-zero. Softmax divides by a sum over all inputs, so every output moves when one input moves (section 4), all 9 Jacobian entries of the three-class example are non-zero, and the line that keeps only the diagonal misses the measured gradient by 0.731.",
+      "hints": [
+        "Ask which outputs change when a single input of softmax is raised."
+      ]
+    },
+    {
+      "id": "nn-017-q11",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 8,
+      "tags": [
+        "softmax",
+        "jacobian"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A softmax row has the output $a = [0.5, 0.3, 0.2]$ and receives the upstream gradient $[1, 0, 0]$. With the Jacobian entries $a_k(1 - a_k)$ for $k = j$ and $-a_k a_j$ for $k \\ne j$, compute the three entries of the gradient with respect to the inputs.",
+      "answer": {
+        "parts": [
+          {
+            "label": "dL/dz_1",
+            "value": 0.25,
+            "tolerance": 1e-06,
+            "unit": ""
+          },
+          {
+            "label": "dL/dz_2",
+            "value": -0.15,
+            "tolerance": 1e-06,
+            "unit": ""
+          },
+          {
+            "label": "dL/dz_3",
+            "value": -0.1,
+            "tolerance": 1e-06,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form: row 1 of the Jacobian diagflat(a) - outer(a, a), as built in snippets/softmax_is_coupled.py, for a = [0.5, 0.3, 0.2].",
+      "explanation": "By the sum of section 1, $\\partial L / \\partial z_j = \\sum_k (\\partial L / \\partial a_k)(\\partial a_k / \\partial z_j)$. Only $k = 1$ has a non-zero upstream entry, so the answer is row 1 of the Jacobian: $0.5 \\cdot 0.5 = 0.25$, $-0.5 \\cdot 0.3 = -0.15$, and $-0.5 \\cdot 0.2 = -0.10$. The element-wise line would return $[0.25, 0, 0]$ and lose the two off-diagonal terms (section 4).",
+      "hints": [
+        "Write the chain-rule sum for one input $z_j$ and see which outputs contribute.",
+        "Only the first output has a non-zero upstream gradient, so one row of the Jacobian is needed."
+      ]
+    },
+    {
+      "id": "nn-017-q12",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "4",
+      "est_minutes": 6,
+      "tags": [
+        "softmax",
+        "jacobian",
+        "column-sum"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The outputs of a softmax row always sum to 1. Suppose the upstream gradient arriving at that row is the same number $c$ for every output. What is the gradient with respect to the inputs?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "$c \\, a_j (1 - a_j)$ for input $j$",
+          "correct": false,
+          "feedback": "That is the element-wise line. It keeps the diagonal term and drops the off-diagonal ones, which here cancel it exactly."
+        },
+        {
+          "key": "b",
+          "text": "$c$ for every input",
+          "correct": false,
+          "feedback": "That would need a Jacobian equal to the identity. Softmax does not pass a gradient through unchanged."
+        },
+        {
+          "key": "c",
+          "text": "0 for every input",
+          "correct": true,
+          "feedback": "Right: each column of the Jacobian sums to zero, so $c$ times that sum is zero."
+        },
+        {
+          "key": "d",
+          "text": "$c / K$ for every input, with $K$ classes",
+          "correct": false,
+          "feedback": "Nothing in the Jacobian averages over the classes. The entries of a column cancel; they do not share $c$ out evenly."
+        }
+      ],
+      "explanation": "From the sum of section 1, $\\partial L / \\partial z_j = c \\sum_k \\partial a_k / \\partial z_j$. Because $\\sum_k a_k = 1$ whatever the inputs are, its derivative with respect to any $z_j$ is 0, so every column of the Jacobian sums to zero; the script of section 4 prints that check as True. The gradient is therefore 0 for every input, while the element-wise line would return $c \\, a_j(1 - a_j)$.",
+      "hints": [
+        "Write the chain-rule sum for one input and take the constant out of it.",
+        "Differentiate the statement that the outputs sum to 1 with respect to one input."
+      ]
+    },
+    {
+      "id": "nn-017-q13",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "1",
+      "est_minutes": 12,
+      "tags": [
+        "chain-rule",
+        "jacobian",
+        "derivation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A layer of three neurons applies an activation to $z_1, z_2, z_3$ and produces $a_1, a_2, a_3$. Write out $\\partial L / \\partial z_2$ as a chain-rule sum over the three outputs. Then (a) reduce it for an element-wise activation $a_k = f(z_k)$, saying which terms vanish and why, and state the resulting NumPy line for a whole batch; (b) say what happens to the same sum when the activation is softmax.",
+      "kind": "derive",
+      "solution": "1. The loss depends on $z_2$ through every output it can influence: $\\frac{\\partial L}{\\partial z_2} = \\frac{\\partial L}{\\partial a_1}\\frac{\\partial a_1}{\\partial z_2} + \\frac{\\partial L}{\\partial a_2}\\frac{\\partial a_2}{\\partial z_2} + \\frac{\\partial L}{\\partial a_3}\\frac{\\partial a_3}{\\partial z_2}$.\n2. For an element-wise activation, $a_1 = f(z_1)$ and $a_3 = f(z_3)$ do not contain $z_2$, so $\\partial a_1 / \\partial z_2 = \\partial a_3 / \\partial z_2 = 0$ and the first and third terms vanish.\n3. The remaining term is $\\frac{\\partial L}{\\partial z_2} = \\frac{\\partial L}{\\partial a_2} f'(z_2)$. The same holds for every neuron and every sample, so the Jacobian of each sample is diagonal and the batch version is `dinputs = dvalues * f_prime(Z)`, an element-wise multiplication of two arrays of shape $(N, 3)$.\n4. For softmax, $a_k = e^{z_k} / \\sum_j e^{z_j}$: the denominator contains $z_2$, so $a_1$ and $a_3$ both change when $z_2$ changes, with $\\partial a_k / \\partial z_2 = -a_k a_2$ for $k \\ne 2$.\n5. None of the three terms vanishes. The gradient is the product of the row of upstream gradients with the full $3 \\times 3$ Jacobian of the sample, and the element-wise line, which keeps only the middle term, gives a wrong result of the right shape.",
+      "rubric": [
+        {
+          "criterion": "Writes the sum with all three terms, each an upstream gradient times a local derivative with respect to $z_2$",
+          "points": 2
+        },
+        {
+          "criterion": "States that the terms for outputs 1 and 3 vanish for an element-wise activation because those outputs do not depend on $z_2$",
+          "points": 2
+        },
+        {
+          "criterion": "Gives the reduced form with $f'(z_2)$ and the batch line `dinputs = dvalues * f_prime(Z)`",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that for softmax every output depends on $z_2$ through the denominator, so no term vanishes",
+          "points": 2
+        },
+        {
+          "criterion": "Concludes that softmax needs the product with the full Jacobian and that the element-wise line is wrong for it",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 1 states the sum over outputs and the two cases. In the element-wise case only the $k = j$ term survives, which gives the one-line backward of section 3 and the diagonal Jacobian of section 3.2. Softmax keeps every term (section 4), which is why its backward is a matrix product per sample.",
+      "hints": [
+        "Start from the fact that $z_2$ can reach the loss through any output that depends on it.",
+        "For each of the three outputs, ask whether it contains $z_2$, first for $a_k = f(z_k)$ and then for softmax."
+      ]
+    },
+    {
+      "id": "nn-017-q14",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 4,
+      "tags": [
+        "backward-chain",
+        "caching"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A dense layer is followed by a ReLU. Put these five events of one forward and backward pass in the order in which they happen.",
+      "items": [
+        {
+          "key": "a",
+          "text": "`Activation_ReLU.backward` copies the gradient it was given and zeroes the entries where its cached input was not positive"
+        },
+        {
+          "key": "b",
+          "text": "The dense layer computes $\\mathbf{Z} = \\mathbf{X}\\mathbf{W} + \\mathbf{b}$"
+        },
+        {
+          "key": "c",
+          "text": "The dense layer's `backward` receives the ReLU's `dinputs` as its `dvalues`"
+        },
+        {
+          "key": "d",
+          "text": "`Activation_ReLU.forward` stores $\\mathbf{Z}$ in `self.inputs` and computes $\\mathbf{A}$"
+        },
+        {
+          "key": "e",
+          "text": "The component after the ReLU finishes its own `backward`, which makes $\\partial L / \\partial \\mathbf{A}$ available"
+        }
+      ],
+      "answer": [
+        "b",
+        "d",
+        "e",
+        "a",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 1 places the activation in the chain. Going forward, the dense layer produces $\\mathbf{Z}$ and the ReLU caches it and produces $\\mathbf{A}$. Going backward the order reverses: the component after the ReLU supplies $\\partial L / \\partial \\mathbf{A}$, the ReLU masks a copy of it using the cached $\\mathbf{Z}$ (section 2.2), and the dense layer receives the result as its `dvalues`.",
+      "hints": [
+        "The forward pass runs from the dense layer onwards; the backward pass visits the same components in reverse."
+      ]
+    },
+    {
+      "id": "nn-017-q15",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3.3",
+      "est_minutes": 15,
+      "tags": [
+        "leaky-relu",
+        "backward"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Complete `Activation_LeakyReLU.backward` in the element-wise pattern. The activation returns $z$ for $z > 0$ and `slope * z` otherwise, so its derivative is 1 for $z > 0$ and `slope` otherwise, including at $z = 0$. The method must store the result in `self.dinputs` and leave the caller's `dvalues` unchanged.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "import numpy as np\n\n\nclass Activation_LeakyReLU:\n    \"\"\"f(z) = z for z > 0 and slope * z otherwise.\"\"\"\n\n    def __init__(self, slope=0.01):\n        self.slope = slope\n\n    def forward(self, inputs):\n        self.inputs = inputs\n        self.output = np.where(inputs > 0, inputs, self.slope * inputs)\n\n    def backward(self, dvalues):\n        # TODO: store the gradient with respect to the inputs in self.dinputs,\n        # using the element-wise pattern dinputs = dvalues * f_prime(Z)\n        self.dinputs = None\n",
+      "solution": "import numpy as np\n\n\nclass Activation_LeakyReLU:\n    \"\"\"f(z) = z for z > 0 and slope * z otherwise.\"\"\"\n\n    def __init__(self, slope=0.01):\n        self.slope = slope\n\n    def forward(self, inputs):\n        self.inputs = inputs\n        self.output = np.where(inputs > 0, inputs, self.slope * inputs)\n\n    def backward(self, dvalues):\n        # f'(z) is 1 where the input was positive and self.slope elsewhere\n        self.dinputs = dvalues * np.where(self.inputs > 0, 1.0, self.slope)\n",
+      "tests": "import numpy as np\n\nact = Activation_LeakyReLU()\nZ = np.array([[1.0, -2.0, 3.0, 0.0]])\ndvalues = np.array([[5.0, 6.0, 7.0, 8.0]])\nkept = dvalues.copy()\nact.forward(Z)\nact.backward(dvalues)\nassert act.dinputs is not None, \"backward must store self.dinputs\"\nassert act.dinputs.shape == Z.shape, act.dinputs.shape\nassert np.allclose(act.dinputs, [[5.0, 0.06, 7.0, 0.08]]), act.dinputs\nassert np.array_equal(dvalues, kept), \"the caller's dvalues must not be modified\"\nassert act.dinputs is not dvalues, \"dinputs must be a new array\"\n\nsteep = Activation_LeakyReLU(slope=0.2)\nsteep.forward(Z)\nsteep.backward(dvalues)\nassert np.allclose(steep.dinputs, [[5.0, 1.2, 7.0, 1.6]]), \"use self.slope, not a fixed 0.01\"\n\nnp.random.seed(0)\nZ = np.random.randn(3, 4)\ndvalues = np.random.randn(3, 4)\nh = 1e-5\nnumerical = np.zeros_like(Z)\nfor index in np.ndindex(*Z.shape):\n    step = np.zeros_like(Z)\n    step[index] = h\n    act.forward(Z + step)\n    plus = np.sum(dvalues * act.output)\n    act.forward(Z - step)\n    minus = np.sum(dvalues * act.output)\n    numerical[index] = (plus - minus) / (2 * h)\nact.forward(Z)\nact.backward(dvalues)\nassert np.abs(act.dinputs - numerical).max() < 1e-8, \"backward disagrees with the central difference\"\nprint(\"leaky ReLU backward passed\")\n",
+      "expected_output": "leaky ReLU backward passed\n",
+      "explanation": "Section 3 gives the pattern `dinputs = dvalues * f_prime(Z)` and section 3.3 names the leaky ReLU slope: 1 where the cached input was positive and the small slope elsewhere. `np.where(self.inputs > 0, 1.0, self.slope)` builds that array of slopes, and the multiplication creates a new array, so the caller's `dvalues` is untouched. The tests include a central-difference check with $h = 10^{-5}$, as in section 6.",
+      "hints": [
+        "The derivative takes one of two values, chosen by the sign of the cached input.",
+        "`np.where` can build an array that holds one of two values per element, chosen by a test on the cached input; the pattern line does the rest."
+      ]
+    },
+    {
+      "id": "nn-017-q16",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "7",
+      "est_minutes": 10,
+      "tags": [
+        "sigmoid",
+        "gradient-check",
+        "debugging"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "This `Activation_Sigmoid` runs without an error and returns `dinputs` of the right shape, but a central-difference check rejects it. Find the defect in `backward` and fix it.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "import numpy as np\n\n\nclass Activation_Sigmoid:\n\n    def forward(self, inputs):\n        self.inputs = inputs\n        self.output = 1 / (1 + np.exp(-inputs))\n\n    def backward(self, dvalues):\n        self.dinputs = dvalues * self.inputs * (1 - self.inputs)\n",
+      "solution": "import numpy as np\n\n\nclass Activation_Sigmoid:\n\n    def forward(self, inputs):\n        self.inputs = inputs\n        self.output = 1 / (1 + np.exp(-inputs))\n\n    def backward(self, dvalues):\n        # f'(z) = sigma(z) * (1 - sigma(z)), read from the cached output\n        self.dinputs = dvalues * self.output * (1 - self.output)\n",
+      "tests": "import numpy as np\n\nact = Activation_Sigmoid()\nZ = np.array([[0.0, 1.0, -2.0]])\ndvalues = np.array([[8.0, 5.0, 6.0]])\nact.forward(Z)\nact.backward(dvalues)\nassert act.dinputs.shape == Z.shape, act.dinputs.shape\nassert abs(act.dinputs[0, 0] - 2.0) < 1e-12, \"at z = 0 the slope is 0.25, so 8 becomes 2\"\nassert np.allclose(act.dinputs, [[2.0, 0.98306, 0.62996]], atol=1e-5), act.dinputs\n\nnp.random.seed(0)\nZ = np.random.randn(3, 4)\ndvalues = np.random.randn(3, 4)\nh = 1e-5\nnumerical = np.zeros_like(Z)\nfor index in np.ndindex(*Z.shape):\n    step = np.zeros_like(Z)\n    step[index] = h\n    act.forward(Z + step)\n    plus = np.sum(dvalues * act.output)\n    act.forward(Z - step)\n    minus = np.sum(dvalues * act.output)\n    numerical[index] = (plus - minus) / (2 * h)\nact.forward(Z)\nact.backward(dvalues)\ngap = np.abs(act.dinputs - numerical).max()\nassert gap < 1e-8, f\"backward disagrees with the central difference by {gap:.2f}\"\nprint(\"sigmoid backward passed\")\n",
+      "expected_output": "sigmoid backward passed\n",
+      "explanation": "The slope of the sigmoid is $\\sigma(z)(1 - \\sigma(z))$, a function of the activation's output (section 3.1). The starter applies the formula to the cached input, the slip reproduced in section 7, where it is off by as much as 2.59 on the seeded batch. Reading `self.output` instead brings the gap to the central difference down to about $10^{-11}$.",
+      "hints": [
+        "The shape is right, so look at which array the slope is computed from.",
+        "Compare the line with the formula for the sigmoid's slope: it is written in terms of $\\sigma(z)$, not $z$."
+      ]
+    },
+    {
+      "id": "nn-017-q17",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "7",
+      "est_minutes": 5,
+      "tags": [
+        "relu",
+        "copy",
+        "debugging"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "While debugging a network, the lines `saved = dense2.dinputs.copy()` and `activation1.backward(dense2.dinputs)` are run one after the other. Afterwards `activation1.dinputs` holds the expected masked gradient, but `dense2.dinputs` no longer equals `saved`: it has new zeros in it. Which defect in the ReLU class explains both observations?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`backward` assigns `dvalues` to `self.dinputs` without copying it.",
+          "correct": true,
+          "feedback": "Right: both names then refer to one array, so the masking line writes its zeros into `dense2.dinputs` as well."
+        },
+        {
+          "key": "b",
+          "text": "`forward` never stored its input, so the mask was built from an old batch.",
+          "correct": false,
+          "feedback": "A stale mask would make `activation1.dinputs` wrong, and it was observed to be right. It also would not write into another object's array."
+        },
+        {
+          "key": "c",
+          "text": "The mask tests `self.output <= 0` instead of `self.inputs <= 0`.",
+          "correct": false,
+          "feedback": "For plain ReLU the two tests select the same positions, so this changes nothing, and it does not touch the caller's array."
+        },
+        {
+          "key": "d",
+          "text": "Several neurons of the layer are dead, so their gradients are zero.",
+          "correct": false,
+          "feedback": "Dead neurons put zeros in `activation1.dinputs`, which is correct behaviour. They do not change the array that was passed in."
+        }
+      ],
+      "explanation": "Section 2.2 explains the `.copy()` and section 7 reproduces its absence: `self.dinputs = dvalues` makes a second name for the caller's array, and `self.dinputs[self.inputs <= 0] = 0` then overwrites it. The activation's own result is still correct, which is why only the caller's array shows the damage.",
+      "hints": [
+        "Ask which line of a ReLU backward writes zeros, and into which array.",
+        "Two names can refer to one NumPy array. Ask which assignment in a `backward` method could bring that about."
+      ]
+    },
+    {
+      "id": "nn-017-q18",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3.3",
+      "est_minutes": 12,
+      "tags": [
+        "vanishing-gradient",
+        "sigmoid",
+        "relu"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Post 06 stated, before the series had a backward pass, that deep sigmoid networks suffer from a vanishing gradient. Use the backward lines of this post to derive that statement. Compare what ten sigmoid activations and ten active ReLU activations do to a gradient entry that crosses them (ignore the dense layers in between), and name the two separate senses in which ReLU's backward step is the cheaper one.",
+      "kind": "connect",
+      "solution": "Each element-wise backward multiplies the incoming gradient entry by the local slope $f'(z)$ of that neuron (`dinputs = dvalues * f_prime(Z)`).\n\nFor a sigmoid the slope is $a(1 - a)$ with $a$ between 0 and 1. It is largest at $z = 0$, where $a = 0.5$ and the slope is 0.25, and it falls towards zero as the unit saturates: about $6.65 \\times 10^{-3}$ at $z = 5$ and $4.54 \\times 10^{-5}$ at $z = 10$. Ten sigmoid activations therefore scale an entry by at most $0.25^{10} \\approx 9.5 \\times 10^{-7}$, and by far less if any of them is saturated. This is the vanishing gradient of post 06, read off the backward line.\n\nFor a ReLU with a positive input the slope is exactly 1. Ten active ReLUs multiply the entry by $1^{10} = 1$: it arrives at full size. Where an input is not positive the slope is 0 and the entry is removed, which is the dead-neuron risk, but nothing in between shrinks.\n\nThe two senses of cheaper: (1) arithmetic. ReLU's line is a comparison per element with no multiplication on the gradient and no exponential in the forward pass, while sigmoid needs a subtraction and two multiplications going back and a negation, an exponential, an addition, and a division going forward. (2) signal. ReLU costs the gradient nothing on its active side, while sigmoid takes at least three quarters of it at every layer. The code shape is the same in both classes; the difference is entirely in the value of the slope.",
+      "rubric": [
+        {
+          "criterion": "States that each element-wise backward multiplies the gradient by the local slope",
+          "points": 1
+        },
+        {
+          "criterion": "Gives the sigmoid slope bound of 0.25 at $z = 0$ and that it falls towards zero under saturation",
+          "points": 2
+        },
+        {
+          "criterion": "Computes or bounds the effect of ten sigmoids as $0.25^{10}$, about $10^{-6}$",
+          "points": 2
+        },
+        {
+          "criterion": "States that an active ReLU has slope exactly 1, so ten of them leave the entry unchanged, and notes the zero on the inactive side",
+          "points": 2
+        },
+        {
+          "criterion": "Separates the arithmetic sense (comparison against multiplications and an exponential) from the signal sense (no shrinking on the active side)",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 3.1 prints the sigmoid slope at 0, 2, 5, and 10, and section 3.3 separates the two meanings of cheap: the arithmetic inside the line, and the size of the gradient that survives it. With a slope of at most 0.25, ten sigmoids scale a gradient by at most $0.25^{10} \\approx 9.5 \\times 10^{-7}$, the figure post 06 quotes, while active ReLUs multiply by exactly 1.",
+      "hints": [
+        "Write down what one element-wise backward does to a single gradient entry, then repeat it ten times.",
+        "Find the largest slope a sigmoid can have and the slope of a ReLU with a positive input."
+      ],
+      "connects": [
+        "nn-006"
+      ]
+    }
+  ]
+}

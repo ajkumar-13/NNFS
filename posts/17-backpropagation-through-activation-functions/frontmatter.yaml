@@ -1,8 +1,23 @@
 id: nn-017
 slug: 17-backpropagation-through-activation-functions
-title: "Part 17 · Backpropagation through activation functions"
+title: "17 - Backpropagation through activation functions"
+summary: "An element-wise activation is backpropagated with one multiply by its slope, which for ReLU is a mask. Softmax couples its outputs, has a full Jacobian, and needs a matrix product instead."
 date: 2026-05-28
+updated: 2026-10-05
+status: complete
+part: "Part V - Backpropagation"
+level: intermediate
+reading_time: 17
 tags: [neural-networks, from-scratch, backpropagation, relu, activations]
 hero: diagrams/01-elementwise-vs-coupled.svg
-reading_time: 10
-part: "Part V — Backpropagation"
+prerequisites: [nn-016]
+code: included
+outcomes:
+  - id: o1
+    text: "Apply the element-wise activation backward in one line for ReLU, sigmoid, or tanh."
+  - id: o2
+    text: "Say why ReLU's backward needs less arithmetic than sigmoid's although the code shape is the same."
+  - id: o3
+    text: "Explain why softmax cannot be backpropagated element-wise."
+recommended: [nn-010]
+compute: cpu
