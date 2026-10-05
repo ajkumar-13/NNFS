@@ -1,8 +1,23 @@
 id: nn-019
 slug: 19-softmax-derivatives-and-the-combined-backward-pass
-title: "Part 19 · Softmax derivatives and the combined backward pass"
+title: "19 - Softmax derivatives and the combined backward pass"
+summary: "The softmax Jacobian is a full matrix, but multiplied by the cross-entropy gradient it collapses to predicted minus true, divided by the batch size. The post derives the cancellation and codes it as one combined class."
 date: 2026-05-28
+updated: 2026-10-05
+status: complete
+part: "Part V - Backpropagation"
+level: intermediate
+reading_time: 20
 tags: [neural-networks, from-scratch, backpropagation, softmax, cross-entropy]
 hero: diagrams/01-combined-shortcut.svg
-reading_time: 12
-part: "Part V — Backpropagation"
+prerequisites: [nn-017, nn-018]
+code: included
+outcomes:
+  - id: o1
+    text: "Explain why softmax's Jacobian is full rather than diagonal."
+  - id: o2
+    text: "Apply the combined formula (y-hat - y) / N and recognise the cancellation that produces it."
+  - id: o3
+    text: "Implement Activation_Softmax_Loss_CategoricalCrossentropy with a three-line backward method."
+recommended: [nn-006, nn-011]
+compute: cpu

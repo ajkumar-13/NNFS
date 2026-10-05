@@ -1,88 +1,146 @@
-# Part 19 · Softmax derivatives and the combined backward pass
+# 19 - Softmax derivatives and the combined backward pass
 
-> **TL;DR.** Softmax's Jacobian is a full matrix, but pairing it with cross-entropy makes the gradient of the loss with respect to the softmax inputs collapse to just $\hat{\mathbf{y}} - \mathbf{y}$ divided by the batch size, which is why every framework ships a fused "softmax + cross-entropy" backward. This post derives that cancellation, codes it in three lines, and verifies the numbers.
+> **TL;DR.** Every softmax output depends on every logit, so the softmax Jacobian of one sample is a full $K \times K$ matrix with $\hat{y}_k(1 - \hat{y}_k)$ on the diagonal and $-\hat{y}_k \hat{y}_j$ off it. Multiplied by the cross-entropy gradient $-\mathbf{y}/\hat{\mathbf{y}}$ of post 18, the matrix collapses: each division by $\hat{y}_k$ meets a factor $\hat{y}_k$, and what is left is $\partial L / \partial \mathbf{Z} = (\hat{\mathbf{y}} - \mathbf{y})/N$ for one-hot labels and a batch-mean loss. `Activation_Softmax_Loss_CategoricalCrossentropy` computes that in three lines, agrees with the Jacobian route to $10^{-16}$ and with a central difference to $10^{-10}$, and stays finite where the separate route returns `nan`.
 >
-> **After reading this you will be able to:**
-> - Explain why softmax's Jacobian is full and not diagonal.
-> - Apply the combined formula $\partial L / \partial \mathbf{Z} = (\hat{\mathbf{y}} - \mathbf{y})/N$ and recognise the cancellation that produces it.
-> - Implement `Activation_Softmax_Loss_CategoricalCrossentropy` in three lines and run it on the spiral example.
+> **Prerequisites:** [Post 17](../17-backpropagation-through-activation-functions/index.md), [Post 18](../18-backpropagation-through-the-loss-function/index.md).
+> **Safe to skip?** Skip it if the reader can already derive the softmax Jacobian, show that it multiplies the cross-entropy gradient into $(\hat{\mathbf{y}} - \mathbf{y})/N$, and code that result for integer and one-hot labels.
+>
+> **After reading, you will be able to:**
+>
+> - Explain why softmax's Jacobian is full rather than diagonal.
+> - Apply the combined formula (y-hat - y) / N and recognise the cancellation that produces it.
+> - Implement Activation_Softmax_Loss_CategoricalCrossentropy with a three-line backward method.
 
-![The full softmax Jacobian on the left vs the clean combined shortcut on the right. Pair softmax with cross-entropy and the math collapses.](diagrams/01-combined-shortcut.svg)
-*The clean three-line backward is the same answer the messy per-sample Jacobian would produce.*
+![Two routes to the same gradient. Left, in three steps: the cross-entropy backward, minus y over y-hat; the softmax Jacobian of each sample; one matrix product per sample. Right, in three steps: softmax substituted into the loss, the two terms differentiated, and the result, y-hat minus y over N. A band below holds the three lines of code.](diagrams/01-combined-shortcut.svg)
 
----
-
-## 1. Why softmax cannot be backpropagated element-wise
-
-[Part 17](../17-backpropagation-through-activation-functions/index.md) ended with the contrast: ReLU's Jacobian (rectified linear unit) is diagonal, so its backward step is element-wise; softmax's Jacobian is full, so its backward step needs real matrix arithmetic.
-
-The softmax formula makes the coupling obvious:
-
-$$A_k = \frac{e^{Z_k}}{\sum_{j=1}^{C} e^{Z_j}}.$$
-
-$A_k$ depends on every $Z_j$ in the denominator. A change to $Z_2$ changes the denominator, which changes $A_1$, $A_3$, and every other output. The Jacobian entries (derived in Part 17) are:
-
-$$\frac{\partial A_k}{\partial Z_j} = \begin{cases} A_k (1 - A_k) & k = j \\ -A_k A_j & k \ne j. \end{cases}$$
-
-For a $C$-class problem with batch size $N$, the full Jacobian for one sample is a $C \times C$ matrix; the backward step needs one matrix-vector product per sample, total cost $O(N C^2)$.
-
-This is **Option 1**: compute the softmax Jacobian explicitly, multiply by the upstream `dvalues`, and write the result to `dinputs`. It works. It is slow and memory-hungry, especially for tasks with many classes.
-
-**Option 2** is much better. Pair softmax with the cross-entropy loss that almost always follows it, derive the combined gradient by hand, and watch the messy parts cancel.
+*Both routes give the same array. The right-hand one never builds a Jacobian and never divides by a prediction.*
 
 ---
 
-## 2. The shortcut
+## 1. The question: does the softmax backward need a matrix?
 
-For the combined operation "softmax → cross-entropy", the gradient of the loss with respect to the softmax *inputs* simplifies to:
+One `backward` method is still missing after post 18, the softmax's. The loss now produces the first gradient, $\partial L / \partial \hat{\mathbf{y}} = -\mathbf{y} / (N \hat{\mathbf{y}})$, and the softmax has to turn it into $\partial L / \partial \mathbf{Z}$, the gradient with respect to the logits, which the last dense layer receives as its `dvalues`.
 
-$$\frac{\partial L}{\partial Z_k} = \hat{y}_k - y_k.$$
+Post 17 showed why this step cannot be the one-line multiply of ReLU. For one sample with logits $z_1, \dots, z_K$, softmax is
 
-Predicted minus true. One subtraction per class, per sample. With the batch-size normalisation from [Part 18](../18-backpropagation-through-the-loss-function/index.md):
+$$\hat{y}_k = \frac{e^{z_k}}{\sum_{j} e^{z_j}},$$
 
-$$\frac{\partial L}{\partial \mathbf{Z}} = \frac{1}{N} (\hat{\mathbf{y}} - \mathbf{y}).$$
+and the denominator contains every logit. Post 17 wrote the output as $a_k$; at the output layer it is the prediction $\hat{y}_k$ of post 08. Raising $z_2$ raises the denominator, which changes $\hat{y}_1$, $\hat{y}_3$, and every other output, so the table of local derivatives $\partial \hat{y}_k / \partial z_j$, the Jacobian, has no zero entries. Post 17 quoted those entries and promised a derivation.
 
-No exponentials. No logarithms. No quotient rule. The formula is so clean that every modern framework hardcodes it as a fused operation, and Part 18's loss class never has to be paired with Part 06's softmax class for backprop — the combined class handles both.
-
-### 2.1. Why this is not magic
-
-The cancellation has a clean reason. For a single sample with one-hot label $\mathbf{y}$ where the true class is $t$, the cross-entropy loss is:
-
-$$L = -\log(\hat{y}_t).$$
-
-Substituting the softmax expression for $\hat{y}_t$:
-
-$$L = -\log\!\left(\frac{e^{Z_t}}{\sum_j e^{Z_j}}\right) = -Z_t + \log\!\left(\sum_{j=1}^{C} e^{Z_j}\right).$$
-
-The loss is suddenly easy to differentiate with respect to any $Z_k$:
-
-- The first term $-Z_t$ contributes $-1$ to $\partial L / \partial Z_k$ when $k = t$, and $0$ otherwise. This is exactly $-y_k$.
-- The second term $\log \sum_j e^{Z_j}$ has derivative $e^{Z_k} / \sum_j e^{Z_j} = \hat{y}_k$.
-
-Adding the two:
-
-$$\frac{\partial L}{\partial Z_k} = -y_k + \hat{y}_k = \hat{y}_k - y_k.$$
-
-The full algebra (with the quotient rule applied to softmax directly and then multiplied by the loss gradient) gives the same answer, but it is messier and easier to make mistakes in. The substitution-then-differentiate route shown here is the standard derivation; the [softmax backward appendix](../../appendix_softmax_combined_backward.md) works through it in full and explains why the explicit-Jacobian route lands on the same result.
-
-### 2.2. Why every framework ships a combined version
-
-Two reasons, both decisive.
-
-![A table of Jacobian versus shortcut work at 3, 1000 and 50,000 classes, beside the log-sum-exp stability argument.](diagrams/02-why-fused.svg)
-*At a language-model vocabulary the explicit route computes two and a half billion numbers per sample where the shortcut computes fifty thousand.*
-
-**Numerical stability.** The "log of softmax" inside the cross-entropy can be computed via the log-sum-exp trick (which is just the max-subtraction stabiliser from [Part 06](../06-activation-functions-relu-and-softmax/index.md) §4.2 in disguise). When the two ops are computed separately and the results threaded together, intermediate quantities can underflow or overflow. The combined op avoids materialising the unstable intermediates.
-
-**Speed.** Computing the full Jacobian and multiplying by the upstream is $O(N C^2)$. The combined shortcut is $O(N C)$. For classification tasks with $C = 1000$ classes (ImageNet) or $C = 50\,000$ tokens (language models), the difference is enormous.
-
-PyTorch's `nn.CrossEntropyLoss` is exactly this fused op. TensorFlow's `tf.nn.softmax_cross_entropy_with_logits` is the same. This series builds the same op as a single class, `Activation_Softmax_Loss_CategoricalCrossentropy`.
+This post gives it, and then answers the practical question. Building a $K \times K$ matrix for every sample of the batch works and is wasteful. Softmax is almost always followed by categorical cross-entropy, and differentiating the two together cancels nearly all of the matrix.
 
 ---
 
-## 3. Worked example
+## 2. The softmax Jacobian
 
-Three samples, three classes:
+### 2.1. One new derivative: the exponential
+
+Post 10 left the exponential for this post. Its difference quotient is
+
+$$\frac{e^{x + h} - e^{x}}{h} = e^{x} \cdot \frac{e^{h} - 1}{h},$$
+
+and $(e^h - 1)/h$ tends to 1 as $h$ shrinks, which is the property that singles out the base $e$ (the mirror image of the limit post 18 used for the logarithm). So
+
+$$\frac{d}{dx} e^{x} = e^{x}:$$
+
+the slope of the exponential is its own value. A central difference agrees at every point tried: at $x = 1$ it measures 2.718282, which is $e$ (`snippets/softmax_jacobian.py`).
+
+### 2.2. The entries
+
+Taking the logarithm of softmax turns the quotient into a difference:
+
+$$\log \hat{y}_k = z_k - \log \sum_{j} e^{z_j}.$$
+
+Both sides are now differentiated with respect to one logit $z_j$, the others held fixed.
+
+- **Left side.** By the chain rule of post 11 and the derivative of the logarithm from post 18, it is $\dfrac{1}{\hat{y}_k} \dfrac{\partial \hat{y}_k}{\partial z_j}$.
+- **First term on the right.** $z_k$ has slope 1 with respect to $z_j$ when $k = j$ and slope 0 otherwise.
+- **Second term on the right.** The chain rule again: the outer logarithm gives one over the sum, and inside the sum only $e^{z_j}$ depends on $z_j$, with slope $e^{z_j}$. The product is $e^{z_j} / \sum_{m} e^{z_m}$, which is $\hat{y}_j$.
+
+Multiplying through by $\hat{y}_k$ gives the entries post 17 quoted:
+
+$$\frac{\partial \hat{y}_k}{\partial z_j} = \begin{cases} \hat{y}_k (1 - \hat{y}_k) & k = j \\ -\hat{y}_k \hat{y}_j & k \ne j. \end{cases}$$
+
+The convention is that of post 17: row $k$ is an output, column $j$ is a logit. Every probability lies strictly between 0 and 1, so no entry is zero. The diagonal is positive, since raising a logit raises its own probability, and everything off the diagonal is negative, since that probability is taken from the other classes. This is the whole reason the Jacobian is **full**: an element-wise activation has $\partial a_k / \partial z_j = 0$ for $k \ne j$, and softmax has $-\hat{y}_k \hat{y}_j$ there.
+
+### 2.3. The Jacobian of one sample
+
+For the softmax output $[0.7, 0.2, 0.1]$ the diagonal is $0.7 \times 0.3$, $0.2 \times 0.8$, $0.1 \times 0.9$, and the off-diagonal entries are the negated pairwise products. In code the matrix is `np.diagflat(y_hat) - np.outer(y_hat, y_hat)`, and `snippets/softmax_jacobian.py` prints
+
+```text
+[[ 0.210000 -0.140000 -0.070000]
+ [-0.140000  0.160000 -0.020000]
+ [-0.070000 -0.020000  0.090000]]
+largest gap to a central difference: 7.6e-12
+column sums: [0.000000 0.000000 0.000000]  symmetric: True
+```
+
+All nine entries are non-zero and match slopes measured by nudging one logit at a time. The matrix is symmetric, and each column sums to zero because the three outputs always sum to 1: what one output gains, the others lose.
+
+---
+
+## 3. The cancellation
+
+The backward step of an activation is the incoming gradient times the Jacobian (post 17). For one sample the incoming gradient is that of post 18, $\partial L_i / \partial \hat{y}_k = -y_k / \hat{y}_k$, so
+
+$$\frac{\partial L_i}{\partial z_j} = \sum_{k} \left(-\frac{y_k}{\hat{y}_k}\right) \frac{\partial \hat{y}_k}{\partial z_j}.$$
+
+Every Jacobian entry in row $k$ carries a factor $\hat{y}_k$, and it cancels the division by $\hat{y}_k$. The term with $k = j$ becomes $-y_j (1 - \hat{y}_j)$ and each other term becomes $+y_k \hat{y}_j$:
+
+$$\frac{\partial L_i}{\partial z_j} = -y_j + \hat{y}_j \sum_{k} y_k = \hat{y}_j - y_j,$$
+
+because the entries of a label row sum to 1. Predicted minus true. The exponentials, the logarithm and the division are gone, and so is the sum over $k$: the gradient at logit $j$ needs only the prediction and the label of class $j$.
+
+The script runs the product for $[0.7, 0.2, 0.1]$ with true class 0:
+
+```text
+dvalues           = [-1.428571  0.000000  0.000000]
+dvalues @ J       = [-0.300000  0.200000  0.100000]
+y_hat - y         = [-0.300000  0.200000  0.100000]
+```
+
+The single non-zero entry of post 18's gradient, $-1/0.7$, picks out the first row of the Jacobian and rescales it into $\hat{\mathbf{y}} - \mathbf{y}$.
+
+For a batch, $L$ is the mean of the $L_i$ and logit $z_{i,k}$ belongs to sample $i$ alone, so the factor $1/N$ of post 18 carries over unchanged:
+
+$$\frac{\partial L}{\partial \mathbf{Z}} = \frac{\hat{\mathbf{y}} - \mathbf{y}}{N}.$$
+
+The division by $N$ happens once. In the Jacobian route it is the one inside `Loss_CategoricalCrossentropy.backward`; the combined route skips that method and has to divide for itself.
+
+### 3.1. Why this is not magic
+
+A second derivation reaches the same place without a Jacobian. With a one-hot label whose true class is $c$, the loss of the sample is $L_i = -\log \hat{y}_c$, and the identity of section 2.2 writes it in the logits directly:
+
+$$L_i = -z_c + \log \sum_{j} e^{z_j}.$$
+
+For $[0.7, 0.2, 0.1]$ both forms give 0.356675. Differentiating with respect to $z_k$ takes two steps:
+
+- The term $-z_c$ contributes $-1$ when $k = c$ and 0 otherwise, which is exactly $-y_k$.
+- The term $\log \sum_j e^{z_j}$ contributes $\hat{y}_k$, as in section 2.2.
+
+The sum is $\hat{y}_k - y_k$ again. The Jacobian has not disappeared; its effect is folded into the rewritten loss. The logarithm in the loss undoes the exponential in softmax, and that is why this particular pair cancels and an arbitrary activation and loss do not.
+
+The result reads easily. The entry at the true class is $\hat{y}_c - 1$, negative, and every other entry is $\hat{y}_k$, positive. Gradient descent subtracts the gradient, so the true-class logit is pushed up and the others down, each by an amount proportional to its own error, and a row sums to zero. A prediction that already equals its label has a zero gradient.
+
+### 3.2. Why frameworks ship a combined version
+
+![A table of the numbers each route computes for one sample: 9 against 3 at 3 classes, 1,000,000 against 1,000 at 1,000 classes, and 2,500,000,000 against 50,000 at 50,000 classes. A second card rewrites the logarithm of softmax as a logit minus the log of the sum of exponentials.](diagrams/02-why-fused.svg)
+
+*The gap between the two routes is a factor of $K$, the number of classes.*
+
+Two reasons, and both are counted or measured in this post, not timed.
+
+**Work.** The Jacobian route builds $K^2$ numbers for every sample and multiplies a row into them; the combined route computes $K$. For the spiral's three classes that is 9 against 3. At 1,000 classes it is 1,000,000 against 1,000, and at 50,000 classes, the size of a language-model vocabulary, 2,500,000,000 against 50,000 for each sample. The ratio is $K$ itself.
+
+**No division.** The separate route divides by $\hat{y}$ and then multiplies by it. On paper the two cancel; in floating point they do not when $\hat{y}$ has underflowed to exactly 0, and section 8 shows the separate route returning `nan` where $\hat{\mathbf{y}} - \mathbf{y}$ is finite. Every entry of $\hat{\mathbf{y}} - \mathbf{y}$ lies between $-1$ and 1.
+
+Framework losses go one step further. PyTorch's `CrossEntropyLoss`, for instance, takes the logits and computes the logarithm of the softmax in one step. The form $-z_c + \log \sum_j e^{z_j}$ is what makes that possible: with the max-subtraction of post 06 it needs no probability before the logarithm, and so no clip. The class of this series joins the two functions for the backward pass only: its forward pass still runs softmax and then the clipped loss of post 08. The same cancellation appears once more in the series, for sigmoid with binary cross-entropy (post 34).
+
+---
+
+## 4. Worked example
+
+The batch of post 08, three samples and three classes:
 
 | Sample | Softmax output $\hat{\mathbf{y}}$ | True class | $\mathbf{y}$ (one-hot) | $\hat{\mathbf{y}} - \mathbf{y}$ |
 |:---:|:---:|:---:|:---:|:---:|
@@ -94,7 +152,7 @@ Dividing by $N = 3$:
 
 $$\frac{\partial L}{\partial \mathbf{Z}} = \frac{1}{3}\begin{bmatrix} -0.3 & 0.1 & 0.2 \\ 0.1 & -0.5 & 0.4 \\ 0.02 & -0.1 & 0.08 \end{bmatrix} = \begin{bmatrix} -0.100 & 0.033 & 0.067 \\ 0.033 & -0.167 & 0.133 \\ 0.007 & -0.033 & 0.027 \end{bmatrix}.$$
 
-In code:
+In code (`snippets/worked_example.py`):
 
 ```python
 import numpy as np
@@ -115,17 +173,33 @@ print(dinputs)
 
 **Output:**
 
-```
-[[-0.1     0.0333  0.0667]
- [ 0.0333 -0.1667  0.1333]
- [ 0.0067 -0.0333  0.0267]]
+```text
+[[-0.1         0.03333333  0.06666667]
+ [ 0.03333333 -0.16666667  0.13333333]
+ [ 0.00666667 -0.03333333  0.02666667]]
 ```
 
-The non-zero pattern is no longer per-row; every entry is now meaningful. The correct-class entry is negative (predicted probability minus 1, since $y = 1$), and the wrong-class entries are positive (predicted probability minus 0).
+Post 18's gradient had one non-zero entry in each row. This one has none that is zero: the Jacobian has spread each row's single entry over all the logits. Sample 3, the most confident and correct, has the smallest gradient, and sample 2, with only 0.5 on its true class, the largest.
+
+The subtraction uses the advanced indexing of post 08: row $i$, column `y_true[i]`. With integer labels the one-hot matrix is never built, because subtracting $\mathbf{y}$ changes only one entry per row.
 
 ---
 
-## 4. The combined class
+## 5. The combined class
+
+For completeness, and for the check of section 7, the Jacobian route is a `backward` method on the softmax class of post 06:
+
+```python
+    def backward(self, dvalues):
+        self.dinputs = np.empty_like(dvalues)
+
+        # One Jacobian and one product for every sample of the batch.
+        for index, (single_output, single_dvalues) in enumerate(zip(self.output, dvalues)):
+            jacobian = np.diagflat(single_output) - np.outer(single_output, single_output)
+            self.dinputs[index] = single_dvalues @ jacobian
+```
+
+It needs a Python loop over the samples, because each row has its own matrix. The series does not use it for training. It uses this class:
 
 ```python
 class Activation_Softmax_Loss_CategoricalCrossentropy:
@@ -154,91 +228,126 @@ class Activation_Softmax_Loss_CategoricalCrossentropy:
 
 Three things to flag.
 
-**`forward` is just a thin wrapper.** It runs the softmax forward, then the cross-entropy forward. Nothing exciting happens until backward.
+**`forward` is a thin wrapper.** It runs the softmax of post 06 on the logits and the loss of post 08 on the result, stores the probabilities as `self.output`, and returns the batch loss. The reported loss is the number the two separate classes would give.
 
-**`backward` ignores its `dvalues` for the upstream gradient.** The combined op's "upstream" is the loss itself (a scalar with derivative 1), so the formula is the local gradient with no upstream multiplication. The `dvalues` parameter holds the softmax output ($\hat{\mathbf{y}}$) and serves only as the starting array for the copy.
+**`dvalues` is the softmax output.** As in post 18, nothing comes after this class, so its upstream gradient is 1 and the argument carries the predictions: the caller passes `softmax_loss.output`. The copy keeps the subtraction from changing that array.
 
-**The class returns the gradient with respect to the softmax inputs.** `self.dinputs` has shape `(N, C)` (one row per sample, one column per class), the same shape as the softmax output. The previous layer (`dense2` in a typical classifier) reads `self.dinputs` as its `dvalues`. From there backprop continues through the dense layer, the ReLU, the first dense layer, and finally produces gradients for all the weights.
+**`dinputs` is the gradient with respect to the logits.** It has shape $(N, K)$, one row per sample and one column per class, the shape of the logits, and the last dense layer reads it as its `dvalues`. All $K$ columns are needed because column $k$ feeds the weights of output neuron $k$. `Loss_CategoricalCrossentropy.backward` and `Activation_Softmax.backward` are not called at all; calling either as well applies part of the chain twice (section 8).
 
 ---
 
-## 5. Handling label formats
+## 6. Label formats
 
-Same as in [Part 18](../18-backpropagation-through-the-loss-function/index.md), but in the *reverse* direction: the combined class works most naturally with integer indices (because it uses advanced indexing to subtract 1 at the true class), so one-hot labels get converted to integers via `np.argmax`. The conversion is one line and constant-time per sample.
+The class works on integer labels, because the subtraction is an indexing operation. One-hot labels are converted first: `np.argmax(y_true, axis=1)` returns the column of the single 1 in each row. This is the reverse of post 18, whose `backward` turned integer labels into one-hot rows for its division. After the conversion `y_true` is a 1-D array of class indices, and the three lines do not branch on the format.
 
-```python
-if len(y_true.shape) == 2:                   # one-hot input
-    y_true = np.argmax(y_true, axis=1)        # convert to class indices
+Two inputs pass the check on the number of dimensions and are still wrong. Integer labels stored as an $(N, 1)$ column are taken for one-hot rows, as in posts 08 and 18. Soft labels such as $[0.9, 0.05, 0.05]$ are two-dimensional as well, and `argmax` reduces each to its largest entry. The derivation of section 3 does hold for them, since it needed only a label row that sums to 1, but the code for it is `(dvalues - y_true) / samples`, not an index, and `forward` would have to change with it: the multiply-and-sum path of post 08 reports the cross-entropy for one-hot rows only. The series uses hard labels only; section 8 measures both failures.
+
+---
+
+## 7. Make it run: both routes against a central difference
+
+`snippets/combined_class.py` holds the two `backward` methods of section 5 with the softmax class of post 06 and the loss classes of posts 08 and 18 around them. It needs NumPy only and runs in under a second from the series root with `python posts/19-softmax-derivatives-and-the-combined-backward-pass/snippets/combined_class.py`.
+
+The script draws five rows of four logits and five labels in float64 from a generator with seed 4, chosen so that the five labels cover all four classes. It computes $\partial L / \partial \mathbf{Z}$ three ways: with the combined class, with post 18's loss `backward` followed by the softmax `backward`, and with the central difference of post 10 ($h = 10^{-5}$), which nudges each of the 20 logits in turn and divides the change in the loss returned by `forward` by $2h$.
+
+```text
+labels: [1 2 1 3 0]  loss: 1.891199
+combined dinputs, shape (5, 4)
+[[ 0.012157 -0.180410  0.123154  0.045099]
+ [ 0.013429  0.068968 -0.162834  0.080437]
+ [ 0.005289 -0.166367  0.033419  0.127659]
+ [ 0.021484  0.026081  0.003517 -0.051082]
+ [-0.193136  0.140296  0.033517  0.019323]]
+row sums: [0.000000 0.000000 0.000000 0.000000 0.000000]
+largest |combined - Jacobian route|     = 2.78e-17
+largest |combined - central difference| = 2.27e-11
+largest |one-hot labels - central difference| = 2.27e-11
+section 4 batch, largest |combined - Jacobian route| = 5.55e-17
+numbers built: Jacobian route 80  combined 20
 ```
 
-After this conversion, `y_true` is always a 1-D array of integer indices, and the rest of the backward works without branching on label format.
+The two analytic routes differ by rounding in the last bit, on this batch and on the batch of section 4. That is the statement that the shortcut is exact and not an approximation. Both agree with the measured slopes to about $2 \times 10^{-11}$, for integer and for one-hot labels, and since the measurement differentiates the batch mean, it confirms the single division by $N$ as well. The Jacobian route built $5 \times 4^2 = 80$ numbers to get there and the combined route 20.
+
+Three more scripts in the same directory print the other numbers of this post, each in under a second: `softmax_jacobian.py` (sections 2 and 3), `worked_example.py` (section 4), and `what_can_go_wrong.py` (section 8).
 
 ---
 
-## 6. What this combined class is *not*
+## 8. What can go wrong?
 
-A boundary section, because the speed-up is so attractive it tempts misuse.
+`snippets/what_can_go_wrong.py` runs each case on the seeded batch of section 7 unless another input is named.
 
-- **It is not a general-purpose loss class.** The combined shortcut works only because softmax pairs with categorical cross-entropy. Using it with a different activation (sigmoid for binary classification) or a different loss (mean squared error for regression) gives wrong gradients.
-- **It is not a forward-pass optimisation.** The forward call still runs softmax and cross-entropy as two operations; the saving is in the backward.
-- **It does not change the loss number reported during training.** The user-visible loss is identical to running the two ops separately; only the gradient is computed via the shortcut.
-- **It is not the only fused op in deep learning.** Sigmoid + binary cross-entropy has a similar cancellation; layer norm + linear has another; matmul + bias + activation can also be fused. Frameworks ship many fused kernels for the same numerical and speed reasons.
+- **The division by $N$ is left out, or done twice.** Without `self.dinputs /= samples` every entry is exactly 5 times the measured slope at $N = 5$. A second division, in a layer or an optimiser, leaves 0.2 times the slope. Neither raises an error or changes the direction of the step.
+
+- **The standalone `backward` methods are called as well.** Passing the combined `dinputs` through `Activation_Softmax.backward` multiplies a finished gradient by the Jacobian a second time. The first row changes from `[0.0122 -0.1804 0.1232 0.0451]` to `[-0.0035 -0.0244 0.0333 -0.0054]`, with two signs flipped, and the largest gap to the central difference is 0.183. The shape is right, so nothing complains.
+
+- **A soft label is passed.** For the label $[0.9, 0.05, 0.05]$ and the prediction $[0.7, 0.1, 0.2]$:
+
+```text
+   combined class:       [[-0.3  0.1  0.2]]
+   Jacobian route:       [[-0.2   0.05  0.15]]
+   central difference:   [[-0.2   0.05  0.15]]
+```
+
+The class returns the gradient for the hard label $[1, 0, 0]$. The measured slopes of the cross-entropy $-\sum_k y_k \log \hat{y}_k$ are $\hat{\mathbf{y}} - \mathbf{y}$ with the soft label, which the Jacobian route reproduces because post 18's `backward` keeps the general division.
+
+- **Integer labels arrive as a column.** With the labels `[1 2 1 3 0]` reshaped to $(5, 1)$, `argmax` over a row of one number returns 0 every time, so the 1 is subtracted in column 0 of every row. The largest gap to the central difference is 0.200, which is $1/N$, and no error is raised. `y.ravel()` restores the right answer.
+
+- **A probability is exactly zero.** The logits $[0, -800, 0]$ with true class 1 give the softmax output `[0.5 0. 0.5]`:
+
+```text
+   Jacobian route: [[nan nan nan]]
+   raised:         RuntimeWarning: divide by zero encountered in divide
+   raised:         RuntimeWarning: invalid value encountered in matmul
+   combined class: [[ 0.5 -1.   0.5]]
+```
+
+The separate route computes $-1/0 = -\infty$ and then multiplies it by Jacobian entries that are 0, which is `nan`. The combined class returns $\hat{\mathbf{y}} - \mathbf{y}$, the correct gradient, and the sample that most needs a correction gets the largest one.
+
+- **The gradient is expected to follow the clipped loss.** For the logits $[-20, 0, 0]$ with true class 0, the true-class probability is $1.031 \times 10^{-9}$, below the lower clip bound of post 08. `forward` reports 16.1181 where the unclipped loss is 20.6931, and the reported number is flat there: its measured slopes are `[0. 0. 0.]`. `backward` returns `[-1. 0.5 0.5]`, the gradient of the unclipped loss. The clip changes the number that is logged and leaves the gradient alone, which is the useful behaviour; a gradient check on such a sample fails for a reason that is not a bug.
+
+- **The formula is used with another loss.** The cancellation belongs to softmax with cross-entropy. For softmax followed by a squared error against the one-hot labels, the measured slopes of the first row are `[-0.0069 -0.0489 0.0666 -0.0108]` and $(\hat{\mathbf{y}} - \mathbf{y})/N$ is `[0.0122 -0.1804 0.1232 0.0451]`: different sizes and, in two places, different signs.
 
 ---
 
-## 7. Anticipated questions
-
-- **What about soft labels (not strictly one-hot)?** The combined formula still applies. $\hat{\mathbf{y}} - \mathbf{y}$ works for any label distribution $\mathbf{y}$ that sums to 1; the one-hot case is the special-case-friendliest version. Implementations that use `np.argmax` to extract a single index break for soft labels; the general implementation uses `np.sum(y_true * softmax_output, axis=1)` instead.
-- **Does the shortcut help with the dying-ReLU problem upstream?** Indirectly. A cleaner gradient signal at the softmax inputs propagates more reliably through the network, so weights have a better chance of moving out of the dead region. The gradient itself is not different from what the separate ops would produce; only the numerics are cleaner.
-- **Why is the combined backward shape `(N, C)`, not `(N, 1)`?** Because every class's gradient contributes to updates of the dense layer's weights that feed that class. The full `(N, C)` matrix is what `dense2.backward(softmax_loss.dinputs)` expects.
-- **What if the softmax output has very small values (e.g. `1e-10`)?** The combined formula has no division by small numbers, so it is stable. The separate softmax-then-cross-entropy version divides by very small softmax outputs in the cross-entropy backward and can produce huge gradients or `inf`. The combined version skips that problem entirely.
-- **Is the combined class always the right choice?** Yes, for classification with categorical cross-entropy. Production code uses it by default; this series matches the pattern.
-
----
-
-## 8. Summary
+## 9. Summary
 
 | Concept | Takeaway |
 |---|---|
-| Softmax Jacobian | Full $C \times C$ matrix per sample; $A_k$ depends on every $Z_j$ |
-| Naive backward | Compute the Jacobian, multiply by upstream; $O(N C^2)$, slow and memory-hungry |
-| Combined shortcut | $\partial L / \partial \mathbf{Z} = (\hat{\mathbf{y}} - \mathbf{y})/N$; one subtraction per class, per sample |
-| Derivation | Substitute softmax into cross-entropy, then differentiate — exponentials and logs cancel |
-| Numerical stability | The combined formula has no small denominators; the separate version can blow up |
-| Framework practice | Every modern framework fuses these two ops; this series does too |
+| Derivative of the exponential | $\frac{d}{dx} e^x = e^x$ |
+| Softmax Jacobian | $\hat{y}_k(1 - \hat{y}_k)$ on the diagonal, $-\hat{y}_k \hat{y}_j$ off it; full, symmetric, columns sum to zero |
+| Jacobian route | `-y / y_hat`, then one $K \times K$ matrix and one product per sample; $N K^2$ numbers |
+| The cancellation | each $1/\hat{y}_k$ meets a factor $\hat{y}_k$, and the label row sums to 1 |
+| Combined gradient | $\partial L / \partial \mathbf{Z} = (\hat{\mathbf{y}} - \mathbf{y})/N$; $N K$ numbers, no division by a prediction |
+| Second derivation | $L_i = -z_c + \log \sum_j e^{z_j}$, differentiated term by term |
+| The class | copy the softmax output, subtract 1 at the true class, divide by $N$ once |
+| Exactness | equal to the Jacobian route to rounding; $2 \times 10^{-11}$ from a central difference |
 
 ---
 
 ## Common pitfalls
 
-- **Implementing the shortcut for a different activation.** The cancellation only works for softmax + cross-entropy. Using `(ŷ − y)/N` with sigmoid + MSE gives wrong gradients.
-- **Forgetting to divide by `samples`.** Same trap as Part 18: without the `1/N`, gradients are `N` times too large.
-- **Using `np.argmax` on soft labels.** That collapses the label distribution to a single class and breaks soft-label training. Use the one-hot-aware sum if the label is not strict.
-- **Treating `dvalues` as the loss's upstream.** In the combined class, `dvalues` is the softmax *output* (the cached prediction). The implementation works because the upstream from the scalar loss is just `1`.
-- **Computing softmax twice.** The combined class runs softmax once in `forward` and stores the output on `self.output`. Re-running it in `backward` wastes the cache.
-- **Mixing the combined class with the standalone softmax and loss classes.** Code that calls `loss.backward()` *and* `softmax.backward()` after the combined `backward` double-applies gradients. Use one or the other.
-- **Believing the shortcut is an approximation.** It is mathematically identical to the separate-op backward, just simpler.
+1. **Forgetting to divide by `samples`.** The combined class replaces the loss `backward`, which is where the $1/N$ lived. Without it the gradient is $N$ times too large.
+2. **Calling the standalone `backward` methods too.** The combined `dinputs` goes straight to the last dense layer. Passing it through the softmax or the loss `backward` gives a wrong gradient of the right shape.
+3. **Using $\hat{\mathbf{y}} - \mathbf{y}$ with another activation or loss.** The cancellation is a property of softmax with cross-entropy (and of sigmoid with binary cross-entropy), not of output layers in general.
+4. **Passing soft labels or an $(N, 1)$ column.** Both are two-dimensional, both go through `argmax`, and both produce a wrong gradient without an error.
+5. **Reading `dvalues` as a gradient.** In this class it is the softmax output; the upstream gradient is 1.
+6. **Treating the shortcut as an approximation.** It is the same derivative as the Jacobian route, equal to rounding, and better behaved when a probability underflows.
 
 ---
 
 ## Further reading
 
+- Bishop, C. M., *Pattern Recognition and Machine Learning*, section 4.3.4 (Springer, 2006).
 - Bridle, J. S., *"Probabilistic Interpretation of Feedforward Classification Network Outputs"* (Neurocomputing, NATO ASI Series, 1990).
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6.2 (Gradient-Based Learning) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 19 (2020).
-- PyTorch documentation, *"`torch.nn.CrossEntropyLoss`"* (latest).
-- TensorFlow documentation, *"`tf.nn.softmax_cross_entropy_with_logits`"* (latest).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, section 6.2.2.3 (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 9 (2020).
+- PyTorch documentation, `torch.nn.CrossEntropyLoss` (latest).
 
-Full citations in [REFERENCES.md](../../REFERENCES.md).
+Full citations are in [REFERENCES.md](../../REFERENCES.md).
 
 ---
 
 ## What to read next
 
-- **[Part 20 — Assembling full backpropagation](../20-assembling-full-backpropagation/index.md)**: every `backward` method snapping into the same script for the first time.
-- **[Part 21 — Coding the full backpropagation](../21-coding-the-full-backpropagation/index.md)**: the complete training loop running on the spiral dataset.
-- **[Softmax backward appendix](../../appendix_softmax_combined_backward.md)**: the full substitution derivation, a class-index implementation, and why the explicit-Jacobian route agrees.
-
----
-
-> **Try it yourself:** Hands-on exercises and quizzes for this lecture live in [Exercises](../../exercises.md) and [Quizzes](../../quizzes.md).
+- **[Post 20 - Assembling full backpropagation](../20-assembling-full-backpropagation/index.md):** every `backward` method of posts 16 to 19 chained into one pass, with this class at its start.
+- **[Post 34 - Sigmoid and binary cross-entropy](../34-sigmoid-and-binary-cross-entropy/index.md):** the same cancellation for a single yes-or-no output.

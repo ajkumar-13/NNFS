@@ -1,0 +1,842 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-019",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-019-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 2,
+      "tags": [
+        "softmax",
+        "jacobian"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The Jacobian of ReLU has zeros everywhere off its diagonal, and the Jacobian of softmax has none. What makes the difference?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Softmax uses an exponential, and a curved function always has a full Jacobian.",
+          "correct": false,
+          "feedback": "Sigmoid and tanh are curved as well and their Jacobians are diagonal, because each output still depends on one input only."
+        },
+        {
+          "key": "b",
+          "text": "Every softmax output divides by a sum that contains every logit of the row.",
+          "correct": true,
+          "feedback": "Right: the shared denominator makes each output depend on all the logits, so no entry of the Jacobian is zero."
+        },
+        {
+          "key": "c",
+          "text": "Softmax is applied to a whole batch, so the rows of the batch influence one another.",
+          "correct": false,
+          "feedback": "Softmax works on each row separately. The coupling is between the classes of one sample, not between samples."
+        },
+        {
+          "key": "d",
+          "text": "Softmax outputs lie between 0 and 1, which forces the off-diagonal entries to be non-zero.",
+          "correct": false,
+          "feedback": "Sigmoid outputs lie between 0 and 1 too and its Jacobian is diagonal. The range of the output is not what couples the entries."
+        }
+      ],
+      "explanation": "Section 1 points at the denominator of softmax: it is the sum of $e^{z_j}$ over all the logits, so each output $\\hat{y}_k$ moves when any logit moves and every entry $\\partial \\hat{y}_k / \\partial z_j$ is non-zero. An element-wise activation computes each output from its own input alone, which leaves only the diagonal.",
+      "hints": [
+        "Look at which logits appear in the formula for a single softmax output."
+      ]
+    },
+    {
+      "id": "nn-019-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "combined-gradient"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "For one sample with a one-hot label $\\mathbf{y}$ and softmax output $\\hat{\\mathbf{y}}$, what is the gradient of the categorical cross-entropy with respect to the logits?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "$\\mathbf{y} - \\hat{\\mathbf{y}}$",
+          "correct": false,
+          "feedback": "The sign is reversed. At the true class the gradient is $\\hat{y}_c - 1$, which is negative, so that subtracting it raises that logit."
+        },
+        {
+          "key": "b",
+          "text": "$-\\mathbf{y} / \\hat{\\mathbf{y}}$",
+          "correct": false,
+          "feedback": "This is the gradient with respect to the predictions, the result of post 18. It still has to pass through the softmax."
+        },
+        {
+          "key": "c",
+          "text": "$\\hat{\\mathbf{y}} - \\mathbf{y}$",
+          "correct": true,
+          "feedback": "Right: predicted minus true, with no exponential, logarithm or division left."
+        },
+        {
+          "key": "d",
+          "text": "$\\hat{\\mathbf{y}} (1 - \\hat{\\mathbf{y}})$",
+          "correct": false,
+          "feedback": "This is the diagonal of the softmax Jacobian alone. It ignores the off-diagonal entries and the loss."
+        }
+      ],
+      "explanation": "Section 3 multiplies the cross-entropy gradient $-\\mathbf{y}/\\hat{\\mathbf{y}}$ by the softmax Jacobian. Each division by $\\hat{y}_k$ cancels against the factor $\\hat{y}_k$ of the Jacobian entries, and because the label row sums to 1 the result is $\\hat{\\mathbf{y}} - \\mathbf{y}$.",
+      "hints": [
+        "It is the product of two local derivatives, and most of that product cancels."
+      ]
+    },
+    {
+      "id": "nn-019-q03",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 4,
+      "tags": [
+        "jacobian",
+        "combined-gradient"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Match each expression to the quantity it gives for one sample, with $\\hat{\\mathbf{y}}$ the softmax output, $\\mathbf{y}$ the one-hot label and $z$ the logits.",
+      "left": [
+        {
+          "key": "a",
+          "text": "$\\hat{y}_k (1 - \\hat{y}_k)$"
+        },
+        {
+          "key": "b",
+          "text": "$-\\hat{y}_k \\hat{y}_j$ with $k \\ne j$"
+        },
+        {
+          "key": "c",
+          "text": "$-y_k / \\hat{y}_k$"
+        },
+        {
+          "key": "d",
+          "text": "$\\hat{y}_k - y_k$"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "$\\partial L_i / \\partial z_k$, the loss with respect to a logit"
+        },
+        {
+          "key": "q",
+          "text": "$\\partial \\hat{y}_k / \\partial z_k$, an output with respect to its own logit"
+        },
+        {
+          "key": "r",
+          "text": "$\\partial L_i / \\partial \\hat{y}_k$, the loss with respect to a prediction"
+        },
+        {
+          "key": "s",
+          "text": "$\\partial \\hat{y}_k / \\partial z_j$, an output with respect to another class's logit"
+        },
+        {
+          "key": "t",
+          "text": "$\\partial L_i / \\partial w$, the loss with respect to a weight"
+        }
+      ],
+      "answer": {
+        "a": "q",
+        "b": "s",
+        "c": "r",
+        "d": "p"
+      },
+      "explanation": "Section 2.2 derives the two kinds of Jacobian entry, $\\hat{y}_k(1 - \\hat{y}_k)$ where the output and the logit belong to the same class and $-\\hat{y}_k \\hat{y}_j$ where they do not. Post 18 gave $-y_k/\\hat{y}_k$ for the loss with respect to a prediction, and section 3 multiplies the two into $\\hat{y}_k - y_k$, the loss with respect to a logit.",
+      "hints": [
+        "Sort the expressions by what is differentiated and with respect to what."
+      ]
+    },
+    {
+      "id": "nn-019-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2.3",
+      "est_minutes": 5,
+      "tags": [
+        "jacobian"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A sample has the softmax output $\\hat{\\mathbf{y}} = [0.5, 0.3, 0.2]$. Give three entries of its Jacobian: $\\partial \\hat{y}_1 / \\partial z_1$, $\\partial \\hat{y}_1 / \\partial z_2$, and $\\partial \\hat{y}_2 / \\partial z_3$.",
+      "answer": {
+        "parts": [
+          {
+            "label": "d y_hat_1 / d z_1",
+            "value": 0.25,
+            "tolerance": 0.0005,
+            "unit": ""
+          },
+          {
+            "label": "d y_hat_1 / d z_2",
+            "value": -0.15,
+            "tolerance": 0.0005,
+            "unit": ""
+          },
+          {
+            "label": "d y_hat_2 / d z_3",
+            "value": -0.06,
+            "tolerance": 0.0005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 2.2; equal to np.diagflat(y_hat) - np.outer(y_hat, y_hat), the construction snippets/softmax_jacobian.py uses for [0.7, 0.2, 0.1].",
+      "explanation": "Section 2.2 gives $\\hat{y}_k(1 - \\hat{y}_k)$ on the diagonal and $-\\hat{y}_k \\hat{y}_j$ off it. So $\\partial \\hat{y}_1 / \\partial z_1 = 0.5 \\times 0.5 = 0.25$, $\\partial \\hat{y}_1 / \\partial z_2 = -0.5 \\times 0.3 = -0.15$, and $\\partial \\hat{y}_2 / \\partial z_3 = -0.3 \\times 0.2 = -0.06$. The off-diagonal entries are negative because probability gained by one class is taken from the others.",
+      "hints": [
+        "Decide for each entry whether the output and the logit belong to the same class."
+      ]
+    },
+    {
+      "id": "nn-019-q05",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2.3",
+      "est_minutes": 3,
+      "tags": [
+        "jacobian"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Which statements hold for the softmax Jacobian of any one sample? Select all that apply.",
+      "select": "multiple",
+      "options": [
+        {
+          "key": "a",
+          "text": "Every diagonal entry is positive.",
+          "correct": true,
+          "feedback": "Right: $\\hat{y}_k(1 - \\hat{y}_k)$ is a product of two numbers between 0 and 1."
+        },
+        {
+          "key": "b",
+          "text": "Every column sums to 1.",
+          "correct": false,
+          "feedback": "Each column sums to 0. The outputs sum to 1 before and after a logit moves, so their changes must add up to nothing."
+        },
+        {
+          "key": "c",
+          "text": "The matrix is symmetric.",
+          "correct": true,
+          "feedback": "Right: the entry in row $k$, column $j$ is $-\\hat{y}_k \\hat{y}_j$, which is the same number with the two indices swapped."
+        },
+        {
+          "key": "d",
+          "text": "Every off-diagonal entry is negative.",
+          "correct": true,
+          "feedback": "Right: $-\\hat{y}_k \\hat{y}_j$ is minus a product of two positive probabilities."
+        }
+      ],
+      "explanation": "Section 2.2 shows the diagonal entries $\\hat{y}_k(1 - \\hat{y}_k)$ are positive and the off-diagonal entries $-\\hat{y}_k \\hat{y}_j$ negative, and swapping $k$ and $j$ leaves $-\\hat{y}_k \\hat{y}_j$ unchanged, so the matrix is symmetric. Section 2.3 shows each column summing to zero, not to one, because the outputs always sum to 1 and a change in one logit can only move probability between classes.",
+      "hints": [
+        "Write out the two kinds of entry and check each statement against them.",
+        "For the sums, ask what happens to the total of the outputs when a single logit is raised."
+      ]
+    },
+    {
+      "id": "nn-019-q06",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3.1",
+      "est_minutes": 2,
+      "tags": [
+        "combined-gradient"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A sample has a hard label and any softmax output. The entries of its row of the combined gradient always add up to the same number. Which number, and why?",
+      "answer": {
+        "model": "Zero: the predictions sum to 1 and the one-hot label sums to 1, so their difference sums to 0.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:only\\s+(?:if|when|for)|unless|otherwise|sometimes|except)\\b)\\W*(?:(?:it|they|the|same|number|that|sum|sums|total|entries|each|every|a|row|rows|always|exactly|is|are|add|adds|up|to|equal|equals|answer|of|gradient|combined|which)\\W+)*(?:zero|0(?:\\.0+)?)(?![\\d.]*\\d)(?!\\s*/)(?!\\W+or\\b)",
+          "^(?![\\s\\S]*\\b(?:not|never|no|isn't|doesn't|don't|cannot|can't|non-?zero)\\b)(?![\\s\\S]*\\b(?:only\\s+(?:if|when|for)|unless|otherwise|sometimes|except)\\b)[\\s\\S]*(?:\\b(?:sums?|adds?|totals?|equals?|is|are|gives?|leaves?)\\s+(?:up\\s+)?(?:to\\s+)?(?:exactly\\s+)?|=\\s*)(?:zero|0(?:\\.0+)?)(?![\\d.]*\\d)(?!\\s*/)(?!\\W+or\\b)(?![\\s\\S]*(?:\\b(?:sums?|adds?|totals?|equals?|is|are|gives?|leaves?)\\s+(?:up\\s+)?(?:to\\s+)?(?:exactly\\s+)?|=\\s*)(?:one\\b|[1-9]|0?\\.\\d*[1-9]))"
+        ]
+      },
+      "explanation": "Section 3.1 notes that a row of $\\hat{\\mathbf{y}} - \\mathbf{y}$ sums to zero: the predictions sum to 1 and the label row sums to 1, so their difference sums to 0, and dividing by $N$ does not change that. The correction taken from the wrong classes is exactly the correction given to the true one.",
+      "hints": [
+        "Add up the predictions of a row, then the entries of its label."
+      ]
+    },
+    {
+      "id": "nn-019-q07",
+      "type": "short",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "dvalues",
+        "combined-class"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The call `softmax_loss.backward(dvalues, y_true)` is made on the combined class. In `Layer_Dense` and `Activation_ReLU` the first argument of `backward` is a gradient arriving from the next component. What does the array hold here?",
+      "answer": {
+        "model": "The softmax output, that is the predicted probabilities, not a gradient.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:not|isn't|never|neither|nor)\\s+(?:\\w+\\s+){0,2}(?:softmax(?:'s)?\\s+(?:outputs?|activations?)|(?:outputs?|activations?)\\s+of\\s+(?:the\\s+)?softmax|predictions?|predicted\\s+(?:class\\s+)?probabilit|probabilit(?:y|ies)|y[-_ ]?hat|y[-_ ]?pred\\b|\\.output\\b))(?![\\s\\S]*\\b(?:minus|subtract\\w*|times|multiplied|divided)\\b)(?![\\s\\S]*-\\s*y\\b)(?=[\\s\\S]*(?:softmax(?:'s)?\\s+(?:outputs?|activations?)|(?:outputs?|activations?)\\s+of\\s+(?:the\\s+)?softmax|predictions?|predicted\\s+(?:class\\s+)?probabilit|probabilit(?:y|ies)|y[-_ ]?hat|y[-_ ]?pred\\b|\\.output\\b))(?:(?!\\b(?:gradient|derivative|logit|slope)s?\\b)[\\s\\S]|(?:\\b(?:not|no|than|of|never)\\s+(?:an?\\s+|the\\s+|any\\s+)?(?:upstream\\s+|incoming\\s+)?(?:gradient|derivative|logit|slope)s?\\b|\\bupstream\\s+gradient\\s+(?:is|equals|=)\\s+(?:1|one)\\b))*$"
+        ]
+      },
+      "explanation": "Section 5 flags it: nothing comes after the combined class, so its upstream gradient is 1 and the argument slot carries the softmax output, which the caller passes as `softmax_loss.output`. The three lines copy that array, subtract 1 at the true class, and divide by the number of samples.",
+      "hints": [
+        "Ask what the three lines of the method need as their starting array."
+      ]
+    },
+    {
+      "id": "nn-019-q08",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 5,
+      "tags": [
+        "combined-gradient",
+        "batch"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A batch has $N = 4$ samples. One of them has the softmax output $[0.2, 0.5, 0.3]$ and its true class is the third of the three (index 2 in code). Give the three entries of that sample's row of $\\partial L / \\partial \\mathbf{Z}$, where $L$ is the batch-mean loss.",
+      "answer": {
+        "parts": [
+          {
+            "label": "entry for class index 0",
+            "value": 0.05,
+            "tolerance": 0.0005,
+            "unit": ""
+          },
+          {
+            "label": "entry for class index 1",
+            "value": 0.125,
+            "tolerance": 0.0005,
+            "unit": ""
+          },
+          {
+            "label": "entry for class index 2",
+            "value": -0.175,
+            "tolerance": 0.0005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form (y_hat - y) / N of section 3 with N = 4; snippets/worked_example.py runs the same three lines on the batch of section 4.",
+      "explanation": "Section 4 applies $(\\hat{\\mathbf{y}} - \\mathbf{y})/N$ row by row. Here $\\hat{\\mathbf{y}} - \\mathbf{y} = [0.2, 0.5, 0.3 - 1] = [0.2, 0.5, -0.7]$, and dividing by 4 gives $[0.05, 0.125, -0.175]$. Only the true-class entry is negative, and the row sums to zero.",
+      "hints": [
+        "Write the one-hot label of the sample first.",
+        "Subtract the label from the prediction, then apply the factor that comes from the mean over the batch."
+      ]
+    },
+    {
+      "id": "nn-019-q09",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2",
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 6,
+      "tags": [
+        "jacobian-route",
+        "predict-output"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Predict the three numbers the script prints, without running it.",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "import numpy as np\n\ny_hat = np.array([0.6, 0.3, 0.1])\ny = np.array([0.0, 1.0, 0.0])\n\ndvalues = -y / y_hat\njacobian = np.diagflat(y_hat) - np.outer(y_hat, y_hat)\nprint(dvalues @ jacobian)\n"
+      },
+      "answer": {
+        "parts": [
+          {
+            "label": "first printed number",
+            "value": 0.6,
+            "tolerance": 0.0005,
+            "unit": ""
+          },
+          {
+            "label": "second printed number",
+            "value": -0.7,
+            "tolerance": 0.0005,
+            "unit": ""
+          },
+          {
+            "label": "third printed number",
+            "value": 0.1,
+            "tolerance": 0.0005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Run of the stimulus in float64 gives [0.6, -0.7, 0.1]; snippets/softmax_jacobian.py runs the same product for [0.7, 0.2, 0.1].",
+      "explanation": "The script is the Jacobian route of section 3 for one sample: the cross-entropy gradient $-\\mathbf{y}/\\hat{\\mathbf{y}} = [0, -1/0.3, 0]$ times the Jacobian. Only the second row of the Jacobian survives, $[-0.18, 0.21, -0.03]$, and scaling it by $-1/0.3$ gives $[0.6, -0.7, 0.1]$. That is $\\hat{\\mathbf{y}} - \\mathbf{y}$, so the product never had to be computed.",
+      "hints": [
+        "Name what `dvalues` and `jacobian` are in the terms of the post.",
+        "The post proves what this product always equals for a one-hot label; use that result instead of multiplying."
+      ]
+    },
+    {
+      "id": "nn-019-q10",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3.2",
+      "est_minutes": 4,
+      "tags": [
+        "cost"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Each item names a route and a number of classes $K$. Order the items by how many numbers the route computes for one sample, from the fewest to the most.",
+      "items": [
+        {
+          "key": "a",
+          "text": "combined route, $K = 1{,}000$"
+        },
+        {
+          "key": "b",
+          "text": "Jacobian route, $K = 10$"
+        },
+        {
+          "key": "c",
+          "text": "combined route, $K = 50$"
+        },
+        {
+          "key": "d",
+          "text": "Jacobian route, $K = 100$"
+        },
+        {
+          "key": "e",
+          "text": "Jacobian route, $K = 3$"
+        }
+      ],
+      "answer": [
+        "e",
+        "c",
+        "b",
+        "a",
+        "d"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 3.2 counts $K^2$ numbers per sample for the Jacobian route and $K$ for the combined route. The five counts are 9 (Jacobian, $K = 3$), 50 (combined, $K = 50$), 100 (Jacobian, $K = 10$), 1,000 (combined, $K = 1{,}000$), and 10,000 (Jacobian, $K = 100$). The Jacobian route at 100 classes already costs ten times the combined route at 1,000.",
+      "hints": [
+        "One route builds a full matrix per sample and the other a single row."
+      ]
+    },
+    {
+      "id": "nn-019-q11",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2.2",
+      "est_minutes": 12,
+      "tags": [
+        "jacobian",
+        "derivation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Starting from $\\log \\hat{y}_k = z_k - \\log \\sum_m e^{z_m}$, derive $\\partial \\hat{y}_k / \\partial z_j$ for $k = j$ and for $k \\ne j$. Use only the chain rule, the derivative of the logarithm and the derivative of the exponential, and say which entry shows that softmax is not element-wise.",
+      "kind": "derive",
+      "solution": "1. Differentiate the left side with respect to $z_j$. By the chain rule and $\\frac{d}{dx} \\log x = 1/x$, it is $\\frac{1}{\\hat{y}_k} \\frac{\\partial \\hat{y}_k}{\\partial z_j}$.\n2. Differentiate $z_k$ with respect to $z_j$: 1 if $k = j$, 0 if $k \\ne j$.\n3. Differentiate $\\log \\sum_m e^{z_m}$ with respect to $z_j$. The outer logarithm gives $1 / \\sum_m e^{z_m}$. Inside the sum only $e^{z_j}$ depends on $z_j$, and its derivative is $e^{z_j}$. The product is $e^{z_j} / \\sum_m e^{z_m} = \\hat{y}_j$.\n4. Equate: $\\frac{1}{\\hat{y}_k} \\frac{\\partial \\hat{y}_k}{\\partial z_j}$ equals $1 - \\hat{y}_j$ when $k = j$ and $-\\hat{y}_j$ when $k \\ne j$.\n5. Multiply by $\\hat{y}_k$: $\\frac{\\partial \\hat{y}_k}{\\partial z_k} = \\hat{y}_k(1 - \\hat{y}_k)$ and $\\frac{\\partial \\hat{y}_k}{\\partial z_j} = -\\hat{y}_k \\hat{y}_j$ for $k \\ne j$.\n6. The entry for $k \\ne j$ is the one that matters: for an element-wise activation it is 0, and here it is a product of two probabilities, which is never 0. It comes from the denominator, which contains every logit.",
+      "rubric": [
+        {
+          "criterion": "Differentiates the left side to $(1/\\hat{y}_k)\\,\\partial \\hat{y}_k / \\partial z_j$ by the chain rule",
+          "points": 2
+        },
+        {
+          "criterion": "Gets 1 or 0 from the term $z_k$ according to whether $k = j$",
+          "points": 1
+        },
+        {
+          "criterion": "Differentiates the log of the sum to $\\hat{y}_j$, noting that one exponential depends on $z_j$",
+          "points": 2
+        },
+        {
+          "criterion": "States both final entries correctly",
+          "points": 2
+        },
+        {
+          "criterion": "Identifies the non-zero off-diagonal entry as what makes the Jacobian full",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 2.2 differentiates both sides of the logarithm of softmax. The left side gives $(1/\\hat{y}_k)\\,\\partial \\hat{y}_k / \\partial z_j$, the right side gives 1 or 0 minus $\\hat{y}_j$, and multiplying by $\\hat{y}_k$ gives $\\hat{y}_k(1 - \\hat{y}_k)$ on the diagonal and $-\\hat{y}_k \\hat{y}_j$ off it. The off-diagonal entry is the one an element-wise activation does not have.",
+      "hints": [
+        "Differentiate the left side with the chain rule: it is a logarithm of a function of $z_j$.",
+        "On the right, the first term depends on $z_j$ only when $k = j$; in the second, only one exponential of the sum depends on $z_j$."
+      ]
+    },
+    {
+      "id": "nn-019-q12",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 15,
+      "tags": [
+        "combined-class",
+        "implementation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Complete `combined_backward(softmax_output, y_true)` so that it returns $\\partial L / \\partial \\mathbf{Z}$ for the batch-mean categorical cross-entropy. Labels may be integer class indices of shape $(N,)$ or one-hot rows of shape $(N, K)$, and the array passed in must be left unchanged.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "import numpy as np\n\n\ndef combined_backward(softmax_output, y_true):\n    \"\"\"Gradient of the batch-mean cross-entropy with respect to the logits.\n\n    softmax_output: array of shape (N, K), one row of probabilities per sample.\n    y_true: integer class indices of shape (N,), or one-hot rows of shape (N, K).\n    The array softmax_output must be left unchanged.\n    \"\"\"\n    samples = len(softmax_output)\n    dinputs = softmax_output\n    # TODO: handle one-hot labels, then apply the three lines of the combined backward\n    return dinputs\n",
+      "solution": "import numpy as np\n\n\ndef combined_backward(softmax_output, y_true):\n    \"\"\"Gradient of the batch-mean cross-entropy with respect to the logits.\n\n    softmax_output: array of shape (N, K), one row of probabilities per sample.\n    y_true: integer class indices of shape (N,), or one-hot rows of shape (N, K).\n    The array softmax_output must be left unchanged.\n    \"\"\"\n    samples = len(softmax_output)\n    if len(y_true.shape) == 2:                 # one-hot rows become class indices\n        y_true = np.argmax(y_true, axis=1)\n    dinputs = softmax_output.copy()            # a copy, so the caller's array survives\n    dinputs[range(samples), y_true] -= 1       # y_hat - y, one entry per row\n    dinputs /= samples                         # the 1/N of the batch mean, once\n    return dinputs\n",
+      "tests": "probs = np.array([[0.7, 0.1, 0.2],\n                  [0.1, 0.5, 0.4],\n                  [0.02, 0.9, 0.08],\n                  [0.25, 0.25, 0.5]])\nlabels = np.array([0, 1, 1, 2])\nbefore = probs.copy()\n\ng = combined_backward(probs, labels)\nassert np.array_equal(probs, before), \"softmax_output must not be modified\"\nassert g.shape == (4, 3), g.shape\nexpected = (before - np.eye(3)[labels]) / 4\nassert np.allclose(g, expected), g\nassert np.allclose(g.sum(axis=1), 0.0), \"every row of the gradient sums to zero\"\n\ng_onehot = combined_backward(probs, np.eye(3)[labels])\nassert np.array_equal(probs, before), \"softmax_output must not be modified\"\nassert np.allclose(g_onehot, expected), \"one-hot labels must give the same array\"\n\nwide = np.array([[0.1, 0.2, 0.3, 0.4],\n                 [0.4, 0.3, 0.2, 0.1]])\nwide_labels = np.array([3, 0])\nwide_expected = (wide - np.eye(4)[wide_labels]) / 2\nassert np.allclose(combined_backward(wide, wide_labels), wide_expected), \"check which axis is the batch\"\nassert np.allclose(combined_backward(wide, np.eye(4)[wide_labels]), wide_expected), \"check the one-hot conversion\"\nprint(\"all combined-backward checks passed\")\n",
+      "expected_output": "all combined-backward checks passed\n",
+      "explanation": "Section 5 gives the three lines: copy the softmax output, subtract 1 at the true class of every row with `dinputs[range(samples), y_true] -= 1`, and divide by the number of samples once. Section 6 adds the conversion of one-hot rows with `np.argmax(y_true, axis=1)`. The tests use a batch with four samples and three classes and one with two samples and four classes, so that dividing by the number of classes, indexing whole columns, or taking the argmax along the wrong axis is caught, and they check that the input array is untouched.",
+      "hints": [
+        "The result is the softmax output with one entry per row changed, then rescaled.",
+        "Pair each row index with that row's class index when subtracting, and take the copy before changing anything."
+      ]
+    },
+    {
+      "id": "nn-019-q13",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "label-format",
+        "silent-failure"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The labels of a batch of five samples are the integers `[1, 2, 1, 3, 0]`, stored as an array of shape $(5, 1)$, and are passed to the `backward` of the combined class. What happens?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "NumPy raises an `IndexError`, because a column cannot be used as an index.",
+          "correct": false,
+          "feedback": "The column never reaches the indexing line. It is converted by `argmax` first, and the conversion succeeds."
+        },
+        {
+          "key": "b",
+          "text": "The gradient is correct, because `argmax` recovers each label from its row.",
+          "correct": false,
+          "feedback": "The argmax of a one-element row is its position, 0, not its value. The labels 1, 2 and 3 are lost."
+        },
+        {
+          "key": "c",
+          "text": "The 1 is subtracted in column 0 of every row, and no error is raised.",
+          "correct": true,
+          "feedback": "Right: every row is read as a one-hot row of length one, whose argmax is 0."
+        },
+        {
+          "key": "d",
+          "text": "The gradient is filled with `nan`, because the labels are broadcast against the predictions.",
+          "correct": false,
+          "feedback": "Nothing is broadcast and nothing is divided in this method. The values are finite and wrong."
+        }
+      ],
+      "explanation": "Sections 6 and 8 trace it. The class decides the format from the number of dimensions, so a column counts as one-hot and goes through `np.argmax(y_true, axis=1)`. The argmax of a row holding a single number is 0, so every label becomes class 0 and the 1 is subtracted in column 0 of every row. The result has the right shape and no error is raised; `y.ravel()` fixes it.",
+      "hints": [
+        "Follow the branch the method takes for a two-dimensional label array.",
+        "Work out what `np.argmax` returns for a row that contains one number."
+      ]
+    },
+    {
+      "id": "nn-019-q14",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "8",
+      "est_minutes": 4,
+      "tags": [
+        "numerical-stability"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A sample has the logits $[0, -800, 0]$ and its true class is the second one, so in float64 its softmax output is exactly $[0.5, 0, 0.5]$. The gradient with respect to the logits is computed by the Jacobian route and by the combined class. What do the two return?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Both return `nan`, because the loss of the sample is infinite.",
+          "correct": false,
+          "feedback": "The combined class computes a subtraction and one division by $N$, neither of which can produce `nan` from finite inputs."
+        },
+        {
+          "key": "b",
+          "text": "The Jacobian route returns `nan`; the combined class returns $[0.5, -1, 0.5]$.",
+          "correct": true,
+          "feedback": "Right: $-1/0$ times a zero Jacobian entry is `nan`, while $\\hat{\\mathbf{y}} - \\mathbf{y}$ is finite."
+        },
+        {
+          "key": "c",
+          "text": "Both return $[0.5, -1, 0.5]$, because the clip in the loss keeps the division finite.",
+          "correct": false,
+          "feedback": "The clip is applied to a copy inside `forward`. The loss `backward` divides by the raw predictions."
+        },
+        {
+          "key": "d",
+          "text": "The Jacobian route returns $[0.5, -1, 0.5]$; the combined class returns zeros, because the prediction is clipped.",
+          "correct": false,
+          "feedback": "The combined `backward` does not clip anything, and the Jacobian route is the one that divides by zero."
+        }
+      ],
+      "explanation": "Section 8 runs this case. The loss `backward` of post 18 computes $-1/0 = -\\infty$ at the true class, and the softmax `backward` multiplies it by Jacobian entries that are 0, which gives `nan` in the whole row. The combined class never divides: it returns $\\hat{\\mathbf{y}} - \\mathbf{y} = [0.5, -1, 0.5]$, the largest correction a sample can receive. The clip of post 08 sits in `forward` and protects only the reported loss.",
+      "hints": [
+        "Find the operation in the Jacobian route that the combined route does not perform.",
+        "Evaluate that operation at a prediction of exactly 0, then ask what multiplying the result by 0 gives."
+      ]
+    },
+    {
+      "id": "nn-019-q15",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "8",
+      "est_minutes": 6,
+      "tags": [
+        "gradient-check",
+        "clipping"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A central-difference check of the combined class passes on every sample of a batch except one. For that sample the true-class probability is about $10^{-9}$, the measured slopes of the loss are all 0, and `backward` returns $[-1, 0.5, 0.5]/N$. What explains the disagreement?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The division by $N$ is missing from `backward`.",
+          "correct": false,
+          "feedback": "A missing division makes every entry $N$ times the measured slope on every sample. It cannot explain a measured slope of exactly 0 on one."
+        },
+        {
+          "key": "b",
+          "text": "The reported loss is clipped, so it is flat here, while `backward` differentiates the unclipped loss.",
+          "correct": true,
+          "feedback": "Right: the clipped loss is constant below the bound, so the check measures 0 where the true cross-entropy still slopes."
+        },
+        {
+          "key": "c",
+          "text": "The step $h = 10^{-5}$ is too large for a probability this small, and a smaller step would restore the agreement.",
+          "correct": false,
+          "feedback": "The reported loss is exactly constant in a neighbourhood of this point, so every step small enough to stay inside it measures 0."
+        },
+        {
+          "key": "d",
+          "text": "`backward` is wrong for this sample and should return zeros to match the loss.",
+          "correct": false,
+          "feedback": "A zero gradient would stop training on exactly the sample that is most wrong. The value returned is the correct slope of the cross-entropy."
+        }
+      ],
+      "explanation": "Section 8 measures this case. The `forward` of post 08 clips predictions to $[10^{-7}, 1 - 10^{-7}]$, so below the lower bound the reported loss is the constant 16.118 and its measured slope is 0. `backward` returns $\\hat{\\mathbf{y}} - \\mathbf{y}$, the gradient of the unclipped loss, which is the one that still corrects the sample. The check and the method differentiate two different functions there, and the method is the one to keep.",
+      "hints": [
+        "Compare the function the central difference evaluates with the function the derivation of the post differentiates.",
+        "Recall what post 08 does to a prediction before taking its logarithm, and what that does to the loss as a function of the logits."
+      ]
+    },
+    {
+      "id": "nn-019-q16",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 15,
+      "tags": [
+        "soft-labels",
+        "derivation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The loss of one sample is the full sum $L_i = -\\sum_k y_k \\log \\hat{y}_k$, with a label row whose entries are non-negative and add up to some number $s$. Carry the product of the loss gradient with the softmax Jacobian through for this label, state the result, say what it becomes for $s = 1$, and explain why the combined class of the post still gives a wrong answer for the soft label $[0.9, 0.05, 0.05]$.",
+      "kind": "derive",
+      "solution": "1. The gradient of the loss with respect to a prediction is $\\partial L_i / \\partial \\hat{y}_k = -y_k / \\hat{y}_k$ for any label row; nothing in that step needs the row to be one-hot.\n2. The chain rule through softmax: $\\frac{\\partial L_i}{\\partial z_j} = \\sum_k \\left(-\\frac{y_k}{\\hat{y}_k}\\right) \\frac{\\partial \\hat{y}_k}{\\partial z_j}$.\n3. The term with $k = j$ uses $\\hat{y}_j(1 - \\hat{y}_j)$ and equals $-y_j(1 - \\hat{y}_j)$. Each term with $k \\ne j$ uses $-\\hat{y}_k \\hat{y}_j$ and equals $+y_k \\hat{y}_j$. In both, the division by $\\hat{y}_k$ has cancelled.\n4. Adding them: $-y_j + y_j \\hat{y}_j + \\hat{y}_j \\sum_{k \\ne j} y_k = -y_j + \\hat{y}_j \\sum_k y_k = s\\,\\hat{y}_j - y_j$.\n5. For $s = 1$ this is $\\hat{y}_j - y_j$. A soft label that sums to 1 therefore has the same combined gradient as a hard one, and for $[0.9, 0.05, 0.05]$ against the prediction $[0.7, 0.1, 0.2]$ it is $[-0.2, 0.05, 0.15]$.\n6. The class does not compute that. Its `backward` treats a two-dimensional label as one-hot, reduces it with `np.argmax` to the index 0, and subtracts 1 there, which returns $[-0.3, 0.1, 0.2]$, the gradient for the hard label $[1, 0, 0]$. The formula is right and the indexing implementation of it is specific to hard labels; `(dvalues - y_true) / samples` is the form that covers both.",
+      "rubric": [
+        {
+          "criterion": "Sets up the sum over $k$ of $-y_k/\\hat{y}_k$ times the Jacobian entry",
+          "points": 1
+        },
+        {
+          "criterion": "Evaluates the $k = j$ term and the $k \\ne j$ terms, with the division cancelled in each",
+          "points": 2
+        },
+        {
+          "criterion": "Reaches $s\\,\\hat{y}_j - y_j$ and identifies the sum of the label row as the only place $s$ enters",
+          "points": 2
+        },
+        {
+          "criterion": "States $\\hat{y}_j - y_j$ for $s = 1$, valid for soft labels as well as hard ones",
+          "points": 1
+        },
+        {
+          "criterion": "Explains the failure of the class by the argmax conversion and the single subtraction of 1",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 3 uses the sum of the label row in one place, the step $\\hat{y}_j \\sum_k y_k$, so a general row gives $s\\,\\hat{y}_j - y_j$ and any row that sums to 1, soft or hard, gives $\\hat{y}_j - y_j$. Sections 6 and 8 show why the class still fails: it converts a two-dimensional label with `argmax` and subtracts 1 at one index, which is the gradient for the hard label $[1, 0, 0]$.",
+      "hints": [
+        "Write the sum over $k$ and split it into the term with $k = j$ and the rest.",
+        "Collect the terms that contain $\\hat{y}_j$; the sum of the labels appears as their common factor. Then compare the formula with what the three lines of code actually subtract."
+      ]
+    },
+    {
+      "id": "nn-019-q17",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "3",
+      "est_minutes": 12,
+      "tags": [
+        "batch-mean",
+        "bias-gradient"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The last dense layer receives the combined gradient as its `dvalues` and computes its bias gradient as `np.sum(dvalues, axis=0, keepdims=True)` (post 16). Express that bias gradient in terms of $\\hat{\\mathbf{y}}$, $\\mathbf{y}$ and $N$, interpret entry $k$ in words, and explain why the combined class has to contain a division by $N$ although the dense layer, the softmax `backward` and the optimiser contain none.",
+      "kind": "connect",
+      "solution": "The bias gradient is the column sum of `dvalues`, and each row of `dvalues` is $(\\hat{\\mathbf{y}}_i - \\mathbf{y}_i)/N$, so\n\n$$\\frac{\\partial L}{\\partial b_k} = \\frac{1}{N} \\sum_{i} (\\hat{y}_{i,k} - y_{i,k}).$$\n\nEntry $k$ is the mean, over the batch, of the probability given to class $k$ minus the indicator that the sample belongs to class $k$: the average predicted share of the class minus its actual share of the batch. It is positive when the network predicts class $k$ too often on average, and gradient descent then lowers that bias.\n\nThe factor $1/N$ is the derivative of the mean that turns the per-sample losses into the batch loss (post 18). It must be applied exactly once on the way from the loss to the parameters. In the Jacobian route it sits in `Loss_CategoricalCrossentropy.backward`; the softmax `backward` only multiplies by a Jacobian and the dense layer only sums over rows, and a sum over $N$ rows that each carry $1/N$ is an average. The combined class replaces the loss `backward`, which is no longer called, so the division has to be written into its own three lines. Leaving it out makes every parameter gradient $N$ times too large, and adding a second one anywhere makes them $N$ times too small.",
+      "rubric": [
+        {
+          "criterion": "Writes the bias gradient as $(1/N)\\sum_i (\\hat{y}_{i,k} - y_{i,k})$",
+          "points": 2
+        },
+        {
+          "criterion": "Interprets it as the mean over the batch of predicted minus true for class $k$",
+          "points": 2
+        },
+        {
+          "criterion": "Traces the $1/N$ to the mean in the loss and states that it is applied exactly once",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that the combined class replaces the loss backward, where the division was, and that the layer only sums",
+          "points": 2
+        }
+      ],
+      "answer_length": "two paragraphs",
+      "explanation": "Section 3 gives each row of `dvalues` as $(\\hat{\\mathbf{y}}_i - \\mathbf{y}_i)/N$, and summing over the rows gives the mean over the batch of predicted minus true for each class. The division comes from the mean in the loss (post 18) and has to appear exactly once; the combined class replaces the loss `backward` where it lived, so the three lines must include it.",
+      "hints": [
+        "Substitute the combined gradient into the sum over the rows.",
+        "Ask which method contained the division in the Jacobian route, and whether that method is still called."
+      ],
+      "connects": [
+        "nn-016",
+        "nn-018"
+      ]
+    },
+    {
+      "id": "nn-019-q18",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "cancellation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the product of the cross-entropy gradient with the softmax Jacobian, what removes the division by the prediction $\\hat{y}_k$?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The clip of the predictions to $[10^{-7}, 1 - 10^{-7}]$.",
+          "correct": false,
+          "feedback": "The clip only bounds the reported loss in `forward`. It plays no part in the algebra of the gradient."
+        },
+        {
+          "key": "b",
+          "text": "The division by the batch size $N$.",
+          "correct": false,
+          "feedback": "The factor $1/N$ comes from the mean over the batch and multiplies the whole gradient. It does not cancel anything."
+        },
+        {
+          "key": "c",
+          "text": "A small-error approximation that is accurate when the prediction is close to the label.",
+          "correct": false,
+          "feedback": "The result is exact for every prediction. The two routes agree to the last bit of rounding."
+        },
+        {
+          "key": "d",
+          "text": "The factor $\\hat{y}_k$ that every Jacobian entry of row $k$ contains.",
+          "correct": true,
+          "feedback": "Right: $(-y_k/\\hat{y}_k)$ times an entry of the form $\\hat{y}_k \\times (\\dots)$ leaves no division."
+        }
+      ],
+      "explanation": "Section 3 points at the factor: both kinds of Jacobian entry in row $k$, $\\hat{y}_k(1 - \\hat{y}_k)$ and $-\\hat{y}_k \\hat{y}_j$, contain $\\hat{y}_k$, and it cancels the $1/\\hat{y}_k$ of the loss gradient exactly. Nothing is approximated, which is why the combined route equals the Jacobian route to rounding in section 7.",
+      "hints": [
+        "Write a Jacobian entry of row $k$ next to the loss gradient for prediction $k$ and look for a common factor."
+      ]
+    }
+  ]
+}
