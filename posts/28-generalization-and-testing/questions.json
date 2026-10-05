@@ -1,0 +1,762 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-028",
+  "next_ordinal": 18,
+  "questions": [
+    {
+      "id": "nn-028-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "test-pass"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The network of the post is `dense1` (a `Layer_Dense`), `activation1` (an `Activation_ReLU`), `dense2` (a `Layer_Dense`) and `loss_activation` (the combined softmax and cross-entropy class), trained with an `optimizer`. Which calls does a correct test pass on held-out data `X_test`, `y_test` make?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The four `forward` calls, the four `backward` calls and the optimiser's calls",
+          "correct": false,
+          "feedback": "This is a training step. It changes the parameters using the test data, after which the data is no longer unseen."
+        },
+        {
+          "key": "b",
+          "text": "The four `forward` calls and the four `backward` calls, without the optimiser",
+          "correct": false,
+          "feedback": "The parameters would stay as they are, but the gradients serve no purpose in a test and the stored gradient arrays are overwritten with ones from the test data."
+        },
+        {
+          "key": "c",
+          "text": "The four `forward` calls only, with no `backward` call and no optimiser call",
+          "correct": true,
+          "feedback": "Right: the loss is returned by the last forward call and the accuracy is computed from the stored predictions."
+        },
+        {
+          "key": "d",
+          "text": "Only `loss_activation.forward(X_test, y_test)`",
+          "correct": false,
+          "feedback": "The combined class expects the logits of `dense2`, not the raw inputs. The data has to pass through both dense layers and the ReLU first."
+        }
+      ],
+      "explanation": "Section 3.1: a loss and an accuracy come out of the forward pass, so the test pass makes the four `forward` calls and nothing else. Any `backward` call is unnecessary, and any optimiser call changes the parameters on data that was meant to stay unseen.",
+      "hints": [
+        "Ask which calls are needed to obtain a loss and a set of predictions."
+      ]
+    },
+    {
+      "id": "nn-028-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "regimes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A classifier is right on 99 percent of its training points and on 70 percent of a large test set drawn from the same generator. Which description fits?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Underfitting",
+          "correct": false,
+          "feedback": "An underfitting model does poorly on its own training data. This one is right on 99 percent of it."
+        },
+        {
+          "key": "b",
+          "text": "Overfitting",
+          "correct": true,
+          "feedback": "Right: a high training figure and a much lower test figure on data from the same generator."
+        },
+        {
+          "key": "c",
+          "text": "A good fit",
+          "correct": false,
+          "feedback": "A good fit has two high figures close together. Here they are 29 points apart, far more than the noise of a large test set."
+        },
+        {
+          "key": "d",
+          "text": "Distribution shift",
+          "correct": false,
+          "feedback": "That diagnosis needs a test set from a different source. The prompt says the test set comes from the same generator."
+        }
+      ],
+      "explanation": "Section 4, with the definition of section 1: overfitting is fitting the training data much better than new data, and the table of regimes places a high training figure with a clearly lower test figure, on test data from the same source, in the overfitting regime.",
+      "hints": [
+        "Compare the two figures: is the model poor everywhere, or only on the new points?"
+      ]
+    },
+    {
+      "id": "nn-028-q03",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 1,
+      "tags": [
+        "vocabulary"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "What is the name of the difference between a model's performance on its training data and its performance on its test data?",
+      "answer": {
+        "model": "The generalisation gap.",
+        "accept": [
+          "^(?![\\s\\S]*(?:\\bnot|n't|\\bnever)\\s+(?:called\\s+|named\\s+)?(?:the\\s+|a\\s+)?generali[sz])(?![\\s\\S]*\\bgap\\s+(?:is|was)\\s+(?:not|never)\\b)(?![\\s\\S]*\\b(?:bias|variance)\\b)(?![\\s\\S]*\\b(?:overfitting|underfitting|risk|error|regulari[sz]ation)\\s*,?\\s+or\\b)(?![\\s\\S]*\\bor\\s+(?:the\\s+|an?\\s+)?(?:overfitting|underfitting|empirical|risk|regulari[sz]ation|training\\s+error|test\\s+error))[\\s\\S]*\\bgenerali[sz]ation(?:\\s+\\w+)?\\s+gap\\b"
+        ]
+      },
+      "explanation": "Section 1 names the difference between training and test performance the generalisation gap. Section 3 computes it for accuracy as the training accuracy minus the test accuracy, 14.00 points on the documented seed.",
+      "hints": [
+        "It is named after the ability that the test set measures."
+      ]
+    },
+    {
+      "id": "nn-028-q04",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "symptoms"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A three-class classifier is tested on data from the generator of its training data. Which of these observations point to overfitting? Select all that apply.",
+      "select": "multiple",
+      "options": [
+        {
+          "key": "a",
+          "text": "The training loss keeps falling while the loss on held-out data rises.",
+          "correct": true,
+          "feedback": "Right: this is the curve cue. The model keeps improving on its own points and gets worse on new ones."
+        },
+        {
+          "key": "b",
+          "text": "Training accuracy and test accuracy are both about 85 percent.",
+          "correct": false,
+          "feedback": "Two high figures with no gap between them describe a good fit, the opposite of overfitting."
+        },
+        {
+          "key": "c",
+          "text": "Training accuracy is 96 percent and test accuracy is 82 percent.",
+          "correct": true,
+          "feedback": "Right: a gap of 14 points with test data from the same generator is the overfitting regime of the post."
+        },
+        {
+          "key": "d",
+          "text": "Training accuracy and test accuracy are both about 45 percent.",
+          "correct": false,
+          "feedback": "The model is poor on its own training data, which is underfitting. The small gap says nothing in its favour."
+        }
+      ],
+      "explanation": "Sections 4 and 5: overfitting shows as a high training figure with a clearly lower test figure, and as a held-out loss that turns upward while the training loss keeps falling. Two equal high figures are a good fit, and two equal low figures are underfitting.",
+      "hints": [
+        "For each observation, ask whether the model does better on the points it was fitted to than on new ones."
+      ]
+    },
+    {
+      "id": "nn-028-q05",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "gap"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "With the same weights, a network classifies 276 of its 300 training points and 231 of 300 test points correctly. Give the training accuracy and the test accuracy in percent, and the generalisation gap in percentage points.",
+      "answer": {
+        "parts": [
+          {
+            "label": "training accuracy",
+            "value": 92.0,
+            "tolerance": 0.05,
+            "unit": "percent"
+          },
+          {
+            "label": "test accuracy",
+            "value": 77.0,
+            "tolerance": 0.05,
+            "unit": "percent"
+          },
+          {
+            "label": "gap",
+            "value": 15.0,
+            "tolerance": 0.05,
+            "unit": "percentage points"
+          }
+        ]
+      },
+      "precision_note": "Closed form: 276/300, 231/300 and their difference, as in section 3 and snippets/test_pass.py.",
+      "explanation": "Section 3 computes the same three figures for 289 and 247 correct points. Here $276/300 = 92$ percent and $231/300 = 77$ percent, and the gap is the training accuracy minus the test accuracy, 15 points.",
+      "hints": [
+        "An accuracy is a count of correct points divided by the number of points."
+      ]
+    },
+    {
+      "id": "nn-028-q06",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 5,
+      "tags": [
+        "standard-error",
+        "test-set-size"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A network has a test accuracy of 0.80. Treating the test points as independent, give the binomial standard error of that accuracy, in percentage points, for a test set of 400 points and for a test set of 10,000 points.",
+      "answer": {
+        "parts": [
+          {
+            "label": "400 points",
+            "value": 2.0,
+            "tolerance": 0.05,
+            "unit": "percentage points"
+          },
+          {
+            "label": "10,000 points",
+            "value": 0.4,
+            "tolerance": 0.01,
+            "unit": "percentage points"
+          }
+        ]
+      },
+      "precision_note": "Closed form sqrt(p(1-p)/n) of section 4, the formula on the last line printed by snippets/test_pass.py; recomputed with NumPy.",
+      "explanation": "Section 4 gives the standard error of an accuracy on $n$ independent points as $\\sqrt{p(1 - p)/n}$. With $p = 0.8$: $\\sqrt{0.16/400} = 0.02$, which is 2.0 points, and $\\sqrt{0.16/10{,}000} = 0.004$, which is 0.4 points. A test set 25 times larger is 5 times less noisy.",
+      "hints": [
+        "The number of correct points is a count of successes among $n$ trials.",
+        "Use $\\sqrt{p(1 - p)/n}$ and convert the result from a fraction to percentage points."
+      ]
+    },
+    {
+      "id": "nn-028-q07",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 6,
+      "tags": [
+        "random-stream",
+        "reproducibility"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A script calls `np.random.seed(7)`, then `X, y = spiral_data(samples=50, classes=3)`, then creates `Layer_Dense(2, 32)` and `Layer_Dense(32, 3)` with weights of `0.01 * np.random.randn(n_inputs, n_neurons)` and zero biases, trains without drawing random numbers, and finally calls `X_test, y_test = spiral_data(samples=50, classes=3)`. `spiral_data` makes one normal draw per point. Counting the draws of the stream from 1, give the first and the last draw that the test set uses.",
+      "answer": {
+        "parts": [
+          {
+            "label": "first draw",
+            "value": 311,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "last draw",
+            "value": 460,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form: 150 + 64 + 96 = 310 draws before the test call, then 150 more; the counting of section 3 (300 + 320, test draws 621 to 920).",
+      "explanation": "Section 3 counts the same way for the documented run. The training data takes $50 \\cdot 3 = 150$ draws, and the weights take $2 \\cdot 32 + 32 \\cdot 3 = 160$ more, so 310 draws are used before the test call. The test set takes the next 150: draws 311 to 460.",
+      "hints": [
+        "Count how many normal numbers each earlier call consumes; the biases are zeros and the loop draws nothing.",
+        "The training data uses one draw per point and each weight array one draw per weight."
+      ]
+    },
+    {
+      "id": "nn-028-q08",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "7",
+      "est_minutes": 6,
+      "tags": [
+        "run-the-script",
+        "seed"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In `snippets/test_pass.py`, change `build(seed=0)` to `build(seed=4)` and run the script from the series root. Report the accuracy it prints on the line that begins with `test data`, to four decimal places.",
+      "answer": {
+        "value": 0.8267,
+        "tolerance": 0.0005,
+        "unit": ""
+      },
+      "precision_note": "snippets/test_pass.py with build(seed=4): 'test data      loss 1.1503  acc 0.8267  (248 of 300)'; the same figure as the seed 4 row of snippets/seed_spread.py.",
+      "explanation": "With seed 4 the script prints a training accuracy of 0.9633 and a test accuracy of 0.8267, 248 of 300 points, a gap of 13.67 points. It is the seed 4 row of the table in section 3: the training accuracy equals that of seed 0 and the test accuracy differs by one point of 300.",
+      "hints": [
+        "Only one argument changes; the test data is still drawn after training.",
+        "The line to read is in the block headed Section 3, below the line for the training data."
+      ]
+    },
+    {
+      "id": "nn-028-q09",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "levers"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Match each lever against overfitting to the part of the training setup that it changes.",
+      "left": [
+        {
+          "key": "a",
+          "text": "Capacity"
+        },
+        {
+          "key": "b",
+          "text": "Epoch budget"
+        },
+        {
+          "key": "c",
+          "text": "Weight penalties (L1, L2)"
+        },
+        {
+          "key": "d",
+          "text": "Dropout"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "The forward pass during training: random activations are set to zero"
+        },
+        {
+          "key": "q",
+          "text": "The architecture: the number of neurons or layers"
+        },
+        {
+          "key": "r",
+          "text": "The update rule of the optimiser"
+        },
+        {
+          "key": "s",
+          "text": "The loss: a term that grows with the size of the weights"
+        },
+        {
+          "key": "t",
+          "text": "The schedule: how long training runs"
+        },
+        {
+          "key": "u",
+          "text": "The test data: harder points are removed"
+        }
+      ],
+      "answer": {
+        "a": "q",
+        "b": "t",
+        "c": "s",
+        "d": "p"
+      },
+      "explanation": "Section 6 lists the four levers with what each changes: capacity changes the architecture, the epoch budget changes the schedule, a weight penalty adds a term to the loss, and dropout changes the forward pass during training. None of them changes the update rule or the test data.",
+      "hints": [
+        "Ask, for each lever, which line of a training script would have to be edited."
+      ]
+    },
+    {
+      "id": "nn-028-q10",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 4,
+      "tags": [
+        "procedure",
+        "random-stream"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "Put the steps of the post's documented run in the order in which its script executes them.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Run the four `forward` calls on the test data"
+        },
+        {
+          "key": "b",
+          "text": "Create the two dense layers, which draws the weights"
+        },
+        {
+          "key": "c",
+          "text": "Call `nnfs.init()`, which sets seed 0"
+        },
+        {
+          "key": "d",
+          "text": "Draw the test data with `spiral_data`"
+        },
+        {
+          "key": "e",
+          "text": "Train for 10,001 epochs"
+        },
+        {
+          "key": "f",
+          "text": "Draw the training data with `spiral_data`"
+        }
+      ],
+      "answer": [
+        "c",
+        "f",
+        "b",
+        "e",
+        "d",
+        "a"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 3: the seed comes first, the training data takes the first 300 draws, the weights the next 320, the loop draws nothing, and the test data is drawn after the loop from the same stream. The forward-only pass can only run once the test data exists. Section 8 shows that moving the test draw before the layers trains a different network.",
+      "hints": [
+        "Follow the random stream: which step consumes its first numbers?"
+      ]
+    },
+    {
+      "id": "nn-028-q11",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "8",
+      "est_minutes": 4,
+      "tags": [
+        "seed",
+        "silent-failure"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A script trains the post's network after `np.random.seed(0)`. To make the test reproducible, its author adds `np.random.seed(0)` on the line before `X_test, y_test = spiral_data(samples=100, classes=3)`. The training accuracy is 0.9633. What does the forward-only test pass report?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "An accuracy of 0.8233, as in the documented run",
+          "correct": false,
+          "feedback": "The documented run draws the test data without a new seed, from a later part of the stream. Setting the seed again changes which points are drawn."
+        },
+        {
+          "key": "b",
+          "text": "An accuracy of 0.9633, because the test set is the training set",
+          "correct": true,
+          "feedback": "Right: the stream restarts, so the call returns the training points and the gap reads zero."
+        },
+        {
+          "key": "c",
+          "text": "An accuracy near 0.33, because the labels no longer match the points",
+          "correct": false,
+          "feedback": "Points and labels are produced together by one call, so they still match. Nothing about the labels changes."
+        },
+        {
+          "key": "d",
+          "text": "An error, because a seed may be set only once per script",
+          "correct": false,
+          "feedback": "NumPy allows the seed to be set any number of times. The mistake is silent, which is what makes it dangerous."
+        }
+      ],
+      "explanation": "Section 8: `spiral_data` draws from the global stream, so the same seed followed by the same call returns the same 300 points and labels. The pass evaluates the training set a second time and prints the training figures, a gap of exactly zero. A test set needs draws that the training set did not use.",
+      "hints": [
+        "Ask which numbers of the random stream the second `spiral_data` call receives.",
+        "Compare them with the numbers the first call received."
+      ]
+    },
+    {
+      "id": "nn-028-q12",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 4,
+      "tags": [
+        "loss-versus-accuracy"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "On the documented seed the network is right on 82.33 percent of the test points, and its test loss is 1.1168, above the $\\ln 3 = 1.0986$ of a uniform guess over three classes. What explains the pair of figures?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The loss is computed with the wrong labels, since an accuracy above 33 percent implies a loss below $\\ln 3$.",
+          "correct": false,
+          "feedback": "No such implication holds. The mean loss has no upper bound from the accuracy, because a single confident mistake can cost more than many correct answers save."
+        },
+        {
+          "key": "b",
+          "text": "Most test points are classified correctly, but each with a probability only just above one third.",
+          "correct": false,
+          "feedback": "That would give every point a loss near $\\ln 3$. The measured correct points have a mean loss of 0.05, so they are classified with high confidence."
+        },
+        {
+          "key": "c",
+          "text": "The misclassified points are predicted with high confidence, and their large losses dominate the mean.",
+          "correct": true,
+          "feedback": "Right: 53 points with a mean loss of 6.09 carry 96.37 percent of the summed loss."
+        },
+        {
+          "key": "d",
+          "text": "A test set of 300 points is too small for its loss to be meaningful.",
+          "correct": false,
+          "feedback": "The noise of a small test set moves the figure a little. It does not explain a loss more than ten times the training loss."
+        }
+      ],
+      "explanation": "Section 4 splits the test loss by sample: the 53 misclassified points have a mean loss of 6.09 and carry 96.37 percent of the total, while the 247 correct points have a mean loss of 0.05. Accuracy counts the mistakes; the cross-entropy also weighs the confidence of each, and a probability near 0.002 on the true class costs about 6.",
+      "hints": [
+        "Accuracy looks only at which class has the largest probability.",
+        "Ask what the cross-entropy charges for a wrong prediction made with a probability close to 1."
+      ]
+    },
+    {
+      "id": "nn-028-q13",
+      "type": "short",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "optimiser-state"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The network of the post is `dense1` (a `Layer_Dense`), `activation1` (an `Activation_ReLU`), `dense2` (a `Layer_Dense`) and `loss_activation` (the combined softmax and cross-entropy class), trained with an `optimizer`. Training ran for 10,001 epochs with one optimiser step each, and then one correct forward-only test pass was made. What value does `optimizer.iterations` hold after the test pass?",
+      "answer": {
+        "model": "10,001: the test pass does not call the optimiser, so the counter is unchanged.",
+        "accept": [
+          "^(?![\\s\\S]*(?<!not )(?<!than )(?<!instead of )(?<!would be )(?<!would read )(?<!would hold )(?<!have been )(?<![\\d,.])10,?(?!001(?!\\d))\\d{3}(?!\\d))(?![\\s\\S]*(?:\\bnot|n't|\\bnever)\\s+(?:be\\s+|at\\s+|hold\\s+|equal\\s+(?:to\\s+)?)?10,?001)[\\s\\S]*(?<![\\d,.])10,?001(?!\\d|,\\d|\\.\\d)"
+        ]
+      },
+      "explanation": "Section 3.1: the test pass makes no optimiser call, so the step counter stays where training left it, at 10,001. Section 8 uses the same counter to expose a test pass that does update: after 100 such passes it reads 10,101.",
+      "hints": [
+        "Ask which method changes this counter, and whether a test pass calls it."
+      ]
+    },
+    {
+      "id": "nn-028-q14",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "7",
+      "est_minutes": 12,
+      "tags": [
+        "fix",
+        "forward-only"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "The function `evaluate` below was copied from a training loop. It returns the right loss and accuracy the first time it is called, and it is still not a test pass. Fix it so that it reports the loss and the accuracy on the held-out data and leaves the network and the optimiser exactly as it found them. The tests supply the classes, train for one step, and then call `evaluate` twice.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "def evaluate(X, y, dense1, activation1, dense2, loss_activation, optimizer):\n    \"\"\"Loss and accuracy of the network on held-out data (X, y).\n\n    dense1 and dense2 are Layer_Dense objects, activation1 is an Activation_ReLU and\n    loss_activation is the combined softmax and cross-entropy class. y holds one integer\n    label per sample. Returns (loss, accuracy). Must leave the network and the optimiser\n    exactly as it found them.\n    \"\"\"\n    dense1.forward(X)\n    activation1.forward(dense1.output)\n    dense2.forward(activation1.output)\n    loss = loss_activation.forward(dense2.output, y)\n\n    predictions = np.argmax(loss_activation.output, axis=1)\n    accuracy = np.mean(predictions == y)\n\n    loss_activation.backward(loss_activation.output, y)\n    dense2.backward(loss_activation.dinputs)\n    activation1.backward(dense2.dinputs)\n    dense1.backward(activation1.dinputs)\n\n    optimizer.pre_update_params()\n    optimizer.update_params(dense1)\n    optimizer.update_params(dense2)\n    optimizer.post_update_params()\n    return loss, accuracy\n",
+      "solution": "def evaluate(X, y, dense1, activation1, dense2, loss_activation, optimizer):\n    \"\"\"Loss and accuracy of the network on held-out data (X, y).\n\n    dense1 and dense2 are Layer_Dense objects, activation1 is an Activation_ReLU and\n    loss_activation is the combined softmax and cross-entropy class. y holds one integer\n    label per sample. Returns (loss, accuracy). Must leave the network and the optimiser\n    exactly as it found them.\n    \"\"\"\n    # Forward pass only: a loss and an accuracy need no gradient.\n    dense1.forward(X)\n    activation1.forward(dense1.output)\n    dense2.forward(activation1.output)\n    loss = loss_activation.forward(dense2.output, y)\n\n    predictions = np.argmax(loss_activation.output, axis=1)\n    accuracy = np.mean(predictions == y)\n    return loss, accuracy\n",
+      "tests": "import numpy as np\n\n\nclass Layer_Dense:\n    def __init__(self, n_inputs, n_neurons):\n        self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)\n        self.biases = np.zeros((1, n_neurons))\n\n    def forward(self, inputs):\n        self.inputs = inputs\n        self.output = np.dot(inputs, self.weights) + self.biases\n\n    def backward(self, dvalues):\n        self.dweights = np.dot(self.inputs.T, dvalues)\n        self.dbiases = np.sum(dvalues, axis=0, keepdims=True)\n        self.dinputs = np.dot(dvalues, self.weights.T)\n\n\nclass Activation_ReLU:\n    def forward(self, inputs):\n        self.inputs = inputs\n        self.output = np.maximum(0, inputs)\n\n    def backward(self, dvalues):\n        self.dinputs = dvalues.copy()\n        self.dinputs[self.inputs <= 0] = 0\n\n\nclass Activation_Softmax_Loss_CategoricalCrossentropy:\n    def forward(self, inputs, y_true):\n        exp_values = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))\n        self.output = exp_values / np.sum(exp_values, axis=1, keepdims=True)\n        confidences = np.clip(self.output[range(len(inputs)), y_true], 1e-7, 1 - 1e-7)\n        return np.mean(-np.log(confidences))\n\n    def backward(self, dvalues, y_true):\n        samples = len(dvalues)\n        self.dinputs = dvalues.copy()\n        self.dinputs[range(samples), y_true] -= 1\n        self.dinputs /= samples\n\n\nclass Optimizer_SGD:\n    def __init__(self, learning_rate=1.0):\n        self.learning_rate = learning_rate\n        self.iterations = 0\n\n    def pre_update_params(self):\n        pass\n\n    def update_params(self, layer):\n        layer.weights -= self.learning_rate * layer.dweights\n        layer.biases -= self.learning_rate * layer.dbiases\n\n    def post_update_params(self):\n        self.iterations += 1\n\n\ndef reference(X, y, W1, b1, W2, b2):\n    \"\"\"Loss and accuracy on loose arrays.\"\"\"\n    Z2 = np.maximum(0, X @ W1 + b1) @ W2 + b2\n    E = np.exp(Z2 - Z2.max(axis=1, keepdims=True))\n    P = E / E.sum(axis=1, keepdims=True)\n    return np.mean(-np.log(P[range(len(y)), y])), np.mean(P.argmax(axis=1) == y)\n\n\nfor seed, (n_in, n_hidden, n_out, n_train, n_test) in [(1, (2, 6, 3, 12, 9)), (2, (4, 8, 5, 20, 15))]:\n    rng = np.random.default_rng(seed)\n    X_train = rng.normal(size=(n_train, n_in))\n    y_train = rng.integers(0, n_out, size=n_train)\n    X_test = rng.normal(size=(n_test, n_in))\n    y_test = rng.integers(0, n_out, size=n_test)\n\n    dense1, activation1 = Layer_Dense(n_in, n_hidden), Activation_ReLU()\n    dense2, loss_activation = Layer_Dense(n_hidden, n_out), Activation_Softmax_Loss_CategoricalCrossentropy()\n    dense1.weights = rng.normal(size=(n_in, n_hidden))\n    dense1.biases = rng.normal(size=(1, n_hidden))\n    dense2.weights = rng.normal(size=(n_hidden, n_out))\n    dense2.biases = rng.normal(size=(1, n_out))\n    optimizer = Optimizer_SGD(learning_rate=0.5)\n\n    # One training step, so that gradients and a step count exist before the test pass.\n    dense1.forward(X_train)\n    activation1.forward(dense1.output)\n    dense2.forward(activation1.output)\n    loss_activation.forward(dense2.output, y_train)\n    loss_activation.backward(loss_activation.output, y_train)\n    dense2.backward(loss_activation.dinputs)\n    activation1.backward(dense2.dinputs)\n    dense1.backward(activation1.dinputs)\n    optimizer.pre_update_params()\n    optimizer.update_params(dense1)\n    optimizer.update_params(dense2)\n    optimizer.post_update_params()\n\n    parameters = [a.copy() for a in (dense1.weights, dense1.biases, dense2.weights, dense2.biases)]\n    gradients = [a.copy() for a in (dense1.dweights, dense1.dbiases, dense2.dweights, dense2.dbiases)]\n    want_loss, want_accuracy = reference(X_test, y_test, *parameters)\n    assert 0 < want_accuracy < 1, \"the test batch must contain right and wrong predictions\"\n\n    result = evaluate(X_test, y_test, dense1, activation1, dense2, loss_activation, optimizer)\n\n    assert result is not None and len(result) == 2, \"evaluate must return the pair (loss, accuracy)\"\n    loss, accuracy = result\n    assert abs(loss - want_loss) < 1e-12, \"the loss is not the mean cross-entropy on the held-out data\"\n    assert abs(accuracy - want_accuracy) < 1e-12, \"the accuracy is not the share of correct held-out points\"\n    for name, before, after in zip((\"dense1.weights\", \"dense1.biases\", \"dense2.weights\", \"dense2.biases\"), parameters,\n                                   (dense1.weights, dense1.biases, dense2.weights, dense2.biases)):\n        assert np.array_equal(before, after), name + \" was changed by the test pass\"\n    for name, before, after in zip((\"dense1.dweights\", \"dense1.dbiases\", \"dense2.dweights\", \"dense2.dbiases\"), gradients,\n                                   (dense1.dweights, dense1.dbiases, dense2.dweights, dense2.dbiases)):\n        assert np.array_equal(before, after), name + \" was overwritten: the test pass ran a backward call\"\n    assert optimizer.iterations == 1, \"the optimiser's step counter moved during the test pass\"\n\n    again = evaluate(X_test, y_test, dense1, activation1, dense2, loss_activation, optimizer)\n    assert abs(again[0] - loss) < 1e-12 and abs(again[1] - accuracy) < 1e-12, \"a second test pass must report the same figures\"\nprint(\"all evaluate checks passed\")\n",
+      "expected_output": "all evaluate checks passed\n",
+      "explanation": "Sections 3.1 and 8: the starter computes its figures before its update, so its first return value is correct, and then it trains on the held-out data. The fix is to delete the four `backward` calls and the four optimiser calls. The tests fail if any parameter moves, if a stored gradient array is overwritten (which catches a pass that keeps the `backward` calls and drops only the optimiser), if the step counter moves, or if a second call reports different figures.",
+      "hints": [
+        "Compare the body with the test pass of the post: which lines produce the loss and the accuracy, and which lines do something else?",
+        "A loss and an accuracy need no gradient and no update. For each line after the accuracy, ask what a test pass would need it for."
+      ]
+    },
+    {
+      "id": "nn-028-q15",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 15,
+      "tags": [
+        "critique",
+        "capacity",
+        "early-stopping"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A report on a three-class problem states: (1) \"The 64-neuron network has 96 percent training and 82 percent test accuracy; the 8-neuron network has 47 and 46 percent. The 8-neuron network generalises better, because its gap is one point, so it is the model to keep.\" (2) \"For the 64-neuron network the epoch with the lowest test loss was found, and the test accuracy at that epoch is reported as the final result.\" Each network was trained once, and the test set has 300 points. Assess both statements and say what should be done instead.",
+      "kind": "critique",
+      "solution": "**Statement 1.** A gap is read together with the two figures it separates. The 8-neuron network is at 47 percent on its own training data in a three-class problem, where a guess gives 33 percent: it underfits. Its small gap means only that it is equally poor on both sets. The quantity that matters is performance on new data, and there the 64-neuron network is 36 points ahead, far more than the standard error of about 2 to 3 points of a 300-point test set. The 64-neuron network is the better model; it overfits (a gap of 14 points), which calls for a lever of section 6, not for a network that cannot fit the data. Removing capacity is the wrong lever here, and the post's own runs show a wider network scoring higher on test data.\n\n**Statement 2.** Two things are wrong. First, the epoch was chosen by looking at the test set, so the test set took part in a decision about the model and its figure at that epoch is no longer an honest estimate; the choice needs a separate validation set, and the test set is opened once at the end. Second, the lowest test loss is not the highest test accuracy. The loss also weighs the confidence of every mistake, and in the post's five runs the test accuracy at the check of lowest test loss was lower than at the end in every run. If the accuracy is the figure of interest, the stopping rule should be judged on accuracy.\n\n**In both cases** each network was trained once. One seed is one draw of the data and the weights; the comparison should be repeated over several seeds and stated as a range.",
+      "rubric": [
+        {
+          "criterion": "Identifies the 8-neuron network as underfitting from its training figure, not as generalising better",
+          "points": 2
+        },
+        {
+          "criterion": "States that the test figure, not the size of the gap, decides between the two networks",
+          "points": 1
+        },
+        {
+          "criterion": "Says that choosing the epoch on the test set makes the reported test figure optimistic and that a validation set is needed",
+          "points": 2
+        },
+        {
+          "criterion": "Distinguishes the lowest test loss from the highest test accuracy, with the reason (confidence of mistakes)",
+          "points": 2
+        },
+        {
+          "criterion": "Asks for several seeds or notes the noise of a 300-point test set",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Sections 4 to 6 measure both situations: the 8-neuron network has the smallest gaps of the post and a test accuracy of 38.00 to 46.67 percent, and the check of lowest test loss has a lower test accuracy than the end of the run in all five seeds. Section 5.1 adds that an epoch found by looking at the test data cannot yield a reported figure, and section 3 that one seed is one draw.",
+      "hints": [
+        "Ask what the reader of the report wants from the model: a small gap, or a high figure on new data?",
+        "For the second statement, ask two things: which quantity is lowest at that epoch, and which data was used to find the epoch."
+      ]
+    },
+    {
+      "id": "nn-028-q16",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 15,
+      "tags": [
+        "cross-entropy",
+        "weights"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "In the post's runs the test loss climbs for thousands of epochs while the test accuracy does not fall. Use the per-sample cross-entropy of nn-008 to explain how both can be true at once, relate it to what the post measures about the size of the weights, and name the lever of Part VII that acts on that quantity, with the post of the series that builds it (nn-029, nn-030 or nn-031).",
+      "kind": "connect",
+      "solution": "The cross-entropy of one sample (nn-008) is $-\\ln \\hat{y}_c$, where $\\hat{y}_c$ is the probability the network gives to the true class $c$. Accuracy only asks whether the true class has the largest probability. A point on the wrong side of the decision boundary counts as one mistake whatever its probabilities are, but its loss is $-\\ln 0.3 \\approx 1.2$ if the network is unsure and $-\\ln 0.002 \\approx 6.2$ if it is confident. The loss has no upper limit other than the clipping, so a fixed set of mistakes can cost more and more.\n\nThat is what the post measures. Between the check of lowest test loss and the end of training, the decision boundary gets only 1 to 17 percent longer, so roughly the same test points stay on the wrong side and the accuracy does not fall (it is higher at the end in all five runs). The weights, however, grow by a factor of 1.64 to 3.84. Larger weights give larger logits, and the softmax turns larger logit differences into probabilities closer to 0 and 1: the function gets steeper on both sides of an almost unchanged boundary. Correct points gain a little, since their loss was already near zero, and each misclassified point loses a lot. On seed 0 the 53 misclassified test points end with a mean loss of 6.09 and carry 96.37 percent of the test loss.\n\nThe lever that acts on the size of the weights is the weight penalty, L1 or L2 regularisation, built in nn-030: it adds a term to the loss that grows with the weights, so that the optimiser pays for the growth that produced the confident mistakes. Whether it also raises the test accuracy is a separate question that this post does not measure.",
+      "rubric": [
+        {
+          "criterion": "States the per-sample loss $-\\ln \\hat{y}_c$ and that accuracy depends only on which class has the largest probability",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that an unchanged set of mistakes can cost more as the wrong predictions become more confident",
+          "points": 2
+        },
+        {
+          "criterion": "Links growing weights to larger logits and to probabilities nearer 0 and 1, with the boundary nearly unchanged",
+          "points": 2
+        },
+        {
+          "criterion": "Names weight penalties (L1 or L2 regularisation) and nn-030",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 4 shows that 53 confident mistakes carry 96.37 percent of the test loss, section 5.2 that the weights grow by a factor of 1.64 to 3.84 between the check of lowest test loss and the end while the boundary moves little, and section 6 that weight penalties, built in nn-030, add a loss term that grows with the size of the weights.",
+      "hints": [
+        "Write down what one misclassified point costs as a function of the probability given to its true class.",
+        "Ask what happens to the probabilities on both sides of a fixed boundary when every weight is multiplied by a number larger than 1."
+      ],
+      "connects": [
+        "nn-008",
+        "nn-030"
+      ]
+    },
+    {
+      "id": "nn-028-q17",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "levers",
+        "underfitting"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-05",
+      "prompt": "A three-class network reaches 45 percent on its training data and 43 percent on a test set from the same generator. Which next step fits these figures?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Add a weight penalty, because the test figure is below the training figure",
+          "correct": false,
+          "feedback": "A gap of two points is within the noise of a test set, and a penalty constrains a network that already cannot fit its training data."
+        },
+        {
+          "key": "b",
+          "text": "Stop training earlier, because the network has started to memorise",
+          "correct": false,
+          "feedback": "A network at 45 percent on its own training points has memorised nothing. Fewer epochs would leave it fitting even less."
+        },
+        {
+          "key": "c",
+          "text": "Give the network more capacity or more training, because it underfits",
+          "correct": true,
+          "feedback": "Right: low on both sets with a small gap is underfitting, and its remedy is the opposite of the levers against overfitting."
+        },
+        {
+          "key": "d",
+          "text": "Collect a new test set, because the test data comes from another distribution",
+          "correct": false,
+          "feedback": "A shifted test set shows as a high training figure with a far lower test figure. Here both figures are low and close, and the generator is the same."
+        }
+      ],
+      "explanation": "Section 4: two low figures with a small gap are underfitting, and the usual next step is more neurons, more layers or more epochs. Section 6 measures it: 8 neurons give 41.33 to 50.67 percent on the training data, 64 neurons give 78.00 to 96.33. The four levers are remedies for a gap, and this network has almost none.",
+      "hints": [
+        "First place the network in one of the four regimes, using the training figure."
+      ]
+    }
+  ]
+}

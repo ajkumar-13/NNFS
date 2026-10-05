@@ -1,8 +1,22 @@
 id: nn-028
 slug: 28-generalization-and-testing
-title: "Part 28 · Generalization and testing"
+title: "28 - Generalization and testing"
+summary: "The Adam-trained spiral network runs forward-only on 300 new points. Over five seeds its test accuracy is 10.7 to 14.0 points below its training accuracy. The gap, the loss curves and four levers against overfitting are read from the runs."
 date: 2026-05-23
+updated: 2026-10-05
+status: complete
+part: "Part VII - Generalisation and regularisation"
+level: intermediate
+reading_time: 23
 tags: [neural-networks, from-scratch, generalization, overfitting, bias-variance]
 hero: diagrams/01-train-vs-test.svg
-reading_time: 12
-part: "Part VII — Generalisation and regularisation"
+prerequisites: [nn-027]
+code: included
+outcomes:
+  - id: o1
+    text: "Run a forward-only test pass on held-out data and read its loss and accuracy against the training figures."
+  - id: o2
+    text: "Distinguish good generalisation from overfitting by the shape of the loss curves and the geometry of the decision boundary."
+  - id: o3
+    text: "Map an overfitting symptom to one of four levers: capacity, epoch budget, weight penalties and dropout."
+compute: cpu
