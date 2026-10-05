@@ -91,10 +91,10 @@ After this part you train with mini-batches, initialise for the activation you u
 
 ## The projects
 
-- [MNIST from scratch](projects/mnist-from-scratch/README.md): handwritten digits with a two-hidden-layer network, Adam, L2, dropout, and mini-batches.
-- [Binary classifier on two-moons](projects/binary-classifier/README.md): sigmoid and binary cross-entropy on a two-dimensional problem whose decision boundary can be drawn.
-- [Fashion-MNIST](projects/fashion-mnist/README.md): the MNIST network, unchanged, on clothing images, and where it fails.
-- [California housing regression](projects/california-housing-regression/README.md): the first regression, with mean squared error and a standardised target.
+- [MNIST from scratch](projects/mnist-from-scratch/README.md) (`nn-p01`): handwritten digits with a two-hidden-layer network, Adam, L2, dropout, and mini-batches; from seed 0 it classifies 9,800 of the 10,000 test images correctly, 98.00 percent.
+- [Binary classifier on two moons](projects/binary-classifier/README.md) (`nn-p02`): sigmoid and binary cross-entropy on a two-dimensional problem whose decision boundary can be drawn; from seed 0 it classifies all 200 held-out points correctly at noise 0.1.
+- [Fashion-MNIST with the same network](projects/fashion-mnist/README.md) (`nn-p03`): the MNIST network, unchanged, on clothing images, and where it fails; from seed 0 it reaches 87.12 percent, 8,712 of the 10,000 test images.
+- [California housing regression](projects/california-housing-regression/README.md) (`nn-p04`): the first regression, with mean squared error and a standardised target; from seed 0 it reaches $R^2 = 0.8231$ on the test fold, with an RMSE of 49,222 dollars.
 
 ## Before you start
 
@@ -106,32 +106,34 @@ Each post opens with a short summary, the prerequisites, and what you will be ab
 
 ## What is measured
 
-- From post 04 to post 31 every experiment uses the same data: the spiral dataset, three classes of 100 points in two dimensions, from the `nnfs` package with its fixed seed.
+- From post 04 to post 31 every network is run on the same data: the spiral dataset, three classes of 100 points in two dimensions, from the `nnfs` package with its fixed seed. Post 09 adds the package's vertical dataset once, as an easy contrast.
 - Part VI trains all six optimisers on one setup (the spiral data, a $2 \to 64 \to 3$ network, 10,001 epochs, the same initial weights), so the rows of its comparison differ only in the optimiser. In that setup plain gradient descent ends at 64.7 percent training accuracy, momentum at 95.7, AdaGrad at 84.0, RMSProp at 90.0, and Adam at 96.3.
 - Part VII measures each regulariser by the gap between training accuracy and accuracy on a fresh draw from the same spiral generator.
 - Each project's README gives the commands that train and evaluate it and reports the test result those commands print.
 
 ## The code
 
-Pure Python and NumPy, plus the `nnfs` package, which supplies `spiral_data` and a fixed seed. There is no library to install: the classes are written in the posts, and each project carries its own copy in `nn.py`.
+Pure Python and NumPy, plus the `nnfs` package, which supplies `spiral_data` and a fixed seed. There is no library to install: the classes are written in the posts, and each project carries its own copy in `src/<package>/nn.py`.
 
 ```text
-posts/NN-slug/   the post (index.md) and its figures
-projects/        four applied projects, each with nn.py, data.py, train.py, evaluate.py
+posts/NN-slug/   the post (index.md), its figures, and the scripts it runs (snippets/)
+projects/        four applied projects, each a package under src/ with tests, docs, and a locked environment
 poster/          the whole series on one page, light and dark
 ```
 
-To run the posts' code and a project:
+To run a post's script and a project:
 
-```powershell
+```bash
 python -m pip install numpy nnfs
-cd projects\mnist-from-scratch
-python -m pip install -r requirements.txt
-python train.py
-python evaluate.py
+python posts/04-dense-layer-class-and-spiral-data/snippets/dense_layer.py
+cd projects/mnist-from-scratch
+uv sync --frozen
+uv run python scripts/download_mnist.py
+uv run python -m mnist_from_scratch.train
+uv run python -m mnist_from_scratch.evaluate
 ```
 
-The projects download their datasets on first use; scikit-learn is used only for that download, and each project's `--backend manual` option avoids it.
+The projects need [uv](https://docs.astral.sh/uv/), which fetches Python 3.13 and the locked packages; NumPy, pinned at 2.3.5, is the only third-party package a project imports. Nothing is downloaded implicitly: the MNIST, Fashion-MNIST, and California housing projects each fetch their data with one script, which keeps a file only if its SHA-256 is the expected one, and the two-moons data are generated. No project uses scikit-learn. The [projects index](projects/README.md) lists the four with their results.
 
 ## Reference pages
 

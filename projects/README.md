@@ -1,35 +1,30 @@
 # Projects
 
-Hands-on builds that apply the neural network from `posts/` to real datasets and tasks. Each project is self-contained: its own directory, its own code files, its own runnable training loop.
+Four projects put the classes of Neural Networks from Scratch to work on real data. Each is a released reference model with one documented run, and each can be built once the post in the "After" column has been read.
 
-The convention:
+| Id | Project | Kind | Status | After | Measured result (seed 0) |
+|---|---|---|---|---|---|
+| `nn-p01` | [MNIST from scratch](mnist-from-scratch/README.md) | model | released | `nn-032` | 98.00 percent test accuracy, 9,800 of 10,000 images |
+| `nn-p02` | [Binary classifier on two moons](binary-classifier/README.md) | model | released | `nn-034` | 200 of 200 held-out points correct at noise 0.1 |
+| `nn-p03` | [Fashion-MNIST with the same network](fashion-mnist/README.md) | model | released | `nn-033` | 87.12 percent test accuracy, 8,712 of 10,000 images |
+| `nn-p04` | [California housing regression](california-housing-regression/README.md) | model | released | `nn-032` | test $R^2$ of 0.8231, RMSE 49,222 dollars |
 
+Each figure is the headline of the project's `docs/EVALUATION.md`, which gives the commands that print it, the per-class or per-fold detail, the runs from other seeds, and the limits of the claim.
+
+## What the projects share
+
+Every project has the same layout: a package under `src/<package>/` whose `nn.py` holds the project's own copy of the series' classes, with `model.py`, `data.py`, `train.py`, and `evaluate.py` beside it; tests under `tests/`; `docs/` with the architecture, the evaluation, the security notes, and the decision records; and a `project.yaml` that names the commands. The environment is managed by [uv](https://docs.astral.sh/uv/) from a committed `uv.lock`, and NumPy, pinned at 2.3.5, is the only third-party package the code imports, so that a run from the fixed seed repeats on the same machine. Weights are saved as plain arrays in an `.npz` file, so loading weights never runs code from the file. The three public datasets are fetched by a script under `scripts/`, which keeps a file only if its SHA-256 is the expected one; the two-moons data are generated and need no download. Datasets and weights stay on the reader's machine and are never committed.
+
+## Commands
+
+From a project's directory, with its package name in place of `<package>`:
+
+```bash
+uv sync --frozen
+uv run python -m <package>.train
+uv run python -m <package>.evaluate
+uv run pytest --cov=src --cov-fail-under=95
+uv run ruff check . && uv run ruff format --check .
 ```
-projects/
-└── NN-slug/
-    ├── README.md          ← writeup (what + why)
-    ├── nn.py              ← from-scratch classes used by this project
-    ├── data.py            ← dataset loading and preprocessing
-    ├── train.py           ← training loop
-    ├── evaluate.py        ← test-time evaluation
-    └── requirements.txt   ← minimal Python dependencies
-```
 
-Numbering matches the order projects were added; the slug describes the project.
-
-## Index
-
-| # | Project | Task | Dataset | Hero result |
-|---|---|---|---|---|
-| 1 | [MNIST from scratch](mnist-from-scratch/README.md) | 10-class classification | MNIST (60k train, 10k test, 28×28 grayscale digits) | ~97% test accuracy |
-| 2 | [Binary classifier on two-moons](binary-classifier/README.md) | binary classification | Two-moons synthetic 2-D dataset (1000 samples) | ~98.5% test accuracy, visualised decision boundary |
-| 3 | [Fashion-MNIST](fashion-mnist/README.md) | 10-class classification | Fashion-MNIST (60k train, 10k test) | ~89% test accuracy, confusion matrix of the "shirt cluster" |
-| 4 | [California housing regression](california-housing-regression/README.md) | regression | California housing (20 640 samples, 8 features) | R² ≈ 0.78, RMSE ~$58k |
-
-## Adding a new project
-
-1. Pick the next two-digit number and a kebab-case slug. Create `projects/NN-slug/`.
-2. Copy the five-file skeleton above. Replace `nn.py` only if the project needs classes that don't already exist in `mnist-from-scratch/nn.py` — otherwise import from there.
-3. Write `README.md` in the textbook voice used by the [lecture posts](../posts/): TL;DR, capability bullets, numbered sections, common pitfalls, further reading.
-4. Add a row to the index table above.
-5. Optional: add a `diagrams/` subfolder with hero SVGs matching the visual style of the existing project diagrams (e.g. [binary-classifier/diagrams/](binary-classifier/diagrams/)).
+The packages are `mnist_from_scratch`, `binary_classifier`, `fashion_mnist`, and `california_housing_regression`. Before training, the three projects with a public dataset run their download script once: `uv run python scripts/download_mnist.py`, `uv run python scripts/download_fashion_mnist.py`, or `uv run python scripts/download_california_housing.py`. Each project's README has its quickstart in full.

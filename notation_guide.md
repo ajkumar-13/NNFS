@@ -9,7 +9,7 @@ The symbols, shapes, and code names used across Neural Networks from Scratch. Wh
 | $\mathbf{X}$ | input batch, one sample per row | $(N, n_\text{inputs})$ | `inputs`, `X` |
 | $\mathbf{W}$ | weights of a dense layer | $(n_\text{inputs}, n_\text{neurons})$ | `weights` |
 | $\mathbf{b}$ | biases of a dense layer | $(1, n_\text{neurons})$ | `biases` |
-| $\mathbf{Z}$ | weighted sums (pre-activation) | $(N, n_\text{neurons})$ | the dense layer's `output` |
+| $\mathbf{Z}$ | pre-activations, the weighted sums plus the biases | $(N, n_\text{neurons})$ | the dense layer's `output` |
 | $\mathbf{A}$ | activation output | $(N, n_\text{neurons})$ | the activation's `output` |
 | $\hat{\mathbf{y}}$ | predicted probabilities | $(N, K)$ | `y_pred`, the softmax `output` |
 | $\mathbf{y}$ | true labels | $(N,)$ class indices or $(N, K)$ one-hot | `y_true`, `y` |
@@ -23,7 +23,9 @@ $$\mathbf{Z} = \mathbf{X}\mathbf{W} + \mathbf{b}$$
 
 and an activation follows, $\mathbf{A} = f(\mathbf{Z})$. The bias row is broadcast to every row of $\mathbf{X}\mathbf{W}$.
 
-**The weight convention changes once.** Posts 01 to 03 store one row of weights per neuron, shape $(n_\text{neurons}, n_\text{inputs})$, and compute `np.dot(inputs, weights.T)`. From Post 04 on, `Layer_Dense` stores $(n_\text{inputs}, n_\text{neurons})$ so that the forward pass is `np.dot(inputs, self.weights)` with no transpose. Both are correct; a formula that looks transposed against an earlier post is usually this change. Post 14, section 8, reconciles the two.
+A subscript $\ell$ on $\mathbf{W}$, $\mathbf{b}$, $\mathbf{Z}$, or $\mathbf{A}$ numbers the layers from 1, and $\mathbf{Z}_0 = \mathbf{X}$ is the input. Posts 02 and 03 shorten $n_\text{inputs}$ and $n_\text{neurons}$ to $n$ and $m$, with $m_\ell$ for the number of neurons in layer $\ell$.
+
+**The weight convention changes once.** Posts 01 to 03 store one row of weights per neuron, shape $(n_\text{neurons}, n_\text{inputs})$, and compute `np.dot(inputs, weights.T)`. From Post 04 on, `Layer_Dense` stores $(n_\text{inputs}, n_\text{neurons})$ so that the forward pass is `np.dot(inputs, self.weights)` with no transpose. Both are correct; a formula that looks transposed against an earlier post is usually this change. Post 14, section 8, reconciles the two. The biases change with it: Posts 01 to 03 keep them in a flat list of $n_\text{neurons}$ numbers, and `Layer_Dense` stores the $(1, n_\text{neurons})$ row of the table. Both broadcast across the batch in the same way.
 
 ## Backward pass
 
@@ -101,4 +103,4 @@ In Adam, $v$ is the second moment, not the momentum velocity of Post 24; the cod
 
 - Inline maths is written `$...$` and display maths `$$...$$` on its own line.
 - Prose uses British spelling (optimiser, regularisation, initialisation); code uses the American spelling of its class and argument names (`Optimizer_Adam`, `weight_regularizer_l2`), as the reference implementation does.
-- Indices start at 0, as in Python. Axis 0 is the batch axis.
+- Code indices start at 0, as in Python, and the maths counts from 1: `inputs[0]` is $x_1$, and layer 1 is the first dense layer. Post 12 is the exception and numbers its inputs and weights from 0, as its code does. Axis 0 is the batch axis.
