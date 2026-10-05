@@ -1,181 +1,100 @@
-# Project 02 · Binary classifier on the two-moons dataset
+# Binary classifier on two moons
 
-> **TL;DR.** [Post 34](../../posts/34-sigmoid-and-binary-cross-entropy/) introduces **sigmoid + binary cross-entropy**, the binary counterpart to the softmax + categorical cross-entropy used through most of the series. This project applies it to a synthetic 2-D dataset (`make_moons`) that can be plotted on a single chart. A two-hidden-layer 16-unit network with He-initialised weights ([Part 33](../../posts/33-weight-initialisation/)), trained with Adam, learns the decision boundary in ~2000 epochs, reaching ~99-100% test accuracy with a clean curve between the moons. The math change from softmax+CCE is mostly cosmetic — same chain-rule shortcut, same combined-class trick from [post 19](../../posts/19-softmax-derivatives-and-the-combined-backward-pass/) — but the geometry is dead obvious because the input space is 2-D.
+A dense network with a single sigmoid output, written in NumPy alone, that learns to separate two interleaved half-circles of points and writes the grid of predictions needed to draw its decision boundary. It is the worked example for the sigmoid and binary cross-entropy post of Neural Networks from Scratch (`nn-034`): 337 parameters, two commands, and a result in about two seconds on a laptop CPU. It is not a general-purpose classifier and not a library. It trains one fixed network on one generated dataset, and its value is that every number it prints can be reproduced and traced to a line of code.
 
----
+## Who this is for
 
-## What this project demonstrates
+Readers of the series who have reached `nn-034` and want to see the combined sigmoid and cross-entropy gradient train a model on a problem that can be drawn on one chart. It also serves anyone who wants a small, exactly reproducible case of an initialisation deciding whether a network learns: one option turns a model that classifies every test point correctly into one that draws a straight line through both moons and gets 26 of 200 test points wrong.
 
-- **Sigmoid + binary cross-entropy** as the natural 2-class analogue of softmax + CCE: one output neuron, one threshold, one log-loss term.
-- The same combined-derivative trick from post 19 carries over: `d(loss)/d(logit) = (sigmoid(logit) − y) / N`, no division by the activation.
-- A 2-D dataset means the trained decision boundary can be sampled on a grid and plotted directly — see `evaluate.py`, which dumps a 200 × 200 `decision_grid.npz` for any plotter to consume.
+## Quickstart
 
-## File layout
-
-```
-binary-classifier/
-├── README.md
-├── requirements.txt    ← numpy only
-├── nn.py               ← Dense, ReLU, Sigmoid, combined Sigmoid+BCE, Adam
-├── data.py             ← make_moons (numpy-only) + train_test_split
-├── train.py            ← full-batch training loop, 2000 epochs
-└── evaluate.py         ← test metrics + 200x200 decision grid
-```
-
-## Quick start
+You need [uv](https://docs.astral.sh/uv/), which fetches Python 3.13 and the locked packages. Nothing else is downloaded: the data are generated. From a clone of the series repository:
 
 ```bash
 cd projects/binary-classifier
-pip install -r requirements.txt
-python train.py            # ~5 sec on a modern laptop CPU
-python evaluate.py         # writes decision_grid.npz alongside the checkpoint
+uv sync --frozen
+uv run python -m binary_classifier.train
+uv run python -m binary_classifier.evaluate
 ```
 
----
+`train` runs 2,000 epochs from seed 0 and writes `moons_weights.npz`; `evaluate` loads that file, prints the results below, and writes `decision_grid.npz`. Both files land in the directory you run from and are never committed.
 
-## 1. Why two moons?
+To check the project itself:
 
-The spiral dataset from the lectures had three classes; for a *binary* problem we want exactly two. The classic choice in textbooks is **two moons**:
-
-- Two interleaved half-rings in the (x, y) plane.
-- Each ring is a different class.
-- Light Gaussian noise around each ring so the data is not perfectly separable.
-
-The dataset is 2-D (visualisable on a single chart), small (1000 samples by default), and non-linearly separable (no straight line can split the two moons cleanly). A linear classifier would fail; a small MLP succeeds.
-
-`data.py` implements `make_moons` in pure NumPy so the project has no external dependency on scikit-learn. The output format matches `sklearn.datasets.make_moons` exactly so the two are interchangeable if you prefer the sklearn version.
-
-## 2. From softmax+CCE to sigmoid+BCE
-
-Multi-class with softmax + categorical cross-entropy (the series default) uses **K output neurons** for K classes:
-
-```
-logits  (N, K) → softmax → probabilities (N, K) → CCE against one-hot y
+```bash
+uv run pytest --cov=src --cov-fail-under=95
+uv run ruff check . && uv run ruff format --check .
 ```
 
-Binary with sigmoid + binary cross-entropy uses **1 output neuron** for 2 classes:
+These are the commands in `project.yaml`, and they were last run from a clean environment on the `verified` date there.
 
-```
-logits  (N, 1) → sigmoid → probability of class 1 (N, 1) → BCE against scalar y
-```
+## What it does
 
-The math equivalence is exact when K = 2: a two-class softmax is just a sigmoid in disguise. The reason to special-case it is **efficiency** (one neuron and one log term instead of two) and **clarity** (the sigmoid output is directly "probability of class 1", no argmax needed).
+- Generates the two-moons dataset in NumPy from a seed: 1,000 points, 500 per class, Gaussian noise of standard deviation 0.1 on each coordinate, split 800 to 200.
+- Trains a $2 \to 16 \to 16 \to 1$ network with ReLU hidden layers by full-batch Adam, using the combined sigmoid and binary cross-entropy class, whose gradient with respect to the logits is $(\hat{y} - y)/N$.
+- Scores the trained network on both sets: loss, accuracy, confusion matrix, and the count of each class classified correctly.
+- Samples the predicted probability on a $200 \times 200$ grid, so that the boundary, the curve where the probability is 0.5, can be drawn by any plotting program.
+- Offers the initialisation as an option (`--init he`, `xavier`, or `small`), so that the failure `nn-033` describes can be produced and measured with the same command.
+- Turns the headline into a check: `uv run python -m binary_classifier.evaluate --min-accuracy 1.0` exits with status 1 if a test point is misclassified.
+- Stores weights as plain arrays in an `.npz` file, so loading weights never runs code from the file.
 
-### 2.1 Sigmoid
+`--epochs`, `--noise`, `--n-samples`, `--init`, `--seed` and `--weights` change a run; `--help` on either command lists them. The layer sizes, the learning rate and the L2 strength are fixed in the code, because they are the documented baseline.
 
-The activation:
+## Architecture
 
-$$\sigma(z) = \frac{1}{1 + e^{-z}}$$
+Five modules under `src/binary_classifier/`: `nn.py` holds the series' classes (`Layer_Dense`, `Activation_ReLU`, `Activation_Sigmoid`, `Activation_Sigmoid_Loss_BinaryCrossentropy`, `Optimizer_Adam`), `data.py` generates and splits the points, `model.py` assembles the network and reads and writes the weights, and `train.py` and `evaluate.py` are the two commands. The network has $2 \cdot 16 + 16 = 48$, $16 \cdot 16 + 16 = 272$, and $16 \cdot 1 + 1 = 17$ parameters in its three dense layers, 337 in all. [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) has the components, the data flow, the file formats, and the diagram, and the records under [docs/adr/](docs/adr/) give the reasons for the decisions a maintainer would otherwise have to rediscover.
 
-`nn.Activation_Sigmoid` implements this with a numerically stable form that avoids overflow when `z` is large negative:
+## Results
 
-```python
-out[z >= 0]  = 1 / (1 + exp(-z))           # safe; exp(-z) stays in [0, 1]
-out[z <  0]  = exp(z) / (1 + exp(z))       # safe; exp(z) stays in [0, 1]
-```
+Measured on 2026-10-05 with the quickstart commands, seed 0, on an Intel Core i7-9750H with 7.8 GB of memory, CPU only. [docs/EVALUATION.md](docs/EVALUATION.md) has the full printed output, the commands for every row, and the limits of the claim.
 
-The derivative is the textbook $\sigma(z)(1 - \sigma(z))$.
-
-### 2.2 Binary cross-entropy loss
-
-For target $y \in \{0, 1\}$ and predicted probability $\hat{y} \in (0, 1)$:
-
-$$L = -\left[\, y \log \hat{y} + (1 - y) \log(1 - \hat{y}) \,\right]$$
-
-Averaging over the batch gives the scalar loss.
-
-### 2.3 The combined trick
-
-Computing the gradient of $L$ with respect to the logits $z$ separately involves a division by $\sigma(z)(1 - \sigma(z))$ that can blow up when the prediction is very confident. The combined sigmoid + BCE derivative simplifies the whole chain:
-
-$$\frac{\partial L}{\partial z} = \sigma(z) - y$$
-
-Identical in spirit to the softmax + CCE shortcut from [post 19](../../posts/19-softmax-derivatives-and-the-combined-backward-pass/). `nn.Activation_Sigmoid_Loss_BinaryCrossentropy` packages the forward and the simplified backward into a single class, exactly the same pattern as `Activation_Softmax_Loss_CategoricalCrossentropy`.
-
-The training loop in `train.py` therefore just calls:
-
-```python
-loss = loss_act.forward(logits, y_batch)
-loss_act.backward(loss_act.output, y_batch)
-# loss_act.dinputs now has shape (N, 1) and contains (sigmoid(z) - y) / N
-```
-
-## 3. Architecture
-
-```
-input (2) → Dense(2, 16) → ReLU → Dense(16, 16) → ReLU → Dense(16, 1) → Sigmoid + BCE
-```
-
-Parameter count:
-
-| Layer | Weights | Biases |
-|---|:---:|:---:|
-| Dense(2, 16)  | 32  | 16 |
-| Dense(16, 16) | 256 | 16 |
-| Dense(16, 1)  | 16  | 1  |
-| **Total** |  | **337** |
-
-337 parameters is tiny — roughly 350× smaller than project 01's MNIST model. The moons dataset is correspondingly simpler; a 16-unit hidden layer is enough to bend the decision boundary into the right shape.
-
-## 4. Training and result
-
-`train.py` runs 2000 epochs of full-batch Adam (lr=0.01) on 800 training points. The remaining 200 points form the test set. Mini-batching is unnecessary at this scale; a single matrix multiply per epoch is fast enough on CPU.
-
-Representative final metrics:
-
-| Split | Loss | Accuracy |
-|---|:---:|:---:|
-| Training (800) | ~0.02 | ~99.9% |
-| Test (200) | ~0.04 | ~98.5% |
-
-The 1.4-percentage-point train/test gap is the kind of mild overfit that small networks on small datasets exhibit. Adding the `weight_regularizer_l2` parameter to the `Layer_Dense` constructor (already set to 1e-4 in `train.py`) keeps the gap from blowing out.
-
-## 5. The decision boundary
-
-`evaluate.py` samples the model's probability on a 200 × 200 grid covering `x ∈ [-1.5, 2.5]` and `y ∈ [-1.0, 1.5]`, dumps it to `decision_grid.npz`, and prints a quick "fraction of cells in the boundary band" sanity check. To plot the boundary in a notebook:
-
-```python
-import numpy as np
-import matplotlib.pyplot as plt
-
-g = np.load("decision_grid.npz")
-plt.contourf(g["XX"], g["YY"], g["probs"], levels=20, cmap="RdBu_r", alpha=0.5)
-plt.contour(g["XX"], g["YY"], g["probs"], levels=[0.5], colors="black", linewidths=2)
-plt.scatter(*g["X_train"].T, c=g["y_train"], cmap="RdBu_r", edgecolor="k")
-plt.show()
-```
-
-The qualitative shape (an S-curve between the moons) is in this project's hero diagram. The boundary is the **locus of points where the network's sigmoid output equals 0.5** — every prediction above 0.5 is class 1, every prediction below 0.5 is class 0.
-
-## 6. Stretch goals
-
-| Goal | Difficulty | Hint |
+| Run | Training set (800 points) | Test set (200 points) |
 |---|---|---|
-| Plot the boundary in matplotlib | easy | The snippet in §5 |
-| Higher noise (σ = 0.5) | easy | Pass `--noise 0.5` to `train.py`; observe where the boundary refuses to commit |
-| Three-spiral classifier | medium | Reuse `spiral_data` from the lectures; replace sigmoid + BCE with softmax + CCE (back to project-01 style) |
-| Add early stopping | medium | Track test loss every 50 epochs; halt when it plateaus |
-| Mini-batch this with a 32-sample batch | easy | Loop over `range(0, len(X_train), 32)` inside the epoch loop |
+| Documented run: He initialisation, noise 0.1 | 800 correct, loss 0.0006 | 200 correct (100.0 percent), loss 0.0045 |
+| The same with `--init small` (weights drawn as 0.01 times a standard normal) | 707 correct (88.4 percent), loss 0.2467 | 174 correct (87.0 percent), loss 0.2645 |
+| The same with `--noise 0.2` | 788 correct (98.5 percent), loss 0.0377 | 192 correct (96.0 percent), loss 0.1846 |
 
-## 7. Related lectures
+Training takes between one and three seconds on that laptop. With the small initialisation the network ends as a linear classifier: after 2,000 epochs, and still after 20,000, a plane fits its logits over the training set with $R^2 = 1.0000$ to four decimals, against 0.7413 for the documented run. Its boundary is a straight line, and no straight line separates two moons.
 
-| Lecture | Used here for |
-|---|---|
-| [Part 4 — Dense layer class](../../posts/04-dense-layer-class-and-spiral-data/) | `Layer_Dense` |
-| [Part 6 — Activations](../../posts/06-activation-functions-relu-and-softmax/) | `Activation_ReLU` (sigmoid is the binary analogue of softmax) |
-| [Part 19 — Softmax + cross-entropy combined](../../posts/19-softmax-derivatives-and-the-combined-backward-pass/) | The combined-derivative trick, applied to sigmoid + BCE here |
-| [Part 34 — Sigmoid and binary cross-entropy](../../posts/34-sigmoid-and-binary-cross-entropy/) | `Activation_Sigmoid` and the combined sigmoid + BCE backward — the core technique of this project |
-| [Part 27 — Adam](../../posts/27-adam-optimiser/) | `Optimizer_Adam` |
-| [Part 30 — L1 / L2 regularisation](../../posts/30-l1-and-l2-regularisation/) | `weight_regularizer_l2` |
+The result is not an accident of seed 0. `uv run python scripts/seed_sweep.py` repeats the run for seeds 0 to 9, each of which draws a different dataset, split, and set of initial weights. With He initialisation the test score lies between 197 and 200 of 200 and is 200 on eight of the ten seeds; with the small initialisation it lies between 173 and 181.
 
-## 8. Common pitfalls
+## Drawing the boundary
 
-- **Treating `y` as one-hot.** Binary cross-entropy expects scalar `y ∈ {0, 1}`, not a 2-element one-hot vector. `nn.Activation_Sigmoid_Loss_BinaryCrossentropy` reshapes to `(N, 1)` internally.
-- **Using softmax with a single output neuron.** Softmax over a 1-element vector always returns 1.0. Use sigmoid for 1-output binary tasks.
-- **Non-numerically-stable sigmoid.** `1 / (1 + exp(-z))` overflows for very negative `z`. `nn.Activation_Sigmoid.forward` uses the conditional form that stays stable in both directions.
-- **Threshold at 0.5 without checking class balance.** For balanced datasets (50/50 like moons), 0.5 is the right threshold. For imbalanced datasets, a different threshold often beats accuracy on the minority class.
-- **Two separate sigmoid and BCE classes in the backward pass.** Use the combined class. Computing them separately invites the divide-by-σ(z)(1−σ(z)) numerical issue.
+`decision_grid.npz` holds the arrays `XX`, `YY`, and `probs`, each $200 \times 200$, covering $x$ from $-1.5$ to $2.5$ and $y$ from $-1$ to $1.5$, together with the training and test points (`X_train`, `y_train`, `X_test`, `y_test`). The boundary is the contour of `probs` at 0.5. matplotlib is not a dependency of this project; to draw the grid with it, save the lines below as `plot.py` beside the grid and run `uv run --with matplotlib python plot.py`.
 
----
+```python
+import matplotlib.pyplot as plt
+import numpy as np
 
-> *Project 02 of N. See [projects/README.md](../README.md) for the project index. The from-scratch series lives in [posts/](../../posts/).*
+grid = np.load("decision_grid.npz")
+plt.contourf(grid["XX"], grid["YY"], grid["probs"], levels=20, cmap="RdBu_r", alpha=0.5)
+plt.contour(grid["XX"], grid["YY"], grid["probs"], levels=[0.5], colors="black", linewidths=2)
+plt.scatter(*grid["X_test"].T, c=grid["y_test"], cmap="RdBu_r", edgecolors="black")
+plt.savefig("decision_boundary.png", dpi=150)
+```
+
+## Limits
+
+- **One architecture, one optimiser setting, one dataset.** The options change the seed, the noise, the number of points, the number of epochs, and the initialisation; the layer sizes, the learning rate, and the L2 penalty are fixed in the code.
+- **Synthetic data.** The data are generated, and the test points come from the same generator as the training points. The test score measures interpolation between training points, not behaviour on data from anywhere else.
+- **An easy setting.** A score of 200 of 200 belongs to noise 0.1: the two noiseless half-circles are 0.5 apart at their closest, five times the standard deviation of the noise. At noise 0.2 the same network gets 192.
+- **No validation split.** The configuration was settled with the test score in view, so the seed sweep, which draws nine further datasets, is the evidence that it was not fitted to one split.
+- **Bit-for-bit reproduction needs the locked environment.** NumPy is pinned to 2.3.5, as in every project of the series. On another processor the last digits of the losses can differ; `data sha256` in the training output tells you whether your data are the documented ones.
+- **Weights, the split, and nothing else.** The `.npz` file holds the six parameter arrays, the training and test points, and the configuration, but no optimiser state, so a run cannot be resumed. Pickle files written by the scripts before version 1.0.0 are not loaded.
+
+## Built from
+
+- `nn-016`, coding backpropagation: `Layer_Dense` and `Activation_ReLU` with their backward passes.
+- `nn-019`, softmax derivatives and the combined backward pass: the pattern of one class for the last activation and the loss, which `nn-034` carries over to the sigmoid.
+- `nn-027`, Adam: `Optimizer_Adam`.
+- `nn-030`, L1 and L2 regularisation: the penalty terms in `Layer_Dense` and `regularization_loss`.
+- `nn-033`, weight initialisation: the `init` argument of `Layer_Dense`, with He as the default.
+- `nn-034`, sigmoid and binary cross-entropy: the stable sigmoid and `Activation_Sigmoid_Loss_BinaryCrossentropy`.
+
+## Corrections
+
+The series takes no pull requests or issues. If you find a mistake, send the correction through the series website.
+
+## Licence
+
+Code under MIT, prose and figures under CC BY 4.0, as stated in the series [LICENSE](../../LICENSE). The data are generated by the code and carry no licence of their own.

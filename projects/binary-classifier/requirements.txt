@@ -1,3 +1,0 @@
-numpy>=1.23
-# No other dependencies. data.py implements make_moons in pure NumPy
-# so sklearn is not required.

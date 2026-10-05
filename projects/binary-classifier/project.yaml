@@ -1,35 +1,42 @@
 id: nn-p02
 slug: binary-classifier
 title: "Binary classifier on two moons"
-summary: "A small dense network with a sigmoid output and binary cross-entropy, written in NumPy alone, that separates the two-moons dataset and writes the decision grid needed to draw its boundary."
+summary: "A 337-parameter dense network with a sigmoid output and binary cross-entropy, written in NumPy alone, that separates the two-moons dataset and writes the decision grid needed to draw its boundary. Two commands reproduce every figure it reports from a fixed seed and a locked environment."
 kind: model
-status: planned
+status: released
 level: intermediate
 after_post: nn-034
-uses: [nn-019, nn-027, nn-033, nn-034]
-problem: "Sigmoid with binary cross-entropy is derived in the series but never trained on data whose decision boundary can be seen. This project trains a 2-16-16-1 network on two interleaved half-moons and exports the boundary as a grid of predictions."
-users: "Readers of the sigmoid and binary cross-entropy post who want to see the combined derivative at work on a problem that can be drawn."
-impact: "Trained from the fixed seed with the documented command, the model reaches the test accuracy recorded in docs/EVALUATION.md, and the same script shows the initialisation that fails to reach it."
+uses: [nn-016, nn-019, nn-027, nn-030, nn-033, nn-034]
+problem: "The series derives the sigmoid with binary cross-entropy and He initialisation, but a reader has nowhere to watch either one decide the outcome on data that can be drawn. This project trains a 2-16-16-1 network on two interleaved half-moons, exports its decision boundary as a grid of predictions, and reproduces on demand the initialisation that leaves the same network a linear classifier."
+users: "Readers of the sigmoid and binary cross-entropy post (nn-034) who want to see the combined derivative train a model on a problem that can be drawn, and readers of the weight initialisation post (nn-033) who want to reproduce an initialisation that fails."
+impact: "Trained from seed 0 with the documented command, the 337-parameter network classifies all 200 held-out points correctly (100.0 percent) at noise 0.1, and the same command with --init small stops at 174 of 200 (87.0 percent). Over seeds 0 to 9 the He runs score at least 197 of 200 and the small-initialisation runs at most 181. docs/EVALUATION.md records the runs, and the eval command exits with an error if a rerun in the locked environment misclassifies a test point."
 stack:
   language: python
   frameworks: [numpy]
+runtime:
+  deploy: none
+  targets: []
 commands:
   setup: "uv sync --frozen"
-  test: "uv run pytest --cov=src --cov-fail-under=80"
-  lint: "uv run ruff check ."
+  test: "uv run pytest --cov=src --cov-fail-under=95"
+  lint: "uv run ruff check . && uv run ruff format --check ."
+  run: "uv run python -m binary_classifier.train"
+  eval: "uv run python -m binary_classifier.evaluate --min-accuracy 1.0"
+  bench: "uv run python scripts/seed_sweep.py"
 quality:
-  coverage_min: 80
+  coverage_min: 95
   evaluation: docs/EVALUATION.md
 data:
   - name: two-moons
-    source: assets/registry/datasets.yaml (two-moons)
+    source: src/binary_classifier/data.py
     license: generated
+    checksum: "sha256:528b9a67c063e8c5d7fe246209911a5ba002d1ead954ddd517b109907fa1a43e"
 security:
   secrets: none
   threat_notes: docs/SECURITY.md
   audited: 2026-10-05
 release:
-  version: "0.0.0"
+  version: "1.0.0"
   license: MIT
   registry: null
 maintenance:

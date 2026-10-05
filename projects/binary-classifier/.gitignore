@@ -1,0 +1,17 @@
+# Environment and tool output
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Weights and decision grids written by the commands, and pickle checkpoints from before 1.0.0
+*.npz
+*.pkl
+
+# The plotting snippet of the README and the picture it saves
+/plot.py
+/decision_boundary.png
