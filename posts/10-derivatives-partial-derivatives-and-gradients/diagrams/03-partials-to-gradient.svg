@@ -128,7 +128,6 @@
   .d-proj { stroke-dasharray: 6 4; }
   .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
   .d-lead { stroke-dasharray: 4 4; }
-  .f-green-ink { fill: var(--nn-green-ink); }
   .f-purple { fill: var(--nn-purple); }
   .f-purple-ink { fill: var(--nn-purple-ink); }
   .f-purple-soft { fill: var(--nn-purple-soft); }
@@ -144,7 +143,7 @@
 </defs>
 <rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
 <text x="40" y="48" class="t-title">Three slopes along three axes make the gradient</text>
-<text x="40" y="76" class="t-subtitle"><tspan class="i">f</tspan>(<tspan class="i">x</tspan>, <tspan class="i">y</tspan>, <tspan class="i">z</tspan>) = 3⁠<tspan class="i">x</tspan><tspan class="sub" dy="-6">3</tspan><tspan dy="6">​</tspan><tspan class="i">z</tspan> − <tspan class="i">y</tspan><tspan class="sub" dy="-6">2</tspan><tspan dy="6">​</tspan> + 5<tspan class="i">z</tspan> + 2<tspan class="i">y</tspan><tspan class="i">z</tspan>, sliced through the point (1, 2, 3), where <tspan class="i">f</tspan> = 32.</text>
+<text x="40" y="76" class="t-subtitle"><tspan class="i">f</tspan>(<tspan class="i">x</tspan>, <tspan class="i">y</tspan>, <tspan class="i">z</tspan>) = 3<tspan class="i">x</tspan><tspan class="sub" dy="-6">3</tspan><tspan dy="6">​</tspan><tspan class="i">z</tspan> − <tspan class="i">y</tspan><tspan class="sub" dy="-6">2</tspan><tspan dy="6">​</tspan> + 5<tspan class="i">z</tspan> + 2<tspan class="i">y</tspan><tspan class="i">z</tspan>, sliced through the point (1, 2, 3), where <tspan class="i">f</tspan> = 32.</text>
 <text x="40" y="120" class="t-head">Along <tspan class="i">x</tspan>; <tspan class="i">y</tspan> = 2, <tspan class="i">z</tspan> = 3 frozen</text>
 <g data-grid="skip">
 <path d="M96,368H296M96,264H296M96,160H296" class="gridline"/>
@@ -158,7 +157,6 @@
 <g clip-path="url(#nn-03-partials-to-gradient-clip-1)">
 <path d="M96,349.4 L99.33,348.93 L102.67,348.41 L106,347.84 L109.33,347.22 L112.67,346.55 L116,345.82 L119.33,345.03 L122.67,344.18 L126,343.27 L129.33,342.29 L132.67,341.25 L136,340.13 L139.33,338.95 L142.67,337.68 L146,336.35 L149.33,334.93 L152.67,333.44 L156,331.86 L159.33,330.19 L162.67,328.44 L166,326.6 L169.33,324.66 L172.67,322.63 L176,320.51 L179.33,318.28 L182.67,315.96 L186,313.53 L189.33,310.99 L192.67,308.35 L196,305.6 L199.33,302.74 L202.67,299.76 L206,296.66 L209.33,293.45 L212.67,290.11 L216,286.65 L219.33,283.06 L222.67,279.35 L226,275.51 L229.33,271.53 L232.67,267.42 L236,263.17 L239.33,258.78 L242.67,254.25 L246,249.58 L249.33,244.76 L252.67,239.79 L256,234.68 L259.33,229.41 L262.67,223.98 L266,218.4 L269.33,212.66 L272.67,206.75 L276,200.68 L279.33,194.45 L282.67,188.05 L286,181.47 L289.33,174.73 L292.67,167.81 L296,160.71" class="s-green w15 nofill"/>
 </g>
-<text x="308" y="165.71" class="t-note f-green-ink"></text>
 </g>
 <text x="96" y="148" class="t-note"><tspan class="i">f</tspan></text>
 <text x="196" y="412" text-anchor="middle" class="t-note"><tspan class="i">x</tspan></text>
@@ -166,8 +164,8 @@
 <path d="M153.17,341.68 L238.83,269.52" class="s-purple w15 nofill"/>
 <circle cx="196" cy="305.6" r="5" class="f-purple s-surface w1"/>
 </g>
-<text x="196" y="444" text-anchor="middle" class="t-note">slice: 9⁠<tspan class="i">x</tspan><tspan class="sub" dy="-6">3</tspan><tspan dy="6">​</tspan> + 23</text>
-<text x="196" y="472" text-anchor="middle" class="t-value f-purple-ink">∂<tspan class="i">f</tspan>/∂<tspan class="i">x</tspan> = 9⁠<tspan class="i">x</tspan><tspan class="sub" dy="-6">2</tspan><tspan dy="6">​</tspan><tspan class="i">z</tspan> = 27</text>
+<text x="196" y="444" text-anchor="middle" class="t-note">slice: 9<tspan class="i">x</tspan><tspan class="sub" dy="-6">3</tspan><tspan dy="6">​</tspan> + 23</text>
+<text x="196" y="472" text-anchor="middle" class="t-value f-purple-ink">∂<tspan class="i">f</tspan>/∂<tspan class="i">x</tspan> = 9<tspan class="i">x</tspan><tspan class="sub" dy="-6">2</tspan><tspan dy="6">​</tspan><tspan class="i">z</tspan> = 27</text>
 <text x="344" y="120" class="t-head">Along <tspan class="i">y</tspan>; <tspan class="i">x</tspan> = 1, <tspan class="i">z</tspan> = 3 frozen</text>
 <g data-grid="skip">
 <path d="M400,368H600M400,264H600M400,160H600" class="gridline"/>
@@ -181,7 +179,6 @@
 <g clip-path="url(#nn-03-partials-to-gradient-clip-2)">
 <path d="M400,313.71 L403.33,313.38 L406.67,313.05 L410,312.73 L413.33,312.41 L416.67,312.1 L420,311.79 L423.33,311.48 L426.67,311.18 L430,310.89 L433.33,310.59 L436.67,310.3 L440,310.02 L443.33,309.74 L446.67,309.46 L450,309.19 L453.33,308.92 L456.67,308.66 L460,308.4 L463.33,308.14 L466.67,307.89 L470,307.64 L473.33,307.4 L476.67,307.16 L480,306.92 L483.33,306.69 L486.67,306.47 L490,306.24 L493.33,306.02 L496.67,305.81 L500,305.6 L503.33,305.39 L506.67,305.19 L510,304.99 L513.33,304.8 L516.67,304.61 L520,304.43 L523.33,304.25 L526.67,304.07 L530,303.9 L533.33,303.73 L536.67,303.56 L540,303.4 L543.33,303.25 L546.67,303.1 L550,302.95 L553.33,302.8 L556.67,302.67 L560,302.53 L563.33,302.4 L566.67,302.27 L570,302.15 L573.33,302.03 L576.67,301.92 L580,301.81 L583.33,301.7 L586.67,301.6 L590,301.5 L593.33,301.41 L596.67,301.32 L600,301.23" class="s-green w15 nofill"/>
 </g>
-<text x="612" y="306.23" class="t-note f-green-ink"></text>
 </g>
 <text x="400" y="148" class="t-note"><tspan class="i">f</tspan></text>
 <text x="500" y="412" text-anchor="middle" class="t-note"><tspan class="i">y</tspan></text>
@@ -189,7 +186,7 @@
 <path d="M444.11,309.09 L555.89,302.11" class="s-purple w15 nofill"/>
 <circle cx="500" cy="305.6" r="5" class="f-purple s-surface w1"/>
 </g>
-<text x="500" y="444" text-anchor="middle" class="t-note">slice: −<tspan class="i">y</tspan><tspan class="sub" dy="-6">2</tspan><tspan dy="6">​</tspan> + 6<tspan class="i">y</tspan> + 24</text>
+<text x="500" y="444" text-anchor="middle" class="t-note">slice: −<tspan class="i">y</tspan><tspan class="sub" dy="-6">2</tspan><tspan dy="6">​</tspan> + 6<tspan class="i">y</tspan> + 24</text>
 <text x="500" y="472" text-anchor="middle" class="t-value f-purple-ink">∂<tspan class="i">f</tspan>/∂<tspan class="i">y</tspan> = −2<tspan class="i">y</tspan> + 2<tspan class="i">z</tspan> = 2</text>
 <text x="648" y="120" class="t-head">Along <tspan class="i">z</tspan>; <tspan class="i">x</tspan> = 1, <tspan class="i">y</tspan> = 2 frozen</text>
 <g data-grid="skip">
@@ -204,7 +201,6 @@
 <g clip-path="url(#nn-03-partials-to-gradient-clip-3)">
 <path d="M704,343.04 L707.33,341.79 L710.67,340.54 L714,339.3 L717.33,338.05 L720.67,336.8 L724,335.55 L727.33,334.3 L730.67,333.06 L734,331.81 L737.33,330.56 L740.67,329.31 L744,328.06 L747.33,326.82 L750.67,325.57 L754,324.32 L757.33,323.07 L760.67,321.82 L764,320.58 L767.33,319.33 L770.67,318.08 L774,316.83 L777.33,315.58 L780.67,314.34 L784,313.09 L787.33,311.84 L790.67,310.59 L794,309.34 L797.33,308.1 L800.67,306.85 L804,305.6 L807.33,304.35 L810.67,303.1 L814,301.86 L817.33,300.61 L820.67,299.36 L824,298.11 L827.33,296.86 L830.67,295.62 L834,294.37 L837.33,293.12 L840.67,291.87 L844,290.62 L847.33,289.38 L850.67,288.13 L854,286.88 L857.33,285.63 L860.67,284.38 L864,283.14 L867.33,281.89 L870.67,280.64 L874,279.39 L877.33,278.14 L880.67,276.9 L884,275.65 L887.33,274.4 L890.67,273.15 L894,271.9 L897.33,270.66 L900.67,269.41 L904,268.16" class="s-green w15 nofill"/>
 </g>
-<text x="916" y="273.16" class="t-note f-green-ink"></text>
 </g>
 <text x="704" y="148" class="t-note"><tspan class="i">f</tspan></text>
 <text x="804" y="412" text-anchor="middle" class="t-note"><tspan class="i">z</tspan></text>
@@ -213,22 +209,22 @@
 <circle cx="804" cy="305.6" r="5" class="f-purple s-surface w1"/>
 </g>
 <text x="804" y="444" text-anchor="middle" class="t-note">slice: 12<tspan class="i">z</tspan> − 4</text>
-<text x="804" y="472" text-anchor="middle" class="t-value f-purple-ink">∂<tspan class="i">f</tspan>/∂<tspan class="i">z</tspan> = 3⁠<tspan class="i">x</tspan><tspan class="sub" dy="-6">3</tspan><tspan dy="6">​</tspan> + 5 + 2<tspan class="i">y</tspan> = 12</text>
-<rect x="392" y="552" width="64" height="48" class="cell f-purple-soft"/>
-<rect x="456" y="552" width="64" height="48" class="cell f-purple-soft"/>
-<rect x="520" y="552" width="64" height="48" class="cell f-purple-soft"/>
-<rect x="392" y="552" width="192" height="48" class="frame" data-fit="skip"/>
+<text x="804" y="472" text-anchor="middle" class="t-value f-purple-ink">∂<tspan class="i">f</tspan>/∂<tspan class="i">z</tspan> = 3<tspan class="i">x</tspan><tspan class="sub" dy="-6">3</tspan><tspan dy="6">​</tspan> + 5 + 2<tspan class="i">y</tspan> = 12</text>
+<rect x="392" y="552" width="72" height="48" class="cell f-purple-soft"/>
+<rect x="464" y="552" width="72" height="48" class="cell f-purple-soft"/>
+<rect x="536" y="552" width="72" height="48" class="cell f-purple-soft"/>
+<rect x="392" y="552" width="216" height="48" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="424" y="582" text-anchor="middle" class="t-cell18">27</text>
-<text x="488" y="582" text-anchor="middle" class="t-cell18">2</text>
-<text x="552" y="582" text-anchor="middle" class="t-cell18">12</text>
+<text x="428" y="582" text-anchor="middle" class="t-cell18">27</text>
+<text x="500" y="582" text-anchor="middle" class="t-cell18">2</text>
+<text x="572" y="582" text-anchor="middle" class="t-cell18">12</text>
 </g>
 <text x="376" y="584" text-anchor="end" class="t-math">∇<tspan class="i">f</tspan>(1, 2, 3) =</text>
-<path d="M196,488 L421.11,551.19" class="flow" marker-end="url(#nn-03-partials-to-gradient-arrow)"/>
-<path d="M500,488 L488.55,549.05" class="flow" marker-end="url(#nn-03-partials-to-gradient-arrow)"/>
-<path d="M804,488 L554.91,551.26" class="flow" marker-end="url(#nn-03-partials-to-gradient-arrow)"/>
-<text x="608" y="568" class="t-note">length √877 ≈ 29.61</text>
-<text x="608" y="592" class="t-note">points uphill</text>
-<text x="488" y="628" text-anchor="middle" class="t-note">central differences: 27.00000000, 2.00000000, 12.00000000</text>
+<path d="M196,488 L196,520 L428,520 L428,549" class="flow" marker-end="url(#nn-03-partials-to-gradient-arrow)"/>
+<path d="M500,488 L500,549" class="flow" marker-end="url(#nn-03-partials-to-gradient-arrow)"/>
+<path d="M804,488 L804,520 L572,520 L572,549" class="flow" marker-end="url(#nn-03-partials-to-gradient-arrow)"/>
+<text x="632" y="568" class="t-note">length √877 ≈ 29.61</text>
+<text x="632" y="592" class="t-note">points uphill</text>
+<text x="500" y="628" text-anchor="middle" class="t-note">central differences: 27.00000000, 2.00000000, 12.00000000</text>
 <text x="40" y="684" class="t-note">Each component is the slope of <tspan class="i">f</tspan> along one axis, the other two held fixed.</text>
 </svg>

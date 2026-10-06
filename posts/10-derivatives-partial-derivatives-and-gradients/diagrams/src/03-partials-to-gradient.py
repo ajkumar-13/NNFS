@@ -19,12 +19,12 @@ import numpy as np
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, r"C:\Users\admin\Desktop\series-standard\tools")
-from figkit import Figure, rich, var, sup, num  # noqa: E402
+from figkit import Figure, Box, rich, var, sup, coef, num  # noqa: E402
 
 PARTIAL, NABLA, MINUS, SQRT, APPROX = "\u2202", "\u2207", "\u2212", "\u221a", "\u2248"
-# figcheck's times rule reads a coefficient before a powered variable (9x with a superscript 3) as 9 x 3; a
-# word joiner (zero width; figcheck strips the zero-width space) between the coefficient and the variable keeps the rule from firing.
-ZW = "\u2060"
+# After a raised script the empty space under it already reads as part of the gap, so a full space before the
+# next operator looks doubled; a thin space (TS) there matches the gaps between the other terms.
+TS = "\u2009"
 SNIP = Path(__file__).resolve().parents[2] / "snippets" / "partials_and_gradient.py"
 ns = runpy.run_path(str(SNIP), run_name="snippet")
 with contextlib.redirect_stdout(io.StringIO()) as out:
@@ -49,12 +49,12 @@ assert f"sqrt(877) = {LENGTH:.6f}" in OUT and f"{LENGTH:.2f}" == "29.61" and int
 # The three slices through (1, 2, 3): the snippet's f with two coordinates frozen, and the polynomial each is.
 NAMES = ("x", "y", "z")
 SLICES = [
-    dict(k=0, poly=lambda t: 9 * t ** 3 + 23, shown=rich("9", ZW, sup("x", "3"), " + 23"),
-         rule=rich("9", ZW, sup("x", "2"), var("z"))),
-    dict(k=1, poly=lambda t: -t * t + 6 * t + 24, shown=rich(MINUS, sup("y", "2"), " + 6", var("y"), " + 24"),
+    dict(k=0, poly=lambda t: 9 * t ** 3 + 23, shown=rich(coef(9, sup("x", "3")), TS, "+ 23"),
+         rule=rich(coef(9, sup("x", "2")), var("z"))),
+    dict(k=1, poly=lambda t: -t * t + 6 * t + 24, shown=rich(MINUS, sup("y", "2"), TS, "+ ", coef(6, "y"), " + 24"),
          rule=rich(MINUS, "2", var("y"), " + 2", var("z"))),
-    dict(k=2, poly=lambda t: 12 * t - 4, shown=rich("12", var("z"), " ", MINUS, " 4"),
-         rule=rich("3", ZW, sup("x", "3"), " + 5 + 2", var("y"))),
+    dict(k=2, poly=lambda t: 12 * t - 4, shown=rich(coef(12, "z"), " ", MINUS, " 4"),
+         rule=rich(coef(3, sup("x", "3")), TS, "+ 5 + ", coef(2, "y"))),
 ]
 for s in SLICES:
     def along(t, k=s["k"]):
@@ -85,8 +85,8 @@ fig = Figure(
     "Arrows carry the three slopes into one vector, the gradient of f at (1, 2, 3), (27, 2, 12). Its central "
     "differences are 27.00000000, 2.00000000 and 12.00000000, and its length is the square root of 877, about "
     "29.61.",
-    subtitle=rich(var("f"), "(", var("x"), ", ", var("y"), ", ", var("z"), ") = 3", ZW, sup("x", "3"), var("z"), " ",
-                  MINUS, " ", sup("y", "2"), " + 5", var("z"), " + 2", var("y"), var("z"),
+    subtitle=rich(var("f"), "(", var("x"), ", ", var("y"), ", ", var("z"), ") = ", coef(3, sup("x", "3")), var("z"), " ",
+                  MINUS, " ", sup("y", "2"), TS, "+ 5", var("z"), " + 2", var("y"), var("z"),
                   ", sliced through the point (1, 2, 3), where ", var("f"), " = 32."),
     height=720)
 
@@ -98,8 +98,8 @@ for s, box in zip(SLICES, panels):
     v, p, m = NAMES[k], float(P[k]), float(G[k])
     body = fig.panel(box, rich("Along ", var(v), "; ", frozen(k), " frozen"))
     ts = [p - 0.6 + 1.2 * i / 60 for i in range(61)]
-    cur = dict(xs=ts, ys=[s["along"](t) for t in ts], color="output", points=False, label="")
-    chart = body.__class__(body.x, body.y, body.w, body.h - 56)
+    cur = dict(xs=ts, ys=[s["along"](t) for t in ts], color="output", points=False, label=None)
+    chart = Box(body.x, body.y, body.w, body.h - 56)
     ax = fig.line_chart(chart, [cur], x=(p - 0.6, p + 0.6, [p - 0.5, p, p + 0.5]), y=(YL, YH, [20, 40, 60]),
                         x_label=var(v), y_label=var("f"), label_w=16, points=False, fmt_x=lambda t: num(t, 1))
     with fig.data():
@@ -115,14 +115,17 @@ for s, box in zip(SLICES, panels):
                                            num(int(m))), "value", color="gradient", anchor="middle")
     tops.append(ax.cx)
 
-# -- the gradient: the three slopes as one vector
-SX, SY, CW = 392, 552, 64
+# -- the gradient: the three slopes as one vector, centred under the middle panel so its arrow runs straight
+# down; the outer two arrows drop, run level at y = 520, and drop again onto their cells
+SY, CW = 552, 72
+SX = tops[1] - 3 * CW // 2
+assert SX % 8 == 0 and tops[1] == SX + 3 * CW / 2
 g = fig.strip(SX, SY, 3, cell=CW, height=48, values=[num(int(v)) for v in G], font=18,
               fill=lambda i: "gradient-soft")
 fig.text(SX - 16, SY + 30, rich(NABLA, var("f"), "(1, 2, 3) ="), "math", anchor="end")
 for i, cx in enumerate(tops):
     c = g.cell(0, i)
-    fig.arrow((cx, 488), (c.cx, c.y))
+    fig.arrow((cx, 488), (c.cx, c.y), via=[(cx, 520), (c.cx, 520)] if cx != c.cx else ())
 fig.text(g.box.right + 24, SY + 18, rich("length ", SQRT, "877 ", APPROX, " ", f"{LENGTH:.2f}"), "note")
 fig.text(g.box.right + 24, SY + 38, "points uphill", "note")
 fig.note(g.box, rich("central differences: ", ", ".join(NG_TXT)), anchor="middle")
