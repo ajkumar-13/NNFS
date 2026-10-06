@@ -1,0 +1,232 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-03-error-and-gap-title" aria-describedby="nn-03-error-and-gap-desc">
+<title id="nn-03-error-and-gap-title">A failed line is read together with its gap</title>
+<desc id="nn-03-error-and-gap-desc">A scatter plot on two logarithmic axes: across, the largest relative error of a gradient array, from 10 to the minus 12 to 10; up, its largest absolute gap, from 10 to the minus 14 to 10 to the 4. Points are given as relative error and gap. Blue circles, the passing check of section 9 at scale 1: dense2.dweights 3.5 times 10 to the minus 10 and 1.4 times 10 to the minus 11; dense2.dbiases 6.1 times 10 to the minus 11 and 1.6 times 10 to the minus 11; dense1.dweights 3.3 times 10 to the minus 10 and 1.9 times 10 to the minus 11; dense1.dbiases 1.4 times 10 to the minus 11 and 4.7 times 10 to the minus 12. Orange triangles, the check on the script's 0.01 weights: dense2.dweights 4.0 times 10 to the minus 7 and 1.3 times 10 to the minus 11; dense2.dbiases 6.1 times 10 to the minus 7 and 6.5 times 10 to the minus 12; dense1.dweights 1.4 times 10 to the minus 3 and 6.8 times 10 to the minus 8; dense1.dbiases 1.0 times 10 to the minus 1 and 1.1 times 10 to the minus 5. Hollow orange squares, the same without the ten samples near a ReLU corner: dense2.dweights 3.1 times 10 to the minus 7 and 1.2 times 10 to the minus 11; dense2.dbiases 8.9 times 10 to the minus 9 and 1.0 times 10 to the minus 11; dense1.dweights 1.5 times 10 to the minus 6 and 9.6 times 10 to the minus 12; dense1.dbiases 6.3 times 10 to the minus 8 and 1.2 times 10 to the minus 11. Red diamonds, a backward pass without the division by N: all four at a relative error of 1.0, with gaps 3.7 times 10 to the 1, 1.4 times 10 to the 2, 1.7 times 10 to the 1, 9.9 times 10 to the 1. A dotted vertical line marks the pass mark, 10 to the minus 7, with the passing side shaded; a dotted horizontal line marks 6.0 times 10 to the minus 11, the largest gap of the correct code at scale 1 on seeds 0 to 49, labelled above: the two slopes disagree, and below: rounding. Dashed arrows take the two dense1 points of the 0.01 check down to the rounding level once the ten samples are left out, labelled without the 10 samples.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--nn-blue); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-orange { fill: var(--nn-orange); }
+  .f-red { fill: var(--nn-red); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-orange { stroke: var(--nn-orange); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-03-error-and-gap-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<clipPath id="nn-03-error-and-gap-clip-1"><rect x="96" y="128" width="800" height="440"/></clipPath>
+<clipPath id="nn-03-error-and-gap-clip-2"><rect x="88" y="120" width="816" height="456"/></clipPath>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title" data-w="494">A failed line is read together with its gap</text>
+<text x="40" y="76" class="t-subtitle" data-w="676">Each point is one gradient array of one check, as the check tables of sections 9 and 11 print it.</text>
+<g data-grid="skip">
+<g clip-path="url(#nn-03-error-and-gap-clip-1)">
+<path d="M96,568 L403.69,568 L403.69,128 L96,128 Z" class="f-green-soft"/>
+</g>
+<path d="M96,568H896M96,494.67H896M96,421.33H896M96,348H896M96,274.67H896M96,201.33H896M96,128H896M96,128V568M280.62,128V568M465.23,128V568M649.85,128V568M834.46,128V568" class="gridline"/>
+<text x="88" y="572" text-anchor="end" class="t-tick" data-w="40">10<tspan class="sub" dy="-6">−14</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="498.67" text-anchor="end" class="t-tick" data-w="40">10<tspan class="sub" dy="-6">−11</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="425.33" text-anchor="end" class="t-tick" data-w="33">10<tspan class="sub" dy="-6">−8</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="352" text-anchor="end" class="t-tick" data-w="33">10<tspan class="sub" dy="-6">−5</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="278.67" text-anchor="end" class="t-tick" data-w="33">10<tspan class="sub" dy="-6">−2</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="205.33" text-anchor="end" class="t-tick" data-w="16">10</text>
+<text x="88" y="132" text-anchor="end" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">4</tspan><tspan dy="6">​</tspan></text>
+<text x="96" y="592" class="t-tick" data-w="40">10<tspan class="sub" dy="-6">−12</tspan><tspan dy="6">​</tspan></text>
+<text x="280.62" y="592" text-anchor="middle" class="t-tick" data-w="33">10<tspan class="sub" dy="-6">−9</tspan><tspan dy="6">​</tspan></text>
+<text x="465.23" y="592" text-anchor="middle" class="t-tick" data-w="33">10<tspan class="sub" dy="-6">−6</tspan><tspan dy="6">​</tspan></text>
+<text x="649.85" y="592" text-anchor="middle" class="t-tick" data-w="33">10<tspan class="sub" dy="-6">−3</tspan><tspan dy="6">​</tspan></text>
+<text x="834.46" y="592" text-anchor="middle" class="t-tick" data-w="8">1</text>
+<path d="M96,128V568H896" class="axis"/>
+<g clip-path="url(#nn-03-error-and-gap-clip-2)">
+<circle cx="252.56" cy="491.09" r="5" class="f-blue s-surface w1"/>
+<circle cx="205.87" cy="489.68" r="5" class="f-blue s-surface w1"/>
+<circle cx="250.99" cy="487.85" r="5" class="f-blue s-surface w1"/>
+<circle cx="166.53" cy="502.68" r="5" class="f-blue s-surface w1"/>
+<path d="M440.74,485.38 L446.37,495.13 L435.11,495.13 Z" class="f-orange s-surface w1"/>
+<path d="M452.02,492.74 L457.65,502.49 L446.39,502.49 Z" class="f-orange s-surface w1"/>
+<path d="M658.84,394.48 L664.47,404.23 L653.21,404.23 Z" class="f-orange s-surface w1"/>
+<path d="M772.92,340.49 L778.55,350.24 L767.29,350.24 Z" class="f-orange s-surface w1"/>
+<path d="M429.43,488.23 H438.43 V497.23 H429.43 Z" class="nofill s-orange w15"/>
+<path d="M334.54,490.17 H343.54 V499.17 H334.54 Z" class="nofill s-orange w15"/>
+<path d="M471.57,490.6 H480.57 V499.6 H471.57 Z" class="nofill s-orange w15"/>
+<path d="M386.84,488.23 H395.84 V497.23 H386.84 Z" class="nofill s-orange w15"/>
+<path d="M834.46,181.44 L840.46,187.44 L834.46,193.44 L828.46,187.44 Z" class="f-red s-surface w1"/>
+<path d="M834.46,167.32 L840.46,173.32 L834.46,179.32 L828.46,173.32 Z" class="f-red s-surface w1"/>
+<path d="M834.46,189.7 L840.46,195.7 L834.46,201.7 L828.46,195.7 Z" class="f-red s-surface w1"/>
+<path d="M834.46,171 L840.46,177 L834.46,183 L828.46,177 Z" class="f-red s-surface w1"/>
+</g>
+</g>
+<text x="96" y="116" class="t-note" data-w="206">largest absolute gap, log scale</text>
+<text x="496" y="612" text-anchor="middle" class="t-note" data-w="204">largest relative error, log scale</text>
+<circle cx="104" cy="636" r="5" class="f-blue s-surface w1"/>
+<text x="128" y="640" class="t-label" data-w="102">correct, scale 1</text>
+<path d="M272,629.5 L277.63,639.25 L266.37,639.25 Z" class="f-orange s-surface w1"/>
+<text x="296" y="640" class="t-label" data-w="140">correct, 0.01 weights</text>
+<path d="M467.5,631.5 H476.5 V640.5 H467.5 Z" class="nofill s-orange w15"/>
+<text x="496" y="640" class="t-label" data-w="198">the same, 10 samples left out</text>
+<path d="M736,630 L742,636 L736,642 L730,636 Z" class="f-red s-surface w1"/>
+<text x="760" y="640" class="t-label" data-w="108">no division by <tspan class="i">N</tspan></text>
+<g data-grid="skip">
+<g data-grid="skip">
+<path d="M403.69,568 L403.69,128" class="s-ink-muted w1 nofill d-ref"/>
+</g>
+<g data-grid="skip">
+<text x="395.69" y="148" text-anchor="end" class="t-note" data-w="113">pass below 10<tspan class="sub" dy="-6">−7</tspan><tspan dy="6">​</tspan></text>
+</g>
+<g data-grid="skip">
+<path d="M96,475.65 L896,475.65" class="s-ink-muted w1 nofill d-ref"/>
+</g>
+<g data-grid="skip">
+<text x="104" y="467.65" class="t-note" data-w="300">largest gap at scale 1, 50 seeds: 6.0 × 10<tspan class="sub" dy="-6">−11</tspan><tspan dy="6">​</tspan></text>
+</g>
+<g data-grid="skip">
+<text x="888" y="467.65" text-anchor="end" class="t-note" data-w="209">above: the two slopes disagree</text>
+</g>
+<g data-grid="skip">
+<text x="888" y="495.65" text-anchor="end" class="t-note" data-w="108">below: rounding</text>
+</g>
+<path d="M652,408 L486.71,486.71" class="flow w1 d-proj" marker-end="url(#nn-03-error-and-gap-arrow)"/>
+<g data-grid="skip">
+<text x="670.84" y="405.98" class="t-code" data-w="129">dense1.dweights</text>
+</g>
+<path d="M768,356 L398.84,483.02" class="flow w1 d-proj" marker-end="url(#nn-03-error-and-gap-arrow)"/>
+<g data-grid="skip">
+<text x="784.92" y="351.99" class="t-code" data-w="120">dense1.dbiases</text>
+</g>
+<g data-grid="skip">
+<text x="464.02" y="519.24" class="t-code" data-w="52">dense2</text>
+</g>
+<g data-grid="skip">
+<text x="465.23" y="392" class="t-note" data-w="156">without the 10 samples</text>
+</g>
+<g data-grid="skip">
+<text x="818.46" y="200.7" text-anchor="end" class="t-note" data-w="230">every gradient 300 times too large</text>
+</g>
+</g>
+<text x="40" y="684" class="t-note" data-w="596">Only the missing division is a bug; the dense1 points of the 0.01 check are ReLU corners.</text>
+</svg>

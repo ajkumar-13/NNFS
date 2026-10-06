@@ -12,9 +12,9 @@
 > - Sanity-check a gradient implementation by matching gradient shapes to parameter shapes.
 > - Check the backward pass of a whole network against central differences in float64.
 
-![A script in three numbered groups of four lines, network, forward pass and backward pass, closed by a three-line comment. A panel on the right lists the four gradient arrays it produces with their shapes, (2, 3), (1, 3), (3, 3) and (1, 3), 21 numbers in all.](diagrams/01-forward-backward-script.svg)
+![The script of section 8 as a numbered listing of fifteen lines in three groups opened by the comments Network, Forward and Backward. Beside each line is what it leaves behind: dense1 and dense2 create weights (2, 3) and biases (1, 3), and weights (3, 3) and biases (1, 3), in orange; the forward calls give Z1, A1 and Z2, each (300, 3), and the loss 1.0986104 beside ln 3 = 1.0986123; the backward calls store dinputs (300, 3), then dweights (3, 3) and dbiases (1, 3) on dense2, dinputs (300, 3) with 456 zeros on the ReLU, and dweights (2, 3) and dbiases (1, 3) on dense1, in purple. A key counts 6 + 3 + 9 + 3 = 21 parameters and as many gradient entries.](diagrams/01-forward-backward-script.svg)
 
-*The script is short because the classes do the work. The figure counts its closing comment among the fifteen lines, where the script of section 8 has three heading comments, and its "Part 22" is post 22.*
+*The script is short because the classes do the work, and each gradient array it leaves has the shape of its parameter.*
 
 ---
 
@@ -188,10 +188,6 @@ dense2.dweights:
 dense2.dbiases: [[-1.073e-05 -9.461e-06  2.003e-05]]
 ```
 
-![Two panels. The left one sets the printed first loss, 1.0986, beside minus the logarithm of one third. The right one is a table that pairs each of the four parameter arrays with its gradient array and their common shape: (2, 3), (1, 3), (3, 3) and (1, 3).](diagrams/02-two-sanity-checks.svg)
-
-*Both tests run before any training exists. The figure's last lines overstate them: the gradients of this run are of order $10^{-5}$ to $10^{-4}$, a tenth of the figure's, and neither test shows that a gradient has the right values. Section 9 does that.*
-
 **The second test: every gradient array has the shape of its parameter.** Entry $(j, k)$ of `dense1.dweights` is the partial derivative of the loss with respect to entry $(j, k)$ of `dense1.weights`, so the two arrays must have the same layout.
 
 ```text
@@ -235,7 +231,7 @@ activation1.backward(dense2.dinputs)                  # stores (300, 3), masked
 dense1.backward(activation1.dinputs)                  # stores (2, 3), (1, 3), (300, 2)
 ```
 
-Fifteen lines: three comments and twelve statements, four per group. After the last one the gradients are ready in `dense1.dweights`, `dense1.dbiases`, `dense2.dweights` and `dense2.dbiases`. The script does not grow in kind with the network. A further hidden layer adds one `Layer_Dense` and one `Activation_ReLU`, which is two objects, two forward calls and two backward calls, six lines (post 20, section 4).
+Fifteen lines: three comments and twelve statements, four per group. The figure at the top of the post sets each line beside what it leaves behind. After the last one the gradients are ready in `dense1.dweights`, `dense1.dbiases`, `dense2.dweights` and `dense2.dbiases`. The script does not grow in kind with the network. A further hidden layer adds one `Layer_Dense` and one `Activation_ReLU`, which is two objects, two forward calls and two backward calls, six lines (post 20, section 4).
 
 The script is one pass over all 300 samples as a single batch. Wrapped in a loop, with an update of the four parameter arrays after the backward calls, it becomes a training run, and [post 22](../22-gradient-descent-optimiser/index.md) builds that.
 
@@ -330,7 +326,13 @@ dense1.dbiases   (1, 3)   3.6e-04           1.0e-01                  1.1e-05   F
 largest |Z1| 1.7e-02; samples with an entry of Z1 within h of 0: 10, of which at the origin: 3
 ```
 
-All four lines fail, for two different reasons. The lines of `dense2` have absolute gaps near $10^{-11}$, the rounding level of the passing check of section 9. Their gradients are about 770 and 23,000 times smaller than there, so the same gap is a larger fraction: this is the tiny-gradient caveat of post 16. The lines of `dense1` have gaps of $6.8 \times 10^{-8}$ and $1.1 \times 10^{-5}$, far above rounding, and those are ReLU corners. The 0.01 weights keep every entry of $\mathbf{Z}_1$ below 0.018, and ten samples have an entry within $h$ of zero. A step of $h$ on a bias carries such an entry across the corner, and the measured slope is then neither the closed gate's nor the open one's. Three of the ten are the points at the origin, where the zero biases leave $\mathbf{Z}_1$ at exactly zero. They do no harm here: the three carry three different labels and the same prediction, so their errors cancel. The gaps come from the other seven, which lie between 0.02 and 0.71 from the origin, each close to a line through the origin on which one neuron's pre-activation changes sign. With only those seven left out the largest gap is $1.9 \times 10^{-11}$. With all ten left out:
+All four lines fail, for two different reasons. The lines of `dense2` have absolute gaps near $10^{-11}$, the rounding level of the passing check of section 9. Their gradients are about 770 and 23,000 times smaller than there, so the same gap is a larger fraction: this is the tiny-gradient caveat of post 16. The lines of `dense1` have gaps of $6.8 \times 10^{-8}$ and $1.1 \times 10^{-5}$, far above rounding, and those are ReLU corners. The 0.01 weights keep every entry of $\mathbf{Z}_1$ below 0.018, and ten samples have an entry within $h$ of zero. A step of $h$ on a bias carries such an entry across the corner, and the measured slope is then neither the closed gate's nor the open one's. Three of the ten are the points at the origin, where the zero biases leave $\mathbf{Z}_1$ at exactly zero. They do no harm here: the three carry three different labels and the same prediction, so their errors cancel. The gaps come from the other seven, which lie between 0.02 and 0.71 from the origin, each close to a line through the origin on which one neuron's pre-activation changes sign. The figure below draws the three lines and rings the ten samples.
+
+![Two scatter plots of the 300 spiral points of seed 0, class 0 as blue circles, class 1 as orange squares and class 2 as green triangles: the whole plane on the left, the square from minus 0.2 to 0.2 around the origin enlarged on the right. Three grey lines through the origin mark where each hidden neuron's pre-activation is 0 under the 0.01 weights and zero biases. Red rings mark the ten samples with an entry of Z1 within h of 0: three at the origin, one of each class, and seven on the lines, between 0.02 and 0.71 from the origin.](diagrams/02-relu-corners.svg)
+
+*With zero biases every hidden neuron switches on a line through the origin, and the spiral arms start there.*
+
+With only those seven left out the largest gap is $1.9 \times 10^{-11}$. With all ten left out:
 
 ```text
 dense2.dweights  (3, 3)   1.8e-04           3.1e-07                  1.2e-11   FAIL
@@ -350,7 +352,11 @@ dense2.dweights  (3, 3)   3.7e+01           1.0e+00                  3.7e+01   F
 relative error of dense2.dweights to four decimals: 0.9967; 1 - 1/N = 0.9967
 ```
 
-The loss is unchanged, every shape is right, and the rows of `loss_activation.dinputs` still sum to zero, so neither the first loss, nor the shape test, nor the row-sum test of post 20 notices anything. The gradient check fails on all four arrays with the same relative error, $1 - 1/300$: every gradient is 300 times too large. An error of exactly this form points at a missing or doubled mean. A ReLU without its mask fails only from `dense1` on; post 16, section 7, measured it.
+The loss is unchanged, every shape is right, and the rows of `loss_activation.dinputs` still sum to zero, so neither the first loss, nor the shape test, nor the row-sum test of post 20 notices anything. The gradient check fails on all four arrays with the same relative error, $1 - 1/300$: every gradient is 300 times too large. An error of exactly this form points at a missing or doubled mean. A ReLU without its mask fails only from `dense1` on; post 16, section 7, measured it. The figure below sets the checks of sections 9 and 11 side by side, each gradient array as one point at its relative error and its absolute gap.
+
+![A scatter plot on two logarithmic axes, the largest relative error of a gradient array across and its largest absolute gap up, four points per check. The passing check of section 9, blue circles, lies left of the pass mark of 10 to the minus 7 with gaps near 10 to the minus 11. The check on the 0.01 weights, orange triangles, has its two dense2 points just right of the mark at the same gaps, and its two dense1 points far higher, at gaps of 6.8 times 10 to the minus 8 and 1.1 times 10 to the minus 5; dashed arrows take them down to the rounding level once the ten samples are left out, hollow squares. A dotted line marks 6.0 times 10 to the minus 11, the largest gap at scale 1 over 50 seeds. The missing division, red diamonds, sits at a relative error of 1 with gaps from 17 to 140.](diagrams/03-error-and-gap.svg)
+
+*Only the missing division is a bug; the dense1 points of the 0.01 check are ReLU corners.*
 
 **The backward calls are reordered.** On fresh objects, `dense2.backward(loss_activation.dinputs)` before `loss_activation.backward` raises at once:
 
