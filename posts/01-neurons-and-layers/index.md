@@ -13,7 +13,7 @@
 > - Code a neuron and a layer in plain Python and then as one NumPy dot product plus the biases.
 > - Predict the shape of every intermediate array as a single sample becomes a batch.
 
-![The four-input neuron of section 5. Inputs 1.0, 2.0, 3.0, 2.5 are multiplied row by row by the weights 0.2, 0.8, minus 0.5, 1.0, giving the products 0.2, 1.6, minus 1.5, 2.5. Lines carry the products into a node marked sigma plus b, the bias 2.0 enters from above, and an arrow labelled sigma plus b equals 2.8 plus 2.0 leads to the output z, 4.8. Underneath, the whole sum is written out, and the count reads 4 weights plus 1 bias, 5 parameters.](diagrams/01-one-neuron.svg)
+![The four-input neuron of section 5. Inputs 1.0, 2.0, 3.0, 2.5 are multiplied row by row by the weights 0.2, 0.8, minus 0.5, 1.0, giving the products 0.2, 1.6, minus 1.5, 2.5. Lines carry the products into a node marked sigma plus b, the bias 2.0 enters from above, and an arrow labelled sigma plus b equals 2.8 plus 2.0 leads to the output z, 4.8. Under the node and the output, the whole sum is written out, ending in 4.8 under the output box, and the bottom line counts one weight per input and one bias, 4 plus 1, 5 parameters.](diagrams/01-one-neuron.svg)
 
 *One neuron, four inputs, five parameters: a weight for each input and a single bias. Every learnable parameter of the dense networks in this series is one or the other, and the rest of the series is rules for setting them.*
 

@@ -168,27 +168,23 @@
 <text x="80" y="256" text-anchor="end" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
 <text x="80" y="312" text-anchor="end" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
 <text x="80" y="368" text-anchor="end" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">4</tspan><tspan dy="-4">​</tspan></text>
-<g data-grid="skip">
-<path d="M136.0,196.0 L256,204" class="nofill w1 s-rule"/>
-<path d="M136.0,252.0 L256,204" class="nofill w1 s-rule"/>
-<path d="M136.0,308.0 L256,204" class="nofill w1 s-rule"/>
-<path d="M136.0,364.0 L256,204" class="nofill w1 s-rule"/>
-<path d="M136.0,196.0 L256,348" class="nofill w1 s-rule"/>
-<path d="M136.0,252.0 L256,348" class="nofill w1 s-rule"/>
-<path d="M136.0,308.0 L256,348" class="nofill w1 s-rule"/>
-<path d="M136.0,364.0 L256,348" class="nofill w1 s-rule"/>
-<path d="M136.0,196.0 L256,276" class="nofill w15 s-orange"/>
-<path d="M136.0,252.0 L256,276" class="nofill w15 s-orange"/>
-<path d="M136.0,308.0 L256,276" class="nofill w15 s-orange"/>
-<path d="M136.0,364.0 L256,276" class="nofill w15 s-orange"/>
-</g>
+<path d="M136,196 L256,204" class="s-rule w1 nofill"/>
+<path d="M136,252 L256,204" class="s-rule w1 nofill"/>
+<path d="M136,308 L256,204" class="s-rule w1 nofill"/>
+<path d="M136,364 L256,204" class="s-rule w1 nofill"/>
+<path d="M136,196 L256,348" class="s-rule w1 nofill"/>
+<path d="M136,252 L256,348" class="s-rule w1 nofill"/>
+<path d="M136,308 L256,348" class="s-rule w1 nofill"/>
+<path d="M136,364 L256,348" class="s-rule w1 nofill"/>
+<path d="M136,196 L256,276" class="s-orange w15 nofill"/>
+<path d="M136,252 L256,276" class="s-orange w15 nofill"/>
+<path d="M136,308 L256,276" class="s-orange w15 nofill"/>
+<path d="M136,364 L256,276" class="s-orange w15 nofill"/>
 <rect x="256" y="184" width="104" height="40" rx="8" class="card"/>
 <text x="308" y="208" text-anchor="middle" class="t-label">Σ + <tspan class="i">b</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
 <text x="376" y="208" class="t-label"><tspan class="i">z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
 <rect x="256" y="256" width="104" height="40" rx="8" class="card"/>
-<g data-grid="skip">
-<rect x="256" y="256" width="104" height="40" rx="8" class="nofill w15 s-orange" data-fit="skip"/>
-</g>
+<rect x="256" y="256" width="104" height="40" rx="8" class="w15 nofill s-orange" data-fit="skip"/>
 <text x="308" y="280" text-anchor="middle" class="t-label">Σ + <tspan class="i">b</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
 <text x="376" y="280" class="t-label"><tspan class="i">z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
 <rect x="256" y="328" width="104" height="40" rx="8" class="card"/>

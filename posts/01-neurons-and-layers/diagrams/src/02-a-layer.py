@@ -12,7 +12,7 @@ from pathlib import Path
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, r"C:\Users\admin\Desktop\series-standard\tools")
-from figkit import Figure, Box, Raw, rich, var, sub, num, CDOT, SIGMA, TIMES  # noqa: E402
+from figkit import Figure, Box, rich, sub, arr, num, SIGMA, TIMES  # noqa: E402
 
 SNIP = Path(__file__).resolve().parents[2] / "snippets" / "layer_by_hand.py"
 with contextlib.redirect_stdout(io.StringIO()) as out:
@@ -25,10 +25,6 @@ assert (N_W, N_B, N_W + N_B) == (12, 3, 15)
 K = 1                                                   # the neuron traced in colour: neuron 2
 SUMK = sum(x * w for x, w in zip(X, W[K]))
 assert round(SUMK, 10) == -1.79 and round(Z[K], 10) == 1.21
-
-
-def bold(s):
-    return Raw(f'<tspan class="b">{s}</tspan>')
 
 
 def say(v, d):
@@ -49,7 +45,7 @@ fig = Figure(
 
 left, right = fig.row((5, 6))
 lb = fig.panel(left, "Wiring: every input reaches every neuron")
-rb = fig.panel(right, rich("The same layer as ", bold("z"), " = ", bold("W"), bold("x"), " + ", bold("b")))
+rb = fig.panel(right, rich("The same layer as ", arr("z"), " = ", arr("W"), arr("x"), " + ", arr("b")))
 
 ROW0, RH = 168, 72                                      # neuron rows: 168..384, one per row of W
 ROWS = [ROW0 + RH * k + RH // 2 for k in range(N_NEU)]  # 204, 276, 348
@@ -64,25 +60,22 @@ gin = [fig.strip(IX, y, 1, width=IW, height=IH, values=[X[i]], decimals=1, font=
 for i, g in enumerate(gin):
     fig.text(g.box.x - 8, g.box.cy + 5, sub("x", str(i + 1)), "label", anchor="end")
 NX, NW, NH = 256, 104, 40
-with fig.data():
-    for k in range(N_NEU):
-        for i, g in enumerate(gin):
-            if k != K:
-                fig._path(f"M{g.box.right},{g.box.cy} L{NX},{ROWS[k]}", f"nofill w1 {fig._cls('s', 'rule')}")
-    for i, g in enumerate(gin):                         # neuron 2's lines last, on top
-        fig._path(f"M{g.box.right},{g.box.cy} L{NX},{ROWS[K]}",
-                  f"nofill w15 {fig._cls('s', 'weight')}")
+for k in range(N_NEU):
+    for g in gin:
+        if k != K:
+            fig.edge((g.box.right, g.box.cy), (NX, ROWS[k]))
+for g in gin:                                           # neuron 2's lines last, on top
+    fig.edge((g.box.right, g.box.cy), (NX, ROWS[K]), color="weight", width=1.5)
 for k in range(N_NEU):
     bx = Box(NX, ROWS[k] - NH // 2, NW, NH)
     fig.panel(bx, None, card=True)
     if k == K:
-        with fig.data():
-            fig._rect(bx.x, bx.y, bx.w, bx.h, f"nofill w15 {fig._cls('s', 'weight')}", rx=8, extra='data-fit="skip"')
+        fig.outline(bx, "weight", width=1.5, radius=8)
     fig.text(bx.cx, bx.cy + 6, rich(SIGMA, " + ", sub("b", str(k + 1))), "label", anchor="middle")
     fig.text(bx.right + 16, bx.cy + 5, sub("z", str(k + 1)), "label")
 fig.note(Box(lb.x, ROW0, 0, BOT - ROW0),
          [rich(f"{N_IN} inputs {TIMES} {N_NEU} neurons = {N_W} lines, one weight each"),
-          rich("Highlighted: neuron 2, whose weights are row 2 of ", bold("W"))])
+          rich("Highlighted: neuron 2, whose weights are row 2 of ", arr("W"))])
 
 # -- right: z = W x + b, rows of W aligned with the neuron rows
 WX, WCW = rb.x, 48                                      # W: 4 columns of 48
@@ -105,10 +98,10 @@ gb.outline(K, K, color="weight", width=1.5)
 gz.window(K, K, color="output")
 for g, name, shape in ((gw, "W", f"({N_NEU}, {N_IN})"), (gx, "x", f"({N_IN},)"), (gb, "b", f"({N_NEU},)"),
                        (gz, "z", f"({N_NEU},)")):
-    fig.text(g.box.cx, BOT + 28, rich(bold(name), " ", shape), "label", anchor="middle")
+    fig.text(g.box.cx, BOT + 28, rich(arr(name), " ", shape), "label", anchor="middle")
 fig.text(WX, BOT + 64, rich("Neuron 2: ", num(SUMK, 2), " + ", num(B[K], 1), " = ", num(Z[K], 2)), "label",
          color="output")
-fig.text(WX, BOT + 84, rich("row 2 of ", bold("W"), " times ", bold("x"), ", then its bias ", sub("b", "2")), "note")
+fig.text(WX, BOT + 84, rich("row 2 of ", arr("W"), " times ", arr("x"), ", then its bias ", sub("b", "2")), "note")
 gw.col_labels([sub("x", str(j + 1)) for j in range(N_IN)])
 
 fig.caption(rich(f"{N_NEU} {TIMES} {N_IN} = {N_W} weights + {N_B} biases = {N_W + N_B} parameters."))
