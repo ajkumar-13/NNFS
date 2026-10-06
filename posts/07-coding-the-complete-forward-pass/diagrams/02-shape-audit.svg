@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-02-shape-audit-title" aria-describedby="nn-02-shape-audit-desc">
 <title id="nn-02-shape-audit-title">Rows come from the batch, columns from the last dense layer</title>
-<desc id="nn-02-shape-audit-desc">The five arrays of the forward pass drawn twice, as bands one column per feature. Top, the batch of 300 spiral points: X is (300, 2), dense1.output (300, 3), activation1.output (300, 3), dense2.output (300, 3), activation2.output (300, 3). Between the arrays, the four objects: dense1 with weights (2, 3), activation1 with no weights, dense2 with weights (3, 3), activation2 with no weights. A bracket under the last four arrays says that they share the shape (300, 3). Bottom, the same pass on the first 7 rows, drawn row by row: (7, 2), then (7, 3) four times. In every shape the row count is printed in blue and the column count in orange, and the orange column count of each dense layer's weights is the column count of its output.</desc>
+<desc id="nn-02-shape-audit-desc">The five arrays of the forward pass drawn twice, as bands one column per feature. Top, the batch of 300 spiral points, each band drawn short: X is (300, 2), dense1.output (300, 3), activation1.output (300, 3), dense2.output (300, 3), activation2.output (300, 3). Between the arrays, the four objects: dense1 with weights (2, 3), activation1 with no weights, dense2 with weights (3, 3), activation2 with no weights. A bracket under the last four arrays says that they share the shape (300, 3). Bottom, the same pass on the first 7 rows, drawn row by row: (7, 2), then (7, 3) four times. In every shape the row count is printed in blue and the column count in orange, and the orange column count of each dense layer's weights is the column count of its output.</desc>
 <style>
   :root {
     --nn-bg: #FAFAF7;
@@ -128,16 +128,12 @@
   .d-proj { stroke-dasharray: 6 4; }
   .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
   .d-lead { stroke-dasharray: 4 4; }
-  .f-blue { fill: var(--nn-blue); }
   .f-blue-ink { fill: var(--nn-blue-ink); }
   .f-blue-soft { fill: var(--nn-blue-soft); }
   .f-green-ink { fill: var(--nn-green-ink); }
   .f-green-soft { fill: var(--nn-green-soft); }
-  .f-orange { fill: var(--nn-orange); }
   .f-orange-ink { fill: var(--nn-orange-ink); }
   .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
-  .s-blue { stroke: var(--nn-blue); }
-  .s-orange { stroke: var(--nn-orange); }
 </style>
 <defs>
 <marker id="nn-02-shape-audit-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
@@ -145,7 +141,7 @@
 <rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
 <text x="40" y="48" class="t-title">Rows come from the batch, columns from the last dense layer</text>
 <text x="40" y="76" class="t-subtitle">snippets/shape_audit.py, run on all 300 spiral points and again on the first 7.</text>
-<text x="40" y="128" class="t-head">All 300 rows</text>
+<text x="40" y="128" class="t-head">All 300 rows, each band drawn short</text>
 <rect x="56" y="176" width="16" height="144" class="cell f-blue-soft"/>
 <rect x="72" y="176" width="16" height="144" class="cell f-blue-soft"/>
 <rect x="56" y="176" width="32" height="144" class="frame" data-fit="skip"/>
@@ -304,9 +300,7 @@
 <path d="M288,512 L413,512" class="flow" marker-end="url(#nn-02-shape-audit-arrow)"/>
 <path d="M480,512 L605,512" class="flow" marker-end="url(#nn-02-shape-audit-arrow)"/>
 <path d="M672,512 L797,512" class="flow" marker-end="url(#nn-02-shape-audit-arrow)"/>
-<rect x="40" y="620" width="16" height="16" class="f-blue s-blue w1"/>
-<text x="72" y="632" class="t-label">rows: one per point of the batch</text>
-<rect x="312" y="620" width="16" height="16" class="f-orange s-orange w1"/>
-<text x="344" y="632" class="t-label">columns: the features; a dense layer sets them to its neuron count</text>
+<text x="40" y="632" class="t-label"><tspan class="b f-blue-ink">300</tspan>, <tspan class="b f-blue-ink">7</tspan>: rows, one per point of the batch</text>
+<text x="392" y="632" class="t-label"><tspan class="b f-orange-ink">2</tspan>, <tspan class="b f-orange-ink">3</tspan>: columns, the features; a dense layer sets them to its neuron count</text>
 <text x="40" y="684" class="t-note">Section 9 hands dense2 the wrong one of the four; only a check on the values catches it.</text>
 </svg>

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-01-pipeline-title" aria-describedby="nn-01-pipeline-desc">
 <title id="nn-01-pipeline-title">Four objects and four calls turn points into probabilities</title>
-<desc id="nn-01-pipeline-desc">Top: the forward pass as a chain of five arrays drawn as bands, one column per feature, each named in code above and in the notation below: X with 2 columns, dense1.output (Z1) with 3, activation1.output (A1) with 3, dense2.output (Z2, the logits) with 3, and activation2.output (y-hat, the probabilities) with 3. Between them the four objects: dense1 computes X W1 + b1, activation1 takes max(0, .) of each entry, dense2 computes A1 W2 + b2, and activation2 takes the softmax per row. Bottom left, a card with the script's eight lines: dense1 = Layer_Dense(2, 3), activation1 = Activation_ReLU(), dense2 = Layer_Dense(3, 3), activation2 = Activation_Softmax(), then dense1.forward(X), activation1.forward(dense1.output), dense2.forward(activation1.output) and activation2.forward(dense2.output). Bottom right, what print(activation2.output[:5]) prints: 0.33333334 three times, then 0.3333332, 0.3333332, 0.33333364; 0.3333329, 0.33333293, 0.3333342; 0.3333326, 0.33333263, 0.33333477; 0.33333233, 0.3333324, 0.33333528. Row 0, the origin, is exactly one third in every entry; rows 1 to 4 are within 0.000002 of one third. A note adds that over all 300 rows every entry lies between 0.333297 and 0.333402 and every row sums to 1.</desc>
+<desc id="nn-01-pipeline-desc">Top: the forward pass as a chain of five arrays drawn as bands, one column per feature, each named in code above and in the notation below: X with 2 columns, dense1.output (Z1) with 3, activation1.output (A1) with 3, dense2.output (Z2, the logits) with 3, and activation2.output (y-hat, the probabilities) with 3; every band stands for 300 rows and is drawn short. Between them the four objects: dense1 computes X W1 + b1, activation1 takes max(0, .) of each entry, dense2 computes A1 W2 + b2, and activation2 takes the softmax per row. Bottom left, a card with the script's eight lines: dense1 = Layer_Dense(2, 3), activation1 = Activation_ReLU(), dense2 = Layer_Dense(3, 3), activation2 = Activation_Softmax(), then dense1.forward(X), activation1.forward(dense1.output), dense2.forward(activation1.output) and activation2.forward(dense2.output). Bottom right, what print(activation2.output[:5]) prints: 0.33333334 three times, then 0.3333332, 0.3333332, 0.33333364; 0.3333329, 0.33333293, 0.3333342; 0.3333326, 0.33333263, 0.33333477; 0.33333233, 0.3333324, 0.33333528. Row 0, the origin, is exactly one third in every entry; rows 1 to 4 are within 0.000002 of one third. A note adds that over all 300 rows every entry lies between 0.333297 and 0.333402 and every row sums to 1.</desc>
 <style>
   :root {
     --nn-bg: #FAFAF7;
@@ -182,6 +182,7 @@
 <path d="M672,224 L797,224" class="flow" marker-end="url(#nn-01-pipeline-arrow)"/>
 <text x="736" y="212" text-anchor="middle" class="t-code">activation2</text>
 <text x="736" y="252" text-anchor="middle" class="t-label">softmax per row</text>
+<text x="40" y="348" class="t-note">Every band: 300 rows, drawn short</text>
 <text x="640" y="348" text-anchor="middle" class="t-note">the logits</text>
 <text x="832" y="348" text-anchor="middle" class="t-note">the probabilities</text>
 <text x="40" y="408" class="t-head">The script: four objects, four calls</text>
@@ -203,10 +204,10 @@
 <text x="448" y="552" class="t-code" xml:space="preserve">[0.33333233 0.3333324  0.33333528]]</text>
 <text x="776" y="456" class="t-note">the origin, 1/3 each</text>
 <path d="M760,468 H768 V564 H760" class="brace"/>
-<text x="776" y="512" class="t-note">rows 1 to 4:</text>
-<text x="776" y="532" class="t-note">within 0.000002</text>
-<text x="776" y="552" class="t-note">of 1/3</text>
-<text x="440" y="608" class="t-note">All 300 rows: every entry between 0.333297 and 0.333402,</text>
-<text x="440" y="628" class="t-note">and every row sums to 1.</text>
+<text x="776" y="504" class="t-note">rows 1 to 4:</text>
+<text x="776" y="524" class="t-note">within 0.000002</text>
+<text x="776" y="544" class="t-note">of 1/3</text>
+<text x="440" y="596" class="t-note">All 300 rows: every entry between 0.333297 and 0.333402,</text>
+<text x="440" y="616" class="t-note">and every row sums to 1.</text>
 <text x="40" y="684" class="t-note">Each object stores its result in .output, and the next call reads it from there.</text>
 </svg>

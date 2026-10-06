@@ -65,7 +65,8 @@ fig = Figure(
     "01-pipeline", "Four objects and four calls turn points into probabilities",
     "Top: the forward pass as a chain of five arrays drawn as bands, one column per feature, each named in code above "
     "and in the notation below: X with 2 columns, dense1.output (Z1) with 3, activation1.output (A1) with 3, "
-    "dense2.output (Z2, the logits) with 3, and activation2.output (y-hat, the probabilities) with 3. Between them "
+    "dense2.output (Z2, the logits) with 3, and activation2.output (y-hat, the probabilities) with 3; every band "
+    "stands for 300 rows and is drawn short. Between them "
     "the four objects: dense1 computes X W1 + b1, activation1 takes max(0, .) of each entry, dense2 computes "
     "A1 W2 + b2, and activation2 takes the softmax per row. Bottom left, a card with the script's eight lines: "
     "dense1 = Layer_Dense(2, 3), activation1 = Activation_ReLU(), dense2 = Layer_Dense(3, 3), activation2 = "
@@ -99,6 +100,7 @@ for (name, color, op), a, b in zip(OPS, bands, bands[1:]):
     cx = (a.right + b.x) / 2
     fig.text(cx, MID - 12, name, "code", anchor="middle", color=color)
     fig.text(cx, MID + 28, op, "label", anchor="middle")
+fig.text(40, bands[0].bottom + 52, "Every band: 300 rows, drawn short", "note")
 fig.text(bands[3].cx, bands[3].bottom + 52, "the logits", "note", anchor="middle")
 fig.text(bands[4].cx, bands[4].bottom + 52, "the probabilities", "note", anchor="middle")
 
@@ -119,11 +121,11 @@ assert code.right <= 760, code.right
 BX = 760
 fig.text(BX + 16, YC + 32, "the origin, 1/3 each", "note")
 fig.brace(YC + 44, YC + 140, BX, side="right", kind="bracket", vertical=True)
-fig.text(BX + 16, YC + 88, "rows 1 to 4:", "note")
-fig.text(BX + 16, YC + 108, "within 0.000002", "note")
-fig.text(BX + 16, YC + 128, "of 1/3", "note")
-fig.text(440, YC + 184, f"All 300 rows: every entry between {LO} and {HI},", "note")
-fig.text(440, YC + 204, "and every row sums to 1.", "note")
+fig.text(BX + 16, YC + 80, "rows 1 to 4:", "note")       # three lines centred on the bracket
+fig.text(BX + 16, YC + 100, "within 0.000002", "note")
+fig.text(BX + 16, YC + 120, "of 1/3", "note")
+fig.text(440, YC + 172, f"All 300 rows: every entry between {LO} and {HI},", "note")
+fig.text(440, YC + 192, "and every row sums to 1.", "note")
 
 fig.caption("Each object stores its result in .output, and the next call reads it from there.")
 fig.write()

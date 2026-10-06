@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-03-why-uniform-title" aria-describedby="nn-03-why-uniform-desc">
 <title id="nn-03-why-uniform-title">Logits in ten-thousandths give probabilities near 1/3</title>
-<desc id="nn-03-why-uniform-desc">Left, a dot plot on a log scale from 10 to the minus 5 to 1 of the size of the entries at each stage of the forward pass on the 300 spiral points, the mean absolute entry as a grey circle and the largest as a green diamond: X, mean 0.318836, largest 0.97939; dense1.output, mean 0.004043, largest 0.01746; activation1.output, mean 0.002029, largest 0.01731; dense2.output, the logits, mean 0.000046, largest 0.00023. Right, row 99, the least uniform row of the output: logits minus 0.0002333, minus 0.0002187, 0.0000813 for classes 0, 1 and 2, and probabilities 0.333297, 0.333302, 0.333402, drawn as three bars on a scale from 0 to 1 that look equal. A note gives the largest logit gap, 0.0003146, and e to that gap, 1.000315, the largest probability over the smallest.</desc>
+<desc id="nn-03-why-uniform-desc">Left, a dot plot on a log scale from 10 to the minus 5 to 10 of the size of the entries at each stage of the forward pass on the 300 spiral points, the mean absolute entry as a grey circle and the largest as a diamond in the text colour: X, mean 0.318836, largest 0.97939; dense1.output, mean 0.004043, largest 0.01746; activation1.output, mean 0.002029, largest 0.01731; dense2.output, the logits, mean 0.000046, largest 0.00023. Right, row 99, the least uniform row of the output: logits minus 0.0002333, minus 0.0002187, 0.0000813 for classes 0, 1 and 2, and probabilities 0.333297, 0.333302, 0.333402, drawn as three bars on a scale from 0 to 1 that look equal. A note gives the largest logit gap, 0.0003146, and e to that gap, 1.000315, the largest probability over the smallest.</desc>
 <style>
   :root {
     --nn-bg: #FAFAF7;
@@ -130,6 +130,7 @@
   .d-lead { stroke-dasharray: 4 4; }
   .f-green { fill: var(--nn-green); }
   .f-green-ink { fill: var(--nn-green-ink); }
+  .f-ink { fill: var(--nn-ink); }
   .f-rule { fill: var(--nn-rule); }
   .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
   .s-rule { stroke: var(--nn-rule); }
@@ -144,42 +145,43 @@
 <text x="40" y="76" class="t-subtitle">snippets/uniform_baseline.py: the entries of every stage on the 300 points, and row 99 of the output.</text>
 <text x="40" y="120" class="t-head">The entries shrink at every layer</text>
 <g data-grid="skip">
-<path d="M200,136V364M246.4,136V364M292.8,136V364M339.2,136V364M385.6,136V364M432,136V364" class="gridline"/>
+<path d="M200,136V364M245.33,136V364M290.67,136V364M336,136V364M381.33,136V364M426.67,136V364M472,136V364" class="gridline"/>
 <text x="200" y="384" text-anchor="middle" class="t-tick">10<tspan class="sub" dy="-6">−5</tspan><tspan dy="6">​</tspan></text>
-<text x="246.4" y="384" text-anchor="middle" class="t-tick">10<tspan class="sub" dy="-6">−4</tspan><tspan dy="6">​</tspan></text>
-<text x="292.8" y="384" text-anchor="middle" class="t-tick">10<tspan class="sub" dy="-6">−3</tspan><tspan dy="6">​</tspan></text>
-<text x="339.2" y="384" text-anchor="middle" class="t-tick">10<tspan class="sub" dy="-6">−2</tspan><tspan dy="6">​</tspan></text>
-<text x="385.6" y="384" text-anchor="middle" class="t-tick">10<tspan class="sub" dy="-6">−1</tspan><tspan dy="6">​</tspan></text>
-<text x="432" y="384" text-anchor="middle" class="t-tick">10<tspan class="sub" dy="-6">0</tspan><tspan dy="6">​</tspan></text>
-<path d="M200,364H432" class="axis"/>
-<path d="M408.97,164.5H431.58" class="s-rule w15 nofill"/>
-<circle cx="408.97" cy="164.5" r="5" class="f-rule s-surface w1"/>
-<path d="M431.58,158.5 L437.58,164.5 L431.58,170.5 L425.58,164.5 Z" class="f-green s-surface w1"/>
+<text x="245.33" y="384" text-anchor="middle" class="t-tick">10<tspan class="sub" dy="-6">−4</tspan><tspan dy="6">​</tspan></text>
+<text x="290.67" y="384" text-anchor="middle" class="t-tick">10<tspan class="sub" dy="-6">−3</tspan><tspan dy="6">​</tspan></text>
+<text x="336" y="384" text-anchor="middle" class="t-tick">10<tspan class="sub" dy="-6">−2</tspan><tspan dy="6">​</tspan></text>
+<text x="381.33" y="384" text-anchor="middle" class="t-tick">10<tspan class="sub" dy="-6">−1</tspan><tspan dy="6">​</tspan></text>
+<text x="426.67" y="384" text-anchor="middle" class="t-tick">10<tspan class="sub" dy="-6">0</tspan><tspan dy="6">​</tspan></text>
+<text x="472" y="384" text-anchor="middle" class="t-tick">10<tspan class="sub" dy="-6">1</tspan><tspan dy="6">​</tspan></text>
+<path d="M200,364H472" class="axis"/>
+<path d="M404.16,164.5H426.26" class="s-rule w15 nofill"/>
+<circle cx="404.16" cy="164.5" r="5" class="f-rule s-surface w1"/>
+<path d="M426.26,158.5 L432.26,164.5 L426.26,170.5 L420.26,164.5 Z" class="f-ink s-surface w1"/>
 <text x="40" y="169.5" class="t-label"><tspan class="mono">X</tspan></text>
-<path d="M320.95,221.5H350.43" class="s-rule w15 nofill"/>
-<circle cx="320.95" cy="221.5" r="5" class="f-rule s-surface w1"/>
-<path d="M350.43,215.5 L356.43,221.5 L350.43,227.5 L344.43,221.5 Z" class="f-green s-surface w1"/>
+<path d="M318.17,221.5H346.97" class="s-rule w15 nofill"/>
+<circle cx="318.17" cy="221.5" r="5" class="f-rule s-surface w1"/>
+<path d="M346.97,215.5 L352.97,221.5 L346.97,227.5 L340.97,221.5 Z" class="f-ink s-surface w1"/>
 <text x="40" y="226.5" class="t-label"><tspan class="mono">dense1.output</tspan></text>
-<path d="M307.06,278.5H350.26" class="s-rule w15 nofill"/>
-<circle cx="307.06" cy="278.5" r="5" class="f-rule s-surface w1"/>
-<path d="M350.26,272.5 L356.26,278.5 L350.26,284.5 L344.26,278.5 Z" class="f-green s-surface w1"/>
+<path d="M304.6,278.5H346.8" class="s-rule w15 nofill"/>
+<circle cx="304.6" cy="278.5" r="5" class="f-rule s-surface w1"/>
+<path d="M346.8,272.5 L352.8,278.5 L346.8,284.5 L340.8,278.5 Z" class="f-ink s-surface w1"/>
 <text x="40" y="283.5" class="t-label"><tspan class="mono">activation1.output</tspan></text>
-<path d="M230.7,335.5H263.47" class="s-rule w15 nofill"/>
-<circle cx="230.7" cy="335.5" r="5" class="f-rule s-surface w1"/>
-<path d="M263.47,329.5 L269.47,335.5 L263.47,341.5 L257.47,335.5 Z" class="f-green s-surface w1"/>
+<path d="M229.99,335.5H262.01" class="s-rule w15 nofill"/>
+<circle cx="229.99" cy="335.5" r="5" class="f-rule s-surface w1"/>
+<path d="M262.01,329.5 L268.01,335.5 L262.01,341.5 L256.01,335.5 Z" class="f-ink s-surface w1"/>
 <text x="40" y="340.5" class="t-label"><tspan class="mono">dense2.output</tspan></text>
 </g>
-<text x="316" y="408" text-anchor="middle" class="t-note">size of an entry, log scale</text>
+<text x="336" y="408" text-anchor="middle" class="t-note">size of an entry, log scale</text>
 <g data-grid="skip">
-<text x="443.58" y="169.5" class="t-value f-green-ink">0.97939</text>
-<text x="362.43" y="226.5" class="t-value f-green-ink">0.01746</text>
-<text x="362.26" y="283.5" class="t-value f-green-ink">0.01731</text>
-<text x="275.47" y="340.5" class="t-value f-green-ink">0.00023</text>
+<text x="438.26" y="169.5" class="t-value f-ink">0.97939</text>
+<text x="358.97" y="226.5" class="t-value f-ink">0.01746</text>
+<text x="358.8" y="283.5" class="t-value f-ink">0.01731</text>
+<text x="274.01" y="340.5" class="t-value f-ink">0.00023</text>
 </g>
-<circle cx="48" cy="452" r="5" class="f-rule s-surface w1"/>
-<text x="72" y="456" class="t-label">mean |entry|</text>
-<path d="M192,446 L198,452 L192,458 L186,452 Z" class="f-green s-surface w1"/>
-<text x="216" y="456" class="t-label">largest |entry|</text>
+<circle cx="208" cy="440" r="5" class="f-rule s-surface w1"/>
+<text x="232" y="444" class="t-label">mean |entry|</text>
+<path d="M352,434 L358,440 L352,446 L346,440 Z" class="f-ink s-surface w1"/>
+<text x="376" y="444" class="t-label">largest |entry|</text>
 <text x="536" y="120" class="t-head">Row 99, the least uniform row</text>
 <rect x="536" y="136" width="64" height="32" class="nofill"/>
 <rect x="600" y="136" width="120" height="32" class="nofill"/>

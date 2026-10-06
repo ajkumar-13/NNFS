@@ -48,7 +48,7 @@ def wshape(t):
 fig = Figure(
     "02-shape-audit", "Rows come from the batch, columns from the last dense layer",
     "The five arrays of the forward pass drawn twice, as bands one column per feature. Top, the batch of 300 "
-    "spiral points: X is (300, 2), dense1.output (300, 3), activation1.output (300, 3), dense2.output (300, 3), "
+    "spiral points, each band drawn short: X is (300, 2), dense1.output (300, 3), activation1.output (300, 3), dense2.output (300, 3), "
     "activation2.output (300, 3). Between the arrays, the four objects: dense1 with weights (2, 3), activation1 "
     "with no weights, dense2 with weights (3, 3), activation2 with no weights. A bracket under the last four arrays "
     "says that they share the shape (300, 3). Bottom, the same pass on the first 7 rows, drawn row by row: (7, 2), "
@@ -67,7 +67,7 @@ OBJ = [("dense1", "weight", wshape(W1)), ("activation1", None, "no weights"),
        ("dense2", "weight", wshape(W2)), ("activation2", None, "no weights")]
 
 # -- the batch of 300
-fig.text(40, 128, "All 300 rows", "head")
+fig.text(40, 128, "All 300 rows, each band drawn short", "head")
 T1, H1 = 176, 144
 big = []
 for x, c, name, k in zip(xs, COLS, NAMES, range(5)):
@@ -97,7 +97,10 @@ M2 = T2 + SMALL[0][0] * C2 // 2
 for a, b in zip(small, small[1:]):
     fig.arrow((a.right + 8, M2), (b.x - 8, M2))
 
-fig.legend(40, 632, [dict(color="input", label="rows: one per point of the batch"),
-                     dict(color="weight", label="columns: the features; a dense layer sets them to its neuron count")], direction="row")
+# the key repeats the coloured numbers themselves, so it is not read as a key to the band fills
+B = lambda v, c: span(str(v), color=c, bold=True)  # noqa: E731
+fig.text(40, 632, rich(B(300, "input"), ", ", B(7, "input"), ": rows, one per point of the batch"), "label")
+fig.text(392, 632, rich(B(2, "weight"), ", ", B(3, "weight"),
+                        ": columns, the features; a dense layer sets them to its neuron count"), "label")
 fig.caption("Section 9 hands dense2 the wrong one of the four; only a check on the values catches it.")
 fig.write()

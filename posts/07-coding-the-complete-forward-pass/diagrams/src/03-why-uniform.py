@@ -56,9 +56,9 @@ def say(v):
 
 fig = Figure(
     "03-why-uniform", "Logits in ten-thousandths give probabilities near 1/3",
-    "Left, a dot plot on a log scale from 10 to the minus 5 to 1 of the size of the entries at each stage of the "
-    "forward pass on the 300 spiral points, the mean absolute entry as a grey circle and the largest as a green "
-    "diamond: X, mean " + ROWS[0][4] + ", largest " + ROWS[0][3] + "; dense1.output, mean " + ROWS[1][4] +
+    "Left, a dot plot on a log scale from 10 to the minus 5 to 10 of the size of the entries at each stage of the "
+    "forward pass on the 300 spiral points, the mean absolute entry as a grey circle and the largest as a "
+    "diamond in the text colour: X, mean " + ROWS[0][4] + ", largest " + ROWS[0][3] + "; dense1.output, mean " + ROWS[1][4] +
     ", largest " + ROWS[1][3] + "; activation1.output, mean " + ROWS[2][4] + ", largest " + ROWS[2][3] +
     "; dense2.output, the logits, mean " + ROWS[3][4] + ", largest " + ROWS[3][3] + ". Right, row 99, the least "
     "uniform row of the output: logits " + ", ".join(say(v) for v in LOGITS) + " for classes 0, 1 and 2, and "
@@ -70,16 +70,19 @@ left, right = fig.row((11, 9))
 
 # -- left: the entries shrink
 lb = fig.panel(left, "The entries shrink at every layer")
-LO, HI = 1e-5, 1.0
-TICKS = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0]
+# the axis runs one decade past 1 so that X's largest entry, 0.979, sits inside the plot and not on its edge;
+# the largest entries are ink diamonds, so green stays the colour of the probabilities on the right
+LO, HI = 1e-5, 10.0
+TICKS = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1.0, 10.0]
+assert all(LO < r[1] and r[2] < 1 for r in ROWS)
 ax = fig.dot_plot(Box(lb.x, lb.y, lb.w, 276), [(span(n, mono=True), [m, b]) for n, m, b, _, _ in ROWS],
-                  LO, HI, TICKS, colors=("rule", "output"), shapes=("circle", "diamond"), x_log=True,
-                  label_w=160, pad_right=72, axis_label="size of an entry, log scale")
+                  LO, HI, TICKS, colors=("rule", "ink"), shapes=("circle", "diamond"), x_log=True,
+                  label_w=160, pad_right=32, axis_label="size of an entry, log scale")
 with fig.data():
     for i, (_, _, b, bs, _) in enumerate(ROWS):
-        fig.text(ax.sx(b) + 12, ax.sy(i) + 5, bs, "value", color="output", snap=False)
-fig.legend(lb.x, lb.y + 320, [dict(color="rule", label="mean |entry|", mark="circle"),
-                              dict(color="output", label="largest |entry|", mark="diamond")], direction="row")
+        fig.text(ax.sx(b) + 12, ax.sy(i) + 5, bs, "value", color="ink", snap=False)
+fig.legend(lb.x + 160, lb.y + 308, [dict(color="rule", label="mean |entry|", mark="circle"),
+                                    dict(color="ink", label="largest |entry|", mark="diamond")], direction="row")
 
 # -- right: row 99, its logits, then its probabilities on a 0 to 1 scale
 rb = fig.panel(right, "Row 99, the least uniform row")
