@@ -11,7 +11,7 @@
 > - Implement Loss_CategoricalCrossentropy.backward for integer and one-hot labels.
 > - Explain why the gradient is divided by the batch size.
 
-![A worked batch of three samples. A one-hot label matrix is divided element-wise by the predictions 0.7, 0.2, 0.1; 0.1, 0.6, 0.3; 0.2, 0.3, 0.5 and scaled by minus 1 over N with N = 3. The result has one non-zero entry per row: -0.476, -0.556 and -0.667. A side panel works row 1 through and shows the two lines of code.](diagrams/01-cross-entropy-backward.svg)
+![Four 3 by 3 grids for the batch of section 3.1. The one-hot labels divided element by element by the predictions 0.7, 0.2, 0.1; 0.1, 0.6, 0.3; 0.2, 0.3, 0.5, and negated, give each sample's gradient: -1.429, -1.667 and -2.000 on the true classes and 0 elsewhere. Divided by N = 3 they give -0.476, -0.556 and -0.667. Below, the two lines of backward that do the two steps, and the third sample worked out: -1 / (3 times 0.5) = -0.667.](diagrams/01-cross-entropy-backward.svg)
 
 *The backward pass starts at the loss. With one-hot labels a single entry per row survives the division; the rest are zero.*
 
@@ -142,9 +142,9 @@ The class of post 08 keeps its `forward` and gains a `backward`:
         self.dinputs = self.dinputs / samples
 ```
 
-The two assignments are sections 2 and 3: the division $-\mathbf{y} / \hat{\mathbf{y}}$, then the factor $1/N$. The result is stored as `self.dinputs`, the gradient with respect to the input of the loss, which is the softmax output; the softmax's `backward` receives it as its `dvalues`. Nothing is cached in `forward`, because both things the derivative needs arrive as arguments.
+The two assignments are sections 2 and 3: the division $-\mathbf{y} / \hat{\mathbf{y}}$, then the factor $1/N$. The result is stored as `self.dinputs`, the gradient with respect to the input of the loss, which is the softmax output; the softmax's `backward` receives it as its `dvalues`. Nothing is cached in `forward`, because both things the derivative needs arrive as arguments. The figure below puts the class into the pipeline of section 1, with what reaches it from each side.
 
-![Two panels. Left, every other class: backward takes dvalues, a gradient arriving from the layer to its right, multiplies it by its own local derivative and passes the product on. Right, the loss class: backward takes dvalues and y_true, the box to its right is empty, and dvalues holds the predictions, because the derivative of the loss with respect to itself is 1.](diagrams/02-where-backprop-starts.svg)
+![Top, the classifier of section 1 as a row of cards, Dense, ReLU, Dense, Softmax and Loss, with forward arrows left to right and backward arrows right to left; the loss sends dinputs to the softmax, and to its right a dashed box holds nothing. Below, the loss class enlarged: the predictions y-hat of shape (N, K) and y_true arrive from the left at forward and at backward, where y-hat fills the dvalues slot, self.dinputs of shape (N, K) goes back to the left as the softmax's dvalues, the per-sample losses leave to the right, and where an upstream gradient would arrive there is nothing, because dL/dL = 1.](diagrams/02-where-backprop-starts.svg)
 
 *The loss is the one class with nothing after it, which is why its `dvalues` is not a gradient.*
 
@@ -166,7 +166,11 @@ N =  30  loss 0.5202  entry [0, 0]: -0.047619  summed over rows with 1/N: [-0.47
 N = 300  loss 0.5202  entry [0, 0]: -0.004762  summed over rows with 1/N: [-0.4762 -0.5556 -0.6667]  without: [-142.86 -166.67 -200.  ]
 ```
 
-The loss is 0.5202 at every size, as a mean should be. A single entry of the gradient shrinks in proportion to $1/N$, and the sum over the rows, which is what reaches the parameters, does not move. Without the division that sum grows in proportion to $N$: 100 times larger at 300 samples than at 3.
+The loss is 0.5202 at every size, as a mean should be. A single entry of the gradient shrinks in proportion to $1/N$, and the sum over the rows, which is what reaches the parameters, does not move. Without the division that sum grows in proportion to $N$: 100 times larger at 300 samples than at 3. The figure below draws the class-0 column of the three lines on log axes.
+
+![A chart on log axes of the class-0 column of the gradient against the batch size N = 3, 30 and 300, sizes drawn since every value is negative. Summed over the rows with the 1/N it is 0.476 at every N, a flat line; a single entry falls as 0.476, 0.0476, 0.00476; summed without the 1/N it rises as 1.43, 14.29, 142.86.](diagrams/03-batch-size.svg)
+
+*With the 1/N the sum that reaches the parameters is flat; without it the sum grows in step with the batch.*
 
 The summed version is the gradient of the summed loss, so it points in the same direction, and a learning rate $N$ times smaller would produce the same step. The cost is that the learning rate then means something different at every batch size. This is the dependence that post 08 said a summed loss would bring.
 
