@@ -11,9 +11,9 @@
 > - Implement Optimizer_RMSprop with per-layer caches and sensible defaults for the learning rate, rho and epsilon.
 > - Place RMSProp between AdaGrad and Adam by naming what it keeps from the first and what the second adds to it.
 
-![Two cache update rules side by side above a log-log chart of cache value against iteration, for a gradient of constant size 0.5. AdaGrad's cache climbs along a straight line from 0.25 to 2,500 at iteration 10,000. RMSProp's cache with rho 0.9 rises to 0.25 within the first hundred iterations and then stays flat.](diagrams/01-rmsprop-vs-adagrad-cache.svg)
+![Two charts of the cache against the step. Left, a gradient of constant size 0.5 on log-log axes: AdaGrad's sum climbs as 0.25 t to 25,000 at step 100,000, while RMSProp's average with rho 0.9 is within 1 percent of 0.25 from step 44 and stays there. Right, the gradient falls from 2 to 0.1 at step 1,000: AdaGrad stays above 4,000, RMSProp with rho 0.9 drops to the new level 0.01 within 101 steps, and with rho 0.999 it falls from 2.5292 to 0.01 over 10,130 steps.](diagrams/01-sum-against-average.svg)
 
-*The same gradient feeds both rules. The sum has no ceiling; the average settles at the squared gradient. The side panel's RMSProp value at iteration 100 rounds to 0.250, not 0.249 (section 3), and the figure's "Part 25" is post 25.*
+*The same gradients feed both rules. The sum has no ceiling and never comes down; the average settles at the squared gradient and follows it down when the gradient shrinks.*
 
 ---
 
@@ -61,7 +61,11 @@ rho     1/(1-rho)  rho^10      rho^100     rho^1000    rho^(1/(1-rho))  weight o
 1/e = 0.3679
 ```
 
-With $\rho = 0.9$ a gradient from 10 steps ago still counts 0.35 times as much as the newest, and one from 100 steps ago $2.7 \times 10^{-5}$ times as much. The usual summary is that the average has a **memory horizon** of about $1 / (1 - \rho)$ steps: 10 for $\rho = 0.9$, 100 for 0.99, 1,000 for 0.999. That is a closed-form rule of thumb, not a cut-off. At an age of $1 / (1 - \rho)$ steps the weight has fallen to roughly $1/e$ of the newest, and the newest $1 / (1 - \rho)$ samples carry about 63 to 65 percent of the total weight. A larger $\rho$ means a longer memory and a cache that changes more slowly.
+With $\rho = 0.9$ a gradient from 10 steps ago still counts 0.35 times as much as the newest, and one from 100 steps ago $2.7 \times 10^{-5}$ times as much. The usual summary is that the average has a **memory horizon** of about $1 / (1 - \rho)$ steps: 10 for $\rho = 0.9$, 100 for 0.99, 1,000 for 0.999. That is a closed-form rule of thumb, not a cut-off. At an age of $1 / (1 - \rho)$ steps the weight has fallen to roughly $1/e$ of the newest, and the newest $1 / (1 - \rho)$ samples carry about 63 to 65 percent of the total weight. A larger $\rho$ means a longer memory and a cache that changes more slowly. The figure below draws $\rho^k$ against the age $k$ for the three factors of the table.
+
+![A chart of the weight a squared gradient k steps old carries, as a share of the newest one's, against the age on a logarithmic axis from 1 to 10,000 steps. AdaGrad is a flat line at 1. The three RMSProp curves, rho to the k, fall through a dotted line at 1/e: rho 0.9 at 0.3487 at age 10, rho 0.99 at 0.3660 at age 100, and rho 0.999 at 0.3677 at age 1,000.](diagrams/02-memory-horizon.svg)
+
+*A horizon ten times longer moves the curve about one decade to the right. AdaGrad's sum never forgets.*
 
 ---
 
@@ -95,7 +99,7 @@ rho 0.999: within 1 percent of the new level 0.01 after 10,130 steps
 AdaGrad: 1/sqrt(G) is 0.0158 at t = 1,000 and 0.0154 at t = 21,000; RMSProp 0.9: 0.5000 and 10.0000
 ```
 
-With $\rho = 0.9$ the cache falls from 4 to the new level 0.01 in about a hundred steps, and the factor $1 / \sqrt{G}$ rises from 0.5 to 10. With $\rho = 0.999$ the same recovery takes about ten thousand steps, and at step 1,000 the cache has reached only 2.5292 of the 4 it is heading for, because of its zero start. AdaGrad cannot recover at all: the 4,000 it accumulated during the turbulent phase is permanent, and its factor stays near 0.016.
+With $\rho = 0.9$ the cache falls from 4 to the new level 0.01 in about a hundred steps, and the factor $1 / \sqrt{G}$ rises from 0.5 to 10. With $\rho = 0.999$ the same recovery takes about ten thousand steps, and at step 1,000 the cache has reached only 2.5292 of the 4 it is heading for, because of its zero start. AdaGrad cannot recover at all: the 4,000 it accumulated during the turbulent phase is permanent, and its factor stays near 0.016. The figure at the top of the post draws both streams of this section.
 
 ---
 
@@ -230,6 +234,12 @@ On this seed AdaGrad ends at a loss of 0.3847 and 84.00 percent accuracy, the fi
 
 **The two learning rates are 50 times apart and the steps are not.** At epochs 10 and 100 the median scale is 3.858 and 3.456 under AdaGrad and 4.034 and 4.060 under RMSProp; among the parameters that still learn it is 1.319 and 1.266 at epoch 1,000. AdaGrad divides a rate of 1.0 by the root of a sum; RMSProp divides a rate of 0.02 by the root of an average, which is far smaller.
 
+The figure below draws every epoch of both runs, the loss and the mean update.
+
+![Two charts of the documented runs on seed 0 over 10,001 epochs, AdaGrad in grey and RMSProp in blue. Top, the loss on a log axis: AdaGrad falls smoothly to 0.3847; RMSProp falls lower, to 0.2379, but spikes again and again, and its highest loss of the last 1,000 epochs is 1.6829 at epoch 9,130. Bottom, the mean distance moved per update on a log axis: AdaGrad's falls from 1.18 times 10 to the minus 2 at epoch 100 to 9.42 times 10 to the minus 4, RMSProp's from 1.05 times 10 to the minus 2 to 6.08 times 10 to the minus 3.](diagrams/03-documented-runs.svg)
+
+*AdaGrad's mean update shrinks 12.5 times between epochs 100 and 10,000, RMSProp's 1.7 times; the steps that stay long are also the ones that overshoot.*
+
 ### 7.2 Ten seeds
 
 One seed is one draw. `seeds_adagrad.py`, `seeds_rmsprop.py` and their `_more` companions repeat both runs for seeds 0 to 9, calling `np.random.seed(seed)` after `nnfs.init()` so that the data and the weights are redrawn. Accuracies are in percent; "late" means the last 1,000 epochs.
@@ -249,7 +259,11 @@ One seed is one draw. `seeds_adagrad.py`, `seeds_rmsprop.py` and their `_more` c
 
 **RMSProp usually finishes higher, not always.** Its final accuracy runs from 77.00 to 95.00 percent and AdaGrad's from 75.67 to 92.67. RMSProp is ahead in seven of the ten seeds and behind in seeds 3, 5 and 7; the mean accuracy over the last 1,000 epochs, which the scripts also print, gives the same seven and the same three (75.35 to 94.91 percent for RMSProp, 75.94 to 92.57 for AdaGrad). The 90.00 against 84.00 percent of seed 0 is a typical draw, not a guaranteed margin.
 
-**RMSProp's last epoch is a noisy reading.** AdaGrad's curve is smooth at the end: in no seed is its lowest late accuracy more than 1.34 points under its final one, or its highest late loss more than 0.012 above its final loss. RMSProp's loss spikes. In eight of the ten seeds its loss exceeds 1.5 somewhere in the last 1,000 epochs, against a final loss between 0.13 and 0.36 in those seeds, and in eight, not the same eight, its accuracy falls below 70 percent. Section 11 shows one spike epoch by epoch. The bounded cache keeps the steps long enough to go on learning, and steps that stay long can also overshoot.
+**RMSProp's last epoch is a noisy reading.** AdaGrad's curve is smooth at the end: in no seed is its lowest late accuracy more than 1.34 points under its final one, or its highest late loss more than 0.012 above its final loss. RMSProp's loss spikes. In eight of the ten seeds its loss exceeds 1.5 somewhere in the last 1,000 epochs, against a final loss between 0.13 and 0.36 in those seeds, and in eight, not the same eight, its accuracy falls below 70 percent. Section 11 shows one spike epoch by epoch. The bounded cache keeps the steps long enough to go on learning, and steps that stay long can also overshoot. The figure below sets three columns of the table side by side for each seed.
+
+![Three dot plots, one row per seed from 0 to 9, AdaGrad as a grey circle and RMSProp as a blue diamond. Final accuracy: RMSProp ahead on seven seeds, behind on seeds 3, 5 and 7, from 77.00 to 95.00 percent against 75.67 to 92.67. Lowest accuracy of the last 1,000 epochs: AdaGrad stays within 1.34 points of its final accuracy, RMSProp falls below a dotted line at 70 percent on eight seeds, to 45.67 at the lowest. Highest loss of the last 1,000 epochs: AdaGrad at most 0.5384, RMSProp above a dotted line at 1.5 on eight seeds, up to 4.7996.](diagrams/04-ten-seeds.svg)
+
+*Over the last 1,000 epochs AdaGrad's runs barely move; RMSProp's, which mostly end higher, dip and spike on most seeds.*
 
 Whether momentum or per-parameter scaling matters more on the spiral is a comparison this post does not run; post 27 puts the optimisers of Part VI side by side.
 
@@ -264,10 +278,6 @@ The decay factor sets the memory horizon of section 2:
 | 0.9 | 10 steps | reacts within tens of steps to a change in the gradient |
 | 0.99 | 100 steps | in between |
 | 0.999 | 1,000 steps | smooth, and slow to follow a change in either direction |
-
-![A chart of the weight a past gradient still carries against its age in steps, on a logarithmic age axis. AdaGrad is a flat line at one. Three RMSProp curves fall away at different ages: rho 0.9 crosses the 1/e level near 10 steps, rho 0.99 near 100 and rho 0.999 near 1,000. A side card lists the three horizons.](diagrams/02-memory-horizon.svg)
-
-*The horizon $1/(1 - \rho)$ is the age at which a gradient's weight has fallen to about $1/e$. The card's "noisy" for 0.9, its "usual default" and the library defaults it names are conventions, not measurements of this post.*
 
 At the lower end, $\rho = 0$ makes the cache the current squared gradient, and the update becomes $\alpha \, g / (|g| + \epsilon)$: every parameter moves by $\alpha$ against the sign of its gradient and the size of the gradient is ignored. Libraries do not agree on a default; 0.9 and 0.99 are both in use.
 

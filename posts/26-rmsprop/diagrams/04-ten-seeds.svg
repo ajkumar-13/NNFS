@@ -1,0 +1,301 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-04-ten-seeds-title" aria-describedby="nn-04-ten-seeds-desc">
+<title id="nn-04-ten-seeds-title">RMSProp mostly ends higher, and spikes late on most seeds</title>
+<desc id="nn-04-ten-seeds-desc">Three dot plots, one row per seed from 0 to 9, AdaGrad (learning rate 1, decay 10 to the minus 4) as a grey circle and RMSProp (learning rate 0.02, decay 10 to the minus 5, rho 0.999) as a blue diamond on each row, 10,001 epochs per run. Final accuracy in percent, seeds 0 to 9: AdaGrad 84.00, 75.67, 81.67, 92.67, 79.67, 84.67, 84.67, 89.67, 83.67, 82.00; RMSProp 90.00, 89.00, 87.33, 91.67, 95.00, 77.33, 89.00, 77.00, 85.67, 85.33; RMSProp is ahead on seven seeds and behind on seeds 3, 5 and 7. Lowest accuracy of the last 1,000 epochs, with a dotted line at 70 percent: AdaGrad 83.67, 75.33, 80.33, 92.33, 78.67, 83.67, 84.33, 89.00, 83.67, 81.67; RMSProp 59.33, 61.67, 66.67, 52.00, 70.00, 66.33, 45.67, 75.67, 57.33, 48.00, below 70 on eight seeds. Highest loss of the last 1,000 epochs, with a dotted line at 1.5: AdaGrad 0.3933, 0.5384, 0.3820, 0.2283, 0.4137, 0.3329, 0.3506, 0.3104, 0.3849, 0.3571; RMSProp 1.6829, 1.8076, 1.5053, 3.6640, 1.6136, 0.7458, 4.7996, 0.5483, 1.5976, 2.9183, above 1.5 on eight seeds.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--nn-blue); }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-rule { stroke: var(--nn-rule); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-04-ten-seeds-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title" data-w="741">RMSProp mostly ends higher, and spikes late on most seeds</text>
+<text x="40" y="76" class="t-subtitle" data-w="656">Seeds 0 to 9, 10,001 epochs each, at the documented settings. Late: the last 1,000 epochs.</text>
+<g data-grid="skip">
+<path d="M104,160V576M182,160V576M260,160V576M338,160V576" class="gridline"/>
+<text x="104" y="596" text-anchor="middle" class="t-tick" data-w="16">40</text>
+<text x="182" y="596" text-anchor="middle" class="t-tick" data-w="16">60</text>
+<text x="260" y="596" text-anchor="middle" class="t-tick" data-w="16">80</text>
+<text x="338" y="596" text-anchor="middle" class="t-tick" data-w="23">100</text>
+<path d="M104,576H338" class="axis"/>
+<path d="M275.6,180.8H299" class="s-rule w15 nofill"/>
+<circle cx="275.6" cy="180.8" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M299,174.8 L305,180.8 L299,186.8 L293,180.8 Z" class="f-blue s-surface w1"/>
+<text x="40" y="185.8" class="t-label" data-w="45">seed 0</text>
+<path d="M243.11,222.4H295.1" class="s-rule w15 nofill"/>
+<circle cx="243.11" cy="222.4" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M295.1,216.4 L301.1,222.4 L295.1,228.4 L289.1,222.4 Z" class="f-blue s-surface w1"/>
+<text x="40" y="227.4" class="t-label" data-w="45">seed 1</text>
+<path d="M266.51,264H288.59" class="s-rule w15 nofill"/>
+<circle cx="266.51" cy="264" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M288.59,258 L294.59,264 L288.59,270 L282.59,264 Z" class="f-blue s-surface w1"/>
+<text x="40" y="269" class="t-label" data-w="45">seed 2</text>
+<path d="M305.51,305.6H309.41" class="s-rule w15 nofill"/>
+<circle cx="309.41" cy="305.6" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M305.51,299.6 L311.51,305.6 L305.51,311.6 L299.51,305.6 Z" class="f-blue s-surface w1"/>
+<text x="40" y="310.6" class="t-label" data-w="45">seed 3</text>
+<path d="M258.71,347.2H318.5" class="s-rule w15 nofill"/>
+<circle cx="258.71" cy="347.2" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M318.5,341.2 L324.5,347.2 L318.5,353.2 L312.5,347.2 Z" class="f-blue s-surface w1"/>
+<text x="40" y="352.2" class="t-label" data-w="45">seed 4</text>
+<path d="M249.59,388.8H278.21" class="s-rule w15 nofill"/>
+<circle cx="278.21" cy="388.8" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M249.59,382.8 L255.59,388.8 L249.59,394.8 L243.59,388.8 Z" class="f-blue s-surface w1"/>
+<text x="40" y="393.8" class="t-label" data-w="45">seed 5</text>
+<path d="M278.21,430.4H295.1" class="s-rule w15 nofill"/>
+<circle cx="278.21" cy="430.4" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M295.1,424.4 L301.1,430.4 L295.1,436.4 L289.1,430.4 Z" class="f-blue s-surface w1"/>
+<text x="40" y="435.4" class="t-label" data-w="45">seed 6</text>
+<path d="M248.3,472H297.71" class="s-rule w15 nofill"/>
+<circle cx="297.71" cy="472" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M248.3,466 L254.3,472 L248.3,478 L242.3,472 Z" class="f-blue s-surface w1"/>
+<text x="40" y="477" class="t-label" data-w="45">seed 7</text>
+<path d="M274.31,513.6H282.11" class="s-rule w15 nofill"/>
+<circle cx="274.31" cy="513.6" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M282.11,507.6 L288.11,513.6 L282.11,519.6 L276.11,513.6 Z" class="f-blue s-surface w1"/>
+<text x="40" y="518.6" class="t-label" data-w="45">seed 8</text>
+<path d="M267.8,555.2H280.79" class="s-rule w15 nofill"/>
+<circle cx="267.8" cy="555.2" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M280.79,549.2 L286.79,555.2 L280.79,561.2 L274.79,555.2 Z" class="f-blue s-surface w1"/>
+<text x="40" y="560.2" class="t-label" data-w="45">seed 9</text>
+</g>
+<g data-grid="skip">
+<path d="M386,160V576M464,160V576M542,160V576M620,160V576" class="gridline"/>
+<text x="386" y="596" text-anchor="middle" class="t-tick" data-w="16">40</text>
+<text x="464" y="596" text-anchor="middle" class="t-tick" data-w="16">60</text>
+<text x="542" y="596" text-anchor="middle" class="t-tick" data-w="16">80</text>
+<text x="620" y="596" text-anchor="middle" class="t-tick" data-w="23">100</text>
+<path d="M386,576H620" class="axis"/>
+<path d="M503,160V576" class="s-ink-muted w1 nofill d-ref"/>
+<text x="509" y="152" class="t-note f-ink-muted" data-w="17">70</text>
+<path d="M461.39,180.8H556.31" class="s-rule w15 nofill"/>
+<circle cx="556.31" cy="180.8" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M461.39,174.8 L467.39,180.8 L461.39,186.8 L455.39,180.8 Z" class="f-blue s-surface w1"/>
+<text x="386" y="185.8" class="t-label" data-w="0"></text>
+<path d="M470.51,222.4H523.79" class="s-rule w15 nofill"/>
+<circle cx="523.79" cy="222.4" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M470.51,216.4 L476.51,222.4 L470.51,228.4 L464.51,222.4 Z" class="f-blue s-surface w1"/>
+<text x="386" y="227.4" class="t-label" data-w="0"></text>
+<path d="M490.01,264H543.29" class="s-rule w15 nofill"/>
+<circle cx="543.29" cy="264" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M490.01,258 L496.01,264 L490.01,270 L484.01,264 Z" class="f-blue s-surface w1"/>
+<text x="386" y="269" class="t-label" data-w="0"></text>
+<path d="M432.8,305.6H590.09" class="s-rule w15 nofill"/>
+<circle cx="590.09" cy="305.6" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M432.8,299.6 L438.8,305.6 L432.8,311.6 L426.8,305.6 Z" class="f-blue s-surface w1"/>
+<text x="386" y="310.6" class="t-label" data-w="0"></text>
+<path d="M503,347.2H536.81" class="s-rule w15 nofill"/>
+<circle cx="536.81" cy="347.2" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M503,341.2 L509,347.2 L503,353.2 L497,347.2 Z" class="f-blue s-surface w1"/>
+<text x="386" y="352.2" class="t-label" data-w="0"></text>
+<path d="M488.69,388.8H556.31" class="s-rule w15 nofill"/>
+<circle cx="556.31" cy="388.8" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M488.69,382.8 L494.69,388.8 L488.69,394.8 L482.69,388.8 Z" class="f-blue s-surface w1"/>
+<text x="386" y="393.8" class="t-label" data-w="0"></text>
+<path d="M408.11,430.4H558.89" class="s-rule w15 nofill"/>
+<circle cx="558.89" cy="430.4" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M408.11,424.4 L414.11,430.4 L408.11,436.4 L402.11,430.4 Z" class="f-blue s-surface w1"/>
+<text x="386" y="435.4" class="t-label" data-w="0"></text>
+<path d="M525.11,472H577.1" class="s-rule w15 nofill"/>
+<circle cx="577.1" cy="472" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M525.11,466 L531.11,472 L525.11,478 L519.11,472 Z" class="f-blue s-surface w1"/>
+<text x="386" y="477" class="t-label" data-w="0"></text>
+<path d="M453.59,513.6H556.31" class="s-rule w15 nofill"/>
+<circle cx="556.31" cy="513.6" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M453.59,507.6 L459.59,513.6 L453.59,519.6 L447.59,513.6 Z" class="f-blue s-surface w1"/>
+<text x="386" y="518.6" class="t-label" data-w="0"></text>
+<path d="M417.2,555.2H548.51" class="s-rule w15 nofill"/>
+<circle cx="548.51" cy="555.2" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M417.2,549.2 L423.2,555.2 L417.2,561.2 L411.2,555.2 Z" class="f-blue s-surface w1"/>
+<text x="386" y="560.2" class="t-label" data-w="0"></text>
+</g>
+<g data-grid="skip">
+<path d="M668,160V576M714.8,160V576M761.6,160V576M808.4,160V576M855.2,160V576M902,160V576" class="gridline"/>
+<text x="668" y="596" text-anchor="middle" class="t-tick" data-w="8">0</text>
+<text x="714.8" y="596" text-anchor="middle" class="t-tick" data-w="8">1</text>
+<text x="761.6" y="596" text-anchor="middle" class="t-tick" data-w="8">2</text>
+<text x="808.4" y="596" text-anchor="middle" class="t-tick" data-w="8">3</text>
+<text x="855.2" y="596" text-anchor="middle" class="t-tick" data-w="8">4</text>
+<text x="902" y="596" text-anchor="middle" class="t-tick" data-w="8">5</text>
+<path d="M668,576H902" class="axis"/>
+<path d="M738.2,160V576" class="s-ink-muted w1 nofill d-ref"/>
+<text x="744.2" y="152" class="t-note f-ink-muted" data-w="21">1.5</text>
+<path d="M686.41,180.8H746.76" class="s-rule w15 nofill"/>
+<circle cx="686.41" cy="180.8" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M746.76,174.8 L752.76,180.8 L746.76,186.8 L740.76,180.8 Z" class="f-blue s-surface w1"/>
+<text x="668" y="185.8" class="t-label" data-w="0"></text>
+<path d="M693.2,222.4H752.6" class="s-rule w15 nofill"/>
+<circle cx="693.2" cy="222.4" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M752.6,216.4 L758.6,222.4 L752.6,228.4 L746.6,222.4 Z" class="f-blue s-surface w1"/>
+<text x="668" y="227.4" class="t-label" data-w="0"></text>
+<path d="M685.88,264H738.45" class="s-rule w15 nofill"/>
+<circle cx="685.88" cy="264" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M738.45,258 L744.45,264 L738.45,270 L732.45,264 Z" class="f-blue s-surface w1"/>
+<text x="668" y="269" class="t-label" data-w="0"></text>
+<path d="M678.68,305.6H839.48" class="s-rule w15 nofill"/>
+<circle cx="678.68" cy="305.6" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M839.48,299.6 L845.48,305.6 L839.48,311.6 L833.48,305.6 Z" class="f-blue s-surface w1"/>
+<text x="668" y="310.6" class="t-label" data-w="0"></text>
+<path d="M687.36,347.2H743.52" class="s-rule w15 nofill"/>
+<circle cx="687.36" cy="347.2" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M743.52,341.2 L749.52,347.2 L743.52,353.2 L737.52,347.2 Z" class="f-blue s-surface w1"/>
+<text x="668" y="352.2" class="t-label" data-w="0"></text>
+<path d="M683.58,388.8H702.9" class="s-rule w15 nofill"/>
+<circle cx="683.58" cy="388.8" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M702.9,382.8 L708.9,388.8 L702.9,394.8 L696.9,388.8 Z" class="f-blue s-surface w1"/>
+<text x="668" y="393.8" class="t-label" data-w="0"></text>
+<path d="M684.41,430.4H892.62" class="s-rule w15 nofill"/>
+<circle cx="684.41" cy="430.4" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M892.62,424.4 L898.62,430.4 L892.62,436.4 L886.62,430.4 Z" class="f-blue s-surface w1"/>
+<text x="668" y="435.4" class="t-label" data-w="0"></text>
+<path d="M682.53,472H693.66" class="s-rule w15 nofill"/>
+<circle cx="682.53" cy="472" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M693.66,466 L699.66,472 L693.66,478 L687.66,472 Z" class="f-blue s-surface w1"/>
+<text x="668" y="477" class="t-label" data-w="0"></text>
+<path d="M686.01,513.6H742.77" class="s-rule w15 nofill"/>
+<circle cx="686.01" cy="513.6" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M742.77,507.6 L748.77,513.6 L742.77,519.6 L736.77,513.6 Z" class="f-blue s-surface w1"/>
+<text x="668" y="518.6" class="t-label" data-w="0"></text>
+<path d="M684.71,555.2H804.58" class="s-rule w15 nofill"/>
+<circle cx="684.71" cy="555.2" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M804.58,549.2 L810.58,555.2 L804.58,561.2 L798.58,555.2 Z" class="f-blue s-surface w1"/>
+<text x="668" y="560.2" class="t-label" data-w="0"></text>
+</g>
+<text x="104" y="120" class="t-head" data-w="189">Final accuracy, percent</text>
+<text x="384" y="120" class="t-head" data-w="243">Lowest late accuracy, percent</text>
+<text x="668" y="120" class="t-head" data-w="137">Highest late loss</text>
+<circle cx="112" cy="644" r="5" class="f-ink-muted s-surface w1"/>
+<text x="136" y="648" class="t-label" data-w="119">AdaGrad, post 25</text>
+<path d="M304,638 L310,644 L304,650 L298,644 Z" class="f-blue s-surface w1"/>
+<text x="328" y="648" class="t-label" data-w="66">RMSProp</text>
+<text x="40" y="684" class="t-note" data-w="570">RMSProp ends higher on seven seeds; on eight its late loss passes 1.5 at least once.</text>
+</svg>

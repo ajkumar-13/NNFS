@@ -9,7 +9,7 @@ part: "Part VI - Optimisers"
 level: intermediate
 reading_time: 24
 tags: [neural-networks, from-scratch, optimisation, rmsprop, adaptive-rates, ema]
-hero: diagrams/01-rmsprop-vs-adagrad-cache.svg
+hero: diagrams/01-sum-against-average.svg
 prerequisites: [nn-025]
 code: included
 outcomes:
