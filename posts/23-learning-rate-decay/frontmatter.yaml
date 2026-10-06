@@ -9,7 +9,7 @@ part: "Part VI - Optimisers"
 level: intermediate
 reading_time: 22
 tags: [neural-networks, from-scratch, optimisation, learning-rate, scheduling]
-hero: diagrams/01-decay-schedule-and-result.svg
+hero: diagrams/01-last-epochs-per-seed.svg
 prerequisites: [nn-022]
 code: included
 outcomes:

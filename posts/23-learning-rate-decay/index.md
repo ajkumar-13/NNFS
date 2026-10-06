@@ -11,9 +11,9 @@
 > - Extend Optimizer_SGD with pre_update_params, post_update_params and an iterations counter.
 > - Diagnose whether a plateau is a learning-rate issue or a local-minimum issue.
 
-![Two panels. Left: the learning rate over 10,000 iterations, flat at 1.0 for d = 0, falling to about 0.09 for d = 1e-3, and already near 0.09 after 1,000 iterations for d = 1e-2. Right: three sketched loss curves over 10,000 epochs, ending at 0.87 with no decay, 0.76 with d = 1e-3 and 1.07 with d = 1e-2.](diagrams/01-decay-schedule-and-result.svg)
+![For seeds 0 to 4, the loss in the last 1,000 of 10,001 epochs as a band from its lowest to its highest value, with a tick at the mean and a dot at epoch 10,000, once for the constant rate d = 0 in grey and once for d = 10 to the minus 3 in blue. The grey bands are 0.098 to 2.283 wide, from 0.835 to 0.933 on seed 0 up to 0.352 to 2.636 on seed 3; the blue ones are 0.021 to 0.035 wide and lie between 0.731 and 0.934. Columns give the largest one-step rise, 0.0553 to 1.1043 without decay and at most 0.0152 with it, the mean loss, lower with decay on seed 0 only, and the width of each band.](diagrams/01-last-epochs-per-seed.svg)
 
-*The left panel is the schedule itself. The right panel is a sketch: its three end values are the losses measured on seed 0, the shapes of its curves are not drawn from data, and its label "winner" holds for that seed only (section 6).*
+*With decay the loss settles in a narrow band on every seed; without it, the final value is wherever epoch 10,000 happens to fall in a wide one.*
 
 ---
 
@@ -112,7 +112,11 @@ d=0.1     sum      69.6   share of the constant rate   0.7%
 exponential, gamma above: sum    1441.8
 ```
 
-This is the price of decay, known before any training: $d = 10^{-3}$ leaves 24 percent of the constant rate's budget, $d = 10^{-2}$ under 5 percent.
+This is the price of decay, known before any training: $d = 10^{-3}$ leaves 24 percent of the constant rate's budget, $d = 10^{-2}$ under 5 percent. The figure draws the rates of the four settings that section 6 trains and, under them, their sums.
+
+![Top: the learning rate alpha_t = alpha_0 / (1 + d t) with alpha_0 = 1 over updates 0 to 10,000. d = 0 stays at 1, d = 10 to the minus 4 ends at 0.5, d = 10 to the minus 3, in blue, is at a half at update 1,000, a quarter at 3,000 and an eighth at 7,000, and d = 10 to the minus 2 is at 0.5 after 100 updates. Bottom: bars of the sum of the 10,001 rates, 10,001.0, 6,932.2, 2,398.4 and 462.0, which are 100.0, 69.3, 24.0 and 4.6 percent of the constant rate's sum.](diagrams/02-schedule-and-budget.svg)
+
+*Each halving of the rate takes twice as long as the one before, and still $d = 10^{-3}$ gives up three quarters of the distance a constant rate could cover.*
 
 The sum also explains the form. For noisy gradients, two conditions on the step sizes, usually named after Robbins and Monro (1951), are the classical route to a convergence proof: $\sum_t \alpha_t = \infty$, so the steps can still cover any distance, and $\sum_t \alpha_t^2 < \infty$, so the noise is averaged away. Rates that fall like $1/t$ meet both, and an exponential schedule fails the first, because its sum is finite. Bottou (2012) recommends a schedule of this inverse-time form for stochastic gradient descent. Two cautions apply here. The conditions come with assumptions that a neural network's loss does not satisfy, so no schedule guarantees the best minimum. And the full-batch gradient of this post has no sampling noise at all; the shrinking rate is used against overshooting, not against noise.
 
@@ -144,7 +148,11 @@ class Optimizer_SGD:
         self.iterations += 1
 ```
 
-Against the class of post 22, the additions are the `decay` argument, the attributes `current_learning_rate`, `decay` and `iterations`, and the methods `pre_update_params` and `post_update_params`. The two existing lines change in one name each: `update_params` reads `current_learning_rate` where it read `learning_rate`.
+Against the class of post 22, the additions are the `decay` argument, the attributes `current_learning_rate`, `decay` and `iterations`, and the methods `pre_update_params` and `post_update_params`. The two existing lines change in one name each: `update_params` reads `current_learning_rate` where it read `learning_rate`. The figure sets the class beside the calls that the training loop of section 5 makes to it.
+
+![A card with the class Optimizer_SGD. Beside the constructor's attributes stand the symbols alpha_0 for learning_rate, alpha_t for current_learning_rate, d for decay and t for iterations. Tags mark pre_update_params and post_update_params as run once per step and update_params as run once per layer; in update_params the parameters layer.weights and layer.biases are orange and the gradients layer.dweights and layer.dbiases purple. On the left, arrows run from the constructor call, once before the loop, and from the four calls of every step, pre_update_params, update_params for dense1 and for dense2, and post_update_params, to their methods.](diagrams/03-optimizer-class.svg)
+
+*Every layer of a step reads the same $\alpha_t$, and the counter moves once, after the last layer.*
 
 **Two rate attributes.** `learning_rate` is $\alpha_0$ and is never overwritten. `current_learning_rate` is $\alpha_t$, written by `pre_update_params` and read by `update_params`. It is an attribute and not a return value because `update_params` is called once per layer and every layer of one step must see the same rate.
 
@@ -252,7 +260,7 @@ decay has the lower mean loss on seeds [0], the higher mean accuracy on seeds [0
 
 **The jumps disappear, on every seed.** With the constant rate the loss rises on 4,154 to 4,765 of the 10,000 steps, and its largest single rise is between 0.0553 and 1.1043. With decay the largest rise is between 0 and 0.0152. The loss still goes up on many steps in four of the five decayed runs, but by far less: the largest rise is about a quarter of the constant rate's on seed 0 and under a hundredth of it on the other four.
 
-**The end of a constant-rate run is a draw.** In its last 1,000 epochs the constant-rate loss moves inside a band that is 0.098 to 2.283 wide, and the reported final loss is wherever in that band epoch 10,000 happens to fall. On seed 3 the band reaches from 0.352 to 2.636. The decayed runs stay within a band of 0.021 to 0.035, so stopping an epoch earlier or later reports nearly the same loss.
+**The end of a constant-rate run is a draw.** In its last 1,000 epochs the constant-rate loss moves inside a band that is 0.098 to 2.283 wide, and the reported final loss is wherever in that band epoch 10,000 happens to fall. On seed 3 the band reaches from 0.352 to 2.636. The decayed runs stay within a band of 0.021 to 0.035, so stopping an epoch earlier or later reports nearly the same loss. The figure at the top of the post draws every band of the table with its mean and its final value.
 
 **Decay does not end lower on most seeds.** By the final loss the decayed run is lower on seeds 0 and 2 and higher on seeds 1, 3 and 4. A final value of the constant-rate run is one draw from its band, though, so the comparison that does not depend on the stopping epoch is the mean over the last 1,000 epochs, and it is less kind to decay: the decayed mean loss is the lower one on seed 0 only (0.7714 against 0.8703), and on seed 2 the order turns round (0.9222 against 0.8905). The mean accuracy is higher with decay on seeds 0 and 2, by 4 points and by 1, and lower on seeds 1, 3 and 4, by 4 to 16 points. The comparison on seed 0 alone would have suggested a clear gain; the spread shows a trade. Decay buys a steady, repeatable descent and pays with the 76 percent of the step budget it gives up (section 3), and inside 10,001 epochs that budget was worth more than the steadiness on four of these five seeds.
 
@@ -302,7 +310,11 @@ seed  loss    acc     last rate  |gradient|  fall in the last 1,000 epochs   los
    4  1.0457  0.4633  0.0099     0.0094      0.00081                         0.7384      0.6367
 ```
 
-`|gradient|` is the length of the whole gradient, the square root of the sum of the squares of all 387 entries of the four gradient arrays. At these plateaus it is 0.0030 to 0.0094, about a hundredth of the 0.33 to 0.81 at which seven of the ten runs of section 6.1 end, and the loss fell by less than 0.001 in the last 1,000 epochs. Both numbers look like a minimum. The test is to restore the rate: the last two columns are the same networks after 3,000 further epochs with `Optimizer_SGD(learning_rate=1.0)`. On all five seeds the loss falls, to between 0.7384 and 0.9548, and the accuracy rises by 10 to 18 points. The plateau was the rate.
+`|gradient|` is the length of the whole gradient, the square root of the sum of the squares of all 387 entries of the four gradient arrays. At these plateaus it is 0.0030 to 0.0094, about a hundredth of the 0.33 to 0.81 at which seven of the ten runs of section 6.1 end, and the loss fell by less than 0.001 in the last 1,000 epochs. Both numbers look like a minimum. The test is to restore the rate: the last two columns are the same networks after 3,000 further epochs with `Optimizer_SGD(learning_rate=1.0)`. On all five seeds the loss falls, to between 0.7384 and 0.9548, and the accuracy rises by 10 to 18 points. The plateau was the rate. The figure draws the five networks before and after the test.
+
+![A dot chart with one row per seed 0 to 4 on a loss axis from 0.7 to 1.15, with a dotted line at ln 3 = 1.0986. A hollow circle marks the loss after 10,001 epochs with d = 10 to the minus 2, between 1.0457 and 1.0725, and a diamond the loss after 3,000 more epochs at a constant rate of 1, between 0.7384 and 0.9548. Columns give both losses and the accuracies, which rise from 39.7 to 46.3 percent to 53.3 to 63.7 percent.](diagrams/04-plateau-test.svg)
+
+*Every diamond lies left of its circle: the networks that looked stuck at a minimum learn again as soon as the rate is back.*
 
 A plateau is a learning-rate issue when restoring the rate, with a new optimiser object or by setting `optimizer.iterations = 0`, makes the loss fall again. It is a minimum, or a region too flat to cross, when the loss stays where it is at every rate that does not make it jump. None of the 20 runs of this post is of that kind: the loss was still moving at the end of fifteen of them, and the five that looked flat passed the test.
 
@@ -320,10 +332,6 @@ Two extra methods are a lot of structure for a division and an increment. They a
 | AdaGrad (post 25) | the same | $G \leftarrow G + g^2$, then $\theta \leftarrow \theta - \alpha_t g / (\sqrt{G} + \epsilon)$ | the same |
 | RMSProp (post 26) | the same | $G \leftarrow \rho G + (1 - \rho) g^2$, then the AdaGrad step | the same |
 | Adam (post 27) | the same | moving averages of $g$ and $g^2$, corrected for their zero start, then the step | the same |
-
-![A table of six optimisers as rows, gradient descent, decay, momentum, AdaGrad, RMSProp and Adam, against three columns for pre_update_params, update_params and post_update_params. From the second row down the first column always says recompute alpha and the last always says t += 1, and only the middle column changes.](diagrams/02-three-hook-contract.svg)
-
-*Two of the three columns stop changing here. The figure writes $\epsilon$ inside the square root for AdaGrad and RMSProp; the series' code adds it outside, as the table above does.*
 
 The four update lines of section 5 are therefore written once. Replacing the optimiser object replaces the middle column and leaves the loop alone, and the decay of this post comes with every later optimiser at no further cost.
 

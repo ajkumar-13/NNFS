@@ -1,0 +1,205 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-04-plateau-test-title" aria-describedby="nn-04-plateau-test-desc">
+<title id="nn-04-plateau-test-title">Restoring the rate ends the plateau on every seed</title>
+<desc id="nn-04-plateau-test-desc">A dot chart, one row per seed 0 to 4, on a loss axis from 0.7 to 1.15 with a dotted line at ln 3 = 1.0986. A hollow circle marks the loss after 10,001 epochs with decay 10 to the minus 2, a diamond the loss of the same network after 3,000 more epochs at a constant rate of 1, joined by a line. Seed 0: 1.0725 to 0.9548, accuracy 39.7 to 53.3 percent. Seed 1: 1.0539 to 0.8449, 44.0 to 54.7. Seed 2: 1.0636 to 0.9019, 46.3 to 56.7. Seed 3: 1.0636 to 0.7486, 42.0 to 59.7. Seed 4: 1.0457 to 0.7384, 46.3 to 63.7. The caption gives the gradient length at the plateaus, 0.0030 to 0.0094.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-ink { fill: var(--nn-ink); }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .f-surface { fill: var(--nn-surface); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-rule { stroke: var(--nn-rule); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-04-plateau-test-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="606">Restoring the rate ends the plateau on every seed</text>
+<text x="40" y="76" class="t-subtitle" data-w="697">Five runs of 10,001 epochs with <tspan class="i">d</tspan> = 10<tspan class="sub" dy="-6">−2</tspan><tspan dy="6">​</tspan>, then 3,000 more epochs on the same network at <tspan class="i">α</tspan> = 1.</text>
+<g data-grid="skip">
+<path d="M136,152V368M251.56,152V368M367.11,152V368M482.67,152V368M598.22,152V368" class="gridline"/>
+<text x="136" y="388" text-anchor="middle" class="t-tick" data-w="19">0.7</text>
+<text x="251.56" y="388" text-anchor="middle" class="t-tick" data-w="19">0.8</text>
+<text x="367.11" y="388" text-anchor="middle" class="t-tick" data-w="19">0.9</text>
+<text x="482.67" y="388" text-anchor="middle" class="t-tick" data-w="19">1.0</text>
+<text x="598.22" y="388" text-anchor="middle" class="t-tick" data-w="19">1.1</text>
+<path d="M136,368H656" class="axis"/>
+<path d="M596.62,152V368" class="s-ink-muted w1 nofill d-ref"/>
+<text x="602.62" y="144" class="t-note f-ink-muted" data-w="88">ln 3 = 1.0986</text>
+<path d="M430.44,173.6H566.44" class="s-rule w15 nofill"/>
+<circle cx="566.44" cy="173.6" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M430.44,167.6 L436.44,173.6 L430.44,179.6 L424.44,173.6 Z" class="f-ink s-surface w1"/>
+<text x="40" y="178.6" class="t-label" data-w="45">seed 0</text>
+<path d="M303.44,216.8H544.95" class="s-rule w15 nofill"/>
+<circle cx="544.95" cy="216.8" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M303.44,210.8 L309.44,216.8 L303.44,222.8 L297.44,216.8 Z" class="f-ink s-surface w1"/>
+<text x="40" y="221.8" class="t-label" data-w="45">seed 1</text>
+<path d="M369.31,260H556.16" class="s-rule w15 nofill"/>
+<circle cx="556.16" cy="260" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M369.31,254 L375.31,260 L369.31,266 L363.31,260 Z" class="f-ink s-surface w1"/>
+<text x="40" y="265" class="t-label" data-w="45">seed 2</text>
+<path d="M192.16,303.2H556.16" class="s-rule w15 nofill"/>
+<circle cx="556.16" cy="303.2" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M192.16,297.2 L198.16,303.2 L192.16,309.2 L186.16,303.2 Z" class="f-ink s-surface w1"/>
+<text x="40" y="308.2" class="t-label" data-w="45">seed 3</text>
+<path d="M180.37,346.4H535.48" class="s-rule w15 nofill"/>
+<circle cx="535.48" cy="346.4" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M180.37,340.4 L186.37,346.4 L180.37,352.4 L174.37,346.4 Z" class="f-ink s-surface w1"/>
+<text x="40" y="351.4" class="t-label" data-w="45">seed 4</text>
+</g>
+<text x="396" y="412" text-anchor="middle" class="t-note" data-w="27">loss</text>
+<g data-grid="skip">
+<circle cx="566.44" cy="173.6" r="5" class="f-surface s-surface w1"/>
+<circle cx="566.44" cy="173.6" r="5" class="nofill s-ink-muted w15"/>
+<text x="792" y="178.6" text-anchor="end" class="t-value" data-w="116">1.0725 → 0.9548</text>
+<text x="920" y="178.6" text-anchor="end" class="t-value" data-w="82">39.7 → 53.3</text>
+<circle cx="544.95" cy="216.8" r="5" class="f-surface s-surface w1"/>
+<circle cx="544.95" cy="216.8" r="5" class="nofill s-ink-muted w15"/>
+<text x="792" y="221.8" text-anchor="end" class="t-value" data-w="116">1.0539 → 0.8449</text>
+<text x="920" y="221.8" text-anchor="end" class="t-value" data-w="82">44.0 → 54.7</text>
+<circle cx="556.16" cy="260" r="5" class="f-surface s-surface w1"/>
+<circle cx="556.16" cy="260" r="5" class="nofill s-ink-muted w15"/>
+<text x="792" y="265" text-anchor="end" class="t-value" data-w="116">1.0636 → 0.9019</text>
+<text x="920" y="265" text-anchor="end" class="t-value" data-w="82">46.3 → 56.7</text>
+<circle cx="556.16" cy="303.2" r="5" class="f-surface s-surface w1"/>
+<circle cx="556.16" cy="303.2" r="5" class="nofill s-ink-muted w15"/>
+<text x="792" y="308.2" text-anchor="end" class="t-value" data-w="116">1.0636 → 0.7486</text>
+<text x="920" y="308.2" text-anchor="end" class="t-value" data-w="82">42.0 → 59.7</text>
+<circle cx="535.48" cy="346.4" r="5" class="f-surface s-surface w1"/>
+<circle cx="535.48" cy="346.4" r="5" class="nofill s-ink-muted w15"/>
+<text x="792" y="351.4" text-anchor="end" class="t-value" data-w="116">1.0457 → 0.7384</text>
+<text x="920" y="351.4" text-anchor="end" class="t-value" data-w="82">46.3 → 63.7</text>
+</g>
+<text x="792" y="120" text-anchor="end" class="t-note" data-w="27">loss</text>
+<text x="920" y="120" text-anchor="end" class="t-note" data-w="119">accuracy, percent</text>
+<circle cx="144" cy="452" r="5" class="nofill s-ink-muted w15"/>
+<text x="168" y="456" class="t-label" data-w="215">after 10,001 epochs at <tspan class="i">d</tspan> = 10<tspan class="sub" dy="-6">−2</tspan><tspan dy="6">​</tspan></text>
+<path d="M416,446 L422,452 L416,458 L410,452 Z" class="f-ink s-surface w1"/>
+<text x="440" y="456" class="t-label" data-w="168">after 3,000 more at <tspan class="i">α</tspan> = 1</text>
+<text x="40" y="504" class="t-note" data-w="583">At the plateaus the gradient had length 0.0030 to 0.0094, which looked like a minimum.</text>
+</svg>

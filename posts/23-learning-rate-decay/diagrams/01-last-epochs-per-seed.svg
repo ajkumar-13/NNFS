@@ -1,0 +1,274 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-01-last-epochs-per-seed-title" aria-describedby="nn-01-last-epochs-per-seed-desc">
+<title id="nn-01-last-epochs-per-seed-title">Decay removes the jumps but mostly ends higher</title>
+<desc id="nn-01-last-epochs-per-seed-desc">For seeds 0 to 4, two rows each: the constant rate, d = 0, in grey and decay d = 10 to the minus 3 in blue, on a loss axis from 0.3 to 2.7. Each row is a band from the lowest to the highest loss of the last 1,000 of the 10,001 epochs, a tick at their mean and a dot at the loss of epoch 10,000. Constant rate: seed 0 0.835 to 0.933, mean 0.8703, final 0.8737; seed 1 0.483 to 1.231, mean 0.5880, final 0.5091; seed 2 0.793 to 1.326, mean 0.8905, final 0.9906; seed 3 0.352 to 2.636, mean 0.4159, final 0.3943; seed 4 0.483 to 1.461, mean 0.5842, final 0.4843. Decay: seed 0 0.761 to 0.782, mean 0.7714, final 0.7612; seed 1 0.733 to 0.763, mean 0.7486, final 0.7335; seed 2 0.911 to 0.934, mean 0.9222, final 0.9107; seed 3 0.731 to 0.766, mean 0.7500, final 0.7310; seed 4 0.775 to 0.797, mean 0.7867, final 0.7750. A column gives the largest one-step rise of the loss: 0.0553, 0.2879, 0.2551, 1.1043 and 0.3507 with the constant rate, 0.0152, 0.0002, 0.0000, 0.0099 and 0.0017 with decay, a column repeats the mean loss, and a column gives the band width: 0.098, 0.748, 0.533, 2.283 and 0.978 with the constant rate, 0.021, 0.030, 0.023, 0.035 and 0.022 with decay. A key explains the band, the tick and the dot, and that grey is d = 0 and blue is d = 10 to the minus 3.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--nn-blue); }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .f-neutral-soft { fill: var(--nn-neutral-soft); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-blue-line { stroke: var(--nn-blue-line); }
+  .s-grid { stroke: var(--nn-grid); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-rule { stroke: var(--nn-rule); }
+  .s-surface { stroke: var(--nn-surface); }
+  .w075 { stroke-width: 0.75; }
+</style>
+<defs>
+<marker id="nn-01-last-epochs-per-seed-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title" data-w="604">Decay removes the jumps but mostly ends higher</text>
+<text x="40" y="76" class="t-subtitle" data-w="528">Spiral classifier, <tspan class="i">α</tspan><tspan class="sub" dy="4">0</tspan><tspan dy="-4">​</tspan> = 1, 10,001 epochs: the last 1,000 epochs of each run.</text>
+<text x="40" y="140" class="t-note" data-w="33">seed</text>
+<text x="80" y="140" class="t-note" data-w="47">setting</text>
+<text x="920" y="120" text-anchor="end" class="t-note" data-w="34">band</text>
+<text x="920" y="140" text-anchor="end" class="t-note" data-w="37">width</text>
+<text x="736" y="120" text-anchor="end" class="t-note" data-w="75">largest rise</text>
+<text x="736" y="140" text-anchor="end" class="t-note" data-w="75">in one step</text>
+<text x="832" y="120" text-anchor="end" class="t-note" data-w="73">mean loss,</text>
+<text x="832" y="140" text-anchor="end" class="t-note" data-w="65">last 1,000</text>
+<g data-grid="skip">
+<path d="M214,152 L214,576" class="s-grid w075 nofill"/>
+<path d="M309,152 L309,576" class="s-grid w075 nofill"/>
+<path d="M404,152 L404,576" class="s-grid w075 nofill"/>
+<path d="M499,152 L499,576" class="s-grid w075 nofill"/>
+<path d="M594,152 L594,576" class="s-grid w075 nofill"/>
+<path d="M176,576 L632,576" class="s-ink-muted w1 nofill"/>
+<text x="214" y="596" text-anchor="middle" class="t-tick" data-w="19">0.5</text>
+<text x="309" y="596" text-anchor="middle" class="t-tick" data-w="19">1.0</text>
+<text x="404" y="596" text-anchor="middle" class="t-tick" data-w="19">1.5</text>
+<text x="499" y="596" text-anchor="middle" class="t-tick" data-w="19">2.0</text>
+<text x="594" y="596" text-anchor="middle" class="t-tick" data-w="19">2.5</text>
+<rect x="277.65" y="170" width="18.62" height="20" class="f-neutral-soft" data-fit="skip"/>
+<rect x="277.65" y="170" width="18.62" height="20" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M284.36,173.33 L284.36,186.67" class="s-ink-muted w1 nofill"/>
+<circle cx="285" cy="180" r="3" class="f-ink-muted s-surface w1"/>
+<text x="736" y="185" text-anchor="end" class="t-value f-ink-muted" data-w="47">0.0553</text>
+<text x="832" y="185" text-anchor="end" class="t-value f-ink-muted" data-w="47">0.8703</text>
+<text x="920" y="185" text-anchor="end" class="t-value f-ink-muted" data-w="38">0.098</text>
+<rect x="263.59" y="202" width="3.99" height="20" class="f-blue-soft" data-fit="skip"/>
+<rect x="263.59" y="202" width="3.99" height="20" class="w1 nofill s-blue-line" data-fit="skip"/>
+<path d="M265.57,205.33 L265.57,218.67" class="s-blue w1 nofill"/>
+<circle cx="263.63" cy="212" r="3" class="f-blue s-surface w1"/>
+<text x="736" y="217" text-anchor="end" class="t-value f-blue-ink" data-w="47">0.0152</text>
+<text x="832" y="217" text-anchor="end" class="t-value f-blue-ink" data-w="47">0.7714</text>
+<text x="920" y="217" text-anchor="end" class="t-value f-blue-ink" data-w="38">0.021</text>
+<rect x="210.77" y="254" width="142.12" height="20" class="f-neutral-soft" data-fit="skip"/>
+<rect x="210.77" y="254" width="142.12" height="20" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M230.72,257.33 L230.72,270.67" class="s-ink-muted w1 nofill"/>
+<circle cx="215.73" cy="264" r="3" class="f-ink-muted s-surface w1"/>
+<text x="736" y="269" text-anchor="end" class="t-value f-ink-muted" data-w="47">0.2879</text>
+<text x="832" y="269" text-anchor="end" class="t-value f-ink-muted" data-w="47">0.5880</text>
+<text x="920" y="269" text-anchor="end" class="t-value f-ink-muted" data-w="38">0.748</text>
+<rect x="258.27" y="286" width="5.7" height="20" class="f-blue-soft" data-fit="skip"/>
+<rect x="258.27" y="286" width="5.7" height="20" class="w1 nofill s-blue-line" data-fit="skip"/>
+<path d="M261.23,289.33 L261.23,302.67" class="s-blue w1 nofill"/>
+<circle cx="258.37" cy="296" r="3" class="f-blue s-surface w1"/>
+<text x="736" y="301" text-anchor="end" class="t-value f-blue-ink" data-w="47">0.0002</text>
+<text x="832" y="301" text-anchor="end" class="t-value f-blue-ink" data-w="47">0.7486</text>
+<text x="920" y="301" text-anchor="end" class="t-value f-blue-ink" data-w="38">0.030</text>
+<rect x="269.67" y="338" width="101.27" height="20" class="f-neutral-soft" data-fit="skip"/>
+<rect x="269.67" y="338" width="101.27" height="20" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M288.19,341.33 L288.19,354.67" class="s-ink-muted w1 nofill"/>
+<circle cx="307.21" cy="348" r="3" class="f-ink-muted s-surface w1"/>
+<text x="736" y="353" text-anchor="end" class="t-value f-ink-muted" data-w="47">0.2551</text>
+<text x="832" y="353" text-anchor="end" class="t-value f-ink-muted" data-w="47">0.8905</text>
+<text x="920" y="353" text-anchor="end" class="t-value f-ink-muted" data-w="38">0.533</text>
+<rect x="292.09" y="370" width="4.37" height="20" class="f-blue-soft" data-fit="skip"/>
+<rect x="292.09" y="370" width="4.37" height="20" class="w1 nofill s-blue-line" data-fit="skip"/>
+<path d="M294.22,373.33 L294.22,386.67" class="s-blue w1 nofill"/>
+<circle cx="292.03" cy="380" r="3" class="f-blue s-surface w1"/>
+<text x="736" y="385" text-anchor="end" class="t-value f-blue-ink" data-w="47">0.0000</text>
+<text x="832" y="385" text-anchor="end" class="t-value f-blue-ink" data-w="47">0.9222</text>
+<text x="920" y="385" text-anchor="end" class="t-value f-blue-ink" data-w="38">0.023</text>
+<rect x="185.88" y="422" width="433.96" height="20" class="f-neutral-soft" data-fit="skip"/>
+<rect x="185.88" y="422" width="433.96" height="20" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M198.02,425.33 L198.02,438.67" class="s-ink-muted w1 nofill"/>
+<circle cx="193.92" cy="432" r="3" class="f-ink-muted s-surface w1"/>
+<text x="736" y="437" text-anchor="end" class="t-value f-ink-muted" data-w="47">1.1043</text>
+<text x="832" y="437" text-anchor="end" class="t-value f-ink-muted" data-w="47">0.4159</text>
+<text x="920" y="437" text-anchor="end" class="t-value f-ink-muted" data-w="38">2.283</text>
+<rect x="257.89" y="454" width="6.65" height="20" class="f-blue-soft" data-fit="skip"/>
+<rect x="257.89" y="454" width="6.65" height="20" class="w1 nofill s-blue-line" data-fit="skip"/>
+<path d="M261.5,457.33 L261.5,470.67" class="s-blue w1 nofill"/>
+<circle cx="257.89" cy="464" r="3" class="f-blue s-surface w1"/>
+<text x="736" y="469" text-anchor="end" class="t-value f-blue-ink" data-w="47">0.0099</text>
+<text x="832" y="469" text-anchor="end" class="t-value f-blue-ink" data-w="47">0.7500</text>
+<text x="920" y="469" text-anchor="end" class="t-value f-blue-ink" data-w="38">0.035</text>
+<rect x="210.77" y="506" width="185.82" height="20" class="f-neutral-soft" data-fit="skip"/>
+<rect x="210.77" y="506" width="185.82" height="20" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M230,509.33 L230,522.67" class="s-ink-muted w1 nofill"/>
+<circle cx="211.02" cy="516" r="3" class="f-ink-muted s-surface w1"/>
+<text x="736" y="521" text-anchor="end" class="t-value f-ink-muted" data-w="47">0.3507</text>
+<text x="832" y="521" text-anchor="end" class="t-value f-ink-muted" data-w="47">0.5842</text>
+<text x="920" y="521" text-anchor="end" class="t-value f-ink-muted" data-w="38">0.978</text>
+<rect x="266.25" y="538" width="4.18" height="20" class="f-blue-soft" data-fit="skip"/>
+<rect x="266.25" y="538" width="4.18" height="20" class="w1 nofill s-blue-line" data-fit="skip"/>
+<path d="M268.47,541.33 L268.47,554.67" class="s-blue w1 nofill"/>
+<circle cx="266.25" cy="548" r="3" class="f-blue s-surface w1"/>
+<text x="736" y="553" text-anchor="end" class="t-value f-blue-ink" data-w="47">0.0017</text>
+<text x="832" y="553" text-anchor="end" class="t-value f-blue-ink" data-w="47">0.7867</text>
+<text x="920" y="553" text-anchor="end" class="t-value f-blue-ink" data-w="38">0.022</text>
+<text x="40" y="185" class="t-label" data-w="9">0</text>
+<text x="80" y="185" class="t-label" data-w="36"><tspan class="i">d</tspan> = 0</text>
+<text x="80" y="217" class="t-label" data-w="61"><tspan class="i">d</tspan> = 10<tspan class="sub" dy="-6">−3</tspan><tspan dy="6">​</tspan></text>
+<text x="40" y="269" class="t-label" data-w="9">1</text>
+<text x="80" y="269" class="t-label" data-w="36"><tspan class="i">d</tspan> = 0</text>
+<text x="80" y="301" class="t-label" data-w="61"><tspan class="i">d</tspan> = 10<tspan class="sub" dy="-6">−3</tspan><tspan dy="6">​</tspan></text>
+<text x="40" y="353" class="t-label" data-w="9">2</text>
+<text x="80" y="353" class="t-label" data-w="36"><tspan class="i">d</tspan> = 0</text>
+<text x="80" y="385" class="t-label" data-w="61"><tspan class="i">d</tspan> = 10<tspan class="sub" dy="-6">−3</tspan><tspan dy="6">​</tspan></text>
+<text x="40" y="437" class="t-label" data-w="9">3</text>
+<text x="80" y="437" class="t-label" data-w="36"><tspan class="i">d</tspan> = 0</text>
+<text x="80" y="469" class="t-label" data-w="61"><tspan class="i">d</tspan> = 10<tspan class="sub" dy="-6">−3</tspan><tspan dy="6">​</tspan></text>
+<text x="40" y="521" class="t-label" data-w="9">4</text>
+<text x="80" y="521" class="t-label" data-w="36"><tspan class="i">d</tspan> = 0</text>
+<text x="80" y="553" class="t-label" data-w="61"><tspan class="i">d</tspan> = 10<tspan class="sub" dy="-6">−3</tspan><tspan dy="6">​</tspan></text>
+</g>
+<text x="40" y="596" class="t-note" data-w="27">loss</text>
+<g data-grid="skip">
+<rect x="176" y="627" width="32" height="16" class="f-neutral-soft" data-fit="skip"/>
+<rect x="176" y="627" width="32" height="16" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M196,629.67 L196,640.33" class="s-ink-muted w1 nofill"/>
+<text x="220" y="640" class="t-label" data-w="115">lowest to highest</text>
+<path d="M367,628 L367,642" class="s-ink-muted w1 nofill"/>
+<text x="379" y="640" class="t-label" data-w="38">mean</text>
+<circle cx="452" cy="635" r="3" class="f-ink-muted s-surface w1"/>
+<text x="465" y="640" class="t-label" data-w="91">epoch 10,000</text>
+<rect x="588" y="627" width="24" height="16" class="f-neutral-soft" data-fit="skip"/>
+<rect x="588" y="627" width="24" height="16" class="w1 nofill s-rule" data-fit="skip"/>
+<text x="624" y="640" class="t-label" data-w="36"><tspan class="i">d</tspan> = 0</text>
+<rect x="692" y="627" width="24" height="16" class="f-blue-soft" data-fit="skip"/>
+<rect x="692" y="627" width="24" height="16" class="w1 nofill s-blue-line" data-fit="skip"/>
+<text x="728" y="640" class="t-label" data-w="61"><tspan class="i">d</tspan> = 10<tspan class="sub" dy="-6">−3</tspan><tspan dy="6">​</tspan></text>
+</g>
+<text x="40" y="684" class="t-note" data-w="509">By the mean of the last 1,000 epochs, decay is the lower run on seed 0 only.</text>
+</svg>
