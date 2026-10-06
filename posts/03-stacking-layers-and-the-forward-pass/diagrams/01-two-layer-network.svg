@@ -1,0 +1,193 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-01-two-layer-network-title" aria-describedby="nn-01-two-layer-network-desc">
+<title id="nn-01-two-layer-network-title">Layer 1's output is layer 2's input</title>
+<desc id="nn-01-two-layer-network-desc">The post's network drawn left to right: 4 input nodes x1 to x4, 3 neurons in layer 1, the hidden layer, and 3 neurons in layer 2, the output layer. Every neuron is joined to every node of the column before it; the 4 connections into the first neuron of layer 1 and the 3 into the first neuron of layer 2 are drawn in the weight colour. Above the connections are the arrays they carry: X of shape (N, 4), then Z1 of shape (N, 3), then the output Z2 of shape (N, 3). Under layer 1: W1 of shape (3, 4), 3 neurons with 4 weights each, b1 of shape (3,), 12 plus 3 is 15 parameters, and Z1 = X W1 transposed + b1. Under layer 2: W2 of shape (3, 3), 3 neurons with 3 weights each, b2 of shape (3,), 9 plus 3 is 12 parameters, and Z2 = Z1 W2 transposed + b2. The whole network has 15 plus 12, which is 27 parameters. A key reads: into neuron 1, 4 weights in layer 1 and 3 weights in layer 2. A caption line reads: each layer runs the same call; only the sizes change.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-orange-ink { fill: var(--nn-orange-ink); }
+  .f-surface { fill: var(--nn-surface); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-orange { stroke: var(--nn-orange); }
+</style>
+<defs>
+<marker id="nn-01-two-layer-network-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title">Layer 1's output is layer 2's input</text>
+<text x="40" y="76" class="t-subtitle">The post's network: 4 inputs, 3 neurons in each layer, a batch of <tspan class="i">N</tspan> samples.</text>
+<g data-grid="skip">
+<path d="M160,216 L368,336M160,296 L368,336M160,376 L368,336M160,456 L368,336M160,216 L368,416M160,296 L368,416M160,376 L368,416M160,456 L368,416M416,256 L624,336M416,336 L624,336M416,416 L624,336M416,256 L624,416M416,336 L624,416M416,416 L624,416" class="rule1"/>
+<path d="M160,216 L368,256M160,296 L368,256M160,376 L368,256M160,456 L368,256M416,256 L624,256M416,336 L624,256M416,416 L624,256" class="s-orange w15 nofill"/>
+</g>
+<g data-grid="skip">
+<circle cx="136" cy="216" r="24" class="f-blue-soft s-blue w15"/>
+<circle cx="136" cy="296" r="24" class="f-blue-soft s-blue w15"/>
+<circle cx="136" cy="376" r="24" class="f-blue-soft s-blue w15"/>
+<circle cx="136" cy="456" r="24" class="f-blue-soft s-blue w15"/>
+<circle cx="392" cy="256" r="24" class="f-surface s-orange w15"/>
+<circle cx="392" cy="336" r="24" class="f-surface s-ink-muted w15"/>
+<circle cx="392" cy="416" r="24" class="f-surface s-ink-muted w15"/>
+<circle cx="648" cy="256" r="24" class="f-surface s-orange w15"/>
+<circle cx="648" cy="336" r="24" class="f-surface s-ink-muted w15"/>
+<circle cx="648" cy="416" r="24" class="f-surface s-ink-muted w15"/>
+</g>
+<text x="136" y="220" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="136" y="300" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<text x="136" y="380" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+<text x="136" y="460" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">4</tspan><tspan dy="-4">​</tspan></text>
+<path d="M672,256 L757,256" class="flow" marker-end="url(#nn-01-two-layer-network-arrow)"/>
+<path d="M672,336 L757,336" class="flow" marker-end="url(#nn-01-two-layer-network-arrow)"/>
+<path d="M672,416 L757,416" class="flow" marker-end="url(#nn-01-two-layer-network-arrow)"/>
+<text x="264" y="136" text-anchor="middle" class="t-label"><tspan class="b">X</tspan>  (<tspan class="i">N</tspan>, 4)</text>
+<text x="264" y="160" text-anchor="middle" class="t-note">4 values per sample</text>
+<text x="520" y="136" text-anchor="middle" class="t-label"><tspan class="b">Z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan>  (<tspan class="i">N</tspan>, 3)</text>
+<text x="520" y="160" text-anchor="middle" class="t-note">3 values per sample</text>
+<text x="704" y="136" text-anchor="middle" class="t-label"><tspan class="b">Z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan>  (<tspan class="i">N</tspan>, 3)</text>
+<text x="704" y="160" text-anchor="middle" class="t-note">the output</text>
+<text x="136" y="528" text-anchor="middle" class="t-head">Input</text>
+<text x="136" y="556" text-anchor="middle" class="t-note">4 features</text>
+<text x="392" y="528" text-anchor="middle" class="t-head">Layer 1: hidden</text>
+<text x="392" y="556" text-anchor="middle" class="t-label f-orange-ink"><tspan class="b">W</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> (3, 4),  <tspan class="b">b</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> (3,)</text>
+<text x="392" y="580" text-anchor="middle" class="t-note">3 neurons, 4 weights each</text>
+<text x="392" y="604" text-anchor="middle" class="t-note">12 + 3 = 15 parameters</text>
+<text x="392" y="640" text-anchor="middle" class="t-math"><tspan class="b">Z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> = <tspan class="b">X</tspan> <tspan class="b">W</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan><tspan class="sub" dy="-7">T</tspan><tspan dy="7">​</tspan> + <tspan class="b">b</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="648" y="528" text-anchor="middle" class="t-head">Layer 2: output</text>
+<text x="648" y="556" text-anchor="middle" class="t-label f-orange-ink"><tspan class="b">W</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> (3, 3),  <tspan class="b">b</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> (3,)</text>
+<text x="648" y="580" text-anchor="middle" class="t-note">3 neurons, 3 weights each</text>
+<text x="648" y="604" text-anchor="middle" class="t-note">9 + 3 = 12 parameters</text>
+<text x="648" y="640" text-anchor="middle" class="t-math"><tspan class="b">Z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> = <tspan class="b">Z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> <tspan class="b">W</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan><tspan class="sub" dy="-7">T</tspan><tspan dy="7">​</tspan> + <tspan class="b">b</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<text x="848" y="528" text-anchor="middle" class="t-head">Network</text>
+<text x="848" y="556" text-anchor="middle" class="t-value">15 + 12 = 27</text>
+<text x="848" y="580" text-anchor="middle" class="t-note">parameters</text>
+<path d="M784,200 H808" class="s-orange w15 nofill"/>
+<text x="816" y="204" class="t-label">Into neuron 1</text>
+<text x="784" y="232" class="t-note">4 weights in layer 1</text>
+<text x="784" y="252" class="t-note">3 weights in layer 2</text>
+<text x="40" y="684" class="t-note">Each layer runs the same call; only the sizes change.</text>
+</svg>

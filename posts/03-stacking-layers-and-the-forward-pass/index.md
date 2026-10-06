@@ -12,9 +12,9 @@
 > - Pick the weight-matrix shape of each layer from the sizes of the layers around it.
 > - Explain in one sentence why dense layers stacked without activations are no more powerful than a single layer.
 
-![A two-layer network drawn left to right. Four inputs with the shape badge (N, 4) connect to each of the three neurons of layer 1, whose formula reads Z1 = X times W1 transposed plus b1, with W1 of shape (3, 4) and b1 of shape (3,). The three values of Z1, badge (N, 3), connect to each of the three neurons of layer 2, whose formula reads Z2 = Z1 times W2 transposed plus b2, with W2 of shape (3, 3) and b2 of shape (3,). The three values of Z2, badge (N, 3), are the final output.](diagrams/01-multi-layer-anatomy.svg)
+![The post's network drawn left to right: four input nodes x1 to x4, three neurons in layer 1, the hidden layer, and three in layer 2, the output layer, each neuron joined to every node of the column before it. The four connections into the first neuron of layer 1 and the three into the first neuron of layer 2 are highlighted. Above the connections are the arrays they carry: X of shape (N, 4), Z1 of shape (N, 3), and the output Z2 of shape (N, 3). Under layer 1: W1 of shape (3, 4) and b1 of shape (3,), 3 neurons with 4 weights each, 12 plus 3 is 15 parameters, and Z1 = X W1 transposed + b1. Under layer 2: W2 of shape (3, 3) and b2 of shape (3,), 3 neurons with 3 weights each, 9 plus 3 is 12 parameters, and Z2 = Z1 W2 transposed + b2. The network has 15 plus 12, which is 27 parameters.](diagrams/01-two-layer-network.svg)
 
-*Each layer box is the same operation: one dot product per neuron, plus that neuron's bias. The depth comes from chaining the boxes, not from adding new mathematics.*
+*Each layer is the same operation: one dot product per neuron, plus that neuron's bias. The depth comes from chaining the layers, not from adding new mathematics.*
 
 ---
 
@@ -63,7 +63,7 @@ For layer 1 the "previous layer" is the input itself, with its $n$ features. Rea
 - Layer 1 has $m_1 = 3$ neurons, each receiving $n = 4$ inputs. $\mathbf{W}_1$ has shape $(3, 4)$.
 - Layer 2 has $m_2 = 3$ neurons, each receiving $m_1 = 3$ inputs. $\mathbf{W}_2$ has shape $(3, 3)$.
 
-The biases $\mathbf{b}_1$ and $\mathbf{b}_2$ have shape $(3,)$ each, one bias per neuron in their layer.
+The biases $\mathbf{b}_1$ and $\mathbf{b}_2$ have shape $(3,)$ each, one bias per neuron in their layer. The figure at the top of the post draws this network: the highlighted connections are the four weights of the first neuron of layer 1 and the three weights of the first neuron of layer 2, one weight for each node of the column before.
 
 ### 3.1. What stacking does *not* do
 
@@ -97,10 +97,6 @@ $$\mathbf{Z}_2 = \mathbf{X} \underbrace{(\mathbf{W}_1^\top \mathbf{W}_2^\top)}_{
 
 The bias multiplies out cleanly because $\mathbf{b}_1$ is the same row for every sample: passing it through layer 2 gives every sample the same extra row $\mathbf{b}_1 \mathbf{W}_2^\top$, a constant that merges with $\mathbf{b}_2$.
 
-![Two chains, one above the other. The upper chain is the two-layer forward pass: X of shape (N, 4) passes through layer 1, labelled W1 transposed and b1, to Z1 of shape (N, 3), then through layer 2, labelled W2 transposed and b2, to Z2 of shape (N, 3). An arrow labelled collapses to leads down to the lower chain, where the same X passes through one layer, labelled W star and b star, to the same Z2 of shape (N, 3). A band below gives the substitution: W star is W1 transposed times W2 transposed, and b star is b1 times W2 transposed plus b2.](diagrams/03-linear-collapse.svg)
-
-*Both chains take the same input shape to the same output shape. Without an activation between the layers, the upper one has no capability the lower one lacks.*
-
 The right-hand side is a single dense layer. Its matrix $\mathbf{W}_\ast = \mathbf{W}_1^\top \mathbf{W}_2^\top$ has shape $(4, 3)$ and already faces the input, so it is applied without a transpose; in the one-row-per-neuron layout of this post the same layer stores $\mathbf{W}_\ast^\top = \mathbf{W}_2 \mathbf{W}_1$, of shape $(3, 4)$, three neurons with four weights each. Its bias $\mathbf{b}_\ast$ has shape $(3,)$. The two layers are mathematically one, which is the point section 3.1 made, and section 8.1 confirms it on numbers. Post 06 breaks that linearity by inserting an activation function between $\mathbf{Z}_1$ and the multiplication by $\mathbf{W}_2^\top$, so $\mathbf{Z}_1$ can no longer be substituted away.
 
 The collapse never adds anything, and it can take something away. If the hidden layer is narrower than both the input and the output, say a stack of sizes $4 \to 2 \to 3$, every sample is squeezed through two numbers on the way, so its three outputs are computed from those two numbers alone. A single layer from 4 inputs to 3 neurons has no such restriction. A linear stack is at most as powerful as one layer, never more.
@@ -123,9 +119,11 @@ Concrete shapes for the batch case, with $N = 3$ samples flowing through the net
 | Layer 2 | $\mathbf{Z}_1 \mathbf{W}_2^\top$ | $(3, 3) \cdot (3, 3)$ | $(3, 3)$ | inner sizes match, 3 and 3 |
 | Layer 2 | $+\ \mathbf{b}_2$ | $(3, 3) + (3,)$ | $(3, 3)$ | bias broadcast across rows |
 
-![A shape-flow chart read left to right for a batch of N samples. The input X of shape (N, 4) enters layer 1, which computes X times W1 transposed plus b1 with W1 of shape (3, 4), transposed to (4, 3), and b1 of shape (3,); the inner sizes 4 and 4 match. The result Z1 of shape (N, 3) enters layer 2, which computes Z1 times W2 transposed plus b2 with W2 of shape (3, 3) and b2 of shape (3,); the inner sizes 3 and 3 match. The final output Z2 has shape (N, 3). A band below states the rule: the weights per neuron in a layer equal the number of neurons in the layer before it.](diagrams/02-dimension-flow.svg)
+The figure fills the same arrays with the numbers of section 8. Each product is drawn with its left factor beside the result and its right factor above it, so row $i$ of the left factor and column $k$ of the right factor meet at entry $(i, k)$; $\mathbf{Z}_1$ is the result of layer 1 and, in the same place, the left factor of layer 2.
 
-*Every layer enforces the same shape rule. A mismatch anywhere surfaces here, on paper, before any code runs.*
+![Every array of the forward pass for the batch of 3 samples, each product drawn with its left factor beside the result and its right factor above it. Layer 1: the input X, shape (3, 4), one row per sample; above the result, W1 transposed, shape (4, 3), whose column k holds the weights of neuron k, and the bias b1, shape (3,), 2.0, 3.0, 0.5; the result Z1, shape (3, 3), holds 4.8, 1.21, 2.385 in its first row. Z1 is also the left factor of layer 2, under W2 transposed, shape (3, 3), and b2, minus 1.0, 2.0, minus 0.5; the result Z2, shape (3, 3), starts 0.5031, minus 1.04185, minus 2.03875. Row 1 of Z1 and column 1 of W2 transposed are outlined and meet at 0.5031, which a caption line works out as 0.1 times 4.8, minus 0.14 times 1.21, plus 0.5 times 2.385, minus 1.0.](diagrams/02-batch-through-two-layers.svg)
+
+*The batch rows run straight through both layers: each layer changes the number of columns, never the number of rows, and the 4 features of the input meet only the first weight matrix.*
 
 A diary of intermediate shapes like this one catches a mismatch before it happens. Printing the shape of the layer-1 output $\mathbf{Z}_1$ and checking it against the expected $(N, m_1)$ is the fastest debugging move available.
 
@@ -212,7 +210,7 @@ Layer 2 outputs: (3, 3)
  [-0.99314  1.41254 -0.35655]]
 ```
 
-The layer-1 block is the output that posts 01 and 02 computed for the same batch and the same layer. In both blocks each row belongs to one sample and each column to one neuron of the layer that produced it. One entry by hand: the first neuron of layer 2 has weights $[0.1, -0.14, 0.5]$ and bias $-1.0$, and the first sample arrives from layer 1 as $[4.8, 1.21, 2.385]$, so its output is $0.1 \cdot 4.8 - 0.14 \cdot 1.21 + 0.5 \cdot 2.385 - 1.0 = 0.5031$, the top-left entry of the layer-2 block.
+The layer-1 block is the output that posts 01 and 02 computed for the same batch and the same layer. In both blocks each row belongs to one sample and each column to one neuron of the layer that produced it. One entry by hand: the first neuron of layer 2 has weights $[0.1, -0.14, 0.5]$ and bias $-1.0$, and the first sample arrives from layer 1 as $[4.8, 1.21, 2.385]$, so its output is $0.1 \cdot 4.8 - 0.14 \cdot 1.21 + 0.5 \cdot 2.385 - 1.0 = 0.5031$, the top-left entry of the layer-2 block. The figure in section 5 lays out both blocks beside the arrays that produce them and outlines the row and the column that meet in this entry.
 
 ### 8.1. One layer that does the work of two
 
@@ -242,6 +240,12 @@ W_star is the transpose of W2 . W1: True
 parameters in the two layers: 27
 parameters in the equivalent layer: 15
 ```
+
+The figure sets the two forms side by side, with every weight matrix stored one row per neuron as in this post, so the single layer appears as $\mathbf{W}_\ast^\top = \mathbf{W}_2 \mathbf{W}_1$, the transpose of the printed `W_star`.
+
+![Two rows that end in the same output Z2 of shape (3, 3) for the post's batch, with weights stored one row per neuron. The upper row, two layers with 27 parameters: W1 of shape (3, 4) beside b1, 15 parameters, then an arrow carrying Z1 of shape (3, 3) to W2 of shape (3, 3) beside b2, 12 parameters, then Z2, whose first row is 0.5031, minus 1.04185, minus 2.03875. The lower row, one layer with 15 parameters: W star transposed, which is W2 times W1, of shape (3, 4), first row minus 0.18, 0.0724, minus 0.0014, 0.605, beside b star, which is b1 times W2 transposed plus b2, minus 0.97, 1.195, 0.745, then one arrow labelled no hidden layer straight to a Z2 with the same values, up to rounding.](diagrams/03-linear-collapse.svg)
+
+*Without an activation between the layers, the 12 parameters of layer 2 buy no function that the 15 parameters of one layer cannot already compute.*
 
 One matrix and one bias vector reproduce the layer-2 numbers of the two-layer network. The largest difference, $8.9 \times 10^{-16}$ in this run, is floating-point rounding: the two routes group the same arithmetic differently, so they agree to about fifteen decimal places and not bit for bit, and the exact size of that residue can vary from one machine to another. The collapse is the property section 3.1 warned about. Until the activation function arrives in post 06, $\mathbf{Z}_2$ is just a linear function of $\mathbf{X}$ wearing a slightly more complicated outfit.
 

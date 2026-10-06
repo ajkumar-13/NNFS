@@ -9,7 +9,7 @@ part: "Part I - Foundations"
 level: beginner
 reading_time: 17
 tags: [neural-networks, from-scratch, forward-pass, dense-layer, shapes, foundations]
-hero: diagrams/01-multi-layer-anatomy.svg
+hero: diagrams/01-two-layer-network.svg
 prerequisites: [nn-001, nn-002]
 code: included
 outcomes:

@@ -1,0 +1,303 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-02-batch-through-two-layers-title" aria-describedby="nn-02-batch-through-two-layers-desc">
+<title id="nn-02-batch-through-two-layers-title">The batch keeps its rows through both layers</title>
+<desc id="nn-02-batch-through-two-layers-desc">Every array of the forward pass for the post's batch of 3 samples, each product drawn with its left factor beside the result and its right factor above it. Layer 1: the input X, shape (3, 4), rows one per sample, holds 1.0, 2.0, 3.0, 2.5, 2.0, 5.0, minus 1.0, 2.0, minus 1.5, 2.7, 3.3, minus 0.8; above the result sits W1 transposed, shape (4, 3), whose column k holds the weights of neuron k: 0.2, 0.5, minus 0.26, 0.8, minus 0.91, minus 0.27, minus 0.5, 0.26, 0.17, 1.0, minus 0.5, 0.87; under it the bias b1, shape (3,), 2.0, 3.0, 0.5, added to every row. The result Z1, shape (3, 3), holds 4.8, 1.21, 2.385, 8.9, minus 1.81, 0.2, 1.41, 1.051, 0.026. Z1 is also the left factor of layer 2: above the second result sit W2 transposed, shape (3, 3), 0.1, minus 0.5, minus 0.44, minus 0.14, 0.12, 0.73, 0.5, minus 0.33, minus 0.13, and the bias b2, minus 1.0, 2.0, minus 0.5. The result Z2, shape (3, 3), holds 0.5031, minus 1.04185, minus 2.03875, 0.2434, minus 2.7332, minus 5.7633, minus 0.99314, 1.41254, minus 0.35655. Row 1 of Z1 and column 1 of W2 transposed are outlined, a note explains that row i on the left meets column k above at entry (i, k) of the result, and they meet at the top-left entry of Z2, 0.5031, which the caption line works out: 0.1 times 4.8, minus 0.14 times 1.21, plus 0.5 times 2.385, minus 1.0.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-orange-ink { fill: var(--nn-orange-ink); }
+  .f-orange-soft { fill: var(--nn-orange-soft); }
+  .s-green { stroke: var(--nn-green); }
+  .s-orange { stroke: var(--nn-orange); }
+</style>
+<defs>
+<marker id="nn-02-batch-through-two-layers-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title">The batch keeps its rows through both layers</text>
+<text x="40" y="76" class="t-subtitle">The post's batch, <tspan class="i">N</tspan> = 3, with the values of snippets/two_layer_forward.py.</text>
+<rect x="136" y="432" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="184" y="432" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="232" y="432" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="280" y="432" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="136" y="480" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="184" y="480" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="232" y="480" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="280" y="480" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="136" y="528" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="184" y="528" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="232" y="528" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="280" y="528" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="136" y="432" width="192" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="160" y="461" text-anchor="middle" class="t-cell14">1.0</text>
+<text x="208" y="461" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="256" y="461" text-anchor="middle" class="t-cell14">3.0</text>
+<text x="304" y="461" text-anchor="middle" class="t-cell14">2.5</text>
+<text x="160" y="509" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="208" y="509" text-anchor="middle" class="t-cell14">5.0</text>
+<text x="256" y="509" text-anchor="middle" class="t-cell14">−1.0</text>
+<text x="304" y="509" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="160" y="557" text-anchor="middle" class="t-cell14">−1.5</text>
+<text x="208" y="557" text-anchor="middle" class="t-cell14">2.7</text>
+<text x="256" y="557" text-anchor="middle" class="t-cell14">3.3</text>
+<text x="304" y="557" text-anchor="middle" class="t-cell14">−0.8</text>
+</g>
+<rect x="384" y="152" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="432" y="152" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="480" y="152" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="384" y="200" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="432" y="200" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="480" y="200" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="384" y="248" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="432" y="248" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="480" y="248" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="384" y="296" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="432" y="296" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="480" y="296" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="384" y="152" width="144" height="192" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="408" y="181" text-anchor="middle" class="t-cell14">0.2</text>
+<text x="456" y="181" text-anchor="middle" class="t-cell14">0.5</text>
+<text x="504" y="181" text-anchor="middle" class="t-cell14">−0.26</text>
+<text x="408" y="229" text-anchor="middle" class="t-cell14">0.8</text>
+<text x="456" y="229" text-anchor="middle" class="t-cell14">−0.91</text>
+<text x="504" y="229" text-anchor="middle" class="t-cell14">−0.27</text>
+<text x="408" y="277" text-anchor="middle" class="t-cell14">−0.5</text>
+<text x="456" y="277" text-anchor="middle" class="t-cell14">0.26</text>
+<text x="504" y="277" text-anchor="middle" class="t-cell14">0.17</text>
+<text x="408" y="325" text-anchor="middle" class="t-cell14">1.0</text>
+<text x="456" y="325" text-anchor="middle" class="t-cell14">−0.5</text>
+<text x="504" y="325" text-anchor="middle" class="t-cell14">0.87</text>
+</g>
+<rect x="384" y="360" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="432" y="360" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="480" y="360" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="384" y="360" width="144" height="48" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="408" y="389" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="456" y="389" text-anchor="middle" class="t-cell14">3.0</text>
+<text x="504" y="389" text-anchor="middle" class="t-cell14">0.5</text>
+</g>
+<rect x="384" y="432" width="48" height="48" class="cell f-green-soft"/>
+<rect x="432" y="432" width="48" height="48" class="cell f-green-soft"/>
+<rect x="480" y="432" width="48" height="48" class="cell f-green-soft"/>
+<rect x="384" y="480" width="48" height="48" class="cell f-green-soft"/>
+<rect x="432" y="480" width="48" height="48" class="cell f-green-soft"/>
+<rect x="480" y="480" width="48" height="48" class="cell f-green-soft"/>
+<rect x="384" y="528" width="48" height="48" class="cell f-green-soft"/>
+<rect x="432" y="528" width="48" height="48" class="cell f-green-soft"/>
+<rect x="480" y="528" width="48" height="48" class="cell f-green-soft"/>
+<rect x="384" y="432" width="144" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="408" y="461" text-anchor="middle" class="t-cell14">4.8</text>
+<text x="456" y="461" text-anchor="middle" class="t-cell14">1.21</text>
+<text x="504" y="461" text-anchor="middle" class="t-cell14">2.385</text>
+<text x="408" y="509" text-anchor="middle" class="t-cell14">8.9</text>
+<text x="456" y="509" text-anchor="middle" class="t-cell14">−1.81</text>
+<text x="504" y="509" text-anchor="middle" class="t-cell14">0.2</text>
+<text x="408" y="557" text-anchor="middle" class="t-cell14">1.41</text>
+<text x="456" y="557" text-anchor="middle" class="t-cell14">1.051</text>
+<text x="504" y="557" text-anchor="middle" class="t-cell14">0.026</text>
+</g>
+<rect x="584" y="200" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="656" y="200" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="728" y="200" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="584" y="248" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="656" y="248" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="728" y="248" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="584" y="296" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="656" y="296" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="728" y="296" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="584" y="200" width="216" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="620" y="229" text-anchor="middle" class="t-cell14">0.1</text>
+<text x="692" y="229" text-anchor="middle" class="t-cell14">−0.5</text>
+<text x="764" y="229" text-anchor="middle" class="t-cell14">−0.44</text>
+<text x="620" y="277" text-anchor="middle" class="t-cell14">−0.14</text>
+<text x="692" y="277" text-anchor="middle" class="t-cell14">0.12</text>
+<text x="764" y="277" text-anchor="middle" class="t-cell14">0.73</text>
+<text x="620" y="325" text-anchor="middle" class="t-cell14">0.5</text>
+<text x="692" y="325" text-anchor="middle" class="t-cell14">−0.33</text>
+<text x="764" y="325" text-anchor="middle" class="t-cell14">−0.13</text>
+</g>
+<rect x="584" y="360" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="656" y="360" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="728" y="360" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="584" y="360" width="216" height="48" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="620" y="389" text-anchor="middle" class="t-cell14">−1.0</text>
+<text x="692" y="389" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="764" y="389" text-anchor="middle" class="t-cell14">−0.5</text>
+</g>
+<rect x="584" y="432" width="72" height="48" class="cell f-green-soft"/>
+<rect x="656" y="432" width="72" height="48" class="cell f-green-soft"/>
+<rect x="728" y="432" width="72" height="48" class="cell f-green-soft"/>
+<rect x="584" y="480" width="72" height="48" class="cell f-green-soft"/>
+<rect x="656" y="480" width="72" height="48" class="cell f-green-soft"/>
+<rect x="728" y="480" width="72" height="48" class="cell f-green-soft"/>
+<rect x="584" y="528" width="72" height="48" class="cell f-green-soft"/>
+<rect x="656" y="528" width="72" height="48" class="cell f-green-soft"/>
+<rect x="728" y="528" width="72" height="48" class="cell f-green-soft"/>
+<rect x="584" y="432" width="216" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="620" y="461" text-anchor="middle" class="t-cell14 f-green-ink b">0.5031</text>
+<text x="692" y="461" text-anchor="middle" class="t-cell14">−1.04185</text>
+<text x="764" y="461" text-anchor="middle" class="t-cell14">−2.03875</text>
+<text x="620" y="509" text-anchor="middle" class="t-cell14">0.2434</text>
+<text x="692" y="509" text-anchor="middle" class="t-cell14">−2.7332</text>
+<text x="764" y="509" text-anchor="middle" class="t-cell14">−5.7633</text>
+<text x="620" y="557" text-anchor="middle" class="t-cell14">−0.99314</text>
+<text x="692" y="557" text-anchor="middle" class="t-cell14">1.41254</text>
+<text x="764" y="557" text-anchor="middle" class="t-cell14">−0.35655</text>
+</g>
+<rect x="384" y="432" width="144" height="48" class="emph s-green" data-fit="skip"/>
+<rect x="584" y="200" width="72" height="144" class="emph s-orange" data-fit="skip"/>
+<text x="584" y="136" class="t-head">How to read it</text>
+<text x="584" y="156" class="t-note">Row <tspan class="i">i</tspan> on the left meets column <tspan class="i">k</tspan> above</text>
+<text x="584" y="176" class="t-note">at entry (<tspan class="i">i</tspan>, <tspan class="i">k</tspan>) of the result.</text>
+<g data-grid="skip">
+<text x="128" y="461" text-anchor="end" class="t-note">sample 1</text>
+<text x="128" y="509" text-anchor="end" class="t-note">sample 2</text>
+<text x="128" y="557" text-anchor="end" class="t-note">sample 3</text>
+</g>
+<text x="368" y="244" text-anchor="end" class="t-label f-orange-ink"><tspan class="b">W</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan><tspan class="sub" dy="-7">T</tspan><tspan dy="7">​</tspan>  (4, 3)</text>
+<text x="368" y="268" text-anchor="end" class="t-note">column <tspan class="i">k</tspan>: the weights of neuron <tspan class="i">k</tspan></text>
+<text x="368" y="388" text-anchor="end" class="t-label f-orange-ink">+ <tspan class="b">b</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan>  (3,)</text>
+<text x="816" y="268" class="t-label f-orange-ink"><tspan class="b">W</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan><tspan class="sub" dy="-7">T</tspan><tspan dy="7">​</tspan>  (3, 3)</text>
+<text x="816" y="292" class="t-note">the same layout</text>
+<text x="816" y="388" class="t-label f-orange-ink">+ <tspan class="b">b</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan>  (3,)</text>
+<text x="136" y="608" class="t-head">Input <tspan class="b">X</tspan>  (3, 4)</text>
+<text x="136" y="632" class="t-note">3 samples, 4 features</text>
+<text x="384" y="608" class="t-head"><tspan class="b">Z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan>  (3, 3)</text>
+<text x="384" y="632" class="t-note">(3, 4) · (4, 3) + (3,)</text>
+<text x="584" y="608" class="t-head"><tspan class="b">Z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan>  (3, 3)</text>
+<text x="584" y="632" class="t-note">(3, 3) · (3, 3) + (3,)</text>
+<text x="40" y="684" class="t-note">Top-left of <tspan class="b">Z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan>: 0.1 · 4.8 − 0.14 · 1.21 + 0.5 · 2.385 − 1.0 = 0.5031.</text>
+</svg>
