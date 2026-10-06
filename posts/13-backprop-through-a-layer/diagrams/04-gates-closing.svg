@@ -1,0 +1,200 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-04-gates-closing-title" aria-describedby="nn-04-gates-closing-desc">
+<title id="nn-04-gates-closing-title">The smallest pre-activation runs out first</title>
+<desc id="nn-04-gates-closing-desc">A line chart of the three pre-activations z1, z2 and z3 over iterations 0 to 24 of the training loop, learning rate 0.001, on a vertical axis from minus 4 to 12. They start at 3.1, 7.2 and 11.3 and fall by the same amount per step while their gates are open; a brace at iteration 8 marks z2 and z3 as 4.1 apart. z1 crosses zero first: at iteration 3 it is minus 0.2167, its gate closes and the line stays flat. z2 crosses next: at iteration 12 it is minus 0.2477 and stays there. Two red diamonds mark the closings, labelled gate 1 closes at iteration 3 and gate 2 closes at iteration 12. z3 keeps falling towards zero, at 1.79 by iteration 24, labelled as the only open gate. A dotted line marks zero.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-orange-ink { fill: var(--nn-orange-ink); }
+  .f-red { fill: var(--nn-red); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-green { stroke: var(--nn-green); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-orange { stroke: var(--nn-orange); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-04-gates-closing-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<clipPath id="nn-04-gates-closing-clip-1"><rect x="90" y="122" width="660" height="312"/></clipPath>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title">The smallest pre-activation runs out first</text>
+<text x="40" y="76" class="t-subtitle">Section 8.1: the training loop, learning rate 0.001, first 24 of its 200 iterations.</text>
+<g data-grid="skip">
+<path d="M96,428H744M96,353H744M96,278H744M96,203H744M96,128H744" class="gridline"/>
+<text x="88" y="432" text-anchor="end" class="t-tick">−4</text>
+<text x="88" y="357" text-anchor="end" class="t-tick">0</text>
+<text x="88" y="282" text-anchor="end" class="t-tick">4</text>
+<text x="88" y="207" text-anchor="end" class="t-tick">8</text>
+<text x="88" y="132" text-anchor="end" class="t-tick">12</text>
+<text x="96" y="448" text-anchor="middle" class="t-tick">0</text>
+<text x="177" y="448" text-anchor="middle" class="t-tick">3</text>
+<text x="258" y="448" text-anchor="middle" class="t-tick">6</text>
+<text x="339" y="448" text-anchor="middle" class="t-tick">9</text>
+<text x="420" y="448" text-anchor="middle" class="t-tick">12</text>
+<text x="501" y="448" text-anchor="middle" class="t-tick">15</text>
+<text x="582" y="448" text-anchor="middle" class="t-tick">18</text>
+<text x="663" y="448" text-anchor="middle" class="t-tick">21</text>
+<text x="744" y="448" text-anchor="middle" class="t-tick">24</text>
+<path d="M96,128V428H744" class="axis"/>
+<path d="M96,353H744" class="s-ink-muted w1 nofill d-ref"/>
+<g clip-path="url(#nn-04-gates-closing-clip-1)">
+<path d="M96,294.88 L123,319.99 L150,340.42 L177,357.06 L204,357.06 L231,357.06 L258,357.06 L285,357.06 L312,357.06 L339,357.06 L366,357.06 L393,357.06 L420,357.06 L447,357.06 L474,357.06 L501,357.06 L528,357.06 L555,357.06 L582,357.06 L609,357.06 L636,357.06 L663,357.06 L690,357.06 L717,357.06 L744,357.06" class="s-blue w15 nofill"/>
+<path d="M96,218 L123,243.11 L150,263.55 L177,280.19 L204,293.98 L231,306.07 L258,316.65 L285,325.93 L312,334.05 L339,341.17 L366,347.4 L393,352.86 L420,357.64 L447,357.64 L474,357.64 L501,357.64 L528,357.64 L555,357.64 L582,357.64 L609,357.64 L636,357.64 L663,357.64 L690,357.64 L717,357.64 L744,357.64" class="s-orange w15 nofill"/>
+<path d="M96,141.12 L123,166.24 L150,186.67 L177,203.31 L204,217.11 L231,229.19 L258,239.78 L285,249.05 L312,257.17 L339,264.29 L366,270.52 L393,275.99 L420,280.77 L447,285.25 L474,289.45 L501,293.39 L528,297.08 L555,300.55 L582,303.8 L609,306.85 L636,309.71 L663,312.4 L690,314.91 L717,317.28 L744,319.49" class="s-green w15 nofill"/>
+</g>
+<text x="756" y="324.49" class="t-note f-green-ink"><tspan class="i">z</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan>, the only open gate</text>
+</g>
+<text x="96" y="116" class="t-note">pre-activation <tspan class="i">z</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan></text>
+<text x="420" y="472" text-anchor="middle" class="t-note">iteration</text>
+<g data-grid="skip">
+<text x="135" y="313.99" class="t-label f-blue-ink"><tspan class="i">z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan>, neuron 1</text>
+</g>
+<g data-grid="skip">
+<text x="189" y="274.19" class="t-label f-orange-ink"><tspan class="i">z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan>, neuron 2</text>
+</g>
+<g data-grid="skip">
+<path d="M316,261.17 Q320,261.17 320,269.17 L320,287.61 Q320,295.61 324,295.61 Q320,295.61 320,303.61 L320,322.05 Q320,330.05 316,330.05" class="brace"/>
+<g data-grid="skip">
+<text x="332" y="300.61" class="t-note">4.1 apart</text>
+</g>
+</g>
+<g data-grid="skip">
+<path d="M177,351.06 L183,357.06 L177,363.06 L171,357.06 Z" class="f-red s-surface w1"/>
+</g>
+<g data-grid="skip">
+<text x="173" y="385.06" class="t-note">gate 1 closes, iteration 3</text>
+</g>
+<g data-grid="skip">
+<path d="M420,351.64 L426,357.64 L420,363.64 L414,357.64 Z" class="f-red s-surface w1"/>
+</g>
+<g data-grid="skip">
+<text x="416" y="385.64" class="t-note">gate 2 closes, iteration 12</text>
+</g>
+<text x="40" y="504" class="t-note">Open neurons fall by the same amount per step, so their gates close in order of size.</text>
+</svg>

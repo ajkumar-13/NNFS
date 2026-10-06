@@ -11,7 +11,7 @@
 > - Write the per-neuron backward pass as a Python loop and identify where it becomes a matrix multiplication.
 > - Predict the gradient of any weight or bias from the input vector, the upstream gradient, and the neuron's ReLU gate.
 
-![Four inputs 1, 2, 3 and 4 feed three neurons with weighted sums 3.1, 7.2 and 11.3, which are added to 21.6 and squared to a loss of 466.56. The value 43.2 flows back to all three neurons, and a table shows three identical rows of weight gradients: 43.2, 86.4, 129.6 and 172.8.](diagrams/01-layer-backprop.svg)
+![Four inputs 1, 2, 3 and 4 feed three ReLU neurons with pre-activations 3.1, 7.2 and 11.3, all three gates open; the activations are added to a layer sum of 21.6, which is squared to a loss of 466.56. The derivative of the loss, 2 times 21.6 = 43.2, flows back to all three neurons, and a table of weight gradients reads 43.2, 86.4, 129.6 and 172.8 in every row, beside three bias gradients of 43.2.](diagrams/01-layer-backprop.svg)
 
 *One upstream value, three ReLU gates, twelve weight gradients: every column of the table is the upstream value times one input.*
 
@@ -136,7 +136,7 @@ With every gate equal to 1, the formula of section 3.1 collapses to
 
 $$\frac{\partial L}{\partial w_{kj}} = 2\hat{y} \cdot x_j = 43.2 \cdot x_j.$$
 
-The upstream gradient is $2\hat{y} = 2 \times 21.6 = 43.2$, shared by all twelve weights and all three biases, and $\partial L / \partial z_k = 43.2$ for each of the three neurons.
+The upstream gradient is $2\hat{y} = 2 \times 21.6 = 43.2$, shared by all twelve weights and all three biases, and $\partial L / \partial z_k = 43.2$ for each of the three neurons. The figure at the top of the post draws this backward pass on the layer, with the forward values and the gradients side by side.
 
 | Weights | $x_j$ | Gradient |
 |---|:---:|---:|
@@ -201,7 +201,11 @@ neuron 3   dL/dW = [  28.8   57.6   86.4  115.2]   dL/db =  28.8
 largest gap to a central difference (h = 1e-5) over 15 parameters: 2.1e-09
 ```
 
-Two things changed, and they are different in kind.
+The figure below sets the two printouts one above the other. Two things changed, and they are different in kind.
+
+![Two tables of the layer's gradients, one above the other. With all three gates open, every neuron has a gradient of 43.2 at its pre-activation and weight gradients 43.2, 86.4, 129.6 and 172.8. With neuron 2 switched off, its pre-activation is minus 6.8, its gate 0 and its five gradients 0, while neurons 1 and 3 get 28.8, 57.6, 86.4 and 115.2, because the layer sum fell from 21.6 to 14.4.](diagrams/02-closed-gate.svg)
+
+*Closing one gate zeroes that neuron's five gradients and, through the smaller layer sum, shrinks the other ten.*
 
 - **Neuron 2's five gradients are all zero.** Its gate is 0, and the gate multiplies every one of them. A small change to any of its weights leaves $a_2$ at zero, so the neuron receives no update from this sample.
 - **Neurons 1 and 3 have smaller gradients, 28.8 per unit of input instead of 43.2**, although nothing about them was touched. What changed is the upstream value: $\hat{y}$ fell from 21.6 to $3.1 + 0 + 11.3 = 14.4$, so $2\hat{y}$ fell to 28.8. The neurons are coupled through the sum that feeds the loss: no neuron's gradient contains another's weights or gate, but all contain $2\hat{y}$, which is built from all three activations. The bias gradients are now 28.8, 0, and 28.8.
@@ -301,7 +305,11 @@ loss at iteration 199, in full: 5.961e-10
 final Z      : [-0.216657 -0.247661  0.000023]
 ```
 
-The loss falls from 466.56 to $5.96 \times 10^{-10}$, but the gates do not stay open. All three pre-activations fall by equal amounts, as section 6 predicted, and the smallest runs out first: at iteration 3 $z_1$ is $-0.2167$ and neuron 1's gate is closed. Neurons 2 and 3 carry on falling together until, at iteration 12, $z_2$ is $-0.2477$ and neuron 2's gate closes as well. From then on only neuron 3 learns. With $m = 1$ the formula of section 6 gives $\hat{y}^{\text{new}} = 0.938\,\hat{y}$, so $z_3 = \hat{y}$ shrinks towards zero and stays positive, and the loss approaches zero without reaching it.
+The loss falls from 466.56 to $5.96 \times 10^{-10}$, but the gates do not stay open, as the figure below shows for the first 24 iterations. All three pre-activations fall by equal amounts, as section 6 predicted, and the smallest runs out first: at iteration 3 $z_1$ is $-0.2167$ and neuron 1's gate is closed. Neurons 2 and 3 carry on falling together until, at iteration 12, $z_2$ is $-0.2477$ and neuron 2's gate closes as well. From then on only neuron 3 learns. With $m = 1$ the formula of section 6 gives $\hat{y}^{\text{new}} = 0.938\,\hat{y}$, so $z_3 = \hat{y}$ shrinks towards zero and stays positive, and the loss approaches zero without reaching it.
+
+![A line chart of the three pre-activations over the first 24 iterations. They start at 3.1, 7.2 and 11.3 and fall by equal amounts, staying 4.1 apart; the first crosses zero at iteration 3 and stays at minus 0.2167, the second crosses at iteration 12 and stays at minus 0.2477, and the third, the only open gate, keeps falling towards zero.](diagrams/04-gates-closing.svg)
+
+*Open neurons fall by equal amounts per step, so the smallest pre-activation is the first to reach zero.*
 
 Neurons 1 and 2 never reopen, because a closed gate passes no gradient to the weights that could move them: on this single input they are **dead neurons** in the sense of post 06. That outcome belongs to this example, with one input and one target. With many samples a neuron closed for one of them usually still receives gradient from others; what carries over is that the gates are recomputed at every forward pass, and a closed gate removes its neuron's parameters from that update.
 
@@ -313,11 +321,11 @@ The line that computes `dL_dW` is the structural centre of the post:
 dL_dW = dL_dZ.reshape(-1, 1) * inputs       # shape (3, 4)
 ```
 
-![A column of three upstream gradients, each 43.2, times a row of the inputs 1, 2, 3 and 4 gives a 3 by 4 matrix whose rows each read 43.2, 86.4, 129.6 and 172.8. One cell, 172.8, is traced back to the 43.2 and the 4 that produce it.](diagrams/02-outer-product.svg)
+![A column of three upstream gradients, each 43.2, sits left of a 3 by 4 matrix and the row of inputs 1, 2, 3 and 4 sits above it, so each cell is one entry of the column times one input. Every row reads 43.2, 86.4, 129.6 and 172.8, and the cell 172.8 is outlined with the 43.2 and the 4 that produce it.](diagrams/03-outer-product.svg)
 
 *Every cell of the weight-gradient matrix is one entry of `dL_dZ` times one input.*
 
-`dL_dZ` has shape `(3,)`. The reshape turns it into a column of shape `(3, 1)`, and NumPy broadcasts that column against the input vector of shape `(4,)` by the rule of post 05, producing a `(3, 4)` array whose entry in row $k$ and column $j$ is $\partial L / \partial z_k$ times $x_j$. That is the double loop of section 5.1 with both loops removed.
+`dL_dZ` has shape `(3,)`. The reshape turns it into a column of shape `(3, 1)`, and NumPy broadcasts that column against the input vector of shape `(4,)` by the rule of post 05, producing a `(3, 4)` array whose entry in row $k$ and column $j$ is $\partial L / \partial z_k$ times $x_j$. That is the double loop of section 5.1 with both loops removed, and the figure above lays it out: row $k$ of the column meets column $j$ of the row at entry $(k, j)$.
 
 This table of all pairwise products of two vectors is called their **outer product**. A column times a row is also an ordinary matrix product, $(3, 1) \cdot (1, 4) \rightarrow (3, 4)$ by the shape rule of post 02, and that is where the matrix multiplication of the backward pass comes from. The script confirms that the broadcast, `np.outer(dL_dZ, inputs)`, and the `(3, 1)` by `(1, 4)` product written with `@` all give the same array as the loop:
 

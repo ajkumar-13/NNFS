@@ -1,0 +1,329 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-02-closed-gate-title" aria-describedby="nn-02-closed-gate-desc">
+<title id="nn-02-closed-gate-title">A closed gate zeroes its row and shrinks the others</title>
+<desc id="nn-02-closed-gate-desc">Two tables with the same columns: each neuron's pre-activation z, its gate, dL/dz, its four weight gradients under the inputs 1, 2, 3 and 4, and its bias gradient. Top, all three gates open: y-hat = 21.6 and 2 y-hat = 43.2; neuron 1: z = 3.1, gate 1, dL/dz = 43.2, weight gradients 43.2, 86.4, 129.6, 172.8, bias 43.2; neuron 2: z = 7.2, gate 1, dL/dz = 43.2, weight gradients 43.2, 86.4, 129.6, 172.8, bias 43.2; neuron 3: z = 11.3, gate 1, dL/dz = 43.2, weight gradients 43.2, 86.4, 129.6, 172.8, bias 43.2. Bottom, neuron 2's weights negated: y-hat = 14.4 and 2 y-hat = 28.8; neuron 1: z = 3.1, gate 1, dL/dz = 28.8, weight gradients 28.8, 57.6, 86.4, 115.2, bias 28.8; neuron 2: z = −6.8, gate 0, dL/dz = 0.0, weight gradients 0.0, 0.0, 0.0, 0.0, bias 0.0; neuron 3: z = 11.3, gate 1, dL/dz = 28.8, weight gradients 28.8, 57.6, 86.4, 115.2, bias 28.8. In the bottom table neuron 2's z is shaded as negative and its row of zero gradients is outlined, and zero gradients are left unshaded. Over the weight gradients a label reads weight gradients dL/dw_kj. Notes say that row 2 is zero because its gate is 0 and that rows 1 and 3 fell from 43.2 to 28.8 per unit of input because y-hat fell.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-purple-ink { fill: var(--nn-purple-ink); }
+  .f-purple-soft { fill: var(--nn-purple-soft); }
+  .f-red-soft { fill: var(--nn-red-soft); }
+  .s-red { stroke: var(--nn-red); }
+</style>
+<defs>
+<marker id="nn-02-closed-gate-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title">A closed gate zeroes its row and shrinks the others</text>
+<text x="40" y="76" class="t-subtitle">Section 5.3: neuron 2's four weights negated, nothing else changed.</text>
+<text x="40" y="136" class="t-head">All three gates open</text>
+<rect x="144" y="176" width="64" height="48" class="cell f-green-soft"/>
+<rect x="144" y="224" width="64" height="48" class="cell f-green-soft"/>
+<rect x="144" y="272" width="64" height="48" class="cell f-green-soft"/>
+<rect x="144" y="176" width="64" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="176" y="206" text-anchor="middle" class="t-cell16">3.1</text>
+<text x="176" y="254" text-anchor="middle" class="t-cell16">7.2</text>
+<text x="176" y="302" text-anchor="middle" class="t-cell16">11.3</text>
+</g>
+<rect x="224" y="176" width="48" height="48" class="cell"/>
+<rect x="224" y="224" width="48" height="48" class="cell"/>
+<rect x="224" y="272" width="48" height="48" class="cell"/>
+<rect x="224" y="176" width="48" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="248" y="206" text-anchor="middle" class="t-cell16">1</text>
+<text x="248" y="254" text-anchor="middle" class="t-cell16">1</text>
+<text x="248" y="302" text-anchor="middle" class="t-cell16">1</text>
+</g>
+<rect x="288" y="176" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="288" y="224" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="288" y="272" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="288" y="176" width="64" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="320" y="206" text-anchor="middle" class="t-cell16">43.2</text>
+<text x="320" y="254" text-anchor="middle" class="t-cell16">43.2</text>
+<text x="320" y="302" text-anchor="middle" class="t-cell16">43.2</text>
+</g>
+<rect x="376" y="176" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="440" y="176" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="504" y="176" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="568" y="176" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="376" y="224" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="440" y="224" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="504" y="224" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="568" y="224" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="376" y="272" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="440" y="272" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="504" y="272" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="568" y="272" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="376" y="176" width="256" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="408" y="206" text-anchor="middle" class="t-cell16">43.2</text>
+<text x="472" y="206" text-anchor="middle" class="t-cell16">86.4</text>
+<text x="536" y="206" text-anchor="middle" class="t-cell16">129.6</text>
+<text x="600" y="206" text-anchor="middle" class="t-cell16">172.8</text>
+<text x="408" y="254" text-anchor="middle" class="t-cell16">43.2</text>
+<text x="472" y="254" text-anchor="middle" class="t-cell16">86.4</text>
+<text x="536" y="254" text-anchor="middle" class="t-cell16">129.6</text>
+<text x="600" y="254" text-anchor="middle" class="t-cell16">172.8</text>
+<text x="408" y="302" text-anchor="middle" class="t-cell16">43.2</text>
+<text x="472" y="302" text-anchor="middle" class="t-cell16">86.4</text>
+<text x="536" y="302" text-anchor="middle" class="t-cell16">129.6</text>
+<text x="600" y="302" text-anchor="middle" class="t-cell16">172.8</text>
+</g>
+<rect x="656" y="176" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="656" y="224" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="656" y="272" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="656" y="176" width="64" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="688" y="206" text-anchor="middle" class="t-cell16">43.2</text>
+<text x="688" y="254" text-anchor="middle" class="t-cell16">43.2</text>
+<text x="688" y="302" text-anchor="middle" class="t-cell16">43.2</text>
+</g>
+<g data-grid="skip">
+<text x="176" y="168" text-anchor="middle" class="t-label"><tspan class="f-green-ink"><tspan class="i">z</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan></tspan></text>
+</g>
+<g data-grid="skip">
+<text x="248" y="168" text-anchor="middle" class="t-label">gate</text>
+</g>
+<g data-grid="skip">
+<text x="320" y="168" text-anchor="middle" class="t-label"><tspan class="f-purple-ink">∂<tspan class="i">L</tspan>/∂<tspan class="i">z</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan></tspan></text>
+</g>
+<g data-grid="skip">
+<text x="408" y="168" text-anchor="middle" class="t-label"><tspan class="f-blue-ink"><tspan class="i">x</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> = 1</tspan></text>
+<text x="472" y="168" text-anchor="middle" class="t-label"><tspan class="f-blue-ink"><tspan class="i">x</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> = 2</tspan></text>
+<text x="536" y="168" text-anchor="middle" class="t-label"><tspan class="f-blue-ink"><tspan class="i">x</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan> = 3</tspan></text>
+<text x="600" y="168" text-anchor="middle" class="t-label"><tspan class="f-blue-ink"><tspan class="i">x</tspan><tspan class="sub" dy="4">4</tspan><tspan dy="-4">​</tspan> = 4</tspan></text>
+</g>
+<g data-grid="skip">
+<text x="688" y="168" text-anchor="middle" class="t-label"><tspan class="f-purple-ink">∂<tspan class="i">L</tspan>/∂<tspan class="i">b</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan></tspan></text>
+</g>
+<text x="376" y="136" class="t-label f-purple-ink">weight gradients ∂<tspan class="i">L</tspan>/∂<tspan class="i">w</tspan><tspan class="sub i" dy="4">kj</tspan><tspan dy="-4">​</tspan></text>
+<g data-grid="skip">
+<text x="136" y="205" text-anchor="end" class="t-note">neuron 1</text>
+<text x="136" y="253" text-anchor="end" class="t-note">neuron 2</text>
+<text x="136" y="301" text-anchor="end" class="t-note">neuron 3</text>
+</g>
+<text x="752" y="204" class="t-value f-green-ink"><tspan class="i">ŷ</tspan> = 21.6</text>
+<text x="752" y="228" class="t-value f-purple-ink">2<tspan class="i">ŷ</tspan> = 43.2</text>
+<text x="40" y="384" class="t-head">Neuron 2 switched off</text>
+<rect x="144" y="424" width="64" height="48" class="cell f-green-soft"/>
+<rect x="144" y="472" width="64" height="48" class="cell f-red-soft"/>
+<rect x="144" y="520" width="64" height="48" class="cell f-green-soft"/>
+<rect x="144" y="424" width="64" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="176" y="454" text-anchor="middle" class="t-cell16">3.1</text>
+<text x="176" y="502" text-anchor="middle" class="t-cell16">−6.8</text>
+<text x="176" y="550" text-anchor="middle" class="t-cell16">11.3</text>
+</g>
+<rect x="224" y="424" width="48" height="48" class="cell"/>
+<rect x="224" y="472" width="48" height="48" class="cell"/>
+<rect x="224" y="520" width="48" height="48" class="cell"/>
+<rect x="224" y="424" width="48" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="248" y="454" text-anchor="middle" class="t-cell16">1</text>
+<text x="248" y="502" text-anchor="middle" class="t-cell16">0</text>
+<text x="248" y="550" text-anchor="middle" class="t-cell16">1</text>
+</g>
+<rect x="288" y="424" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="288" y="472" width="64" height="48" class="cell"/>
+<rect x="288" y="520" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="288" y="424" width="64" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="320" y="454" text-anchor="middle" class="t-cell16">28.8</text>
+<text x="320" y="502" text-anchor="middle" class="t-cell16">0.0</text>
+<text x="320" y="550" text-anchor="middle" class="t-cell16">28.8</text>
+</g>
+<rect x="376" y="424" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="440" y="424" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="504" y="424" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="568" y="424" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="376" y="472" width="64" height="48" class="cell"/>
+<rect x="440" y="472" width="64" height="48" class="cell"/>
+<rect x="504" y="472" width="64" height="48" class="cell"/>
+<rect x="568" y="472" width="64" height="48" class="cell"/>
+<rect x="376" y="520" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="440" y="520" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="504" y="520" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="568" y="520" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="376" y="424" width="256" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="408" y="454" text-anchor="middle" class="t-cell16">28.8</text>
+<text x="472" y="454" text-anchor="middle" class="t-cell16">57.6</text>
+<text x="536" y="454" text-anchor="middle" class="t-cell16">86.4</text>
+<text x="600" y="454" text-anchor="middle" class="t-cell16">115.2</text>
+<text x="408" y="502" text-anchor="middle" class="t-cell16">0.0</text>
+<text x="472" y="502" text-anchor="middle" class="t-cell16">0.0</text>
+<text x="536" y="502" text-anchor="middle" class="t-cell16">0.0</text>
+<text x="600" y="502" text-anchor="middle" class="t-cell16">0.0</text>
+<text x="408" y="550" text-anchor="middle" class="t-cell16">28.8</text>
+<text x="472" y="550" text-anchor="middle" class="t-cell16">57.6</text>
+<text x="536" y="550" text-anchor="middle" class="t-cell16">86.4</text>
+<text x="600" y="550" text-anchor="middle" class="t-cell16">115.2</text>
+</g>
+<rect x="656" y="424" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="656" y="472" width="64" height="48" class="cell"/>
+<rect x="656" y="520" width="64" height="48" class="cell f-purple-soft"/>
+<rect x="656" y="424" width="64" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="688" y="454" text-anchor="middle" class="t-cell16">28.8</text>
+<text x="688" y="502" text-anchor="middle" class="t-cell16">0.0</text>
+<text x="688" y="550" text-anchor="middle" class="t-cell16">28.8</text>
+</g>
+<g data-grid="skip">
+<text x="176" y="416" text-anchor="middle" class="t-label"><tspan class="f-green-ink"><tspan class="i">z</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan></tspan></text>
+</g>
+<g data-grid="skip">
+<text x="248" y="416" text-anchor="middle" class="t-label">gate</text>
+</g>
+<g data-grid="skip">
+<text x="320" y="416" text-anchor="middle" class="t-label"><tspan class="f-purple-ink">∂<tspan class="i">L</tspan>/∂<tspan class="i">z</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan></tspan></text>
+</g>
+<g data-grid="skip">
+<text x="408" y="416" text-anchor="middle" class="t-label"><tspan class="f-blue-ink"><tspan class="i">x</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> = 1</tspan></text>
+<text x="472" y="416" text-anchor="middle" class="t-label"><tspan class="f-blue-ink"><tspan class="i">x</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> = 2</tspan></text>
+<text x="536" y="416" text-anchor="middle" class="t-label"><tspan class="f-blue-ink"><tspan class="i">x</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan> = 3</tspan></text>
+<text x="600" y="416" text-anchor="middle" class="t-label"><tspan class="f-blue-ink"><tspan class="i">x</tspan><tspan class="sub" dy="4">4</tspan><tspan dy="-4">​</tspan> = 4</tspan></text>
+</g>
+<g data-grid="skip">
+<text x="688" y="416" text-anchor="middle" class="t-label"><tspan class="f-purple-ink">∂<tspan class="i">L</tspan>/∂<tspan class="i">b</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan></tspan></text>
+</g>
+<text x="376" y="384" class="t-label f-purple-ink">weight gradients ∂<tspan class="i">L</tspan>/∂<tspan class="i">w</tspan><tspan class="sub i" dy="4">kj</tspan><tspan dy="-4">​</tspan></text>
+<g data-grid="skip">
+<text x="136" y="453" text-anchor="end" class="t-note">neuron 1</text>
+<text x="136" y="501" text-anchor="end" class="t-note">neuron 2</text>
+<text x="136" y="549" text-anchor="end" class="t-note">neuron 3</text>
+</g>
+<text x="752" y="452" class="t-value f-green-ink"><tspan class="i">ŷ</tspan> = 14.4</text>
+<text x="752" y="476" class="t-value f-purple-ink">2<tspan class="i">ŷ</tspan> = 28.8</text>
+<rect x="376" y="472" width="256" height="48" class="emph s-red" data-fit="skip"/>
+<text x="376" y="596" class="t-note">Row 2: gate 0, so all five gradients are 0.</text>
+<text x="376" y="616" class="t-note">Rows 1 and 3: 28.8 per unit of input, because <tspan class="i">ŷ</tspan> fell.</text>
+<text x="40" y="684" class="t-note">No neuron's gradient contains another's weights, but every one contains 2<tspan class="i">ŷ</tspan>.</text>
+</svg>
