@@ -78,35 +78,42 @@ fig = Figure(
                   " ", MINUS, " ", var("α"), " ", CDOT, " 2", W, "; dots: the start and 3 steps; ring: step 100."),
     height=720)
 
-boxes = []
-top_row = fig.row(2, y=104, h=264)
-bottom_row = fig.row(2, y=392, h=264)
+# the axis name w is printed once per column, under the bottom row; the top row's boxes are 24 shorter so all
+# four plots keep one height
+top_row = fig.row(2, y=104, h=252)
+bottom_row = fig.row(2, y=380, h=276)
 X_LO, X_HI, Y_LO, Y_HI = -6, 6, 0, 36
 ws = np.linspace(X_LO, X_HI, 121)
-curve = dict(xs=ws.tolist(), ys=[f(v) for v in ws], color="ink-muted", points=False, label="")
+curve = dict(xs=ws.tolist(), ys=[f(v) for v in ws], color="ink-muted", points=False, label=None)
 
-for box, (lr, verb) in zip(top_row + bottom_row, PANELS):
+plots = []
+for k, (box, (lr, verb)) in enumerate(zip(top_row + bottom_row, PANELS)):
     body = fig.panel(box, rich(var("α"), f" = {lr:g}: {verb}"))
     chart = Box(body.x, body.y, body.w, body.h - 32)
     ax = fig.line_chart(chart, [curve], x=(X_LO, X_HI, [-5, 0, 5]), y=(Y_LO, Y_HI, [0, 25]),
-                        x_label=W, y_label=rich(var("f"), "(", W, ")"),
+                        x_label=W if k >= 2 else None, y_label=rich(var("f"), "(", W, ")"),
                         label_w=8, fmt_x=lambda v: num(v), fmt_y=lambda v: str(v))
+    plots.append((ax.y, ax.h))
     path = PATHS[lr]
     shown = [v for v in path[:4]]
     with fig.data():
         pts = [ax.to_px(v, f(v)) for v in shown]
-        for (x0, y0), (x1, y1), v1 in zip(pts, pts[1:], shown[1:]):
+        for (x0, y0), (x1, y1), v0, v1 in zip(pts, pts[1:], shown, shown[1:]):
             if f(v1) <= Y_HI:
                 fig.edge((x0, y0), (x1, y1), color="gradient", width=1.5)
             else:
-                # the jump leaves the chart: draw it up to the top edge of the plot, where it exits
-                t = (Y_HI - f(shown[0])) / (f(v1) - f(shown[0]))
-                xe, ye = ax.to_px(shown[0] + t * (v1 - shown[0]), Y_HI)
-                fig.edge((x0, y0), (xe, ye), color="gradient", width=1.5)
+                # the jump leaves the chart: the segment is clipped at the plot's top edge, where it exits
+                ax.segment(v0, f(v0), v1, f(v1), color="gradient", width=1.5)
+                ax.text(v0, Y_HI, rich("to ", W, " = ", num(v1)), "note", anchor="end", dx=-12, dy=20)
                 break
         for v, (x, y) in zip(shown, pts):
             if f(v) <= Y_HI:
                 fig.marker(x, y, "circle", "gradient", size=8)
+        if lr == 0.001:
+            # 5, 4.99, 4.98, 4.97 are a third of a pixel apart at this scale: say so beside the one dot they make
+            assert abs(ax.to_px(shown[0], 0)[0] - ax.to_px(shown[3], 0)[0]) < 1.5
+            ax.text(shown[0], f(shown[0]), "four dots on top of one another", "note", anchor="end", dx=-12,
+                    dy=-8)
         end = path[100]
         if abs(end) <= X_HI and f(end) <= Y_HI:
             fig.marker(*ax.to_px(end, f(end)), "circle", "gradient", size=10, hollow=True)
@@ -114,6 +121,7 @@ for box, (lr, verb) in zip(top_row + bottom_row, PANELS):
 
 FACTORS = [1 - 2 * lr for lr in RATES]
 assert [f"{v:g}" for v in FACTORS] == ["0.998", "0.8", "-1", "-19"]          # section 5.1's four factors
+assert len(set(plots)) == 2 and plots[0][1] == plots[2][1]   # one plot height in both rows
 fig.caption(rich("Each step multiplies ", W, " by 1 ", MINUS, " 2", var("α"), ": ",
                  ", ".join(num(v) if v < 0 else f"{v:g}" for v in FACTORS[:3]), " and ", num(FACTORS[3]), "."))
 fig.write()

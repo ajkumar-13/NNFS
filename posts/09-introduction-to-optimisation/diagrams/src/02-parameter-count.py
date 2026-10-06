@@ -103,7 +103,9 @@ with fig.data():
                 fig.text(seg.cx, cy + 5, rich(arr(name, sub=k), "  ", num(n)), "label", anchor="middle",
                          snap=False)
             acc += n
-        fig.text(sx(acc) + 12, cy + 5, num(acc), "value", color="weight", snap=False)
+        # the small bar's four segments are slivers at this scale: name their sizes after it, as the top panel does
+        total = num(acc) if parts is WIDE else rich(" + ".join(str(size(s)) for _, _, s in parts), " = ", num(acc))
+        fig.text(sx(acc) + 12, cy + 5, total, "value", color="weight", snap=False)
     last = Box(sx(N_WIDE - 3), 424 - BH / 2, sx(N_WIDE) - sx(N_WIDE - 3), BH)
 fig.callout(last, rich(arr("b", sub="2"), "  3"), side="above", length=12)
 fig.text(40, 464, "parameters", "note")

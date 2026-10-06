@@ -202,7 +202,7 @@
 <rect x="230.4" y="364" width="14.4" height="24" class="w1 nofill s-orange" data-fit="skip"/>
 <rect x="244.8" y="364" width="4.8" height="24" class="f-orange-soft" data-fit="skip"/>
 <rect x="244.8" y="364" width="4.8" height="24" class="w1 nofill s-orange" data-fit="skip"/>
-<text x="261.6" y="381" class="t-value f-orange-ink">21</text>
+<text x="261.6" y="381" class="t-value f-orange-ink">6 + 3 + 9 + 3 = 21</text>
 <text x="40" y="429" class="t-label">64 hidden neurons</text>
 <rect x="216" y="412" width="204.8" height="24" class="f-orange-soft" data-fit="skip"/>
 <rect x="216" y="412" width="204.8" height="24" class="w1 nofill s-orange" data-fit="skip"/>

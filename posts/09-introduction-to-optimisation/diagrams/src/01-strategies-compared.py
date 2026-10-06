@@ -23,7 +23,7 @@ import numpy as np
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, r"C:\Users\admin\Desktop\series-standard\tools")
-from figkit import Figure, Box, rich  # noqa: E402
+from figkit import Figure, rich  # noqa: E402
 
 POST = Path(__file__).resolve().parents[2]
 ROOT = POST.parents[1]
@@ -93,7 +93,7 @@ fig = Figure(
     subtitle="Spiral data, 10,000 iterations from one start; the walk repeated with 20 streams of nudges.")
 
 LO, HI, TICKS = 0.85, 1.10, [0.85, 0.90, 0.95, 1.00, 1.05, 1.10]
-PX0, PX1 = 288, 784                       # the plot's left and right edges
+PX0, PX1 = 312, 784                       # the plot's left and right edges (clear of the longest heading)
 VX = 920                                  # the value column, right-aligned
 sx = lambda v: PX0 + (PX1 - PX0) * (v - LO) / (HI - LO)  # noqa: E731
 ALPHA = "α"
@@ -141,12 +141,9 @@ for heading, base, rows in GROUPS:
                          bold=(val == GD[(64, "1.0")]))
             else:
                 lo, hi = min(STREAMS[val]), max(STREAMS[val])
-                band = Box(sx(lo) - 4, cy - 10, sx(hi) - sx(lo) + 8, 20)
-                fig.fill(band, "blue-soft", radius=4, fit=False)
-                fig.outline(band, "blue-line", width=1, radius=4)
-                for v in STREAMS[val]:
-                    fig.edge((sx(v), cy - 8), (sx(v), cy + 8), color="blue", width=1)
-                fig.marker(sx(PRINTED[val]), cy, "circle", "blue", size=10)
+                # the band with ticks: one tick per stream, the printed run as the solid dot
+                fig.range_mark(sx(lo) - 4, sx(hi) + 4, cy, ticks=[sx(v) for v in STREAMS[val]], color="blue",
+                               dot=sx(PRINTED[val]), h=24)
                 # two short lines in the value column: the printed run (its mark's colour) over the median (muted)
                 fig.text(VX, cy - 3, rich("run ", f4(PRINTED[val])), "value", anchor="end", color="blue",
                          snap=False)
@@ -154,11 +151,7 @@ for heading, base, rows in GROUPS:
                          snap=False)
 
 # -- legend for the walk's two marks, under the axis
-fig.legend(PX0, 472, [dict(color="blue-soft", label="20 other streams, one tick each", mark="swatch"),
+fig.legend(PX0, 472, [dict(color="blue", label="20 other streams, one tick each", mark="band"),
                       dict(color="blue", label="printed run", mark="circle")], direction="row")
-# the band swatch gets three thin ticks inside, so the legend repeats the band-with-ticks mark
-with fig.data():
-    for dx in (5, 8, 11):
-        fig.edge((PX0 + dx, 472 - 10), (PX0 + dx, 472 + 2), color="blue", width=1)
 fig.caption("Dotted line: ln 3 = 1.0986, the loss of a uniform guess.")
 fig.write()

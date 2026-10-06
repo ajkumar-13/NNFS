@@ -128,7 +128,6 @@
   .d-proj { stroke-dasharray: 6 4; }
   .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
   .d-lead { stroke-dasharray: 4 4; }
-  .f-ink-muted { fill: var(--nn-ink-muted); }
   .f-purple { fill: var(--nn-purple); }
   .s-ink-muted { stroke: var(--nn-ink-muted); }
   .s-purple { stroke: var(--nn-purple); }
@@ -136,114 +135,116 @@
 </style>
 <defs>
 <marker id="nn-03-learning-rate-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
-<clipPath id="nn-03-learning-rate-clip-1"><rect x="90" y="154" width="372" height="140"/></clipPath>
-<clipPath id="nn-03-learning-rate-clip-2"><rect x="546" y="154" width="372" height="140"/></clipPath>
-<clipPath id="nn-03-learning-rate-clip-3"><rect x="90" y="442" width="372" height="140"/></clipPath>
-<clipPath id="nn-03-learning-rate-clip-4"><rect x="546" y="442" width="372" height="140"/></clipPath>
+<clipPath id="nn-03-learning-rate-clip-1"><rect x="90" y="154" width="372" height="152"/></clipPath>
+<clipPath id="nn-03-learning-rate-clip-2"><rect x="546" y="154" width="372" height="152"/></clipPath>
+<clipPath id="nn-03-learning-rate-clip-3"><rect x="90" y="430" width="372" height="152"/></clipPath>
+<clipPath id="nn-03-learning-rate-clip-4"><rect x="546" y="430" width="372" height="152"/></clipPath>
 </defs>
 <rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
 <text x="40" y="48" class="t-title">Too small crawls, too large bounces or diverges</text>
 <text x="40" y="76" class="t-subtitle"><tspan class="i">f</tspan>(<tspan class="i">w</tspan>) = <tspan class="i">w</tspan><tspan class="sub" dy="-6">2</tspan><tspan dy="6">​</tspan>, start at <tspan class="i">w</tspan> = 5, update <tspan class="i">w</tspan> ← <tspan class="i">w</tspan> − <tspan class="i">α</tspan> · 2<tspan class="i">w</tspan>; dots: the start and 3 steps; ring: step 100.</text>
 <text x="40" y="120" class="t-head"><tspan class="i">α</tspan> = 0.001: crawls</text>
 <g data-grid="skip">
-<path d="M96,288H456M96,199.11H456" class="gridline"/>
-<text x="88" y="292" text-anchor="end" class="t-tick">0</text>
-<text x="88" y="203.11" text-anchor="end" class="t-tick">25</text>
-<text x="126" y="308" text-anchor="middle" class="t-tick">−5</text>
-<text x="276" y="308" text-anchor="middle" class="t-tick">0</text>
-<text x="426" y="308" text-anchor="middle" class="t-tick">5</text>
-<path d="M96,160V288H456" class="axis"/>
+<path d="M96,300H456M96,202.78H456" class="gridline"/>
+<text x="88" y="304" text-anchor="end" class="t-tick">0</text>
+<text x="88" y="206.78" text-anchor="end" class="t-tick">25</text>
+<text x="126" y="320" text-anchor="middle" class="t-tick">−5</text>
+<text x="276" y="320" text-anchor="middle" class="t-tick">0</text>
+<text x="426" y="320" text-anchor="middle" class="t-tick">5</text>
+<path d="M96,160V300H456" class="axis"/>
 <g clip-path="url(#nn-03-learning-rate-clip-1)">
-<path d="M96,160 L99,164.23 L102,168.39 L105,172.48 L108,176.5 L111,180.44 L114,184.32 L117,188.12 L120,191.86 L123,195.52 L126,199.11 L129,202.63 L132,206.08 L135,209.46 L138,212.76 L141,216 L144,219.16 L147,222.26 L150,225.28 L153,228.23 L156,231.11 L159,233.92 L162,236.66 L165,239.32 L168,241.92 L171,244.44 L174,246.9 L177,249.28 L180,251.59 L183,253.83 L186,256 L189,258.1 L192,260.12 L195,262.08 L198,263.96 L201,265.78 L204,267.52 L207,269.19 L210,270.79 L213,272.32 L216,273.78 L219,275.16 L222,276.48 L225,277.72 L228,278.9 L231,280 L234,281.03 L237,281.99 L240,282.88 L243,283.7 L246,284.44 L249,285.12 L252,285.72 L255,286.26 L258,286.72 L261,287.11 L264,287.43 L267,287.68 L270,287.86 L273,287.96 L276,288 L279,287.96 L282,287.86 L285,287.68 L288,287.43 L291,287.11 L294,286.72 L297,286.26 L300,285.72 L303,285.12 L306,284.44 L309,283.7 L312,282.88 L315,281.99 L318,281.03 L321,280 L324,278.9 L327,277.72 L330,276.48 L333,275.16 L336,273.78 L339,272.32 L342,270.79 L345,269.19 L348,267.52 L351,265.78 L354,263.96 L357,262.08 L360,260.12 L363,258.1 L366,256 L369,253.83 L372,251.59 L375,249.28 L378,246.9 L381,244.44 L384,241.92 L387,239.32 L390,236.66 L393,233.92 L396,231.11 L399,228.23 L402,225.28 L405,222.26 L408,219.16 L411,216 L414,212.76 L417,209.46 L420,206.08 L423,202.63 L426,199.11 L429,195.52 L432,191.86 L435,188.12 L438,184.32 L441,180.44 L444,176.5 L447,172.48 L450,168.39 L453,164.23 L456,160" class="s-ink-muted w15 nofill"/>
+<path d="M96,160 L99,164.63 L102,169.18 L105,173.65 L108,178.04 L111,182.36 L114,186.6 L117,190.76 L120,194.84 L123,198.85 L126,202.78 L129,206.63 L132,210.4 L135,214.09 L138,217.71 L141,221.25 L144,224.71 L147,228.09 L150,231.4 L153,234.63 L156,237.78 L159,240.85 L162,243.84 L165,246.76 L168,249.6 L171,252.36 L174,255.04 L177,257.65 L180,260.18 L183,262.63 L186,265 L189,267.29 L192,269.51 L195,271.65 L198,273.71 L201,275.69 L204,277.6 L207,279.43 L210,281.18 L213,282.85 L216,284.44 L219,285.96 L222,287.4 L225,288.76 L228,290.04 L231,291.25 L234,292.38 L237,293.43 L240,294.4 L243,295.29 L246,296.11 L249,296.85 L252,297.51 L255,298.09 L258,298.6 L261,299.03 L264,299.38 L267,299.65 L270,299.84 L273,299.96 L276,300 L279,299.96 L282,299.84 L285,299.65 L288,299.38 L291,299.03 L294,298.6 L297,298.09 L300,297.51 L303,296.85 L306,296.11 L309,295.29 L312,294.4 L315,293.43 L318,292.38 L321,291.25 L324,290.04 L327,288.76 L330,287.4 L333,285.96 L336,284.44 L339,282.85 L342,281.18 L345,279.43 L348,277.6 L351,275.69 L354,273.71 L357,271.65 L360,269.51 L363,267.29 L366,265 L369,262.63 L372,260.18 L375,257.65 L378,255.04 L381,252.36 L384,249.6 L387,246.76 L390,243.84 L393,240.85 L396,237.78 L399,234.63 L402,231.4 L405,228.09 L408,224.71 L411,221.25 L414,217.71 L417,214.09 L420,210.4 L423,206.63 L426,202.78 L429,198.85 L432,194.84 L435,190.76 L438,186.6 L441,182.36 L444,178.04 L447,173.65 L450,169.18 L453,164.63 L456,160" class="s-ink-muted w15 nofill"/>
 </g>
-<text x="468" y="165" class="t-note f-ink-muted"></text>
 </g>
 <text x="96" y="148" class="t-note"><tspan class="i">f</tspan>(<tspan class="i">w</tspan>)</text>
-<text x="276" y="332" text-anchor="middle" class="t-note"><tspan class="i">w</tspan></text>
 <g data-grid="skip">
-<path d="M426,199.11 L425.7,199.47" class="s-purple w15 nofill"/>
-<path d="M425.7,199.47 L425.4,199.82" class="s-purple w15 nofill"/>
-<path d="M425.4,199.82 L425.1,200.17" class="s-purple w15 nofill"/>
-<circle cx="426" cy="199.11" r="4" class="f-purple s-surface w1"/>
-<circle cx="425.7" cy="199.47" r="4" class="f-purple s-surface w1"/>
-<circle cx="425.4" cy="199.82" r="4" class="f-purple s-surface w1"/>
-<circle cx="425.1" cy="200.17" r="4" class="f-purple s-surface w1"/>
-<circle cx="398.79" cy="228.44" r="5" class="nofill s-purple w15"/>
+<path d="M426,202.78 L425.7,203.17" class="s-purple w15 nofill"/>
+<path d="M425.7,203.17 L425.4,203.55" class="s-purple w15 nofill"/>
+<path d="M425.4,203.55 L425.1,203.94" class="s-purple w15 nofill"/>
+<circle cx="426" cy="202.78" r="4" class="f-purple s-surface w1"/>
+<circle cx="425.7" cy="203.17" r="4" class="f-purple s-surface w1"/>
+<circle cx="425.4" cy="203.55" r="4" class="f-purple s-surface w1"/>
+<circle cx="425.1" cy="203.94" r="4" class="f-purple s-surface w1"/>
+<g data-grid="skip">
+<text x="414" y="194.78" text-anchor="end" class="t-note">four dots on top of one another</text>
 </g>
-<text x="40" y="364" class="t-note"><tspan class="i">w</tspan>: 5, 4.99, 4.98, 4.97; 4.093 after 100 steps</text>
+<circle cx="398.79" cy="234.86" r="5" class="nofill s-purple w15"/>
+</g>
+<text x="40" y="352" class="t-note"><tspan class="i">w</tspan>: 5, 4.99, 4.98, 4.97; 4.093 after 100 steps</text>
 <text x="496" y="120" class="t-head"><tspan class="i">α</tspan> = 0.1: converges</text>
 <g data-grid="skip">
-<path d="M552,288H912M552,199.11H912" class="gridline"/>
-<text x="544" y="292" text-anchor="end" class="t-tick">0</text>
-<text x="544" y="203.11" text-anchor="end" class="t-tick">25</text>
-<text x="582" y="308" text-anchor="middle" class="t-tick">−5</text>
-<text x="732" y="308" text-anchor="middle" class="t-tick">0</text>
-<text x="882" y="308" text-anchor="middle" class="t-tick">5</text>
-<path d="M552,160V288H912" class="axis"/>
+<path d="M552,300H912M552,202.78H912" class="gridline"/>
+<text x="544" y="304" text-anchor="end" class="t-tick">0</text>
+<text x="544" y="206.78" text-anchor="end" class="t-tick">25</text>
+<text x="582" y="320" text-anchor="middle" class="t-tick">−5</text>
+<text x="732" y="320" text-anchor="middle" class="t-tick">0</text>
+<text x="882" y="320" text-anchor="middle" class="t-tick">5</text>
+<path d="M552,160V300H912" class="axis"/>
 <g clip-path="url(#nn-03-learning-rate-clip-2)">
-<path d="M552,160 L555,164.23 L558,168.39 L561,172.48 L564,176.5 L567,180.44 L570,184.32 L573,188.12 L576,191.86 L579,195.52 L582,199.11 L585,202.63 L588,206.08 L591,209.46 L594,212.76 L597,216 L600,219.16 L603,222.26 L606,225.28 L609,228.23 L612,231.11 L615,233.92 L618,236.66 L621,239.32 L624,241.92 L627,244.44 L630,246.9 L633,249.28 L636,251.59 L639,253.83 L642,256 L645,258.1 L648,260.12 L651,262.08 L654,263.96 L657,265.78 L660,267.52 L663,269.19 L666,270.79 L669,272.32 L672,273.78 L675,275.16 L678,276.48 L681,277.72 L684,278.9 L687,280 L690,281.03 L693,281.99 L696,282.88 L699,283.7 L702,284.44 L705,285.12 L708,285.72 L711,286.26 L714,286.72 L717,287.11 L720,287.43 L723,287.68 L726,287.86 L729,287.96 L732,288 L735,287.96 L738,287.86 L741,287.68 L744,287.43 L747,287.11 L750,286.72 L753,286.26 L756,285.72 L759,285.12 L762,284.44 L765,283.7 L768,282.88 L771,281.99 L774,281.03 L777,280 L780,278.9 L783,277.72 L786,276.48 L789,275.16 L792,273.78 L795,272.32 L798,270.79 L801,269.19 L804,267.52 L807,265.78 L810,263.96 L813,262.08 L816,260.12 L819,258.1 L822,256 L825,253.83 L828,251.59 L831,249.28 L834,246.9 L837,244.44 L840,241.92 L843,239.32 L846,236.66 L849,233.92 L852,231.11 L855,228.23 L858,225.28 L861,222.26 L864,219.16 L867,216 L870,212.76 L873,209.46 L876,206.08 L879,202.63 L882,199.11 L885,195.52 L888,191.86 L891,188.12 L894,184.32 L897,180.44 L900,176.5 L903,172.48 L906,168.39 L909,164.23 L912,160" class="s-ink-muted w15 nofill"/>
+<path d="M552,160 L555,164.63 L558,169.18 L561,173.65 L564,178.04 L567,182.36 L570,186.6 L573,190.76 L576,194.84 L579,198.85 L582,202.78 L585,206.63 L588,210.4 L591,214.09 L594,217.71 L597,221.25 L600,224.71 L603,228.09 L606,231.4 L609,234.63 L612,237.78 L615,240.85 L618,243.84 L621,246.76 L624,249.6 L627,252.36 L630,255.04 L633,257.65 L636,260.18 L639,262.63 L642,265 L645,267.29 L648,269.51 L651,271.65 L654,273.71 L657,275.69 L660,277.6 L663,279.43 L666,281.18 L669,282.85 L672,284.44 L675,285.96 L678,287.4 L681,288.76 L684,290.04 L687,291.25 L690,292.38 L693,293.43 L696,294.4 L699,295.29 L702,296.11 L705,296.85 L708,297.51 L711,298.09 L714,298.6 L717,299.03 L720,299.38 L723,299.65 L726,299.84 L729,299.96 L732,300 L735,299.96 L738,299.84 L741,299.65 L744,299.38 L747,299.03 L750,298.6 L753,298.09 L756,297.51 L759,296.85 L762,296.11 L765,295.29 L768,294.4 L771,293.43 L774,292.38 L777,291.25 L780,290.04 L783,288.76 L786,287.4 L789,285.96 L792,284.44 L795,282.85 L798,281.18 L801,279.43 L804,277.6 L807,275.69 L810,273.71 L813,271.65 L816,269.51 L819,267.29 L822,265 L825,262.63 L828,260.18 L831,257.65 L834,255.04 L837,252.36 L840,249.6 L843,246.76 L846,243.84 L849,240.85 L852,237.78 L855,234.63 L858,231.4 L861,228.09 L864,224.71 L867,221.25 L870,217.71 L873,214.09 L876,210.4 L879,206.63 L882,202.78 L885,198.85 L888,194.84 L891,190.76 L894,186.6 L897,182.36 L900,178.04 L903,173.65 L906,169.18 L909,164.63 L912,160" class="s-ink-muted w15 nofill"/>
 </g>
-<text x="924" y="165" class="t-note f-ink-muted"></text>
 </g>
 <text x="552" y="148" class="t-note"><tspan class="i">f</tspan>(<tspan class="i">w</tspan>)</text>
-<text x="732" y="332" text-anchor="middle" class="t-note"><tspan class="i">w</tspan></text>
 <g data-grid="skip">
-<path d="M882,199.11 L852,231.11" class="s-purple w15 nofill"/>
-<path d="M852,231.11 L828,251.59" class="s-purple w15 nofill"/>
-<path d="M828,251.59 L808.8,264.7" class="s-purple w15 nofill"/>
-<circle cx="882" cy="199.11" r="4" class="f-purple s-surface w1"/>
-<circle cx="852" cy="231.11" r="4" class="f-purple s-surface w1"/>
-<circle cx="828" cy="251.59" r="4" class="f-purple s-surface w1"/>
-<circle cx="808.8" cy="264.7" r="4" class="f-purple s-surface w1"/>
-<circle cx="732" cy="288" r="5" class="nofill s-purple w15"/>
+<path d="M882,202.78 L852,237.78" class="s-purple w15 nofill"/>
+<path d="M852,237.78 L828,260.18" class="s-purple w15 nofill"/>
+<path d="M828,260.18 L808.8,274.51" class="s-purple w15 nofill"/>
+<circle cx="882" cy="202.78" r="4" class="f-purple s-surface w1"/>
+<circle cx="852" cy="237.78" r="4" class="f-purple s-surface w1"/>
+<circle cx="828" cy="260.18" r="4" class="f-purple s-surface w1"/>
+<circle cx="808.8" cy="274.51" r="4" class="f-purple s-surface w1"/>
+<circle cx="732" cy="300" r="5" class="nofill s-purple w15"/>
 </g>
-<text x="496" y="364" class="t-note"><tspan class="i">w</tspan>: 5, 4, 3.2, 2.56; 1.019 × 10<tspan class="sub" dy="-6">−9</tspan><tspan dy="6">​</tspan> after 100 steps</text>
-<text x="40" y="408" class="t-head"><tspan class="i">α</tspan> = 1: oscillates</text>
+<text x="496" y="352" class="t-note"><tspan class="i">w</tspan>: 5, 4, 3.2, 2.56; 1.019 × 10<tspan class="sub" dy="-6">−9</tspan><tspan dy="6">​</tspan> after 100 steps</text>
+<text x="40" y="396" class="t-head"><tspan class="i">α</tspan> = 1: oscillates</text>
 <g data-grid="skip">
-<path d="M96,576H456M96,487.11H456" class="gridline"/>
+<path d="M96,576H456M96,478.78H456" class="gridline"/>
 <text x="88" y="580" text-anchor="end" class="t-tick">0</text>
-<text x="88" y="491.11" text-anchor="end" class="t-tick">25</text>
+<text x="88" y="482.78" text-anchor="end" class="t-tick">25</text>
 <text x="126" y="596" text-anchor="middle" class="t-tick">−5</text>
 <text x="276" y="596" text-anchor="middle" class="t-tick">0</text>
 <text x="426" y="596" text-anchor="middle" class="t-tick">5</text>
-<path d="M96,448V576H456" class="axis"/>
+<path d="M96,436V576H456" class="axis"/>
 <g clip-path="url(#nn-03-learning-rate-clip-3)">
-<path d="M96,448 L99,452.23 L102,456.39 L105,460.48 L108,464.5 L111,468.44 L114,472.32 L117,476.12 L120,479.86 L123,483.52 L126,487.11 L129,490.63 L132,494.08 L135,497.46 L138,500.76 L141,504 L144,507.16 L147,510.26 L150,513.28 L153,516.23 L156,519.11 L159,521.92 L162,524.66 L165,527.32 L168,529.92 L171,532.44 L174,534.9 L177,537.28 L180,539.59 L183,541.83 L186,544 L189,546.1 L192,548.12 L195,550.08 L198,551.96 L201,553.78 L204,555.52 L207,557.19 L210,558.79 L213,560.32 L216,561.78 L219,563.16 L222,564.48 L225,565.72 L228,566.9 L231,568 L234,569.03 L237,569.99 L240,570.88 L243,571.7 L246,572.44 L249,573.12 L252,573.72 L255,574.26 L258,574.72 L261,575.11 L264,575.43 L267,575.68 L270,575.86 L273,575.96 L276,576 L279,575.96 L282,575.86 L285,575.68 L288,575.43 L291,575.11 L294,574.72 L297,574.26 L300,573.72 L303,573.12 L306,572.44 L309,571.7 L312,570.88 L315,569.99 L318,569.03 L321,568 L324,566.9 L327,565.72 L330,564.48 L333,563.16 L336,561.78 L339,560.32 L342,558.79 L345,557.19 L348,555.52 L351,553.78 L354,551.96 L357,550.08 L360,548.12 L363,546.1 L366,544 L369,541.83 L372,539.59 L375,537.28 L378,534.9 L381,532.44 L384,529.92 L387,527.32 L390,524.66 L393,521.92 L396,519.11 L399,516.23 L402,513.28 L405,510.26 L408,507.16 L411,504 L414,500.76 L417,497.46 L420,494.08 L423,490.63 L426,487.11 L429,483.52 L432,479.86 L435,476.12 L438,472.32 L441,468.44 L444,464.5 L447,460.48 L450,456.39 L453,452.23 L456,448" class="s-ink-muted w15 nofill"/>
+<path d="M96,436 L99,440.63 L102,445.18 L105,449.65 L108,454.04 L111,458.36 L114,462.6 L117,466.76 L120,470.84 L123,474.85 L126,478.78 L129,482.63 L132,486.4 L135,490.09 L138,493.71 L141,497.25 L144,500.71 L147,504.09 L150,507.4 L153,510.63 L156,513.78 L159,516.85 L162,519.84 L165,522.76 L168,525.6 L171,528.36 L174,531.04 L177,533.65 L180,536.18 L183,538.63 L186,541 L189,543.29 L192,545.51 L195,547.65 L198,549.71 L201,551.69 L204,553.6 L207,555.43 L210,557.18 L213,558.85 L216,560.44 L219,561.96 L222,563.4 L225,564.76 L228,566.04 L231,567.25 L234,568.38 L237,569.43 L240,570.4 L243,571.29 L246,572.11 L249,572.85 L252,573.51 L255,574.09 L258,574.6 L261,575.03 L264,575.38 L267,575.65 L270,575.84 L273,575.96 L276,576 L279,575.96 L282,575.84 L285,575.65 L288,575.38 L291,575.03 L294,574.6 L297,574.09 L300,573.51 L303,572.85 L306,572.11 L309,571.29 L312,570.4 L315,569.43 L318,568.38 L321,567.25 L324,566.04 L327,564.76 L330,563.4 L333,561.96 L336,560.44 L339,558.85 L342,557.18 L345,555.43 L348,553.6 L351,551.69 L354,549.71 L357,547.65 L360,545.51 L363,543.29 L366,541 L369,538.63 L372,536.18 L375,533.65 L378,531.04 L381,528.36 L384,525.6 L387,522.76 L390,519.84 L393,516.85 L396,513.78 L399,510.63 L402,507.4 L405,504.09 L408,500.71 L411,497.25 L414,493.71 L417,490.09 L420,486.4 L423,482.63 L426,478.78 L429,474.85 L432,470.84 L435,466.76 L438,462.6 L441,458.36 L444,454.04 L447,449.65 L450,445.18 L453,440.63 L456,436" class="s-ink-muted w15 nofill"/>
 </g>
-<text x="468" y="453" class="t-note f-ink-muted"></text>
 </g>
-<text x="96" y="436" class="t-note"><tspan class="i">f</tspan>(<tspan class="i">w</tspan>)</text>
+<text x="96" y="424" class="t-note"><tspan class="i">f</tspan>(<tspan class="i">w</tspan>)</text>
 <text x="276" y="620" text-anchor="middle" class="t-note"><tspan class="i">w</tspan></text>
 <g data-grid="skip">
-<path d="M426,487.11 L126,487.11" class="s-purple w15 nofill"/>
-<path d="M126,487.11 L426,487.11" class="s-purple w15 nofill"/>
-<path d="M426,487.11 L126,487.11" class="s-purple w15 nofill"/>
-<circle cx="426" cy="487.11" r="4" class="f-purple s-surface w1"/>
-<circle cx="126" cy="487.11" r="4" class="f-purple s-surface w1"/>
-<circle cx="426" cy="487.11" r="4" class="f-purple s-surface w1"/>
-<circle cx="126" cy="487.11" r="4" class="f-purple s-surface w1"/>
-<circle cx="426" cy="487.11" r="5" class="nofill s-purple w15"/>
+<path d="M426,478.78 L126,478.78" class="s-purple w15 nofill"/>
+<path d="M126,478.78 L426,478.78" class="s-purple w15 nofill"/>
+<path d="M426,478.78 L126,478.78" class="s-purple w15 nofill"/>
+<circle cx="426" cy="478.78" r="4" class="f-purple s-surface w1"/>
+<circle cx="126" cy="478.78" r="4" class="f-purple s-surface w1"/>
+<circle cx="426" cy="478.78" r="4" class="f-purple s-surface w1"/>
+<circle cx="126" cy="478.78" r="4" class="f-purple s-surface w1"/>
+<circle cx="426" cy="478.78" r="5" class="nofill s-purple w15"/>
 </g>
 <text x="40" y="652" class="t-note"><tspan class="i">w</tspan>: 5, −5, 5, −5; 5 after 100 steps</text>
-<text x="496" y="408" class="t-head"><tspan class="i">α</tspan> = 10: diverges</text>
+<text x="496" y="396" class="t-head"><tspan class="i">α</tspan> = 10: diverges</text>
 <g data-grid="skip">
-<path d="M552,576H912M552,487.11H912" class="gridline"/>
+<path d="M552,576H912M552,478.78H912" class="gridline"/>
 <text x="544" y="580" text-anchor="end" class="t-tick">0</text>
-<text x="544" y="491.11" text-anchor="end" class="t-tick">25</text>
+<text x="544" y="482.78" text-anchor="end" class="t-tick">25</text>
 <text x="582" y="596" text-anchor="middle" class="t-tick">−5</text>
 <text x="732" y="596" text-anchor="middle" class="t-tick">0</text>
 <text x="882" y="596" text-anchor="middle" class="t-tick">5</text>
-<path d="M552,448V576H912" class="axis"/>
+<path d="M552,436V576H912" class="axis"/>
 <g clip-path="url(#nn-03-learning-rate-clip-4)">
-<path d="M552,448 L555,452.23 L558,456.39 L561,460.48 L564,464.5 L567,468.44 L570,472.32 L573,476.12 L576,479.86 L579,483.52 L582,487.11 L585,490.63 L588,494.08 L591,497.46 L594,500.76 L597,504 L600,507.16 L603,510.26 L606,513.28 L609,516.23 L612,519.11 L615,521.92 L618,524.66 L621,527.32 L624,529.92 L627,532.44 L630,534.9 L633,537.28 L636,539.59 L639,541.83 L642,544 L645,546.1 L648,548.12 L651,550.08 L654,551.96 L657,553.78 L660,555.52 L663,557.19 L666,558.79 L669,560.32 L672,561.78 L675,563.16 L678,564.48 L681,565.72 L684,566.9 L687,568 L690,569.03 L693,569.99 L696,570.88 L699,571.7 L702,572.44 L705,573.12 L708,573.72 L711,574.26 L714,574.72 L717,575.11 L720,575.43 L723,575.68 L726,575.86 L729,575.96 L732,576 L735,575.96 L738,575.86 L741,575.68 L744,575.43 L747,575.11 L750,574.72 L753,574.26 L756,573.72 L759,573.12 L762,572.44 L765,571.7 L768,570.88 L771,569.99 L774,569.03 L777,568 L780,566.9 L783,565.72 L786,564.48 L789,563.16 L792,561.78 L795,560.32 L798,558.79 L801,557.19 L804,555.52 L807,553.78 L810,551.96 L813,550.08 L816,548.12 L819,546.1 L822,544 L825,541.83 L828,539.59 L831,537.28 L834,534.9 L837,532.44 L840,529.92 L843,527.32 L846,524.66 L849,521.92 L852,519.11 L855,516.23 L858,513.28 L861,510.26 L864,507.16 L867,504 L870,500.76 L873,497.46 L876,494.08 L879,490.63 L882,487.11 L885,483.52 L888,479.86 L891,476.12 L894,472.32 L897,468.44 L900,464.5 L903,460.48 L906,456.39 L909,452.23 L912,448" class="s-ink-muted w15 nofill"/>
+<path d="M552,436 L555,440.63 L558,445.18 L561,449.65 L564,454.04 L567,458.36 L570,462.6 L573,466.76 L576,470.84 L579,474.85 L582,478.78 L585,482.63 L588,486.4 L591,490.09 L594,493.71 L597,497.25 L600,500.71 L603,504.09 L606,507.4 L609,510.63 L612,513.78 L615,516.85 L618,519.84 L621,522.76 L624,525.6 L627,528.36 L630,531.04 L633,533.65 L636,536.18 L639,538.63 L642,541 L645,543.29 L648,545.51 L651,547.65 L654,549.71 L657,551.69 L660,553.6 L663,555.43 L666,557.18 L669,558.85 L672,560.44 L675,561.96 L678,563.4 L681,564.76 L684,566.04 L687,567.25 L690,568.38 L693,569.43 L696,570.4 L699,571.29 L702,572.11 L705,572.85 L708,573.51 L711,574.09 L714,574.6 L717,575.03 L720,575.38 L723,575.65 L726,575.84 L729,575.96 L732,576 L735,575.96 L738,575.84 L741,575.65 L744,575.38 L747,575.03 L750,574.6 L753,574.09 L756,573.51 L759,572.85 L762,572.11 L765,571.29 L768,570.4 L771,569.43 L774,568.38 L777,567.25 L780,566.04 L783,564.76 L786,563.4 L789,561.96 L792,560.44 L795,558.85 L798,557.18 L801,555.43 L804,553.6 L807,551.69 L810,549.71 L813,547.65 L816,545.51 L819,543.29 L822,541 L825,538.63 L828,536.18 L831,533.65 L834,531.04 L837,528.36 L840,525.6 L843,522.76 L846,519.84 L849,516.85 L852,513.78 L855,510.63 L858,507.4 L861,504.09 L864,500.71 L867,497.25 L870,493.71 L873,490.09 L876,486.4 L879,482.63 L882,478.78 L885,474.85 L888,470.84 L891,466.76 L894,462.6 L897,458.36 L900,454.04 L903,449.65 L906,445.18 L909,440.63 L912,436" class="s-ink-muted w15 nofill"/>
 </g>
-<text x="924" y="453" class="t-note f-ink-muted"></text>
 </g>
-<text x="552" y="436" class="t-note"><tspan class="i">f</tspan>(<tspan class="i">w</tspan>)</text>
+<text x="552" y="424" class="t-note"><tspan class="i">f</tspan>(<tspan class="i">w</tspan>)</text>
 <text x="732" y="620" text-anchor="middle" class="t-note"><tspan class="i">w</tspan></text>
 <g data-grid="skip">
-<path d="M882,487.11 L878.33,448" class="s-purple w15 nofill"/>
-<circle cx="882" cy="487.11" r="4" class="f-purple s-surface w1"/>
+<g data-grid="skip">
+<path d="M882,478.78 L878.33,436" class="s-purple w15 nofill"/>
+</g>
+<g data-grid="skip">
+<text x="870" y="456" text-anchor="end" class="t-note">to <tspan class="i">w</tspan> = −95</text>
+</g>
+<circle cx="882" cy="478.78" r="4" class="f-purple s-surface w1"/>
 </g>
 <text x="496" y="652" class="t-note"><tspan class="i">w</tspan>: 5, −95, 1,805; 3.753 × 10<tspan class="sub" dy="-6">128</tspan><tspan dy="6">​</tspan> after 100 steps</text>
 <text x="40" y="684" class="t-note">Each step multiplies <tspan class="i">w</tspan> by 1 − 2<tspan class="i">α</tspan>: 0.998, 0.8, −1 and −19.</text>
