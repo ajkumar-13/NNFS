@@ -1,0 +1,870 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-035",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-035-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "weight-sharing"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Convolutional layers, recurrent layers and attention answer the same weakness of a dense layer. Which one?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It has no non-linearity of its own",
+          "correct": false,
+          "feedback": "True of `Layer_Dense`, and equally true of a convolution or a recurrent weighted sum. The activation is a separate step in all of them."
+        },
+        {
+          "key": "b",
+          "text": "It has a separate weight for every input position",
+          "correct": true,
+          "feedback": "Right: what it learns at one position it cannot use at another, and all three layers share weights across positions."
+        },
+        {
+          "key": "c",
+          "text": "It cannot be trained by backpropagation through its weights",
+          "correct": false,
+          "feedback": "Posts 12 to 21 train it by backpropagation. The three new layers are trained the same way."
+        },
+        {
+          "key": "d",
+          "text": "It needs labelled data",
+          "correct": false,
+          "feedback": "Labels are a property of the task and the loss. A dense layer can be trained on a self-supervised task as well."
+        }
+      ],
+      "explanation": "Section 2 opens with it: a dense layer has a separate weight for every input position, so nothing learned at one position is available at another. Each of the three layers reuses one set of weights across positions, over a grid, over time, or over all pairs of positions.",
+      "hints": [
+        "Ask what a dense layer would have to do to recognise the same pattern in two different places of its input."
+      ]
+    },
+    {
+      "id": "nn-035-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "convolution"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A convolutional layer can be described as a dense layer with constraints placed on its weights. Which pair of constraints is it?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Each output reads the whole input, and the weights are fixed instead of learned",
+          "correct": false,
+          "feedback": "The filter's weights are learned by gradient descent like any others, and each output reads a small patch only."
+        },
+        {
+          "key": "b",
+          "text": "Each output reads a small patch, and every output has weights of its own",
+          "correct": false,
+          "feedback": "Reading a patch is half of it. With separate weights per position, a pattern would still be learned once per position."
+        },
+        {
+          "key": "c",
+          "text": "Each output reads a small patch, and outputs of one filter share their weights",
+          "correct": true,
+          "feedback": "Right: locality and sharing. Together they make the parameter count independent of the size of the input."
+        },
+        {
+          "key": "d",
+          "text": "Each output reads the whole input, and the bias is removed",
+          "correct": false,
+          "feedback": "A filter keeps its bias, and it reads one patch at a time, not the whole input."
+        }
+      ],
+      "explanation": "Section 2.1: the output of a filter at one position is the weighted sum of a small patch plus a bias, and the same filter is applied at every position. Seen as a dense layer, every weight outside the patch is fixed at zero and the remaining weights are tied to those of every other position.",
+      "hints": [
+        "Think of one output value of the layer: which inputs does it read?",
+        "Then compare two output values produced by the same filter: what do they have in common?"
+      ]
+    },
+    {
+      "id": "nn-035-q03",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 5,
+      "tags": [
+        "parameter-count",
+        "convolution"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "An image of $32 \\times 32$ pixels with one channel is the input of two candidate first layers. Layer A is a dense layer of 64 neurons on the flattened image. Layer B is a convolutional layer of 16 filters of size $3 \\times 3$, each with one bias. How many parameters does each layer have?",
+      "answer": {
+        "parts": [
+          {
+            "label": "layer A (dense)",
+            "value": 65600,
+            "tolerance": 0,
+            "unit": "parameters"
+          },
+          {
+            "label": "layer B (convolutional)",
+            "value": 160,
+            "tolerance": 0,
+            "unit": "parameters"
+          }
+        ]
+      },
+      "precision_note": "Closed forms of section 2.1: inputs times neurons plus neurons, 1024*64 + 64 = 65600; filters times filter size plus filters, 16*9 + 16 = 160.",
+      "explanation": "Section 2.1 counts both kinds. A dense layer has one weight per input and neuron plus one bias per neuron: $1{,}024 \\cdot 64 + 64 = 65{,}600$. A convolutional layer has one weight per filter entry plus one bias per filter: $16 \\cdot 9 + 16 = 160$. The size of the image enters the first count and not the second.",
+      "hints": [
+        "A flattened $32 \\times 32$ image has $32 \\cdot 32$ values.",
+        "A filter's weights are counted once, however many positions it visits."
+      ]
+    },
+    {
+      "id": "nn-035-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 6,
+      "tags": [
+        "parameter-count",
+        "recurrence"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A sequence has 50 timesteps of 20 features each. A recurrent layer with 32 hidden units, of the form $\\mathbf{h}_t = \\tanh(\\mathbf{x}_t \\mathbf{W}_x + \\mathbf{h}_{t-1} \\mathbf{W}_h + \\mathbf{b})$, reads it step by step. A dense layer of 32 neurons reads the same sequence flattened into one row. How many parameters does each have, and how many does the recurrent layer have when the sequence grows to 500 timesteps?",
+      "answer": {
+        "parts": [
+          {
+            "label": "recurrent layer, 50 steps",
+            "value": 1696,
+            "tolerance": 0,
+            "unit": "parameters"
+          },
+          {
+            "label": "dense layer on the flattened sequence",
+            "value": 32032,
+            "tolerance": 0,
+            "unit": "parameters"
+          },
+          {
+            "label": "recurrent layer, 500 steps",
+            "value": 1696,
+            "tolerance": 0,
+            "unit": "parameters"
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 2.2: features*hidden + hidden*hidden + hidden = 20*32 + 32*32 + 32 = 1696, independent of length; dense: 50*20*32 + 32 = 32032.",
+      "explanation": "Section 2.2: the recurrent layer has $\\mathbf{W}_x$ of shape $(20, 32)$, $\\mathbf{W}_h$ of shape $(32, 32)$ and 32 biases, $640 + 1{,}024 + 32 = 1{,}696$, used again at every step, so the count is the same for 500 steps. The dense layer has one weight per position and feature: $1{,}000 \\cdot 32 + 32 = 32{,}032$.",
+      "hints": [
+        "Write down the shape of each of the three arrays of the recurrent layer.",
+        "Ask which of the two layers has an array whose shape contains the number of timesteps."
+      ]
+    },
+    {
+      "id": "nn-035-q05",
+      "type": "numeric",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 4,
+      "tags": [
+        "attention",
+        "cost"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "One attention layer computes one score for every pair of positions of its input. How many scores does it compute for a sequence of 2,000 positions, and by what factor does that number grow when the sequence is doubled to 4,000?",
+      "answer": {
+        "parts": [
+          {
+            "label": "scores at 2,000 positions",
+            "value": 4000000,
+            "tolerance": 0,
+            "unit": "scores"
+          },
+          {
+            "label": "growth factor on doubling",
+            "value": 4,
+            "tolerance": 0,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 2.3: T*T scores, 2000*2000 = 4000000; (2T)^2 / T^2 = 4.",
+      "explanation": "Section 2.3: the score matrix $\\mathbf{Q} \\mathbf{K}^\\top$ has one row and one column per position, so $T$ positions give $T^2$ scores: $2{,}000^2 = 4{,}000{,}000$. Doubling $T$ multiplies $T^2$ by 4. This quadratic growth is the price of letting every position read every other directly.",
+      "hints": [
+        "Count the entries of a table with one row and one column per position.",
+        "Replace the length $T$ by $2T$ in that count and divide."
+      ]
+    },
+    {
+      "id": "nn-035-q06",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2",
+      "est_minutes": 1,
+      "tags": [
+        "papers",
+        "transformer"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Which paper introduced the transformer, the model built from attention without recurrence? Give its title or its first author.",
+      "answer": {
+        "model": "\"Attention Is All You Need\", by Vaswani et al.",
+        "accept": [
+          "^(?![\\s\\S]*(?:\\bnot\\b|\\bnever\\b|n't|\\bneither\\b|\\bnor\\b)[\\s\\S]{0,60}(?:vaswani|attention\\s+is\\s+all))(?![\\s\\S]*\\b(?:maybe|perhaps|possibly|either|probably|i\\s+think|i\\s+guess|not\\s+sure)\\b)(?!(?:(?!\\b(?:not|unlike|rather\\s+than|instead\\s+of)\\b)[\\s\\S])*\\b(?:bahdanau|cho|bengio|hochreiter|schmidhuber|lecun|bottou|haffner|ioffe|szegedy|kingma|devlin|radford|srivastava|hinton|karpathy|alammar|olah|long\\s+short|lstm\\s+paper|bert|jointly\\s+learning)\\b)[\\s\\S]*(?:\\battention\\s+is\\s+all\\s+(?:you|we)\\s+need\\b|\\bvaswani\\b)"
+        ]
+      },
+      "explanation": "Section 2.3: Vaswani et al., \"Attention Is All You Need\", removed the recurrence from the encoder-decoder models before it and built the whole model from attention, dense layers, residual connections and layer normalisation. Bahdanau, Cho and Bengio had added attention to a recurrent model earlier.",
+      "hints": [
+        "The title states the paper's claim about which mechanism suffices."
+      ]
+    },
+    {
+      "id": "nn-035-q07",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2",
+      "est_minutes": 4,
+      "tags": [
+        "papers"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Match each idea to the authors of the paper the post names as its source.",
+      "left": [
+        {
+          "key": "a",
+          "text": "A convolutional network for reading digits (LeNet-5)"
+        },
+        {
+          "key": "b",
+          "text": "The LSTM cell"
+        },
+        {
+          "key": "c",
+          "text": "The transformer"
+        },
+        {
+          "key": "d",
+          "text": "Batch normalisation"
+        },
+        {
+          "key": "e",
+          "text": "The residual connection"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "Ioffe and Szegedy"
+        },
+        {
+          "key": "q",
+          "text": "Vaswani et al."
+        },
+        {
+          "key": "r",
+          "text": "Kingma and Ba"
+        },
+        {
+          "key": "s",
+          "text": "LeCun, Bottou, Bengio and Haffner"
+        },
+        {
+          "key": "t",
+          "text": "He, Zhang, Ren and Sun"
+        },
+        {
+          "key": "u",
+          "text": "Hochreiter and Schmidhuber"
+        },
+        {
+          "key": "v",
+          "text": "Srivastava et al."
+        }
+      ],
+      "answer": {
+        "a": "s",
+        "b": "u",
+        "c": "q",
+        "d": "p",
+        "e": "t"
+      },
+      "explanation": "Sections 2 and 3 give one paper per idea: LeCun, Bottou, Bengio and Haffner for the convolutional network LeNet-5; Hochreiter and Schmidhuber for LSTM; Vaswani et al. for the transformer; Ioffe and Szegedy for batch normalisation; He, Zhang, Ren and Sun for the residual connection. Kingma and Ba wrote the Adam paper of post 27 and Srivastava et al. the dropout paper of post 31, both already inside the series.",
+      "hints": [
+        "Two of the names on the right belong to methods the series itself built."
+      ]
+    },
+    {
+      "id": "nn-035-q08",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2",
+      "est_minutes": 3,
+      "tags": [
+        "tutorials",
+        "recurrence"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A reader wants to see a recurrent network's forward and backward pass written out in NumPy, in the style of this series. Which of the sources the post names for recurrence does that?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Olah's essay \"Understanding LSTM Networks\"",
+          "correct": false,
+          "feedback": "The post lists it as the explainer: it draws the cell gate by gate and contains no implementation."
+        },
+        {
+          "key": "b",
+          "text": "Hochreiter and Schmidhuber's paper \"Long Short-Term Memory\"",
+          "correct": false,
+          "feedback": "It is the paper that introduced the cell. It gives the mathematics and the experiments, not a NumPy script."
+        },
+        {
+          "key": "c",
+          "text": "Alammar's essay \"The Illustrated Transformer\"",
+          "correct": false,
+          "feedback": "It is the explainer the post names for attention and transformers, not for recurrence, and it is an illustrated essay."
+        },
+        {
+          "key": "d",
+          "text": "Karpathy's `min-char-rnn`",
+          "correct": true,
+          "feedback": "Right: a character-level recurrent network in NumPy, forward and backward, which updates its parameters with AdaGrad."
+        }
+      ],
+      "explanation": "Section 2.2 separates three kinds of source. The paper introduces the method, the explainer draws it, and the from-scratch source writes it: the sibling series `rnn-from-scratch` and Karpathy's `min-char-rnn`, a character-level recurrent network in about a hundred lines of NumPy.",
+      "hints": [
+        "The post lists a paper, an explainer and a from-scratch source for each architecture. Which kind contains code?"
+      ]
+    },
+    {
+      "id": "nn-035-q09",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 4,
+      "tags": [
+        "residual",
+        "backward"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A residual block computes $\\mathbf{y} = F(\\mathbf{x}) + \\mathbf{x}$. During one backward pass the gradient that comes back through $F$ is zero for every element, for example because all of its ReLU units are inactive. What does the block store as `dinputs`?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "An array of zeros, because nothing comes back through $F$",
+          "correct": false,
+          "feedback": "That is the plain stack without the skip path. Here the added $\\mathbf{x}$ contributes a second term that does not pass through $F$."
+        },
+        {
+          "key": "b",
+          "text": "The upstream gradient `dvalues`, unchanged",
+          "correct": true,
+          "feedback": "Right: zero from the path through $F$ plus `dvalues` times 1 from the skip path."
+        },
+        {
+          "key": "c",
+          "text": "Twice the upstream gradient",
+          "correct": false,
+          "feedback": "That would need the path through $F$ to contribute `dvalues` as well. The prompt says it contributes zero."
+        },
+        {
+          "key": "d",
+          "text": "The block's input $\\mathbf{x}$",
+          "correct": false,
+          "feedback": "$\\mathbf{x}$ is a value of the forward pass. A gradient with respect to $\\mathbf{x}$ has its shape and is built from `dvalues`."
+        }
+      ],
+      "explanation": "Section 3.2: the block's input gradient is the gradient through $F$ plus the upstream gradient itself. The local derivative of the added $\\mathbf{x}$ is 1, so that term passes `dvalues` back unchanged whatever happens inside $F$. This direct path is what the connection adds to a plain stack, in which a zero would end the gradient there.",
+      "hints": [
+        "The output is a sum of two terms. Differentiate each with respect to $\\mathbf{x}$.",
+        "By the rule of post 11, contributions along two paths to the same variable are added."
+      ]
+    },
+    {
+      "id": "nn-035-q10",
+      "type": "numeric",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 6,
+      "tags": [
+        "schedules"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Two schedules start at $\\alpha_0 = 1$ and run for $T = 10{,}000$ updates. One is the cosine decay $\\alpha_t = \\alpha_{\\min} + \\tfrac{1}{2}(\\alpha_0 - \\alpha_{\\min})(1 + \\cos(\\pi t / T))$ with $\\alpha_{\\min} = 0$. The other is the schedule of post 23, $\\alpha_t = \\alpha_0 / (1 + d \\cdot t)$, with $d = 10^{-3}$. What is the learning rate of each at $t = 2{,}500$?",
+      "connects": [
+        "nn-023"
+      ],
+      "answer": {
+        "parts": [
+          {
+            "label": "cosine decay",
+            "value": 0.8536,
+            "tolerance": 0.005,
+            "unit": ""
+          },
+          {
+            "label": "post 23's schedule",
+            "value": 0.2857,
+            "tolerance": 0.005,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed forms of section 3.3: 0.5*(1 + cos(pi/4)) = 0.853553 and 1/(1 + 0.001*2500) = 0.285714. A cosine taken in degrees (0.99995) and a decay with d*t = 0.25 (0.8) are outside the tolerance.",
+      "explanation": "Section 3.3 gives both formulas. Cosine: $\\tfrac{1}{2}(1 + \\cos(\\pi / 4)) = \\tfrac{1}{2}(1 + 0.7071) = 0.8536$. Post 23's schedule: $1 / (1 + 2.5) = 0.2857$. A quarter of the way through, the cosine schedule has given up 15 percent of its rate and the other 71 percent: the two spend the same number of updates very differently.",
+      "hints": [
+        "At $t = 2{,}500$ the argument of the cosine is $\\pi / 4$.",
+        "For the second schedule compute $d \\cdot t$ first."
+      ]
+    },
+    {
+      "id": "nn-035-q11",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "normalisation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Batch normalisation takes the mean and standard deviation of each feature over the mini-batch. Over what does layer normalisation take its mean and standard deviation?",
+      "answer": {
+        "model": "Over the features of each single sample, so it does not depend on the batch.",
+        "accept": [
+          "^(?!(?:(?!\\b(?:not|instead|rather|independent|unlike|without|never|no|whereas|while|but|than)\\b|n't|\\bbatch\\s+norm)[\\s\\S])*\\b(?:over|across|along|from|on)\\s+(?:the\\s+|a\\s+|each\\s+|every\\s+)?(?:whole\\s+|entire\\s+|mini-?)?batch\\b)(?![\\s\\S]*\\b(?:or|maybe|perhaps|possibly)\\b)(?![\\s\\S]*(?:\\b(?:not|never)\\b|n't)(?:(?!batch|\\bbut\\b|[;,.])[\\s\\S]){0,25}(?:features?|activations?|units?|neurons?|dimensions?|values?|outputs?|columns?|elements?)\\s+(?:of|in|within)\\s+(?:each|every|one|a|any|single|the\\s+same|per|an\\s+individual|an)\\s)(?![\\s\\S]*\\b(?:each|every|per|one)\\s+(?:single\\s+)?(?:feature|column|unit|neuron)\\b)(?![\\s\\S]*\\b(?:sample|example|row|input|data\\s+point|datapoint|position|token)s?\\s+(?:of|in|across|over)\\s+(?:the|a|each)\\s+(?:mini-?)?batch\\b)[\\s\\S]*(?:\\b(?:features?|activations?|units?|neurons?|dimensions?|values?|outputs?|columns?|elements?)\\b[\\s\\S]{0,40}\\b(?:each|every|one|a|any|single|the\\s+same|per|an\\s+individual|an)\\s+(?:single\\s+|individual\\s+|one\\s+)?(?:sample|example|row|input|data\\s+point|datapoint|position|token)\\b(?!s)|\\b(?:each|every|one|a|any|single|the\\s+same|per|an\\s+individual|an)\\s+(?:single\\s+|individual\\s+)?(?:sample|example|row|input|data\\s+point|datapoint|position|token)(?:'s)?\\b(?!s)[\\s\\S]{0,40}\\b(?:features?|activations?|units?|neurons?|dimensions?|values?|outputs?|columns?|elements?)\\b|\\b(?:per|within|inside)\\s+(?:each\\s+|every\\s+|a\\s+|one\\s+)?(?:single\\s+|individual\\s+)?(?:sample|example|row|input|data\\s+point|datapoint|position|token)\\b(?!s))"
+        ]
+      },
+      "explanation": "Section 3.1: layer normalisation takes the statistics over the features of each sample, so the result for one sample does not depend on which other samples share its batch. This is the form transformers use.",
+      "hints": [
+        "Ask which of the two normalisations still works when the batch holds one sample only."
+      ]
+    },
+    {
+      "id": "nn-035-q12",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "choosing"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A reader wants to classify bird calls from spectrograms: grids of sound energy with time on one axis and frequency on the other, in which the same call can occur at any moment of a recording. Which addition to the dense network should be studied first?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Reinforcement learning",
+          "correct": false,
+          "feedback": "That framing is for an agent that acts and is rewarded later. Here every recording has a label, which is supervised learning."
+        },
+        {
+          "key": "b",
+          "text": "Diffusion models",
+          "correct": false,
+          "feedback": "Those generate new images or audio. The task is to classify existing recordings."
+        },
+        {
+          "key": "c",
+          "text": "Convolutional layers",
+          "correct": true,
+          "feedback": "Right: a grid in which a pattern can appear anywhere calls for weights shared over positions."
+        },
+        {
+          "key": "d",
+          "text": "Mixed-precision training",
+          "correct": false,
+          "feedback": "That makes training cheaper on suitable hardware. It adds nothing a dense layer lacks on a grid."
+        }
+      ],
+      "explanation": "Section 7 sends images, spectrograms and other grids to weights shared over positions, the convolutional layer of section 2.1, and to the sibling series `cnn-from-scratch`. A pattern that can occur anywhere in a grid is the case weight sharing was made for. The task is supervised classification, so no new framing is needed.",
+      "hints": [
+        "Decide first whether the task needs a new kind of layer or a new source of targets.",
+        "The same pattern can occur at any place of the input: which layer reuses its weights across places of a grid?"
+      ]
+    },
+    {
+      "id": "nn-035-q13",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 5,
+      "tags": [
+        "choosing"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Match each problem to what it needs beyond the classes of this series, as the post's table of choices gives it.",
+      "left": [
+        {
+          "key": "a",
+          "text": "Predicting a house price from eight unrelated measurements"
+        },
+        {
+          "key": "b",
+          "text": "Classifying photographs"
+        },
+        {
+          "key": "c",
+          "text": "Forecasting from a sensor trace read in order"
+        },
+        {
+          "key": "d",
+          "text": "Classifying 200 labelled X-ray images, with a network trained on a million other images available"
+        },
+        {
+          "key": "e",
+          "text": "Learning to play a game in which the score arrives at the end"
+        },
+        {
+          "key": "f",
+          "text": "Producing new images that resemble a collection"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "A denoising objective"
+        },
+        {
+          "key": "q",
+          "text": "Weights shared over time, and a hidden state"
+        },
+        {
+          "key": "r",
+          "text": "Nothing new in the layers"
+        },
+        {
+          "key": "s",
+          "text": "A pretrained network to fine-tune"
+        },
+        {
+          "key": "t",
+          "text": "Weights shared over the positions of a grid"
+        },
+        {
+          "key": "u",
+          "text": "Reward-weighted gradients in place of labels"
+        },
+        {
+          "key": "v",
+          "text": "A wider dense layer"
+        }
+      ],
+      "answer": {
+        "a": "r",
+        "b": "t",
+        "c": "q",
+        "d": "s",
+        "e": "u",
+        "f": "p"
+      },
+      "explanation": "Section 7: rows of unrelated features need no new layer; a grid needs weights shared over positions; an ordered sequence needs weights shared over time and a hidden state; few labels beside a large related dataset call for a pretrained network; generation needs a denoising objective; delayed reward means there are no labels, and the gradient is weighted by reward. A wider dense layer is on the list of none of them.",
+      "hints": [
+        "Sort the problems first by what is unusual: the shape of the input, or where the target comes from."
+      ]
+    },
+    {
+      "id": "nn-035-q14",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "8",
+      "est_minutes": 15,
+      "tags": [
+        "critique",
+        "training-loop"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A colleague writes: \"A network that contains batch normalisation and a recurrent layer can be trained and evaluated with the loop of post 22 exactly as it stands, because every new layer is only a `forward` and a `backward`.\" Say what is right in this claim and name the changes the loop or the layers need that the claim overlooks.",
+      "kind": "critique",
+      "solution": "**What is right.** The interface holds. Batch normalisation and a recurrent layer each have a `forward` that stores an output and a `backward` that receives `dvalues` and stores `dinputs`, and the optimiser is handed their parameters through the same three calls (section 1). No new mathematics is needed either: both are built from sums, products and a division, and the chain rule of post 11 gives their gradients.\n\n**What it overlooks.**\n\n1. *Two modes.* Batch normalisation uses the statistics of the mini-batch in training and stored averages in evaluation (section 3.1). The loop of post 22 has one kind of pass. The loop, or a flag it sets, has to tell the layer which mode is running, as the evaluation pass of `nn-p01` already does when it calls its dropout layers with `training=False`. Evaluating with batch statistics makes a sample's prediction depend on the other samples of its batch.\n2. *Carried state.* A recurrent layer keeps a hidden state from one step to the next. Between two unrelated sequences that state has to be reset, or the second sequence starts from the memory of the first. Nothing in the loop of post 22 does that, because no layer of this series keeps anything between calls except what `backward` needs.\n3. *Shared weights.* The recurrent weights are used at every timestep, so their gradient is the sum of the contributions of all timesteps. That sum is formed inside the layer's `backward`, by accumulation over the steps; a `backward` that assigns the contribution of one step, in the manner of `Layer_Dense`, returns a wrong gradient without raising an error. This is a change inside the layer and not in the loop, and a gradient check (post 21) catches it.\n\n**Verdict.** The skeleton survives, and the loop needs small additions: a mode and a reset. \"Exactly as it stands\" is too strong.",
+      "rubric": [
+        {
+          "criterion": "States what is right: the forward and backward interface and the optimiser calls are unchanged",
+          "points": 2
+        },
+        {
+          "criterion": "Names the training and evaluation modes of batch normalisation and that the loop must select between them",
+          "points": 2
+        },
+        {
+          "criterion": "Names the hidden state of the recurrent layer and the need to reset it between unrelated sequences",
+          "points": 2
+        },
+        {
+          "criterion": "States that a shared weight's gradient is a sum over its uses, formed inside the layer's backward",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 8 lists the three changes: a layer that behaves differently in training and evaluation needs a loop that knows which pass it is running; a recurrent layer's state must be reset between unrelated sequences; a layer with shared weights sums its gradient contributions inside `backward`. Section 1 gives what stays: the two-method interface and the optimiser's three calls.",
+      "hints": [
+        "Start with what is right: which calls does the loop make, and do they change?",
+        "Then ask which of the two layers behaves differently in evaluation, and which one keeps something between calls."
+      ]
+    },
+    {
+      "id": "nn-035-q15",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 15,
+      "tags": [
+        "design",
+        "choosing"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A reader has trained the dense network of `nn-p03` on Fashion-MNIST and sees that most of its errors are confusions between similar garments, such as shirts and pullovers. The reader plans to replace the first dense layer by a convolutional layer and to report whether that helps. Write the plan: say why this addition fits the problem, which parts of the series' code stay as they are, what has to be checked in the new layer before a run is trusted, and how the comparison has to be run for its result to mean anything.",
+      "connects": [
+        "nn-027",
+        "nn-028",
+        "cnn-001"
+      ],
+      "kind": "design",
+      "solution": "**Why convolution fits.** The input is a grid in which neighbouring pixels belong together and the same local pattern, an edge, a collar, a sleeve seam, can occur at different places. A dense layer has a separate weight for every pixel, treats neighbouring pixels as unrelated columns, and must learn a pattern again at every position (section 2.1). A convolutional layer reads small patches and shares one filter across all positions, with far fewer parameters. It is the entry in the table of section 7 for images, and the sibling series `cnn-from-scratch` builds it on this series' classes, starting at `cnn-001`.\n\n**What stays.** Everything outside the new layer: the later dense layers, ReLU, dropout, the combined softmax and cross-entropy loss, `Optimizer_Adam` and its three calls, the mini-batch loop, and the evaluation pass. The new layer only has to offer a `forward` that stores its output and a `backward` that receives `dvalues`, stores `dinputs` and the gradients of its filters and biases. Its backward pass sums the contributions of all positions into each shared weight, and it should pass a gradient check in float64 before any training run is trusted.\n\n**How to compare.**\n\n1. Same data split, same number of epochs, same optimiser settings and the same evaluation on the test set for both networks; only the first layer differs.\n2. Several seeds for each network, not one. Post 27 found one optimiser best on seed 0 and on no other of five seeds, so a single pair of runs cannot say which network is better. The result is stated as a range, or as a count of seeds on which the convolutional network is ahead.\n3. Test accuracy, not training accuracy (post 28), and choices such as the number of filters made on a validation split, not on the test set.\n4. The confusion between similar garments is looked at again: the claim to test is that these particular errors fall, not only that the total does.\n\n**What would count against the plan.** If the ranges of the two networks overlap over the seeds, the honest report is that no difference was shown.",
+      "rubric": [
+        {
+          "criterion": "Explains the fit: a grid input, local patterns that recur at different positions, weights shared over positions",
+          "points": 2
+        },
+        {
+          "criterion": "States what is unchanged: the other layers, the loss, the optimiser and its calls, the loop, with only a forward and a backward to supply",
+          "points": 2
+        },
+        {
+          "criterion": "Requires several seeds for both networks and a result stated as a range or a count, with the reason",
+          "points": 2
+        },
+        {
+          "criterion": "Compares on held-out data with everything but the first layer held equal",
+          "points": 2
+        },
+        {
+          "criterion": "Mentions a check of the new backward pass or that shared weights sum their gradient contributions",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 7 sends a grid input to weights shared over positions, section 1 says which interfaces stay fixed, and sections 1 and 8 repeat the series' rule that a comparison is read over several seeds on held-out data. The plan is those three things applied to one project.",
+      "hints": [
+        "Why does a dense layer use an image poorly? Section 2.1 gives two reasons in its first paragraph.",
+        "Post 27 compared six optimisers. What did one seed show, and what did five?"
+      ]
+    },
+    {
+      "id": "nn-035-q16",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 4,
+      "tags": [
+        "reading-order"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A reader with no particular problem in mind wants to reach the point of writing a small transformer. Put these steps in the order the post recommends.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Read Vaswani et al., \"Attention Is All You Need\""
+        },
+        {
+          "key": "b",
+          "text": "Study the LSTM"
+        },
+        {
+          "key": "c",
+          "text": "Follow a lecture that builds a transformer language model and write it"
+        },
+        {
+          "key": "d",
+          "text": "Study backpropagation through time and vanishing gradients"
+        },
+        {
+          "key": "e",
+          "text": "Read Alammar's essay \"The Illustrated Transformer\""
+        }
+      ],
+      "answer": [
+        "d",
+        "b",
+        "e",
+        "a",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 7 puts recurrence first (backpropagation through time and vanishing gradients, then the LSTM), and then, for attention, the explainer before the paper and the paper before the implementation. Section 8 gives the reasons: the transformer paper presents its model as a replacement for recurrent models, and both papers were written for readers who knew what came before.",
+      "hints": [
+        "Two rules decide the order: the older architecture before the newer one, and the explainer before the paper."
+      ]
+    },
+    {
+      "id": "nn-035-q17",
+      "type": "code",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 12,
+      "tags": [
+        "implement",
+        "convolution"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Write `conv1d_forward(x, w, b)`: the forward pass of one filter slid over a one-dimensional input. Output $i$ is the weighted sum of the patch $x_i, \\dots, x_{i+k-1}$ with the $k$ weights of the filter, plus the bias, so an input of $n$ values gives $n - k + 1$ outputs. The same weights are used at every position.",
+      "kind": "implement",
+      "language": "python",
+      "starter": "import numpy as np\n\n\ndef conv1d_forward(x, w, b):\n    \"\"\"One filter slid over a 1-D input, as the post describes a convolutional layer.\n\n    x: array of shape (n,), the input.\n    w: array of shape (k,), the filter; the same weights are used at every position.\n    b: float, the filter's bias.\n    Returns an array of shape (n - k + 1,). Output i is the weighted sum of the\n    patch x[i], ..., x[i + k - 1] with w[0], ..., w[k - 1], plus b.\n    \"\"\"\n    raise NotImplementedError\n",
+      "solution": "import numpy as np\n\n\ndef conv1d_forward(x, w, b):\n    \"\"\"One filter slid over a 1-D input, as the post describes a convolutional layer.\n\n    x: array of shape (n,), the input.\n    w: array of shape (k,), the filter; the same weights are used at every position.\n    b: float, the filter's bias.\n    Returns an array of shape (n - k + 1,). Output i is the weighted sum of the\n    patch x[i], ..., x[i + k - 1] with w[0], ..., w[k - 1], plus b.\n    \"\"\"\n    k = len(w)\n    out = np.zeros(len(x) - k + 1)\n    for i in range(len(out)):\n        # The neuron of post 01, with the patch as its input and shared weights.\n        out[i] = np.dot(x[i:i + k], w) + b\n    return out\n",
+      "tests": "import numpy as np\n\nx = np.array([1.0, 2.0, 0.0, -1.0, 3.0])\nw = np.array([2.0, -1.0, 0.5])\nout = np.asarray(conv1d_forward(x, w, 0.25), dtype=float)\nassert out.shape == (3,), f\"shape {out.shape}, expected (3,)\"\nassert np.allclose(out, [0.25, 3.75, 2.75]), out\n\n# A filter of one weight scales and shifts every element.\nout1 = np.asarray(conv1d_forward(x, np.array([3.0]), -1.0), dtype=float)\nassert out1.shape == (5,), out1.shape\nassert np.allclose(out1, 3.0 * x - 1.0), out1\n\n# A filter as long as the input is one neuron: a single weighted sum plus a bias.\nout_full = np.asarray(conv1d_forward(x, np.arange(5.0), 2.0), dtype=float)\nassert out_full.shape == (1,), out_full.shape\nassert np.allclose(out_full, [np.dot(x, np.arange(5.0)) + 2.0]), out_full\n\n# The inputs are left as they were.\nassert np.array_equal(x, [1.0, 2.0, 0.0, -1.0, 3.0]) and np.array_equal(w, [2.0, -1.0, 0.5])\n\nrng = np.random.default_rng(0)\nxr, wr = rng.normal(size=12), rng.normal(size=4)\nref = np.array([sum(xr[i + j] * wr[j] for j in range(4)) + 0.5 for i in range(9)])\ngot = np.asarray(conv1d_forward(xr, wr, 0.5), dtype=float)\nassert got.shape == (9,), got.shape\nassert np.allclose(got, ref), \"does not match the patch-by-patch weighted sum\"\nprint(\"ok\")\n",
+      "explanation": "Section 2.1: the output of a filter at one position is the weighted sum of a small patch plus a bias, the neuron of post 01 with a patch as its input, and sliding the filter gives one such output per position. The loop writes exactly that; the filter is not reversed and the bias is added once per output.",
+      "hints": [
+        "Each output is one neuron of post 01. What is its input?",
+        "Slice the patch `x[i:i + k]` for every valid start `i`; there are `len(x) - len(w) + 1` of them."
+      ]
+    },
+    {
+      "id": "nn-035-q18",
+      "type": "mcq",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 4,
+      "tags": [
+        "weight-sharing",
+        "backward"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A filter has a weight $w$ that is used at 26 positions of one input. In the backward pass the layer receives one upstream gradient per output position. How is $\\partial L / \\partial w$ obtained?",
+      "connects": [
+        "nn-011"
+      ],
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "From the last position only, since a `backward` assigns its gradient",
+          "correct": false,
+          "feedback": "Assigning applies to the stored array as a whole on each call. Within one call, every use of the weight contributes."
+        },
+        {
+          "key": "b",
+          "text": "As the mean of the 26 products of upstream gradient and input value",
+          "correct": false,
+          "feedback": "The chain rule adds the paths. A mean would make the gradient 26 times too small."
+        },
+        {
+          "key": "c",
+          "text": "As 26 separate gradients, followed by 26 separate updates of $w$",
+          "correct": false,
+          "feedback": "That treats the positions as 26 unshared weights. There is one $w$ and it has one gradient."
+        },
+        {
+          "key": "d",
+          "text": "As the sum of the 26 products of upstream gradient and input value",
+          "correct": true,
+          "feedback": "Right: one path per use of the weight, and contributions along several paths are added."
+        }
+      ],
+      "explanation": "Section 2.1: a shared weight is used at every position, so its gradient is the sum of the contributions from all of them. It is the rule of post 11 for a variable that reaches the loss along several paths: each use is one path, with the local derivative being the input value the weight multiplied there, and the paths are added.",
+      "hints": [
+        "Each of the 26 uses of $w$ is a separate path from $w$ to the loss.",
+        "Post 11 says what to do with the contributions of several paths to one variable."
+      ]
+    }
+  ]
+}

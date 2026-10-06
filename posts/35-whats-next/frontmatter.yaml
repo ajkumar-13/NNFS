@@ -1,8 +1,23 @@
 id: nn-035
 slug: 35-whats-next
-title: "Part 35 · What to read after this series"
+title: "35 - What to read after this series"
+summary: "A map of what comes after the dense network: what convolution, recurrence, attention, normalisation, residual connections and new problem framings each add to it, with a paper and a from-scratch tutorial for each."
 date: 2026-05-30
-tags: [reading-list, conv-nets, rnn, transformers, batch-norm, deep-learning]
+updated: 2026-10-06
+status: complete
+part: "Part VIII - Practical training and extensions"
+level: intermediate
+reading_time: 20
+tags: [neural-networks, from-scratch, reading-list, convolution, recurrence, attention, transformers, pytorch]
 hero: diagrams/01-whats-next-map.svg
-reading_time: 11
-part: "Part VIII — Practical training and extensions"
+prerequisites: [nn-031, nn-034]
+code: none
+outcomes:
+  - id: o1
+    text: "Place convolutional networks, recurrent networks and transformers on a map of what each adds to a dense network."
+  - id: o2
+    text: "Name the canonical paper and a from-scratch tutorial for each of the three architectures."
+  - id: o3
+    text: "Choose what to study next from the kind of problem to be solved."
+recommended: [nn-032, nn-033]
+compute: cpu
