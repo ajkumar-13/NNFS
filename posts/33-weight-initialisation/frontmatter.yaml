@@ -9,7 +9,7 @@ part: "Part VIII - Practical training and extensions"
 level: intermediate
 reading_time: 22
 tags: [neural-networks, from-scratch, training, initialisation, he-init, xavier-init, glorot]
-hero: diagrams/01-activation-variance-by-depth.svg
+hero: diagrams/01-activation-spread-by-depth.svg
 prerequisites: [nn-004, nn-006]
 code: included
 outcomes:

@@ -1,0 +1,253 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-01-activation-spread-by-depth-title" aria-describedby="nn-01-activation-spread-by-depth-desc">
+<title id="nn-01-activation-spread-by-depth-title">At 0.01 the signal vanishes; He keeps it through ten layers</title>
+<desc id="nn-01-activation-spread-by-depth-desc">A chart on a log axis of the standard deviation of each layer's activations, layers 1 to 10, for ten 64-neuron layers with ReLU on the spiral, seed 0, under three weight scales on the same draws. Scale 0.01: 3.565 times 10 to the minus 3, 1.705 times 10 to the minus 4, 9.798 times 10 to the minus 6, 4.836 times 10 to the minus 7, 3.096 times 10 to the minus 8, 1.674 times 10 to the minus 9, 1.049 times 10 to the minus 10, 5.888 times 10 to the minus 12, 2.875 times 10 to the minus 13, 1.337 times 10 to the minus 14. Glorot: 6.205 times 10 to the minus 2, 3.710 times 10 to the minus 2, 2.665 times 10 to the minus 2, 1.644 times 10 to the minus 2, 1.316 times 10 to the minus 2, 8.890 times 10 to the minus 3, 6.963 times 10 to the minus 3, 4.887 times 10 to the minus 3, 2.983 times 10 to the minus 3, 1.734 times 10 to the minus 3. He: 3.565 times 10 to the minus 1, 3.014 times 10 to the minus 1, 3.062 times 10 to the minus 1, 2.672 times 10 to the minus 1, 3.024 times 10 to the minus 1, 2.889 times 10 to the minus 1, 3.200 times 10 to the minus 1, 3.176 times 10 to the minus 1, 2.742 times 10 to the minus 1, 2.254 times 10 to the minus 1. A table below gives the factor per layer on the mean square for layers 2 to 10, mean over seeds 0 to 99, with the weights' standard deviation: 0.01, predicted 0.0032, measured 0.0031 to 0.0032 forward and 0.0032 to 0.0032 backward; Glorot, 0.125, predicted 0.5, measured 0.4846 to 0.5077 forward and 0.4922 to 0.5024 backward; He, 0.177, predicted 1, measured 0.9692 to 1.0153 forward and 0.9896 to 1.0091 backward.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--nn-blue); }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-ink { fill: var(--nn-ink); }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-ink { stroke: var(--nn-ink); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-01-activation-spread-by-depth-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<clipPath id="nn-01-activation-spread-by-depth-clip-1"><rect x="90" y="122" width="740" height="300"/></clipPath>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title" data-w="709">At 0.01 the signal vanishes; He keeps it through ten layers</text>
+<text x="40" y="76" class="t-subtitle" data-w="723">Ten 64-neuron layers, each followed by ReLU, on the spiral; one set of draws at three scales, seed 0.</text>
+<g data-grid="skip">
+<path d="M96,416H824M96,358.4H824M96,300.8H824M96,243.2H824M96,185.6H824M96,128H824" class="gridline"/>
+<text x="88" y="420" text-anchor="end" class="t-tick" data-w="40">10<tspan class="sub" dy="-6">−15</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="362.4" text-anchor="end" class="t-tick" data-w="40">10<tspan class="sub" dy="-6">−12</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="304.8" text-anchor="end" class="t-tick" data-w="33">10<tspan class="sub" dy="-6">−9</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="247.2" text-anchor="end" class="t-tick" data-w="33">10<tspan class="sub" dy="-6">−6</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="189.6" text-anchor="end" class="t-tick" data-w="33">10<tspan class="sub" dy="-6">−3</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="132" text-anchor="end" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">0</tspan><tspan dy="6">​</tspan></text>
+<text x="96" y="436" text-anchor="middle" class="t-tick" data-w="8">1</text>
+<text x="176.89" y="436" text-anchor="middle" class="t-tick" data-w="8">2</text>
+<text x="257.78" y="436" text-anchor="middle" class="t-tick" data-w="8">3</text>
+<text x="338.67" y="436" text-anchor="middle" class="t-tick" data-w="8">4</text>
+<text x="419.56" y="436" text-anchor="middle" class="t-tick" data-w="8">5</text>
+<text x="500.44" y="436" text-anchor="middle" class="t-tick" data-w="8">6</text>
+<text x="581.33" y="436" text-anchor="middle" class="t-tick" data-w="8">7</text>
+<text x="662.22" y="436" text-anchor="middle" class="t-tick" data-w="8">8</text>
+<text x="743.11" y="436" text-anchor="middle" class="t-tick" data-w="8">9</text>
+<text x="824" y="436" text-anchor="middle" class="t-tick" data-w="16">10</text>
+<path d="M96,128V416H824" class="axis"/>
+<g clip-path="url(#nn-01-activation-spread-by-depth-clip-1)">
+<path d="M96,175 L176.89,200.35 L257.78,224.17 L338.67,249.26 L419.56,272.18 L500.44,296.5 L581.33,319.6 L662.22,343.62 L743.11,368.79 L824,394.38" class="s-ink-muted w15 nofill"/>
+<circle cx="96" cy="175" r="5" class="f-ink-muted s-surface w1"/>
+<circle cx="176.89" cy="200.35" r="5" class="f-ink-muted s-surface w1"/>
+<circle cx="257.78" cy="224.17" r="5" class="f-ink-muted s-surface w1"/>
+<circle cx="338.67" cy="249.26" r="5" class="f-ink-muted s-surface w1"/>
+<circle cx="419.56" cy="272.18" r="5" class="f-ink-muted s-surface w1"/>
+<circle cx="500.44" cy="296.5" r="5" class="f-ink-muted s-surface w1"/>
+<circle cx="581.33" cy="319.6" r="5" class="f-ink-muted s-surface w1"/>
+<circle cx="662.22" cy="343.62" r="5" class="f-ink-muted s-surface w1"/>
+<circle cx="743.11" cy="368.79" r="5" class="f-ink-muted s-surface w1"/>
+<circle cx="824" cy="394.38" r="5" class="f-ink-muted s-surface w1"/>
+<path d="M96,151.18 L176.89,155.47 L257.78,158.23 L338.67,162.25 L419.56,164.11 L500.44,167.38 L581.33,169.42 L662.22,172.37 L743.11,176.49 L824,181.01" class="s-ink w15 nofill"/>
+<path d="M91.5,146.68 H100.5 V155.68 H91.5 Z" class="f-ink s-surface w1"/>
+<path d="M172.39,150.97 H181.39 V159.97 H172.39 Z" class="f-ink s-surface w1"/>
+<path d="M253.28,153.73 H262.28 V162.73 H253.28 Z" class="f-ink s-surface w1"/>
+<path d="M334.17,157.75 H343.17 V166.75 H334.17 Z" class="f-ink s-surface w1"/>
+<path d="M415.06,159.61 H424.06 V168.61 H415.06 Z" class="f-ink s-surface w1"/>
+<path d="M495.94,162.88 H504.94 V171.88 H495.94 Z" class="f-ink s-surface w1"/>
+<path d="M576.83,164.92 H585.83 V173.92 H576.83 Z" class="f-ink s-surface w1"/>
+<path d="M657.72,167.87 H666.72 V176.87 H657.72 Z" class="f-ink s-surface w1"/>
+<path d="M738.61,171.99 H747.61 V180.99 H738.61 Z" class="f-ink s-surface w1"/>
+<path d="M819.5,176.51 H828.5 V185.51 H819.5 Z" class="f-ink s-surface w1"/>
+<path d="M96,136.6 L176.89,138 L257.78,137.87 L338.67,139 L419.56,137.97 L500.44,138.35 L581.33,137.5 L662.22,137.56 L743.11,138.79 L824,140.42" class="s-blue w15 nofill"/>
+<path d="M96,130.6 L102,136.6 L96,142.6 L90,136.6 Z" class="f-blue s-surface w1"/>
+<path d="M176.89,132 L182.89,138 L176.89,144 L170.89,138 Z" class="f-blue s-surface w1"/>
+<path d="M257.78,131.87 L263.78,137.87 L257.78,143.87 L251.78,137.87 Z" class="f-blue s-surface w1"/>
+<path d="M338.67,133 L344.67,139 L338.67,145 L332.67,139 Z" class="f-blue s-surface w1"/>
+<path d="M419.56,131.97 L425.56,137.97 L419.56,143.97 L413.56,137.97 Z" class="f-blue s-surface w1"/>
+<path d="M500.44,132.35 L506.44,138.35 L500.44,144.35 L494.44,138.35 Z" class="f-blue s-surface w1"/>
+<path d="M581.33,131.5 L587.33,137.5 L581.33,143.5 L575.33,137.5 Z" class="f-blue s-surface w1"/>
+<path d="M662.22,131.56 L668.22,137.56 L662.22,143.56 L656.22,137.56 Z" class="f-blue s-surface w1"/>
+<path d="M743.11,132.79 L749.11,138.79 L743.11,144.79 L737.11,138.79 Z" class="f-blue s-surface w1"/>
+<path d="M824,134.42 L830,140.42 L824,146.42 L818,140.42 Z" class="f-blue s-surface w1"/>
+</g>
+<text x="836" y="399.38" class="t-note f-ink-muted" data-w="29">0.01</text>
+<text x="836" y="186.01" class="t-note f-ink" data-w="43">Glorot</text>
+<text x="836" y="145.42" class="t-note f-blue-ink" data-w="19">He</text>
+</g>
+<text x="96" y="116" class="t-note" data-w="360">standard deviation of the layer's activations, log scale</text>
+<text x="460" y="460" text-anchor="middle" class="t-note" data-w="33">layer</text>
+<text x="96" y="496" class="t-head" data-w="617">Factor per layer on the mean square, layers 2 to 10, mean over seeds 0 to 99</text>
+<rect x="96" y="608" width="768" height="32" class="f-blue-soft" data-fit="skip"/>
+<rect x="96" y="512" width="136" height="32" class="nofill"/>
+<rect x="232" y="512" width="136" height="32" class="nofill"/>
+<rect x="368" y="512" width="120" height="32" class="nofill"/>
+<rect x="488" y="512" width="192" height="32" class="nofill"/>
+<rect x="680" y="512" width="184" height="32" class="nofill"/>
+<rect x="96" y="544" width="136" height="32" class="nofill"/>
+<rect x="232" y="544" width="136" height="32" class="nofill"/>
+<rect x="368" y="544" width="120" height="32" class="nofill"/>
+<rect x="488" y="544" width="192" height="32" class="nofill"/>
+<rect x="680" y="544" width="184" height="32" class="nofill"/>
+<rect x="96" y="576" width="136" height="32" class="nofill"/>
+<rect x="232" y="576" width="136" height="32" class="nofill"/>
+<rect x="368" y="576" width="120" height="32" class="nofill"/>
+<rect x="488" y="576" width="192" height="32" class="nofill"/>
+<rect x="680" y="576" width="184" height="32" class="nofill"/>
+<rect x="96" y="608" width="136" height="32" class="nofill"/>
+<rect x="232" y="608" width="136" height="32" class="nofill"/>
+<rect x="368" y="608" width="120" height="32" class="nofill"/>
+<rect x="488" y="608" width="192" height="32" class="nofill"/>
+<rect x="680" y="608" width="184" height="32" class="nofill"/>
+<path d="M96,512H864M96,640H864" class="axis"/>
+<path d="M96,544H864" class="rule1"/>
+<text x="104" y="532" class="t-head" data-w="64">scheme</text>
+<text x="360" y="532" text-anchor="end" class="t-head" data-w="86">weight std</text>
+<text x="480" y="532" text-anchor="end" class="t-head" data-w="78">predicted</text>
+<text x="672" y="532" text-anchor="end" class="t-head" data-w="148">measured forward</text>
+<text x="856" y="532" text-anchor="end" class="t-head" data-w="164">measured backward</text>
+<text x="104" y="564" class="t-label" data-w="29">0.01</text>
+<text x="360" y="564" text-anchor="end" class="t-label" data-w="29">0.01</text>
+<text x="480" y="564" text-anchor="end" class="t-label" data-w="45">0.0032</text>
+<text x="672" y="564" text-anchor="end" class="t-label" data-w="112">0.0031 to 0.0032</text>
+<text x="856" y="564" text-anchor="end" class="t-label" data-w="112">0.0032 to 0.0032</text>
+<text x="104" y="596" class="t-label" data-w="43">Glorot</text>
+<text x="360" y="596" text-anchor="end" class="t-label" data-w="37">0.125</text>
+<text x="480" y="596" text-anchor="end" class="t-label" data-w="21">0.5</text>
+<text x="672" y="596" text-anchor="end" class="t-label" data-w="112">0.4846 to 0.5077</text>
+<text x="856" y="596" text-anchor="end" class="t-label" data-w="112">0.4922 to 0.5024</text>
+<text x="104" y="628" class="t-label" data-w="19"><tspan class="f-blue-ink">He</tspan></text>
+<text x="360" y="628" text-anchor="end" class="t-label" data-w="37">0.177</text>
+<text x="480" y="628" text-anchor="end" class="t-label" data-w="9">1</text>
+<text x="672" y="628" text-anchor="end" class="t-label" data-w="112">0.9692 to 1.0153</text>
+<text x="856" y="628" text-anchor="end" class="t-label" data-w="112">0.9896 to 1.0091</text>
+<text x="40" y="684" class="t-note" data-w="587">A dense layer and its ReLU multiply the mean square by <tspan class="i">n</tspan><tspan class="sub" dy="4">in</tspan><tspan dy="-4">​</tspan> · Var(<tspan class="i">W</tspan>) / 2; He sets it to 1.</text>
+</svg>

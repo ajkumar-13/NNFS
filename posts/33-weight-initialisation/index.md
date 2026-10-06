@@ -11,9 +11,9 @@
 > - Implement both in Layer_Dense through an init argument and say which one fits which activation.
 > - Recognise the symptoms of bad initialisation: gradients near zero, a NaN loss in the first steps, a plateau from the start.
 
-![A log-scale chart of activation variance against layer depth for ten 64-unit ReLU layers. The curve for 0.01 times randn falls off the bottom of the chart by layer 4, the Xavier curve falls by half per layer to about one thousandth at layer 10, and the He curve stays flat at 1. A side panel lists the three weight scales.](diagrams/01-activation-variance-by-depth.svg)
+![A log-scale chart of the standard deviation of each layer's activations in ten 64-neuron ReLU layers on seed 0. At scale 0.01 it falls from 0.0036 at layer 1 to 1.3 times 10 to the minus 14 at layer 10, with Glorot from 0.062 to 0.0017, and with He it stays between 0.22 and 0.36. A table below gives the factor per layer on the mean square, mean over seeds 0 to 99: predicted 0.0032, 0.5 and 1, measured within 4 percent of each, forward and backward.](diagrams/01-activation-spread-by-depth.svg)
 
-*Three weight scales through the same ten layers. The figure is a schematic that starts every curve at 1; the measured values are in section 5, where the quantity that each layer scales turns out to be the mean square of the activations and the factor for the 0.01 scale is 0.0032 per layer.*
+*One set of weight draws at three scales through the same ten layers. Each layer multiplies the mean square by the same factor, so ten layers apply it ten times.*
 
 ---
 
@@ -88,10 +88,6 @@ The derivation treats the activation as the identity, a fair description of one 
 
 ## 4. He initialisation: ReLU keeps half of the mean square
 
-![A zero-centred bell curve with its negative half shaded and swept by an arrow onto a single spike at zero, beside two cards that give the Glorot and He weight variances and the NumPy line for each.](diagrams/02-the-factor-of-two.svg)
-
-*The half that ReLU moves to zero. The figure writes the result as a halving of the variance; what is halved is the mean square, and the variance falls to 0.34 of its value, as the text below shows.*
-
 ReLU replaces every negative pre-activation by zero, $a_k = \max(0, z_k)$. Under assumptions 1 and 2 the pre-activation $z_k$ is symmetric about zero, because the weights are: $z_k$ and $-z_k$ are equally likely. Half of the values are therefore set to zero, and the positive half carries half of the total of $z_k^2$:
 
 $$\mathbb{E}\left[ a_k^2 \right] = \frac{1}{2} \, \mathbb{E}\left[ z_k^2 \right]$$
@@ -103,6 +99,12 @@ ReLU: fraction of zeros 0.4995
 ReLU: mean square of a / mean square of z = 0.5003   (closed form 1/2)
 ReLU: variance of a / variance of z       = 0.3408   (closed form 1/2 - 1/(2 pi) = 0.3408)
 ```
+
+The figure below draws the two halves of $z$ and sets the three ratios beside their closed forms.
+
+![Left, the density of a zero-centred normal pre-activation z, its negative half shaded red and labelled set to 0, its positive half blue and labelled kept. Right, the ReLU output a: the same blue half, and a spike at a = 0 that holds half of the draws. A table gives the fraction of outputs at 0 as 1/2, measured 0.4995, the ratio of mean squares as 1/2, measured 0.5003, and the ratio of variances as 1/2 minus 1/(2π) = 0.3408, measured 0.3408.](diagrams/02-the-factor-of-two.svg)
+
+*What ReLU does to a zero-centred pre-activation: the negative half moves to zero, half of the mean square survives, and 0.34 of the variance.*
 
 The mean square is the quantity that matters, because section 2 showed that the next layer scales the mean square of what it receives. A dense layer followed by a ReLU therefore multiplies the mean square by
 
@@ -131,7 +133,7 @@ the gate keeps half of the mean square of the gradient, and the backward factor 
 
 ## 5. Ten layers, measured forward and backward
 
-`snippets/ten_layers.py` builds the stack of the hero figure on the spiral data: ten `Layer_Dense` layers of 64 neurons, each followed by `Activation_ReLU`, then `Layer_Dense(64, 3)` and the combined softmax and loss. Unlike post 04's `init_scale.py` it has an activation after every layer, ten layers, and float64 without `nnfs.init()`; it first repeats post 04's six linear layers and prints the same $2.2 \times 10^{-8}$. The three schemes get the same standard normal draws, so only the scale differs. On seed 0:
+`snippets/ten_layers.py` builds the stack of the first figure on the spiral data: ten `Layer_Dense` layers of 64 neurons, each followed by `Activation_ReLU`, then `Layer_Dense(64, 3)` and the combined softmax and loss. Unlike post 04's `init_scale.py` it has an activation after every layer, ten layers, and float64 without `nnfs.init()`; it first repeats post 04's six linear layers and prints the same $2.2 \times 10^{-8}$. The three schemes get the same standard normal draws, so only the scale differs. On seed 0:
 
 ```text
 layer   small       xavier      he          fraction of zeros (the same for all three)
@@ -236,7 +238,11 @@ Adam divides each gradient by a running size of that gradient (post 27), so the 
 | 5 | $4.3 \times 10^{-9}$ to $6.8 \times 10^{-9}$ | 1 of 5 | 0.0956 to 1.0986 | 0.0121 to 0.0470 |
 | 6 | $2.3 \times 10^{-10}$ to $4.6 \times 10^{-10}$ | 3 of 5 | 0.1120 to 1.0986 | 0.0111 to 0.0978 |
 
-With Adam the 0.01 scale trains through four hidden layers on all five seeds, loses one seed at five and three at six. The two seeds that escape at six hidden layers need 186 and 191 epochs to pass a loss of 1.0, against 15 to 27 for He. The failure line sits where the first gradient drops well below $\epsilon$, for this width and this number of epochs. With He every run at every depth is below 1.0 within 37 epochs.
+With Adam the 0.01 scale trains through four hidden layers on all five seeds, loses one seed at five and three at six. The two seeds that escape at six hidden layers need 186 and 191 epochs to pass a loss of 1.0, against 15 to 27 for He. The failure line sits where the first gradient drops well below $\epsilon$, for this width and this number of epochs. With He every run at every depth is below 1.0 within 37 epochs. The figure below draws every run of the two sweeps, one tick per seed.
+
+![Two panels of bands of the loss at epoch 500, each band spanning five seeds with one tick per seed, 0.01 in grey and He in blue, with a dashed line at ln 3. Plain gradient descent: with one hidden layer both scales end between 1.02 and 1.07; with two and three He ends between 0.38 and 0.59 while 0.01 stays between 1.07 and 1.10. Adam: 0.01 trains at two and four hidden layers, leaves one run at ln 3 at five and three at six, and He ends below 0.1 at every depth. Two columns give the runs below a loss of 1.0 and the first epoch below 1.0.](diagrams/03-depth-and-optimiser.svg)
+
+*Under plain gradient descent the 0.01 scale stays at ln 3 from three hidden layers; under Adam it first loses runs at five.*
 
 The released project `nn-p02` documents the failure on two 16-neuron hidden layers under Adam. Its published evaluation reports, for two moons at noise 0.1, 200 of 200 held-out points with He against 174 of 200, 87.0 percent, with the 0.01 scale on seed 0, and 197 to 200 against at most 181 over seeds 0 to 9.
 

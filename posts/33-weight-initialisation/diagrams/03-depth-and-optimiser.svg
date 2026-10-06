@@ -1,0 +1,312 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-03-depth-and-optimiser-title" aria-describedby="nn-03-depth-and-optimiser-desc">
+<title id="nn-03-depth-and-optimiser-title">Adam carries the 0.01 scale deeper than plain descent</title>
+<desc id="nn-03-depth-and-optimiser-desc">Two panels of bands, one row per number of hidden layers and initial scale, 0.01 in grey and He in blue, on an axis of the loss at epoch 500 from 0 to 1.15 with a dashed line at ln 3 = 1.0986; each band spans five seeds with one tick per seed, and two columns give the runs that went below a loss of 1.0 and the first epoch below 1.0. Plain gradient descent at learning rate 1.0: 1 hidden, 0.01: 1.0713, 1.0535, 1.0629, 1.0635, 1.0431, 0 of 5 below 1.0, first epoch below 1.0 none; 1 hidden, He: 1.0237, 1.0405, 1.0556, 1.0604, 1.0279, 0 of 5 below 1.0, first epoch below 1.0 none; 2 hidden, 0.01: 1.0946, 1.0745, 1.0819, 1.0769, 1.0816, 0 of 5 below 1.0, first epoch below 1.0 none; 2 hidden, He: 0.5505, 0.5276, 0.5651, 0.5755, 0.4205, 5 of 5 below 1.0, first epoch below 1.0 77 to 133; 3 hidden, 0.01: 1.0986, 1.0986, 1.0986, 1.0986, 1.0986, 0 of 5 below 1.0, first epoch below 1.0 none; 3 hidden, He: 0.4888, 0.3843, 0.5887, 0.4388, 0.3769, 5 of 5 below 1.0, first epoch below 1.0 45 to 62. Adam at learning rate 0.02: 2 hidden, 0.01: 0.1409, 0.1189, 0.1691, 0.1550, 0.2032, 5 of 5 below 1.0, first epoch below 1.0 30 to 40; 2 hidden, He: 0.0640, 0.0558, 0.0704, 0.0575, 0.0251, 5 of 5 below 1.0, first epoch below 1.0 24 to 37; 4 hidden, 0.01: 0.3098, 0.0513, 0.1661, 0.1029, 0.1013, 5 of 5 below 1.0, first epoch below 1.0 50 to 104; 4 hidden, He: 0.0525, 0.0189, 0.0420, 0.0215, 0.0144, 5 of 5 below 1.0, first epoch below 1.0 18 to 25; 5 hidden, 0.01: 0.4696, 0.1717, 0.2180, 0.0956, 1.0986, 4 of 5 below 1.0, first epoch below 1.0 65 to 117; 5 hidden, He: 0.0238, 0.0470, 0.0253, 0.0351, 0.0121, 5 of 5 below 1.0, first epoch below 1.0 15 to 25; 6 hidden, 0.01: 1.0986, 1.0986, 1.0986, 0.2011, 0.1120, 2 of 5 below 1.0, first epoch below 1.0 186 to 191; 6 hidden, He: 0.0938, 0.0512, 0.0415, 0.0978, 0.0111, 5 of 5 below 1.0, first epoch below 1.0 15 to 27.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-neutral-soft { fill: var(--nn-neutral-soft); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-blue-line { stroke: var(--nn-blue-line); }
+  .s-grid { stroke: var(--nn-grid); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-rule { stroke: var(--nn-rule); }
+  .w075 { stroke-width: 0.75; }
+</style>
+<defs>
+<marker id="nn-03-depth-and-optimiser-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title" data-w="658">Adam carries the 0.01 scale deeper than plain descent</text>
+<text x="40" y="76" class="t-subtitle" data-w="707">Loss at epoch 500 on the spiral, 64 neurons per hidden layer with ReLU; seeds 0 to 4 for each row.</text>
+<text x="800" y="128" text-anchor="end" class="t-note" data-w="30">runs</text>
+<text x="800" y="152" text-anchor="end" class="t-note" data-w="65">below 1.0</text>
+<text x="920" y="128" text-anchor="end" class="t-note" data-w="71">first epoch</text>
+<text x="920" y="152" text-anchor="end" class="t-note" data-w="65">below 1.0</text>
+<text x="40" y="128" class="t-head" data-w="323">Plain gradient descent, learning rate 1.0</text>
+<text x="40" y="152" class="t-note" data-w="90">hidden layers</text>
+<text x="144" y="152" class="t-note" data-w="21">init</text>
+<text x="192" y="152" class="t-note" data-w="118">loss at epoch 500</text>
+<g data-grid="skip">
+<path d="M192,156 L192,320" class="s-grid w075 nofill"/>
+<path d="M305.04,156 L305.04,320" class="s-grid w075 nofill"/>
+<path d="M418.09,156 L418.09,320" class="s-grid w075 nofill"/>
+<path d="M531.13,156 L531.13,320" class="s-grid w075 nofill"/>
+<path d="M644.17,156 L644.17,320" class="s-grid w075 nofill"/>
+<path d="M192,320 L712,320" class="s-ink-muted w1 nofill"/>
+<text x="192" y="340" text-anchor="middle" class="t-tick" data-w="27">0.00</text>
+<text x="305.04" y="340" text-anchor="middle" class="t-tick" data-w="27">0.25</text>
+<text x="418.09" y="340" text-anchor="middle" class="t-tick" data-w="27">0.50</text>
+<text x="531.13" y="340" text-anchor="middle" class="t-tick" data-w="27">0.75</text>
+<text x="644.17" y="340" text-anchor="middle" class="t-tick" data-w="27">1.00</text>
+<path d="M688.76,156 L688.76,320" class="s-ink-muted w1 nofill d-ref"/>
+<text x="682.76" y="152" text-anchor="end" class="t-note" data-w="25">ln 3</text>
+<text x="40" y="173" class="t-label" data-w="9">1</text>
+<rect x="663.66" y="160" width="12.75" height="16" class="f-neutral-soft" data-fit="skip"/>
+<rect x="663.66" y="160" width="12.75" height="16" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M676.41,163 L676.41,173" class="s-ink-muted w1 nofill"/>
+<path d="M668.37,163 L668.37,173" class="s-ink-muted w1 nofill"/>
+<path d="M672.62,163 L672.62,173" class="s-ink-muted w1 nofill"/>
+<path d="M672.89,163 L672.89,173" class="s-ink-muted w1 nofill"/>
+<path d="M663.66,163 L663.66,173" class="s-ink-muted w1 nofill"/>
+<text x="144" y="173" class="t-label" data-w="29">0.01</text>
+<text x="800" y="173" text-anchor="end" class="t-label" data-w="38">0 of 5</text>
+<text x="920" y="173" text-anchor="end" class="t-label" data-w="34">none</text>
+<rect x="654.89" y="184" width="16.59" height="16" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M654.89,186.67V197.33M662.49,186.67V197.33M669.31,186.67V197.33M671.49,186.67V197.33M656.79,186.67V197.33" class="s-blue w1 nofill"/>
+<text x="144" y="197" class="t-label f-blue-ink" data-w="19">He</text>
+<text x="800" y="197" text-anchor="end" class="t-label f-blue-ink" data-w="38">0 of 5</text>
+<text x="920" y="197" text-anchor="end" class="t-label f-blue-ink" data-w="34">none</text>
+<text x="40" y="229" class="t-label" data-w="9">2</text>
+<rect x="677.86" y="216" width="9.09" height="16" class="f-neutral-soft" data-fit="skip"/>
+<rect x="677.86" y="216" width="9.09" height="16" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M686.95,219 L686.95,229" class="s-ink-muted w1 nofill"/>
+<path d="M677.86,219 L677.86,229" class="s-ink-muted w1 nofill"/>
+<path d="M681.21,219 L681.21,229" class="s-ink-muted w1 nofill"/>
+<path d="M678.95,219 L678.95,229" class="s-ink-muted w1 nofill"/>
+<path d="M681.07,219 L681.07,229" class="s-ink-muted w1 nofill"/>
+<text x="144" y="229" class="t-label" data-w="29">0.01</text>
+<text x="800" y="229" text-anchor="end" class="t-label" data-w="38">0 of 5</text>
+<text x="920" y="229" text-anchor="end" class="t-label" data-w="34">none</text>
+<rect x="382.14" y="240" width="70.09" height="16" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M440.92,242.67V253.33M430.57,242.67V253.33M447.52,242.67V253.33M452.23,242.67V253.33M382.14,242.67V253.33" class="s-blue w1 nofill"/>
+<text x="144" y="253" class="t-label f-blue-ink" data-w="19">He</text>
+<text x="800" y="253" text-anchor="end" class="t-label f-blue-ink" data-w="38">5 of 5</text>
+<text x="920" y="253" text-anchor="end" class="t-label f-blue-ink" data-w="63">77 to 133</text>
+<text x="40" y="285" class="t-label" data-w="9">3</text>
+<rect x="686.76" y="272" width="4" height="16" class="f-neutral-soft" data-fit="skip"/>
+<rect x="686.76" y="272" width="4" height="16" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M688.76,275 L688.76,285" class="s-ink-muted w1 nofill"/>
+<path d="M688.76,275 L688.76,285" class="s-ink-muted w1 nofill"/>
+<path d="M688.76,275 L688.76,285" class="s-ink-muted w1 nofill"/>
+<path d="M688.76,275 L688.76,285" class="s-ink-muted w1 nofill"/>
+<path d="M688.76,275 L688.76,285" class="s-ink-muted w1 nofill"/>
+<text x="144" y="285" class="t-label" data-w="29">0.01</text>
+<text x="800" y="285" text-anchor="end" class="t-label" data-w="38">0 of 5</text>
+<text x="920" y="285" text-anchor="end" class="t-label" data-w="34">none</text>
+<rect x="362.42" y="296" width="95.77" height="16" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M413.02,298.67V309.33M365.77,298.67V309.33M458.19,298.67V309.33M390.41,298.67V309.33M362.42,298.67V309.33" class="s-blue w1 nofill"/>
+<text x="144" y="309" class="t-label f-blue-ink" data-w="19">He</text>
+<text x="800" y="309" text-anchor="end" class="t-label f-blue-ink" data-w="38">5 of 5</text>
+<text x="920" y="309" text-anchor="end" class="t-label f-blue-ink" data-w="55">45 to 62</text>
+</g>
+<text x="40" y="368" class="t-head" data-w="198">Adam, learning rate 0.02</text>
+<text x="40" y="392" class="t-note" data-w="90">hidden layers</text>
+<text x="144" y="392" class="t-note" data-w="21">init</text>
+<text x="192" y="392" class="t-note" data-w="118">loss at epoch 500</text>
+<g data-grid="skip">
+<path d="M192,396 L192,616" class="s-grid w075 nofill"/>
+<path d="M305.04,396 L305.04,616" class="s-grid w075 nofill"/>
+<path d="M418.09,396 L418.09,616" class="s-grid w075 nofill"/>
+<path d="M531.13,396 L531.13,616" class="s-grid w075 nofill"/>
+<path d="M644.17,396 L644.17,616" class="s-grid w075 nofill"/>
+<path d="M192,616 L712,616" class="s-ink-muted w1 nofill"/>
+<text x="192" y="636" text-anchor="middle" class="t-tick" data-w="27">0.00</text>
+<text x="305.04" y="636" text-anchor="middle" class="t-tick" data-w="27">0.25</text>
+<text x="418.09" y="636" text-anchor="middle" class="t-tick" data-w="27">0.50</text>
+<text x="531.13" y="636" text-anchor="middle" class="t-tick" data-w="27">0.75</text>
+<text x="644.17" y="636" text-anchor="middle" class="t-tick" data-w="27">1.00</text>
+<path d="M688.76,396 L688.76,616" class="s-ink-muted w1 nofill d-ref"/>
+<text x="682.76" y="392" text-anchor="end" class="t-note" data-w="25">ln 3</text>
+<text x="40" y="413" class="t-label" data-w="9">2</text>
+<rect x="245.76" y="400" width="38.12" height="16" class="f-neutral-soft" data-fit="skip"/>
+<rect x="245.76" y="400" width="38.12" height="16" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M255.71,403 L255.71,413" class="s-ink-muted w1 nofill"/>
+<path d="M245.76,403 L245.76,413" class="s-ink-muted w1 nofill"/>
+<path d="M268.46,403 L268.46,413" class="s-ink-muted w1 nofill"/>
+<path d="M262.09,403 L262.09,413" class="s-ink-muted w1 nofill"/>
+<path d="M283.88,403 L283.88,413" class="s-ink-muted w1 nofill"/>
+<text x="144" y="413" class="t-label" data-w="29">0.01</text>
+<text x="800" y="413" text-anchor="end" class="t-label" data-w="38">5 of 5</text>
+<text x="920" y="413" text-anchor="end" class="t-label" data-w="55">30 to 40</text>
+<rect x="203.35" y="424" width="20.48" height="16" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M220.94,426.67V437.33M217.23,426.67V437.33M223.83,426.67V437.33M218,426.67V437.33M203.35,426.67V437.33" class="s-blue w1 nofill"/>
+<text x="144" y="437" class="t-label f-blue-ink" data-w="19">He</text>
+<text x="800" y="437" text-anchor="end" class="t-label f-blue-ink" data-w="38">5 of 5</text>
+<text x="920" y="437" text-anchor="end" class="t-label f-blue-ink" data-w="55">24 to 37</text>
+<text x="40" y="469" class="t-label" data-w="9">4</text>
+<rect x="215.2" y="456" width="116.89" height="16" class="f-neutral-soft" data-fit="skip"/>
+<rect x="215.2" y="456" width="116.89" height="16" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M332.08,459 L332.08,469" class="s-ink-muted w1 nofill"/>
+<path d="M215.2,459 L215.2,469" class="s-ink-muted w1 nofill"/>
+<path d="M267.11,459 L267.11,469" class="s-ink-muted w1 nofill"/>
+<path d="M238.53,459 L238.53,469" class="s-ink-muted w1 nofill"/>
+<path d="M237.81,459 L237.81,469" class="s-ink-muted w1 nofill"/>
+<text x="144" y="469" class="t-label" data-w="29">0.01</text>
+<text x="800" y="469" text-anchor="end" class="t-label" data-w="38">5 of 5</text>
+<text x="920" y="469" text-anchor="end" class="t-label" data-w="63">50 to 104</text>
+<rect x="198.51" y="480" width="17.23" height="16" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M215.74,482.67V493.33M200.55,482.67V493.33M210.99,482.67V493.33M201.72,482.67V493.33M198.51,482.67V493.33" class="s-blue w1 nofill"/>
+<text x="144" y="493" class="t-label f-blue-ink" data-w="19">He</text>
+<text x="800" y="493" text-anchor="end" class="t-label f-blue-ink" data-w="38">5 of 5</text>
+<text x="920" y="493" text-anchor="end" class="t-label f-blue-ink" data-w="55">18 to 25</text>
+<text x="40" y="525" class="t-label" data-w="9">5</text>
+<rect x="235.23" y="512" width="453.53" height="16" class="f-neutral-soft" data-fit="skip"/>
+<rect x="235.23" y="512" width="453.53" height="16" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M404.34,515 L404.34,525" class="s-ink-muted w1 nofill"/>
+<path d="M269.64,515 L269.64,525" class="s-ink-muted w1 nofill"/>
+<path d="M290.57,515 L290.57,525" class="s-ink-muted w1 nofill"/>
+<path d="M235.23,515 L235.23,525" class="s-ink-muted w1 nofill"/>
+<path d="M688.76,515 L688.76,525" class="s-ink-muted w1 nofill"/>
+<text x="144" y="525" class="t-label" data-w="29">0.01</text>
+<text x="800" y="525" text-anchor="end" class="t-label" data-w="38">4 of 5</text>
+<text x="920" y="525" text-anchor="end" class="t-label" data-w="63">65 to 117</text>
+<rect x="197.47" y="536" width="15.78" height="16" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M202.76,538.67V549.33M213.25,538.67V549.33M203.44,538.67V549.33M207.87,538.67V549.33M197.47,538.67V549.33" class="s-blue w1 nofill"/>
+<text x="144" y="549" class="t-label f-blue-ink" data-w="19">He</text>
+<text x="800" y="549" text-anchor="end" class="t-label f-blue-ink" data-w="38">5 of 5</text>
+<text x="920" y="549" text-anchor="end" class="t-label f-blue-ink" data-w="55">15 to 25</text>
+<text x="40" y="581" class="t-label" data-w="9">6</text>
+<rect x="242.64" y="568" width="446.11" height="16" class="f-neutral-soft" data-fit="skip"/>
+<rect x="242.64" y="568" width="446.11" height="16" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M688.76,571 L688.76,581" class="s-ink-muted w1 nofill"/>
+<path d="M688.76,571 L688.76,581" class="s-ink-muted w1 nofill"/>
+<path d="M688.76,571 L688.76,581" class="s-ink-muted w1 nofill"/>
+<path d="M282.93,571 L282.93,581" class="s-ink-muted w1 nofill"/>
+<path d="M242.64,571 L242.64,581" class="s-ink-muted w1 nofill"/>
+<text x="144" y="581" class="t-label" data-w="29">0.01</text>
+<text x="800" y="581" text-anchor="end" class="t-label" data-w="38">2 of 5</text>
+<text x="920" y="581" text-anchor="end" class="t-label" data-w="71">186 to 191</text>
+<rect x="197.02" y="592" width="39.2" height="16" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M234.41,594.67V605.33M215.15,594.67V605.33M210.77,594.67V605.33M236.22,594.67V605.33M197.02,594.67V605.33" class="s-blue w1 nofill"/>
+<text x="144" y="605" class="t-label f-blue-ink" data-w="19">He</text>
+<text x="800" y="605" text-anchor="end" class="t-label f-blue-ink" data-w="38">5 of 5</text>
+<text x="920" y="605" text-anchor="end" class="t-label f-blue-ink" data-w="55">15 to 27</text>
+</g>
+<g data-grid="skip">
+<rect x="432" y="355" width="24" height="16" class="f-neutral-soft" data-fit="skip"/>
+<rect x="432" y="355" width="24" height="16" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M444,358 L444,368" class="s-ink-muted w1 nofill"/>
+<text x="464" y="368" class="t-label" data-w="29">0.01</text>
+<rect x="517" y="355" width="24" height="16" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M529,357.67V368.33" class="s-blue w1 nofill"/>
+<text x="549" y="368" class="t-label f-blue-ink" data-w="19">He</text>
+<text x="592" y="368" class="t-note" data-w="115">one tick per seed</text>
+</g>
+<text x="40" y="684" class="t-note" data-w="667">Under plain descent 0.01 has not left ln 3 at three hidden layers; under Adam it loses runs from five.</text>
+</svg>
