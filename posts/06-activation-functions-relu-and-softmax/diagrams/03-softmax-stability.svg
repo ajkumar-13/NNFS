@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-03-softmax-stability-title" aria-describedby="nn-03-softmax-stability-desc">
 <title id="nn-03-softmax-stability-title">Subtracting the row's maximum keeps np.exp from overflowing</title>
-<desc id="nn-03-softmax-stability-desc">Two columns of three steps for the logits 1000, 1001, 999 in float64, where np.exp returns inf above 709.78 (88.72 in float32). Naive column: the exponents are the logits themselves; np.exp gives inf, inf, inf; dividing by the row sum gives nan, nan, nan, with the two RuntimeWarnings NumPy prints, overflow encountered in exp and invalid value encountered in divide. An arrow labelled minus 1001, the row's maximum, leads to the stable column: the exponents are −1, 0, −2, every one at most 0; np.exp gives 0.368, 1.000, 0.135; dividing by the row sum gives 0.245, 0.665, 0.090.</desc>
+<desc id="nn-03-softmax-stability-desc">Two columns of three steps, rows labelled logits, np.exp and divided by the row sum, for the logits 1000, 1001, 999 in float64, where np.exp returns inf above 709.78 (88.72 in float32). Naive column: the logits themselves; np.exp gives inf, inf, inf; dividing by the row sum gives nan, nan, nan, with the two RuntimeWarnings NumPy prints, overflow encountered in exp and invalid value encountered in divide. An arrow labelled minus 1001, the row's maximum, leads to the stable column: the shifted logits are −1, 0, −2, every one at most 0; np.exp gives 0.368, 1.000, 0.135, every one at most 1; dividing by the row sum gives 0.245, 0.665, 0.090, which sum to 1.</desc>
 <style>
   :root {
     --nn-bg: #FAFAF7;
@@ -142,77 +142,78 @@
 <rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
 <text x="40" y="48" class="t-title">Subtracting the row's maximum keeps np.exp from overflowing</text>
 <text x="40" y="76" class="t-subtitle">The logits [1000, 1001, 999] in float64: <tspan class="mono">np.exp</tspan> returns inf above 709.78 (88.72 in float32).</text>
-<text x="248" y="136" class="t-head">Naive</text>
-<text x="600" y="136" class="t-head">Stable</text>
-<text x="40" y="188" class="t-label">exponent</text>
+<text x="136" y="136" class="t-head">Naive</text>
+<text x="632" y="136" class="t-head">Stable</text>
+<text x="40" y="188" class="t-label">logits</text>
 <text x="40" y="284" class="t-label"><tspan class="mono">np.exp</tspan></text>
 <text x="40" y="380" class="t-label">÷ row sum</text>
-<rect x="248" y="160" width="80" height="48" class="cell f-blue-soft"/>
-<rect x="328" y="160" width="80" height="48" class="cell f-blue-soft"/>
-<rect x="408" y="160" width="80" height="48" class="cell f-blue-soft"/>
-<rect x="248" y="160" width="240" height="48" class="frame" data-fit="skip"/>
+<rect x="136" y="160" width="96" height="48" class="cell f-blue-soft"/>
+<rect x="232" y="160" width="96" height="48" class="cell f-blue-soft"/>
+<rect x="328" y="160" width="96" height="48" class="cell f-blue-soft"/>
+<rect x="136" y="160" width="288" height="48" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="288" y="190" text-anchor="middle" class="t-cell16">1000</text>
-<text x="368" y="190" text-anchor="middle" class="t-cell16">1001</text>
-<text x="448" y="190" text-anchor="middle" class="t-cell16">999</text>
+<text x="184" y="190" text-anchor="middle" class="t-cell16">1000</text>
+<text x="280" y="190" text-anchor="middle" class="t-cell16">1001</text>
+<text x="376" y="190" text-anchor="middle" class="t-cell16">999</text>
 </g>
-<rect x="248" y="256" width="80" height="48" class="cell f-red-soft"/>
-<rect x="328" y="256" width="80" height="48" class="cell f-red-soft"/>
-<rect x="408" y="256" width="80" height="48" class="cell f-red-soft"/>
-<rect x="248" y="256" width="240" height="48" class="frame" data-fit="skip"/>
+<rect x="136" y="256" width="96" height="48" class="cell f-red-soft"/>
+<rect x="232" y="256" width="96" height="48" class="cell f-red-soft"/>
+<rect x="328" y="256" width="96" height="48" class="cell f-red-soft"/>
+<rect x="136" y="256" width="288" height="48" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="288" y="286" text-anchor="middle" class="t-cell16">inf</text>
-<text x="368" y="286" text-anchor="middle" class="t-cell16">inf</text>
-<text x="448" y="286" text-anchor="middle" class="t-cell16">inf</text>
+<text x="184" y="286" text-anchor="middle" class="t-cell16">inf</text>
+<text x="280" y="286" text-anchor="middle" class="t-cell16">inf</text>
+<text x="376" y="286" text-anchor="middle" class="t-cell16">inf</text>
 </g>
-<rect x="248" y="352" width="80" height="48" class="cell f-red-soft"/>
-<rect x="328" y="352" width="80" height="48" class="cell f-red-soft"/>
-<rect x="408" y="352" width="80" height="48" class="cell f-red-soft"/>
-<rect x="248" y="352" width="240" height="48" class="frame" data-fit="skip"/>
+<rect x="136" y="352" width="96" height="48" class="cell f-red-soft"/>
+<rect x="232" y="352" width="96" height="48" class="cell f-red-soft"/>
+<rect x="328" y="352" width="96" height="48" class="cell f-red-soft"/>
+<rect x="136" y="352" width="288" height="48" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="288" y="382" text-anchor="middle" class="t-cell16">nan</text>
-<text x="368" y="382" text-anchor="middle" class="t-cell16">nan</text>
-<text x="448" y="382" text-anchor="middle" class="t-cell16">nan</text>
+<text x="184" y="382" text-anchor="middle" class="t-cell16">nan</text>
+<text x="280" y="382" text-anchor="middle" class="t-cell16">nan</text>
+<text x="376" y="382" text-anchor="middle" class="t-cell16">nan</text>
 </g>
-<path d="M368,212 L368,249" class="flow" marker-end="url(#nn-03-softmax-stability-arrow)"/>
-<path d="M368,308 L368,345" class="flow" marker-end="url(#nn-03-softmax-stability-arrow)"/>
-<rect x="600" y="160" width="80" height="48" class="cell f-blue-soft"/>
-<rect x="680" y="160" width="80" height="48" class="cell f-blue-soft"/>
-<rect x="760" y="160" width="80" height="48" class="cell f-blue-soft"/>
-<rect x="600" y="160" width="240" height="48" class="frame" data-fit="skip"/>
+<path d="M280,212 L280,249" class="flow" marker-end="url(#nn-03-softmax-stability-arrow)"/>
+<path d="M280,308 L280,345" class="flow" marker-end="url(#nn-03-softmax-stability-arrow)"/>
+<rect x="632" y="160" width="96" height="48" class="cell f-blue-soft"/>
+<rect x="728" y="160" width="96" height="48" class="cell f-blue-soft"/>
+<rect x="824" y="160" width="96" height="48" class="cell f-blue-soft"/>
+<rect x="632" y="160" width="288" height="48" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="640" y="190" text-anchor="middle" class="t-cell16">−1</text>
-<text x="720" y="190" text-anchor="middle" class="t-cell16">0</text>
-<text x="800" y="190" text-anchor="middle" class="t-cell16">−2</text>
+<text x="680" y="190" text-anchor="middle" class="t-cell16">−1</text>
+<text x="776" y="190" text-anchor="middle" class="t-cell16">0</text>
+<text x="872" y="190" text-anchor="middle" class="t-cell16">−2</text>
 </g>
-<rect x="600" y="256" width="80" height="48" class="cell"/>
-<rect x="680" y="256" width="80" height="48" class="cell"/>
-<rect x="760" y="256" width="80" height="48" class="cell"/>
-<rect x="600" y="256" width="240" height="48" class="frame" data-fit="skip"/>
+<rect x="632" y="256" width="96" height="48" class="cell"/>
+<rect x="728" y="256" width="96" height="48" class="cell"/>
+<rect x="824" y="256" width="96" height="48" class="cell"/>
+<rect x="632" y="256" width="288" height="48" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="640" y="286" text-anchor="middle" class="t-cell16">0.368</text>
-<text x="720" y="286" text-anchor="middle" class="t-cell16">1.000</text>
-<text x="800" y="286" text-anchor="middle" class="t-cell16">0.135</text>
+<text x="680" y="286" text-anchor="middle" class="t-cell16">0.368</text>
+<text x="776" y="286" text-anchor="middle" class="t-cell16">1.000</text>
+<text x="872" y="286" text-anchor="middle" class="t-cell16">0.135</text>
 </g>
-<rect x="600" y="352" width="80" height="48" class="cell f-green-soft"/>
-<rect x="680" y="352" width="80" height="48" class="cell f-green-soft"/>
-<rect x="760" y="352" width="80" height="48" class="cell f-green-soft"/>
-<rect x="600" y="352" width="240" height="48" class="frame" data-fit="skip"/>
+<rect x="632" y="352" width="96" height="48" class="cell f-green-soft"/>
+<rect x="728" y="352" width="96" height="48" class="cell f-green-soft"/>
+<rect x="824" y="352" width="96" height="48" class="cell f-green-soft"/>
+<rect x="632" y="352" width="288" height="48" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="640" y="382" text-anchor="middle" class="t-cell16">0.245</text>
-<text x="720" y="382" text-anchor="middle" class="t-cell16">0.665</text>
-<text x="800" y="382" text-anchor="middle" class="t-cell16">0.090</text>
+<text x="680" y="382" text-anchor="middle" class="t-cell16">0.245</text>
+<text x="776" y="382" text-anchor="middle" class="t-cell16">0.665</text>
+<text x="872" y="382" text-anchor="middle" class="t-cell16">0.090</text>
 </g>
-<path d="M720,212 L720,249" class="flow" marker-end="url(#nn-03-softmax-stability-arrow)"/>
-<path d="M720,308 L720,345" class="flow" marker-end="url(#nn-03-softmax-stability-arrow)"/>
-<rect x="328" y="160" width="80" height="48" class="emph s-blue" data-fit="skip"/>
-<rect x="680" y="160" width="80" height="48" class="emph s-blue" data-fit="skip"/>
-<path d="M496,184 L589,184" class="flow" marker-end="url(#nn-03-softmax-stability-arrow)"/>
-<text x="544" y="172" text-anchor="middle" class="t-note">− 1001</text>
-<text x="544" y="208" text-anchor="middle" class="t-note">the row's max</text>
-<text x="40" y="436" class="t-code13 f-red-ink">RuntimeWarning: overflow encountered in exp</text>
-<text x="40" y="456" class="t-code13 f-red-ink">RuntimeWarning: invalid value encountered in divide</text>
-<text x="600" y="436" class="t-note">Every exponent ≤ 0, every exponential ≤ 1</text>
-<text x="600" y="456" class="t-note">The row sums to 1</text>
+<path d="M776,212 L776,249" class="flow" marker-end="url(#nn-03-softmax-stability-arrow)"/>
+<path d="M776,308 L776,345" class="flow" marker-end="url(#nn-03-softmax-stability-arrow)"/>
+<rect x="232" y="160" width="96" height="48" class="emph s-blue" data-fit="skip"/>
+<rect x="728" y="160" width="96" height="48" class="emph s-blue" data-fit="skip"/>
+<path d="M432,184 L621,184" class="flow" marker-end="url(#nn-03-softmax-stability-arrow)"/>
+<text x="528" y="172" text-anchor="middle" class="t-note">− 1001</text>
+<text x="528" y="208" text-anchor="middle" class="t-note">the row's max</text>
+<text x="136" y="436" class="t-code13 f-red-ink">RuntimeWarning: overflow encountered in exp</text>
+<text x="136" y="456" class="t-code13 f-red-ink">RuntimeWarning: invalid value encountered in divide</text>
+<text x="632" y="436" class="t-note">Every shifted logit ≤ 0</text>
+<text x="632" y="456" class="t-note">Every exponential ≤ 1</text>
+<text x="632" y="476" class="t-note">The row sums to 1</text>
 <text x="40" y="504" class="t-note">The shift cancels in the ratio, so the probabilities are those of the plain formula.</text>
 </svg>

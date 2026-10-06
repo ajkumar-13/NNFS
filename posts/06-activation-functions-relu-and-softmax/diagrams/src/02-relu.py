@@ -52,8 +52,9 @@ fig = Figure(
     "Two charts. Left, ReLU of z = max(0, z) for z from minus 3 to 3, computed with the post's Activation_ReLU: "
     "a flat line at 0 for negative inputs, labelled negative in, 0 out, a kink at z = 0, and a diagonal for positive "
     "inputs, labelled positive in, unchanged. Dots mark the five inputs of section 2.3, 1, minus 2, 3, minus 0.5 and "
-    "0, at their outputs 1, 0, 3, 0 and 0. Right, the slopes for z from minus 5 to 5: ReLU's slope is 0 below zero "
-    "and 1 above it, with a solid dot at 0 and an open dot at 1 for z = 0; the sigmoid's slope peaks at 0.25 at "
+    "0, at their outputs 1, 0, 3, 0 and 0, and a small table in the upper left lists them as in and out. Right, the slopes for z from minus 5 to 5: ReLU's slope is 0 below zero "
+    "and 1 above it, with a solid dot at 0 and an open dot at 1 for z = 0, a legend saying the solid one is used at "
+    "z = 0 and the open one is not; the sigmoid's slope peaks at 0.25 at "
     "z = 0 and tanh's at 1, and both fall towards 0 on either side.",
     subtitle="Left: what the post's Activation_ReLU returns. Right: the slopes a backward signal is multiplied by.")
 
@@ -72,8 +73,18 @@ with fig.data():
         fig.marker(*ax.to_px(z, a), "circle", "input", size=10)
     px, py = ax.to_px(-1.5, 0)
     fig.text(px, py - 12, "negative in, 0 out", "note", anchor="middle", snap=False)
-    px, py = ax.to_px(1.6, 2.0)                    # above and left of the diagonal, which is at z = 2 here
-    fig.text(px, py, "positive in, unchanged", "note", anchor="end", snap=False)
+    # the diagonal's label in the empty triangle under it, two lines, clear of the line (checked)
+    for zz, yy in [(1.5, 0.7), (1.5, 0.35)]:
+        assert yy + 0.3 < zz
+    ax.text(1.5, 0.7, "positive in,", "note")
+    ax.text(1.5, 0.35, "unchanged", "note")
+    # the five dots' values, in the empty upper left, one column per input
+    COLS = [-2.05 + 0.75 * k for k in range(5)]        # right edges of the value columns
+    ax.text(-2.85, 2.6, "in", "note")
+    ax.text(-2.85, 2.25, "out", "note")
+    for c, z, a in zip(COLS, INPUTS, OUTPUTS):
+        ax.text(c, 2.6, num(float(z)) if z % 1 else num(int(z)), "note", anchor="end")
+        ax.text(c, 2.25, num(int(a)), "note", anchor="end")
     px, py = ax.to_px(0, 0)
     fig.text(px + 8, py + 24, rich("kink at ", var("z"), " = 0"), "note", snap=False)
 
@@ -89,10 +100,10 @@ ax2 = fig.line_chart(Box(right.x, CHART_TOP, right.w, right.bottom - CHART_TOP),
                      x_label=rich("input ", var("z")), y_label="slope", fmt_y=fmt, label_w=24)
 with fig.data():
     # ReLU's slope: two flat pieces; at z = 0 it is taken as 0 (solid dot), not 1 (open dot)
-    fig.edge(ax2.to_px(-5, 0), ax2.to_px(0, 0), color="gradient", width=1.5)
-    fig.edge(ax2.to_px(0, 1), ax2.to_px(5, 1), color="gradient", width=1.5)
-    fig.marker(*ax2.to_px(0, 0), "circle", "gradient", size=10)
-    fig.marker(*ax2.to_px(0, 1), "circle", "gradient", size=10, hollow=True)
+    ax2.segment(-5, 0, 0, 0, "gradient")
+    ax2.segment(0, 1, 5, 1, "gradient")
+    ax2.point(0, 0, "circle", "gradient", size=10)
+    ax2.point(0, 1, "circle", "gradient", size=10, hollow=True)
     px, py = ax2.to_px(3, 1)
     fig.text(px, py - 12, "ReLU", "label", color="gradient", anchor="middle", snap=False)
     # direct labels beside their own curves, clear of the other curve (checked below)
@@ -103,6 +114,14 @@ with fig.data():
     fig.text(px - 4, py, "tanh", "label", color="input", anchor="end", snap=False)
     px, py = ax2.to_px(2.4, 0.16)
     fig.text(px, py, "sigmoid", "label", color="weight", snap=False)
+
+# what the two dots at z = 0 mean, in the empty upper left of the slope chart, below the open dot's row so
+# that neither legend line reads as the label of the dot beside it (tanh is below 0.75 left of z = -1)
+assert tanh_slope(-1.0) < 0.75
+lx, ly = ax2.to_px(-4.7, 0.86)
+fig.legend(round(lx / 4) * 4, round((ly + 5) / 4) * 4,
+           [dict(color="gradient", label=rich("used at ", var("z"), " = 0"), mark="circle"),
+            dict(color="gradient", label="not used", mark="circle", hollow=True)])
 
 fig.caption("Past zero, ReLU passes a signal back unshrunk; the sigmoid scales it by 0.25 at best.")
 fig.write()

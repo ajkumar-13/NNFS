@@ -64,10 +64,10 @@ fig = Figure(
 
 R = 24
 CY = 200                                         # node centres
-CX = [112, 296, 480, 664, 848]                   # 184 apart
+CX = [100, 284, 468, 652, 836]                   # 184 apart; the last name, the widest, ends 14 inside the margin
 NODES = [(arr("X"), "input"), (arr("Z", sub="1"), None), (arr("A", sub="1"), None), (arr("Z", sub="2"), None),
          (arr("\u0177"), "output")]
-CARD_TOP, CARD_H, CARD_W = 264, 184, 176
+CARD_TOP, CARD_H, CARD_W = 264, 192, 176
 HS = "\u2009"                                    # a thin space between the factors of a product
 
 # -- the arrays: name and shape above each node, the node, an arrow to the next
@@ -86,7 +86,7 @@ CARDS = [
      [rich(arr("W", sub="1"), ": ", shape(d1.weights)), f"{d1.weights.shape[1]} hidden neurons"]),
     ("activation1", "Activation_ReLU",
      rich(arr("A", sub="1"), " = max(0, ", arr("Z", sub="1"), ")"),
-     [rich(num(ZEROS_OUT), " of ", num(SIZE), " set to 0"), f"{NEG} negative, {ZERO} exactly 0"]),
+     [rich(num(ZEROS_OUT), " of ", num(SIZE), " set to 0:"), f"{NEG} negative,", f"{ZERO} exactly 0"]),
     ("dense2", "Layer_Dense(3, 3)",
      rich(arr("Z", sub="2"), " = ", arr("A", sub="1"), HS, arr("W", sub="2"), " + ", arr("b", sub="2")),
      [rich(arr("W", sub="2"), ": ", shape(d2.weights)), "the logits"]),

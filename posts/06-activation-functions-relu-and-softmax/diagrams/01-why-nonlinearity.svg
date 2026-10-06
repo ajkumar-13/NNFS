@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-01-why-nonlinearity-title" aria-describedby="nn-01-why-nonlinearity-desc">
 <title id="nn-01-why-nonlinearity-title">Two layers make a line; with ReLU between them, a zigzag</title>
-<desc id="nn-01-why-nonlinearity-desc">Two line charts of the output against the input x, from minus 1 to 3, for the post's network of one input, three hidden neurons and one output, 10 parameters, with the nine outputs of the snippet as dots. Left, without an activation: the two layers collapse to one layer with W star = 1 and b star = minus 2, and the output is the straight line x minus 2, from minus 3 to 1, slope 1 throughout. Right, with ReLU between the same layers: the output is 0 up to x = 0, rises to 1 at x = 1, falls to 0 at x = 2 and rises to 1 at x = 3, slopes 0, 1, minus 1 and 1. Diamonds mark the three kinks, at x = 0, 1 and 2, one per hidden neuron, where its weighted sum crosses zero. Under the zigzag: output = a1 minus 2 a2 plus 2 a3, with a k = max(0, x + b k) and b1 = (0, minus 1, minus 2).</desc>
+<desc id="nn-01-why-nonlinearity-desc">Two line charts of the output against the input x, from minus 1 to 3, for the post's network of one input, three hidden neurons and one output, 10 parameters, with the nine outputs of the snippet as dots. Left, without an activation: the two layers collapse to one layer with W star = 1 and b star = minus 2, and the output is the straight line x minus 2, from minus 3 to 1, written output = x minus 2, slope 1, in the empty upper left. Right, with ReLU between the same layers: the output is 0 up to x = 0, rises to 1 at x = 1, falls to 0 at x = 2 and rises to 1 at x = 3, slopes 0, 1, minus 1 and 1. Diamonds mark the three kinks, at x = 0, 1 and 2, one per hidden neuron, where its weighted sum crosses zero. Under the zigzag: output = a1 minus 2 a2 plus 2 a3, with a k = max(0, x + b k) and b1 = (0, minus 1, minus 2).</desc>
 <style>
   :root {
     --nn-bg: #FAFAF7;
@@ -129,15 +129,14 @@
   .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
   .d-lead { stroke-dasharray: 4 4; }
   .f-green { fill: var(--nn-green); }
-  .f-green-ink { fill: var(--nn-green-ink); }
   .f-orange { fill: var(--nn-orange); }
   .s-green { stroke: var(--nn-green); }
   .s-surface { stroke: var(--nn-surface); }
 </style>
 <defs>
 <marker id="nn-01-why-nonlinearity-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
-<clipPath id="nn-01-why-nonlinearity-clip-1"><rect x="90" y="186" width="324" height="248"/></clipPath>
-<clipPath id="nn-01-why-nonlinearity-clip-2"><rect x="546" y="186" width="324" height="248"/></clipPath>
+<clipPath id="nn-01-why-nonlinearity-clip-1"><rect x="90" y="186" width="356" height="248"/></clipPath>
+<clipPath id="nn-01-why-nonlinearity-clip-2"><rect x="546" y="186" width="356" height="248"/></clipPath>
 </defs>
 <rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
 <text x="40" y="48" class="t-title">Two layers make a line; with ReLU between them, a zigzag</text>
@@ -145,76 +144,79 @@
 <text x="40" y="120" class="t-head">Without an activation</text>
 <text x="40" y="140" class="t-note">The two collapse to one layer: <tspan class="b">W</tspan><tspan class="sub" dy="4">∗</tspan><tspan dy="-4">​</tspan> = 1, <tspan class="b">b</tspan><tspan class="sub" dy="4">∗</tspan><tspan dy="-4">​</tspan> = −2</text>
 <g data-grid="skip">
-<path d="M96,428H408M96,369H408M96,310H408M96,251H408M96,192H408" class="gridline"/>
+<path d="M96,428H440M96,369H440M96,310H440M96,251H440M96,192H440" class="gridline"/>
 <text x="88" y="432" text-anchor="end" class="t-tick">−3</text>
 <text x="88" y="373" text-anchor="end" class="t-tick">−2</text>
 <text x="88" y="314" text-anchor="end" class="t-tick">−1</text>
 <text x="88" y="255" text-anchor="end" class="t-tick">0</text>
 <text x="88" y="196" text-anchor="end" class="t-tick">1</text>
 <text x="96" y="448" text-anchor="middle" class="t-tick">−1</text>
-<text x="174" y="448" text-anchor="middle" class="t-tick">0</text>
-<text x="252" y="448" text-anchor="middle" class="t-tick">1</text>
-<text x="330" y="448" text-anchor="middle" class="t-tick">2</text>
-<text x="408" y="448" text-anchor="middle" class="t-tick">3</text>
-<path d="M96,192V428H408" class="axis"/>
+<text x="182" y="448" text-anchor="middle" class="t-tick">0</text>
+<text x="268" y="448" text-anchor="middle" class="t-tick">1</text>
+<text x="354" y="448" text-anchor="middle" class="t-tick">2</text>
+<text x="440" y="448" text-anchor="middle" class="t-tick">3</text>
+<path d="M96,192V428H440" class="axis"/>
 <g clip-path="url(#nn-01-why-nonlinearity-clip-1)">
-<path d="M96,428 L135,398.5 L174,369 L213,339.5 L252,310 L291,280.5 L330,251 L369,221.5 L408,192" class="s-green w15 nofill"/>
+<path d="M96,428 L139,398.5 L182,369 L225,339.5 L268,310 L311,280.5 L354,251 L397,221.5 L440,192" class="s-green w15 nofill"/>
 <circle cx="96" cy="428" r="4" class="f-green"/>
-<circle cx="135" cy="398.5" r="4" class="f-green"/>
-<circle cx="174" cy="369" r="4" class="f-green"/>
-<circle cx="213" cy="339.5" r="4" class="f-green"/>
-<circle cx="252" cy="310" r="4" class="f-green"/>
-<circle cx="291" cy="280.5" r="4" class="f-green"/>
-<circle cx="330" cy="251" r="4" class="f-green"/>
-<circle cx="369" cy="221.5" r="4" class="f-green"/>
-<circle cx="408" cy="192" r="4" class="f-green"/>
+<circle cx="139" cy="398.5" r="4" class="f-green"/>
+<circle cx="182" cy="369" r="4" class="f-green"/>
+<circle cx="225" cy="339.5" r="4" class="f-green"/>
+<circle cx="268" cy="310" r="4" class="f-green"/>
+<circle cx="311" cy="280.5" r="4" class="f-green"/>
+<circle cx="354" cy="251" r="4" class="f-green"/>
+<circle cx="397" cy="221.5" r="4" class="f-green"/>
+<circle cx="440" cy="192" r="4" class="f-green"/>
 </g>
-<text x="420" y="197" class="t-note f-green-ink"><tspan class="i">x</tspan> − 2</text>
 </g>
 <text x="96" y="180" class="t-note">output</text>
-<text x="252" y="472" text-anchor="middle" class="t-note">input <tspan class="i">x</tspan></text>
+<text x="268" y="472" text-anchor="middle" class="t-note">input <tspan class="i">x</tspan></text>
 <text x="496" y="120" class="t-head">With ReLU between the layers</text>
 <text x="496" y="140" class="t-note">Diamonds: kinks at <tspan class="i">x</tspan> = 0, 1, 2, one per hidden neuron</text>
 <g data-grid="skip">
-<path d="M552,428H864M552,369H864M552,310H864M552,251H864M552,192H864" class="gridline"/>
+<path d="M552,428H896M552,369H896M552,310H896M552,251H896M552,192H896" class="gridline"/>
 <text x="544" y="432" text-anchor="end" class="t-tick">−3</text>
 <text x="544" y="373" text-anchor="end" class="t-tick">−2</text>
 <text x="544" y="314" text-anchor="end" class="t-tick">−1</text>
 <text x="544" y="255" text-anchor="end" class="t-tick">0</text>
 <text x="544" y="196" text-anchor="end" class="t-tick">1</text>
 <text x="552" y="448" text-anchor="middle" class="t-tick">−1</text>
-<text x="630" y="448" text-anchor="middle" class="t-tick">0</text>
-<text x="708" y="448" text-anchor="middle" class="t-tick">1</text>
-<text x="786" y="448" text-anchor="middle" class="t-tick">2</text>
-<text x="864" y="448" text-anchor="middle" class="t-tick">3</text>
-<path d="M552,192V428H864" class="axis"/>
+<text x="638" y="448" text-anchor="middle" class="t-tick">0</text>
+<text x="724" y="448" text-anchor="middle" class="t-tick">1</text>
+<text x="810" y="448" text-anchor="middle" class="t-tick">2</text>
+<text x="896" y="448" text-anchor="middle" class="t-tick">3</text>
+<path d="M552,192V428H896" class="axis"/>
 <g clip-path="url(#nn-01-why-nonlinearity-clip-2)">
-<path d="M552,251 L591,251 L630,251 L669,221.5 L708,192 L747,221.5 L786,251 L825,221.5 L864,192" class="s-green w15 nofill"/>
+<path d="M552,251 L595,251 L638,251 L681,221.5 L724,192 L767,221.5 L810,251 L853,221.5 L896,192" class="s-green w15 nofill"/>
 <circle cx="552" cy="251" r="4" class="f-green"/>
-<circle cx="591" cy="251" r="4" class="f-green"/>
-<circle cx="630" cy="251" r="4" class="f-green"/>
-<circle cx="669" cy="221.5" r="4" class="f-green"/>
-<circle cx="708" cy="192" r="4" class="f-green"/>
-<circle cx="747" cy="221.5" r="4" class="f-green"/>
-<circle cx="786" cy="251" r="4" class="f-green"/>
-<circle cx="825" cy="221.5" r="4" class="f-green"/>
-<circle cx="864" cy="192" r="4" class="f-green"/>
+<circle cx="595" cy="251" r="4" class="f-green"/>
+<circle cx="638" cy="251" r="4" class="f-green"/>
+<circle cx="681" cy="221.5" r="4" class="f-green"/>
+<circle cx="724" cy="192" r="4" class="f-green"/>
+<circle cx="767" cy="221.5" r="4" class="f-green"/>
+<circle cx="810" cy="251" r="4" class="f-green"/>
+<circle cx="853" cy="221.5" r="4" class="f-green"/>
+<circle cx="896" cy="192" r="4" class="f-green"/>
 </g>
-<text x="876" y="197" class="t-note f-green-ink"></text>
 </g>
 <text x="552" y="180" class="t-note">output</text>
-<text x="708" y="472" text-anchor="middle" class="t-note">input <tspan class="i">x</tspan></text>
+<text x="724" y="472" text-anchor="middle" class="t-note">input <tspan class="i">x</tspan></text>
 <g data-grid="skip">
-<text x="330" y="383.75" text-anchor="middle" class="t-note">slope 1</text>
-<path d="M630,243.8 L637.2,251 L630,258.2 L622.8,251 Z" class="f-orange s-surface w1"/>
-<path d="M708,184.8 L715.2,192 L708,199.2 L700.8,192 Z" class="f-orange s-surface w1"/>
-<path d="M786,243.8 L793.2,251 L786,258.2 L778.8,251 Z" class="f-orange s-surface w1"/>
-<text x="591" y="295.25" text-anchor="middle" class="t-note">slope 0</text>
-<text x="669" y="295.25" text-anchor="middle" class="t-note">slope 1</text>
-<text x="747" y="295.25" text-anchor="middle" class="t-note">slope −1</text>
-<text x="825" y="295.25" text-anchor="middle" class="t-note">slope 1</text>
-<text x="708" y="342.45" text-anchor="middle" class="t-math">output = <tspan class="i">a</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> − 2<tspan class="i">a</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> + 2<tspan class="i">a</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
-<text x="708" y="395.55" text-anchor="middle" class="t-note"><tspan class="i">a</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan> = max(0, <tspan class="i">x</tspan> + <tspan class="i">b</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan>),  <tspan class="b">b</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> = (0, −1, −2)</text>
+<g data-grid="skip">
+<text x="108.9" y="224.45" class="t-math">output = <tspan class="i">x</tspan> − 2</text>
+</g>
+<g data-grid="skip">
+<text x="108.9" y="248.05" class="t-note">slope 1</text>
+</g>
+<path d="M638,243.8 L645.2,251 L638,258.2 L630.8,251 Z" class="f-orange s-surface w1"/>
+<path d="M724,184.8 L731.2,192 L724,199.2 L716.8,192 Z" class="f-orange s-surface w1"/>
+<path d="M810,243.8 L817.2,251 L810,258.2 L802.8,251 Z" class="f-orange s-surface w1"/>
+<text x="595" y="295.25" text-anchor="middle" class="t-note">slope 0</text>
+<text x="681" y="295.25" text-anchor="middle" class="t-note">slope 1</text>
+<text x="767" y="295.25" text-anchor="middle" class="t-note">slope −1</text>
+<text x="853" y="295.25" text-anchor="middle" class="t-note">slope 1</text>
+<text x="724" y="333.6" text-anchor="middle" class="t-math">output = <tspan class="i">a</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> − 2<tspan class="i">a</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> + 2<tspan class="i">a</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+<text x="724" y="360.15" text-anchor="middle" class="t-note"><tspan class="i">a</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan> = max(0, <tspan class="i">x</tspan> + <tspan class="i">b</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan>),  <tspan class="b">b</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> = (0, −1, −2)</text>
 </g>
 <text x="40" y="504" class="t-note">Without the activation the two layers are the line <tspan class="i">x</tspan> − 2; ReLU gives one bend per hidden neuron.</text>
 </svg>

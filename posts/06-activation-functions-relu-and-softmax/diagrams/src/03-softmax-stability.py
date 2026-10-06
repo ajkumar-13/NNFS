@@ -82,19 +82,20 @@ def ints(row):
 
 fig = Figure(
     "03-softmax-stability", "Subtracting the row's maximum keeps np.exp from overflowing",
-    "Two columns of three steps for the logits 1000, 1001, 999 in float64, where np.exp returns inf above "
-    f"{L64:.2f} ({L32:.2f} in float32). Naive column: the exponents are the logits themselves; np.exp gives inf, "
+    "Two columns of three steps, rows labelled logits, np.exp and divided by the row sum, for the logits 1000, "
+    f"1001, 999 in float64, where np.exp returns inf above {L64:.2f} ({L32:.2f} in float32). Naive column: the "
+    "logits themselves; np.exp gives inf, "
     "inf, inf; dividing by the row sum gives nan, nan, nan, with the two RuntimeWarnings NumPy prints, overflow "
     "encountered in exp and invalid value encountered in divide. An arrow labelled minus 1001, the row's maximum, "
-    f"leads to the stable column: the exponents are {say(ints(SHIFTED[0]))}, every one at most 0; np.exp gives "
-    f"{say(EXP3)}; dividing by the row sum gives {say(P3)}.",
+    f"leads to the stable column: the shifted logits are {say(ints(SHIFTED[0]))}, every one at most 0; np.exp "
+    f"gives {say(EXP3)}, every one at most 1; dividing by the row sum gives {say(P3)}, which sum to 1.",
     subtitle=rich("The logits [1000, 1001, 999] in float64: ", span("np.exp", mono=True), " returns inf above ",
                   f"{L64:.2f}", " (", f"{L32:.2f}", " in float32)."))
 
-CW, CH = 80, 48                                   # cells
-GN, GS = 248, 600                                 # the naive and the stable column
+CW, CH = 96, 48                                   # cells
+GN, GS = 136, 632                                 # the naive and the stable column; the stable one ends at 920
 ROWS = [160, 256, 352]                            # row tops; 48 between rows for the arrows
-LABELS = ["exponent", rich(span("np.exp", mono=True)), rich("÷ row sum")]
+LABELS = ["logits", rich(span("np.exp", mono=True)), rich("÷ row sum")]   # the stable row: logits − 1001
 
 fig.text(GN, 136, "Naive", "head")
 fig.text(GS, 136, "Stable", "head")
@@ -123,9 +124,9 @@ fig.text((naive_a.box.right + stable_a.box.x) / 2, naive_a.box.cy + 24, "the row
 # what NumPy says on the naive path, and what holds on the stable one
 yb = ROWS[-1] + CH
 for k, m in enumerate(w_naive):
-    fig.text(40, yb + 36 + 20 * k, m, "code13", color="error")
-fig.text(GS, yb + 36, rich("Every exponent ≤ 0, every exponential ≤ 1"), "note")
-fig.text(GS, yb + 56, rich("The row sums to 1"), "note")
+    fig.text(GN, yb + 36 + 20 * k, m, "code13", color="error")
+for k, line in enumerate(["Every shifted logit ≤ 0", "Every exponential ≤ 1", "The row sums to 1"]):
+    fig.text(GS, yb + 36 + 20 * k, line, "note")
 
 fig.caption("The shift cancels in the ratio, so the probabilities are those of the plain formula.")
 fig.write()

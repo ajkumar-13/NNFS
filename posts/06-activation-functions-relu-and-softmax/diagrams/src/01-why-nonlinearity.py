@@ -17,7 +17,7 @@ import numpy as np
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, r"C:\Users\admin\Desktop\series-standard\tools")
-from figkit import Figure, Box, Raw, rich, var, sub, arr, num, MINUS  # noqa: E402
+from figkit import Figure, Box, rich, var, sub, isub, arr, num, MINUS  # noqa: E402
 
 SNIPPET = Path(__file__).resolve().parents[2] / "snippets" / "why_nonlinearity.py"
 buf = io.StringIO()
@@ -56,12 +56,6 @@ assert "slopes without an activation: [1.]" in OUT and "slopes with ReLU:       
 assert "f(0) = 0.0  f(2) = 0.0  their midpoint = 0.0  but f(1) = 1.0" in OUT
 
 
-def isub(base, s):
-    """An italic letter with an italic index (a_k): the index is a variable, not a digit. The kit's sub() sets
-    the index upright, which is right for digits only."""
-    return Raw(f'{var(base)}<tspan class="sub i" dy="4">{s}</tspan><tspan dy="-4">​</tspan>')
-
-
 def slope_txt(s):
     return rich("slope ", num(int(s)))
 
@@ -85,7 +79,8 @@ fig = Figure(
     "Two line charts of the output against the input x, from minus 1 to 3, for the post's network of one input, "
     f"three hidden neurons and one output, {N_PARAMS} parameters, with the nine outputs of the snippet as dots. "
     "Left, without an activation: the two layers collapse to one layer with W star = 1 and b star = minus 2, and "
-    "the output is the straight line x minus 2, from minus 3 to 1, slope 1 throughout. Right, with ReLU between "
+    "the output is the straight line x minus 2, from minus 3 to 1, written output = x minus 2, slope 1, in the "
+    "empty upper left. Right, with ReLU between "
     "the same layers: the output is 0 up to x = 0, rises to 1 at x = 1, falls to 0 at x = 2 and rises to 1 at "
     "x = 3, slopes 0, 1, minus 1 and 1. Diamonds mark the three kinks, at x = 0, 1 and 2, one per hidden neuron, "
     "where its weighted sum crosses zero. Under the zigzag: output = a1 minus 2 a2 plus 2 a3, with a k = "
@@ -97,7 +92,7 @@ left, right = fig.row(2)
 X_AX = (-1, 3, [-1, 0, 1, 2, 3])
 Y_AX = (-3, 1, [-3, -2, -1, 0, 1])
 CHART_TOP = 168
-LABEL_W = 56
+LABEL_W = 24                                     # no end labels: the equations name the curves
 
 
 def chart(panel, heading, note, ys, label):
@@ -112,15 +107,15 @@ def chart(panel, heading, note, ys, label):
 ax_l = chart(left, "Without an activation",
              rich("The two collapse to one layer: ", arr("W", sub="\u2217"), " = ", num(W_STAR), ", ",
                   arr("b", sub="\u2217"), " = ", num(B_STAR)),
-             LIN, rich(var("x"), " ", MINUS, " 2"))
+             LIN, None)
 ax_r = chart(right, "With ReLU between the layers",
              rich("Diamonds: kinks at ", var("x"), " = 0, 1, 2, one per hidden neuron"),
-             RELU, "")
+             RELU, None)
 
 with fig.data():
-    # left: the single slope, under the line in the empty lower right
-    px, py = ax_l.to_px(2.0, -2.25)
-    fig.text(px, py, slope_txt(W_STAR), "note", anchor="middle", snap=False)
+    # left: the one line's equation and slope, in the empty upper left, as the right panel writes its output
+    ax_l.text(-0.85, 0.45, rich("output = ", var("x"), " ", MINUS, " 2"), "math")
+    ax_l.text(-0.85, 0.05, slope_txt(W_STAR), "note")
     # right: the kinks, then each piece's slope on one baseline under the zigzag
     for k in KINKS:
         kx, ky = ax_r.to_px(k, float(np.interp(k, XS, RELU)))
@@ -129,9 +124,9 @@ with fig.data():
         px, py = ax_r.to_px((a + b) / 2, -0.75)
         fig.text(px, py, slope_txt(s), "note", anchor="middle", snap=False)
     # right, in the space under the zigzag: the output as the second layer forms it, and the hidden neurons
-    px, py = ax_r.to_px(1.0, -1.55)
+    px, py = ax_r.to_px(1.0, -1.4)                 # the two lines as one block, close under the slopes
     fig.text(px, py, OUTPUT_EQ, "math", anchor="middle", snap=False)
-    px, py = ax_r.to_px(1.0, -2.45)
+    px, py = ax_r.to_px(1.0, -1.85)
     fig.text(px, py, rich(isub("a", "k"), " = max(0, ", var("x"), " + ", isub("b", "k"), "),  ",
                           arr("b", sub="1"), " = (", ", ".join(num(v) for v in B1.ravel()), ")"), "note",
              anchor="middle", snap=False)

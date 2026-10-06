@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-02-relu-title" aria-describedby="nn-02-relu-desc">
 <title id="nn-02-relu-title">ReLU zeroes negatives and keeps a slope of 1 above zero</title>
-<desc id="nn-02-relu-desc">Two charts. Left, ReLU of z = max(0, z) for z from minus 3 to 3, computed with the post's Activation_ReLU: a flat line at 0 for negative inputs, labelled negative in, 0 out, a kink at z = 0, and a diagonal for positive inputs, labelled positive in, unchanged. Dots mark the five inputs of section 2.3, 1, minus 2, 3, minus 0.5 and 0, at their outputs 1, 0, 3, 0 and 0. Right, the slopes for z from minus 5 to 5: ReLU's slope is 0 below zero and 1 above it, with a solid dot at 0 and an open dot at 1 for z = 0; the sigmoid's slope peaks at 0.25 at z = 0 and tanh's at 1, and both fall towards 0 on either side.</desc>
+<desc id="nn-02-relu-desc">Two charts. Left, ReLU of z = max(0, z) for z from minus 3 to 3, computed with the post's Activation_ReLU: a flat line at 0 for negative inputs, labelled negative in, 0 out, a kink at z = 0, and a diagonal for positive inputs, labelled positive in, unchanged. Dots mark the five inputs of section 2.3, 1, minus 2, 3, minus 0.5 and 0, at their outputs 1, 0, 3, 0 and 0, and a small table in the upper left lists them as in and out. Right, the slopes for z from minus 5 to 5: ReLU's slope is 0 below zero and 1 above it, with a solid dot at 0 and an open dot at 1 for z = 0, a legend saying the solid one is used at z = 0 and the open one is not; the sigmoid's slope peaks at 0.25 at z = 0 and tanh's at 1, and both fall towards 0 on either side.</desc>
 <style>
   :root {
     --nn-bg: #FAFAF7;
@@ -179,7 +179,48 @@
 <circle cx="239.33" cy="369" r="5" class="f-blue s-surface w1"/>
 <circle cx="268" cy="369" r="5" class="f-blue s-surface w1"/>
 <text x="182" y="357" text-anchor="middle" class="t-note">negative in, 0 out</text>
-<text x="359.73" y="251" text-anchor="end" class="t-note">positive in, unchanged</text>
+<g data-grid="skip">
+<text x="354" y="327.7" class="t-note">positive in,</text>
+</g>
+<g data-grid="skip">
+<text x="354" y="348.35" class="t-note">unchanged</text>
+</g>
+<g data-grid="skip">
+<text x="104.6" y="215.6" class="t-note">in</text>
+</g>
+<g data-grid="skip">
+<text x="104.6" y="236.25" class="t-note">out</text>
+</g>
+<g data-grid="skip">
+<text x="150.47" y="215.6" text-anchor="end" class="t-note">1</text>
+</g>
+<g data-grid="skip">
+<text x="150.47" y="236.25" text-anchor="end" class="t-note">1</text>
+</g>
+<g data-grid="skip">
+<text x="193.47" y="215.6" text-anchor="end" class="t-note">−2</text>
+</g>
+<g data-grid="skip">
+<text x="193.47" y="236.25" text-anchor="end" class="t-note">0</text>
+</g>
+<g data-grid="skip">
+<text x="236.47" y="215.6" text-anchor="end" class="t-note">3</text>
+</g>
+<g data-grid="skip">
+<text x="236.47" y="236.25" text-anchor="end" class="t-note">3</text>
+</g>
+<g data-grid="skip">
+<text x="279.47" y="215.6" text-anchor="end" class="t-note">−0.5</text>
+</g>
+<g data-grid="skip">
+<text x="279.47" y="236.25" text-anchor="end" class="t-note">0</text>
+</g>
+<g data-grid="skip">
+<text x="322.47" y="215.6" text-anchor="end" class="t-note">0</text>
+</g>
+<g data-grid="skip">
+<text x="322.47" y="236.25" text-anchor="end" class="t-note">0</text>
+</g>
 <text x="276" y="393" class="t-note">kink at <tspan class="i">z</tspan> = 0</text>
 </g>
 <text x="496" y="120" class="t-head">Slopes of ReLU, sigmoid and tanh</text>
@@ -207,13 +248,25 @@
 <text x="552" y="180" class="t-note">slope</text>
 <text x="724" y="472" text-anchor="middle" class="t-note">input <tspan class="i">z</tspan></text>
 <g data-grid="skip">
+<g data-grid="skip">
 <path d="M552,408.33 L724,408.33" class="s-purple w15 nofill"/>
+</g>
+<g data-grid="skip">
 <path d="M724,211.67 L896,211.67" class="s-purple w15 nofill"/>
+</g>
+<g data-grid="skip">
 <circle cx="724" cy="408.33" r="5" class="f-purple s-surface w1"/>
+</g>
+<g data-grid="skip">
 <circle cx="724" cy="211.67" r="5" class="nofill s-purple w15"/>
+</g>
 <text x="827.2" y="199.67" text-anchor="middle" class="t-label f-purple-ink">ReLU</text>
 <text x="682.16" y="300.17" text-anchor="end" class="t-label f-blue-ink">tanh</text>
 <text x="806.56" y="376.87" class="t-label f-orange-ink">sigmoid</text>
 </g>
+<circle cx="572" cy="240" r="5" class="f-purple s-surface w1"/>
+<text x="596" y="244" class="t-label">used at <tspan class="i">z</tspan> = 0</text>
+<circle cx="572" cy="264" r="5" class="nofill s-purple w15"/>
+<text x="596" y="268" class="t-label">not used</text>
 <text x="40" y="504" class="t-note">Past zero, ReLU passes a signal back unshrunk; the sigmoid scales it by 0.25 at best.</text>
 </svg>
