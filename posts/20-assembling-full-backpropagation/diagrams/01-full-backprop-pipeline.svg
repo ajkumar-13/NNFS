@@ -1,137 +1,229 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
-  <title id="t">Full backpropagation pipeline: forward and backward through three classes</title>
-  <desc id="d">A two-row pipeline diagram. Top row (forward, primary blue arrows): inputs X flow into layer1 (Layer_Dense), then activation1 (ReLU), then layer2 (Layer_Dense), then loss_activation (Softmax + CrossEntropy), producing the loss scalar L. Bottom row (backward, alert red arrows): starting from L, each component's backward method runs in reverse, with each one's dinputs becoming the next one's dvalues. The arrows are labelled with the gradient quantities at each handoff. A footer band shows the four trainable parameter updates: layer1.weights and biases, layer2.weights and biases.</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-01-full-backprop-pipeline-title" aria-describedby="nn-01-full-backprop-pipeline-desc">
+<title id="nn-01-full-backprop-pipeline-title">Four calls forward, four calls back, one update</title>
+<desc id="nn-01-full-backprop-pipeline-desc">The network of the post, on its batch of N = 4 samples, as a row of five cards: the data X of shape (4, 2), dense1 (a Layer_Dense), activation1 (an Activation_ReLU), dense2 (a Layer_Dense) and loss_activation (softmax and the loss). Grey forward arrows run left to right, labelled Z1, A1 and Z2, each of shape (4, 3). Purple backward arrows run right to left, labelled dL/dZ2, dL/dA1, dL/dZ1 and, dashed, dL/dX, which nothing reads. Under each object, what its backward call stores: dense1 dweights (2, 3), dbiases (1, 3) and dinputs (4, 2); activation1 dinputs (4, 3), zero at 5 closed gates; dense2 dweights (3, 3), dbiases (1, 3) and dinputs (4, 3); loss_activation dinputs (4, 3), computed from the predictions y-hat and the labels y and divided by N = 4. The parameter gradients of the two dense layers go down to a card with the four update lines, each parameter minus learning_rate times its gradient, with learning_rate = 0.01, and a second forward pass gives the loss before, 1.098629, and after, 1.098210, a change of minus 4.190 times 10 to the minus 4.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .row-label{font-weight:700;font-size:12px;fill:var(--nn-ink-muted);text-transform:uppercase;letter-spacing:0.06em;}
-    .data-pill{fill:var(--nn-primary);fill-opacity:0.18;stroke:var(--nn-primary);stroke-width:1.5;}
-    .data-pill-ok{fill:var(--nn-success);fill-opacity:0.20;stroke:var(--nn-success);stroke-width:1.5;}
-    .var-name{font-weight:700;font-size:13px;fill:var(--nn-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .op-dense{fill:var(--nn-surface);stroke:var(--nn-ink);stroke-width:1.5;}
-    .op-relu{fill:var(--nn-warn);fill-opacity:0.10;stroke:var(--nn-warn);stroke-width:1.5;}
-    .op-soft{fill:var(--nn-success);fill-opacity:0.10;stroke:var(--nn-success);stroke-width:1.5;}
-    .op-name{font-weight:700;font-size:13px;fill:var(--nn-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .op-sub{font-size:10px;fill:var(--nn-ink-muted);}
-    .fwd-arrow{stroke:var(--nn-primary);stroke-width:1.8;fill:none;}
-    .fwd-head{fill:var(--nn-primary);}
-    .bwd-arrow{stroke:var(--nn-alert);stroke-width:1.8;fill:none;}
-    .bwd-head{fill:var(--nn-alert);}
-    .grad-label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--nn-alert);}
-    .update-band{fill:var(--nn-primary);fill-opacity:0.08;stroke:var(--nn-primary);stroke-width:1.5;}
-    .update-head{font-weight:700;font-size:13px;fill:var(--nn-primary);}
-    .update-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--nn-ink);}
-  ]]></style>
-
-  <defs>
-    <marker id="aFwd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" class="fwd-head"/>
-    </marker>
-    <marker id="aBwd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" class="bwd-head"/>
-    </marker>
-  </defs>
-
-  <rect class="bg" width="960" height="540"/>
-
-  <text class="title"    x="48" y="48">Full backpropagation pipeline</text>
-  <text class="subtitle" x="48" y="70">Forward walks left to right; backward walks right to left. Each backward call feeds the next via dinputs.</text>
-
-  <!-- ============================ FORWARD ROW ============================ -->
-  <text class="row-label" x="48" y="110">forward (left to right)</text>
-
-  <!-- X -->
-  <circle class="data-pill" cx="80" cy="160" r="24"/>
-  <text class="var-name" x="80" y="165" text-anchor="middle">X</text>
-
-  <line class="fwd-arrow" x1="108" y1="160" x2="140" y2="160" marker-end="url(#aFwd)"/>
-
-  <!-- layer1 -->
-  <rect class="op-dense" x="144" y="132" width="124" height="56" rx="10"/>
-  <text class="op-name" x="206" y="156" text-anchor="middle">layer1</text>
-  <text class="op-sub"  x="206" y="174" text-anchor="middle">Layer_Dense(2,3)</text>
-
-  <line class="fwd-arrow" x1="272" y1="160" x2="300" y2="160" marker-end="url(#aFwd)"/>
-
-  <!-- activation1 -->
-  <rect class="op-relu" x="304" y="132" width="124" height="56" rx="10"/>
-  <text class="op-name" x="366" y="156" text-anchor="middle">activation1</text>
-  <text class="op-sub"  x="366" y="174" text-anchor="middle">ReLU</text>
-
-  <line class="fwd-arrow" x1="432" y1="160" x2="460" y2="160" marker-end="url(#aFwd)"/>
-
-  <!-- layer2 -->
-  <rect class="op-dense" x="464" y="132" width="124" height="56" rx="10"/>
-  <text class="op-name" x="526" y="156" text-anchor="middle">layer2</text>
-  <text class="op-sub"  x="526" y="174" text-anchor="middle">Layer_Dense(3,3)</text>
-
-  <line class="fwd-arrow" x1="592" y1="160" x2="620" y2="160" marker-end="url(#aFwd)"/>
-
-  <!-- loss_activation -->
-  <rect class="op-soft" x="624" y="132" width="170" height="56" rx="10"/>
-  <text class="op-name" x="709" y="156" text-anchor="middle">loss_activation</text>
-  <text class="op-sub"  x="709" y="174" text-anchor="middle">Softmax + CE</text>
-
-  <line class="fwd-arrow" x1="798" y1="160" x2="828" y2="160" marker-end="url(#aFwd)"/>
-
-  <!-- L (scalar loss) -->
-  <circle class="data-pill-ok" cx="864" cy="160" r="28"/>
-  <text class="var-name" x="864" y="165" text-anchor="middle">L</text>
-
-  <!-- ============================ BACKWARD ROW ============================ -->
-  <text class="row-label" x="48" y="262">backward (right to left)  ·  each .dinputs becomes the next .dvalues</text>
-
-  <!-- Each backward arrow goes between the same box centers, in reverse -->
-  <line class="bwd-arrow" x1="828" y1="312" x2="798" y2="312" marker-end="url(#aBwd)"/>
-  <text class="grad-label" x="813" y="302" text-anchor="middle">(ŷ−y)/N</text>
-
-  <line class="bwd-arrow" x1="620" y1="312" x2="592" y2="312" marker-end="url(#aBwd)"/>
-  <text class="grad-label" x="606" y="302" text-anchor="middle">∂L/∂Z2</text>
-
-  <line class="bwd-arrow" x1="460" y1="312" x2="432" y2="312" marker-end="url(#aBwd)"/>
-  <text class="grad-label" x="446" y="302" text-anchor="middle">∂L/∂A1</text>
-
-  <line class="bwd-arrow" x1="300" y1="312" x2="272" y2="312" marker-end="url(#aBwd)"/>
-  <text class="grad-label" x="286" y="302" text-anchor="middle">∂L/∂Z1</text>
-
-  <line class="bwd-arrow" x1="140" y1="312" x2="108" y2="312" marker-end="url(#aBwd)"/>
-  <text class="grad-label" x="124" y="302" text-anchor="middle">∂L/∂X</text>
-
-  <!-- Labels on each backward call -->
-  <text class="op-sub" x="709" y="334" text-anchor="middle">loss_activation.backward(ŷ, y)</text>
-  <text class="op-sub" x="526" y="334" text-anchor="middle">layer2.backward(...)</text>
-  <text class="op-sub" x="366" y="334" text-anchor="middle">activation1.backward(...)</text>
-  <text class="op-sub" x="206" y="334" text-anchor="middle">layer1.backward(...)</text>
-
-  <!-- Per-class gradients produced -->
-  <text class="op-sub" x="206" y="354" text-anchor="middle" style="fill:var(--nn-alert);font-weight:600;">produces: dweights, dbiases, dinputs</text>
-  <text class="op-sub" x="366" y="354" text-anchor="middle" style="fill:var(--nn-alert);font-weight:600;">produces: dinputs (masked)</text>
-  <text class="op-sub" x="526" y="354" text-anchor="middle" style="fill:var(--nn-alert);font-weight:600;">produces: dweights, dbiases, dinputs</text>
-  <text class="op-sub" x="709" y="354" text-anchor="middle" style="fill:var(--nn-alert);font-weight:600;">produces: dinputs = (ŷ−y)/N</text>
-
-  <!-- ============================ Update band ============================ -->
-  <rect class="update-band" x="48" y="396" width="864" height="120" rx="12"/>
-  <text class="update-head" x="68" y="424">Update: four parameter subtractions (vanilla SGD)</text>
-  <text class="update-text" x="68" y="450">layer1.weights -= learning_rate * layer1.dweights</text>
-  <text class="update-text" x="68" y="468">layer1.biases  -= learning_rate * layer1.dbiases</text>
-  <text class="update-text" x="68" y="486">layer2.weights -= learning_rate * layer2.dweights</text>
-  <text class="update-text" x="68" y="504">layer2.biases  -= learning_rate * layer2.dbiases</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-orange-ink { fill: var(--nn-orange-ink); }
+  .f-purple { fill: var(--nn-purple); }
+  .f-purple-ink { fill: var(--nn-purple-ink); }
+  .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .s-arrow { stroke: var(--nn-arrow); }
+  .s-blue-line { stroke: var(--nn-blue-line); }
+  .s-purple { stroke: var(--nn-purple); }
+</style>
+<defs>
+<marker id="nn-01-full-backprop-pipeline-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<marker id="nn-01-full-backprop-pipeline-arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="f-purple"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title" data-w="565">Four calls forward, four calls back, one update</text>
+<text x="40" y="76" class="t-subtitle" data-w="605">The network of section 2 on its batch of <tspan class="i">N</tspan> = 4 samples. Shapes are (rows, columns).</text>
+<path d="M40,116 H64" class="s-arrow w15 nofill"/>
+<text x="72" y="120" class="t-label" data-w="350">forward: each call reads the output of the call before</text>
+<path d="M464,116 H488" class="s-purple w15 nofill"/>
+<text x="496" y="120" class="t-label" data-w="325">backward: each dinputs is the next call's dvalues</text>
+<rect x="40" y="152" width="48" height="120" rx="8" class="f-blue-soft s-blue-line w1"/>
+<text x="64" y="204" text-anchor="middle" class="t-head" data-w="12"><tspan class="b">X</tspan></text>
+<text x="64" y="228" text-anchor="middle" class="t-note" data-w="35">(4, 2)</text>
+<rect x="176" y="152" width="104" height="120" rx="8" class="card"/>
+<text x="228" y="204" text-anchor="middle" class="t-code" data-w="52">dense1</text>
+<text x="228" y="228" text-anchor="middle" class="t-note" data-w="88">Layer_Dense</text>
+<rect x="368" y="152" width="128" height="120" rx="8" class="card"/>
+<text x="432" y="204" text-anchor="middle" class="t-code" data-w="94">activation1</text>
+<text x="432" y="228" text-anchor="middle" class="t-note" data-w="113">Activation_ReLU</text>
+<rect x="584" y="152" width="104" height="120" rx="8" class="card"/>
+<text x="636" y="204" text-anchor="middle" class="t-code" data-w="52">dense2</text>
+<text x="636" y="228" text-anchor="middle" class="t-note" data-w="88">Layer_Dense</text>
+<rect x="776" y="152" width="144" height="120" rx="8" class="card"/>
+<text x="848" y="204" text-anchor="middle" class="t-code" data-w="129">loss_activation</text>
+<text x="848" y="228" text-anchor="middle" class="t-note" data-w="99">softmax + loss</text>
+<path d="M88,188 L173,188" class="flow" marker-end="url(#nn-01-full-backprop-pipeline-arrow)"/>
+<path d="M280,188 L365,188" class="flow" marker-end="url(#nn-01-full-backprop-pipeline-arrow)"/>
+<text x="324" y="176" text-anchor="middle" class="t-note" data-w="55"><tspan class="b">Z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> (4, 3)</text>
+<path d="M496,188 L581,188" class="flow" marker-end="url(#nn-01-full-backprop-pipeline-arrow)"/>
+<text x="540" y="176" text-anchor="middle" class="t-note" data-w="56"><tspan class="b">A</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> (4, 3)</text>
+<path d="M688,188 L773,188" class="flow" marker-end="url(#nn-01-full-backprop-pipeline-arrow)"/>
+<text x="732" y="176" text-anchor="middle" class="t-note" data-w="55"><tspan class="b">Z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> (4, 3)</text>
+<path d="M368,236 L283,236" class="s-purple w15 nofill" marker-end="url(#nn-01-full-backprop-pipeline-arrow-purple)"/>
+<text x="324" y="260" text-anchor="middle" class="t-note f-purple-ink" data-w="47">∂<tspan class="i">L</tspan>/∂<tspan class="b">Z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<path d="M584,236 L499,236" class="s-purple w15 nofill" marker-end="url(#nn-01-full-backprop-pipeline-arrow-purple)"/>
+<text x="540" y="260" text-anchor="middle" class="t-note f-purple-ink" data-w="48">∂<tspan class="i">L</tspan>/∂<tspan class="b">A</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<path d="M776,236 L691,236" class="s-purple w15 nofill" marker-end="url(#nn-01-full-backprop-pipeline-arrow-purple)"/>
+<text x="732" y="260" text-anchor="middle" class="t-note f-purple-ink" data-w="47">∂<tspan class="i">L</tspan>/∂<tspan class="b">Z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<path d="M176,236 L91,236" class="s-purple w15 nofill d-proj" marker-end="url(#nn-01-full-backprop-pipeline-arrow-purple)"/>
+<text x="132" y="260" text-anchor="middle" class="t-note f-purple-ink" data-w="40">∂<tspan class="i">L</tspan>/∂<tspan class="b">X</tspan></text>
+<text x="40" y="300" class="t-note" data-w="51">nothing</text>
+<text x="40" y="320" class="t-note" data-w="51">reads it</text>
+<rect x="148" y="336" width="160" height="104" rx="8" class="card"/>
+<text x="164" y="368" class="t-code" data-w="69"><tspan class="mono f-purple-ink">dweights</tspan></text>
+<text x="292" y="368" text-anchor="end" class="t-label" data-w="35">(2, 3)</text>
+<text x="164" y="392" class="t-code" data-w="60"><tspan class="mono f-purple-ink">dbiases</tspan></text>
+<text x="292" y="392" text-anchor="end" class="t-label" data-w="35">(1, 3)</text>
+<text x="164" y="416" class="t-code" data-w="60"><tspan class="mono f-purple-ink">dinputs</tspan></text>
+<text x="292" y="416" text-anchor="end" class="t-label" data-w="35">(4, 2)</text>
+<path d="M228,280 L228,325" class="s-purple w15 nofill" marker-end="url(#nn-01-full-backprop-pipeline-arrow-purple)"/>
+<text x="240" y="308" class="t-note f-purple-ink" data-w="42">stores</text>
+<rect x="352" y="336" width="160" height="56" rx="8" class="card"/>
+<text x="368" y="368" class="t-code" data-w="60"><tspan class="mono f-purple-ink">dinputs</tspan></text>
+<text x="496" y="368" text-anchor="end" class="t-label" data-w="35">(4, 3)</text>
+<path d="M432,280 L432,325" class="s-purple w15 nofill" marker-end="url(#nn-01-full-backprop-pipeline-arrow-purple)"/>
+<rect x="556" y="336" width="160" height="104" rx="8" class="card"/>
+<text x="572" y="368" class="t-code" data-w="69"><tspan class="mono f-purple-ink">dweights</tspan></text>
+<text x="700" y="368" text-anchor="end" class="t-label" data-w="35">(3, 3)</text>
+<text x="572" y="392" class="t-code" data-w="60"><tspan class="mono f-purple-ink">dbiases</tspan></text>
+<text x="700" y="392" text-anchor="end" class="t-label" data-w="35">(1, 3)</text>
+<text x="572" y="416" class="t-code" data-w="60"><tspan class="mono f-purple-ink">dinputs</tspan></text>
+<text x="700" y="416" text-anchor="end" class="t-label" data-w="35">(4, 3)</text>
+<path d="M636,280 L636,325" class="s-purple w15 nofill" marker-end="url(#nn-01-full-backprop-pipeline-arrow-purple)"/>
+<rect x="776" y="336" width="144" height="56" rx="8" class="card"/>
+<text x="792" y="368" class="t-code" data-w="60"><tspan class="mono f-purple-ink">dinputs</tspan></text>
+<text x="904" y="368" text-anchor="end" class="t-label" data-w="35">(4, 3)</text>
+<path d="M848,280 L848,325" class="s-purple w15 nofill" marker-end="url(#nn-01-full-backprop-pipeline-arrow-purple)"/>
+<text x="352" y="420" class="t-note" data-w="85">zero at the 5</text>
+<text x="352" y="440" class="t-note" data-w="86">closed gates</text>
+<text x="776" y="420" class="t-note" data-w="85">from <tspan class="b">ŷ</tspan> and <tspan class="b">y</tspan></text>
+<text x="776" y="440" class="t-note" data-w="111">divided by <tspan class="i">N</tspan> = 4</text>
+<rect x="176" y="496" width="512" height="156" rx="8" class="card"/>
+<text x="192" y="528" class="t-head" data-w="263">The update, learning_rate = 0.01</text>
+<text x="192" y="560" class="t-code" data-w="419"><tspan class="mono f-orange-ink">dense1.weights</tspan><tspan class="mono"> -= learning_rate * </tspan><tspan class="mono f-purple-ink">dense1.dweights</tspan></text>
+<text x="192" y="584" class="t-code" data-w="402"><tspan class="mono f-orange-ink">dense1.biases</tspan><tspan class="mono"> -= learning_rate * </tspan><tspan class="mono f-purple-ink">dense1.dbiases</tspan></text>
+<text x="192" y="608" class="t-code" data-w="419"><tspan class="mono f-orange-ink">dense2.weights</tspan><tspan class="mono"> -= learning_rate * </tspan><tspan class="mono f-purple-ink">dense2.dweights</tspan></text>
+<text x="192" y="632" class="t-code" data-w="402"><tspan class="mono f-orange-ink">dense2.biases</tspan><tspan class="mono"> -= learning_rate * </tspan><tspan class="mono f-purple-ink">dense2.dbiases</tspan></text>
+<path d="M228,448 L228,485" class="s-purple w15 nofill" marker-end="url(#nn-01-full-backprop-pipeline-arrow-purple)"/>
+<path d="M636,448 L636,485" class="s-purple w15 nofill" marker-end="url(#nn-01-full-backprop-pipeline-arrow-purple)"/>
+<rect x="744" y="496" width="176" height="136" rx="8" class="card"/>
+<text x="760" y="528" class="t-head" data-w="69">The loss</text>
+<text x="760" y="560" class="t-label" data-w="44">before</text>
+<text x="904" y="560" text-anchor="end" class="t-label" data-w="62">1.098629</text>
+<text x="760" y="584" class="t-label" data-w="32">after</text>
+<text x="904" y="584" text-anchor="end" class="t-label" data-w="62">1.098210</text>
+<text x="760" y="608" class="t-label" data-w="152">change −4.190 × 10<tspan class="sub" dy="-6">−4</tspan><tspan dy="6">​</tspan></text>
+<path d="M696,568 L733,568" class="flow" marker-end="url(#nn-01-full-backprop-pipeline-arrow)"/>
+<text x="40" y="684" class="t-note" data-w="551">Only the two dense layers store parameter gradients, so the update has four lines.</text>
 </svg>

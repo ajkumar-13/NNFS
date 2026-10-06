@@ -11,9 +11,9 @@
 > - Trace how one component's dinputs becomes the previous component's dvalues.
 > - Apply a single gradient-descent update to all four parameter arrays.
 
-![A pipeline of four boxes, layer1, activation1, layer2 and loss_activation, between the input X and the loss L. Blue arrows run forward from left to right. Red arrows run backward from right to left, each labelled with the gradient that one call hands to the next, and the four parameter subtractions are listed underneath.](diagrams/01-full-backprop-pipeline.svg)
+![A row of five cards, the data X of shape (4, 2), dense1, activation1, dense2 and loss_activation. Grey forward arrows run left to right, labelled Z1, A1 and Z2, each of shape (4, 3); purple backward arrows run right to left, labelled dL/dZ2, dL/dA1, dL/dZ1 and, dashed, dL/dX, which nothing reads. Under each object is what its backward call stores with its shape: dweights, dbiases and dinputs for the two dense layers, dinputs alone for the ReLU, zero at its 5 closed gates, and dinputs alone for the combined class, computed from y-hat and y and divided by N = 4. The dense layers' gradients feed a card with the four update lines at learning_rate 0.01, and the loss goes from 1.098629 to 1.098210, a change of minus 4.190 times 10 to the minus 4.](diagrams/01-full-backprop-pipeline.svg)
 
-*Every forward call has a matching backward call that runs in the opposite direction. The figure names the dense layers `layer1` and `layer2`; they are the `dense1` and `dense2` of the text.*
+*Every forward call has a matching backward call that runs in the opposite direction, and only the two dense layers store anything the update needs.*
 
 ---
 
@@ -26,10 +26,6 @@ Posts 16 to 19 gave every component of the classifier a `backward` method, one c
 | `Layer_Dense` | $\mathbf{Z} = \mathbf{X} \mathbf{W} + \mathbf{b}$ | `dweights`, `dbiases`, `dinputs` | yes |
 | `Activation_ReLU` | $\max(0, \mathbf{Z})$ | `dinputs`, a masked copy of `dvalues` | no |
 | `Activation_Softmax_Loss_CategoricalCrossentropy` | softmax, then the mean cross-entropy | `dinputs` $= (\hat{\mathbf{y}} - \mathbf{y})/N$ | no |
-
-![Three class cards. Layer_Dense is marked trainable: its forward computes Z = X @ W + b and caches its inputs, and its backward writes dweights, dbiases and dinputs. Activation_ReLU and the combined softmax and cross-entropy class are marked as having no parameters, and their backward writes dinputs alone.](diagrams/02-the-toolkit.svg)
-
-*Only the dense layer has anything to learn. The other two exist to pass gradients through, which is why the update of section 5 never touches them.*
 
 The network is the one of [post 07](../07-coding-the-complete-forward-pass/index.md): two inputs, a hidden layer of three ReLU neurons, an output layer of three neurons, softmax, and the cross-entropy loss. It has four parameter arrays, the weights and biases of the two dense layers, with $2 \cdot 3 + 3 + 3 \cdot 3 + 3 = 21$ numbers between them. This post runs it on a batch of four hand-written samples, small enough to print; post 21 runs the same calls on the spiral data.
 
@@ -89,7 +85,7 @@ dense1.backward(activation1.dinputs)                  # dL/dZ1 -> dweights, dbia
 
 **The first call has no upstream gradient to receive.** The loss is the right-hand end of the chain, and the derivative of the loss with respect to itself is 1, so there is nothing to multiply by. The combined class goes straight to its own gradient, $(\hat{\mathbf{y}} - \mathbf{y})/N$, and for that it needs the predictions and the labels. Its first parameter is still named `dvalues`, to keep one signature across the series, but what it must be given is `loss_activation.output`. The division by $N$, which comes from the mean over the batch (post 18), happens inside this call and nowhere else in the chain.
 
-**Calls 2 to 4 are each handed the `dinputs` of the call before.** No `backward` returns anything; each stores its results on the object, and the next line of the script reads them from there.
+**Calls 2 to 4 are each handed the `dinputs` of the call before.** No `backward` returns anything; each stores its results on the object, and the next line of the script reads them from there. The figure at the top of the post draws the four calls this way, with the shape of every array they store.
 
 ```text
 gradient                 shape     read by
@@ -110,7 +106,11 @@ dense2.dbiases [[ 0.083399 -0.166745  0.083346]]
 closed ReLU gates: 5 of 12; zeros in activation1.dinputs: 5
 ```
 
-The numbers can be read without a calculator. Every prediction is close to $1/3$, so a row of $(\hat{\mathbf{y}} - \mathbf{y})/4$ is close to $-1/6$ at the true class and $1/12$ elsewhere. `dense2.dbiases` is the sum of that array down each column: class 1 is the label of two samples, which gives $(1/12 + 1/12 - 1/6 - 1/6) \approx -0.1667$, and classes 0 and 2 are the label of one sample each, which gives $1/12 \approx 0.0833$. Five of the twelve ReLU gates were closed on this batch, and `activation1.dinputs` is zero in exactly those five places.
+The numbers can be read without a calculator. Every prediction is close to $1/3$, so a row of $(\hat{\mathbf{y}} - \mathbf{y})/4$ is close to $-1/6$ at the true class and $1/12$ elsewhere. `dense2.dbiases` is the sum of that array down each column: class 1 is the label of two samples, which gives $(1/12 + 1/12 - 1/6 - 1/6) \approx -0.1667$, and classes 0 and 2 are the label of one sample each, which gives $1/12 \approx 0.0833$. Five of the twelve ReLU gates were closed on this batch, and `activation1.dinputs` is zero in exactly those five places. The figure below shows both arrays entry by entry.
+
+![Left, loss_activation.dinputs as a 4 by 3 grid, rows labelled y = 0, 1, 2, 1 and columns class 0 to 2. The cell of each sample's label is shaded green and holds about minus 1/6: -0.166638, -0.166668, -0.166667 and -0.166699; every other cell holds about 1/12. An arrow, sum down each column, leads to dense2.dbiases: 0.083399, -0.166745, 0.083346. Right, activation1.dinputs, samples by hidden neurons, with five cells shaded red for the closed gates, each 0, and the other seven entries small numbers copied from dense2.dinputs, such as -0.001795 and 0.001314.](diagrams/02-first-gradients.svg)
+
+*Every row of the first gradient sums to zero, and its column sums are the bias gradient of `dense2`.*
 
 `dense1.dinputs` is the gradient of the loss with respect to the data. It is computed because `Layer_Dense.backward` always computes it, and nothing reads it, because no component stands before `dense1`.
 
@@ -173,7 +173,13 @@ The fall barely depends on the seed here. For seeds 0 to 9 the script prints fal
 balanced batch of six: smallest 2.723e-07, largest 1.409e-06
 ```
 
-When every class occurs equally often, the bias gradient of the last layer nearly cancels, because each class is predicted with probability about $1/3$ and is the label of a third of the samples. What is left are the weight gradients and the bias gradient of the first layer, and those are small because the weights of the 0.01 initialisation are. One step then lowers the loss by about a millionth or less. A single update is a small thing; training is the cycle of forward pass, backward pass and update repeated many times, which [post 22](../22-gradient-descent-optimiser/index.md) codes as a loop, with the update packaged into an optimiser class.
+When every class occurs equally often, the bias gradient of the last layer nearly cancels, because each class is predicted with probability about $1/3$ and is the label of a third of the samples. What is left are the weight gradients and the bias gradient of the first layer, and those are small because the weights of the 0.01 initialisation are. One step then lowers the loss by about a millionth or less. The figure below puts the falls of both batches for the ten seeds on one logarithmic axis.
+
+![Two ranges on a logarithmic axis from 10 to the minus 7 to 10 to the minus 3, the fall in loss after one update, one tick per seed for seeds 0 to 9. On the post's batch of four, labels 0, 1, 2, 1, all ten falls sit in one place, between 4.169 times 10 to the minus 4 and 4.191 times 10 to the minus 4. On the balanced batch of six, labels 0, 1, 2, 1, 0, 2, they spread from 2.723 times 10 to the minus 7 to 1.409 times 10 to the minus 6.](diagrams/03-fall-per-seed.svg)
+
+*The two batches differ by more than two powers of ten; the ten seeds hardly differ at all.*
+
+A single update is a small thing; training is the cycle of forward pass, backward pass and update repeated many times, which [post 22](../22-gradient-descent-optimiser/index.md) codes as a loop, with the update packaged into an optimiser class.
 
 The four subtractions stand after the four backward calls. Updating each dense layer straight after its own `backward` gives the same parameters, because a layer's `dinputs` already exists when its weights change (`snippets/what_can_go_wrong.py` checks it). Keeping the two phases apart is still the convention of the series: the optimisers of Part VI are handed layers whose gradients are complete.
 
