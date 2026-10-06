@@ -9,7 +9,7 @@ part: "Part V - Backpropagation"
 level: intermediate
 reading_time: 20
 tags: [neural-networks, from-scratch, backpropagation, softmax, cross-entropy]
-hero: diagrams/01-combined-shortcut.svg
+hero: diagrams/01-two-routes.svg
 prerequisites: [nn-017, nn-018]
 code: included
 outcomes:

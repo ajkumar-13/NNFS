@@ -11,9 +11,9 @@
 > - Apply the combined formula (y-hat - y) / N and recognise the cancellation that produces it.
 > - Implement Activation_Softmax_Loss_CategoricalCrossentropy with a three-line backward method.
 
-![Two routes to the same gradient. Left, in three steps: the cross-entropy backward, minus y over y-hat; the softmax Jacobian of each sample; one matrix product per sample. Right, in three steps: softmax substituted into the loss, the two terms differentiated, and the result, y-hat minus y over N. A band below holds the three lines of code.](diagrams/01-combined-shortcut.svg)
+![Two routes for one sample with softmax output 0.7, 0.2, 0.1 and true class 0. Top, the Jacobian route: the row minus y over y-hat, -1.43, 0, 0, times the 3 by 3 softmax Jacobian gives -0.30, 0.20, 0.10; the non-zero entry and the first Jacobian row are outlined, and a worked line shows that row is 0.7 times 0.3, -0.2, -0.1, so the 0.7 cancels the 1/0.7. Bottom, the combined route: y-hat minus the one-hot y, 1, 0, 0, gives the same -0.30, 0.20, 0.10.](diagrams/01-two-routes.svg)
 
-*Both routes give the same array. The right-hand one never builds a Jacobian and never divides by a prediction.*
+*Both routes give the same row. The combined route never builds the Jacobian and never divides by a prediction.*
 
 ---
 
@@ -99,7 +99,7 @@ dvalues @ J       = [-0.300000  0.200000  0.100000]
 y_hat - y         = [-0.300000  0.200000  0.100000]
 ```
 
-The single non-zero entry of post 18's gradient, $-1/0.7$, picks out the first row of the Jacobian and rescales it into $\hat{\mathbf{y}} - \mathbf{y}$.
+The single non-zero entry of post 18's gradient, $-1/0.7$, picks out the first row of the Jacobian and rescales it into $\hat{\mathbf{y}} - \mathbf{y}$. The figure at the top of the post draws this product and the subtraction side by side.
 
 For a batch, $L$ is the mean of the $L_i$ and logit $z_{i,k}$ belongs to sample $i$ alone, so the factor $1/N$ of post 18 carries over unchanged:
 
@@ -124,11 +124,11 @@ The result reads easily. The entry at the true class is $\hat{y}_c - 1$, negativ
 
 ### 3.2. Why frameworks ship a combined version
 
-![A table of the numbers each route computes for one sample: 9 against 3 at 3 classes, 1,000,000 against 1,000 at 1,000 classes, and 2,500,000,000 against 50,000 at 50,000 classes. A second card rewrites the logarithm of softmax as a logit minus the log of the sum of exponentials.](diagrams/02-why-fused.svg)
+![Two panels. Left, a table of the numbers each route computes for one sample: 9 against 3 at 3 classes, 1,000,000 against 1,000 at 1,000 classes, and 2,500,000,000 against 50,000 at 50,000 classes. Right, the logits 0, -800, 0 with true class 1: the softmax output 0.5, 0, 0.5, the Jacobian route's minus y over y-hat with minus infinity in the middle and the nan row it ends in, and the combined route's finite 0.5, -1, 0.5.](diagrams/02-why-combined.svg)
 
-*The gap between the two routes is a factor of $K$, the number of classes.*
+*The gap between the two routes is a factor of $K$, the number of classes, and only the Jacobian route divides by a probability.*
 
-Two reasons, and both are counted or measured in this post, not timed.
+Two reasons, and both are counted or measured in this post, not timed; the figure above shows one of each.
 
 **Work.** The Jacobian route builds $K^2$ numbers for every sample and multiplies a row into them; the combined route computes $K$. For the spiral's three classes that is 9 against 3. At 1,000 classes it is 1,000,000 against 1,000, and at 50,000 classes, the size of a language-model vocabulary, 2,500,000,000 against 50,000 for each sample. The ratio is $K$ itself.
 
@@ -179,7 +179,11 @@ print(dinputs)
  [ 0.00666667 -0.03333333  0.02666667]]
 ```
 
-Post 18's gradient had one non-zero entry in each row. This one has none that is zero: the Jacobian has spread each row's single entry over all the logits. Sample 3, the most confident and correct, has the smallest gradient, and sample 2, with only 0.5 on its true class, the largest.
+![The three lines of the combined backward, as in the snippet and as in the class of section 5, above the batch they act on: the labels 0, 1, 1; the copy of the softmax output; the copy with 1 subtracted at each true class, the three changed cells outlined; and dinputs after the division by 3, rows -0.100, 0.033, 0.067; 0.033, -0.167, 0.133; 0.007, -0.033, 0.027.](diagrams/03-three-lines.svg)
+
+*Line 2 changes one entry per row, at the true class; line 3 divides every entry by the batch size.*
+
+The figure follows the batch through the three lines. Post 18's gradient had one non-zero entry in each row. This one has none that is zero: the Jacobian has spread each row's single entry over all the logits. Sample 3, the most confident and correct, has the smallest gradient, and sample 2, with only 0.5 on its true class, the largest.
 
 The subtraction uses the advanced indexing of post 08: row $i$, column `y_true[i]`. With integer labels the one-hot matrix is never built, because subtracting $\mathbf{y}$ changes only one entry per row.
 
@@ -226,7 +230,11 @@ class Activation_Softmax_Loss_CategoricalCrossentropy:
         self.dinputs /= samples
 ```
 
-Three things to flag.
+![The combined class between the last dense layer and the loss. Its forward card takes the logits, shape N by K, stores self.output, tagged cached, and returns the loss, one number. A purple arrow carries softmax_loss.output, N by K, down into the backward card as dvalues, and a purple arrow carries dinputs, N by K, left to the dense layer, which reads it as its dvalues. The dense layer appears twice, a forward card and a backward card joined by a dashed edge labelled the same object. A note says neither standalone backward method is called, and a key gives grey for forward, purple for backward and the cached tag.](diagrams/04-combined-class.svg)
+
+*The caller passes the cached `output` back as `dvalues`, and `dinputs` goes straight to the last dense layer.*
+
+Three things to flag, each visible in the figure.
 
 **`forward` is a thin wrapper.** It runs the softmax of post 06 on the logits and the loss of post 08 on the result, stores the probabilities as `self.output`, and returns the batch loss. The reported loss is the number the two separate classes would give.
 
