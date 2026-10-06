@@ -12,7 +12,7 @@
 > - State why predictions are clipped to [1e-7, 1 - 1e-7] before the logarithm is taken.
 > - Interpret a loss value using the uniform-guess baseline ln K and the accuracy reported beside it.
 
-![A chart of the loss, minus log p, against the probability p given to the correct class. The curve falls from about 4.6 at p = 0.01 to 0 at p = 1, with marked points 2.30 at p = 0.1, 1.20 at 0.3, 0.69 at 0.5, 0.36 at 0.7 and 0.11 at 0.9. A side panel states that the loss is never negative, that it is zero only at p = 1, that p = 0.01 costs about 6.6 times as much as p = 0.5, and that the per-sample loss is averaged over the batch.](diagrams/01-cross-entropy-curve.svg)
+![A line chart of the loss, minus log p, against the probability p on the true class, from p = 0.01 to 1. The curve falls from 4.605 at p = 0.01 through 2.303 at 0.10 and 0.693 at 0.50 to 0 at p = 1, and a diamond marks ln 3 = 1.099 at p = 1/3, the uniform guess over three classes. Two shaded steps of equal width show the loss falling by 2.303 from 0.01 to 0.10 and by 0.095 from 0.90 to 0.99, while the dashed straight line 1 minus p falls by 0.09 on each.](diagrams/01-cross-entropy-curve.svg)
 
 *Categorical cross-entropy is the negative log of the probability given to the correct class. The curve is nearly flat close to 1 and steep close to 0, and that shape does the work.*
 
@@ -98,7 +98,7 @@ Two properties hold for every point on the curve:
 
 The curve steepens as $p$ approaches zero. A probability of 0.01 on the true class costs 4.605, which is 6.64 times the 0.693 of a probability of 0.5. Raising a probability from 0.01 to 0.10 removes 2.303 of loss; the step of the same size from 0.90 to 0.99 removes 0.095. A loss that fell in a straight line, such as $1 - p$, would pay 0.09 for either step. This uneven charge is the source of the loss's training signal: the samples the network gets most wrong dominate the mean, so the largest corrections go to them. Post 19 computes the gradient that carries those corrections.
 
-In one sentence: $-\log(p)$ is zero when the true class gets probability 1, positive otherwise, unbounded as that probability goes to 0, and it adds over samples in the same way that their probabilities multiply. The table and the figures of this section are printed by `snippets/neg_log_curve.py`.
+In one sentence: $-\log(p)$ is zero when the true class gets probability 1, positive otherwise, unbounded as that probability goes to 0, and it adds over samples in the same way that their probabilities multiply. The table and the numbers of this section are printed by `snippets/neg_log_curve.py`, and the figure at the top of the post draws the curve with the two steps of equal width shaded.
 
 ---
 
@@ -122,14 +122,14 @@ Sample 3 has the lowest loss (0.90 on the right class). Sample 2 has the highest
 
 ## 5. Two label formats, two ways to index
 
-Datasets ship class labels in one of two formats. Both formats encode the same information; the implementation has to handle each one differently.
+Datasets ship class labels in one of two formats. Both formats encode the same information; the implementation has to handle each one differently, and the figure below follows the worked batch of section 4 down both paths.
 
 | Format | The labels of section 4 | Shape | Where it comes from |
 |---|---|:---:|---|
 | **Integer index** | `[0, 1, 1]` | $(N,)$ | one integer per sample; what `spiral_data` returns |
 | **One-hot vector** | `[[1,0,0], [0,1,0], [0,1,0]]` | $(N, K)$ | an encoding step, such as `np.eye(3)[class_targets]` |
 
-![Two panels on the worked batch of softmax outputs. Left, integer labels 0, 1, 1: indexing with the row numbers and the labels picks row 0 column 0, 0.70, row 1 column 1, 0.50, and row 2 column 1, 0.90. Right, one-hot labels: the element-wise product turns every wrong-class entry into 0.00 and leaves 0.70, 0.50 and 0.90, which the row sums recover. Both panels end in the same array of 0.7, 0.5 and 0.9.](diagrams/02-indexing-methods.svg)
+![Two rows on the worked batch of softmax outputs. Top, integer labels: class_targets 0, 1, 1 picks row 0 column 0, row 1 column 1 and row 2 column 1, the cells 0.70, 0.50 and 0.90. Bottom, one-hot labels: the one-hot rows times the softmax outputs, element by element, keep 0.70, 0.50 and 0.90 and turn every other entry into 0.00, and the row sums recover them. Both paths end in the same correct_confidences 0.70, 0.50, 0.90, and minus log of it gives the losses 0.357, 0.693 and 0.105, with mean 0.385.](diagrams/02-indexing-methods.svg)
 
 *Same arithmetic, two paths. Either one ends in the same vector of probabilities on the true class.*
 
@@ -353,7 +353,7 @@ The script prints 0.340: 102 of the 300 predictions are right. That is the score
 | Categorical cross-entropy | how much probability the network put on the true class | yes | optimisation (training) |
 | Accuracy | whether the top prediction matches the truth | no | human-readable reporting |
 
-![Two batches of three softmax rows with true classes 0, 1 and 1. The left batch, the worked batch of section 4, has 0.7, 0.5 and 0.9 on the true classes, per-sample losses 0.357, 0.693 and 0.105, and a mean loss of 0.385. The right batch has 0.95, 0.96 and 0.97 on them, per-sample losses 0.051, 0.041 and 0.030, and a mean loss of 0.041. Both batches show an accuracy of 3 out of 3, 100 percent.](diagrams/03-loss-vs-accuracy.svg)
+![Two batches of three softmax rows with true classes 0, 1 and 1, each row with a bar for its loss on one shared scale. The left batch, the worked batch of section 4, has 0.70, 0.50 and 0.90 on the true classes, per-sample losses 0.357, 0.693 and 0.105, and a mean loss of 0.385. The right batch has 0.95, 0.96 and 0.97 on them, per-sample losses 0.051, 0.041 and 0.030, and a mean loss of 0.041. A solid bar under each lane shows the mean, and a row of three squares marks the three samples whose top prediction is right: both batches have an accuracy of 1.000, 3 of 3.](diagrams/03-loss-vs-accuracy.svg)
 
 *Both batches are right on every sample, so accuracy reports 100 percent for each. The whole difference between them lands in the loss.*
 

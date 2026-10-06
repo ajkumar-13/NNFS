@@ -1,153 +1,304 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" role="img" aria-labelledby="t d">
-  <title id="t">Two label formats, two ways to extract the correct-class probability</title>
-  <desc id="d">A side-by-side comparison showing the two ways to extract the correct-class probability from a softmax-output matrix. Left panel uses integer labels [0, 1, 1] and advanced indexing softmax[range(N), labels] to pick row 0 col 0 (0.7), row 1 col 1 (0.5), and row 2 col 1 (0.9). Right panel uses one-hot labels and an element-wise multiply that zeros out wrong-class columns, followed by a per-row sum. Both methods produce the identical result vector [0.7, 0.5, 0.9].</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-02-indexing-methods-title" aria-describedby="nn-02-indexing-methods-desc">
+<title id="nn-02-indexing-methods-title">Two label formats, one vector of true-class probabilities</title>
+<desc id="nn-02-indexing-methods-desc">Two rows on the worked batch of softmax outputs 0.70, 0.10, 0.20; 0.10, 0.50, 0.40; 0.02, 0.90, 0.08. Top, integer labels: class_targets 0, 1, 1 picks row 0 column 0, row 1 column 1 and row 2 column 1, the cells outlined. Bottom, one-hot labels: the rows 1, 0, 0; 0, 1, 0; 0, 1, 0 times the softmax outputs element by element give 0.70, 0.00, 0.00; 0.00, 0.50, 0.00; 0.00, 0.90, 0.00. Both paths end in the same correct_confidences 0.70, 0.50, 0.90; minus log of it gives the losses 0.357, 0.693, 0.105 and the mean 0.385.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .panel-prim{fill:var(--nn-primary);fill-opacity:0.06;stroke:var(--nn-primary);stroke-width:1.5;}
-    .panel-acc {fill:var(--nn-accent);fill-opacity:0.06;stroke:var(--nn-accent);stroke-width:1.5;}
-    .pill-prim{fill:var(--nn-primary);}
-    .pill-acc{fill:var(--nn-accent);}
-    .head-prim{font-weight:700;font-size:15px;fill:var(--nn-primary);}
-    .head-acc{font-weight:700;font-size:15px;fill:var(--nn-accent);}
-    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
-    .code-pill{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
-    .code-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--nn-ink);}
-    .cell-base{fill:var(--nn-neutral-1);stroke:var(--nn-border);stroke-width:1;}
-    .cell-hl{fill:var(--nn-success);fill-opacity:0.30;stroke:var(--nn-success);stroke-width:1.5;}
-    .cell-zero{fill:var(--nn-neutral-1);fill-opacity:0.3;stroke:var(--nn-border);stroke-width:1;}
-    .cell-num{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--nn-ink);}
-    .label-text{font-size:11px;fill:var(--nn-ink-muted);}
-    .result-pill{fill:var(--nn-success);fill-opacity:0.20;stroke:var(--nn-success);stroke-width:1.5;}
-  ]]></style>
-
-  <rect class="bg" width="960" height="460"/>
-
-  <text class="title"    x="48" y="48">Two label formats, two indexing tricks</text>
-  <text class="subtitle" x="48" y="70">Same softmax outputs, same correct-class probabilities. Pick the path that matches the label format.</text>
-
-  <!-- ============================ LEFT: integer labels ============================ -->
-  <rect class="panel-prim" x="48" y="96" width="424" height="312" rx="12"/>
-  <rect class="pill-prim"  x="48" y="96" width="6"   height="312" rx="3"/>
-  <text class="head-prim" x="68" y="124">Integer labels — advanced indexing</text>
-
-  <rect class="code-pill" x="68" y="138" width="384" height="44" rx="6"/>
-  <text class="code-text" x="80" y="156">labels = [0, 1, 1]</text>
-  <text class="code-text" x="80" y="174">correct = softmax[range(N), labels]</text>
-
-  <!-- softmax matrix -->
-  <text class="label-text" x="116" y="202" text-anchor="middle">softmax outputs</text>
-  <g transform="translate(80, 210)">
-    <!-- Row 0 -->
-    <rect class="cell-hl"   x="0"  y="0"  width="48" height="28"/>
-    <rect class="cell-base" x="48" y="0"  width="48" height="28"/>
-    <rect class="cell-base" x="96" y="0"  width="48" height="28"/>
-    <!-- Row 1 -->
-    <rect class="cell-base" x="0"  y="28" width="48" height="28"/>
-    <rect class="cell-hl"   x="48" y="28" width="48" height="28"/>
-    <rect class="cell-base" x="96" y="28" width="48" height="28"/>
-    <!-- Row 2 -->
-    <rect class="cell-base" x="0"  y="56" width="48" height="28"/>
-    <rect class="cell-hl"   x="48" y="56" width="48" height="28"/>
-    <rect class="cell-base" x="96" y="56" width="48" height="28"/>
-
-    <text class="cell-num" x="24" y="19" text-anchor="middle">0.70</text>
-    <text class="cell-num" x="72" y="19" text-anchor="middle">0.10</text>
-    <text class="cell-num" x="120" y="19" text-anchor="middle">0.20</text>
-    <text class="cell-num" x="24" y="47" text-anchor="middle">0.10</text>
-    <text class="cell-num" x="72" y="47" text-anchor="middle">0.50</text>
-    <text class="cell-num" x="120" y="47" text-anchor="middle">0.40</text>
-    <text class="cell-num" x="24" y="75" text-anchor="middle">0.02</text>
-    <text class="cell-num" x="72" y="75" text-anchor="middle">0.90</text>
-    <text class="cell-num" x="120" y="75" text-anchor="middle">0.08</text>
-  </g>
-  <!-- Row labels: r0, r1, r2 -->
-  <text class="label-text" x="70" y="232" text-anchor="end">r0</text>
-  <text class="label-text" x="70" y="260" text-anchor="end">r1</text>
-  <text class="label-text" x="70" y="288" text-anchor="end">r2</text>
-  <!-- Column labels: c0, c1, c2 -->
-  <text class="label-text" x="104" y="306" text-anchor="middle">c0</text>
-  <text class="label-text" x="152" y="306" text-anchor="middle">c1</text>
-  <text class="label-text" x="200" y="306" text-anchor="middle">c2</text>
-
-  <!-- Index walks: r0,c0  r1,c1  r2,c1 -->
-  <text class="label-text" x="248" y="232" style="fill:var(--nn-success);">(r0, c0) → 0.70</text>
-  <text class="label-text" x="248" y="260" style="fill:var(--nn-success);">(r1, c1) → 0.50</text>
-  <text class="label-text" x="248" y="288" style="fill:var(--nn-success);">(r2, c1) → 0.90</text>
-
-  <!-- Result -->
-  <rect class="result-pill" x="68" y="330" width="384" height="32" rx="8"/>
-  <text class="code-text" x="80" y="350">correct = array([0.7, 0.5, 0.9])</text>
-  <text class="label-text" x="68" y="386">Row indices come from range(N); column indices come from the label list.</text>
-
-  <!-- ============================ RIGHT: one-hot labels ============================ -->
-  <rect class="panel-acc" x="488" y="96" width="424" height="312" rx="12"/>
-  <rect class="pill-acc"  x="488" y="96" width="6"   height="312" rx="3"/>
-  <text class="head-acc" x="508" y="124">One-hot labels — element-wise multiply</text>
-
-  <rect class="code-pill" x="508" y="138" width="384" height="44" rx="6"/>
-  <text class="code-text" x="520" y="156">labels_onehot = [[1,0,0], [0,1,0], [0,1,0]]</text>
-  <text class="code-text" x="520" y="174">correct = sum(labels_onehot * softmax, axis=1)</text>
-
-  <!-- softmax * one-hot result -->
-  <text class="label-text" x="556" y="202" text-anchor="middle">element-wise product</text>
-  <g transform="translate(520, 210)">
-    <!-- Row 0: 1*0.7, 0*0.1, 0*0.2 -->
-    <rect class="cell-hl"   x="0"  y="0"  width="48" height="28"/>
-    <rect class="cell-zero" x="48" y="0"  width="48" height="28"/>
-    <rect class="cell-zero" x="96" y="0"  width="48" height="28"/>
-    <!-- Row 1: 0*0.1, 1*0.5, 0*0.4 -->
-    <rect class="cell-zero" x="0"  y="28" width="48" height="28"/>
-    <rect class="cell-hl"   x="48" y="28" width="48" height="28"/>
-    <rect class="cell-zero" x="96" y="28" width="48" height="28"/>
-    <!-- Row 2: 0*0.02, 1*0.9, 0*0.08 -->
-    <rect class="cell-zero" x="0"  y="56" width="48" height="28"/>
-    <rect class="cell-hl"   x="48" y="56" width="48" height="28"/>
-    <rect class="cell-zero" x="96" y="56" width="48" height="28"/>
-
-    <text class="cell-num" x="24" y="19" text-anchor="middle">0.70</text>
-    <text class="cell-num" x="72" y="19" text-anchor="middle">0.00</text>
-    <text class="cell-num" x="120" y="19" text-anchor="middle">0.00</text>
-    <text class="cell-num" x="24" y="47" text-anchor="middle">0.00</text>
-    <text class="cell-num" x="72" y="47" text-anchor="middle">0.50</text>
-    <text class="cell-num" x="120" y="47" text-anchor="middle">0.00</text>
-    <text class="cell-num" x="24" y="75" text-anchor="middle">0.00</text>
-    <text class="cell-num" x="72" y="75" text-anchor="middle">0.90</text>
-    <text class="cell-num" x="120" y="75" text-anchor="middle">0.00</text>
-  </g>
-
-  <text class="label-text" x="510" y="232" text-anchor="end">r0</text>
-  <text class="label-text" x="510" y="260" text-anchor="end">r1</text>
-  <text class="label-text" x="510" y="288" text-anchor="end">r2</text>
-
-  <!-- Per-row sum -->
-  <text class="label-text" x="690" y="232" style="fill:var(--nn-success);">sum row 0 → 0.70</text>
-  <text class="label-text" x="690" y="260" style="fill:var(--nn-success);">sum row 1 → 0.50</text>
-  <text class="label-text" x="690" y="288" style="fill:var(--nn-success);">sum row 2 → 0.90</text>
-
-  <!-- Result -->
-  <rect class="result-pill" x="508" y="330" width="384" height="32" rx="8"/>
-  <text class="code-text" x="520" y="350">correct = array([0.7, 0.5, 0.9])  ← identical</text>
-  <text class="label-text" x="508" y="386">Zeros in the one-hot rows kill the wrong-class probabilities; the sum recovers the right one.</text>
-
-  <!-- ============================ Footer ============================ -->
-  <text class="footer" x="48"  y="438">Both methods compute the same vector. The Loss class picks one based on len(y_true.shape).</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-red-soft { fill: var(--nn-red-soft); }
+  .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .s-green { stroke: var(--nn-green); }
+</style>
+<defs>
+<marker id="nn-02-indexing-methods-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title">Two label formats, one vector of true-class probabilities</text>
+<text x="40" y="76" class="t-subtitle">The worked batch of section 4, true classes 0, 1, 1. Outlined: the probability on the true class.</text>
+<text x="40" y="136" class="t-head">Integer labels: <tspan class="mono">softmax_outputs[range(3), class_targets]</tspan></text>
+<rect x="144" y="200" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="144" y="248" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="144" y="296" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="144" y="200" width="48" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="168" y="230" text-anchor="middle" class="t-cell18">0</text>
+<text x="168" y="278" text-anchor="middle" class="t-cell18">1</text>
+<text x="168" y="326" text-anchor="middle" class="t-cell18">1</text>
+</g>
+<text x="168" y="168" text-anchor="middle" class="t-code"><tspan class="mono">class_targets</tspan></text>
+<rect x="248" y="200" width="48" height="48" class="cell f-green-soft"/>
+<rect x="296" y="200" width="48" height="48" class="cell"/>
+<rect x="344" y="200" width="48" height="48" class="cell"/>
+<rect x="248" y="248" width="48" height="48" class="cell"/>
+<rect x="296" y="248" width="48" height="48" class="cell f-green-soft"/>
+<rect x="344" y="248" width="48" height="48" class="cell"/>
+<rect x="248" y="296" width="48" height="48" class="cell"/>
+<rect x="296" y="296" width="48" height="48" class="cell f-green-soft"/>
+<rect x="344" y="296" width="48" height="48" class="cell"/>
+<rect x="248" y="200" width="144" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="272" y="230" text-anchor="middle" class="t-cell18">0.70</text>
+<text x="320" y="230" text-anchor="middle" class="t-cell18">0.10</text>
+<text x="368" y="230" text-anchor="middle" class="t-cell18">0.20</text>
+<text x="272" y="278" text-anchor="middle" class="t-cell18">0.10</text>
+<text x="320" y="278" text-anchor="middle" class="t-cell18">0.50</text>
+<text x="368" y="278" text-anchor="middle" class="t-cell18">0.40</text>
+<text x="272" y="326" text-anchor="middle" class="t-cell18">0.02</text>
+<text x="320" y="326" text-anchor="middle" class="t-cell18">0.90</text>
+<text x="368" y="326" text-anchor="middle" class="t-cell18">0.08</text>
+</g>
+<rect x="248" y="200" width="48" height="48" class="w15 nofill s-green" data-fit="skip"/>
+<rect x="296" y="248" width="48" height="48" class="w15 nofill s-green" data-fit="skip"/>
+<rect x="296" y="296" width="48" height="48" class="w15 nofill s-green" data-fit="skip"/>
+<text x="320" y="168" text-anchor="middle" class="t-code"><tspan class="mono">softmax_outputs</tspan></text>
+<g data-grid="skip">
+<text x="272" y="192" text-anchor="middle" class="t-tick">0</text>
+<text x="320" y="192" text-anchor="middle" class="t-tick">1</text>
+<text x="368" y="192" text-anchor="middle" class="t-tick">2</text>
+</g>
+<g data-grid="skip">
+<text x="240" y="229" text-anchor="end" class="t-tick">row 0</text>
+<text x="240" y="277" text-anchor="end" class="t-tick">row 1</text>
+<text x="240" y="325" text-anchor="end" class="t-tick">row 2</text>
+</g>
+<text x="40" y="416" class="t-head">One-hot labels: multiply element-wise, then sum along <tspan class="mono">axis=1</tspan></text>
+<rect x="40" y="480" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="88" y="480" width="48" height="48" class="cell"/>
+<rect x="136" y="480" width="48" height="48" class="cell"/>
+<rect x="40" y="528" width="48" height="48" class="cell"/>
+<rect x="88" y="528" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="136" y="528" width="48" height="48" class="cell"/>
+<rect x="40" y="576" width="48" height="48" class="cell"/>
+<rect x="88" y="576" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="136" y="576" width="48" height="48" class="cell"/>
+<rect x="40" y="480" width="144" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="64" y="510" text-anchor="middle" class="t-cell18">1</text>
+<text x="112" y="510" text-anchor="middle" class="t-cell18">0</text>
+<text x="160" y="510" text-anchor="middle" class="t-cell18">0</text>
+<text x="64" y="558" text-anchor="middle" class="t-cell18">0</text>
+<text x="112" y="558" text-anchor="middle" class="t-cell18">1</text>
+<text x="160" y="558" text-anchor="middle" class="t-cell18">0</text>
+<text x="64" y="606" text-anchor="middle" class="t-cell18">0</text>
+<text x="112" y="606" text-anchor="middle" class="t-cell18">1</text>
+<text x="160" y="606" text-anchor="middle" class="t-cell18">0</text>
+</g>
+<text x="40" y="448" class="t-code"><tspan class="mono">class_targets_onehot</tspan></text>
+<rect x="248" y="480" width="48" height="48" class="cell"/>
+<rect x="296" y="480" width="48" height="48" class="cell"/>
+<rect x="344" y="480" width="48" height="48" class="cell"/>
+<rect x="248" y="528" width="48" height="48" class="cell"/>
+<rect x="296" y="528" width="48" height="48" class="cell"/>
+<rect x="344" y="528" width="48" height="48" class="cell"/>
+<rect x="248" y="576" width="48" height="48" class="cell"/>
+<rect x="296" y="576" width="48" height="48" class="cell"/>
+<rect x="344" y="576" width="48" height="48" class="cell"/>
+<rect x="248" y="480" width="144" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="272" y="510" text-anchor="middle" class="t-cell18">0.70</text>
+<text x="320" y="510" text-anchor="middle" class="t-cell18">0.10</text>
+<text x="368" y="510" text-anchor="middle" class="t-cell18">0.20</text>
+<text x="272" y="558" text-anchor="middle" class="t-cell18">0.10</text>
+<text x="320" y="558" text-anchor="middle" class="t-cell18">0.50</text>
+<text x="368" y="558" text-anchor="middle" class="t-cell18">0.40</text>
+<text x="272" y="606" text-anchor="middle" class="t-cell18">0.02</text>
+<text x="320" y="606" text-anchor="middle" class="t-cell18">0.90</text>
+<text x="368" y="606" text-anchor="middle" class="t-cell18">0.08</text>
+</g>
+<text x="320" y="448" text-anchor="middle" class="t-code"><tspan class="mono">softmax_outputs</tspan></text>
+<rect x="456" y="480" width="48" height="48" class="cell f-green-soft"/>
+<rect x="504" y="480" width="48" height="48" class="cell"/>
+<rect x="552" y="480" width="48" height="48" class="cell"/>
+<rect x="456" y="528" width="48" height="48" class="cell"/>
+<rect x="504" y="528" width="48" height="48" class="cell f-green-soft"/>
+<rect x="552" y="528" width="48" height="48" class="cell"/>
+<rect x="456" y="576" width="48" height="48" class="cell"/>
+<rect x="504" y="576" width="48" height="48" class="cell f-green-soft"/>
+<rect x="552" y="576" width="48" height="48" class="cell"/>
+<rect x="456" y="480" width="144" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="480" y="510" text-anchor="middle" class="t-cell18">0.70</text>
+<text x="528" y="510" text-anchor="middle" class="t-cell18">0.00</text>
+<text x="576" y="510" text-anchor="middle" class="t-cell18">0.00</text>
+<text x="480" y="558" text-anchor="middle" class="t-cell18">0.00</text>
+<text x="528" y="558" text-anchor="middle" class="t-cell18">0.50</text>
+<text x="576" y="558" text-anchor="middle" class="t-cell18">0.00</text>
+<text x="480" y="606" text-anchor="middle" class="t-cell18">0.00</text>
+<text x="528" y="606" text-anchor="middle" class="t-cell18">0.90</text>
+<text x="576" y="606" text-anchor="middle" class="t-cell18">0.00</text>
+</g>
+<text x="528" y="448" text-anchor="middle" class="t-label">product</text>
+<rect x="456" y="480" width="48" height="48" class="w15 nofill s-green" data-fit="skip"/>
+<rect x="504" y="528" width="48" height="48" class="w15 nofill s-green" data-fit="skip"/>
+<rect x="504" y="576" width="48" height="48" class="w15 nofill s-green" data-fit="skip"/>
+<g data-grid="skip">
+<text x="64" y="472" text-anchor="middle" class="t-tick">0</text>
+<text x="112" y="472" text-anchor="middle" class="t-tick">1</text>
+<text x="160" y="472" text-anchor="middle" class="t-tick">2</text>
+</g>
+<g data-grid="skip">
+<text x="272" y="472" text-anchor="middle" class="t-tick">0</text>
+<text x="320" y="472" text-anchor="middle" class="t-tick">1</text>
+<text x="368" y="472" text-anchor="middle" class="t-tick">2</text>
+</g>
+<g data-grid="skip">
+<text x="480" y="472" text-anchor="middle" class="t-tick">0</text>
+<text x="528" y="472" text-anchor="middle" class="t-tick">1</text>
+<text x="576" y="472" text-anchor="middle" class="t-tick">2</text>
+</g>
+<text x="216" y="560" text-anchor="middle" class="t-op">⊙</text>
+<text x="424" y="560" text-anchor="middle" class="t-op">=</text>
+<rect x="680" y="336" width="64" height="48" class="cell f-green-soft"/>
+<rect x="680" y="384" width="64" height="48" class="cell f-green-soft"/>
+<rect x="680" y="432" width="64" height="48" class="cell f-green-soft"/>
+<rect x="680" y="336" width="64" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="712" y="366" text-anchor="middle" class="t-cell18">0.70</text>
+<text x="712" y="414" text-anchor="middle" class="t-cell18">0.50</text>
+<text x="712" y="462" text-anchor="middle" class="t-cell18">0.90</text>
+</g>
+<text x="712" y="320" text-anchor="middle" class="t-code"><tspan class="mono">correct_confidences</tspan></text>
+<rect x="824" y="336" width="64" height="48" class="cell f-red-soft"/>
+<rect x="824" y="384" width="64" height="48" class="cell f-red-soft"/>
+<rect x="824" y="432" width="64" height="48" class="cell f-red-soft"/>
+<rect x="824" y="336" width="64" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="856" y="366" text-anchor="middle" class="t-cell18">0.357</text>
+<text x="856" y="414" text-anchor="middle" class="t-cell18">0.693</text>
+<text x="856" y="462" text-anchor="middle" class="t-cell18">0.105</text>
+</g>
+<text x="856" y="320" text-anchor="middle" class="t-code"><tspan class="mono">sample_losses</tspan></text>
+<text x="856" y="508" text-anchor="middle" class="t-label">mean <tspan class="b">0.385</tspan></text>
+<path d="M400,272 L624,272 L624,360 L677,360" class="flow" marker-end="url(#nn-02-indexing-methods-arrow)"/>
+<text x="408" y="260" class="t-note">pick</text>
+<path d="M608,552 L624,552 L624,456 L677,456" class="flow" marker-end="url(#nn-02-indexing-methods-arrow)"/>
+<text x="616" y="576" class="t-note">sum, axis=1</text>
+<path d="M752,408 L813,408" class="flow" marker-end="url(#nn-02-indexing-methods-arrow)"/>
+<text x="784" y="396" text-anchor="middle" class="t-note">−log</text>
+<text x="40" y="684" class="t-note">Either path gives the same three probabilities; only they enter the loss.</text>
 </svg>

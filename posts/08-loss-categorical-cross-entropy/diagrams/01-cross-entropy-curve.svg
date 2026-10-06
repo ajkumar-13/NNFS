@@ -1,156 +1,197 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" role="img" aria-labelledby="t d">
-  <title id="t">The negative-log curve: cross-entropy loss as a function of predicted probability</title>
-  <desc id="d">A line chart plotting -log(p) against the predicted probability p, for p between 0.01 and 1.0. The curve starts very high near p = 0 (loss above 4 at p = 0.01) and drops smoothly to zero at p = 1. Five reference dots mark the values at p = 0.1, 0.3, 0.5, 0.7, and 0.9, with the corresponding loss values labelled. A right-side panel summarises the two key properties of the curve: loss is non-negative everywhere, and loss is zero only at p = 1.</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
-      --nn-grid:rgba(26,26,26,0.06);
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-01-cross-entropy-curve-title" aria-describedby="nn-01-cross-entropy-curve-desc">
+<title id="nn-01-cross-entropy-curve-title">The loss is the negative log of the true-class probability</title>
+<desc id="nn-01-cross-entropy-curve-desc">A line chart of the loss minus log p against the probability p on the true class, p from 0.01 to 1. The curve falls from 4.605 at p = 0.01 through 2.303 at 0.10 and 0.693 at 0.50 to 0 at p = 1. A blue diamond marks p = 1/3, the uniform guess over three classes, at ln 3 = 1.099. Two shaded steps of the same width in p: from 0.01 to 0.10 the loss falls by 2.303, from 0.90 to 0.99 by 0.095. A dashed straight line, 1 minus p, falls by 0.09 on each step. The caption adds that at the clip bound p = 10 to the minus 7 the loss is 16.118.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-        --nn-grid:rgba(241,238,232,0.08);
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
-    .axis{stroke:var(--nn-ink-muted);stroke-width:1.25;fill:none;}
-    .grid{stroke:var(--nn-grid);stroke-width:0.75;fill:none;}
-    .axis-label{font-size:11px;fill:var(--nn-ink-muted);}
-    .axis-title{font-size:13px;font-weight:600;fill:var(--nn-ink);}
-    .curve{stroke:var(--nn-primary);stroke-width:3;fill:none;stroke-linecap:round;}
-    .ref-dot{fill:var(--nn-accent);}
-    .ref-label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--nn-accent);}
-    .ref-leader{stroke:var(--nn-accent);stroke-width:1;fill:none;stroke-dasharray:2 2;}
-    .insight-head{font-weight:700;font-size:13px;fill:var(--nn-ink);}
-    .insight-body{font-size:12px;fill:var(--nn-ink);}
-    .insight-muted{font-size:11px;fill:var(--nn-ink-muted);}
-    .formula-pill{fill:var(--nn-primary);fill-opacity:0.10;stroke:var(--nn-primary);stroke-width:1.2;}
-    .formula-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;fill:var(--nn-ink);font-weight:600;}
-  ]]></style>
-
-  <rect class="bg" width="960" height="500"/>
-
-  <text class="title"    x="48" y="48">Cross-entropy: the −log(p) curve</text>
-  <text class="subtitle" x="48" y="70">Loss is the negative log of the probability the network assigned to the correct class.</text>
-
-  <!-- ============================ Chart panel ============================ -->
-  <rect class="panel" x="48" y="96" width="560" height="356" rx="12"/>
-
-  <!-- Plot area: x: p in [0, 1] maps to [80, 588]; y: loss in [0, 5] maps to [432, 120] (inverted) -->
-  <!-- Gridlines -->
-  <g class="grid">
-    <line x1="80" y1="120" x2="588" y2="120"/>
-    <line x1="80" y1="182" x2="588" y2="182"/>
-    <line x1="80" y1="245" x2="588" y2="245"/>
-    <line x1="80" y1="308" x2="588" y2="308"/>
-    <line x1="80" y1="370" x2="588" y2="370"/>
-  </g>
-
-  <!-- Axes -->
-  <line class="axis" x1="80" y1="432" x2="588" y2="432"/>
-  <line class="axis" x1="80" y1="432" x2="80"  y2="120"/>
-
-  <!-- Y-axis ticks (loss values 0, 1, 2, 3, 4) -->
-  <text class="axis-label" x="72" y="436" text-anchor="end">0</text>
-  <text class="axis-label" x="72" y="374" text-anchor="end">1</text>
-  <text class="axis-label" x="72" y="312" text-anchor="end">2</text>
-  <text class="axis-label" x="72" y="249" text-anchor="end">3</text>
-  <text class="axis-label" x="72" y="186" text-anchor="end">4</text>
-  <text class="axis-label" x="72" y="124" text-anchor="end">5</text>
-
-  <!-- X-axis ticks (p values 0.0, 0.2, 0.4, 0.6, 0.8, 1.0) -->
-  <text class="axis-label" x="80"  y="450" text-anchor="middle">0.0</text>
-  <text class="axis-label" x="182" y="450" text-anchor="middle">0.2</text>
-  <text class="axis-label" x="283" y="450" text-anchor="middle">0.4</text>
-  <text class="axis-label" x="385" y="450" text-anchor="middle">0.6</text>
-  <text class="axis-label" x="486" y="450" text-anchor="middle">0.8</text>
-  <text class="axis-label" x="588" y="450" text-anchor="middle">1.0</text>
-
-  <!-- Axis titles -->
-  <text class="axis-title" x="334" y="478" text-anchor="middle">predicted probability  p  for the correct class</text>
-  <g transform="translate(30, 276) rotate(-90)">
-    <text class="axis-title" text-anchor="middle">loss   −log(p)</text>
-  </g>
-
-  <!-- The curve: -log(p), sampled at many points -->
-  <!-- y_pix = 432 - (-log(p)) * 62.4  (where 62.4 px = 1 loss unit, since 1 unit = 62 px) -->
-  <!-- Sample points: p = 0.01, 0.05, 0.10, 0.15, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.00 -->
-  <path class="curve"
-        d="M 85.1 144.5
-           L 105.5 245.3
-           L 131.0 288.6
-           L 156.5 314.3
-           L 182.0 332.6
-           L 233.0 357.9
-           L 283.0 375.6
-           L 334.0 388.7
-           L 385.0 399.5
-           L 436.0 409.0
-           L 486.0 417.5
-           L 537.0 425.4
-           L 588.0 432.0"/>
-
-  <!-- Reference dots and labels -->
-  <!-- (p=0.1, loss=2.303), x_pix=131, y_pix=432-2.303*62.4 ≈ 288.3 -->
-  <circle class="ref-dot" cx="131"  cy="288" r="4"/>
-  <text class="ref-label" x="148"  y="285">p=0.1  →  2.30</text>
-
-  <!-- (p=0.3, loss=1.204), x=232.6, y=432-75.1≈357 -->
-  <circle class="ref-dot" cx="232"  cy="357" r="4"/>
-  <text class="ref-label" x="248"  y="354">p=0.3  →  1.20</text>
-
-  <!-- (p=0.5, loss=0.693), x=334, y=388.8 -->
-  <circle class="ref-dot" cx="334"  cy="389" r="4"/>
-  <text class="ref-label" x="350"  y="386">p=0.5  →  0.69</text>
-
-  <!-- (p=0.7, loss=0.357), x=436, y=409.7 -->
-  <circle class="ref-dot" cx="436"  cy="410" r="4"/>
-  <text class="ref-label" x="452"  y="407">p=0.7  →  0.36</text>
-
-  <!-- (p=0.9, loss=0.105), x=537, y=425.4 -->
-  <circle class="ref-dot" cx="537"  cy="425" r="4"/>
-  <text class="ref-label" x="500"  y="420" text-anchor="end">p=0.9  →  0.11</text>
-
-  <!-- Origin marker at (1.0, 0) -->
-  <circle class="ref-dot" cx="588" cy="432" r="4" style="fill:var(--nn-success);"/>
-  <text class="ref-label" x="586" y="425" text-anchor="end" style="fill:var(--nn-success);">p=1.0  →  0  (perfect)</text>
-
-  <!-- ============================ Right info panel ============================ -->
-  <rect class="panel" x="624" y="96" width="288" height="356" rx="12"/>
-  <text class="insight-head" x="644" y="124">Two properties</text>
-
-  <text class="insight-body" x="644" y="156">1. Loss is non-negative.</text>
-  <text class="insight-muted" x="644" y="174">p ∈ (0, 1] → log(p) ≤ 0 → −log(p) ≥ 0</text>
-
-  <text class="insight-body" x="644" y="206">2. Loss is zero only at p = 1.</text>
-  <text class="insight-muted" x="644" y="224">log(1) = 0 → −log(1) = 0</text>
-
-  <text class="insight-head" x="644" y="258">Why this curve, not a linear one?</text>
-  <text class="insight-muted" x="644" y="278">A confident-and-wrong prediction</text>
-  <text class="insight-muted" x="644" y="294">(p = 0.01) costs ~6.6× more than an</text>
-  <text class="insight-muted" x="644" y="310">uncertain one (p = 0.5). That</text>
-  <text class="insight-muted" x="644" y="326">non-linearity is the training signal.</text>
-
-  <rect class="formula-pill" x="644" y="346" width="248" height="56" rx="8"/>
-  <text class="formula-text" x="768" y="376" text-anchor="middle">L = −log(ŷ_correct)</text>
-  <text class="insight-muted" x="768" y="394" text-anchor="middle">per sample</text>
-
-  <text class="insight-muted" x="644" y="424">Mean across the batch gives the</text>
-  <text class="insight-muted" x="644" y="440">scalar that the optimiser minimises.</text>
-
-  <!-- Footer -->
-  <text class="footer" x="48"  y="490">Pair with softmax on the output layer (Part 06). Maximum-likelihood estimator under a categorical distribution.</text>
-  <text class="footer" x="912" y="490" text-anchor="end">Origins: Bridle, 1990. Used in essentially every classifier.</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--nn-blue); }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-red { fill: var(--nn-red); }
+  .f-red-ink { fill: var(--nn-red-ink); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-red { stroke: var(--nn-red); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-01-cross-entropy-curve-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<clipPath id="nn-01-cross-entropy-curve-clip-1"><rect x="90" y="122" width="716" height="312"/></clipPath>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title">The loss is the negative log of the true-class probability</text>
+<text x="40" y="76" class="t-subtitle">Zero at <tspan class="i">p</tspan> = 1, never negative, and steeper the closer <tspan class="i">p</tspan> comes to 0; natural log.</text>
+<g data-grid="skip">
+<rect x="103.04" y="128" width="63.36" height="300" class="f-blue-soft" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<rect x="729.6" y="128" width="63.36" height="300" class="f-blue-soft" data-fit="skip"/>
+</g>
+<g data-grid="skip">
+<path d="M103.04,368.6 L800,428" class="s-ink-muted w15 nofill d-ref"/>
+</g>
+<g data-grid="skip">
+<path d="M96,428H800M96,368H800M96,308H800M96,248H800M96,188H800M96,128H800" class="gridline"/>
+<text x="88" y="432" text-anchor="end" class="t-tick">0</text>
+<text x="88" y="372" text-anchor="end" class="t-tick">1</text>
+<text x="88" y="312" text-anchor="end" class="t-tick">2</text>
+<text x="88" y="252" text-anchor="end" class="t-tick">3</text>
+<text x="88" y="192" text-anchor="end" class="t-tick">4</text>
+<text x="88" y="132" text-anchor="end" class="t-tick">5</text>
+<text x="96" y="448" text-anchor="middle" class="t-tick">0.0</text>
+<text x="236.8" y="448" text-anchor="middle" class="t-tick">0.2</text>
+<text x="377.6" y="448" text-anchor="middle" class="t-tick">0.4</text>
+<text x="518.4" y="448" text-anchor="middle" class="t-tick">0.6</text>
+<text x="659.2" y="448" text-anchor="middle" class="t-tick">0.8</text>
+<text x="800" y="448" text-anchor="middle" class="t-tick">1.0</text>
+<path d="M96,128V428H800" class="axis"/>
+<g clip-path="url(#nn-01-cross-entropy-curve-clip-1)">
+<path d="M103.04,151.69 L106.56,176.02 L110.08,193.28 L113.6,206.67 L117.12,217.61 L120.64,226.86 L124.16,234.87 L127.68,241.93 L131.2,248.26 L134.72,253.97 L138.24,259.2 L141.76,264 L145.28,268.44 L148.8,272.58 L152.32,276.46 L155.84,280.09 L159.36,283.52 L162.88,286.77 L166.4,289.84 L169.92,292.77 L173.44,295.56 L176.96,298.23 L180.48,300.78 L184,303.23 L187.52,305.59 L191.04,307.85 L194.56,310.03 L198.08,312.14 L201.6,314.17 L205.12,316.14 L208.64,318.05 L212.16,319.89 L215.68,321.68 L219.2,323.42 L222.72,325.11 L226.24,326.76 L229.76,328.36 L233.28,329.91 L236.8,331.43 L240.32,332.92 L243.84,334.36 L247.36,335.77 L250.88,337.15 L254.4,338.5 L257.92,339.82 L261.44,341.11 L264.96,342.37 L268.48,343.61 L272,344.82 L275.52,346.01 L279.04,347.18 L282.56,348.32 L286.08,349.44 L289.6,350.54 L293.12,351.62 L296.64,352.68 L300.16,353.73 L303.68,354.75 L307.2,355.76 L310.72,356.75 L314.24,357.73 L317.76,358.69 L321.28,359.63 L324.8,360.56 L328.32,361.48 L331.84,362.38 L335.36,363.27 L338.88,364.15 L342.4,365.01 L345.92,365.86 L349.44,366.7 L352.96,367.53 L356.48,368.34 L360,369.15 L363.52,369.94 L367.04,370.73 L370.56,371.5 L374.08,372.27 L377.6,373.02 L381.12,373.77 L384.64,374.5 L388.16,375.23 L391.68,375.95 L395.2,376.66 L398.72,377.36 L402.24,378.06 L405.76,378.74 L409.28,379.42 L412.8,380.09 L416.32,380.75 L419.84,381.41 L423.36,382.06 L426.88,382.7 L430.4,383.33 L433.92,383.96 L437.44,384.58 L440.96,385.2 L444.48,385.81 L448,386.41 L451.52,387.01 L455.04,387.6 L458.56,388.18 L462.08,388.76 L465.6,389.34 L469.12,389.91 L472.64,390.47 L476.16,391.03 L479.68,391.58 L483.2,392.13 L486.72,392.67 L490.24,393.21 L493.76,393.74 L497.28,394.27 L500.8,394.8 L504.32,395.32 L507.84,395.83 L511.36,396.34 L514.88,396.85 L518.4,397.35 L521.92,397.85 L525.44,398.34 L528.96,398.83 L532.48,399.32 L536,399.8 L539.52,400.28 L543.04,400.75 L546.56,401.22 L550.08,401.69 L553.6,402.15 L557.12,402.61 L560.64,403.07 L564.16,403.52 L567.68,403.97 L571.2,404.42 L574.72,404.86 L578.24,405.3 L581.76,405.74 L585.28,406.17 L588.8,406.6 L592.32,407.03 L595.84,407.45 L599.36,407.87 L602.88,408.29 L606.4,408.7 L609.92,409.12 L613.44,409.53 L616.96,409.93 L620.48,410.34 L624,410.74 L627.52,411.14 L631.04,411.53 L634.56,411.93 L638.08,412.32 L641.6,412.71 L645.12,413.09 L648.64,413.48 L652.16,413.86 L655.68,414.24 L659.2,414.61 L662.72,414.99 L666.24,415.36 L669.76,415.73 L673.28,416.09 L676.8,416.46 L680.32,416.82 L683.84,417.18 L687.36,417.54 L690.88,417.89 L694.4,418.25 L697.92,418.6 L701.44,418.95 L704.96,419.3 L708.48,419.64 L712,419.99 L715.52,420.33 L719.04,420.67 L722.56,421.01 L726.08,421.34 L729.6,421.68 L733.12,422.01 L736.64,422.34 L740.16,422.67 L743.68,423 L747.2,423.32 L750.72,423.65 L754.24,423.97 L757.76,424.29 L761.28,424.61 L764.8,424.92 L768.32,425.24 L771.84,425.55 L775.36,425.86 L778.88,426.17 L782.4,426.48 L785.92,426.79 L789.44,427.09 L792.96,427.4 L796.48,427.7 L800,428" class="s-red w15 nofill"/>
+</g>
+<text x="812" y="433" class="t-note f-red-ink">−log(<tspan class="i">p</tspan>)</text>
+</g>
+<text x="96" y="116" class="t-note">loss −log(<tspan class="i">p</tspan>)</text>
+<text x="448" y="472" text-anchor="middle" class="t-note">probability <tspan class="i">p</tspan> on the true class</text>
+<g data-grid="skip">
+<circle cx="103.04" cy="151.69" r="5" class="f-red s-surface w1"/>
+<circle cx="166.4" cy="289.84" r="5" class="f-red s-surface w1"/>
+<circle cx="448" cy="386.41" r="5" class="f-red s-surface w1"/>
+<circle cx="800" cy="428" r="5" class="f-red s-surface w1"/>
+<path d="M330.67,356.08 L336.67,362.08 L330.67,368.08 L324.67,362.08 Z" class="f-blue s-surface w1"/>
+<text x="115.04" y="156.69" class="t-value f-red-ink">4.605</text>
+<text x="178.4" y="294.84" class="t-value f-red-ink">2.303</text>
+<text x="458" y="374.41" class="t-value f-red-ink">0.693</text>
+<text x="344.67" y="352.08" class="t-label f-blue-ink">ln 3 = 1.099, a uniform guess over 3 classes</text>
+<text x="178.4" y="194" class="t-label"><tspan class="i">p</tspan> from 0.01</text>
+<text x="178.4" y="214" class="t-label">to 0.10:</text>
+<text x="178.4" y="234" class="t-label">−2.303</text>
+<text x="804.96" y="332" class="t-label"><tspan class="i">p</tspan> from 0.90</text>
+<text x="804.96" y="352" class="t-label">to 0.99:</text>
+<text x="804.96" y="372" class="t-label">−0.095</text>
+<text x="178.4" y="413" class="t-note">dashed, 1 − <tspan class="i">p</tspan>: −0.09 on each step</text>
+</g>
+<text x="40" y="504" class="t-note">Off the chart to the left, the clip bound <tspan class="i">p</tspan> = 10<tspan class="sub" dy="-6">−7</tspan><tspan dy="6">​</tspan> costs 16.118; without the clip the loss has no upper bound.</text>
 </svg>

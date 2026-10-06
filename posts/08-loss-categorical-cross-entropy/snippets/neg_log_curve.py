@@ -11,8 +11,8 @@ print("section 3: the loss -log(p) for a probability p on the true class")
 for p in [1.00, 0.90, 0.70, 0.50, 0.10, 0.01]:
     loss = abs(-np.log(p))          # abs only turns the -0.0 at p = 1 into 0.0
     print(f"   p = {p:.2f}   -log(p) = {loss:.3f}")
-print("   the five points marked in the first figure:",
-      ", ".join(f"{p} -> {-np.log(p):.2f}" for p in [0.1, 0.3, 0.5, 0.7, 0.9]))
+print("   the points marked in the first figure:",
+      ", ".join(f"{p} -> {abs(-np.log(p)):.3f}" for p in [0.01, 0.1, 0.5, 1.0]))
 
 print("section 3: the curve charges a low probability far more than a high one")
 print(f"   -log(0.01) / -log(0.5) = {np.log(0.01) / np.log(0.5):.2f}")
