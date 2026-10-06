@@ -12,9 +12,9 @@
 > - State the gradient-descent update rule, say what each symbol means, and predict what a given learning rate does on a one-parameter loss.
 > - Name which later posts supply the calculus, the backward pass, and the optimisers that the update rule relies on.
 
-![Three panels side by side, each a valley-shaped loss landscape above a small loss curve with a dashed chance baseline. In the random selection panel scattered dots land high on the valley walls and the loss curve stays flat on the baseline. In the random perturbation panel a chain of dots moves a short way down and stops, and the curve dips slightly and flattens. In the gradient descent panel a chain of dots runs down to the valley floor and the curve falls well below the baseline. A band underneath states the update rule, new parameter equals old parameter minus the learning rate times the gradient.](diagrams/01-strategies-compared.svg)
+![A dot chart of the final loss on the spiral after 10,000 iterations from one start, on an axis from 0.85 to 1.10 with a dotted line at ln 3, 1.0986. With 21 parameters, random selection's best draw is 1.0981; random perturbation ends at 1.0435 in the printed run and between 1.0321 and 1.0793 in 20 other streams of nudges, median 1.0684; gradient descent ends at 1.0776 with a learning rate of 1 and 1.0797 with 0.1. With 387 parameters, the walk ends at 1.0730 and between 1.0442 and 1.0666, median 1.0595, while gradient descent ends at 0.8737 and 1.0226.](diagrams/01-strategies-compared.svg)
 
-*A schematic of the three strategies on one valley: fresh random draws, random nudges, and steps against the gradient. The numbers measured on the spiral data are in sections 2 to 4, and they are less tidy than the sketch.*
+*Final losses after 10,000 iterations on the spiral. On 21 parameters the blind walk keeps pace with gradient descent; on 387 every stream of the walk stays above 1.04, and gradient descent at a learning rate of 1 reaches 0.8737.*
 
 ---
 
@@ -38,10 +38,6 @@ The 21 parameters of the current architecture are not many by modern standards (
 | `dense2.weights` | `(3, 3)` | 9 |
 | `dense2.biases` | `(1, 3)` | 3 |
 | **total** | | **21** |
-
-![A hand-drawn figure in two halves. On the left every parameter of the network is drawn as a cell: 6 weights in W1 of shape (2, 3), 3 biases in b1, 9 weights in W2 of shape (3, 3) and 3 biases in b2, 21 in total. On the right three rows compare scales: this network with 21 parameters, a small ResNet with about ten million, and GPT-3 with 175 billion, above a band saying that random search has to land in a good region by luck.](diagrams/02-parameter-count.svg)
-
-*Small enough to draw in full, and already far too many to find by luck. The same update rule has to serve all three scales.*
 
 The question this post sets up: **what is the right algorithm for moving these 21 numbers in the direction that lowers the loss?** Two strategies that need no mathematics are tried first, and both are measured.
 
@@ -236,7 +232,7 @@ On the small network the walk ends anywhere between 1.0321 and 1.0793, so the pr
 
 **That is a statement about the budget, not about the network.** Neither 1.04 nor 1.08 is the lowest loss three hidden neurons can reach. Run with the argument `long`, the two scripts give both methods ten times the budget on the 21-parameter network: gradient descent with $\alpha = 0.1$ sits near 1.0797 for a long stretch and then falls to 1.0049 and 137 of 300 correct after 100,000 steps, while the random walk moves from 1.0435 to 1.0403 and 125 of 300, keeping 27 more nudges in 90,000. In this pair of runs, with enough steps, the method that knows the direction pulls ahead on the small network too.
 
-**On 387 parameters only gradient descent uses the extra room.** With $\alpha = 1$ it ends at 0.8737 and 194 of 300 correct, 64.7 percent; with $\alpha = 0.1$ at 1.0226 and 133. The random walk ends at 1.0730 and 129 of 300, keeping 37 of its 10,000 nudges, and that printed run is its unluckiest: the 20 other streams end between 1.0442 and 1.0666. Not one of them is below gradient descent at either learning rate. Eighteen times as many parameters lowered the final loss of gradient descent by 0.2039 at $\alpha = 1$ and by 0.0571 at $\alpha = 0.1$. They moved the walk's median from 1.0684 to 1.0595, less than the distance between two of its own streams, so the walk gained next to nothing from them.
+**On 387 parameters only gradient descent uses the extra room.** With $\alpha = 1$ it ends at 0.8737 and 194 of 300 correct, 64.7 percent; with $\alpha = 0.1$ at 1.0226 and 133. The random walk ends at 1.0730 and 129 of 300, keeping 37 of its 10,000 nudges, and that printed run is its unluckiest: the 20 other streams end between 1.0442 and 1.0666. Not one of them is below gradient descent at either learning rate. Eighteen times as many parameters lowered the final loss of gradient descent by 0.2039 at $\alpha = 1$ and by 0.0571 at $\alpha = 0.1$. They moved the walk's median from 1.0684 to 1.0595, less than the distance between two of its own streams, so the walk gained next to nothing from them. The figure at the top of the post puts all of these final losses on one axis, one tick per stream of the walk.
 
 **The learning rate of 1 bounces.** With $\alpha = 1$ the loss went up on 4,363 of the 10,000 steps on the small network and on 4,628 on the wide one, where the run ends at 0.8737 although it had touched 0.8343 at step 7,874. This is the oscillation that section 5.1 produces on one parameter. With $\alpha = 0.1$ the wide network's loss never rises, and it gets less far in the same budget: 1.0226. A large step that bounces covered more ground here than a small one that descends steadily; both settings are shown so that neither is mistaken for the method. On the small network the loss at $\alpha = 0.1$ also ticks up on 923 steps, yet its final value is its lowest to four decimals.
 
@@ -244,7 +240,11 @@ Early in a run the picture is different again. After 100 iterations the random w
 
 That is the measured form of the scaling argument: with few parameters and few steps the blind method loses nothing, and with eighteen times the parameters it is left far behind in every stream tried. Two general statements stand behind this.
 
-**The budget buys little, and each parameter multiplies the price.** For random selection, the best loss in section 2 after 10, 100, 1,000, 10,000 and 100,000 draws was 1.0986, 1.0984, 1.0983, 1.0981 and 1.0980: each tenfold increase in the budget bought one or two ten-thousandths, so the return on the budget is roughly logarithmic. The cost in parameters runs the other way. As an illustration, suppose a good region required nothing more than each parameter landing in the correct half of its range. One draw would then hit it with probability $(1/2)^{21} = 1/2{,}097{,}152$ for 21 parameters, about one in two million, and with probability $(1/2)^{387} \approx 3 \times 10^{-117}$ for 387. Doubling the number of draws does double such a chance, but twice a chance of that size is still nothing. Under that assumption the number of draws needed doubles with every parameter added, and no budget keeps up.
+**The budget buys little, and each parameter multiplies the price.** For random selection, the best loss in section 2 after 10, 100, 1,000, 10,000 and 100,000 draws was 1.0986, 1.0984, 1.0983, 1.0981 and 1.0980: each tenfold increase in the budget bought one or two ten-thousandths, so the return on the budget is roughly logarithmic. The cost in parameters runs the other way. As an illustration, suppose a good region required nothing more than each parameter landing in the correct half of its range. One draw would then hit it with probability $(1/2)^{21} = 1/2{,}097{,}152$ for 21 parameters, about one in two million, and with probability $(1/2)^{387} \approx 3 \times 10^{-117}$ for 387. Doubling the number of draws does double such a chance, but twice a chance of that size is still nothing. Under that assumption the number of draws needed doubles with every parameter added, and no budget keeps up. The figure below draws every parameter of the small network and then both networks to one scale.
+
+![Top: the 21 parameters of the network with 3 hidden neurons, one cell each in their array shapes, W1 of shape (2, 3), b1 (1, 3), W2 (3, 3) and b2 (1, 3), with 6 plus 3 plus 9 plus 3 equals 21 underneath. Bottom: both networks as bars on one axis from 0 to 400 parameters, 21 long for 3 hidden neurons and 387 long for 64, split into 128 weights in W1, 64 biases in b1, 192 weights in W2 and 3 biases in b2.](diagrams/02-parameter-count.svg)
+
+*Every weight and every bias is one number the update rule has to move. If each had to land in the right half of its range by chance, one draw would succeed with probability 1 in 2,097,152 for 21 parameters and about $3 \times 10^{-117}$ for 387.*
 
 **Random perturbation asks one question per forward pass.** It proposes a direction, pays for a forward pass, and learns a single fact: better or worse. In 21 dimensions that was competitive for 10,000 iterations. In 387 it kept 37 proposals in 10,000, and a network of millions of parameters has millions of directions to ask about. The fix is not to be cleverer about sampling; the fix is to know the downhill direction *before* taking the step.
 
@@ -267,7 +267,7 @@ This is the foundation of **gradient descent**. At every iteration the update ru
 
 $$\theta \leftarrow \theta - \alpha \, \nabla L,$$
 
-where $\theta$ stands for all the parameters at once, the arrow means "is replaced by", and $\alpha$ is the **learning rate**, a small positive number that sets how big the step is. Written for one parameter, the rule is $\theta_i \leftarrow \theta_i - \alpha \, \partial L / \partial \theta_i$: every weight and every bias moves against its own slope. The minus sign is what makes the algorithm a *descent* algorithm. The hero figure writes the same rule as $w_\text{new} = w_\text{old} - \alpha \nabla L$, with $w$ for a parameter.
+where $\theta$ stands for all the parameters at once, the arrow means "is replaced by", and $\alpha$ is the **learning rate**, a small positive number that sets how big the step is. Written for one parameter, the rule is $\theta_i \leftarrow \theta_i - \alpha \, \partial L / \partial \theta_i$: every weight and every bias moves against its own slope. The minus sign is what makes the algorithm a *descent* algorithm.
 
 Compared with random perturbation, one thing has changed. The random walk learned one fact per forward pass. The gradient delivers the slope along all 21 axes, or all 387, at once, and backpropagation computes it with one forward pass and one backward pass.
 
@@ -308,6 +308,12 @@ Because the slope is $2w$, each step replaces $w$ by $w - 2\alpha w = (1 - 2\alp
 - $\alpha = 10$ gives $-19$. Every step overshoots further than the last and $w$ **diverges**, to $3.75 \times 10^{128}$ after 100 steps.
 
 On this loss the rule converges exactly when $|1 - 2\alpha| < 1$, that is for $0 < \alpha < 1$. A real loss surface has no single threshold of this kind, since its steepness differs from place to place and from direction to direction, but the behaviours carry over to a real network: in section 4 the learning rate of 1 bounced, and 0.1 descended steadily and slowly.
+
+The figure below draws four of the five runs on the curve $f(w) = w^2$: the start and the first three steps as dots, and the value after 100 steps as a ring.
+
+![Four charts of f(w) = w squared for w from minus 6 to 6, each with the start at w = 5 and the first steps of gradient descent as dots joined by straight jumps, and w after 100 steps as a ring. With a learning rate of 0.001 the dots 5, 4.99, 4.98 and 4.97 overlap and the ring sits at 4.093. With 0.1 the dots step down the right side, 5, 4, 3.2, 2.56, and the ring is at the minimum. With 1 the jumps run between 5 and minus 5 at a loss of 25. With 10 the first jump leaves the chart, to minus 95.](diagrams/03-learning-rate.svg)
+
+*The same rule and the same start; only the learning rate differs. Each step multiplies $w$ by $1 - 2\alpha$: 0.998, 0.8, $-1$ and $-19$.*
 
 ---
 

@@ -1,184 +1,262 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
-  <title id="t">Three optimisation strategies compared: random search, random perturbation, gradient descent</title>
-  <desc id="d">A three-panel comparison of optimisation strategies on a stylised loss landscape. Left panel (random selection, alert red): scattered dots represent random teleports across the landscape, almost none of which land in the low-loss valley; the resulting loss curve stays flat near the chance baseline of 1.10. Middle panel (random perturbation, warn tan): connected dots show small random steps that succeed on a smooth landscape but stall in a shallow local pocket; the loss curve flattens at 1.04 on hard data. Right panel (gradient descent, success green): connected dots follow the steepest-descent direction down into the valley; the loss curve drops smoothly from 1.10 toward 0.3. A bottom band states the gradient-descent update rule.</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
-      --nn-grid:rgba(26,26,26,0.06);
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-01-strategies-compared-title" aria-describedby="nn-01-strategies-compared-desc">
+<title id="nn-01-strategies-compared-title">Only gradient descent uses the 387 parameters</title>
+<desc id="nn-01-strategies-compared-desc">A dot chart of the final loss on the spiral data after 10,000 iterations from the same start, on a loss axis from 0.85 to 1.10, with a dotted line at ln 3, 1.0986, the loss of a uniform guess. With 21 parameters: random selection's best draw 1.0981; random perturbation, the printed run 1.0435 and 20 other streams of nudges, one tick each in a band, from 1.0321 to 1.0793, median 1.0684; gradient descent 1.0776 at learning rate 1 and 1.0797 at 0.1. With 387 parameters: random perturbation, the printed run 1.0730 and 20 streams from 1.0442 to 1.0666, median 1.0595; gradient descent 0.8737 at learning rate 1 and 1.0226 at 0.1.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-        --nn-grid:rgba(241,238,232,0.08);
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .panel-bad{fill:var(--nn-alert);fill-opacity:0.06;stroke:var(--nn-alert);stroke-width:1.5;}
-    .panel-mid{fill:var(--nn-warn);fill-opacity:0.06;stroke:var(--nn-warn);stroke-width:1.5;}
-    .panel-ok {fill:var(--nn-success);fill-opacity:0.07;stroke:var(--nn-success);stroke-width:1.5;}
-    .pill-bad{fill:var(--nn-alert);}
-    .pill-mid{fill:var(--nn-warn);}
-    .pill-ok {fill:var(--nn-success);}
-    .head-bad{font-weight:700;font-size:14px;fill:var(--nn-alert);}
-    .head-mid{font-weight:700;font-size:14px;fill:var(--nn-warn);}
-    .head-ok {font-weight:700;font-size:14px;fill:var(--nn-success);}
-    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
-    .chart{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
-    .axis{stroke:var(--nn-ink-muted);stroke-width:1;fill:none;}
-    .grid{stroke:var(--nn-grid);stroke-width:0.75;fill:none;}
-    .axis-label{font-size:10px;fill:var(--nn-ink-muted);}
-    .axis-title{font-size:11px;fill:var(--nn-ink-muted);font-style:italic;}
-    .baseline{stroke:var(--nn-ink-subtle);stroke-width:1;fill:none;stroke-dasharray:3 3;}
-    .baseline-label{font-size:9px;fill:var(--nn-ink-subtle);}
-    .loss-bad{stroke:var(--nn-alert);stroke-width:2.2;fill:none;stroke-linecap:round;}
-    .loss-mid{stroke:var(--nn-warn);stroke-width:2.2;fill:none;stroke-linecap:round;}
-    .loss-ok {stroke:var(--nn-success);stroke-width:2.2;fill:none;stroke-linecap:round;}
-    .dot-bad{fill:var(--nn-alert);}
-    .dot-mid{fill:var(--nn-warn);}
-    .dot-ok {fill:var(--nn-success);}
-    .verdict-bad{font-size:11px;font-weight:700;fill:var(--nn-alert);}
-    .verdict-mid{font-size:11px;font-weight:700;fill:var(--nn-warn);}
-    .verdict-ok{font-size:11px;font-weight:700;fill:var(--nn-success);}
-    .verdict-body{font-size:10px;fill:var(--nn-ink-muted);}
-    .rule-band{fill:var(--nn-primary);fill-opacity:0.08;stroke:var(--nn-primary);stroke-width:1.5;}
-    .rule-head{font-weight:700;font-size:13px;fill:var(--nn-primary);}
-    .rule-body{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;fill:var(--nn-ink);font-weight:600;}
-    .rule-note{font-size:11px;fill:var(--nn-ink-muted);}
-  ]]></style>
-
-  <rect class="bg" width="960" height="540"/>
-
-  <text class="title"    x="48" y="48">Three strategies, only one works at scale</text>
-  <text class="subtitle" x="48" y="70">Same loss landscape, same starting point. Each panel shows the loss across iterations; only gradient descent reaches the valley.</text>
-
-  <!-- ====================== Panel 1: random selection ====================== -->
-  <rect class="panel-bad" x="48" y="96" width="280" height="312" rx="12"/>
-  <rect class="pill-bad"  x="48" y="96" width="6"   height="312" rx="3"/>
-  <text class="head-bad"  x="68" y="124">Random selection</text>
-  <text class="panel-sub" x="68" y="142">weights = randn() every iteration</text>
-
-  <rect class="chart" x="68" y="160" width="240" height="160" rx="8"/>
-  <g class="grid">
-    <line x1="68" y1="200" x2="308" y2="200"/>
-    <line x1="68" y1="240" x2="308" y2="240"/>
-    <line x1="68" y1="280" x2="308" y2="280"/>
-  </g>
-  <line class="axis" x1="68" y1="320" x2="308" y2="320"/>
-  <line class="axis" x1="68" y1="160" x2="68"  y2="320"/>
-
-  <!-- Baseline at loss = 1.10 → y ≈ 200 -->
-  <line class="baseline" x1="68" y1="200" x2="308" y2="200"/>
-  <text class="baseline-label" x="306" y="196" text-anchor="end">chance baseline 1.10</text>
-
-  <!-- Random-search loss: scattered dots near 1.10, slight downward trend to 1.095 -->
-  <path class="loss-bad" d="M 76 198 L 100 200 L 130 199 L 162 196 L 196 202 L 232 198 L 268 200 L 302 197"/>
-  <circle class="dot-bad" cx="76"  cy="198" r="2.5"/>
-  <circle class="dot-bad" cx="100" cy="200" r="2.5"/>
-  <circle class="dot-bad" cx="130" cy="199" r="2.5"/>
-  <circle class="dot-bad" cx="162" cy="196" r="2.5"/>
-  <circle class="dot-bad" cx="196" cy="202" r="2.5"/>
-  <circle class="dot-bad" cx="232" cy="198" r="2.5"/>
-  <circle class="dot-bad" cx="268" cy="200" r="2.5"/>
-  <circle class="dot-bad" cx="302" cy="197" r="2.5"/>
-
-  <text class="axis-label" x="60" y="324" text-anchor="end">0</text>
-  <text class="axis-label" x="60" y="204" text-anchor="end">1.1</text>
-  <text class="axis-title" x="188" y="338" text-anchor="middle">iterations →</text>
-
-  <text class="verdict-bad" x="68" y="362">100 000 iters · loss 1.095 · acc 33%</text>
-  <text class="verdict-body" x="68" y="378">21-D parameter space is too large for blind</text>
-  <text class="verdict-body" x="68" y="392">sampling to ever land in a low-loss region.</text>
-
-  <!-- ====================== Panel 2: random perturbation ====================== -->
-  <rect class="panel-mid" x="344" y="96" width="280" height="312" rx="12"/>
-  <rect class="pill-mid"  x="344" y="96" width="6"   height="312" rx="3"/>
-  <text class="head-mid"  x="364" y="124">Random perturbation</text>
-  <text class="panel-sub" x="364" y="142">weights += randn() each iteration</text>
-
-  <rect class="chart" x="364" y="160" width="240" height="160" rx="8"/>
-  <g class="grid">
-    <line x1="364" y1="200" x2="604" y2="200"/>
-    <line x1="364" y1="240" x2="604" y2="240"/>
-    <line x1="364" y1="280" x2="604" y2="280"/>
-  </g>
-  <line class="axis" x1="364" y1="320" x2="604" y2="320"/>
-  <line class="axis" x1="364" y1="160" x2="364" y2="320"/>
-
-  <line class="baseline" x1="364" y1="200" x2="604" y2="200"/>
-  <text class="baseline-label" x="602" y="196" text-anchor="end">chance baseline 1.10</text>
-
-  <!-- Random perturbation loss: small monotonic decrease then flattens at ~1.04 (y ≈ 210) -->
-  <path class="loss-mid" d="M 372 198 L 400 202 L 432 205 L 466 208 L 500 210 L 540 211 L 580 212 L 600 212"/>
-  <circle class="dot-mid" cx="372" cy="198" r="2.5"/>
-  <circle class="dot-mid" cx="400" cy="202" r="2.5"/>
-  <circle class="dot-mid" cx="432" cy="205" r="2.5"/>
-  <circle class="dot-mid" cx="466" cy="208" r="2.5"/>
-  <circle class="dot-mid" cx="500" cy="210" r="2.5"/>
-  <circle class="dot-mid" cx="540" cy="211" r="2.5"/>
-  <circle class="dot-mid" cx="580" cy="212" r="2.5"/>
-  <circle class="dot-mid" cx="600" cy="212" r="2.5"/>
-
-  <text class="axis-label" x="356" y="324" text-anchor="end">0</text>
-  <text class="axis-label" x="356" y="204" text-anchor="end">1.1</text>
-  <text class="axis-title" x="484" y="338" text-anchor="middle">iterations →</text>
-
-  <text class="verdict-mid" x="364" y="362">10 000 iters · loss 1.04 · acc ~40%</text>
-  <text class="verdict-body" x="364" y="378">Works on easy data, stalls on hard data.</text>
-  <text class="verdict-body" x="364" y="392">Random direction means most steps go uphill.</text>
-
-  <!-- ====================== Panel 3: gradient descent ====================== -->
-  <rect class="panel-ok" x="640" y="96" width="272" height="312" rx="12"/>
-  <rect class="pill-ok"  x="640" y="96" width="6"   height="312" rx="3"/>
-  <text class="head-ok"   x="660" y="124">Gradient descent</text>
-  <text class="panel-sub" x="660" y="142">w := w − α · ∇L</text>
-
-  <rect class="chart" x="660" y="160" width="232" height="160" rx="8"/>
-  <g class="grid">
-    <line x1="660" y1="200" x2="892" y2="200"/>
-    <line x1="660" y1="240" x2="892" y2="240"/>
-    <line x1="660" y1="280" x2="892" y2="280"/>
-  </g>
-  <line class="axis" x1="660" y1="320" x2="892" y2="320"/>
-  <line class="axis" x1="660" y1="160" x2="660" y2="320"/>
-
-  <line class="baseline" x1="660" y1="200" x2="892" y2="200"/>
-  <text class="baseline-label" x="890" y="196" text-anchor="end">chance baseline 1.10</text>
-
-  <!-- Gradient descent loss: smooth drop from 1.10 (y=200) to ~0.3 (y=300) -->
-  <path class="loss-ok" d="M 668 198 C 690 200, 720 220, 750 248 C 780 270, 820 290, 884 302"/>
-  <circle class="dot-ok" cx="668" cy="198" r="2.5"/>
-  <circle class="dot-ok" cx="710" cy="216" r="2.5"/>
-  <circle class="dot-ok" cx="750" cy="248" r="2.5"/>
-  <circle class="dot-ok" cx="790" cy="272" r="2.5"/>
-  <circle class="dot-ok" cx="830" cy="288" r="2.5"/>
-  <circle class="dot-ok" cx="870" cy="298" r="2.5"/>
-
-  <text class="axis-label" x="652" y="324" text-anchor="end">0</text>
-  <text class="axis-label" x="652" y="204" text-anchor="end">1.1</text>
-  <text class="axis-label" x="652" y="304" text-anchor="end">0.3</text>
-  <text class="axis-title" x="776" y="338" text-anchor="middle">iterations →</text>
-
-  <text class="verdict-ok" x="660" y="362">~1 000 iters · loss 0.3 · acc 90%+</text>
-  <text class="verdict-body" x="660" y="378">Knows the steepest-descent direction</text>
-  <text class="verdict-body" x="660" y="392">before taking each step.</text>
-
-  <!-- ====================== Rule band ====================== -->
-  <rect class="rule-band" x="48" y="432" width="864" height="68" rx="12"/>
-  <text class="rule-head" x="68" y="458">The gradient-descent update rule:</text>
-  <text class="rule-body" x="68" y="484">w_new = w_old − α · ∇L</text>
-  <text class="rule-note" x="280" y="484">α is the learning rate (step size). The minus sign is what makes this a descent algorithm.</text>
-
-  <!-- Footer -->
-  <text class="footer" x="48"  y="528">Cauchy described gradient descent in 1847; Rumelhart, Hinton &amp; Williams (1986) paired it with backpropagation for neural networks.</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--nn-blue); }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .f-purple { fill: var(--nn-purple); }
+  .f-purple-ink { fill: var(--nn-purple-ink); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-blue-line { stroke: var(--nn-blue-line); }
+  .s-grid { stroke: var(--nn-grid); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-surface { stroke: var(--nn-surface); }
+  .w075 { stroke-width: 0.75; }
+</style>
+<defs>
+<marker id="nn-01-strategies-compared-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title">Only gradient descent uses the 387 parameters</text>
+<text x="40" y="76" class="t-subtitle">Spiral data, 10,000 iterations from one start; the walk repeated with 20 streams of nudges.</text>
+<g data-grid="skip">
+<path d="M288,132 L288,428" class="s-grid w075 nofill"/>
+<path d="M387.2,132 L387.2,428" class="s-grid w075 nofill"/>
+<path d="M486.4,132 L486.4,428" class="s-grid w075 nofill"/>
+<path d="M585.6,132 L585.6,428" class="s-grid w075 nofill"/>
+<path d="M684.8,132 L684.8,428" class="s-grid w075 nofill"/>
+<path d="M784,132 L784,428" class="s-grid w075 nofill"/>
+<path d="M781.25,132 L781.25,428" class="s-ink-muted w1 nofill d-ref"/>
+<path d="M288,428 L784,428" class="s-ink-muted w1 nofill"/>
+<text x="288" y="448" text-anchor="middle" class="t-tick">0.85</text>
+<text x="387.2" y="448" text-anchor="middle" class="t-tick">0.90</text>
+<text x="486.4" y="448" text-anchor="middle" class="t-tick">0.95</text>
+<text x="585.6" y="448" text-anchor="middle" class="t-tick">1.00</text>
+<text x="684.8" y="448" text-anchor="middle" class="t-tick">1.05</text>
+<text x="784" y="448" text-anchor="middle" class="t-tick">1.10</text>
+<text x="781.25" y="120" text-anchor="middle" class="t-note">ln 3</text>
+</g>
+<text x="40" y="448" class="t-note">final loss</text>
+<text x="920" y="120" text-anchor="end" class="t-note">final loss</text>
+<text x="40" y="120" class="t-head">21 parameters, 3 hidden neurons</text>
+<text x="40" y="156" class="t-label">Random selection, best draw</text>
+<g data-grid="skip">
+<path d="M775.73,147.5 H784.73 V156.5 H775.73 Z" class="f-ink-muted s-surface w1"/>
+<text x="920" y="157" text-anchor="end" class="t-value f-ink-muted">1.0981</text>
+</g>
+<text x="40" y="192" class="t-label">Random perturbation</text>
+<g data-grid="skip">
+<rect x="645.35" y="178" width="101.66" height="20" rx="4" class="f-blue-soft" data-fit="skip"/>
+<rect x="645.35" y="178" width="101.66" height="20" rx="4" class="w1 nofill s-blue-line" data-fit="skip"/>
+<path d="M738.73,180 L738.73,196" class="s-blue w1 nofill"/>
+<path d="M726.86,180 L726.86,196" class="s-blue w1 nofill"/>
+<path d="M742.62,180 L742.62,196" class="s-blue w1 nofill"/>
+<path d="M718.73,180 L718.73,196" class="s-blue w1 nofill"/>
+<path d="M743.01,180 L743.01,196" class="s-blue w1 nofill"/>
+<path d="M729.63,180 L729.63,196" class="s-blue w1 nofill"/>
+<path d="M723.75,180 L723.75,196" class="s-blue w1 nofill"/>
+<path d="M711.94,180 L711.94,196" class="s-blue w1 nofill"/>
+<path d="M728.39,180 L728.39,196" class="s-blue w1 nofill"/>
+<path d="M706.75,180 L706.75,196" class="s-blue w1 nofill"/>
+<path d="M708.47,180 L708.47,196" class="s-blue w1 nofill"/>
+<path d="M701.21,180 L701.21,196" class="s-blue w1 nofill"/>
+<path d="M694.32,180 L694.32,196" class="s-blue w1 nofill"/>
+<path d="M649.35,180 L649.35,196" class="s-blue w1 nofill"/>
+<path d="M724.86,180 L724.86,196" class="s-blue w1 nofill"/>
+<path d="M740.16,180 L740.16,196" class="s-blue w1 nofill"/>
+<path d="M697.6,180 L697.6,196" class="s-blue w1 nofill"/>
+<path d="M741.94,180 L741.94,196" class="s-blue w1 nofill"/>
+<path d="M711.88,180 L711.88,196" class="s-blue w1 nofill"/>
+<path d="M690.4,180 L690.4,196" class="s-blue w1 nofill"/>
+<circle cx="671.9" cy="188" r="5" class="f-blue s-surface w1"/>
+<text x="920" y="185" text-anchor="end" class="t-value f-blue-ink">run 1.0435</text>
+<text x="920" y="203" text-anchor="end" class="t-value f-ink-muted">median 1.0684</text>
+</g>
+<text x="40" y="228" class="t-label">Gradient descent, α = 1</text>
+<g data-grid="skip">
+<path d="M739.56,218 L745.56,224 L739.56,230 L733.56,224 Z" class="f-purple s-surface w1"/>
+<text x="920" y="229" text-anchor="end" class="t-value f-purple-ink">1.0776</text>
+</g>
+<text x="40" y="264" class="t-label">Gradient descent, α = 0.1</text>
+<g data-grid="skip">
+<path d="M743.72,254 L749.72,260 L743.72,266 L737.72,260 Z" class="f-purple s-surface w1"/>
+<text x="920" y="265" text-anchor="end" class="t-value f-purple-ink">1.0797</text>
+</g>
+<text x="40" y="300" class="t-head">387 parameters, 64 hidden neurons</text>
+<text x="40" y="336" class="t-label">Random perturbation</text>
+<g data-grid="skip">
+<rect x="669.35" y="322" width="52.44" height="20" rx="4" class="f-blue-soft" data-fit="skip"/>
+<rect x="669.35" y="322" width="52.44" height="20" rx="4" class="w1 nofill s-blue-line" data-fit="skip"/>
+<path d="M676.9,324 L676.9,340" class="s-blue w1 nofill"/>
+<path d="M710.05,324 L710.05,340" class="s-blue w1 nofill"/>
+<path d="M691.03,324 L691.03,340" class="s-blue w1 nofill"/>
+<path d="M713.61,324 L713.61,340" class="s-blue w1 nofill"/>
+<path d="M686.02,324 L686.02,340" class="s-blue w1 nofill"/>
+<path d="M699.58,324 L699.58,340" class="s-blue w1 nofill"/>
+<path d="M697.25,324 L697.25,340" class="s-blue w1 nofill"/>
+<path d="M715.48,324 L715.48,340" class="s-blue w1 nofill"/>
+<path d="M702.44,324 L702.44,340" class="s-blue w1 nofill"/>
+<path d="M716.42,324 L716.42,340" class="s-blue w1 nofill"/>
+<path d="M716.98,324 L716.98,340" class="s-blue w1 nofill"/>
+<path d="M706.71,324 L706.71,340" class="s-blue w1 nofill"/>
+<path d="M695.72,324 L695.72,340" class="s-blue w1 nofill"/>
+<path d="M701.35,324 L701.35,340" class="s-blue w1 nofill"/>
+<path d="M704.97,324 L704.97,340" class="s-blue w1 nofill"/>
+<path d="M673.35,324 L673.35,340" class="s-blue w1 nofill"/>
+<path d="M717.79,324 L717.79,340" class="s-blue w1 nofill"/>
+<path d="M692.93,324 L692.93,340" class="s-blue w1 nofill"/>
+<path d="M704.71,324 L704.71,340" class="s-blue w1 nofill"/>
+<path d="M710.21,324 L710.21,340" class="s-blue w1 nofill"/>
+<circle cx="730.43" cy="332" r="5" class="f-blue s-surface w1"/>
+<text x="920" y="329" text-anchor="end" class="t-value f-blue-ink">run 1.0730</text>
+<text x="920" y="347" text-anchor="end" class="t-value f-ink-muted">median 1.0595</text>
+</g>
+<text x="40" y="372" class="t-label">Gradient descent, α = 1</text>
+<g data-grid="skip">
+<path d="M335.02,362 L341.02,368 L335.02,374 L329.02,368 Z" class="f-purple s-surface w1"/>
+<text x="920" y="373" text-anchor="end" class="t-value f-purple-ink b">0.8737</text>
+</g>
+<text x="40" y="408" class="t-label">Gradient descent, α = 0.1</text>
+<g data-grid="skip">
+<path d="M630.44,398 L636.44,404 L630.44,410 L624.44,404 Z" class="f-purple s-surface w1"/>
+<text x="920" y="409" text-anchor="end" class="t-value f-purple-ink">1.0226</text>
+</g>
+<rect x="288" y="460" width="16" height="16" class="f-blue-soft s-blue w1"/>
+<text x="320" y="472" class="t-label">20 other streams, one tick each</text>
+<circle cx="568" cy="468" r="5" class="f-blue s-surface w1"/>
+<text x="592" y="472" class="t-label">printed run</text>
+<g data-grid="skip">
+<path d="M293,462 L293,474" class="s-blue w1 nofill"/>
+<path d="M296,462 L296,474" class="s-blue w1 nofill"/>
+<path d="M299,462 L299,474" class="s-blue w1 nofill"/>
+</g>
+<text x="40" y="504" class="t-note">Dotted line: ln 3 = 1.0986, the loss of a uniform guess.</text>
 </svg>
