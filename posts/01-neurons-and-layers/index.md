@@ -13,9 +13,9 @@
 > - Code a neuron and a layer in plain Python and then as one NumPy dot product plus the biases.
 > - Predict the shape of every intermediate array as a single sample becomes a batch.
 
-![One neuron with four inputs. Circles x1 to x4 on the left send arrows labelled w1 to w4 into a central node marked sigma plus b, weighted sum plus bias; a dashed arrow brings the bias b in from above, and one arrow leaves for a box holding the output y-hat. Underneath is the formula y-hat equals x1 w1 plus x2 w2 plus x3 w3 plus x4 w4 plus b. Four cards on the right describe the inputs, the weights, the bias, and the output, and the footer counts five parameters: four weights and one bias.](diagrams/01-neuron-anatomy.svg)
+![The four-input neuron of section 5. Inputs 1.0, 2.0, 3.0, 2.5 are multiplied row by row by the weights 0.2, 0.8, minus 0.5, 1.0, giving the products 0.2, 1.6, minus 1.5, 2.5. Lines carry the products into a node marked sigma plus b, the bias 2.0 enters from above, and an arrow labelled 2.8 plus 2.0 leads to the output z, 4.8. Underneath, the whole sum is written out, and the count reads 4 weights plus 1 bias, 5 parameters.](diagrams/01-one-neuron.svg)
 
-*One neuron, four inputs, five parameters: a weight on each of the four input arrows and a single bias. Every learnable parameter of the dense networks in this series is one or the other, and the rest of the series is rules for setting them. The figure labels the output ŷ; the text calls the same number $z$.*
+*One neuron, four inputs, five parameters: a weight for each input and a single bias. Every learnable parameter of the dense networks in this series is one or the other, and the rest of the series is rules for setting them.*
 
 ---
 
@@ -152,15 +152,15 @@ print(output)
 | Sum | $0.2 + 1.6 - 1.5 + 2.5$ | $2.8$ |
 | Plus bias | $2.8 + 2.0$ | $4.8$ |
 
-The shape of the operation is invariant: one weight per input, one bias per neuron, one scalar out. A neuron with $n_\text{inputs}$ inputs therefore has $n_\text{inputs} + 1$ parameters, five in this case.
+The shape of the operation is invariant: one weight per input, one bias per neuron, one scalar out. A neuron with $n_\text{inputs}$ inputs therefore has $n_\text{inputs} + 1$ parameters, five in this case. The figure at the top of the post draws this neuron with its numbers.
 
 ## 6. From a neuron to a layer
 
-A **layer** is a group of neurons that all receive the same input vector while each keeps its own weights and its own bias. The figure below puts the four-input neuron of section 5 next to a layer of three such neurons; it abbreviates $n_\text{inputs}$ to $n$ and $n_\text{neurons}$ to $m$, as the later figures of this post do.
+A **layer** is a group of neurons that all receive the same input vector while each keeps its own weights and its own bias. The figure below draws the layer of section 7, three such neurons over the four inputs of section 5, first as wiring and then as one matrix.
 
-![Two panels. On the left, a single neuron: inputs x1 to x4 feed one node marked sigma plus b with one output, captioned 4 inputs, 4 weights, 1 bias, 5 parameters. On the right, a layer of three neurons: the same four inputs connect to three nodes marked sigma plus b1, sigma plus b2, and sigma plus b3, twelve connections in all, each node with its own output, captioned 4 inputs, 12 weights, 3 biases, 15 parameters. A band underneath gives the parameter count as 5 for one neuron, 15 for three, and in general m times (n plus 1) for m neurons with n inputs each.](diagrams/02-layer-as-stacked-neurons.svg)
+![Two panels. On the left, four inputs x1 to x4 each connect to all three neuron boxes, sigma plus b1, sigma plus b2 and sigma plus b3, twelve lines, with neuron 2's lines in the weight colour; the boxes give z1, z2 and z3. On the right, the same layer as z equals W x plus b: W is a 3 by 4 grid with one row of weights per neuron, x holds 1.0, 2.0, 3.0, 2.5, b holds 2.0, 3.0, 0.5, and z holds 4.800, 1.210, 2.385. Row 2 of W, b2 and z2 are outlined: minus 1.79 plus 3.0 is 1.21.](diagrams/02-a-layer.svg)
 
-*Every input reaches every neuron, so the weights multiply (3 neurons times 4 inputs is 12) while the biases only add (3). One neuron with $n$ inputs has $n + 1$ parameters; a layer of $m$ such neurons has $m(n + 1)$, exactly $m$ times more.*
+*Every input reaches every neuron, so the weights multiply (3 neurons times 4 inputs is 12) while the biases only add (3). Row $k$ of $\mathbf{W}$ holds the weights of neuron $k$.*
 
 For a layer of three neurons fed by four inputs:
 
@@ -231,11 +231,7 @@ The code is correct but does not scale: fifty neurons would mean fifty hand-writ
 
 ## 8. The same operation, three implementations
 
-The neuron does not care which Python construct computes it. Three implementations (the hand-written sums of section 7, two nested loops, and one NumPy call) produce the same numbers; each replaces the previous one's repetition with a stronger abstraction. The figure below sets the three side by side.
-
-![Three code panels for the same three-neuron layer. Manual: each output written out as a sum of four products plus a bias, one block per neuron, marked does not scale. Loops: an outer loop over the neurons and an inner loop over the inputs, marked scales, but slowly. NumPy: an import and the single expression np.dot(weights, inputs) + biases, marked scales and is fast. A strip underneath compares lines of code, about 25, about 10, and 2, whether each scales, and wall time at scale as three bars of decreasing length that the footer calls illustrative.](diagrams/03-three-implementations.svg)
-
-*The arithmetic does not change. The representation does, and with it both the length of the code and its speed. The bars, the line counts, and the footer's 50 to 200 times are illustrative, not measured; section 9 gives the timing measured for this post.*
+The neuron does not care which Python construct computes it. Three implementations (the hand-written sums of section 7, two nested loops, and one NumPy call) produce the same numbers; each replaces the previous one's repetition with a stronger abstraction. The arithmetic does not change; the representation does, and with it the length of the code and its speed, which section 9 measures.
 
 Two nested loops handle any number of neurons and any number of inputs.
 
@@ -347,13 +343,7 @@ Here $\mathbf{X}$ is the batch, of shape $(N, n_\text{inputs})$ for $N$ samples,
 
 The transpose is needed only because this post stores one row of weights per neuron. Posts 01 to 03 keep that layout, $(n_\text{neurons}, n_\text{inputs})$. From post 04 on, the `Layer_Dense` class stores the weights already transposed, $(n_\text{inputs}, n_\text{neurons})$, so that the same forward pass reads $\mathbf{Z} = \mathbf{X} \mathbf{W} + \mathbf{b}$ with no transpose, and it stores the biases as a $(1, n_\text{neurons})$ row instead of the flat list used here. Both layouts compute the same numbers.
 
-The figure below is the shape diary: the same operation at three sizes, with $n$ for $n_\text{inputs}$ and $m$ for $n_\text{neurons}$.
-
-![A table with three rows and the columns setting, X, W, b, operation, and output. Single neuron, single sample: X is (n,), W is (n,), b is a scalar, and np.dot(W, X) + b gives a scalar. Layer of m, single sample: X is (n,), W is (m, n), b is (m,), and np.dot(W, X) + b gives (m,). Layer of m, batch of N: X is (N, n), W is (m, n), b is (m,), and np.dot(X, W.T) + b gives (N, m). A legend reads N for batch size, n for inputs per neuron, m for neurons per layer.](diagrams/04-shape-diary.svg)
-
-*Tracking shapes is the cheapest debugging tool in deep learning: write them down before a call and print them after it. The 90 percent in the figure's header is a manner of speaking, not a measurement.*
-
-The diary in full:
+The shape diary below follows the same operation at three sizes. Tracking shapes is the cheapest debugging tool in deep learning: write them down before a call and print them after it.
 
 | Setting | `X` shape | `W` shape | `b` shape | Operation | Output shape |
 |---|---|---|---|---|---|
@@ -411,9 +401,9 @@ print(np.dot(inputs, np.array(weights).T) + biases)
 
 Each row is the layer's output for one input sample; each column belongs to one neuron. The first row is the single-sample result of section 9. The figure below draws the same call as grids.
 
-![A batch drawn as grids. A 3 by 4 grid of inputs X with rows s1 to s3, times a 4 by 3 grid of transposed weights with columns n1 to n3, equals a 3 by 3 grid marked raw X times W transposed, before bias. A bias b of shape (3,), drawn as a column of three cells n1 to n3 and marked broadcast across all rows, is added to give the 3 by 3 outputs Y with rows s1 to s3 and columns n1 to n3: 4.80, 1.21, 2.39 in the first row, 8.90, -1.81, 0.20 in the second, and 1.41, 1.05, 0.03 in the third. A code line reads Y = np.dot(X, W.T) + b.](diagrams/05-batch-broadcasting.svg)
+![Four grids in a row. X, 3 by 4, one sample per row, times W transposed, 4 by 3, one neuron per column, plus b broadcast to 3 by 3, every row 2.0, 3.0, 0.5, copied from the stored b of shape (3,) above it, equals Z, 3 by 3: 4.800, 1.210, 2.385, then 8.900, minus 1.810, 0.200, then 1.410, 1.051, 0.026. Sample 2's row, neuron 2's column, its bias and Z entry (2, 2) are outlined: minus 4.81 plus 3.0 is minus 1.81.](diagrams/03-batch-in-one-call.svg)
 
-*Three samples flow through the same three neurons in one call, and the bias vector of shape $(3,)$ is added to every row of the $(3, 3)$ product. The figure draws the bias as a column, but it is added along each row: one bias per neuron, that is, per column of the output. The figure also rounds the outputs to two decimals and names them Y where the text writes $\mathbf{Z}$.*
+*Three samples go through the same three neurons in one call. The bias row of shape $(3,)$ is added to every row of the $(3, 3)$ product, so each neuron's bias lands in its own column.*
 
 ## 11. The core formula
 
@@ -421,13 +411,7 @@ Every neuron in every dense layer computes
 
 $$z = \sum_{i=1}^{n_\text{inputs}} w_i x_i + b.$$
 
-A layer computes $\mathbf{z} = \mathbf{W} \mathbf{x} + \mathbf{b}$ for one sample, and a batch goes through as $\mathbf{Z} = \mathbf{X} \mathbf{W}^{\top} + \mathbf{b}$. The figure below shows what the rest of the series puts around that formula.
-
-![A card on the left, the core, holds the formula output equals the sum of w i times x i plus b and the note that every learnable parameter is a weight or a bias. An arrow leads to three cards. Activation functions (ReLU, Softmax): without them, stacking layers collapses back to a single linear layer; arrives in Part 06. Loss functions (cross-entropy): a way to score the predicted outputs against the truth; arrives in Part 08. Backpropagation plus an optimiser: a way to adjust W and b so the score the loss reports goes down; arrives in Parts 09 to 27. A band underneath says that with all three in place the forward pass that printed 4.8, 1.21, 2.385 becomes the inner loop of a network that classifies spirals, recognises handwritten digits, or sorts sentiment.](diagrams/06-what-gets-added.svg)
-
-*The forward pass built here is never replaced. Three things are added around it, and the posts after them are detail on those three. The figure says Part where the series now says post, and its last example, sorting sentiment, is not something this series builds.*
-
-The rest of the series adds three things to this core:
+A layer computes $\mathbf{z} = \mathbf{W} \mathbf{x} + \mathbf{b}$ for one sample, and a batch goes through as $\mathbf{Z} = \mathbf{X} \mathbf{W}^{\top} + \mathbf{b}$. The forward pass built here is never replaced. The rest of the series adds three things to this core:
 
 | What is added | When it arrives | Why |
 |---|---|---|

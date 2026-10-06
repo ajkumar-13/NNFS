@@ -1,0 +1,220 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-01-one-neuron-title" aria-describedby="nn-01-one-neuron-desc">
+<title id="nn-01-one-neuron-title">A neuron is a weighted sum plus one bias</title>
+<desc id="nn-01-one-neuron-desc">The four-input neuron of section 5. Inputs x1 to x4, 1.0, 2.0, 3.0, 2.5, are multiplied row by row by the weights w1 to w4, 0.2, 0.8, minus 0.5, 1.0, giving the products 0.2, 1.6, minus 1.5, 2.5. Lines carry the four products into a node marked sigma plus b; the bias b, 2.0, enters it from above. An arrow labelled 2.8 plus 2.0 leads to the output z, 4.8. Underneath, the whole sum is written out: z equals 1.0 times 0.2 plus 2.0 times 0.8 plus 3.0 times minus 0.5 plus 2.5 times 1.0 plus 2.0, which is 4.8. Four weights and one bias make five parameters.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-orange-soft { fill: var(--nn-orange-soft); }
+  .f-surface { fill: var(--nn-surface); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-rule { stroke: var(--nn-rule); }
+</style>
+<defs>
+<marker id="nn-01-one-neuron-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title">A neuron is a weighted sum plus one bias</text>
+<text x="40" y="76" class="t-subtitle">Section 5's neuron: four inputs, one weight per input, one bias, one output.</text>
+<rect x="96" y="160" width="64" height="48" class="cell f-blue-soft"/>
+<rect x="96" y="208" width="64" height="48" class="cell f-blue-soft"/>
+<rect x="96" y="256" width="64" height="48" class="cell f-blue-soft"/>
+<rect x="96" y="304" width="64" height="48" class="cell f-blue-soft"/>
+<rect x="96" y="160" width="64" height="192" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="128" y="190" text-anchor="middle" class="t-cell16">1.0</text>
+<text x="128" y="238" text-anchor="middle" class="t-cell16">2.0</text>
+<text x="128" y="286" text-anchor="middle" class="t-cell16">3.0</text>
+<text x="128" y="334" text-anchor="middle" class="t-cell16">2.5</text>
+</g>
+<rect x="208" y="160" width="64" height="48" class="cell f-orange-soft"/>
+<rect x="208" y="208" width="64" height="48" class="cell f-orange-soft"/>
+<rect x="208" y="256" width="64" height="48" class="cell f-orange-soft"/>
+<rect x="208" y="304" width="64" height="48" class="cell f-orange-soft"/>
+<rect x="208" y="160" width="64" height="192" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="240" y="190" text-anchor="middle" class="t-cell16">0.2</text>
+<text x="240" y="238" text-anchor="middle" class="t-cell16">0.8</text>
+<text x="240" y="286" text-anchor="middle" class="t-cell16">−0.5</text>
+<text x="240" y="334" text-anchor="middle" class="t-cell16">1.0</text>
+</g>
+<rect x="320" y="160" width="64" height="48" class="cell"/>
+<rect x="320" y="208" width="64" height="48" class="cell"/>
+<rect x="320" y="256" width="64" height="48" class="cell"/>
+<rect x="320" y="304" width="64" height="48" class="cell"/>
+<rect x="320" y="160" width="64" height="192" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="352" y="190" text-anchor="middle" class="t-cell16">0.2</text>
+<text x="352" y="238" text-anchor="middle" class="t-cell16">1.6</text>
+<text x="352" y="286" text-anchor="middle" class="t-cell16">−1.5</text>
+<text x="352" y="334" text-anchor="middle" class="t-cell16">2.5</text>
+</g>
+<g data-grid="skip">
+<text x="88" y="189" text-anchor="end" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="88" y="237" text-anchor="end" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<text x="88" y="285" text-anchor="end" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+<text x="88" y="333" text-anchor="end" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">4</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<text x="96" y="144" class="t-head">Inputs <tspan class="i">x</tspan><tspan class="sub" dy="4">i</tspan><tspan dy="-4">​</tspan></text>
+<text x="208" y="144" class="t-head">Weights <tspan class="i">w</tspan><tspan class="sub" dy="4">i</tspan><tspan dy="-4">​</tspan></text>
+<text x="320" y="144" class="t-head">Products</text>
+<text x="184" y="192" text-anchor="middle" class="t-op">×</text>
+<text x="296" y="192" text-anchor="middle" class="t-op">=</text>
+<text x="184" y="240" text-anchor="middle" class="t-op">×</text>
+<text x="296" y="240" text-anchor="middle" class="t-op">=</text>
+<text x="184" y="288" text-anchor="middle" class="t-op">×</text>
+<text x="296" y="288" text-anchor="middle" class="t-op">=</text>
+<text x="184" y="336" text-anchor="middle" class="t-op">×</text>
+<text x="296" y="336" text-anchor="middle" class="t-op">=</text>
+<g data-grid="skip">
+<path d="M384,184.0 L515.57,237.83" class="nofill w15 s-rule"/>
+<path d="M384,232.0 L512.44,249.51" class="nofill w15 s-rule"/>
+<path d="M384,280.0 L512.44,262.49" class="nofill w15 s-rule"/>
+<path d="M384,328.0 L515.57,274.17" class="nofill w15 s-rule"/>
+<circle cx="560" cy="256" r="48" class="w15 f-surface s-ink-muted" data-fit="skip"/>
+</g>
+<text x="560" y="264" text-anchor="middle" class="t-math">Σ + <tspan class="i">b</tspan></text>
+<rect x="528" y="112" width="64" height="48" class="cell f-orange-soft"/>
+<rect x="528" y="112" width="64" height="48" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="560" y="142" text-anchor="middle" class="t-cell16">2.0</text>
+</g>
+<text x="512" y="144" text-anchor="end" class="t-head">Bias <tspan class="i">b</tspan></text>
+<path d="M560,160 L560,205" class="flow" marker-end="url(#nn-01-one-neuron-arrow)"/>
+<rect x="760" y="232" width="80" height="48" class="cell f-green-soft"/>
+<rect x="760" y="232" width="80" height="48" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="800" y="262" text-anchor="middle" class="t-cell18 f-green-ink b">4.8</text>
+</g>
+<text x="760" y="216" class="t-head">Output <tspan class="i">z</tspan></text>
+<path d="M608,256 L757,256" class="flow" marker-end="url(#nn-01-one-neuron-arrow)"/>
+<text x="684" y="244" text-anchor="middle" class="t-note">2.8 + 2.0</text>
+<text x="96" y="416" class="t-math"><tspan class="i">z</tspan> = 1.0·0.2 + 2.0·0.8 + 3.0·(−0.5) + 2.5·1.0 + 2.0 = 4.8</text>
+<text x="40" y="504" class="t-note">One weight per input, one bias per neuron: 4 + 1 = 5 parameters.</text>
+</svg>
