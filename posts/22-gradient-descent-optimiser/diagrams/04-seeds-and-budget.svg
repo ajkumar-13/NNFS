@@ -1,0 +1,220 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-04-seeds-and-budget-title" aria-describedby="nn-04-seeds-and-budget-desc">
+<title id="nn-04-seeds-and-budget-title">One seed is one draw; 50,000 epochs lift every seed tried</title>
+<desc id="nn-04-seeds-and-budget-desc">Ten rows, seeds 0 to 9, on an accuracy axis from 0.35 to 1.0, learning rate 1. For each seed a band spans the lowest to the highest accuracy over epochs 9,001 to 10,000 and a circle marks the accuracy at epoch 10,000; for seeds 0 to 4 a diamond marks the accuracy at epoch 50,000. At epoch 10,000: seed 0 0.6467, seed 1 0.7467, seed 2 0.5367, seed 3 0.8700, seed 4 0.7867, seed 5 0.4300, seed 6 0.7433, seed 7 0.7167, seed 8 0.5867, seed 9 0.7800, from 0.4300 to 0.8700. Bands: 0.5633 to 0.6533, 0.5567 to 0.7967, 0.4200 to 0.6333, 0.5433 to 0.8867, 0.5167 to 0.8100, 0.4000 to 0.6900, 0.5600 to 0.7967, 0.4567 to 0.7467, 0.4733 to 0.6400, 0.4267 to 0.8433. At epoch 50,000: seed 0 0.9067, seed 1 0.9267, seed 2 0.7433, seed 3 0.9500, seed 4 0.9633, higher than at 10,000 for all five, four of them above 0.9. Seed 0 is the documented run.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--nn-blue); }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-green { fill: var(--nn-green); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .s-green-line { stroke: var(--nn-green-line); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-04-seeds-and-budget-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title" data-w="693">One seed is one draw; 50,000 epochs lift every seed tried</text>
+<text x="40" y="76" class="t-subtitle" data-w="479">Accuracy of the documented setup from ten seeds, learning rate 1.</text>
+<g data-grid="skip">
+<path d="M227.08,136V552M313.23,136V552M399.38,136V552M485.54,136V552M571.69,136V552M657.85,136V552M744,136V552" class="gridline"/>
+<text x="227.08" y="572" text-anchor="middle" class="t-tick" data-w="19">0.4</text>
+<text x="313.23" y="572" text-anchor="middle" class="t-tick" data-w="19">0.5</text>
+<text x="399.38" y="572" text-anchor="middle" class="t-tick" data-w="19">0.6</text>
+<text x="485.54" y="572" text-anchor="middle" class="t-tick" data-w="19">0.7</text>
+<text x="571.69" y="572" text-anchor="middle" class="t-tick" data-w="19">0.8</text>
+<text x="657.85" y="572" text-anchor="middle" class="t-tick" data-w="19">0.9</text>
+<text x="744" y="572" text-anchor="middle" class="t-tick" data-w="19">1.0</text>
+<path d="M184,552H744" class="axis"/>
+<text x="40" y="161.8" class="t-label" data-w="45">seed 0</text>
+<text x="40" y="203.4" class="t-label" data-w="45">seed 1</text>
+<text x="40" y="245" class="t-label" data-w="45">seed 2</text>
+<text x="40" y="286.6" class="t-label" data-w="45">seed 3</text>
+<text x="40" y="328.2" class="t-label" data-w="45">seed 4</text>
+<text x="40" y="369.8" class="t-label" data-w="45">seed 5</text>
+<text x="40" y="411.4" class="t-label" data-w="45">seed 6</text>
+<text x="40" y="453" class="t-label" data-w="45">seed 7</text>
+<text x="40" y="494.6" class="t-label" data-w="45">seed 8</text>
+<text x="40" y="536.2" class="t-label" data-w="45">seed 9</text>
+</g>
+<text x="464" y="596" text-anchor="middle" class="t-note" data-w="60">accuracy</text>
+<g data-grid="skip">
+<rect x="367.79" y="146.8" width="77.54" height="20" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<circle cx="439.59" cy="156.8" r="5" class="f-green s-surface w1"/>
+<text x="832" y="161.8" text-anchor="end" class="t-label" data-w="45">0.6467</text>
+<path d="M663.62,150.8 L669.62,156.8 L663.62,162.8 L657.62,156.8 Z" class="f-blue s-surface w1"/>
+<text x="920" y="161.8" text-anchor="end" class="t-value f-blue-ink" data-w="47">0.9067</text>
+<rect x="362.05" y="188.4" width="206.77" height="20" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<circle cx="525.74" cy="198.4" r="5" class="f-green s-surface w1"/>
+<text x="832" y="203.4" text-anchor="end" class="t-label" data-w="45">0.7467</text>
+<path d="M680.85,192.4 L686.85,198.4 L680.85,204.4 L674.85,198.4 Z" class="f-blue s-surface w1"/>
+<text x="920" y="203.4" text-anchor="end" class="t-value f-blue-ink" data-w="47">0.9267</text>
+<rect x="244.31" y="230" width="183.79" height="20" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<circle cx="344.82" cy="240" r="5" class="f-green s-surface w1"/>
+<text x="832" y="245" text-anchor="end" class="t-label" data-w="45">0.5367</text>
+<path d="M522.84,234 L528.84,240 L522.84,246 L516.84,240 Z" class="f-blue s-surface w1"/>
+<text x="920" y="245" text-anchor="end" class="t-value f-blue-ink" data-w="47">0.7433</text>
+<rect x="350.56" y="271.6" width="295.79" height="20" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<circle cx="632" cy="281.6" r="5" class="f-green s-surface w1"/>
+<text x="832" y="286.6" text-anchor="end" class="t-label" data-w="45">0.8700</text>
+<path d="M700.92,275.6 L706.92,281.6 L700.92,287.6 L694.92,281.6 Z" class="f-blue s-surface w1"/>
+<text x="920" y="286.6" text-anchor="end" class="t-value f-blue-ink" data-w="47">0.9500</text>
+<rect x="327.59" y="313.2" width="252.72" height="20" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<circle cx="560.21" cy="323.2" r="5" class="f-green s-surface w1"/>
+<text x="832" y="328.2" text-anchor="end" class="t-label" data-w="45">0.7867</text>
+<path d="M712.38,317.2 L718.38,323.2 L712.38,329.2 L706.38,323.2 Z" class="f-blue s-surface w1"/>
+<text x="920" y="328.2" text-anchor="end" class="t-value f-blue-ink" data-w="47">0.9633</text>
+<rect x="227.08" y="354.8" width="249.85" height="20" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<circle cx="252.92" cy="364.8" r="5" class="f-green s-surface w1"/>
+<text x="832" y="369.8" text-anchor="end" class="t-label" data-w="45">0.4300</text>
+<rect x="364.92" y="396.4" width="203.9" height="20" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<circle cx="522.87" cy="406.4" r="5" class="f-green s-surface w1"/>
+<text x="832" y="411.4" text-anchor="end" class="t-label" data-w="45">0.7433</text>
+<rect x="275.9" y="438" width="249.85" height="20" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<circle cx="499.9" cy="448" r="5" class="f-green s-surface w1"/>
+<text x="832" y="453" text-anchor="end" class="t-label" data-w="45">0.7167</text>
+<rect x="290.26" y="479.6" width="143.59" height="20" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<circle cx="387.9" cy="489.6" r="5" class="f-green s-surface w1"/>
+<text x="832" y="494.6" text-anchor="end" class="t-label" data-w="45">0.5867</text>
+<rect x="250.05" y="521.2" width="358.97" height="20" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<circle cx="554.46" cy="531.2" r="5" class="f-green s-surface w1"/>
+<text x="832" y="536.2" text-anchor="end" class="t-label" data-w="45">0.7800</text>
+<text x="355.79" y="161.8" text-anchor="end" class="t-note" data-w="136">the documented run</text>
+</g>
+<text x="832" y="120" text-anchor="end" class="t-note" data-w="91">epoch 10,000</text>
+<text x="920" y="120" text-anchor="end" class="t-note" data-w="45">50,000</text>
+<g data-grid="skip">
+<rect x="224" y="627" width="24" height="16" class="f-green-soft s-green-line w1" data-fit="skip"/>
+</g>
+<text x="256" y="640" class="t-label" data-w="232">range over epochs 9,001 to 10,000</text>
+<circle cx="528" cy="636" r="5" class="f-green s-surface w1"/>
+<text x="552" y="640" class="t-label" data-w="91">epoch 10,000</text>
+<path d="M680,630 L686,636 L680,642 L674,636 Z" class="f-blue s-surface w1"/>
+<text x="704" y="640" class="t-label" data-w="91">epoch 50,000</text>
+<text x="40" y="684" class="t-note" data-w="641">Ten seeds end between 0.43 and 0.87 at epoch 10,000; each of seeds 0 to 4 is higher at 50,000.</text>
+</svg>

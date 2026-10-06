@@ -1,0 +1,198 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-03-learning-rates-title" aria-describedby="nn-03-learning-rates-desc">
+<title id="nn-03-learning-rates-title">No learning rate is both steady and quick</title>
+<desc id="nn-03-learning-rates-desc">Six rows, one per learning rate, each with a band from the smallest to the largest final loss over seeds 0 to 4 after 10,001 epochs, on an axis from 0.3 to 2.0 with a dotted line at ln 3 = 1.0986, the loss of the untrained network. 0.001: 1.0984 to 1.0985, crawls; the loss rose on 292 to 462 updates, float32 rounding; 0 to 1 dead of 64. 0.01: 1.0702 to 1.0867, never rose, 2 to 9 dead. 0.1: 1.0014 to 1.0583, never rose, 2 to 10 dead, steady and slow. 1: 0.3943 to 0.9906, rose on 4,154 to 4,765, 2 to 11 dead. 3: 0.3746 to 0.5482, rose on 4,690 to 4,907, 2 to 13 dead; both fast and unsteady. 10: 1.1854 to 1.9295, rose on 6,425 to 6,468, all 64 hidden neurons dead. The 0.001 row is a dot, all five within 0.0001.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .f-red { fill: var(--nn-red); }
+  .f-red-ink { fill: var(--nn-red-ink); }
+  .f-red-soft { fill: var(--nn-red-soft); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-red { stroke: var(--nn-red); }
+  .s-red-line { stroke: var(--nn-red-line); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-03-learning-rates-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="502">No learning rate is both steady and quick</text>
+<text x="40" y="76" class="t-subtitle" data-w="570">10,001 epochs from each of the seeds 0 to 4; a band spans the five final losses.</text>
+<g data-grid="skip">
+<path d="M311.06,128V404M428.71,128V404M546.35,128V404M664,128V404" class="gridline"/>
+<text x="311.06" y="424" text-anchor="middle" class="t-tick" data-w="19">0.5</text>
+<text x="428.71" y="424" text-anchor="middle" class="t-tick" data-w="19">1.0</text>
+<text x="546.35" y="424" text-anchor="middle" class="t-tick" data-w="19">1.5</text>
+<text x="664" y="424" text-anchor="middle" class="t-tick" data-w="19">2.0</text>
+<path d="M264,404H664" class="axis"/>
+<path d="M451.91,128V404" class="s-ink-muted w1 nofill d-ref"/>
+<text x="457.91" y="120" class="t-note f-ink-muted" data-w="88">ln 3 = 1.0986</text>
+<text x="40" y="156" class="t-label" data-w="65"><tspan class="i">α</tspan> = 0.001</text>
+<text x="40" y="202" class="t-label" data-w="56"><tspan class="i">α</tspan> = 0.01</text>
+<text x="40" y="248" class="t-label" data-w="48"><tspan class="i">α</tspan> = 0.1</text>
+<text x="40" y="294" class="t-label" data-w="36"><tspan class="i">α</tspan> = 1</text>
+<text x="40" y="340" class="t-label" data-w="36"><tspan class="i">α</tspan> = 3</text>
+<text x="40" y="386" class="t-label" data-w="44"><tspan class="i">α</tspan> = 10</text>
+</g>
+<text x="464" y="448" text-anchor="middle" class="t-note" data-w="60">final loss</text>
+<g data-grid="skip">
+<text x="40" y="176" class="t-note" data-w="192">crawls; its rises are rounding</text>
+<circle cx="451.87" cy="151" r="5" class="f-red s-surface w1"/>
+<text x="463.88" y="156" class="t-note" data-w="136">all five within 0.0001</text>
+<text x="800" y="156" text-anchor="end" class="t-label" data-w="71">292 to 462</text>
+<text x="912" y="156" text-anchor="end" class="t-label" data-w="39">0 to 1</text>
+<text x="40" y="222" class="t-note" data-w="43">crawls</text>
+<rect x="445.22" y="185" width="3.88" height="24" class="f-red-soft s-red-line w1" data-fit="skip"/>
+<path d="M445.22,189V205M449.11,189V205" class="s-red w1 nofill"/>
+<text x="800" y="202" text-anchor="end" class="t-label" data-w="38">never</text>
+<text x="912" y="202" text-anchor="end" class="t-label" data-w="39">2 to 9</text>
+<text x="40" y="268" class="t-note" data-w="109">steady and slow</text>
+<rect x="429.04" y="231" width="13.39" height="24" class="f-red-soft s-red-line w1" data-fit="skip"/>
+<path d="M429.04,235V251M442.42,235V251" class="s-red w1 nofill"/>
+<text x="800" y="248" text-anchor="end" class="t-label" data-w="38">never</text>
+<text x="912" y="248" text-anchor="end" class="t-label" data-w="47">2 to 10</text>
+<text x="40" y="314" class="t-note" data-w="120">fast and unsteady</text>
+<rect x="286.19" y="277" width="140.31" height="24" class="f-red-soft s-red-line w1" data-fit="skip"/>
+<path d="M286.19,281V297M426.49,281V297" class="s-red w1 nofill"/>
+<text x="800" y="294" text-anchor="end" class="t-label" data-w="96">4,154 to 4,765</text>
+<text x="912" y="294" text-anchor="end" class="t-label" data-w="47">2 to 11</text>
+<text x="40" y="360" class="t-note" data-w="120">fast and unsteady</text>
+<rect x="281.55" y="323" width="40.85" height="24" class="f-red-soft s-red-line w1" data-fit="skip"/>
+<path d="M281.55,327V343M322.4,327V343" class="s-red w1 nofill"/>
+<text x="800" y="340" text-anchor="end" class="t-label" data-w="96">4,690 to 4,907</text>
+<text x="912" y="340" text-anchor="end" class="t-label" data-w="47">2 to 13</text>
+<text x="40" y="406" class="t-note" data-w="174">kills all 64 hidden neurons</text>
+<rect x="472.33" y="369" width="175.08" height="24" class="f-red-soft s-red-line w1" data-fit="skip"/>
+<path d="M472.33,373V389M647.41,373V389" class="s-red w1 nofill"/>
+<text x="800" y="386" text-anchor="end" class="t-label" data-w="96">6,425 to 6,468</text>
+<text x="912" y="386" text-anchor="end" class="t-label f-red-ink" data-w="17">64</text>
+</g>
+<text x="800" y="120" text-anchor="end" class="t-note" data-w="82">loss rose on</text>
+<text x="912" y="120" text-anchor="end" class="t-note" data-w="72">dead of 64</text>
+<text x="40" y="504" class="t-note" data-w="546">The rates that never raise the loss run out of budget; the rates that use it bounce.</text>
+</svg>

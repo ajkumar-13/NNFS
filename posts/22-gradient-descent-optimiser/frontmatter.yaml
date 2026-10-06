@@ -9,7 +9,7 @@ part: "Part VI - Optimisers"
 level: intermediate
 reading_time: 20
 tags: [neural-networks, from-scratch, optimisation, gradient-descent, sgd]
-hero: diagrams/01-sgd-update-and-lr.svg
+hero: diagrams/01-documented-run.svg
 prerequisites: [nn-021]
 code: included
 outcomes:

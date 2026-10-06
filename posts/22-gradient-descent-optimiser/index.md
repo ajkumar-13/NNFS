@@ -11,9 +11,9 @@
 > - Write a complete training loop (forward, backward, update, log) for the spiral classifier.
 > - Explain why the accuracy vanilla gradient descent reaches on the spiral is a limit of the optimiser and its budget, not of the data.
 
-![The update rule, theta new equals theta old minus alpha times the gradient, above three small loss curves. With alpha too small the curve stays almost flat. With alpha labelled right-sized it falls slowly to about 0.87 at 10,000 epochs. With alpha too large it bounces and diverges.](diagrams/01-sgd-update-and-lr.svg)
+![Two charts of the documented run against the epoch, 0 to 10,000. Top, the loss of every epoch as a thin red line that bounces around the eleven printed rows, which fall from ln 3 = 1.0986 to 0.8737; the largest single rise, 0.0553, ends at epoch 1,604, and the lowest loss is 0.8343, at epoch 7,874. Bottom, the accuracy of every epoch around the printed rows, from 0.3600 to 0.6467, with the last 1,000 epochs shaded, where it moved between 0.5633 and 0.6533.](diagrams/01-documented-run.svg)
 
-*One rule and one setting. The middle panel draws the rate of 1 as a smooth, slow fall; the measured curve of section 4 falls on average and rises on nearly half of its steps, and section 5 measures what the right-hand panel sketches.*
+*The documented run of section 4, every epoch drawn: eleven printed rows read as a steady descent, while the loss rose on 4,628 of the 10,000 updates.*
 
 ---
 
@@ -73,7 +73,13 @@ biases  [[0.2, -0.25]]
 same array object as before the update: True
 ```
 
-Each entry moved against its own gradient by a tenth of it: $0.5 - 0.1 \cdot 1.0 = 0.4$ and $-1.0 - 0.1 \cdot (-2.0) = -0.8$; the entry whose gradient is 0 stayed at 2.0. Three things follow from the eight lines of the class.
+Each entry moved against its own gradient by a tenth of it: $0.5 - 0.1 \cdot 1.0 = 0.4$ and $-1.0 - 0.1 \cdot (-2.0) = -0.8$; the entry whose gradient is 0 stayed at 2.0. The figure below draws the class above this call, entry by entry.
+
+![A card with the class Optimizer_SGD, whose update_params subtracts self.learning_rate times layer.dweights from layer.weights and times layer.dbiases from layer.biases, parameters in orange and gradients in purple. Below it the call with learning rate 0.1: weights 0.5, −1.0, 2.0, 0.0 minus 0.1 times dweights 1.0, −2.0, 0.0, 4.0 gives 0.4, −0.8, 2.0, −0.4, and biases 0.10, −0.20 minus 0.1 times dbiases −1.00, 0.50 gives 0.20, −0.25.](diagrams/02-update-params.svg)
+
+*`update_params` reads the two gradient arrays and writes into the two parameter arrays the layer already holds.*
+
+Three things follow from the eight lines of the class.
 
 - **It works on anything that has the four arrays.** The `layer` above is a bare `SimpleNamespace`, not a `Layer_Dense`. `Activation_ReLU` and the combined softmax and loss class have no parameters, so they are never handed to it.
 - **It writes in place.** `-=` changes the array the layer already holds, so the next forward pass sees the new parameters without anything being handed back.
@@ -167,7 +173,7 @@ The first row is the untrained network: a loss of $\ln 3 = 1.0986$ and 108 of 30
 
 **The start is slow.** After 100 updates the loss is 1.0869, and after 1,000 it is 1.0623 with 40 percent correct. The cause is the one post 20, section 5, measured on a small batch: with weights at a scale of 0.01 and every class equally frequent, the first gradients are tiny, and a step of $\alpha$ times a tiny gradient is tiny whatever $\alpha$ is.
 
-**The log hides most of what the loss did.** Eleven rows a thousand epochs apart read as a steady descent. The script also looks between them:
+**The log hides most of what the loss did.** Eleven rows a thousand epochs apart read as a steady descent; the figure at the top of the post draws every epoch of the run beside them. The script also looks between them:
 
 ```text
 the loss rose on 4,628 of 10,000 updates; largest single rise 0.0553, at epoch 1,604
@@ -202,10 +208,6 @@ The last four columns are the lowest and highest loss and accuracy over epochs 9
 - **The loss rose on 4,154 to 4,858 of the 10,000 updates in every run.** The bouncing belongs to the learning rate of 1 on this network, not to one unlucky start.
 - **The last epoch is an arbitrary place to stop.** Seed 5 ends at a loss of 2.2696, about twice the 1.0986 of the untrained network, only because epoch 10,000 fell on a peak: within its last thousand epochs the loss was as low as 0.6053 and the accuracy as high as 69.0 percent. The steadier figure is the mean over epochs 9,001 to 10,000, which the script prints seed by seed after the table: across the ten runs a loss of 0.4159 to 0.9071 and an accuracy of 56.1 to 84.5 percent. These means, not the final rows, are what a later optimiser is to be compared with.
 
-![A loss curve drawn through four marked points, 1.10 at the start, 1.06 at 1,000 epochs, 0.97 at 5,000 and 0.87 at 10,000, with accuracies of 36, 40, 51 and 65 percent above them, beside three bars: plain gradient descent at 10,000 epochs 65 percent, at 50,000 epochs 91 percent, Adam at 10,000 epochs 96 percent.](diagrams/02-sgd-is-slow.svg)
-
-*The marked points are those of the seed 0 run, and its 50,000-epoch bar is the seed 0 row of section 6. The curve between the points is drawn smooth, which the run is not, and the Adam bar is a result of post 27 that this post does not measure.*
-
 ---
 
 ## 5. The learning-rate trade-off
@@ -234,7 +236,11 @@ seed 0 to 4: [64, 38, 36, 79, 38]
 
 A handful of dead neurons, 2 to 13 of 64, appears at every rate from 0.01 to 3 and does not stop those runs; all 64 is what ends training. Post 17 names the usual remedies, a smaller learning rate and a leaky ReLU.
 
-This is the one-parameter experiment of post 09, section 5.1, on a real network: crawl, steady descent, bouncing, and, where the parabola diverged, a network of dead ReLUs. The difference is that no rate here is both steady and quick. The rates that never raise the loss are too slow for the budget, and the rates that use the budget spend nearly half their steps going up.
+This is the one-parameter experiment of post 09, section 5.1, on a real network: crawl, steady descent, bouncing, and, where the parabola diverged, a network of dead ReLUs. The difference is that no rate here is both steady and quick. The rates that never raise the loss are too slow for the budget, and the rates that use the budget spend nearly half their steps going up. The figure below puts the six rows of the table on one axis.
+
+![Six rows, one per learning rate, each a band from the smallest to the largest final loss over seeds 0 to 4, beside a dotted line at ln 3 = 1.0986, with how many updates raised the loss and how many hidden neurons are dead. 0.001: 1.0984 to 1.0985, with 292 to 462 rises that are float32 rounding. 0.01: 1.0702 to 1.0867 and 0.1: 1.0014 to 1.0583, the loss never rose. 1: 0.3943 to 0.9906 and 3: 0.3746 to 0.5482, rising on 4,154 to 4,907 updates. 10: 1.1854 to 1.9295, all 64 hidden neurons dead.](diagrams/03-learning-rates.svg)
+
+*The rates that never raise the loss run out of budget, the rates that use it bounce, and a rate of 10 kills the hidden layer.*
 
 ---
 
@@ -254,7 +260,11 @@ seed         10,000         20,000         30,000         40,000         50,000 
 accuracy at epoch 50,000: 0.7433 to 0.9633; mean of the last 1,000 epochs: 0.7237 to 0.9481
 ```
 
-In every one of the five seeds the accuracy at epoch 50,000 is higher than at epoch 10,000, and four of the five end above 90 percent; averaged over the last thousand epochs, which is steadier than one epoch, the runs stand between 72.4 and 94.8 percent. The same 387 parameters on the same 300 points get there with the same rule, given five times the updates. The network can fit the spiral; gradient descent with one constant rate is slow at finding the fit.
+In every one of the five seeds the accuracy at epoch 50,000 is higher than at epoch 10,000, and four of the five end above 90 percent; averaged over the last thousand epochs, which is steadier than one epoch, the runs stand between 72.4 and 94.8 percent. The same 387 parameters on the same 300 points get there with the same rule, given five times the updates. The network can fit the spiral; gradient descent with one constant rate is slow at finding the fit. The figure below sets the ten seeds of section 4 beside these five longer runs.
+
+![Ten rows, seeds 0 to 9, on an accuracy axis. Each row has a band from the lowest to the highest accuracy over epochs 9,001 to 10,000 and a circle at the accuracy of epoch 10,000, from 0.4300 for seed 5 to 0.8700 for seed 3, with 0.6467 for seed 0, the documented run. Seeds 0 to 4 also have a diamond at epoch 50,000: 0.9067, 0.9267, 0.7433, 0.9500 and 0.9633, each higher than at epoch 10,000.](diagrams/04-seeds-and-budget.svg)
+
+*The seed alone moves the accuracy at epoch 10,000 from 0.43 to 0.87; five times the updates lift every seed that was run longer.*
 
 Three properties of the rule are the candidates for the cause, and each of the next posts changes one of them.
 
