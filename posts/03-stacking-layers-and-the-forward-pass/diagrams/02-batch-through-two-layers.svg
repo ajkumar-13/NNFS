@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-02-batch-through-two-layers-title" aria-describedby="nn-02-batch-through-two-layers-desc">
 <title id="nn-02-batch-through-two-layers-title">The batch keeps its rows through both layers</title>
-<desc id="nn-02-batch-through-two-layers-desc">Every array of the forward pass for the post's batch of 3 samples, each product drawn with its left factor beside the result and its right factor above it. Layer 1: the input X, shape (3, 4), rows one per sample, holds 1.0, 2.0, 3.0, 2.5, 2.0, 5.0, minus 1.0, 2.0, minus 1.5, 2.7, 3.3, minus 0.8; above the result sits W1 transposed, shape (4, 3), whose column k holds the weights of neuron k: 0.2, 0.5, minus 0.26, 0.8, minus 0.91, minus 0.27, minus 0.5, 0.26, 0.17, 1.0, minus 0.5, 0.87; under it the bias b1, shape (3,), 2.0, 3.0, 0.5, added to every row. The result Z1, shape (3, 3), holds 4.8, 1.21, 2.385, 8.9, minus 1.81, 0.2, 1.41, 1.051, 0.026. Z1 is also the left factor of layer 2: above the second result sit W2 transposed, shape (3, 3), 0.1, minus 0.5, minus 0.44, minus 0.14, 0.12, 0.73, 0.5, minus 0.33, minus 0.13, and the bias b2, minus 1.0, 2.0, minus 0.5. The result Z2, shape (3, 3), holds 0.5031, minus 1.04185, minus 2.03875, 0.2434, minus 2.7332, minus 5.7633, minus 0.99314, 1.41254, minus 0.35655. Row 1 of Z1 and column 1 of W2 transposed are outlined, a note explains that row i on the left meets column k above at entry (i, k) of the result, and they meet at the top-left entry of Z2, 0.5031, which the caption line works out: 0.1 times 4.8, minus 0.14 times 1.21, plus 0.5 times 2.385, minus 1.0.</desc>
+<desc id="nn-02-batch-through-two-layers-desc">Every array of the forward pass for the post's batch of 3 samples, each product drawn with its left factor beside the result and its right factor above it. Layer 1: the input X, shape (3, 4), rows one per sample, holds 1.0, 2.0, 3.0, 2.5, 2.0, 5.0, minus 1.0, 2.0, minus 1.5, 2.7, 3.3, minus 0.8; above the result sits W1 transposed, shape (4, 3), whose column k holds the weights of neuron k: 0.2, 0.5, minus 0.26, 0.8, minus 0.91, minus 0.27, minus 0.5, 0.26, 0.17, 1.0, minus 0.5, 0.87; under it the bias b1, shape (3,), 2.0, 3.0, 0.5, added to every row. The result Z1, shape (3, 3), holds 4.8, 1.21, 2.385, 8.9, minus 1.81, 0.2, 1.41, 1.051, 0.026. Z1 is also the left factor of layer 2: above the second result sit W2 transposed, shape (3, 3), 0.1, minus 0.5, minus 0.44, minus 0.14, 0.12, 0.73, 0.5, minus 0.33, minus 0.13, and the bias b2, minus 1.0, 2.0, minus 0.5. The result Z2, shape (3, 3), holds 0.5031, minus 1.04185, minus 2.03875, 0.2434, minus 2.7332, minus 5.7633, minus 0.99314, 1.41254, minus 0.35655. A note at the top left explains that row i on the left meets column k above at entry (i, k) of the result; under it the two layer calls, Z1 = X W1 transposed + b1 and Z2 = Z1 W2 transposed + b2, and the same calls in the snippet's code, np.dot(inputs, weights1.T) + biases1 and np.dot(layer1_outputs, weights2.T) + biases2. Row 1 of Z1, column 1 of W2 transposed and the first bias of b2 are outlined, and one arrow from the row and one from the bias point into the top-left entry of Z2, 0.5031, which the caption line works out: 0.1 times 4.8, minus 0.14 times 1.21, plus 0.5 times 2.385, minus 1.0.</desc>
 <style>
   :root {
     --nn-bg: #FAFAF7;
@@ -279,18 +279,26 @@
 </g>
 <rect x="384" y="432" width="144" height="48" class="emph s-green" data-fit="skip"/>
 <rect x="584" y="200" width="72" height="144" class="emph s-orange" data-fit="skip"/>
-<text x="584" y="136" class="t-head">How to read it</text>
-<text x="584" y="156" class="t-note">Row <tspan class="i">i</tspan> on the left meets column <tspan class="i">k</tspan> above</text>
-<text x="584" y="176" class="t-note">at entry (<tspan class="i">i</tspan>, <tspan class="i">k</tspan>) of the result.</text>
+<rect x="584" y="360" width="72" height="48" class="emph s-orange" data-fit="skip"/>
+<path d="M536,456 L573,456" class="flow" marker-end="url(#nn-02-batch-through-two-layers-arrow)"/>
+<path d="M620,408 L620,429" class="flow" marker-end="url(#nn-02-batch-through-two-layers-arrow)"/>
+<text x="40" y="136" class="t-head">How to read it</text>
+<text x="40" y="156" class="t-note">Row <tspan class="i">i</tspan> on the left meets column <tspan class="i">k</tspan> above</text>
+<text x="40" y="176" class="t-note">at entry (<tspan class="i">i</tspan>, <tspan class="i">k</tspan>) of the result.</text>
+<text x="40" y="216" class="t-math"><tspan class="b">Z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> = <tspan class="b">X</tspan> <tspan class="b">W</tspan><tspan class="sub" dy="-9">T</tspan><tspan class="sub" dx="-7" dy="13">1</tspan><tspan dy="-4">​</tspan> + <tspan class="b">b</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="40" y="244" class="t-math"><tspan class="b">Z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> = <tspan class="b">Z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> <tspan class="b">W</tspan><tspan class="sub" dy="-9">T</tspan><tspan class="sub" dx="-7" dy="13">2</tspan><tspan dy="-4">​</tspan> + <tspan class="b">b</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<text x="40" y="300" class="t-code">np.dot(inputs, weights1.T) + biases1</text>
+<text x="40" y="324" class="t-code">np.dot(layer1_outputs,</text>
+<text x="72" y="348" class="t-code">weights2.T) + biases2</text>
 <g data-grid="skip">
 <text x="128" y="461" text-anchor="end" class="t-note">sample 1</text>
 <text x="128" y="509" text-anchor="end" class="t-note">sample 2</text>
 <text x="128" y="557" text-anchor="end" class="t-note">sample 3</text>
 </g>
-<text x="368" y="244" text-anchor="end" class="t-label f-orange-ink"><tspan class="b">W</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan><tspan class="sub" dy="-7">T</tspan><tspan dy="7">​</tspan>  (4, 3)</text>
+<text x="368" y="244" text-anchor="end" class="t-label f-orange-ink"><tspan class="b">W</tspan><tspan class="sub" dy="-9">T</tspan><tspan class="sub" dx="-7" dy="13">1</tspan><tspan dy="-4">​</tspan>  (4, 3)</text>
 <text x="368" y="268" text-anchor="end" class="t-note">column <tspan class="i">k</tspan>: the weights of neuron <tspan class="i">k</tspan></text>
 <text x="368" y="388" text-anchor="end" class="t-label f-orange-ink">+ <tspan class="b">b</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan>  (3,)</text>
-<text x="816" y="268" class="t-label f-orange-ink"><tspan class="b">W</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan><tspan class="sub" dy="-7">T</tspan><tspan dy="7">​</tspan>  (3, 3)</text>
+<text x="816" y="268" class="t-label f-orange-ink"><tspan class="b">W</tspan><tspan class="sub" dy="-9">T</tspan><tspan class="sub" dx="-7" dy="13">2</tspan><tspan dy="-4">​</tspan>  (3, 3)</text>
 <text x="816" y="292" class="t-note">the same layout</text>
 <text x="816" y="388" class="t-label f-orange-ink">+ <tspan class="b">b</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan>  (3,)</text>
 <text x="136" y="608" class="t-head">Input <tspan class="b">X</tspan>  (3, 4)</text>

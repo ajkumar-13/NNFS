@@ -39,14 +39,23 @@ HAND = [(W2[0, j], Z1[0, j]) for j in range(3)]
 assert B2[0] < 0                                     # the caption writes it as a subtraction
 assert abs(sum(w * z for w, z in HAND) + B2[0] - 0.5031) < 1e-12
 assert X.shape == (3, 4) and W1.shape == (3, 4) and W2.shape == (3, 3) and Z1.shape == Z2.shape == (3, 3)
+# the two calls as the snippet spells them (its column-aligning spaces collapsed), shown under the note
+CALLS = ["np.dot(inputs, weights1.T) + biases1", "np.dot(layer1_outputs, weights2.T) + biases2"]
+_src = {" ".join(line.split()) for line in SNIP.read_text(encoding="utf-8").splitlines()}
+assert all(f"{out} = {c}" in _src for out, c in zip(("layer1_outputs", "layer2_outputs"), CALLS))
 
 
 def bold(base, s=None, t=False):
     out = f'<tspan class="b">{base}</tspan>'
-    if s is not None:
+    if t and s is not None:
+        # the transpose sits straight over the subscript: T raised, then the subscript pulled back under it
+        # by the width of a 13 px T, then back to the baseline
+        out += (f'<tspan class="sub" dy="-9">T</tspan><tspan class="sub" dx="-7" dy="13">{s}</tspan>'
+                f'<tspan dy="-4">\u200b</tspan>')
+    elif t:
+        out += '<tspan class="sub" dy="-9">T</tspan><tspan dy="9">\u200b</tspan>'
+    elif s is not None:
         out += f'<tspan class="sub" dy="4">{s}</tspan><tspan dy="-4">\u200b</tspan>'
-    if t:
-        out += '<tspan class="sub" dy="-7">T</tspan><tspan dy="7">\u200b</tspan>'
     return Raw(out)
 
 
@@ -65,10 +74,12 @@ fig = Figure(
     f"{say(X)}; above the result sits W1 transposed, shape (4, 3), whose column k holds the weights of neuron k: "
     f"{say(W1.T)}; under it the bias b1, shape (3,), {say(B1)}, added to every row. The result Z1, shape (3, 3), "
     f"holds {say(Z1)}. Z1 is also the left factor of layer 2: above the second result sit W2 transposed, shape "
-    f"(3, 3), {say(W2.T)}, and the bias b2, {say(B2)}. The result Z2, shape (3, 3), holds {say(Z2)}. Row 1 of Z1 "
-    f"and column 1 of W2 transposed are outlined, a note explains that row i on the left meets column k above "
-    f"at entry (i, k) of the result, and they meet at the top-left entry of Z2, 0.5031, which the caption "
-    f"line works out: 0.1 times 4.8, minus 0.14 times 1.21, plus 0.5 times 2.385, minus 1.0.",
+    f"(3, 3), {say(W2.T)}, and the bias b2, {say(B2)}. The result Z2, shape (3, 3), holds {say(Z2)}. A note at "
+    f"the top left explains that row i on the left meets column k above at entry (i, k) of the result; under it the two layer "
+    f"calls, Z1 = X W1 transposed + b1 and Z2 = Z1 W2 transposed + b2, and the same calls in the snippet's code, "
+    f"{CALLS[0]} and {CALLS[1]}. Row 1 of "
+    f"Z1, column 1 of W2 transposed and the first bias of b2 are outlined, and one arrow from the row and one "
+    f"from the bias point into the top-left entry of Z2, 0.5031, which the caption line works out: 0.1 times 4.8, minus 0.14 times 1.21, plus 0.5 times 2.385, minus 1.0.",
     subtitle=rich("The post's batch, ", var("N"), " = 3, with the values of snippets/two_layer_forward.py."),
     height=720)
 
@@ -89,14 +100,30 @@ gb2 = fig.strip(Z2X, YB, 3, CW, height=C, values=[fmt(v) for v in B2], fill=lamb
 gz2 = fig.grid(Z2X, YZ, 3, 3, cell_w=CW, cell_h=C, values=lambda i, j: fmt(Z2[i, j]),
                fill=lambda i, j: "output-soft", font=F, strong={(0, 0): "output"})
 
-# the hand check: row 1 of Z1 meets column 1 of W2 transposed at the top-left of Z2
+# the hand check: row 1 of Z1 meets column 1 of W2 transposed, and the bias of neuron 1, at the top-left of Z2;
+# one arrow from each side into that cell
 gz1.window(0, 0, 1, 3, "output")
 gw2.window(0, 0, 3, 1, "weight")
+gb2.outline(0, 0, color="weight", width=2.5)
+hit = gz2.cell(0, 0)
+fig.arrow((gz1.box.right + 8, hit.cy), (hit.x - 8, hit.cy))
+fig.arrow((hit.cx, gb2.box.bottom), (hit.cx, hit.y))
 
-# how to read the layout, in the free corner over layer 2
-fig.text(Z2X, 136, "How to read it", "head")
-fig.note(Box(Z2X, 128, 0, 0), [rich("Row ", var("i"), " on the left meets column ", var("k"), " above"),
-                                   rich("at entry (", var("i"), ", ", var("k"), ") of the result.")])
+# how to read the layout, first, in the free top-left corner
+fig.text(40, 136, "How to read it", "head")
+fig.note(Box(40, 128, 0, 0), [rich("Row ", var("i"), " on the left meets column ", var("k"), " above"),
+                                 rich("at entry (", var("i"), ", ", var("k"), ") of the result.")])
+# the two layer calls the grids carry out, as maths and as the snippet's code, under the note
+# (the second call is too wide for the 344 units left of W1 transposed, so it wraps inside its parentheses,
+# as Python allows, with a hanging indent)
+fig.text(40, 216, rich(bold("Z", "1"), " = ", bold("X"), " ", bold("W", "1", t=True), " + ", bold("b", "1")), "math")
+fig.text(40, 244, rich(bold("Z", "2"), " = ", bold("Z", "1"), " ", bold("W", "2", t=True), " + ", bold("b", "2")),
+         "math")
+WRAP = CALLS[1].index(" ") + 1                       # after "np.dot(layer1_outputs, "
+assert CALLS[1][:WRAP] == "np.dot(layer1_outputs, "
+fig.text(40, 300, CALLS[0], "code")
+fig.text(40, 324, CALLS[1][:WRAP].rstrip(), "code")
+fig.text(72, 348, CALLS[1][WRAP:], "code")
 
 # rows are samples
 gx.row_labels(["sample 1", "sample 2", "sample 3"], side="left", style="note")

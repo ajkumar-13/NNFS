@@ -27,10 +27,15 @@ assert (P1, P2, P1 + P2) == (15, 12, 27)          # section 6
 def bold(base, s=None, t=False):
     """A whole array: bold upright capital (or bold b), optional subscript, optional transpose."""
     out = f'<tspan class="b">{base}</tspan>'
-    if s is not None:
+    if t and s is not None:
+        # the transpose sits straight over the subscript: T raised, then the subscript pulled back under it
+        # by the width of a 13 px T, then back to the baseline
+        out += (f'<tspan class="sub" dy="-9">T</tspan><tspan class="sub" dx="-7" dy="13">{s}</tspan>'
+                f'<tspan dy="-4">\u200b</tspan>')
+    elif t:
+        out += '<tspan class="sub" dy="-6">T</tspan><tspan dy="6">\u200b</tspan>'
+    elif s is not None:
         out += f'<tspan class="sub" dy="4">{s}</tspan><tspan dy="-4">\u200b</tspan>'
-    if t:
-        out += '<tspan class="sub" dy="-7">T</tspan><tspan dy="7">\u200b</tspan>'
     return Raw(out)
 
 
@@ -45,11 +50,12 @@ fig = Figure(
     f"layer, and {M2} neurons in layer 2, the output layer. Every neuron is joined to every node of the column "
     f"before it; the {N_IN} connections into the first neuron of layer 1 and the {M1} into the first neuron of "
     f"layer 2 are drawn in the weight colour. Above the connections are the arrays they carry: X of shape (N, 4), "
-    f"then Z1 of shape (N, 3), then the output Z2 of shape (N, 3). Under layer 1: W1 of shape (3, 4), 3 neurons "
+    f"then Z1 of shape (N, 3); a brace over the three output arrows labels them Z2 of shape (N, 3), the output. "
+    f"Under layer 1: W1 of shape (3, 4), 3 neurons "
     f"with 4 weights each, b1 of shape (3,), 12 plus 3 is {P1} parameters, and Z1 = X W1 transposed + b1. Under "
     f"layer 2: W2 of shape (3, 3), 3 neurons with 3 weights each, b2 of shape (3,), 9 plus 3 is {P2} parameters, "
-    f"and Z2 = Z1 W2 transposed + b2. The whole network has {P1} plus {P2}, which is {P1 + P2} parameters. A key "
-    f"reads: into neuron 1, {N_IN} weights in layer 1 and {M1} weights in layer 2. A caption line reads: each "
+    f"and Z2 = Z1 W2 transposed + b2. The whole network has {P1} plus {P2}, which is {P1 + P2} parameters. A key at "
+    f"the top right reads: into neuron 1, {N_IN} weights in layer 1 and {M1} weights in layer 2. A caption line reads: each "
     f"layer runs the same call; only the sizes change.",
     subtitle=rich("The post's network: 4 inputs, 3 neurons in each layer, a batch of ", var("N"), " samples."),
     height=720)
@@ -94,10 +100,14 @@ for y in Y_L2:
 # -- the array each set of connections carries
 TOP = 136
 for x, name, shp, per in ((264, bold("X"), shape("N", N_IN), f"{N_IN} values per sample"),
-                          (520, bold("Z", "1"), shape("N", M1), f"{M1} values per sample"),
-                          (704, bold("Z", "2"), shape("N", M2), "the output")):
+                          (520, bold("Z", "1"), shape("N", M1), f"{M1} values per sample")):
     fig.text(x, TOP, rich(name, "  ", shp), "label", anchor="middle")
     fig.text(x, TOP + 24, per, "note", anchor="middle")
+# the output: a brace over the three arrow tips, labelled in the right column, centred on the middle output
+fig.brace(Y_L2[0] - 16, Y_L2[-1] + 16, OUT_X + 8, side="right", vertical=True)
+XR = OUT_X + 24                          # the right column's left edge
+fig.text(XR, YMID - 4, rich(bold("Z", "2"), "  ", shape("N", M2)), "label")
+fig.text(XR, YMID + 20, "the output", "note")
 
 # -- one block per column: what the layer is, its weights, its parameter count, its call
 YB = 528
@@ -118,8 +128,8 @@ fig.text(848, YB, "Network", "head", anchor="middle")
 fig.text(848, YB + 28, rich(num(P1), " + ", num(P2), " = ", num(P1 + P2)), "value", anchor="middle")
 fig.text(848, YB + 52, "parameters", "note", anchor="middle")
 
-# -- what the weight colour marks, in the free space right of the outputs
-fig.legend(784, Y_L2[0] - 52, [dict(color="weight", label="Into neuron 1", mark="line")])
-fig.note(Box(784, Y_L2[0] - 52, 0, 0), [f"{N_IN} weights in layer 1", f"{M1} weights in layer 2"])
+# -- what the weight colour marks: the key heads the right column, on the baseline of the array labels
+fig.legend(XR, TOP, [dict(color="weight", label="Into neuron 1", mark="line")])
+fig.note(Box(XR, TOP, 0, 0), [f"{N_IN} weights in layer 1", f"{M1} weights in layer 2"])
 fig.caption("Each layer runs the same call; only the sizes change.")
 fig.write()

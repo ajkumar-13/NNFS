@@ -50,10 +50,15 @@ STAR = "\u2217"                         # the post's W_* and b_*: a subscript as
 
 def bold(base, s=None, t=False):
     out = f'<tspan class="b">{base}</tspan>'
-    if s is not None:
+    if t and s is not None:
+        # the transpose sits straight over the subscript: T raised, then the subscript pulled back under it
+        # by the width of a 13 px T, then back to the baseline
+        out += (f'<tspan class="sub" dy="-9">T</tspan><tspan class="sub" dx="-7" dy="13">{s}</tspan>'
+                f'<tspan dy="-4">\u200b</tspan>')
+    elif t:
+        out += '<tspan class="sub" dy="-9">T</tspan><tspan dy="9">\u200b</tspan>'
+    elif s is not None:
         out += f'<tspan class="sub" dy="4">{s}</tspan><tspan dy="-4">\u200b</tspan>'
-    if t:
-        out += '<tspan class="sub" dy="-7">T</tspan><tspan dy="7">\u200b</tspan>'
     return Raw(out)
 
 
@@ -69,7 +74,8 @@ fig = Figure(
     f"{say(B2)}, 12 parameters; then Z2, {say(TWO)}. Lower row, one layer with 15 parameters: W star transposed, "
     f"which is W2 times W1, of shape (3, 4), {say(WST, 4)}, with b star, which is b1 times W2 transposed plus b2, "
     f"{say(BS, 4)}, 15 parameters; one arrow, labelled no hidden layer, with the two formulas under it, straight "
-    f"to Z2, which holds the same values as the upper Z2 up to rounding. A caption line reads: with no activation "
+    f"to Z2. An equals sign between the two Z2 grids sits over the note: same values, up to rounding. "
+    f"A caption line reads: with no activation "
     f"between them, the second layer adds parameters, not capability.",
     subtitle=rich("Both rows take the post's batch ", bold("X"), ", shape (3, 4). Values from "
                   "snippets/linear_collapse.py."),
@@ -129,7 +135,9 @@ fig.text(mx, gs.box.cy + 40, rich(bold("W", STAR, t=True), " = ", bold("W", "2")
 fig.text(mx, gs.box.cy + 68, rich(bold("b", STAR), " = ", bold("b", "1"), " ", bold("W", "2", t=True), " + ",
                                   bold("b", "2")), "label", anchor="middle")
 
-# -- the two outputs agree
-fig.text(XZ, 400, "Same values, up to rounding", "note")
+# -- the two outputs agree: an equals sign between the two Z2 grids, the note under it
+ex = z_two.box.cx
+fig.text(ex, z_two.box.bottom + 48, "=", "op", anchor="middle")
+fig.text(ex, z_two.box.bottom + 76, "Same values, up to rounding", "note", anchor="middle")
 fig.caption("With no activation between them, the second layer adds parameters, not capability.")
 fig.write()
