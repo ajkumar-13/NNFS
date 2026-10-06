@@ -65,7 +65,7 @@ fig = Figure(
                   " comes to 0; natural log."))
 
 BOX = Box(40, 104, 880, 372)
-LABEL_W = 120
+LABEL_W = 88
 X_LO, X_HI, Y_LO, Y_HI = 0, 1, 0, 5
 # the plot area line_chart will use (same arithmetic as the kit: 56 for y ticks, 24 above, 48 below)
 PX, PY = BOX.x + 56, BOX.y + 24
@@ -101,12 +101,11 @@ with fig.data():
     fig.text(sx(0.50) + 10, sy(L(0.50)) - 12, f"{L(0.50):.3f}", "value", color="error", snap=False)
     fig.text(sx(1 / 3) + 14, sy(LN3) - 10, rich("ln 3 = ", f"{LN3:.3f}", ", a uniform guess over 3 classes"),
              "label", color="input", snap=False)
-    # the two steps: each label stacked on three lines just right of its own band, in the same way
-    for (a, b), drop, top in zip(STEPS, DROP, (3.9, 1.6)):
-        x = sx(b) + 12
-        fig.text(x, sy(top), rich(var("p"), f" from {a:.2f}"), "label", snap=False)
-        fig.text(x, sy(top) + 20, f"to {b:.2f}:", "label", snap=False)
-        fig.text(x, sy(top) + 40, rich(MINUS, f"{drop:.3f}"), "label", snap=False)
+    # the two steps: each label on two lines inside the plot, on one shared baseline, 12 from its own band
+    # (right of the left band, left of the right band, so each sits against the band it describes)
+    for (a, b), drop, x, anchor in zip(STEPS, DROP, (sx(0.10) + 12, sx(0.90) - 12), ("start", "end")):
+        fig.text(x, sy(3.9), rich(var("p"), f" from {a:.2f} to {b:.2f}:"), "label", anchor=anchor, snap=False)
+        fig.text(x, sy(3.9) + 20, rich(MINUS, f"{drop:.3f}"), "label", anchor=anchor, snap=False)
     fig.text(sx(0.10) + 12, sy(0.25), rich("dashed, 1 ", MINUS, " ", var("p"), ": ", MINUS,
              f"{LINEAR[0]:.2f}", " on each step"), "note", snap=False)
 fig.caption(rich("Off the chart to the left, the clip bound ", var("p"), " = ", sup("10", num(-7), italic=False),

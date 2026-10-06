@@ -69,31 +69,31 @@ fig = Figure(
 
 C = 48
 XA, XB, XC = 40, 248, 456            # one-hot labels, softmax outputs, product
-YA, YB = 200, 480                    # the two rows' grids
-XR, XL, YR, SW = 680, 824, 336, 64   # result strip, loss strip, their top, their width
+YA, YB = 208, 488                    # the two rows' grids
+XR, XL, YR, SW = 680, 824, 344, 64   # result strip, loss strip, their top, their width
 
 TRUE = lambda i, j: j == T[i]  # noqa: E731
 
 # --- top row: integer labels
-fig.text(40, 136, rich("Integer labels: ", mono("softmax_outputs[range(3), class_targets]")), "head")
+fig.text(40, 144, rich("Integer labels: ", mono("softmax_outputs[range(3), class_targets]")), "head")
 ct = fig.strip(144, YA, 3, C, vertical=True, values=T, fill=lambda i: "input-soft")
-fig.text(ct.box.cx, 168, mono("class_targets"), "code", anchor="middle")
+fig.text(ct.box.cx, 176, mono("class_targets"), "code", anchor="middle")
 ga = fig.grid(XB, YA, 3, 3, C, values=P.tolist(), decimals=2, fill=lambda i, j: "output-soft" if TRUE(i, j) else None)
 for i in range(3):
     ga.outline(i, T[i], color="output", width=1.5)
-fig.text(ga.box.cx, 168, mono("softmax_outputs"), "code", anchor="middle")
+fig.text(ga.box.cx, 176, mono("softmax_outputs"), "code", anchor="middle")
 ga.col_labels(["0", "1", "2"])
 ga.row_labels(["row 0", "row 1", "row 2"])
 
 # --- bottom row: one-hot labels
-fig.text(40, 416, rich("One-hot labels: multiply element-wise, then sum along ", mono("axis=1")), "head")
+fig.text(40, 424, rich("One-hot labels: multiply element-wise, then sum along ", mono("axis=1")), "head")
 gh = fig.grid(XA, YB, 3, 3, C, values=H.tolist(), fill=lambda i, j: "input-soft" if H[i][j] else None)
-fig.text(XA, 448, mono("class_targets_onehot"), "code")
+fig.text(XA, 456, mono("class_targets_onehot"), "code")
 gp = fig.grid(XB, YB, 3, 3, C, values=P.tolist(), decimals=2)
-fig.text(gp.box.cx, 448, mono("softmax_outputs"), "code", anchor="middle")
+fig.text(gp.box.cx, 456, mono("softmax_outputs"), "code", anchor="middle")
 gx = fig.grid(XC, YB, 3, 3, C, values=product.tolist(), decimals=2,
               fill=lambda i, j: "output-soft" if TRUE(i, j) else None)
-fig.text(gx.box.cx, 448, "product", "label", anchor="middle")
+fig.text(gx.box.cx, 456, "product", "label", anchor="middle")
 for i in range(3):
     gx.outline(i, T[i], color="output", width=1.5)
 for g in (gh, gp, gx):
@@ -109,9 +109,12 @@ gl = fig.strip(XL, YR, 3, C, vertical=True, width=SW, values=LOSS3, font=18, fil
 fig.text(gl.box.cx, YR - 16, mono("sample_losses"), "code", anchor="middle")
 fig.text(gl.box.cx, gl.box.bottom + 28, rich("mean ", span(f"{mean:.3f}", bold=True)), "label", anchor="middle")
 
-fig.arrow((ga.box.right + 8, ga.box.cy), (gr.box.x, gr.cell(0).cy), via=[(624, ga.box.cy), (624, gr.cell(0).cy)])
+# the top arrow turns at 624, left of the correct_confidences label it would otherwise cross; the bottom
+# arrow turns 16 further right, so it leaves the product with a 32-unit stub before it turns
+ELBOW_TOP, ELBOW = 624, 640
+fig.arrow((ga.box.right + 8, ga.box.cy), (gr.box.x, gr.cell(0).cy), via=[(ELBOW_TOP, ga.box.cy), (ELBOW_TOP, gr.cell(0).cy)])
 fig.text(ga.box.right + 16, ga.box.cy - 12, "pick", "note")
-fig.arrow((gx.box.right + 8, gx.box.cy), (gr.box.x, gr.cell(2).cy), via=[(624, gx.box.cy), (624, gr.cell(2).cy)])
+fig.arrow((gx.box.right + 8, gx.box.cy), (gr.box.x, gr.cell(2).cy), via=[(ELBOW, gx.box.cy), (ELBOW, gr.cell(2).cy)])
 fig.text(gx.box.right + 16, gx.box.cy + 24, "sum, axis=1", "note")
 fig.arrow((gr.box.right + 8, gr.box.cy), (gl.box.x - 8, gr.box.cy), label=rich(MINUS, "log"))
 

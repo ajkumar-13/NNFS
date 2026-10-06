@@ -80,8 +80,8 @@ for box, b in zip(fig.row(2), BATCHES):
     g.col_labels(["class 0", "class 1", "class 2"])
     x0 = g.box.right + 24
     fig.text(x0, gy - 8, "per-sample loss", "tick")
-    my = g.box.bottom + 44                       # the centre of the mean bar
-    ay = my + 48                                 # the centre of the accuracy row
+    my = g.box.bottom + 52                       # the centre of the mean bar
+    ay = my + 56                                 # the centre of the accuracy row
     right = np.argmax(b["P"], axis=1) == Y
     with fig.data():
         fig.edge((x0, gy), (x0, my + 16), color="ink-muted", width=1)

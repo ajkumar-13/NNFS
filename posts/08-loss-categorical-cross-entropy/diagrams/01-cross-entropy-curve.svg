@@ -139,22 +139,22 @@
 </style>
 <defs>
 <marker id="nn-01-cross-entropy-curve-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
-<clipPath id="nn-01-cross-entropy-curve-clip-1"><rect x="90" y="122" width="716" height="312"/></clipPath>
+<clipPath id="nn-01-cross-entropy-curve-clip-1"><rect x="90" y="122" width="748" height="312"/></clipPath>
 </defs>
 <rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
 <text x="40" y="48" class="t-title">The loss is the negative log of the true-class probability</text>
 <text x="40" y="76" class="t-subtitle">Zero at <tspan class="i">p</tspan> = 1, never negative, and steeper the closer <tspan class="i">p</tspan> comes to 0; natural log.</text>
 <g data-grid="skip">
-<rect x="103.04" y="128" width="63.36" height="300" class="f-blue-soft" data-fit="skip"/>
+<rect x="103.36" y="128" width="66.24" height="300" class="f-blue-soft" data-fit="skip"/>
 </g>
 <g data-grid="skip">
-<rect x="729.6" y="128" width="63.36" height="300" class="f-blue-soft" data-fit="skip"/>
+<rect x="758.4" y="128" width="66.24" height="300" class="f-blue-soft" data-fit="skip"/>
 </g>
 <g data-grid="skip">
-<path d="M103.04,368.6 L800,428" class="s-ink-muted w15 nofill d-ref"/>
+<path d="M103.36,368.6 L832,428" class="s-ink-muted w15 nofill d-ref"/>
 </g>
 <g data-grid="skip">
-<path d="M96,428H800M96,368H800M96,308H800M96,248H800M96,188H800M96,128H800" class="gridline"/>
+<path d="M96,428H832M96,368H832M96,308H832M96,248H832M96,188H832M96,128H832" class="gridline"/>
 <text x="88" y="432" text-anchor="end" class="t-tick">0</text>
 <text x="88" y="372" text-anchor="end" class="t-tick">1</text>
 <text x="88" y="312" text-anchor="end" class="t-tick">2</text>
@@ -162,36 +162,34 @@
 <text x="88" y="192" text-anchor="end" class="t-tick">4</text>
 <text x="88" y="132" text-anchor="end" class="t-tick">5</text>
 <text x="96" y="448" text-anchor="middle" class="t-tick">0.0</text>
-<text x="236.8" y="448" text-anchor="middle" class="t-tick">0.2</text>
-<text x="377.6" y="448" text-anchor="middle" class="t-tick">0.4</text>
-<text x="518.4" y="448" text-anchor="middle" class="t-tick">0.6</text>
-<text x="659.2" y="448" text-anchor="middle" class="t-tick">0.8</text>
-<text x="800" y="448" text-anchor="middle" class="t-tick">1.0</text>
-<path d="M96,128V428H800" class="axis"/>
+<text x="243.2" y="448" text-anchor="middle" class="t-tick">0.2</text>
+<text x="390.4" y="448" text-anchor="middle" class="t-tick">0.4</text>
+<text x="537.6" y="448" text-anchor="middle" class="t-tick">0.6</text>
+<text x="684.8" y="448" text-anchor="middle" class="t-tick">0.8</text>
+<text x="832" y="448" text-anchor="middle" class="t-tick">1.0</text>
+<path d="M96,128V428H832" class="axis"/>
 <g clip-path="url(#nn-01-cross-entropy-curve-clip-1)">
-<path d="M103.04,151.69 L106.56,176.02 L110.08,193.28 L113.6,206.67 L117.12,217.61 L120.64,226.86 L124.16,234.87 L127.68,241.93 L131.2,248.26 L134.72,253.97 L138.24,259.2 L141.76,264 L145.28,268.44 L148.8,272.58 L152.32,276.46 L155.84,280.09 L159.36,283.52 L162.88,286.77 L166.4,289.84 L169.92,292.77 L173.44,295.56 L176.96,298.23 L180.48,300.78 L184,303.23 L187.52,305.59 L191.04,307.85 L194.56,310.03 L198.08,312.14 L201.6,314.17 L205.12,316.14 L208.64,318.05 L212.16,319.89 L215.68,321.68 L219.2,323.42 L222.72,325.11 L226.24,326.76 L229.76,328.36 L233.28,329.91 L236.8,331.43 L240.32,332.92 L243.84,334.36 L247.36,335.77 L250.88,337.15 L254.4,338.5 L257.92,339.82 L261.44,341.11 L264.96,342.37 L268.48,343.61 L272,344.82 L275.52,346.01 L279.04,347.18 L282.56,348.32 L286.08,349.44 L289.6,350.54 L293.12,351.62 L296.64,352.68 L300.16,353.73 L303.68,354.75 L307.2,355.76 L310.72,356.75 L314.24,357.73 L317.76,358.69 L321.28,359.63 L324.8,360.56 L328.32,361.48 L331.84,362.38 L335.36,363.27 L338.88,364.15 L342.4,365.01 L345.92,365.86 L349.44,366.7 L352.96,367.53 L356.48,368.34 L360,369.15 L363.52,369.94 L367.04,370.73 L370.56,371.5 L374.08,372.27 L377.6,373.02 L381.12,373.77 L384.64,374.5 L388.16,375.23 L391.68,375.95 L395.2,376.66 L398.72,377.36 L402.24,378.06 L405.76,378.74 L409.28,379.42 L412.8,380.09 L416.32,380.75 L419.84,381.41 L423.36,382.06 L426.88,382.7 L430.4,383.33 L433.92,383.96 L437.44,384.58 L440.96,385.2 L444.48,385.81 L448,386.41 L451.52,387.01 L455.04,387.6 L458.56,388.18 L462.08,388.76 L465.6,389.34 L469.12,389.91 L472.64,390.47 L476.16,391.03 L479.68,391.58 L483.2,392.13 L486.72,392.67 L490.24,393.21 L493.76,393.74 L497.28,394.27 L500.8,394.8 L504.32,395.32 L507.84,395.83 L511.36,396.34 L514.88,396.85 L518.4,397.35 L521.92,397.85 L525.44,398.34 L528.96,398.83 L532.48,399.32 L536,399.8 L539.52,400.28 L543.04,400.75 L546.56,401.22 L550.08,401.69 L553.6,402.15 L557.12,402.61 L560.64,403.07 L564.16,403.52 L567.68,403.97 L571.2,404.42 L574.72,404.86 L578.24,405.3 L581.76,405.74 L585.28,406.17 L588.8,406.6 L592.32,407.03 L595.84,407.45 L599.36,407.87 L602.88,408.29 L606.4,408.7 L609.92,409.12 L613.44,409.53 L616.96,409.93 L620.48,410.34 L624,410.74 L627.52,411.14 L631.04,411.53 L634.56,411.93 L638.08,412.32 L641.6,412.71 L645.12,413.09 L648.64,413.48 L652.16,413.86 L655.68,414.24 L659.2,414.61 L662.72,414.99 L666.24,415.36 L669.76,415.73 L673.28,416.09 L676.8,416.46 L680.32,416.82 L683.84,417.18 L687.36,417.54 L690.88,417.89 L694.4,418.25 L697.92,418.6 L701.44,418.95 L704.96,419.3 L708.48,419.64 L712,419.99 L715.52,420.33 L719.04,420.67 L722.56,421.01 L726.08,421.34 L729.6,421.68 L733.12,422.01 L736.64,422.34 L740.16,422.67 L743.68,423 L747.2,423.32 L750.72,423.65 L754.24,423.97 L757.76,424.29 L761.28,424.61 L764.8,424.92 L768.32,425.24 L771.84,425.55 L775.36,425.86 L778.88,426.17 L782.4,426.48 L785.92,426.79 L789.44,427.09 L792.96,427.4 L796.48,427.7 L800,428" class="s-red w15 nofill"/>
+<path d="M103.36,151.69 L107.04,176.02 L110.72,193.28 L114.4,206.67 L118.08,217.61 L121.76,226.86 L125.44,234.87 L129.12,241.93 L132.8,248.26 L136.48,253.97 L140.16,259.2 L143.84,264 L147.52,268.44 L151.2,272.58 L154.88,276.46 L158.56,280.09 L162.24,283.52 L165.92,286.77 L169.6,289.84 L173.28,292.77 L176.96,295.56 L180.64,298.23 L184.32,300.78 L188,303.23 L191.68,305.59 L195.36,307.85 L199.04,310.03 L202.72,312.14 L206.4,314.17 L210.08,316.14 L213.76,318.05 L217.44,319.89 L221.12,321.68 L224.8,323.42 L228.48,325.11 L232.16,326.76 L235.84,328.36 L239.52,329.91 L243.2,331.43 L246.88,332.92 L250.56,334.36 L254.24,335.77 L257.92,337.15 L261.6,338.5 L265.28,339.82 L268.96,341.11 L272.64,342.37 L276.32,343.61 L280,344.82 L283.68,346.01 L287.36,347.18 L291.04,348.32 L294.72,349.44 L298.4,350.54 L302.08,351.62 L305.76,352.68 L309.44,353.73 L313.12,354.75 L316.8,355.76 L320.48,356.75 L324.16,357.73 L327.84,358.69 L331.52,359.63 L335.2,360.56 L338.88,361.48 L342.56,362.38 L346.24,363.27 L349.92,364.15 L353.6,365.01 L357.28,365.86 L360.96,366.7 L364.64,367.53 L368.32,368.34 L372,369.15 L375.68,369.94 L379.36,370.73 L383.04,371.5 L386.72,372.27 L390.4,373.02 L394.08,373.77 L397.76,374.5 L401.44,375.23 L405.12,375.95 L408.8,376.66 L412.48,377.36 L416.16,378.06 L419.84,378.74 L423.52,379.42 L427.2,380.09 L430.88,380.75 L434.56,381.41 L438.24,382.06 L441.92,382.7 L445.6,383.33 L449.28,383.96 L452.96,384.58 L456.64,385.2 L460.32,385.81 L464,386.41 L467.68,387.01 L471.36,387.6 L475.04,388.18 L478.72,388.76 L482.4,389.34 L486.08,389.91 L489.76,390.47 L493.44,391.03 L497.12,391.58 L500.8,392.13 L504.48,392.67 L508.16,393.21 L511.84,393.74 L515.52,394.27 L519.2,394.8 L522.88,395.32 L526.56,395.83 L530.24,396.34 L533.92,396.85 L537.6,397.35 L541.28,397.85 L544.96,398.34 L548.64,398.83 L552.32,399.32 L556,399.8 L559.68,400.28 L563.36,400.75 L567.04,401.22 L570.72,401.69 L574.4,402.15 L578.08,402.61 L581.76,403.07 L585.44,403.52 L589.12,403.97 L592.8,404.42 L596.48,404.86 L600.16,405.3 L603.84,405.74 L607.52,406.17 L611.2,406.6 L614.88,407.03 L618.56,407.45 L622.24,407.87 L625.92,408.29 L629.6,408.7 L633.28,409.12 L636.96,409.53 L640.64,409.93 L644.32,410.34 L648,410.74 L651.68,411.14 L655.36,411.53 L659.04,411.93 L662.72,412.32 L666.4,412.71 L670.08,413.09 L673.76,413.48 L677.44,413.86 L681.12,414.24 L684.8,414.61 L688.48,414.99 L692.16,415.36 L695.84,415.73 L699.52,416.09 L703.2,416.46 L706.88,416.82 L710.56,417.18 L714.24,417.54 L717.92,417.89 L721.6,418.25 L725.28,418.6 L728.96,418.95 L732.64,419.3 L736.32,419.64 L740,419.99 L743.68,420.33 L747.36,420.67 L751.04,421.01 L754.72,421.34 L758.4,421.68 L762.08,422.01 L765.76,422.34 L769.44,422.67 L773.12,423 L776.8,423.32 L780.48,423.65 L784.16,423.97 L787.84,424.29 L791.52,424.61 L795.2,424.92 L798.88,425.24 L802.56,425.55 L806.24,425.86 L809.92,426.17 L813.6,426.48 L817.28,426.79 L820.96,427.09 L824.64,427.4 L828.32,427.7 L832,428" class="s-red w15 nofill"/>
 </g>
-<text x="812" y="433" class="t-note f-red-ink">−log(<tspan class="i">p</tspan>)</text>
+<text x="844" y="433" class="t-note f-red-ink">−log(<tspan class="i">p</tspan>)</text>
 </g>
 <text x="96" y="116" class="t-note">loss −log(<tspan class="i">p</tspan>)</text>
-<text x="448" y="472" text-anchor="middle" class="t-note">probability <tspan class="i">p</tspan> on the true class</text>
+<text x="464" y="472" text-anchor="middle" class="t-note">probability <tspan class="i">p</tspan> on the true class</text>
 <g data-grid="skip">
-<circle cx="103.04" cy="151.69" r="5" class="f-red s-surface w1"/>
-<circle cx="166.4" cy="289.84" r="5" class="f-red s-surface w1"/>
-<circle cx="448" cy="386.41" r="5" class="f-red s-surface w1"/>
-<circle cx="800" cy="428" r="5" class="f-red s-surface w1"/>
-<path d="M330.67,356.08 L336.67,362.08 L330.67,368.08 L324.67,362.08 Z" class="f-blue s-surface w1"/>
-<text x="115.04" y="156.69" class="t-value f-red-ink">4.605</text>
-<text x="178.4" y="294.84" class="t-value f-red-ink">2.303</text>
-<text x="458" y="374.41" class="t-value f-red-ink">0.693</text>
-<text x="344.67" y="352.08" class="t-label f-blue-ink">ln 3 = 1.099, a uniform guess over 3 classes</text>
-<text x="178.4" y="194" class="t-label"><tspan class="i">p</tspan> from 0.01</text>
-<text x="178.4" y="214" class="t-label">to 0.10:</text>
-<text x="178.4" y="234" class="t-label">−2.303</text>
-<text x="804.96" y="332" class="t-label"><tspan class="i">p</tspan> from 0.90</text>
-<text x="804.96" y="352" class="t-label">to 0.99:</text>
-<text x="804.96" y="372" class="t-label">−0.095</text>
-<text x="178.4" y="413" class="t-note">dashed, 1 − <tspan class="i">p</tspan>: −0.09 on each step</text>
+<circle cx="103.36" cy="151.69" r="5" class="f-red s-surface w1"/>
+<circle cx="169.6" cy="289.84" r="5" class="f-red s-surface w1"/>
+<circle cx="464" cy="386.41" r="5" class="f-red s-surface w1"/>
+<circle cx="832" cy="428" r="5" class="f-red s-surface w1"/>
+<path d="M341.33,356.08 L347.33,362.08 L341.33,368.08 L335.33,362.08 Z" class="f-blue s-surface w1"/>
+<text x="115.36" y="156.69" class="t-value f-red-ink">4.605</text>
+<text x="181.6" y="294.84" class="t-value f-red-ink">2.303</text>
+<text x="474" y="374.41" class="t-value f-red-ink">0.693</text>
+<text x="355.33" y="352.08" class="t-label f-blue-ink">ln 3 = 1.099, a uniform guess over 3 classes</text>
+<text x="181.6" y="194" class="t-label"><tspan class="i">p</tspan> from 0.01 to 0.10:</text>
+<text x="181.6" y="214" class="t-label">−2.303</text>
+<text x="746.4" y="194" text-anchor="end" class="t-label"><tspan class="i">p</tspan> from 0.90 to 0.99:</text>
+<text x="746.4" y="214" text-anchor="end" class="t-label">−0.095</text>
+<text x="181.6" y="413" class="t-note">dashed, 1 − <tspan class="i">p</tspan>: −0.09 on each step</text>
 </g>
 <text x="40" y="504" class="t-note">Off the chart to the left, the clip bound <tspan class="i">p</tspan> = 10<tspan class="sub" dy="-6">−7</tspan><tspan dy="6">​</tspan> costs 16.118; without the clip the loss has no upper bound.</text>
 </svg>

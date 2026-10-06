@@ -177,7 +177,7 @@
 </g>
 <text x="208" y="160" class="t-tick">per-sample loss</text>
 <g data-grid="skip">
-<path d="M208,168 L208,372" class="s-ink-muted w1 nofill"/>
+<path d="M208,168 L208,380" class="s-ink-muted w1 nofill"/>
 <rect x="208" y="180" width="102.91" height="24" class="f-red-soft" data-fit="skip"/>
 <rect x="208" y="180" width="102.91" height="24" class="w1 nofill s-red-line" data-fit="skip"/>
 <text x="318.91" y="197" class="t-value f-red-ink">0.357</text>
@@ -187,14 +187,14 @@
 <rect x="208" y="276" width="30.4" height="24" class="f-red-soft" data-fit="skip"/>
 <rect x="208" y="276" width="30.4" height="24" class="w1 nofill s-red-line" data-fit="skip"/>
 <text x="246.4" y="293" class="t-value f-red-ink">0.105</text>
-<rect x="208" y="344" width="111.11" height="24" class="f-red" data-fit="skip"/>
-<text x="327.11" y="361" class="t-value f-red-ink b">0.385</text>
-<text x="200" y="361" text-anchor="end" class="t-label">mean</text>
-<path d="M215.5,399.5 H224.5 V408.5 H215.5 Z" class="f-green s-surface w1"/>
-<path d="M239.5,399.5 H248.5 V408.5 H239.5 Z" class="f-green s-surface w1"/>
-<path d="M263.5,399.5 H272.5 V408.5 H263.5 Z" class="f-green s-surface w1"/>
-<text x="200" y="409" text-anchor="end" class="t-label">right</text>
-<text x="284" y="409" class="t-label f-green-ink">3 of 3, accuracy 1.000</text>
+<rect x="208" y="352" width="111.11" height="24" class="f-red" data-fit="skip"/>
+<text x="327.11" y="369" class="t-value f-red-ink b">0.385</text>
+<text x="200" y="369" text-anchor="end" class="t-label">mean</text>
+<path d="M215.5,415.5 H224.5 V424.5 H215.5 Z" class="f-green s-surface w1"/>
+<path d="M239.5,415.5 H248.5 V424.5 H239.5 Z" class="f-green s-surface w1"/>
+<path d="M263.5,415.5 H272.5 V424.5 H263.5 Z" class="f-green s-surface w1"/>
+<text x="200" y="425" text-anchor="end" class="t-label">right</text>
+<text x="284" y="425" class="t-label f-green-ink">3 of 3, accuracy 1.000</text>
 </g>
 <text x="496" y="120" class="t-head">Confidently right</text>
 <rect x="496" y="168" width="48" height="48" class="cell f-green-soft"/>
@@ -228,7 +228,7 @@
 </g>
 <text x="664" y="160" class="t-tick">per-sample loss</text>
 <g data-grid="skip">
-<path d="M664,168 L664,372" class="s-ink-muted w1 nofill"/>
+<path d="M664,168 L664,380" class="s-ink-muted w1 nofill"/>
 <rect x="664" y="180" width="14.8" height="24" class="f-red-soft" data-fit="skip"/>
 <rect x="664" y="180" width="14.8" height="24" class="w1 nofill s-red-line" data-fit="skip"/>
 <text x="686.8" y="197" class="t-value f-red-ink">0.051</text>
@@ -238,14 +238,14 @@
 <rect x="664" y="276" width="8.79" height="24" class="f-red-soft" data-fit="skip"/>
 <rect x="664" y="276" width="8.79" height="24" class="w1 nofill s-red-line" data-fit="skip"/>
 <text x="680.79" y="293" class="t-value f-red-ink">0.030</text>
-<rect x="664" y="344" width="11.79" height="24" class="f-red" data-fit="skip"/>
-<text x="683.79" y="361" class="t-value f-red-ink b">0.041</text>
-<text x="656" y="361" text-anchor="end" class="t-label">mean</text>
-<path d="M671.5,399.5 H680.5 V408.5 H671.5 Z" class="f-green s-surface w1"/>
-<path d="M695.5,399.5 H704.5 V408.5 H695.5 Z" class="f-green s-surface w1"/>
-<path d="M719.5,399.5 H728.5 V408.5 H719.5 Z" class="f-green s-surface w1"/>
-<text x="656" y="409" text-anchor="end" class="t-label">right</text>
-<text x="740" y="409" class="t-label f-green-ink">3 of 3, accuracy 1.000</text>
+<rect x="664" y="352" width="11.79" height="24" class="f-red" data-fit="skip"/>
+<text x="683.79" y="369" class="t-value f-red-ink b">0.041</text>
+<text x="656" y="369" text-anchor="end" class="t-label">mean</text>
+<path d="M671.5,415.5 H680.5 V424.5 H671.5 Z" class="f-green s-surface w1"/>
+<path d="M695.5,415.5 H704.5 V424.5 H695.5 Z" class="f-green s-surface w1"/>
+<path d="M719.5,415.5 H728.5 V424.5 H719.5 Z" class="f-green s-surface w1"/>
+<text x="656" y="425" text-anchor="end" class="t-label">right</text>
+<text x="740" y="425" class="t-label f-green-ink">3 of 3, accuracy 1.000</text>
 </g>
 <text x="40" y="504" class="t-note">The same accuracy for both; the mean losses differ by a factor of 9.4.</text>
 </svg>
