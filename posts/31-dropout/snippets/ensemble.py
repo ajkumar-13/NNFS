@@ -46,6 +46,7 @@ mean_probabilities = np.zeros_like(full_probabilities)
 mean_log_probabilities = np.zeros_like(full_probabilities)
 total_weight = 0.0
 disagree = []
+n_kept = []
 for kept in product((0, 1), repeat=N_NEURONS):
     kept = np.array(kept)
     weight = (1 - p) ** kept.sum() * p ** (N_NEURONS - kept.sum())
@@ -56,6 +57,7 @@ for kept in product((0, 1), repeat=N_NEURONS):
     mean_probabilities += weight * softmax.output
     mean_log_probabilities += weight * np.log(softmax.output)
     disagree.append(np.mean(np.argmax(softmax.output, axis=1) != np.argmax(full_probabilities, axis=1)))
+    n_kept.append(kept.sum())
 
 geometric = np.exp(mean_log_probabilities)
 geometric /= geometric.sum(axis=1, keepdims=True)
@@ -72,3 +74,9 @@ print(f"points where the arithmetic mean and the full network pick the same clas
 print(f"one thinned network against the full network: it picks another class on "
       f"{100 * min(disagree):.1f} to {100 * max(disagree):.1f} percent of the points "
       f"(mean over the masks {100 * np.mean(disagree):.1f})")
+print("the same by the number of neurons a mask keeps, in percent of the points:")
+print("kept   masks   lowest    mean   highest")
+disagree, n_kept = np.array(disagree), np.array(n_kept)
+for k in range(N_NEURONS + 1):
+    d = 100 * disagree[n_kept == k]
+    print(f"{k:4d}   {len(d):5d}   {d.min():6.1f}  {d.mean():6.1f}   {d.max():7.1f}")

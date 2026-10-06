@@ -9,7 +9,7 @@ part: "Part VII - Generalisation and regularisation"
 level: intermediate
 reading_time: 29
 tags: [neural-networks, from-scratch, regularisation, dropout, generalisation]
-hero: diagrams/01-dropout-train-vs-test.svg
+hero: diagrams/01-two-modes.svg
 prerequisites: [nn-028]
 code: included
 outcomes:

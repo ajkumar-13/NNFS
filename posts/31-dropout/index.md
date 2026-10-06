@@ -11,9 +11,9 @@
 > - Implement Layer_Dropout with the inverted convention: scale by 1/(1 - p) in training, identity at test time.
 > - Wire dropout into the forward and backward passes of the pipeline with the train-versus-test switch.
 
-![Two panels show the same row of eight neurons with activations of 1. In the training panel two neurons are crossed out and output 0 while the other six output 1.33, and the outputs sum to 8. In the testing panel all eight output 1 and sum to 8. A strip below contrasts training=True, mask and scale, with training=False, identity.](diagrams/01-dropout-train-vs-test.svg)
+![Three rows of five cells for one dropout layer at drop rate 0.2. Training, forward: activations of 1 times the stored mask 1.25, 1.25, 1.25, 1.25, 0 give the output 1.25, 1.25, 1.25, 1.25, 0, which sums to 5 as the input does. Training, backward: dvalues 0.1, minus 0.2, 0.3, 0.4, minus 0.5 times the same mask give dinputs 0.125, minus 0.25, 0.375, 0.5, 0. Evaluation with training=False: no mask is drawn and the output is a copy of the input.](diagrams/01-two-modes.svg)
 
-*One layer, two modes, at a drop rate of 0.25. In training a fresh mask zeroes some neurons and the rest are divided by 0.75; in evaluation the layer passes its input through. The six survivors sum to 8 on this draw; in general only the expected sum is preserved (section 4).*
+*One layer at a drop rate of 0.2, on the five activations of section 4. In training the stored mask zeroes one entry and scales the other four by 1/0.8, in the forward and the backward pass; in evaluation the layer copies its input.*
 
 ---
 
@@ -39,10 +39,6 @@ The papers give two explanations of why this helps. They describe the same algor
 
 **An ensemble that shares its weights.** The second is statistical. A layer of $n$ neurons has $2^n$ subsets, so a network with one dropout layer contains $2^n$ **thinned networks**, one for each choice of which neurons stay on. The count does not depend on $p$; the rate only sets how often each pattern is drawn. A training pass draws a thinned network and takes one optimiser step on it, and since all of them use the same weight arrays, the step changes every other thinned network too. The 64-neuron layer of this series has $2^{64} \approx 1.8 \times 10^{19}$ of them; the point is the sharing, not the coverage.
 
-![A layer of five units, labelled as having 32 subsets, above four training steps that each cross out a different subset, with 3, 3, 4 and 2 units left active. A card beside them says that every step updates one subnetwork and that all subnetworks share one set of weights.](diagrams/02-implicit-ensemble.svg)
-
-*A mask chooses which of the $2^n$ thinned networks takes the step. The figure draws one mask per step; the class of section 5 draws one per sample, as section 5 explains.*
-
 Averaging the predictions of many models is a standard way to reduce test error, at the cost of one training run and one forward pass per model. The ensemble reading says that the full network stands in for an average over its thinned networks at the cost of a single pass. For a network with one hidden layer feeding a softmax, Hinton et al. (2012) state the relation exactly: the full network outputs the renormalised geometric mean of the class probabilities of all $2^n$ thinned networks. The reason is one line. The logits are linear in the mask, so with the scale of section 4 their expectation over masks is the logits of the full network, and the softmax of a mean of logits is the renormalised geometric mean of the softmaxes.
 
 `snippets/ensemble.py` checks it by enumeration on a network small enough to list: 2 inputs, 8 ReLU neurons, 3 classes, random parameters at scale 1, $p = 0.5$, all 256 masks on the 300 spiral points.
@@ -54,9 +50,24 @@ renormalised geometric mean of the probabilities, against the full: largest gap 
 arithmetic mean of the probabilities, against the full:             largest gap 0.2293
 points where the arithmetic mean and the full network pick the same class: 300 of 300
 one thinned network against the full network: it picks another class on 6.3 to 76.7 percent of the points (mean over the masks 37.5)
+the same by the number of neurons a mask keeps, in percent of the points:
+kept   masks   lowest    mean   highest
+   0       1     76.7    76.7      76.7
+   1       8     23.0    64.6      76.7
+   2      28      6.3    54.2      76.7
+   3      56      6.3    45.0      76.7
+   4      70      6.3    36.8      76.7
+   5      56      6.3    29.4      76.7
+   6      28      6.3    22.4      76.7
+   7       8      6.3    15.4      54.0
+   8       1      8.0     8.0       8.0
 ```
 
-The first two lines are equalities up to rounding. The third shows what the identity is not: the full network is not the arithmetic mean of the thinned networks' probabilities, which differs from it by up to 0.23 in a probability, although the two choose the same class on all 300 points here. The last line is the reason the switch of section 7 matters: a single thinned network disagrees with the full one on 37.5 percent of the points on average.
+The first two lines are equalities up to rounding. The third shows what the identity is not: the full network is not the arithmetic mean of the thinned networks' probabilities, which differs from it by up to 0.23 in a probability, although the two choose the same class on all 300 points here. The sixth line is the reason the switch of section 7 matters: a single thinned network disagrees with the full one on 37.5 percent of the points on average. The table under it, drawn in the figure below, splits that figure by the number of neurons a mask keeps: the mean disagreement falls from 64.6 percent with one neuron kept to 15.4 with seven, and even the mask that keeps all eight, which doubles every activation, picks another class on 8.0 percent of the points.
+
+![Left: a network of 2 inputs, 8 ReLU neurons and 3 classes with a mask that keeps 5 neurons; the 3 dropped ones are dashed and unconnected. Right: for 0 to 8 kept neurons, a band from the lowest to the highest share of the 300 points on which a thinned network picks another class than the full network, with its mean: 76.7, 64.6, 54.2, 45.0, 36.8, 29.4, 22.4, 15.4 and 8.0 percent, and a dotted line at the mean over all 256 masks, 37.5.](diagrams/02-thinned-networks.svg)
+
+*All 256 thinned networks of the network of `snippets/ensemble.py` at $p = 0.5$. One of them alone often picks another class than the full network, and the fewer neurons it keeps, the more often; their logits averaged over the masks are the full network's.*
 
 The identity needs the dropped layer to feed the softmax through a linear layer. With a non-linearity after the dropout layer, as in a deeper network, the full network is only an approximation to the average; Srivastava et al. (2014) report that the approximation works well in practice. Neither reading says how much a given network gains; section 8 measures it.
 
@@ -99,7 +110,7 @@ mask of 0 and 1:        [1 1 1 1 0]  sum of a * mask: 4.0
 mask / (1 - p):         [1.25 1.25 1.25 1.25 0.  ]  sum: 5.0
 ```
 
-The four survivors carry 1.25 each and the sum is back at 5. That is one draw; a mask that kept all five would give 6.25. The claim is about the mean, here over 200,000 masks:
+The four survivors carry 1.25 each and the sum is back at 5, as the first row of the figure at the top of the post shows. That is one draw; a mask that kept all five would give 6.25. The claim is about the mean, here over 200,000 masks:
 
 ```text
 activations a:               [0.5 1.  2.  0.  3. ]
@@ -269,6 +280,12 @@ Each cell is the range over seeds 0 to 4, in percent; the last two columns are d
 | $p = 0.1$ | `seeds_rate_10.py` | 53.07 to 69.50 | 58.00 to 74.33 | 54.00 to 66.33 | 2.00 to 11.67 | $-2.93$ to 6.92 |
 | $p = 0.2$ | `seeds_rate_20.py` | 54.81 to 64.88 | 61.33 to 72.67 | 50.67 to 63.00 | 6.67 to 11.33 | $-0.89$ to 5.88 |
 | $p = 0.5$ | `seeds_rate_50.py` | 56.11 to 58.44 | 64.33 to 67.00 | 53.33 to 62.33 | 3.00 to 11.00 | $-4.97$ to 2.78 |
+
+The figure below draws the three figures of each of these twenty runs.
+
+![Twenty rows, seeds 0 to 4 without dropout and at p = 0.1, 0.2 and 0.5, on an accuracy axis from 50 to 100 percent, each with three marks: training accuracy through the mask, training accuracy with the mask off, and test accuracy. Without dropout the two training marks coincide. With dropout the mask-on mark is left of the mask-off mark in every row, and the test mark is right of the mask-on mark on 1, 1 and 4 of the five seeds, but left of the mask-off mark in all 20 rows. Two columns print the two differences in points.](diagrams/03-three-accuracies.svg)
+
+*Every run of the table, seed by seed. The training figure through the mask sits below the mask-off figure of the same weights, which is why a test accuracy here can exceed the one and never the other.*
 
 **Dropout lowered the test accuracy on every seed, at every rate.** `snippets/jobs/paired.py` runs seeds 0 to 9 and prints every seed-by-seed count of this section. Against the baseline of the same seed, the test accuracy is lower on ten of ten seeds at each rate: by 9.33 to 31.33 points at $p = 0.1$, by 4.33 to 32.00 at $p = 0.2$ and by 5.00 to 23.67 at $p = 0.5$. The test loss, in contrast, is lower with dropout on 2 to 4 of the ten seeds at each rate: the baseline is confidently wrong on some test points (post 28, section 4), and the dropout networks are less confident.
 

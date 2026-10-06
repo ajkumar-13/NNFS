@@ -1,0 +1,321 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-03-three-accuracies-title" aria-describedby="nn-03-three-accuracies-desc">
+<title id="nn-03-three-accuracies-title">Test beats training only when training runs through the mask</title>
+<desc id="nn-03-three-accuracies-desc">Twenty rows, seeds 0 to 4 in four groups: no dropout layer and Layer_Dropout at p = 0.1, 0.2 and 0.5, on an accuracy axis from 50 to 100 percent. Each row has three marks: the training accuracy through the mask (mean of 100 masks, hollow green circle), the training accuracy with the mask off (solid green circle) and the test accuracy (blue diamond), in percent. No dropout layer, mask on, mask off, test: seed 0 96.33, 96.33, 82.33; seed 1 83.33, 83.33, 72.00; seed 2 78.00, 78.00, 67.33; seed 3 88.00, 88.00, 77.00; seed 4 96.33, 96.33, 82.67. p = 0.1, mask on, mask off, test: seed 0 69.50, 74.33, 66.33; seed 1 56.40, 60.33, 55.33; seed 2 59.31, 65.00, 58.00; seed 3 53.07, 58.00, 56.00; seed 4 60.92, 65.67, 54.00. p = 0.2, mask on, mask off, test: seed 0 64.88, 69.67, 59.00; seed 1 56.54, 61.33, 54.67; seed 2 63.42, 72.67, 63.00; seed 3 60.45, 70.00, 61.33; seed 4 54.81, 62.00, 50.67. p = 0.5, mask on, mask off, test: seed 0 58.44, 67.00, 60.33; seed 1 57.03, 65.00, 62.00; seed 2 58.26, 66.67, 62.33; seed 3 56.11, 64.33, 53.33; seed 4 57.64, 66.67, 59.67. Without a dropout layer the mask-on and mask-off marks coincide. Two columns print mask off minus test and mask on minus test in points; the second is negative, test above the masked training figure, on 0, 1, 1 and 4 of the five seeds. Mask off minus test is positive in all 20 runs.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-green { fill: var(--nn-green); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-green { stroke: var(--nn-green); }
+  .s-grid { stroke: var(--nn-grid); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-rule { stroke: var(--nn-rule); }
+  .s-surface { stroke: var(--nn-surface); }
+  .w075 { stroke-width: 0.75; }
+</style>
+<defs>
+<marker id="nn-03-three-accuracies-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title" data-w="746">Test beats training only when training runs through the mask</text>
+<text x="40" y="76" class="t-subtitle" data-w="703">Seeds 0 to 4, 10,001 epochs, all measured forward-only on the final weights; differences in points.</text>
+<text x="40" y="128" class="t-note" data-w="53">dropout</text>
+<text x="136" y="128" class="t-note" data-w="33">seed</text>
+<text x="808" y="128" text-anchor="end" class="t-note" data-w="102">mask off − test</text>
+<text x="920" y="128" text-anchor="end" class="t-note" data-w="101">mask on − test</text>
+<g data-grid="skip">
+<path d="M192,144 L192,608" class="s-grid w075 nofill"/>
+<path d="M291.2,144 L291.2,608" class="s-grid w075 nofill"/>
+<path d="M390.4,144 L390.4,608" class="s-grid w075 nofill"/>
+<path d="M489.6,144 L489.6,608" class="s-grid w075 nofill"/>
+<path d="M588.8,144 L588.8,608" class="s-grid w075 nofill"/>
+<path d="M688,144 L688,608" class="s-grid w075 nofill"/>
+<path d="M192,608 L688,608" class="s-ink-muted w1 nofill"/>
+<text x="192" y="628" text-anchor="middle" class="t-tick" data-w="16">50</text>
+<text x="291.2" y="628" text-anchor="middle" class="t-tick" data-w="16">60</text>
+<text x="390.4" y="628" text-anchor="middle" class="t-tick" data-w="16">70</text>
+<text x="489.6" y="628" text-anchor="middle" class="t-tick" data-w="16">80</text>
+<text x="588.8" y="628" text-anchor="middle" class="t-tick" data-w="16">90</text>
+<text x="688" y="628" text-anchor="middle" class="t-tick" data-w="23">100</text>
+<text x="40" y="165" class="t-label" data-w="34">none</text>
+<text x="40" y="185" class="t-note" data-w="53">on = off</text>
+<path d="M512.75,160 L651.63,160" class="s-rule w1 nofill"/>
+<path d="M512.75,154 L518.75,160 L512.75,166 L506.75,160 Z" class="nofill s-blue w15"/>
+<circle cx="651.63" cy="160" r="5" class="f-green s-surface w1"/>
+<circle cx="651.59" cy="160" r="5" class="nofill s-green w15"/>
+<text x="136" y="165" class="t-tick" data-w="8">0</text>
+<text x="808" y="165" text-anchor="end" class="t-label" data-w="37">14.00</text>
+<text x="920" y="165" text-anchor="end" class="t-label" data-w="37">14.00</text>
+<path d="M410.24,180 L522.67,180" class="s-rule w1 nofill"/>
+<path d="M410.24,174 L416.24,180 L410.24,186 L404.24,180 Z" class="nofill s-blue w15"/>
+<circle cx="522.67" cy="180" r="5" class="f-green s-surface w1"/>
+<circle cx="522.63" cy="180" r="5" class="nofill s-green w15"/>
+<text x="136" y="185" class="t-tick" data-w="8">1</text>
+<text x="808" y="185" text-anchor="end" class="t-label" data-w="37">11.33</text>
+<text x="920" y="185" text-anchor="end" class="t-label" data-w="37">11.33</text>
+<path d="M363.95,200 L469.76,200" class="s-rule w1 nofill"/>
+<path d="M363.95,194 L369.95,200 L363.95,206 L357.95,200 Z" class="nofill s-blue w15"/>
+<circle cx="469.76" cy="200" r="5" class="f-green s-surface w1"/>
+<circle cx="469.76" cy="200" r="5" class="nofill s-green w15"/>
+<text x="136" y="205" class="t-tick" data-w="8">2</text>
+<text x="808" y="205" text-anchor="end" class="t-label" data-w="37">10.67</text>
+<text x="920" y="205" text-anchor="end" class="t-label" data-w="37">10.67</text>
+<path d="M459.84,220 L568.96,220" class="s-rule w1 nofill"/>
+<path d="M459.84,214 L465.84,220 L459.84,226 L453.84,220 Z" class="nofill s-blue w15"/>
+<circle cx="568.96" cy="220" r="5" class="f-green s-surface w1"/>
+<circle cx="568.96" cy="220" r="5" class="nofill s-green w15"/>
+<text x="136" y="225" class="t-tick" data-w="8">3</text>
+<text x="808" y="225" text-anchor="end" class="t-label" data-w="37">11.00</text>
+<text x="920" y="225" text-anchor="end" class="t-label" data-w="37">11.00</text>
+<path d="M516.05,240 L651.63,240" class="s-rule w1 nofill"/>
+<path d="M516.05,234 L522.05,240 L516.05,246 L510.05,240 Z" class="nofill s-blue w15"/>
+<circle cx="651.63" cy="240" r="5" class="f-green s-surface w1"/>
+<circle cx="651.59" cy="240" r="5" class="nofill s-green w15"/>
+<text x="136" y="245" class="t-tick" data-w="8">4</text>
+<text x="808" y="245" text-anchor="end" class="t-label" data-w="37">13.67</text>
+<text x="920" y="245" text-anchor="end" class="t-label" data-w="37">13.67</text>
+<text x="40" y="281" class="t-label" data-w="48"><tspan class="i">p</tspan> = 0.1</text>
+<path d="M354.03,276 L433.39,276" class="s-rule w1 nofill"/>
+<path d="M354.03,270 L360.03,276 L354.03,282 L348.03,276 Z" class="nofill s-blue w15"/>
+<circle cx="433.39" cy="276" r="5" class="f-green s-surface w1"/>
+<circle cx="385.44" cy="276" r="5" class="nofill s-green w15"/>
+<text x="136" y="281" class="t-tick" data-w="8">0</text>
+<text x="808" y="281" text-anchor="end" class="t-label" data-w="29">8.00</text>
+<text x="920" y="281" text-anchor="end" class="t-label" data-w="29">3.17</text>
+<path d="M244.91,296 L294.51,296" class="s-rule w1 nofill"/>
+<path d="M244.91,290 L250.91,296 L244.91,302 L238.91,296 Z" class="nofill s-blue w15"/>
+<circle cx="294.51" cy="296" r="5" class="f-green s-surface w1"/>
+<circle cx="255.49" cy="296" r="5" class="nofill s-green w15"/>
+<text x="136" y="301" class="t-tick" data-w="8">1</text>
+<text x="808" y="301" text-anchor="end" class="t-label" data-w="29">5.00</text>
+<text x="920" y="301" text-anchor="end" class="t-label" data-w="29">1.07</text>
+<path d="M271.36,316 L340.8,316" class="s-rule w1 nofill"/>
+<path d="M271.36,310 L277.36,316 L271.36,322 L265.36,316 Z" class="nofill s-blue w15"/>
+<circle cx="340.8" cy="316" r="5" class="f-green s-surface w1"/>
+<circle cx="284.36" cy="316" r="5" class="nofill s-green w15"/>
+<text x="136" y="321" class="t-tick" data-w="8">2</text>
+<text x="808" y="321" text-anchor="end" class="t-label" data-w="29">7.00</text>
+<text x="920" y="321" text-anchor="end" class="t-label" data-w="29">1.31</text>
+<path d="M222.45,336 L271.36,336" class="s-rule w1 nofill"/>
+<path d="M251.52,330 L257.52,336 L251.52,342 L245.52,336 Z" class="nofill s-blue w15"/>
+<circle cx="271.36" cy="336" r="5" class="f-green s-surface w1"/>
+<circle cx="222.45" cy="336" r="5" class="nofill s-green w15"/>
+<text x="136" y="341" class="t-tick" data-w="8">3</text>
+<text x="808" y="341" text-anchor="end" class="t-label" data-w="29">2.00</text>
+<text x="920" y="341" text-anchor="end" class="t-value f-blue-ink" data-w="40">−2.93</text>
+<path d="M231.68,356 L347.41,356" class="s-rule w1 nofill"/>
+<path d="M231.68,350 L237.68,356 L231.68,362 L225.68,356 Z" class="nofill s-blue w15"/>
+<circle cx="347.41" cy="356" r="5" class="f-green s-surface w1"/>
+<circle cx="300.33" cy="356" r="5" class="nofill s-green w15"/>
+<text x="136" y="361" class="t-tick" data-w="8">4</text>
+<text x="808" y="361" text-anchor="end" class="t-label" data-w="37">11.67</text>
+<text x="920" y="361" text-anchor="end" class="t-label" data-w="29">6.92</text>
+<text x="40" y="397" class="t-label" data-w="48"><tspan class="i">p</tspan> = 0.2</text>
+<path d="M281.28,392 L387.09,392" class="s-rule w1 nofill"/>
+<path d="M281.28,386 L287.28,392 L281.28,398 L275.28,392 Z" class="nofill s-blue w15"/>
+<circle cx="387.09" cy="392" r="5" class="f-green s-surface w1"/>
+<circle cx="339.61" cy="392" r="5" class="nofill s-green w15"/>
+<text x="136" y="397" class="t-tick" data-w="8">0</text>
+<text x="808" y="397" text-anchor="end" class="t-label" data-w="37">10.67</text>
+<text x="920" y="397" text-anchor="end" class="t-label" data-w="29">5.88</text>
+<path d="M238.29,412 L304.43,412" class="s-rule w1 nofill"/>
+<path d="M238.29,406 L244.29,412 L238.29,418 L232.29,412 Z" class="nofill s-blue w15"/>
+<circle cx="304.43" cy="412" r="5" class="f-green s-surface w1"/>
+<circle cx="256.88" cy="412" r="5" class="nofill s-green w15"/>
+<text x="136" y="417" class="t-tick" data-w="8">1</text>
+<text x="808" y="417" text-anchor="end" class="t-label" data-w="29">6.67</text>
+<text x="920" y="417" text-anchor="end" class="t-label" data-w="29">1.87</text>
+<path d="M320.96,432 L416.85,432" class="s-rule w1 nofill"/>
+<path d="M320.96,426 L326.96,432 L320.96,438 L314.96,432 Z" class="nofill s-blue w15"/>
+<circle cx="416.85" cy="432" r="5" class="f-green s-surface w1"/>
+<circle cx="325.13" cy="432" r="5" class="nofill s-green w15"/>
+<text x="136" y="437" class="t-tick" data-w="8">2</text>
+<text x="808" y="437" text-anchor="end" class="t-label" data-w="29">9.67</text>
+<text x="920" y="437" text-anchor="end" class="t-label" data-w="29">0.42</text>
+<path d="M295.66,452 L390.4,452" class="s-rule w1 nofill"/>
+<path d="M304.43,446 L310.43,452 L304.43,458 L298.43,452 Z" class="nofill s-blue w15"/>
+<circle cx="390.4" cy="452" r="5" class="f-green s-surface w1"/>
+<circle cx="295.66" cy="452" r="5" class="nofill s-green w15"/>
+<text x="136" y="457" class="t-tick" data-w="8">3</text>
+<text x="808" y="457" text-anchor="end" class="t-label" data-w="29">8.67</text>
+<text x="920" y="457" text-anchor="end" class="t-value f-blue-ink" data-w="40">−0.89</text>
+<path d="M198.61,472 L311.04,472" class="s-rule w1 nofill"/>
+<path d="M198.61,466 L204.61,472 L198.61,478 L192.61,472 Z" class="nofill s-blue w15"/>
+<circle cx="311.04" cy="472" r="5" class="f-green s-surface w1"/>
+<circle cx="239.72" cy="472" r="5" class="nofill s-green w15"/>
+<text x="136" y="477" class="t-tick" data-w="8">4</text>
+<text x="808" y="477" text-anchor="end" class="t-label" data-w="37">11.33</text>
+<text x="920" y="477" text-anchor="end" class="t-label" data-w="29">4.14</text>
+<text x="40" y="513" class="t-label" data-w="48"><tspan class="i">p</tspan> = 0.5</text>
+<path d="M275.72,508 L360.64,508" class="s-rule w1 nofill"/>
+<path d="M294.51,502 L300.51,508 L294.51,514 L288.51,508 Z" class="nofill s-blue w15"/>
+<circle cx="360.64" cy="508" r="5" class="f-green s-surface w1"/>
+<circle cx="275.72" cy="508" r="5" class="nofill s-green w15"/>
+<text x="136" y="513" class="t-tick" data-w="8">0</text>
+<text x="808" y="513" text-anchor="end" class="t-label" data-w="29">6.67</text>
+<text x="920" y="513" text-anchor="end" class="t-value f-blue-ink" data-w="40">−1.89</text>
+<path d="M261.74,528 L340.8,528" class="s-rule w1 nofill"/>
+<path d="M311.04,522 L317.04,528 L311.04,534 L305.04,528 Z" class="nofill s-blue w15"/>
+<circle cx="340.8" cy="528" r="5" class="f-green s-surface w1"/>
+<circle cx="261.74" cy="528" r="5" class="nofill s-green w15"/>
+<text x="136" y="533" class="t-tick" data-w="8">1</text>
+<text x="808" y="533" text-anchor="end" class="t-label" data-w="29">3.00</text>
+<text x="920" y="533" text-anchor="end" class="t-value f-blue-ink" data-w="40">−4.97</text>
+<path d="M273.94,548 L357.33,548" class="s-rule w1 nofill"/>
+<path d="M314.35,542 L320.35,548 L314.35,554 L308.35,548 Z" class="nofill s-blue w15"/>
+<circle cx="357.33" cy="548" r="5" class="f-green s-surface w1"/>
+<circle cx="273.94" cy="548" r="5" class="nofill s-green w15"/>
+<text x="136" y="553" class="t-tick" data-w="8">2</text>
+<text x="808" y="553" text-anchor="end" class="t-label" data-w="29">4.33</text>
+<text x="920" y="553" text-anchor="end" class="t-value f-blue-ink" data-w="40">−4.07</text>
+<path d="M225.07,568 L334.19,568" class="s-rule w1 nofill"/>
+<path d="M225.07,562 L231.07,568 L225.07,574 L219.07,568 Z" class="nofill s-blue w15"/>
+<circle cx="334.19" cy="568" r="5" class="f-green s-surface w1"/>
+<circle cx="252.61" cy="568" r="5" class="nofill s-green w15"/>
+<text x="136" y="573" class="t-tick" data-w="8">3</text>
+<text x="808" y="573" text-anchor="end" class="t-label" data-w="37">11.00</text>
+<text x="920" y="573" text-anchor="end" class="t-label" data-w="29">2.78</text>
+<path d="M267.79,588 L357.33,588" class="s-rule w1 nofill"/>
+<path d="M287.89,582 L293.89,588 L287.89,594 L281.89,588 Z" class="nofill s-blue w15"/>
+<circle cx="357.33" cy="588" r="5" class="f-green s-surface w1"/>
+<circle cx="267.79" cy="588" r="5" class="nofill s-green w15"/>
+<text x="136" y="593" class="t-tick" data-w="8">4</text>
+<text x="808" y="593" text-anchor="end" class="t-label" data-w="29">7.00</text>
+<text x="920" y="593" text-anchor="end" class="t-value f-blue-ink" data-w="40">−2.03</text>
+</g>
+<text x="440" y="652" text-anchor="middle" class="t-note" data-w="119">accuracy, percent</text>
+<g data-grid="skip">
+<circle cx="200" cy="124" r="5" class="nofill s-green w15"/>
+<text x="216" y="128" class="t-label" data-w="116">training, mask on</text>
+<circle cx="372" cy="124" r="5" class="f-green s-surface w1"/>
+<text x="388" y="128" class="t-label" data-w="58">mask off</text>
+<path d="M486,118 L492,124 L486,130 L480,124 Z" class="nofill s-blue w15"/>
+<text x="502" y="128" class="t-label" data-w="26">test</text>
+</g>
+<text x="40" y="684" class="t-note" data-w="486">With the mask off, training accuracy is above test accuracy in all 20 runs.</text>
+</svg>
