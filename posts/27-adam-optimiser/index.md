@@ -11,9 +11,9 @@
 > - Implement Optimizer_Adam with two buffers per parameter array and reproduce the documented spiral run.
 > - Reason about when Adam is the wrong default, from the measured seed spread and the published cases.
 
-![A flow diagram of the Adam update. The gradient feeds two parallel lanes, a moving average of the gradient and a moving average of its square, each followed by a bias-correction box, and the two corrected values meet in one parameter-update box. A bar chart beneath lists the final spiral accuracy of six optimisers, from 64.7 to 96.3 percent.](diagrams/01-adam-pipeline.svg)
+![A flow diagram of the Adam update for one parameter. The gradient g t forks into two lanes. Top, the first moment with beta 1 = 0.9, m t = beta 1 m t minus 1 plus (1 minus beta 1) g t, the averaging of momentum from post 24, then its correction, m hat t = m t over (1 minus beta 1 to the t). Bottom, the second moment with beta 2 = 0.999, the cache of RMSProp from post 26, then its correction v hat t = v t over (1 minus beta 2 to the t). Both feed the update theta t = theta t minus 1 minus alpha times m hat t over (root of v hat t plus epsilon), with epsilon = 10 to the minus 7. Under each line, the first update of a constant gradient 0.5: m 1 = 0.05 and v 1 = 0.00025, corrected to 0.5 and 0.25, a step of one learning rate, against 3.162 learning rates without the corrections.](diagrams/01-adam-update.svg)
 
-*Two averages, two corrections, one update. The bar chart is the documented run of section 7, seed 0 only, and the figure's "Part 24" and "Part 26" are posts 24 and 26. The boxes marked "amplifies" enlarge the two estimates; what that does to the step is the subject of section 3.2.*
+*Two averages, two corrections, one update, with the numbers of the first update for a constant gradient of 0.5 (section 3).*
 
 ---
 
@@ -50,7 +50,7 @@ v_t &= \beta_2 \, v_{t-1} + (1 - \beta_2) \, g_t^2 \quad &\text{(second moment)}
 \theta_t &= \theta_{t-1} - \alpha \cdot \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon} \quad &\text{(parameter update)}
 \end{aligned}$$
 
-Five lines, all applied element by element to a whole weight or bias array. The second line is the cache of post 26 with $\rho$ renamed $\beta_2$; here $v$ is the second moment, not the velocity that post 24 called $v$. The last line has the form of the RMSProp update, $\alpha$ divided by $\sqrt{\cdot} + \epsilon$, with $\hat{m}_t$ where RMSProp has the raw gradient.
+Five lines, all applied element by element to a whole weight or bias array; the figure at the top of the post draws them as two lanes that meet in the update. The second line is the cache of post 26 with $\rho$ renamed $\beta_2$; here $v$ is the second moment, not the velocity that post 24 called $v$. The last line has the form of the RMSProp update, $\alpha$ divided by $\sqrt{\cdot} + \epsilon$, with $\hat{m}_t$ where RMSProp has the raw gradient.
 
 The first line is not the velocity of post 24. That velocity was $v \leftarrow \beta v - \alpha g$, and the parameter moved by it. Adam's $m$ carries the factor $(1 - \beta_1)$ and no learning rate, so it is an exponential moving average (EMA) of the gradient: a weighted mean, in the units of $g$, whose weights sum to $1 - \beta_1^t$. The learning rate enters once, in the last line.
 
@@ -79,10 +79,6 @@ The geometric sum leaves $m_t$ short by the factor $1 - \beta_1^t$, and dividing
 
 The correction of $m$ is gone after about 50 steps (the factor is 1.005 there). The correction of $v$ lasts a hundred times longer: it is still 10.5 at step 100 and 1.58 at step 1,000. These are factors on $v$; the step divides by $\sqrt{\hat{v}}$ and feels their square roots, 3.24 and 1.26. No schedule switches either of them off; $\beta^t$ goes to zero by itself.
 
-![Two panels. The left panel writes the first value of each moving average, a tenth of the gradient and a thousandth of its square. The right panel plots the correction factor, one over one minus beta to the power t, on log axes for beta 0.9 and beta 0.999, falling from 10 and from 1,000 towards 1.](diagrams/02-bias-correction.svg)
-
-*The two curves are the two factor columns of the table. The left panel's remark that an uncorrected optimiser crawls is not what section 3.2 measures: left alone, the early steps are larger, not smaller.*
-
 ### 3.2. What the correction does to the step
 
 The step divides $\hat{m}_t$ by $\sqrt{\hat{v}_t}$, so the two corrections act against each other. Leaving $\epsilon$ aside, and for any sequence of gradients,
@@ -101,7 +97,11 @@ largest uncorrected step: 6.569 learning rates at t = 12
 uncorrected step still above 1.1 learning rates until t = 1750
 ```
 
-The table is in units of $\alpha$ for a constant gradient, where the corrected step is exactly $\alpha$. Bias correction is therefore a brake on the early updates: compared with the uncorrected rule it multiplies the step by 0.316 at the first update and by as little as $1/6.569 = 0.152$ at the twelfth, and it releases the brake over the first two thousand updates. Kingma and Ba describe it the same way: the two averages are biased towards zero by their start, and with $\beta_2$ close to 1 a missing correction leads to initial steps that are much larger. Their paper also writes the corrected rule as the uncorrected one run at the rate $\alpha \sqrt{1 - \beta_2^t} / (1 - \beta_1^t)$, the reciprocal of the factor above.
+The table is in units of $\alpha$ for a constant gradient, where the corrected step is exactly $\alpha$. Bias correction is therefore a brake on the early updates: compared with the uncorrected rule it multiplies the step by 0.316 at the first update and by as little as $1/6.569 = 0.152$ at the twelfth, and it releases the brake over the first two thousand updates. Kingma and Ba describe it the same way: the two averages are biased towards zero by their start, and with $\beta_2$ close to 1 a missing correction leads to initial steps that are much larger. Their paper also writes the corrected rule as the uncorrected one run at the rate $\alpha \sqrt{1 - \beta_2^t} / (1 - \beta_1^t)$, the reciprocal of the factor above. The figure draws the two tables of this section as curves over the first 10,000 updates.
+
+![Two charts against the update t on a log axis from 1 to 10,000, for beta 1 = 0.9 and beta 2 = 0.999. Left, the correction factor 1 over (1 minus beta to the t) on a log scale: for m it falls from 10 to 1.535 at t = 10 and 1.000 at t = 100; for v from 1,000 to 100.451 at t = 10, 10.503 at t = 100, 1.582 at t = 1,000 and 1.007 at t = 5,000. Right, the step for a constant gradient in learning rates: 1 at every t with the correction; without it 3.162 at t = 1, 6.528 at t = 10, 3.241 at t = 100 and 1.258 at t = 1,000, largest at 6.569 at t = 12 and above 1.1 until t = 1,750.](diagrams/02-bias-correction.svg)
+
+*The two corrections fade by themselves; without them the early steps rise to 6.569 learning rates before they settle.*
 
 The first corrected update is the cleanest case. $\hat{m}_1 = g_1$ and $\hat{v}_1 = g_1^2$, so the step is $\alpha \, g_1 / (|g_1| + \epsilon)$: the learning rate, in the direction against the gradient, whatever the size of the gradient. The script hands `Optimizer_Adam()` four weight gradients and one bias gradient:
 
@@ -284,7 +284,13 @@ On seed 0 Adam has the lowest loss at every checkpoint and the highest final acc
 | RMSProp | 90.0 | **89.0** | **87.3** | 91.7 | 95.0 | 90.6 |
 | Adam | **96.3** | 82.3 | 81.3 | 88.7 | 96.3 | 89.0 |
 
-The best figure of each seed is in bold, and four different optimisers hold one. What the five seeds support:
+The best figure of each seed is in bold, and four different optimisers hold one. The figure draws each row as a band over the five seeds.
+
+![A chart of the final training accuracy on the spiral after 10,001 epochs for the six optimisers of Part VI, one row each, a band from the lowest to the highest of seeds 0 to 4 with a tick per seed and a dot for seed 0, on an axis from 50 to 100 percent. Gradient descent, post 22: seed 0 64.7, mean 71.7, best on no seed. Learning-rate decay, post 23: 64.7, mean 64.5, none. Momentum, post 24: 95.7, mean 83.4, best on seed 4. AdaGrad, post 25: 84.0, mean 82.7, best on seed 3. RMSProp, post 26: 90.0, mean 90.6, best on seeds 1 and 2. Adam, this post, in blue: 96.3, mean 89.0, best on seed 0.](diagrams/04-six-optimisers.svg)
+
+*The seed-0 dots alone put Adam first; the bands overlap, and the best of each seed is four different optimisers.*
+
+What the five seeds support:
 
 - **Adam is the best of the six on seed 0 and on no other seed.** It is second on seeds 1 and 4 and third on seeds 2 and 3. Its final accuracy runs from 81.3 to 96.3 percent and its final loss from 0.0806 to 0.4722.
 - **On these five seeds RMSProp has the highest mean and the narrowest range**, 87.3 to 95.0 percent, and it ends above Adam on three. Five more seeds undo both leads. On seeds 5 to 9 post 26 measures 77.3, 89.0, 77.0, 85.7 and 85.3 percent for RMSProp, and `seeds_adam_more.py` 84.0, 79.7, 86.7, 82.0 and 95.7 for Adam. Over the ten seeds RMSProp runs from 77.0 to 95.0 percent with a mean of 86.7 and Adam from 79.7 to 96.3 with a mean of 87.3, and each ends above the other on five.
@@ -304,7 +310,11 @@ The learning rate was not tuned either. `rate_low.py` and `rate_high.py` rerun A
 | 0.02 (documented) | 81.3 to 96.3 | 89.0 | 0.0806 to 0.4722 | 2 |
 | 0.1 | 89.3 to 98.7 | 94.8 | 0.0390 to 0.2655 | 5 |
 
-Across a factor of 100 in the learning rate every one of the fifteen runs trains, to between 81.3 and 98.7 percent. The largest rate does best on four of the five seeds, which agrees with the uncorrected runs of section 3.2: this network on this data wants larger steps than 0.02 gives it. At a rate of 1.0, the setting of post 22, Adam fails on all five seeds (section 12).
+Across a factor of 100 in the learning rate every one of the fifteen runs trains, to between 81.3 and 98.7 percent. The largest rate does best on four of the five seeds, which agrees with the uncorrected runs of section 3.2: this network on this data wants larger steps than 0.02 gives it. At a rate of 1.0, the setting of post 22, Adam fails on all five seeds (section 12). The figure puts the fifteen runs beside the ten uncorrected ones of section 3.2.
+
+![A chart of Adam's final training accuracy on the spiral after 10,001 epochs, one row per setting, each a band from the lowest to the highest of seeds 0 to 4 with a tick per seed and a dot for seed 0, on an axis from 40 to 100 percent, with the mean and the number of seeds past 90 percent at the right. In blue, with the correction: learning rate 0.001, 88.0 to 93.3, mean 90.6, 3 of 5; 0.02, 81.3 to 96.3, mean 89.0, 2 of 5; 0.1, 89.3 to 98.7, mean 94.8, 5 of 5. In grey, without the correction: 0.02, 93.3 to 97.3, mean 96.1, 5 of 5; 0.1, 41.7 to 52.0, mean 46.7, 0 of 5.](diagrams/03-rates-and-correction.svg)
+
+*Every corrected rate trains; the uncorrected optimiser is ahead at 0.02 on every seed and behind at 0.1 on every seed.*
 
 ---
 

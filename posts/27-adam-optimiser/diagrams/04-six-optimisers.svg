@@ -1,0 +1,244 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-04-six-optimisers-title" aria-describedby="nn-04-six-optimisers-desc">
+<title id="nn-04-six-optimisers-title">Adam is the best of the six on seed 0 and on no other</title>
+<desc id="nn-04-six-optimisers-desc">A chart of the final training accuracy on the spiral after 10,001 epochs for the six optimisers of Part VI, one row each, a band from the lowest to the highest of seeds 0 to 4 with a tick per seed and a dot for seed 0, on an axis from 50 to 100 percent, with seed 0, the mean and the seeds on which the row is the best of the six at the right. Seeds 0 to 4: gradient descent: 64.7, 74.7, 53.7, 87.0, 78.7, mean 71.7, best on none; learning-rate decay: 64.7, 69.3, 58.0, 67.0, 63.7, mean 64.5, best on none; momentum: 95.7, 68.7, 73.0, 81.7, 98.0, mean 83.4, best on seed 4; AdaGrad: 84.0, 75.7, 81.7, 92.7, 79.7, mean 82.7, best on seed 3; RMSProp: 90.0, 89.0, 87.3, 91.7, 95.0, mean 90.6, best on seeds 1 and 2; Adam: 96.3, 82.3, 81.3, 88.7, 96.3, mean 89.0, best on seed 0.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--nn-blue); }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .f-neutral-soft { fill: var(--nn-neutral-soft); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-blue-line { stroke: var(--nn-blue-line); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-rule { stroke: var(--nn-rule); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-04-six-optimisers-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="650">Adam is the best of the six on seed 0 and on no other</text>
+<text x="40" y="76" class="t-subtitle" data-w="733">Final training accuracy on the spiral after 10,001 epochs, seeds 0 to 4, each at its documented setting.</text>
+<g data-grid="skip">
+<path d="M240,128V392M324.8,128V392M409.6,128V392M494.4,128V392M579.2,128V392M664,128V392" class="gridline"/>
+<text x="240" y="412" text-anchor="middle" class="t-tick" data-w="16">50</text>
+<text x="324.8" y="412" text-anchor="middle" class="t-tick" data-w="16">60</text>
+<text x="409.6" y="412" text-anchor="middle" class="t-tick" data-w="16">70</text>
+<text x="494.4" y="412" text-anchor="middle" class="t-tick" data-w="16">80</text>
+<text x="579.2" y="412" text-anchor="middle" class="t-tick" data-w="16">90</text>
+<text x="664" y="412" text-anchor="middle" class="t-tick" data-w="23">100</text>
+<path d="M240,392H664" class="axis"/>
+<text x="40" y="155" class="t-label" data-w="0"></text>
+<text x="40" y="199" class="t-label" data-w="0"></text>
+<text x="40" y="243" class="t-label" data-w="0"></text>
+<text x="40" y="287" class="t-label" data-w="0"></text>
+<text x="40" y="331" class="t-label" data-w="0"></text>
+<text x="40" y="375" class="t-label" data-w="0"></text>
+</g>
+<text x="452" y="436" text-anchor="middle" class="t-note" data-w="151">final accuracy, percent</text>
+<text x="752" y="112" text-anchor="end" class="t-note" data-w="45">seed 0</text>
+<text x="816" y="112" text-anchor="end" class="t-note" data-w="38">mean</text>
+<text x="920" y="112" text-anchor="end" class="t-note" data-w="51">best on</text>
+<g data-grid="skip">
+<text x="40" y="155" class="t-label" data-w="171">gradient descent, <tspan class="f-ink-muted">post 22</tspan></text>
+<rect x="271.12" y="138" width="282.64" height="24" class="f-neutral-soft" data-fit="skip"/>
+<rect x="271.12" y="138" width="282.64" height="24" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M364.4,142 L364.4,158" class="s-ink-muted w1 nofill"/>
+<path d="M449.2,142 L449.2,158" class="s-ink-muted w1 nofill"/>
+<path d="M271.12,142 L271.12,158" class="s-ink-muted w1 nofill"/>
+<path d="M553.76,142 L553.76,158" class="s-ink-muted w1 nofill"/>
+<path d="M483.12,142 L483.12,158" class="s-ink-muted w1 nofill"/>
+<circle cx="364.4" cy="150" r="5" class="f-ink-muted s-surface w1"/>
+<text x="752" y="155" text-anchor="end" class="t-label" data-w="29">64.7</text>
+<text x="816" y="155" text-anchor="end" class="t-value" data-w="30">71.7</text>
+<text x="920" y="155" text-anchor="end" class="t-label" data-w="34">none</text>
+<text x="40" y="199" class="t-label" data-w="189">learning-rate decay, <tspan class="f-ink-muted">post 23</tspan></text>
+<rect x="307.84" y="182" width="96.08" height="24" class="f-neutral-soft" data-fit="skip"/>
+<rect x="307.84" y="182" width="96.08" height="24" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M364.4,186 L364.4,202" class="s-ink-muted w1 nofill"/>
+<path d="M403.92,186 L403.92,202" class="s-ink-muted w1 nofill"/>
+<path d="M307.84,186 L307.84,202" class="s-ink-muted w1 nofill"/>
+<path d="M384.16,186 L384.16,202" class="s-ink-muted w1 nofill"/>
+<path d="M355.92,186 L355.92,202" class="s-ink-muted w1 nofill"/>
+<circle cx="364.4" cy="194" r="5" class="f-ink-muted s-surface w1"/>
+<text x="752" y="199" text-anchor="end" class="t-label" data-w="29">64.7</text>
+<text x="816" y="199" text-anchor="end" class="t-value" data-w="30">64.5</text>
+<text x="920" y="199" text-anchor="end" class="t-label" data-w="34">none</text>
+<text x="40" y="243" class="t-label" data-w="135">momentum, <tspan class="f-ink-muted">post 24</tspan></text>
+<rect x="398.32" y="226" width="248.72" height="24" class="f-neutral-soft" data-fit="skip"/>
+<rect x="398.32" y="226" width="248.72" height="24" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M627.28,230 L627.28,246" class="s-ink-muted w1 nofill"/>
+<path d="M398.32,230 L398.32,246" class="s-ink-muted w1 nofill"/>
+<path d="M435.04,230 L435.04,246" class="s-ink-muted w1 nofill"/>
+<path d="M508.56,230 L508.56,246" class="s-ink-muted w1 nofill"/>
+<path d="M647.04,230 L647.04,246" class="s-ink-muted w1 nofill"/>
+<circle cx="627.28" cy="238" r="5" class="f-ink-muted s-surface w1"/>
+<text x="752" y="243" text-anchor="end" class="t-label" data-w="29">95.7</text>
+<text x="816" y="243" text-anchor="end" class="t-value" data-w="30">83.4</text>
+<text x="920" y="243" text-anchor="end" class="t-label" data-w="45">seed 4</text>
+<text x="40" y="287" class="t-label" data-w="119">AdaGrad, <tspan class="f-ink-muted">post 25</tspan></text>
+<rect x="457.68" y="270" width="144.16" height="24" class="f-neutral-soft" data-fit="skip"/>
+<rect x="457.68" y="270" width="144.16" height="24" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M528.32,274 L528.32,290" class="s-ink-muted w1 nofill"/>
+<path d="M457.68,274 L457.68,290" class="s-ink-muted w1 nofill"/>
+<path d="M508.56,274 L508.56,290" class="s-ink-muted w1 nofill"/>
+<path d="M601.84,274 L601.84,290" class="s-ink-muted w1 nofill"/>
+<path d="M491.6,274 L491.6,290" class="s-ink-muted w1 nofill"/>
+<circle cx="528.32" cy="282" r="5" class="f-ink-muted s-surface w1"/>
+<text x="752" y="287" text-anchor="end" class="t-label" data-w="29">84.0</text>
+<text x="816" y="287" text-anchor="end" class="t-value" data-w="30">82.7</text>
+<text x="920" y="287" text-anchor="end" class="t-label" data-w="45">seed 3</text>
+<text x="40" y="331" class="t-label" data-w="124">RMSProp, <tspan class="f-ink-muted">post 26</tspan></text>
+<rect x="556.56" y="314" width="65.04" height="24" class="f-neutral-soft" data-fit="skip"/>
+<rect x="556.56" y="314" width="65.04" height="24" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M579.2,318 L579.2,334" class="s-ink-muted w1 nofill"/>
+<path d="M570.72,318 L570.72,334" class="s-ink-muted w1 nofill"/>
+<path d="M556.56,318 L556.56,334" class="s-ink-muted w1 nofill"/>
+<path d="M593.36,318 L593.36,334" class="s-ink-muted w1 nofill"/>
+<path d="M621.6,318 L621.6,334" class="s-ink-muted w1 nofill"/>
+<circle cx="579.2" cy="326" r="5" class="f-ink-muted s-surface w1"/>
+<text x="752" y="331" text-anchor="end" class="t-label" data-w="29">90.0</text>
+<text x="816" y="331" text-anchor="end" class="t-value" data-w="30">90.6</text>
+<text x="920" y="331" text-anchor="end" class="t-label" data-w="94">seeds 1 and 2</text>
+<text x="40" y="375" class="t-label" data-w="106">Adam, <tspan class="f-ink-muted">this post</tspan></text>
+<rect x="505.68" y="358" width="127.2" height="24" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M632.88,362V378M514.16,362V378M505.68,362V378M567.92,362V378M632.88,362V378" class="s-blue w1 nofill"/>
+<circle cx="632.88" cy="370" r="5" class="f-blue s-surface w1"/>
+<text x="752" y="375" text-anchor="end" class="t-label" data-w="29">96.3</text>
+<text x="816" y="375" text-anchor="end" class="t-value f-blue-ink" data-w="30">89.0</text>
+<text x="920" y="375" text-anchor="end" class="t-label" data-w="45">seed 0</text>
+<rect x="240" y="456" width="24" height="16" class="f-neutral-soft" data-fit="skip"/>
+<rect x="240" y="456" width="24" height="16" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M252,458.67 L252,469.33" class="s-ink-muted w1 nofill"/>
+<text x="276" y="468" class="t-label" data-w="165">five seeds, one tick each</text>
+<circle cx="512" cy="464" r="5" class="f-ink-muted s-surface w1"/>
+<text x="528" y="468" class="t-label" data-w="189">seed 0, the documented run</text>
+</g>
+<text x="40" y="504" class="t-note" data-w="660">Four different optimisers are the best of some seed; the order on seed 0 is a property of that seed.</text>
+</svg>

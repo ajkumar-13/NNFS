@@ -1,0 +1,189 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-01-adam-update-title" aria-describedby="nn-01-adam-update-desc">
+<title id="nn-01-adam-update-title">Two averages, two corrections, one update</title>
+<desc id="nn-01-adam-update-desc">A flow diagram of the Adam update for one parameter. The gradient g t feeds two lanes. Top, the first moment with beta 1 = 0.9, m t = beta 1 m t minus 1 plus (1 minus beta 1) g t, the averaging of momentum from post 24, then its correction m hat t = m t over (1 minus beta 1 to the t). Bottom, the second moment with beta 2 = 0.999, v t = beta 2 v t minus 1 plus (1 minus beta 2) g t squared, the cache of RMSProp from post 26, then its correction v hat t = v t over (1 minus beta 2 to the t). Both feed the update theta t = theta t minus 1 minus alpha times m hat t over (root of v hat t plus epsilon), epsilon = 10 to the minus 7. For the first update of a constant gradient 0.5: m 1 = 0.05 and v 1 = 0.00025; the corrections divide by 0.1 and 0.001 and give m hat 1 = 0.5 and v hat 1 = 0.25, so the step is alpha times 0.5 over (0.5 plus epsilon), one learning rate. Without the corrections it would be 3.162 learning rates.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-orange-soft { fill: var(--nn-orange-soft); }
+  .f-purple-ink { fill: var(--nn-purple-ink); }
+  .f-purple-soft { fill: var(--nn-purple-soft); }
+  .s-blue-line { stroke: var(--nn-blue-line); }
+  .s-orange-line { stroke: var(--nn-orange-line); }
+  .s-purple-line { stroke: var(--nn-purple-line); }
+</style>
+<defs>
+<marker id="nn-01-adam-update-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="524">Two averages, two corrections, one update</text>
+<text x="40" y="76" class="t-subtitle" data-w="680">One parameter, <tspan class="i">t</tspan> counted from 1. The numbers: the first update of a constant gradient <tspan class="i">g</tspan> = 0.5.</text>
+<rect x="40" y="224" width="96" height="112" rx="8" class="f-purple-soft s-purple-line w1"/>
+<text x="88" y="276" text-anchor="middle" class="t-math f-purple-ink" data-w="16"><tspan class="i">g</tspan><tspan class="sub i" dy="4">t</tspan><tspan dy="-4">​</tspan></text>
+<text x="88" y="304" text-anchor="middle" class="t-note" data-w="56">gradient</text>
+<rect x="168" y="112" width="280" height="136" rx="8" class="card"/>
+<text x="184" y="144" class="t-head" data-w="183">First moment, <tspan class="i">β</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> = 0.9</text>
+<text x="184" y="184" class="t-math" data-w="206"><tspan class="i">m</tspan><tspan class="sub i" dy="4">t</tspan><tspan dy="-4">​</tspan> = <tspan class="i">β</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> <tspan class="i">m</tspan><tspan class="sub" dy="4"><tspan class="i">t</tspan>−1</tspan><tspan dy="-4">​</tspan> + (1 − <tspan class="i">β</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan>) <tspan class="i">g</tspan><tspan class="sub i" dy="4">t</tspan><tspan dy="-4">​</tspan></text>
+<text x="184" y="208" class="t-note" data-w="248">the averaging of momentum, post 24</text>
+<text x="184" y="232" class="t-label" data-w="140"><tspan class="i">m</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> = 0.1 · 0.5 = 0.05</text>
+<rect x="480" y="112" width="208" height="136" rx="8" class="f-blue-soft s-blue-line w1"/>
+<text x="496" y="144" class="t-head" data-w="128">Correction of <tspan class="i">m</tspan></text>
+<text x="496" y="184" class="t-math" data-w="164"><tspan class="i">m̂</tspan><tspan class="sub i" dy="4">t</tspan><tspan dy="-4">​</tspan> = <tspan class="i">m</tspan><tspan class="sub i" dy="4">t</tspan><tspan dy="-4">​</tspan> / (1 − <tspan class="i">β</tspan><tspan class="sub i" dy="-6">t</tspan><tspan class="sub" dx="-3.61" dy="10">1</tspan><tspan dy="-4">​</tspan>)</text>
+<text x="496" y="208" class="t-note" data-w="145">divides by 0.1 at <tspan class="i">t</tspan> = 1</text>
+<text x="496" y="232" class="t-label" data-w="155"><tspan class="i">m̂</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> = 0.05 / 0.1 = 0.5</text>
+<rect x="168" y="280" width="280" height="136" rx="8" class="card"/>
+<text x="184" y="312" class="t-head" data-w="225">Second moment, <tspan class="i">β</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> = 0.999</text>
+<text x="184" y="352" class="t-math" data-w="201"><tspan class="i">v</tspan><tspan class="sub i" dy="4">t</tspan><tspan dy="-4">​</tspan> = <tspan class="i">β</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> <tspan class="i">v</tspan><tspan class="sub" dy="4"><tspan class="i">t</tspan>−1</tspan><tspan dy="-4">​</tspan> + (1 − <tspan class="i">β</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan>) <tspan class="i">g</tspan><tspan class="sub" dy="-6">2</tspan><tspan class="sub i" dx="-7.01" dy="10">t</tspan><tspan dx="3.98" dy="-4">​</tspan></text>
+<text x="184" y="376" class="t-note" data-w="211">the cache of RMSProp, post 26</text>
+<text x="184" y="400" class="t-label" data-w="183"><tspan class="i">v</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> = 0.001 · 0.25 = 0.00025</text>
+<rect x="480" y="280" width="208" height="136" rx="8" class="f-blue-soft s-blue-line w1"/>
+<text x="496" y="312" class="t-head" data-w="122">Correction of <tspan class="i">v</tspan></text>
+<text x="496" y="352" class="t-math" data-w="151"><tspan class="i">v̂</tspan><tspan class="sub i" dy="4">t</tspan><tspan dy="-4">​</tspan> = <tspan class="i">v</tspan><tspan class="sub i" dy="4">t</tspan><tspan dy="-4">​</tspan> / (1 − <tspan class="i">β</tspan><tspan class="sub i" dy="-6">t</tspan><tspan class="sub" dx="-3.61" dy="10">2</tspan><tspan dy="-4">​</tspan>)</text>
+<text x="496" y="376" class="t-note" data-w="161">divides by 0.001 at <tspan class="i">t</tspan> = 1</text>
+<text x="496" y="400" class="t-label" data-w="77"><tspan class="i">v̂</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> = 0.25</text>
+<rect x="720" y="196" width="200" height="168" rx="8" class="f-orange-soft s-orange-line w1"/>
+<text x="736" y="228" class="t-head" data-w="134">Update, <tspan class="i">ε</tspan> = 10<tspan class="sub" dy="-6">−7</tspan><tspan dy="6">​</tspan></text>
+<text x="736" y="268" class="t-math" data-w="70"><tspan class="i">θ</tspan><tspan class="sub i" dy="4">t</tspan><tspan dy="-4">​</tspan> = <tspan class="i">θ</tspan><tspan class="sub" dy="4"><tspan class="i">t</tspan>−1</tspan><tspan dy="-4">​</tspan></text>
+<text x="752" y="292" class="t-math" data-w="184">− <tspan class="i">α</tspan> · <tspan class="i">m̂</tspan><tspan class="sub i" dy="4">t</tspan><tspan dy="-4">​</tspan> / (√<tspan class="i">v̂</tspan><tspan class="sub i" dy="4">t</tspan><tspan dy="-4">​</tspan> + <tspan class="i">ε</tspan>)</text>
+<text x="736" y="324" class="t-label" data-w="179">first step: <tspan class="i">α</tspan> · 0.5 / (0.5 + <tspan class="i">ε</tspan>)</text>
+<text x="736" y="348" class="t-label" data-w="65">= 1.000 <tspan class="i">α</tspan></text>
+<path d="M136,280 L152,280 L152,180 L165,180" class="flow" marker-end="url(#nn-01-adam-update-arrow)"/>
+<path d="M136,280 L152,280 L152,348 L165,348" class="flow" marker-end="url(#nn-01-adam-update-arrow)"/>
+<path d="M448,180 L477,180" class="flow" marker-end="url(#nn-01-adam-update-arrow)"/>
+<path d="M448,348 L477,348" class="flow" marker-end="url(#nn-01-adam-update-arrow)"/>
+<path d="M688,180 L704,180 L704,236 L717,236" class="flow" marker-end="url(#nn-01-adam-update-arrow)"/>
+<path d="M688,348 L704,348 L704,324 L717,324" class="flow" marker-end="url(#nn-01-adam-update-arrow)"/>
+<rect x="40" y="444" width="32" height="20" rx="4" class="f-purple-soft s-purple-line w1"/>
+<text x="84" y="460" class="t-label" data-w="56">gradient</text>
+<rect x="172" y="444" width="32" height="20" rx="4" class="card"/>
+<text x="216" y="460" class="t-label" data-w="258">optimiser state, kept between updates</text>
+<rect x="512" y="444" width="32" height="20" rx="4" class="f-blue-soft s-blue-line w1"/>
+<text x="556" y="460" class="t-label" data-w="194">bias correction, new in Adam</text>
+<rect x="788" y="444" width="32" height="20" rx="4" class="f-orange-soft s-orange-line w1"/>
+<text x="832" y="460" class="t-label" data-w="70">parameter</text>
+<text x="40" y="504" class="t-note" data-w="575">Without the corrections the first step would be 0.05 / √0.00025 = 3.162 learning rates.</text>
+</svg>

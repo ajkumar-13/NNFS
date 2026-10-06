@@ -9,7 +9,7 @@ part: "Part VI - Optimisers"
 level: intermediate
 reading_time: 24
 tags: [neural-networks, from-scratch, optimisation, adam, bias-correction]
-hero: diagrams/01-adam-pipeline.svg
+hero: diagrams/01-adam-update.svg
 prerequisites: [nn-024, nn-026]
 code: included
 outcomes:
