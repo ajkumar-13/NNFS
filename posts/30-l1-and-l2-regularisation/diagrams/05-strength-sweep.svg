@@ -1,0 +1,273 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-05-strength-sweep-title" aria-describedby="nn-05-strength-sweep-desc">
+<title id="nn-05-strength-sweep-title">Three strengths tie in test accuracy; the largest underfits</title>
+<desc id="nn-05-strength-sweep-desc">Two dot charts, one row per L2 strength on the first layer, each row a band from the lowest to the highest of seeds 0 to 4 with one tick per seed and a dot at the mean of the five. Left the training accuracy in percent on an axis from 80 to 100, right the test accuracy from 70 to 95, with the mean test accuracy printed at the right. In percent, no penalty: training 95.33, 84.67, 92.67, 96.33, 97.67; test 78.67, 73.00, 77.33, 81.33, 82.33, mean 78.53; 10 to the minus 4: training 96.33, 95.00, 95.00, 96.33, 98.67; test 84.67, 88.33, 78.33, 84.33, 87.67, mean 84.67; 5 times 10 to the minus 4: training 95.33, 92.67, 93.33, 95.00, 96.33; test 84.00, 85.67, 81.00, 84.67, 86.67, mean 84.40; 10 to the minus 3: training 95.00, 93.33, 93.67, 94.67, 95.67; test 82.33, 86.33, 81.33, 81.00, 86.67, mean 83.53; 10 to the minus 2: training 85.00, 84.33, 87.33, 89.00, 81.00; test 76.67, 79.67, 76.67, 76.00, 77.67, mean 77.33. No penalty in grey, the four strengths in blue.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--nn-blue); }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .f-neutral-soft { fill: var(--nn-neutral-soft); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-blue-line { stroke: var(--nn-blue-line); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-rule { stroke: var(--nn-rule); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-05-strength-sweep-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="697">Three strengths tie in test accuracy; the largest underfits</text>
+<text x="40" y="76" class="t-subtitle" data-w="668">L2 on the weights and biases of the first layer, seeds 0 to 4 for each strength, 10,001 epochs.</text>
+<g data-grid="skip">
+<path d="M176,128V408M252,128V408M328,128V408M404,128V408M480,128V408" class="gridline"/>
+<text x="176" y="428" text-anchor="middle" class="t-tick" data-w="16">80</text>
+<text x="252" y="428" text-anchor="middle" class="t-tick" data-w="16">85</text>
+<text x="328" y="428" text-anchor="middle" class="t-tick" data-w="16">90</text>
+<text x="404" y="428" text-anchor="middle" class="t-tick" data-w="16">95</text>
+<text x="480" y="428" text-anchor="middle" class="t-tick" data-w="23">100</text>
+<path d="M176,408H480" class="axis"/>
+<text x="40" y="161" class="t-label" data-w="34"><tspan class="i">λ</tspan> = 0</text>
+<text x="40" y="217" class="t-label" data-w="59"><tspan class="i">λ</tspan> = 10<tspan class="sub" dy="-6">−4</tspan><tspan dy="6">​</tspan></text>
+<text x="40" y="273" class="t-label" data-w="86"><tspan class="i">λ</tspan> = 5 × 10<tspan class="sub" dy="-6">−4</tspan><tspan dy="6">​</tspan></text>
+<text x="40" y="329" class="t-label" data-w="59"><tspan class="i">λ</tspan> = 10<tspan class="sub" dy="-6">−3</tspan><tspan dy="6">​</tspan></text>
+<text x="40" y="385" class="t-label" data-w="59"><tspan class="i">λ</tspan> = 10<tspan class="sub" dy="-6">−2</tspan><tspan dy="6">​</tspan></text>
+</g>
+<g data-grid="skip">
+<path d="M528,128V408M590.4,128V408M652.8,128V408M715.2,128V408M777.6,128V408M840,128V408" class="gridline"/>
+<text x="528" y="428" text-anchor="middle" class="t-tick" data-w="16">70</text>
+<text x="590.4" y="428" text-anchor="middle" class="t-tick" data-w="16">75</text>
+<text x="652.8" y="428" text-anchor="middle" class="t-tick" data-w="16">80</text>
+<text x="715.2" y="428" text-anchor="middle" class="t-tick" data-w="16">85</text>
+<text x="777.6" y="428" text-anchor="middle" class="t-tick" data-w="16">90</text>
+<text x="840" y="428" text-anchor="middle" class="t-tick" data-w="16">95</text>
+<path d="M528,408H840" class="axis"/>
+<text x="528" y="161" class="t-label" data-w="0"></text>
+<text x="528" y="217" class="t-label" data-w="0"></text>
+<text x="528" y="273" class="t-label" data-w="0"></text>
+<text x="528" y="329" class="t-label" data-w="0"></text>
+<text x="528" y="385" class="t-label" data-w="0"></text>
+</g>
+<text x="176" y="112" class="t-head" data-w="216">Training accuracy, percent</text>
+<text x="528" y="112" class="t-head" data-w="185">Test accuracy, percent</text>
+<text x="920" y="112" text-anchor="end" class="t-note" data-w="38">mean</text>
+<g data-grid="skip">
+<rect x="246.93" y="144" width="197.6" height="24" class="f-neutral-soft" data-fit="skip"/>
+<rect x="246.93" y="144" width="197.6" height="24" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M409.07,148 L409.07,164" class="s-ink-muted w1 nofill"/>
+<path d="M246.93,148 L246.93,164" class="s-ink-muted w1 nofill"/>
+<path d="M368.53,148 L368.53,164" class="s-ink-muted w1 nofill"/>
+<path d="M424.27,148 L424.27,164" class="s-ink-muted w1 nofill"/>
+<path d="M444.53,148 L444.53,164" class="s-ink-muted w1 nofill"/>
+<circle cx="378.67" cy="156" r="5" class="f-ink-muted s-surface w1"/>
+<rect x="565.44" y="144" width="116.48" height="24" class="f-neutral-soft" data-fit="skip"/>
+<rect x="565.44" y="144" width="116.48" height="24" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M636.16,148 L636.16,164" class="s-ink-muted w1 nofill"/>
+<path d="M565.44,148 L565.44,164" class="s-ink-muted w1 nofill"/>
+<path d="M619.52,148 L619.52,164" class="s-ink-muted w1 nofill"/>
+<path d="M669.44,148 L669.44,164" class="s-ink-muted w1 nofill"/>
+<path d="M681.92,148 L681.92,164" class="s-ink-muted w1 nofill"/>
+<circle cx="634.5" cy="156" r="5" class="f-ink-muted s-surface w1"/>
+<text x="920" y="161" text-anchor="end" class="t-value f-ink-muted" data-w="38">78.53</text>
+<rect x="404" y="200" width="55.73" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="404" y="200" width="55.73" height="24" class="w1 nofill s-blue-line" data-fit="skip"/>
+<path d="M424.27,204 L424.27,220" class="s-blue w1 nofill"/>
+<path d="M404,204 L404,220" class="s-blue w1 nofill"/>
+<path d="M404,204 L404,220" class="s-blue w1 nofill"/>
+<path d="M424.27,204 L424.27,220" class="s-blue w1 nofill"/>
+<path d="M459.73,204 L459.73,220" class="s-blue w1 nofill"/>
+<circle cx="423.25" cy="212" r="5" class="f-blue s-surface w1"/>
+<rect x="632" y="200" width="124.8" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="632" y="200" width="124.8" height="24" class="w1 nofill s-blue-line" data-fit="skip"/>
+<path d="M711.04,204 L711.04,220" class="s-blue w1 nofill"/>
+<path d="M756.8,204 L756.8,220" class="s-blue w1 nofill"/>
+<path d="M632,204 L632,220" class="s-blue w1 nofill"/>
+<path d="M706.88,204 L706.88,220" class="s-blue w1 nofill"/>
+<path d="M748.48,204 L748.48,220" class="s-blue w1 nofill"/>
+<circle cx="711.04" cy="212" r="5" class="f-blue s-surface w1"/>
+<text x="920" y="217" text-anchor="end" class="t-value f-blue-ink" data-w="38">84.67</text>
+<rect x="368.53" y="256" width="55.73" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="368.53" y="256" width="55.73" height="24" class="w1 nofill s-blue-line" data-fit="skip"/>
+<path d="M409.07,260 L409.07,276" class="s-blue w1 nofill"/>
+<path d="M368.53,260 L368.53,276" class="s-blue w1 nofill"/>
+<path d="M378.67,260 L378.67,276" class="s-blue w1 nofill"/>
+<path d="M404,260 L404,276" class="s-blue w1 nofill"/>
+<path d="M424.27,260 L424.27,276" class="s-blue w1 nofill"/>
+<circle cx="396.91" cy="268" r="5" class="f-blue s-surface w1"/>
+<rect x="665.28" y="256" width="70.72" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="665.28" y="256" width="70.72" height="24" class="w1 nofill s-blue-line" data-fit="skip"/>
+<path d="M702.72,260 L702.72,276" class="s-blue w1 nofill"/>
+<path d="M723.52,260 L723.52,276" class="s-blue w1 nofill"/>
+<path d="M665.28,260 L665.28,276" class="s-blue w1 nofill"/>
+<path d="M711.04,260 L711.04,276" class="s-blue w1 nofill"/>
+<path d="M736,260 L736,276" class="s-blue w1 nofill"/>
+<circle cx="707.71" cy="268" r="5" class="f-blue s-surface w1"/>
+<text x="920" y="273" text-anchor="end" class="t-value f-blue-ink" data-w="38">84.40</text>
+<rect x="378.67" y="312" width="35.47" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="378.67" y="312" width="35.47" height="24" class="w1 nofill s-blue-line" data-fit="skip"/>
+<path d="M404,316 L404,332" class="s-blue w1 nofill"/>
+<path d="M378.67,316 L378.67,332" class="s-blue w1 nofill"/>
+<path d="M383.73,316 L383.73,332" class="s-blue w1 nofill"/>
+<path d="M398.93,316 L398.93,332" class="s-blue w1 nofill"/>
+<path d="M414.13,316 L414.13,332" class="s-blue w1 nofill"/>
+<circle cx="395.89" cy="324" r="5" class="f-blue s-surface w1"/>
+<rect x="665.28" y="312" width="70.72" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="665.28" y="312" width="70.72" height="24" class="w1 nofill s-blue-line" data-fit="skip"/>
+<path d="M681.92,316 L681.92,332" class="s-blue w1 nofill"/>
+<path d="M731.84,316 L731.84,332" class="s-blue w1 nofill"/>
+<path d="M669.44,316 L669.44,332" class="s-blue w1 nofill"/>
+<path d="M665.28,316 L665.28,332" class="s-blue w1 nofill"/>
+<path d="M736,316 L736,332" class="s-blue w1 nofill"/>
+<circle cx="696.9" cy="324" r="5" class="f-blue s-surface w1"/>
+<text x="920" y="329" text-anchor="end" class="t-value f-blue-ink" data-w="38">83.53</text>
+<rect x="191.2" y="368" width="121.6" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="191.2" y="368" width="121.6" height="24" class="w1 nofill s-blue-line" data-fit="skip"/>
+<path d="M252,372 L252,388" class="s-blue w1 nofill"/>
+<path d="M241.87,372 L241.87,388" class="s-blue w1 nofill"/>
+<path d="M287.47,372 L287.47,388" class="s-blue w1 nofill"/>
+<path d="M312.8,372 L312.8,388" class="s-blue w1 nofill"/>
+<path d="M191.2,372 L191.2,388" class="s-blue w1 nofill"/>
+<circle cx="257.07" cy="380" r="5" class="f-blue s-surface w1"/>
+<rect x="602.88" y="368" width="45.76" height="24" class="f-blue-soft" data-fit="skip"/>
+<rect x="602.88" y="368" width="45.76" height="24" class="w1 nofill s-blue-line" data-fit="skip"/>
+<path d="M611.2,372 L611.2,388" class="s-blue w1 nofill"/>
+<path d="M648.64,372 L648.64,388" class="s-blue w1 nofill"/>
+<path d="M611.2,372 L611.2,388" class="s-blue w1 nofill"/>
+<path d="M602.88,372 L602.88,388" class="s-blue w1 nofill"/>
+<path d="M623.68,372 L623.68,388" class="s-blue w1 nofill"/>
+<circle cx="619.52" cy="380" r="5" class="f-blue s-surface w1"/>
+<text x="920" y="385" text-anchor="end" class="t-value f-blue-ink" data-w="38">77.33</text>
+</g>
+<rect x="176" y="456" width="24" height="16" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M188,458.67V469.33" class="s-blue w1 nofill"/>
+<text x="208" y="468" class="t-label" data-w="165">five seeds, one tick each</text>
+<circle cx="416" cy="464" r="5" class="f-blue s-surface w1"/>
+<text x="440" y="468" class="t-label" data-w="108">mean of the five</text>
+<text x="40" y="504" class="t-note" data-w="613">The spread between seeds is wider than the difference between the three middle strengths.</text>
+</svg>

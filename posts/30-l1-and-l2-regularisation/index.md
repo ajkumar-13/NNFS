@@ -12,9 +12,9 @@
 > - Extend Layer_Dense with weight_regularizer_l1 and weight_regularizer_l2 that hook into the existing forward and backward passes.
 > - Choose a sensible regularisation strength from a sweep read on held-out data over several seeds.
 
-![Two panels. On the left the L1 penalty, a V with its corner at zero, carries three arrows of equal length at weights 0.5, 1 and 1.5. On the right the L2 penalty, a parabola, carries three arrows that grow with the weight. A table underneath lists both gradients at a strength of 0.01 for weights of 0.01, 1 and 10.](diagrams/01-l1-vs-l2-penalty.svg)
+![Two charts over one weight w from −1.5 to 1.5 at a strength of 0.01. Left, the penalty: L1, lambda times the absolute value of w, is a V with its corner at 0 and reaches 0.015 at the ends; L2, lambda times w squared, is a parabola and reaches 0.0225. Right, the gradient of each penalty as the dense layer computes it: L1 is −0.01 for every negative weight and +0.01 for every positive one and for w = 0; L2 is the line 2 lambda w from −0.03 to 0.03. The two gradients are equal at w = 0.5 and w = −0.5.](diagrams/01-penalty-and-gradient.svg)
 
-*The same weights under two penalty shapes. The arrows are the size of the gradient: equal everywhere on the V, proportional to the weight on the parabola. The figure's note "L1 → 0" is qualified in section 3.*
+*One weight under the two penalties at $\lambda = 0.01$. The L1 gradient has the same size at every weight; the L2 gradient grows with the weight and passes it at $|w| = 0.5$.*
 
 ---
 
@@ -63,11 +63,7 @@ The two gradients differ in one respect. The L1 gradient has the same size, $\la
 | 10 | 0.01 | 0.2 |
 | 100 | 0.01 | 2 |
 
-![A log-log chart of gradient size against weight magnitude from 0.01 to 100 at a strength of 0.01. The L1 line is flat at 0.01. The L2 line rises with slope 1 from 0.0002 to 2. The two cross at a weight magnitude of 0.5, marked with a dot, and a side card describes each side of the crossing.](diagrams/02-gradient-pressure.svg)
-
-*A flat line and a line of slope 1. With the same $\lambda$ on both, they cross where $\lambda = 2 \lambda |w|$, at $|w| = 0.5$ whatever $\lambda$ is; the crossing moves only when the two penalties are given different strengths, the only sense in which the card's "moves with λ" holds; its "crosses zero and stays" is qualified in section 3.*
-
-Below $|w| = 0.5$ the L1 gradient is the larger one, and above it the L2 gradient is.
+The figure at the top of the post draws both gradients at this strength. With the same $\lambda$ on both, they cross where $\lambda = 2 \lambda |w|$, at $|w| = 0.5$ whatever $\lambda$ is. Below $|w| = 0.5$ the L1 gradient is the larger one, and above it the L2 gradient is.
 
 ---
 
@@ -87,6 +83,12 @@ L1 after step 10: |w| stays at 0.000500 to 0.000500; steps with w == 0: 0 of 100
 L2 factor per step: 1 - 2 * learning rate * lambda = 0.998; start * factor^1000 = 0.001418
 L1 from a weight of exactly 0: -0.001  0  -0.001  0
 ```
+
+The figure below draws both paths from the same steps, the first 20 on the left and all 1,000 on the right.
+
+![Two charts of the weight against the step, from 0.0105, under each penalty alone with plain steps at a learning rate of 0.1 and lambda 0.01. Left, steps 0 to 20: the L1 weight falls by 0.001 per step to 0.0005 at step 10 and then jumps between 0.0005 and −0.0005, never 0, while the L2 weight barely moves. Right, steps 0 to 1,000: the L2 weight follows 0.0105 times 0.998 to the power t, 0.008595 at step 100 and 0.001418 at step 1,000; the L1 weight stays in a band from −0.0005 to 0.0005 from step 10 on.](diagrams/02-one-weight-plain-steps.svg)
+
+*The same 1,000 steps on two time scales. L1 covers the distance to zero at a constant speed and then oversteps it every step; L2 loses 0.2 percent of what is left each step.*
 
 **L2 shrinks.** Each step multiplies the weight by $1 - 2 \alpha \lambda = 0.998$, so the weight decays geometrically: after 1,000 steps it is $0.0105 \cdot 0.998^{1000} = 0.001418$. The step is proportional to what is left, so a large weight loses a lot, a small one loses little, and the weight never arrives at zero.
 
@@ -263,6 +265,12 @@ Each row is a range over seeds 0 to 4, measured forward-only after the last upda
 | L1, $5 \times 10^{-4}$ | `seeds_l1.py` | 95.00 to 97.33 | 80.33 to 86.67 | 9.33 to 16.00 | 0.485 to 0.775 |
 | L1 and L2, both $5 \times 10^{-4}$ | `seeds_l1_l2.py` | 82.00 to 96.33 | 77.33 to 88.00 | 1.67 to 11.33 | 0.440 to 0.682 |
 
+The figure below draws every run of the first three rows seed by seed, each as a line from its test accuracy to its training accuracy, so that the length of the line is the gap.
+
+![One row per run for seeds 0 to 4, three runs per seed: no penalty, L2 and L1, both at 5 times 10 to the minus 4, on an accuracy axis from 70 to 100 percent. Each run is a line from its test accuracy, a solid mark, to its training accuracy, a hollow mark. On every seed the L2 and L1 lines start further right than the line without a penalty and are shorter: test accuracy 78.67, 84.00 and 80.33 percent on seed 0, 73.00, 85.67 and 86.67 on seed 1, 77.33, 81.00 and 83.00 on seed 2, 81.33, 84.67 and 83.33 on seed 3, 82.33, 86.67 and 83.33 on seed 4.](diagrams/03-train-and-test-per-seed.svg)
+
+*The ranges of the table overlap; seed by seed, each penalty has the higher test accuracy and the shorter line.*
+
 **L2 helped on each of the five seeds.** Seed by seed, test accuracy rose by 3.33 to 12.67 points, the gap narrowed by 3.00 to 5.67 points, and the test data loss fell, in all five runs. On seed 0 the figures are 95.33 percent in training with and without the penalty, and 78.67 against 84.00 percent on the test set. The ranges of the two rows overlap, so a single run of each on different seeds could show the opposite; the claim rests on the paired comparison.
 
 **L1 raised test accuracy on each of the five seeds too, and narrowed the gap by less.** Test accuracy rose by 1.00 to 13.67 points and the gap narrowed by 0.67 to 3.33 points, against 3.00 to 5.67 under L2, because L1 kept the higher training accuracy on all five seeds. A rise of 1.00 point is 3 test points of 300, where one test accuracy scatters by about 2.2 points (post 28, section 4): on such a seed the run shows that L1 did no harm, and no more. Between L1 and L2 at this strength the runs give no order in test accuracy: L2 is higher on three seeds and L1 on two.
@@ -282,7 +290,11 @@ What the penalties did to the 128 weights of `dense1`, over the same five seeds:
 
 **Both penalties shrink the weights a great deal.** The sum of squares falls by a factor of roughly 14 to 39 under L2 and 5 to 11 under L1.
 
-**No weight is exactly zero in any of the twenty runs,** as section 3 predicts for gradient steps. With a threshold of 0.001 for "near zero", L1 leaves 6 to 22 of the 128 weights there and L2 leaves 0 to 18, which reads as no contrast. The count mixes two kinds of weight. A dead neuron (post 06), with zero output on every training point, passes no data gradient to its two incoming weights, so they move under the penalty alone, towards zero under either one. Without a penalty 12 to 23 of the 64 neurons end dead and their weights stay where they were. Under L2 every near-zero weight belongs to a dead neuron, on all five seeds; among live neurons L2 leaves no weight below the threshold and L1 leaves 4 to 16. The textbook contrast, sparse under L1 and dense under L2, therefore holds on these runs among the weights the network uses, and the raw count hides it.
+**No weight is exactly zero in any of the twenty runs,** as section 3 predicts for gradient steps. With a threshold of 0.001 for "near zero", L1 leaves 6 to 22 of the 128 weights there and L2 leaves 0 to 18, which reads as no contrast. The count mixes two kinds of weight. A dead neuron (post 06), with zero output on every training point, passes no data gradient to its two incoming weights, so they move under the penalty alone, towards zero under either one. Without a penalty 12 to 23 of the 64 neurons end dead and their weights stay where they were. Under L2 every near-zero weight belongs to a dead neuron, on all five seeds; among live neurons L2 leaves no weight below the threshold and L1 leaves 4 to 16. The textbook contrast, sparse under L1 and dense under L2, therefore holds on these runs among the weights the network uses, and the raw count hides it. The figure below splits the near-zero weights of each L2 and L1 run by the neuron they belong to.
+
+![Two stacked bar charts of the weights of the first layer below 0.001 after training, one bar per seed, 0 to 4. Left, L2 at 5 times 10 to the minus 4: 18, 0, 4, 12 and 6 weights, all of them in dead neurons. Right, L1 at the same strength: 7 and 9, 2 and 4, 3 and 11, 6 and 16, 3 and 8 weights in dead and in live neurons, totals 16, 6, 14, 22 and 11.](diagrams/04-near-zero-weights.svg)
+
+*Grey bars are weights that only the penalty moves; the coloured part, under L1 alone, is near-zero weights of neurons that still fire.*
 
 `snippets/single_weight.py` follows a weight that only the penalty moves. Under `Optimizer_Adam(learning_rate=0.05)` and the L1 penalty alone, a weight starting at 1 crosses zero at step 21 and then keeps moving within 0.0002 to 0.0049 of it, below the threshold on 213 of the last 1,000 steps and never at zero. Over 10,001 steps with the decay of the runs it is below the threshold on 214 of the last 1,000 steps under L1 and on 940 under L2, and in the trained networks 21 of the 52 weights of dead neurons are near zero under L1 against 40 of 44 under L2. For a weight the data has let go, Adam brings L2 closer to zero than L1, the reverse of the plain steps of section 3.
 
@@ -301,6 +313,12 @@ $\lambda$ is a hyperparameter, and [post 29](../29-validation-and-hyperparameter
 | $5 \times 10^{-4}$ | `seeds_l2.py` | 92.67 to 96.33 | 81.00 to 86.67 (84.40) | 7.00 to 12.33 | 99.64 to 141.04 |
 | $10^{-3}$ | `l2_strong.py` | 93.33 to 95.67 | 81.00 to 86.67 (83.53) | 7.00 to 13.67 | 61.57 to 72.44 |
 | $10^{-2}$ | `l2_too_strong.py` | 81.00 to 89.00 | 76.00 to 79.67 (77.33) | 3.33 to 13.00 | 7.98 to 11.52 |
+
+The figure below draws the two accuracy columns seed by seed, with a tick for every run.
+
+![Two dot charts, one row per L2 strength, 0, 10 to the minus 4, 5 times 10 to the minus 4, 10 to the minus 3 and 10 to the minus 2, each row a band over seeds 0 to 4 with a tick per seed and a dot at the mean. Left, training accuracy from 80 to 100 percent: the three middle strengths sit between 92.67 and 98.67, and 10 to the minus 2 falls to 81.00 to 89.00. Right, test accuracy from 70 to 95 percent, with mean test accuracies of 78.53, 84.67, 84.40, 83.53 and 77.33: the bands of the three middle strengths overlap almost entirely, and their means lie 5.0 to 6.1 points above that of no penalty.](diagrams/05-strength-sweep.svg)
+
+*No penalty in grey. Between $10^{-4}$ and $10^{-3}$ the spread over seeds is wider than the differences between strengths; at $10^{-2}$ both accuracies fall.*
 
 **The weights shrink steadily with $\lambda$.** The sum of squares falls at every step of the sweep, with no overlap between neighbouring rows.
 

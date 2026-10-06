@@ -9,7 +9,7 @@ part: "Part VII - Generalisation and regularisation"
 level: intermediate
 reading_time: 27
 tags: [neural-networks, from-scratch, regularisation, l1, l2, generalisation, weight-decay]
-hero: diagrams/01-l1-vs-l2-penalty.svg
+hero: diagrams/01-penalty-and-gradient.svg
 prerequisites: [nn-016, nn-028]
 code: included
 outcomes:
