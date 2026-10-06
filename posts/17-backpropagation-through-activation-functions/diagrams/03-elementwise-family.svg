@@ -1,0 +1,348 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-03-elementwise-family-title" aria-describedby="nn-03-elementwise-family-desc">
+<title id="nn-03-elementwise-family-title">One backward line, three slopes</title>
+<desc id="nn-03-elementwise-family-desc">Three panels, each plotting an activation f(z) in green and its slope f prime(z) in purple for z from minus 4 to 4, with the slope marked at the inputs z = 1, minus 2 and 3. ReLU: f = max(0, z); its slope steps from 0 to 1 at z = 0, with a solid dot at 0 and an open dot at 1 for z = 0 and a label f prime(0) = 0; for z &lt; 0 the green f is drawn over the purple slope, both 0. Sigmoid: its slope a(1 minus a), with a = sigma(z), peaks at 0.25. Tanh: its slope 1 minus a squared, with a = tanh(z), peaks at 1. Under each chart a table gives, for z = 1, minus 2, 3, the slope and dinputs = dvalues times the slope with dvalues = 5, 6, 7. ReLU: slopes 1, 0, 1 and dinputs 5, 0, 7. Sigmoid: 0.197, 0.105, 0.045 and 0.983, 0.630, 0.316. Tanh: 0.420, 0.071, 0.010 and 2.100, 0.424, 0.069. A line at the bottom gives the code all three share, dinputs = dvalues * f_prime(Z). Table values are rounded to 3 decimals.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-purple { fill: var(--nn-purple); }
+  .f-purple-ink { fill: var(--nn-purple-ink); }
+  .s-green { stroke: var(--nn-green); }
+  .s-purple { stroke: var(--nn-purple); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-03-elementwise-family-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<clipPath id="nn-03-elementwise-family-clip-1"><rect x="90" y="162" width="204" height="204"/></clipPath>
+<clipPath id="nn-03-elementwise-family-clip-2"><rect x="394" y="162" width="204" height="204"/></clipPath>
+<clipPath id="nn-03-elementwise-family-clip-3"><rect x="698" y="162" width="204" height="204"/></clipPath>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title" data-w="389">One backward line, three slopes</text>
+<text x="40" y="76" class="t-subtitle" data-w="565">Green: the activation <tspan class="i">f</tspan>(<tspan class="i">z</tspan>). Purple: its slope <tspan class="i">f</tspan> ′(<tspan class="i">z</tspan>). Dots: the slope at <tspan class="i">z</tspan> = 1, −2, 3.</text>
+<text x="40" y="120" class="t-head" data-w="44">ReLU</text>
+<text x="40" y="148" class="t-note" data-w="134"><tspan class="i">f</tspan> ′ = 1 if <tspan class="i">z</tspan> &gt; 0, else 0</text>
+<g data-grid="skip">
+<path d="M96,338.67H288M96,296H288M96,253.33H288M96,210.67H288M96,168H288" class="gridline"/>
+<text x="88" y="342.67" text-anchor="end" class="t-tick" data-w="8">0</text>
+<text x="88" y="300" text-anchor="end" class="t-tick" data-w="8">1</text>
+<text x="88" y="257.33" text-anchor="end" class="t-tick" data-w="8">2</text>
+<text x="88" y="214.67" text-anchor="end" class="t-tick" data-w="8">3</text>
+<text x="88" y="172" text-anchor="end" class="t-tick" data-w="8">4</text>
+<text x="96" y="380" text-anchor="middle" class="t-tick" data-w="17">−4</text>
+<text x="144" y="380" text-anchor="middle" class="t-tick" data-w="17">−2</text>
+<text x="192" y="380" text-anchor="middle" class="t-tick" data-w="8">0</text>
+<text x="240" y="380" text-anchor="middle" class="t-tick" data-w="8">2</text>
+<text x="288" y="380" text-anchor="middle" class="t-tick" data-w="8">4</text>
+<path d="M96,168V360H288" class="axis"/>
+<g clip-path="url(#nn-03-elementwise-family-clip-1)">
+<path d="M96,338.67 L97.2,338.67 L98.4,338.67 L99.6,338.67 L100.8,338.67 L102,338.67 L103.2,338.67 L104.4,338.67 L105.6,338.67 L106.8,338.67 L108,338.67 L109.2,338.67 L110.4,338.67 L111.6,338.67 L112.8,338.67 L114,338.67 L115.2,338.67 L116.4,338.67 L117.6,338.67 L118.8,338.67 L120,338.67 L121.2,338.67 L122.4,338.67 L123.6,338.67 L124.8,338.67 L126,338.67 L127.2,338.67 L128.4,338.67 L129.6,338.67 L130.8,338.67 L132,338.67 L133.2,338.67 L134.4,338.67 L135.6,338.67 L136.8,338.67 L138,338.67 L139.2,338.67 L140.4,338.67 L141.6,338.67 L142.8,338.67 L144,338.67 L145.2,338.67 L146.4,338.67 L147.6,338.67 L148.8,338.67 L150,338.67 L151.2,338.67 L152.4,338.67 L153.6,338.67 L154.8,338.67 L156,338.67 L157.2,338.67 L158.4,338.67 L159.6,338.67 L160.8,338.67 L162,338.67 L163.2,338.67 L164.4,338.67 L165.6,338.67 L166.8,338.67 L168,338.67 L169.2,338.67 L170.4,338.67 L171.6,338.67 L172.8,338.67 L174,338.67 L175.2,338.67 L176.4,338.67 L177.6,338.67 L178.8,338.67 L180,338.67 L181.2,338.67 L182.4,338.67 L183.6,338.67 L184.8,338.67 L186,338.67 L187.2,338.67 L188.4,338.67 L189.6,338.67 L190.8,338.67 L192,338.67 L193.2,336.53 L194.4,334.4 L195.6,332.27 L196.8,330.13 L198,328 L199.2,325.87 L200.4,323.73 L201.6,321.6 L202.8,319.47 L204,317.33 L205.2,315.2 L206.4,313.07 L207.6,310.93 L208.8,308.8 L210,306.67 L211.2,304.53 L212.4,302.4 L213.6,300.27 L214.8,298.13 L216,296 L217.2,293.87 L218.4,291.73 L219.6,289.6 L220.8,287.47 L222,285.33 L223.2,283.2 L224.4,281.07 L225.6,278.93 L226.8,276.8 L228,274.67 L229.2,272.53 L230.4,270.4 L231.6,268.27 L232.8,266.13 L234,264 L235.2,261.87 L236.4,259.73 L237.6,257.6 L238.8,255.47 L240,253.33 L241.2,251.2 L242.4,249.07 L243.6,246.93 L244.8,244.8 L246,242.67 L247.2,240.53 L248.4,238.4 L249.6,236.27 L250.8,234.13 L252,232 L253.2,229.87 L254.4,227.73 L255.6,225.6 L256.8,223.47 L258,221.33 L259.2,219.2 L260.4,217.07 L261.6,214.93 L262.8,212.8 L264,210.67 L265.2,208.53 L266.4,206.4 L267.6,204.27 L268.8,202.13 L270,200 L271.2,197.87 L272.4,195.73 L273.6,193.6 L274.8,191.47 L276,189.33 L277.2,187.2 L278.4,185.07 L279.6,182.93 L280.8,180.8 L282,178.67 L283.2,176.53 L284.4,174.4 L285.6,172.27 L286.8,170.13 L288,168" class="s-green w15 nofill"/>
+</g>
+<text x="300" y="173" class="t-note f-green-ink" data-w="5"><tspan class="i">f</tspan></text>
+</g>
+<text x="192" y="404" text-anchor="middle" class="t-note" data-w="8"><tspan class="i">z</tspan></text>
+<g data-grid="skip">
+<g data-grid="skip">
+<path d="M96,338.67 L192,338.67" class="s-purple w15 nofill"/>
+</g>
+<g data-grid="skip">
+<path d="M192,296 L288,296" class="s-purple w15 nofill"/>
+</g>
+<g data-grid="skip">
+<path d="M96,338.67 L192,338.67" class="s-green w15 nofill"/>
+</g>
+<g data-grid="skip">
+<circle cx="192" cy="338.67" r="5" class="f-purple s-surface w1"/>
+</g>
+<g data-grid="skip">
+<circle cx="192" cy="296" r="5" class="nofill s-purple w15"/>
+</g>
+<g data-grid="skip">
+<text x="220.8" y="333" class="t-note f-purple-ink" data-w="57"><tspan class="i">f</tspan> ′(0) = 0</text>
+</g>
+<text x="300" y="301" class="t-note f-purple-ink" data-w="13"><tspan class="i">f</tspan> ′</text>
+<g data-grid="skip">
+<circle cx="216" cy="296" r="5" class="f-purple s-surface w1"/>
+</g>
+<g data-grid="skip">
+<circle cx="144" cy="338.67" r="5" class="f-purple s-surface w1"/>
+</g>
+<g data-grid="skip">
+<circle cx="264" cy="296" r="5" class="f-purple s-surface w1"/>
+</g>
+</g>
+<rect x="96" y="448" width="56" height="32" class="nofill"/>
+<rect x="152" y="448" width="72" height="32" class="nofill"/>
+<rect x="224" y="448" width="88" height="32" class="nofill"/>
+<rect x="96" y="480" width="56" height="32" class="nofill"/>
+<rect x="152" y="480" width="72" height="32" class="nofill"/>
+<rect x="224" y="480" width="88" height="32" class="nofill"/>
+<rect x="96" y="512" width="56" height="32" class="nofill"/>
+<rect x="152" y="512" width="72" height="32" class="nofill"/>
+<rect x="224" y="512" width="88" height="32" class="nofill"/>
+<rect x="96" y="544" width="56" height="32" class="nofill"/>
+<rect x="152" y="544" width="72" height="32" class="nofill"/>
+<rect x="224" y="544" width="88" height="32" class="nofill"/>
+<path d="M96,448H312M96,576H312" class="axis"/>
+<path d="M96,480H312" class="rule1"/>
+<text x="144" y="468" text-anchor="end" class="t-label" data-w="8"><tspan class="i">z</tspan></text>
+<text x="216" y="468" text-anchor="end" class="t-label" data-w="30"><tspan class="i">f</tspan> ′(<tspan class="i">z</tspan>)</text>
+<text x="144" y="500" text-anchor="end" class="t-label" data-w="9">1</text>
+<text x="216" y="500" text-anchor="end" class="t-label" data-w="9">1</text>
+<text x="304" y="500" text-anchor="end" class="t-label" data-w="9">5</text>
+<text x="144" y="532" text-anchor="end" class="t-label" data-w="19">−2</text>
+<text x="216" y="532" text-anchor="end" class="t-label" data-w="9">0</text>
+<text x="304" y="532" text-anchor="end" class="t-label" data-w="9">0</text>
+<text x="144" y="564" text-anchor="end" class="t-label" data-w="9">3</text>
+<text x="216" y="564" text-anchor="end" class="t-label" data-w="9">1</text>
+<text x="304" y="564" text-anchor="end" class="t-label" data-w="9">7</text>
+<text x="304" y="468" text-anchor="end" class="t-code" data-w="60">dinputs</text>
+<text x="344" y="120" class="t-head" data-w="68">Sigmoid</text>
+<text x="344" y="148" class="t-note" data-w="148"><tspan class="i">f</tspan> ′ = <tspan class="i">a</tspan>(1 − <tspan class="i">a</tspan>),  <tspan class="i">a</tspan> = σ(<tspan class="i">z</tspan>)</text>
+<g data-grid="skip">
+<path d="M400,338.67H592M400,296H592M400,253.33H592M400,210.67H592M400,168H592" class="gridline"/>
+<text x="392" y="342.67" text-anchor="end" class="t-tick" data-w="8">0</text>
+<text x="392" y="300" text-anchor="end" class="t-tick" data-w="27">0.25</text>
+<text x="392" y="257.33" text-anchor="end" class="t-tick" data-w="19">0.5</text>
+<text x="392" y="214.67" text-anchor="end" class="t-tick" data-w="27">0.75</text>
+<text x="392" y="172" text-anchor="end" class="t-tick" data-w="8">1</text>
+<text x="400" y="380" text-anchor="middle" class="t-tick" data-w="17">−4</text>
+<text x="448" y="380" text-anchor="middle" class="t-tick" data-w="17">−2</text>
+<text x="496" y="380" text-anchor="middle" class="t-tick" data-w="8">0</text>
+<text x="544" y="380" text-anchor="middle" class="t-tick" data-w="8">2</text>
+<text x="592" y="380" text-anchor="middle" class="t-tick" data-w="8">4</text>
+<path d="M400,168V360H592" class="axis"/>
+<g clip-path="url(#nn-03-elementwise-family-clip-2)">
+<path d="M400,335.6 L401.2,335.44 L402.4,335.28 L403.6,335.11 L404.8,334.93 L406,334.75 L407.2,334.55 L408.4,334.34 L409.6,334.13 L410.8,333.9 L412,333.66 L413.2,333.42 L414.4,333.15 L415.6,332.88 L416.8,332.6 L418,332.3 L419.2,331.98 L420.4,331.65 L421.6,331.31 L422.8,330.95 L424,330.57 L425.2,330.18 L426.4,329.77 L427.6,329.33 L428.8,328.88 L430,328.41 L431.2,327.92 L432.4,327.4 L433.6,326.87 L434.8,326.31 L436,325.72 L437.2,325.11 L438.4,324.47 L439.6,323.81 L440.8,323.12 L442,322.39 L443.2,321.64 L444.4,320.86 L445.6,320.05 L446.8,319.2 L448,318.32 L449.2,317.41 L450.4,316.46 L451.6,315.48 L452.8,314.46 L454,313.4 L455.2,312.3 L456.4,311.17 L457.6,310 L458.8,308.79 L460,307.53 L461.2,306.24 L462.4,304.91 L463.6,303.53 L464.8,302.12 L466,300.66 L467.2,299.16 L468.4,297.62 L469.6,296.04 L470.8,294.43 L472,292.77 L473.2,291.07 L474.4,289.34 L475.6,287.56 L476.8,285.76 L478,283.91 L479.2,282.04 L480.4,280.13 L481.6,278.19 L482.8,276.23 L484,274.23 L485.2,272.22 L486.4,270.18 L487.6,268.12 L488.8,266.04 L490,263.94 L491.2,261.84 L492.4,259.72 L493.6,257.6 L494.8,255.47 L496,253.33 L497.2,251.2 L498.4,249.07 L499.6,246.95 L500.8,244.83 L502,242.72 L503.2,240.63 L504.4,238.55 L505.6,236.49 L506.8,234.45 L508,232.43 L509.2,230.44 L510.4,228.47 L511.6,226.54 L512.8,224.63 L514,222.75 L515.2,220.91 L516.4,219.1 L517.6,217.33 L518.8,215.6 L520,213.9 L521.2,212.24 L522.4,210.62 L523.6,209.04 L524.8,207.51 L526,206.01 L527.2,204.55 L528.4,203.14 L529.6,201.76 L530.8,200.43 L532,199.13 L533.2,197.88 L534.4,196.67 L535.6,195.5 L536.8,194.36 L538,193.27 L539.2,192.21 L540.4,191.19 L541.6,190.21 L542.8,189.26 L544,188.34 L545.2,187.46 L546.4,186.62 L547.6,185.81 L548.8,185.02 L550,184.27 L551.2,183.55 L552.4,182.86 L553.6,182.19 L554.8,181.56 L556,180.95 L557.2,180.36 L558.4,179.8 L559.6,179.26 L560.8,178.75 L562,178.25 L563.2,177.78 L564.4,177.33 L565.6,176.9 L566.8,176.49 L568,176.09 L569.2,175.72 L570.4,175.36 L571.6,175.01 L572.8,174.68 L574,174.37 L575.2,174.07 L576.4,173.78 L577.6,173.51 L578.8,173.25 L580,173 L581.2,172.77 L582.4,172.54 L583.6,172.32 L584.8,172.12 L586,171.92 L587.2,171.73 L588.4,171.56 L589.6,171.39 L590.8,171.22 L592,171.07" class="s-green w15 nofill"/>
+<path d="M400,335.65 L401.2,335.5 L402.4,335.35 L403.6,335.18 L404.8,335.01 L406,334.84 L407.2,334.65 L408.4,334.45 L409.6,334.25 L410.8,334.03 L412,333.81 L413.2,333.58 L414.4,333.33 L415.6,333.08 L416.8,332.81 L418,332.53 L419.2,332.24 L420.4,331.94 L421.6,331.63 L422.8,331.3 L424,330.96 L425.2,330.6 L426.4,330.23 L427.6,329.84 L428.8,329.44 L430,329.03 L431.2,328.6 L432.4,328.15 L433.6,327.68 L434.8,327.2 L436,326.7 L437.2,326.19 L438.4,325.65 L439.6,325.1 L440.8,324.53 L442,323.95 L443.2,323.34 L444.4,322.72 L445.6,322.08 L446.8,321.42 L448,320.75 L449.2,320.06 L450.4,319.35 L451.6,318.63 L452.8,317.89 L454,317.14 L455.2,316.38 L456.4,315.6 L457.6,314.81 L458.8,314.02 L460,313.21 L461.2,312.4 L462.4,311.58 L463.6,310.76 L464.8,309.94 L466,309.12 L467.2,308.31 L468.4,307.49 L469.6,306.69 L470.8,305.89 L472,305.11 L473.2,304.34 L474.4,303.59 L475.6,302.87 L476.8,302.16 L478,301.48 L479.2,300.83 L480.4,300.21 L481.6,299.62 L482.8,299.07 L484,298.56 L485.2,298.09 L486.4,297.66 L487.6,297.28 L488.8,296.95 L490,296.66 L491.2,296.42 L492.4,296.24 L493.6,296.11 L494.8,296.03 L496,296 L497.2,296.03 L498.4,296.11 L499.6,296.24 L500.8,296.42 L502,296.66 L503.2,296.95 L504.4,297.28 L505.6,297.66 L506.8,298.09 L508,298.56 L509.2,299.07 L510.4,299.62 L511.6,300.21 L512.8,300.83 L514,301.48 L515.2,302.16 L516.4,302.87 L517.6,303.59 L518.8,304.34 L520,305.11 L521.2,305.89 L522.4,306.69 L523.6,307.49 L524.8,308.31 L526,309.12 L527.2,309.94 L528.4,310.76 L529.6,311.58 L530.8,312.4 L532,313.21 L533.2,314.02 L534.4,314.81 L535.6,315.6 L536.8,316.38 L538,317.14 L539.2,317.89 L540.4,318.63 L541.6,319.35 L542.8,320.06 L544,320.75 L545.2,321.42 L546.4,322.08 L547.6,322.72 L548.8,323.34 L550,323.95 L551.2,324.53 L552.4,325.1 L553.6,325.65 L554.8,326.19 L556,326.7 L557.2,327.2 L558.4,327.68 L559.6,328.15 L560.8,328.6 L562,329.03 L563.2,329.44 L564.4,329.84 L565.6,330.23 L566.8,330.6 L568,330.96 L569.2,331.3 L570.4,331.63 L571.6,331.94 L572.8,332.24 L574,332.53 L575.2,332.81 L576.4,333.08 L577.6,333.33 L578.8,333.58 L580,333.81 L581.2,334.03 L582.4,334.25 L583.6,334.45 L584.8,334.65 L586,334.84 L587.2,335.01 L588.4,335.18 L589.6,335.35 L590.8,335.5 L592,335.65" class="s-purple w15 nofill"/>
+</g>
+<text x="604" y="176.07" class="t-note f-green-ink" data-w="5"><tspan class="i">f</tspan></text>
+<text x="604" y="340.65" class="t-note f-purple-ink" data-w="13"><tspan class="i">f</tspan> ′</text>
+</g>
+<text x="496" y="404" text-anchor="middle" class="t-note" data-w="8"><tspan class="i">z</tspan></text>
+<g data-grid="skip">
+<g data-grid="skip">
+<circle cx="520" cy="305.11" r="5" class="f-purple s-surface w1"/>
+</g>
+<g data-grid="skip">
+<circle cx="448" cy="320.75" r="5" class="f-purple s-surface w1"/>
+</g>
+<g data-grid="skip">
+<circle cx="568" cy="330.96" r="5" class="f-purple s-surface w1"/>
+</g>
+</g>
+<rect x="400" y="448" width="56" height="32" class="nofill"/>
+<rect x="456" y="448" width="72" height="32" class="nofill"/>
+<rect x="528" y="448" width="88" height="32" class="nofill"/>
+<rect x="400" y="480" width="56" height="32" class="nofill"/>
+<rect x="456" y="480" width="72" height="32" class="nofill"/>
+<rect x="528" y="480" width="88" height="32" class="nofill"/>
+<rect x="400" y="512" width="56" height="32" class="nofill"/>
+<rect x="456" y="512" width="72" height="32" class="nofill"/>
+<rect x="528" y="512" width="88" height="32" class="nofill"/>
+<rect x="400" y="544" width="56" height="32" class="nofill"/>
+<rect x="456" y="544" width="72" height="32" class="nofill"/>
+<rect x="528" y="544" width="88" height="32" class="nofill"/>
+<path d="M400,448H616M400,576H616" class="axis"/>
+<path d="M400,480H616" class="rule1"/>
+<text x="448" y="468" text-anchor="end" class="t-label" data-w="8"><tspan class="i">z</tspan></text>
+<text x="520" y="468" text-anchor="end" class="t-label" data-w="30"><tspan class="i">f</tspan> ′(<tspan class="i">z</tspan>)</text>
+<text x="448" y="500" text-anchor="end" class="t-label" data-w="9">1</text>
+<text x="520" y="500" text-anchor="end" class="t-label" data-w="37">0.197</text>
+<text x="608" y="500" text-anchor="end" class="t-label" data-w="37">0.983</text>
+<text x="448" y="532" text-anchor="end" class="t-label" data-w="19">−2</text>
+<text x="520" y="532" text-anchor="end" class="t-label" data-w="37">0.105</text>
+<text x="608" y="532" text-anchor="end" class="t-label" data-w="37">0.630</text>
+<text x="448" y="564" text-anchor="end" class="t-label" data-w="9">3</text>
+<text x="520" y="564" text-anchor="end" class="t-label" data-w="37">0.045</text>
+<text x="608" y="564" text-anchor="end" class="t-label" data-w="37">0.316</text>
+<text x="608" y="468" text-anchor="end" class="t-code" data-w="60">dinputs</text>
+<text x="648" y="120" class="t-head" data-w="41">Tanh</text>
+<text x="648" y="148" class="t-note" data-w="159"><tspan class="i">f</tspan> ′ = 1 − <tspan class="i">a</tspan><tspan class="sub" dy="-6">2</tspan><tspan dy="6">​</tspan>,  <tspan class="i">a</tspan> = tanh(<tspan class="i">z</tspan>)</text>
+<g data-grid="skip">
+<path d="M704,360H896M704,312H896M704,264H896M704,216H896M704,168H896" class="gridline"/>
+<text x="696" y="364" text-anchor="end" class="t-tick" data-w="17">−1</text>
+<text x="696" y="316" text-anchor="end" class="t-tick" data-w="29">−0.5</text>
+<text x="696" y="268" text-anchor="end" class="t-tick" data-w="8">0</text>
+<text x="696" y="220" text-anchor="end" class="t-tick" data-w="19">0.5</text>
+<text x="696" y="172" text-anchor="end" class="t-tick" data-w="8">1</text>
+<text x="704" y="380" text-anchor="middle" class="t-tick" data-w="17">−4</text>
+<text x="752" y="380" text-anchor="middle" class="t-tick" data-w="17">−2</text>
+<text x="800" y="380" text-anchor="middle" class="t-tick" data-w="8">0</text>
+<text x="848" y="380" text-anchor="middle" class="t-tick" data-w="8">2</text>
+<text x="896" y="380" text-anchor="middle" class="t-tick" data-w="8">4</text>
+<path d="M704,168V360H896" class="axis"/>
+<g clip-path="url(#nn-03-elementwise-family-clip-3)">
+<path d="M704,359.94 L705.2,359.93 L706.4,359.92 L707.6,359.91 L708.8,359.9 L710,359.89 L711.2,359.88 L712.4,359.87 L713.6,359.86 L714.8,359.84 L716,359.83 L717.2,359.81 L718.4,359.79 L719.6,359.76 L720.8,359.74 L722,359.71 L723.2,359.68 L724.4,359.65 L725.6,359.61 L726.8,359.57 L728,359.53 L729.2,359.48 L730.4,359.42 L731.6,359.36 L732.8,359.29 L734,359.22 L735.2,359.14 L736.4,359.05 L737.6,358.95 L738.8,358.84 L740,358.71 L741.2,358.58 L742.4,358.43 L743.6,358.27 L744.8,358.09 L746,357.89 L747.2,357.67 L748.4,357.43 L749.6,357.16 L750.8,356.87 L752,356.55 L753.2,356.19 L754.4,355.8 L755.6,355.37 L756.8,354.89 L758,354.37 L759.2,353.8 L760.4,353.17 L761.6,352.48 L762.8,351.72 L764,350.89 L765.2,349.99 L766.4,348.99 L767.6,347.91 L768.8,346.73 L770,345.44 L771.2,344.03 L772.4,342.5 L773.6,340.85 L774.8,339.05 L776,337.11 L777.2,335.02 L778.4,332.76 L779.6,330.34 L780.8,327.75 L782,324.97 L783.2,322.02 L784.4,318.88 L785.6,315.56 L786.8,312.05 L788,308.36 L789.2,304.5 L790.4,300.48 L791.6,296.29 L792.8,291.97 L794,287.51 L795.2,282.95 L796.4,278.29 L797.6,273.57 L798.8,268.8 L800,264 L801.2,259.2 L802.4,254.43 L803.6,249.71 L804.8,245.05 L806,240.49 L807.2,236.03 L808.4,231.71 L809.6,227.52 L810.8,223.5 L812,219.64 L813.2,215.95 L814.4,212.44 L815.6,209.12 L816.8,205.98 L818,203.03 L819.2,200.25 L820.4,197.66 L821.6,195.24 L822.8,192.98 L824,190.89 L825.2,188.95 L826.4,187.15 L827.6,185.5 L828.8,183.97 L830,182.56 L831.2,181.27 L832.4,180.09 L833.6,179.01 L834.8,178.01 L836,177.11 L837.2,176.28 L838.4,175.52 L839.6,174.83 L840.8,174.2 L842,173.63 L843.2,173.11 L844.4,172.63 L845.6,172.2 L846.8,171.81 L848,171.45 L849.2,171.13 L850.4,170.84 L851.6,170.57 L852.8,170.33 L854,170.11 L855.2,169.91 L856.4,169.73 L857.6,169.57 L858.8,169.42 L860,169.29 L861.2,169.16 L862.4,169.05 L863.6,168.95 L864.8,168.86 L866,168.78 L867.2,168.71 L868.4,168.64 L869.6,168.58 L870.8,168.52 L872,168.47 L873.2,168.43 L874.4,168.39 L875.6,168.35 L876.8,168.32 L878,168.29 L879.2,168.26 L880.4,168.24 L881.6,168.21 L882.8,168.19 L884,168.17 L885.2,168.16 L886.4,168.14 L887.6,168.13 L888.8,168.12 L890,168.11 L891.2,168.1 L892.4,168.09 L893.6,168.08 L894.8,168.07 L896,168.06" class="s-green w15 nofill"/>
+<path d="M704,263.87 L705.2,263.86 L706.4,263.84 L707.6,263.83 L708.8,263.81 L710,263.79 L711.2,263.77 L712.4,263.74 L713.6,263.71 L714.8,263.68 L716,263.65 L717.2,263.61 L718.4,263.57 L719.6,263.53 L720.8,263.48 L722,263.42 L723.2,263.36 L724.4,263.3 L725.6,263.22 L726.8,263.14 L728,263.05 L729.2,262.95 L730.4,262.84 L731.6,262.72 L732.8,262.59 L734,262.44 L735.2,262.28 L736.4,262.1 L737.6,261.9 L738.8,261.69 L740,261.45 L741.2,261.18 L742.4,260.89 L743.6,260.57 L744.8,260.22 L746,259.83 L747.2,259.4 L748.4,258.93 L749.6,258.41 L750.8,257.84 L752,257.22 L753.2,256.53 L754.4,255.78 L755.6,254.96 L756.8,254.06 L758,253.07 L759.2,252 L760.4,250.83 L761.6,249.55 L762.8,248.16 L764,246.65 L765.2,245.02 L766.4,243.25 L767.6,241.34 L768.8,239.29 L770,237.08 L771.2,234.72 L772.4,232.2 L773.6,229.52 L774.8,226.68 L776,223.68 L777.2,220.54 L778.4,217.26 L779.6,213.85 L780.8,210.33 L782,206.73 L783.2,203.06 L784.4,199.37 L785.6,195.69 L786.8,192.05 L788,188.5 L789.2,185.09 L790.4,181.86 L791.6,178.86 L792.8,176.15 L794,173.76 L795.2,171.74 L796.4,170.13 L797.6,168.95 L798.8,168.24 L800,168 L801.2,168.24 L802.4,168.95 L803.6,170.13 L804.8,171.74 L806,173.76 L807.2,176.15 L808.4,178.86 L809.6,181.86 L810.8,185.09 L812,188.5 L813.2,192.05 L814.4,195.69 L815.6,199.37 L816.8,203.06 L818,206.73 L819.2,210.33 L820.4,213.85 L821.6,217.26 L822.8,220.54 L824,223.68 L825.2,226.68 L826.4,229.52 L827.6,232.2 L828.8,234.72 L830,237.08 L831.2,239.29 L832.4,241.34 L833.6,243.25 L834.8,245.02 L836,246.65 L837.2,248.16 L838.4,249.55 L839.6,250.83 L840.8,252 L842,253.07 L843.2,254.06 L844.4,254.96 L845.6,255.78 L846.8,256.53 L848,257.22 L849.2,257.84 L850.4,258.41 L851.6,258.93 L852.8,259.4 L854,259.83 L855.2,260.22 L856.4,260.57 L857.6,260.89 L858.8,261.18 L860,261.45 L861.2,261.69 L862.4,261.9 L863.6,262.1 L864.8,262.28 L866,262.44 L867.2,262.59 L868.4,262.72 L869.6,262.84 L870.8,262.95 L872,263.05 L873.2,263.14 L874.4,263.22 L875.6,263.3 L876.8,263.36 L878,263.42 L879.2,263.48 L880.4,263.53 L881.6,263.57 L882.8,263.61 L884,263.65 L885.2,263.68 L886.4,263.71 L887.6,263.74 L888.8,263.77 L890,263.79 L891.2,263.81 L892.4,263.83 L893.6,263.84 L894.8,263.86 L896,263.87" class="s-purple w15 nofill"/>
+</g>
+<text x="908" y="173.06" class="t-note f-green-ink" data-w="5"><tspan class="i">f</tspan></text>
+<text x="908" y="268.87" class="t-note f-purple-ink" data-w="13"><tspan class="i">f</tspan> ′</text>
+</g>
+<text x="800" y="404" text-anchor="middle" class="t-note" data-w="8"><tspan class="i">z</tspan></text>
+<g data-grid="skip">
+<g data-grid="skip">
+<circle cx="824" cy="223.68" r="5" class="f-purple s-surface w1"/>
+</g>
+<g data-grid="skip">
+<circle cx="752" cy="257.22" r="5" class="f-purple s-surface w1"/>
+</g>
+<g data-grid="skip">
+<circle cx="872" cy="263.05" r="5" class="f-purple s-surface w1"/>
+</g>
+</g>
+<rect x="704" y="448" width="56" height="32" class="nofill"/>
+<rect x="760" y="448" width="72" height="32" class="nofill"/>
+<rect x="832" y="448" width="88" height="32" class="nofill"/>
+<rect x="704" y="480" width="56" height="32" class="nofill"/>
+<rect x="760" y="480" width="72" height="32" class="nofill"/>
+<rect x="832" y="480" width="88" height="32" class="nofill"/>
+<rect x="704" y="512" width="56" height="32" class="nofill"/>
+<rect x="760" y="512" width="72" height="32" class="nofill"/>
+<rect x="832" y="512" width="88" height="32" class="nofill"/>
+<rect x="704" y="544" width="56" height="32" class="nofill"/>
+<rect x="760" y="544" width="72" height="32" class="nofill"/>
+<rect x="832" y="544" width="88" height="32" class="nofill"/>
+<path d="M704,448H920M704,576H920" class="axis"/>
+<path d="M704,480H920" class="rule1"/>
+<text x="752" y="468" text-anchor="end" class="t-label" data-w="8"><tspan class="i">z</tspan></text>
+<text x="824" y="468" text-anchor="end" class="t-label" data-w="30"><tspan class="i">f</tspan> ′(<tspan class="i">z</tspan>)</text>
+<text x="752" y="500" text-anchor="end" class="t-label" data-w="9">1</text>
+<text x="824" y="500" text-anchor="end" class="t-label" data-w="37">0.420</text>
+<text x="912" y="500" text-anchor="end" class="t-label" data-w="37">2.100</text>
+<text x="752" y="532" text-anchor="end" class="t-label" data-w="19">−2</text>
+<text x="824" y="532" text-anchor="end" class="t-label" data-w="37">0.071</text>
+<text x="912" y="532" text-anchor="end" class="t-label" data-w="37">0.424</text>
+<text x="752" y="564" text-anchor="end" class="t-label" data-w="9">3</text>
+<text x="824" y="564" text-anchor="end" class="t-label" data-w="37">0.010</text>
+<text x="912" y="564" text-anchor="end" class="t-label" data-w="37">0.069</text>
+<text x="912" y="468" text-anchor="end" class="t-code" data-w="60">dinputs</text>
+<text x="40" y="432" class="t-note" data-w="243">Table values rounded to 3 decimals.</text>
+<text x="480" y="624" text-anchor="middle" class="t-code" data-w="257">dinputs = dvalues * f_prime(Z)</text>
+<text x="480" y="648" text-anchor="middle" class="t-note" data-w="392">dvalues = (5, 6, 7) in all three tables; only f_prime changes</text>
+<text x="40" y="684" class="t-note" data-w="577">A new element-wise activation costs one derivative; the backward line stays the same.</text>
+</svg>

@@ -11,9 +11,9 @@
 > - Say why ReLU's backward needs less arithmetic than sigmoid's although the code shape is the same.
 > - Explain why softmax cannot be backpropagated element-wise.
 
-![Two 3 by 3 Jacobians side by side. On the left, for ReLU, sigmoid and tanh, only the three diagonal cells are filled, each with one neuron's slope f'(z), above the code line dinputs = dvalues * f_prime(Z). On the right, for softmax, all nine cells are filled, a_k(1 - a_k) on the diagonal and minus a_k a_j off it, above the matrix product dinputs = dvalues @ J.](diagrams/01-elementwise-vs-coupled.svg)
+![Two rows, each the row dvalues = 5, 6, 7 times a 3 by 3 Jacobian at z = 1, minus 2, 3, rows a1 to a3, columns z1 to z3, with the diagonal outlined. Top, sigmoid: only the diagonal is non-zero, 0.196612, 0.104994 and 0.045177, and the product 0.98306, 0.62996, 0.31624 equals dvalues * f_prime(Z), one multiply per entry. Bottom, softmax: all nine entries are non-zero, and the product minus 0.208216, minus 0.004467, 0.212683 matches the central difference, which the element-wise line misses by 0.731.](diagrams/01-elementwise-vs-coupled.svg)
 
-*Left, a diagonal Jacobian: one slope per neuron and one multiply per element. Right, a full Jacobian: every output depends on every input, and the backward step is a matrix product for each sample.*
+*Top, a diagonal Jacobian: one slope per neuron and one multiply per element. Bottom, a full Jacobian: every output depends on every input, and the backward step is a matrix product for each sample.*
 
 ---
 
@@ -34,7 +34,7 @@ The factors $\partial a_k / \partial z_j$ are the local derivatives of the activ
 - **Element-wise activation** (ReLU, sigmoid, tanh, and the variants of section 3.3). $a_k$ depends on $z_k$ alone. Every term of the sum with $k \ne j$ is zero, and one term is left.
 - **Coupled activation** (softmax). $a_k$ depends on *every* $z_j$, because the softmax denominator sums over all the inputs. No term drops out.
 
-Sections 2 and 3 work out the first case, where the sum collapses to one multiplication per element. Section 4 shows on three numbers why the second case does not collapse.
+Sections 2 and 3 work out the first case, where the sum collapses to one multiplication per element. Section 4 shows on three numbers why the second case does not collapse. The figure at the top of the post puts the two cases side by side on those three numbers: the sigmoid Jacobian of section 3.2 above the softmax Jacobian of section 4.
 
 ---
 
@@ -78,6 +78,12 @@ class Activation_ReLU:
 
 This is the class of post 16, unchanged. `forward` caches its input because `backward` runs later and needs to know which inputs were positive. `backward` starts from a copy of `dvalues` and overwrites with 0 every position where the cached input was not positive. The `.copy()` matters: without it `self.dinputs` would be a second name for the caller's array, and the masking line would overwrite it (section 7). The method stores its result in `self.dinputs` and returns nothing, like `Layer_Dense.backward`, because the next component reads the attribute.
 
+The figure below runs the worked example through the class: the forward method turns the input on the left into the output on the right, and the backward method turns the gradient arriving on the right into the masked gradient on the left.
+
+![A card for the class Activation_ReLU, its forward method above its backward method, with the line self.inputs = inputs tagged cached. Forward, left to right: the inputs 1, minus 2, 3 go in and the output 1, 0, 3 comes out. Backward, right to left in purple: dvalues 5, 6, 7 goes in and dinputs 5, 0, 7 comes out, its 0 outlined under the input minus 2. Every array has shape 1 by 3, and the caller's dvalues is unchanged after the call.](diagrams/02-relu-backward.svg)
+
+*The backward method reads the input that forward cached and zeroes the gradient where that input was not positive.*
+
 `snippets/relu_backward.py` runs the class on the table above:
 
 ```text
@@ -111,9 +117,9 @@ ReLU is one instance of a broader pattern. For any element-wise activation $a_k 
 
 $$\frac{\partial L}{\partial z_k} = \frac{\partial L}{\partial a_k} \cdot f'(z_k).$$
 
-For a whole batch this is one **element-wise multiplication** in NumPy, `dinputs = dvalues * f_prime(Z)`, with no matrix product, no reshape, and no transpose. `dvalues`, `Z`, and `dinputs` all have the shape $(N, n_\text{neurons})$. ReLU's mask is this line with a slope of 0 or 1: multiplying by 1 keeps an entry and multiplying by 0 clears it.
+For a whole batch this is one **element-wise multiplication** in NumPy, `dinputs = dvalues * f_prime(Z)`, with no matrix product, no reshape, and no transpose. `dvalues`, `Z`, and `dinputs` all have the shape $(N, n_\text{neurons})$. ReLU's mask is this line with a slope of 0 or 1: multiplying by 1 keeps an entry and multiplying by 0 clears it. The figure below draws the three activations of the table that follows with their slopes, and sends the upstream gradient of section 2.1 through each.
 
-![Three panels plot ReLU, sigmoid and tanh, each above its own derivative: a step from 0 to 1 for ReLU, a bump peaking at 0.25 for sigmoid, and a bump peaking at 1 for tanh. A band below gives the backward line all three share, dinputs = dvalues * f_prime(Z).](diagrams/02-elementwise-family.svg)
+![Three charts for z from minus 4 to 4, each with an activation in green and its slope in purple: ReLU, whose slope steps from 0 to 1 at z = 0 and is 0 at z = 0 itself; sigmoid, whose slope a(1 - a) peaks at 0.25; and tanh, whose slope 1 - a squared peaks at 1. Dots mark the slope at z = 1, minus 2, 3. The tables under the charts give the slopes and dinputs for dvalues = 5, 6, 7: 1, 0, 1 and 5, 0, 7 for ReLU; 0.197, 0.105, 0.045 and 0.983, 0.630, 0.316 for sigmoid; 0.420, 0.071, 0.010 and 2.100, 0.424, 0.069 for tanh. A line at the bottom gives the code all three share, dinputs = dvalues * f_prime(Z).](diagrams/03-elementwise-family.svg)
 
 *The backward line is the same for all three. Only what `f_prime` returns changes, so a new element-wise activation costs one derivative.*
 

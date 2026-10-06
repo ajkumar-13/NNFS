@@ -1,133 +1,290 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" role="img" aria-labelledby="t d">
-  <title id="t">Element-wise vs coupled activation backwards: Jacobian shape determines code shape</title>
-  <desc id="d">Two side-by-side panels contrasting the backward pass for element-wise activations (left, success-green) and coupled activations like softmax (right, alert-red). Left: a diagonal 3-by-3 Jacobian with non-zero entries only on the diagonal, paired with the one-line formula dinputs = dvalues * f-prime(Z). Right: a fully populated 3-by-3 Jacobian with non-zero entries everywhere, paired with the matrix product formula dinputs = dvalues @ J. A bottom band states that ReLU, sigmoid, and tanh are diagonal; softmax is dense.</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-01-elementwise-vs-coupled-title" aria-describedby="nn-01-elementwise-vs-coupled-desc">
+<title id="nn-01-elementwise-vs-coupled-title">A diagonal Jacobian is one multiply; a full one is not</title>
+<desc id="nn-01-elementwise-vs-coupled-desc">Two rows, each the row dvalues = 5, 6, 7 times a 3 by 3 Jacobian whose entry (k, j), row a_k and column z_j, is d a_k / d z_j, with its diagonal outlined, at z = 1, minus 2, 3. Top, sigmoid: only the diagonal is non-zero, 0.196612, 0.104994 and 0.045177, the other six entries are 0, and the product 0.98306, 0.62996, 0.31624 equals dvalues * f_prime(Z), one multiply per entry. Bottom, softmax: all nine entries are non-zero (0.104457, minus 0.000699, minus 0.103758; minus 0.000699, 0.005865, minus 0.005166; minus 0.103758, minus 0.005166, 0.108924), a_k(1 minus a_k) on the diagonal and minus a_k a_j off it, and the product is minus 0.208216, minus 0.004467, 0.212683, which the central difference matches. The element-wise line would give 0.522287, 0.035190, 0.762469, off by up to 0.731.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .panel-ok {fill:var(--nn-success);fill-opacity:0.07;stroke:var(--nn-success);stroke-width:1.5;}
-    .panel-bad{fill:var(--nn-alert);fill-opacity:0.06;stroke:var(--nn-alert);stroke-width:1.5;}
-    .pill-ok{fill:var(--nn-success);}
-    .pill-bad{fill:var(--nn-alert);}
-    .head-ok {font-weight:700;font-size:15px;fill:var(--nn-success);}
-    .head-bad{font-weight:700;font-size:15px;fill:var(--nn-alert);}
-    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
-    .cell-zero{fill:var(--nn-neutral-1);stroke:var(--nn-border);stroke-width:1;}
-    .cell-ok  {fill:var(--nn-success);fill-opacity:0.30;stroke:var(--nn-success);stroke-width:1.2;}
-    .cell-bad {fill:var(--nn-alert);fill-opacity:0.30;stroke:var(--nn-alert);stroke-width:1.2;}
-    .cell-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--nn-ink);}
-    .code-pill{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
-    .code-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--nn-ink);}
-    .label-head{font-weight:700;font-size:12px;fill:var(--nn-ink);}
-    .label-sub{font-size:11px;fill:var(--nn-ink-muted);}
-    .insight-band{fill:var(--nn-primary);fill-opacity:0.08;stroke:var(--nn-primary);stroke-width:1.5;}
-    .insight-head{font-weight:700;font-size:13px;fill:var(--nn-primary);}
-    .insight-body{font-size:12px;fill:var(--nn-ink);}
-  ]]></style>
-
-  <rect class="bg" width="960" height="480"/>
-
-  <text class="title"    x="48" y="48">Element-wise vs coupled activation backwards</text>
-  <text class="subtitle" x="48" y="70">Jacobian shape determines code shape: diagonal → scalar multiply; full → matrix product.</text>
-
-  <!-- ============================ LEFT PANEL: element-wise ============================ -->
-  <rect class="panel-ok" x="48" y="96" width="424" height="288" rx="12"/>
-  <rect class="pill-ok"  x="48" y="96" width="6"   height="288" rx="3"/>
-  <text class="head-ok" x="68" y="124">Element-wise: ReLU, sigmoid, tanh</text>
-  <text class="panel-sub" x="68" y="142">a_k depends only on z_k. Jacobian is diagonal.</text>
-
-  <!-- Diagonal Jacobian: 3x3 grid, only diagonal cells active -->
-  <text class="label-head" x="180" y="170" text-anchor="middle">∂A / ∂Z   (3 × 3)</text>
-  <g transform="translate(116, 184)">
-    <rect class="cell-ok"   x="0"  y="0"  width="40" height="32"/>
-    <rect class="cell-zero" x="40" y="0"  width="40" height="32"/>
-    <rect class="cell-zero" x="80" y="0"  width="40" height="32"/>
-    <rect class="cell-zero" x="0"  y="32" width="40" height="32"/>
-    <rect class="cell-ok"   x="40" y="32" width="40" height="32"/>
-    <rect class="cell-zero" x="80" y="32" width="40" height="32"/>
-    <rect class="cell-zero" x="0"  y="64" width="40" height="32"/>
-    <rect class="cell-zero" x="40" y="64" width="40" height="32"/>
-    <rect class="cell-ok"   x="80" y="64" width="40" height="32"/>
-
-    <text class="cell-text" x="20"  y="21" text-anchor="middle">f'(z₁)</text>
-    <text class="cell-text" x="60"  y="21" text-anchor="middle">0</text>
-    <text class="cell-text" x="100" y="21" text-anchor="middle">0</text>
-    <text class="cell-text" x="20"  y="53" text-anchor="middle">0</text>
-    <text class="cell-text" x="60"  y="53" text-anchor="middle">f'(z₂)</text>
-    <text class="cell-text" x="100" y="53" text-anchor="middle">0</text>
-    <text class="cell-text" x="20"  y="85" text-anchor="middle">0</text>
-    <text class="cell-text" x="60"  y="85" text-anchor="middle">0</text>
-    <text class="cell-text" x="100" y="85" text-anchor="middle">f'(z₃)</text>
-  </g>
-
-  <text class="label-sub" x="300" y="200">Only diagonal entries are non-zero.</text>
-  <text class="label-sub" x="300" y="218">f'(z_k) is one scalar per neuron.</text>
-  <text class="label-sub" x="300" y="252">"Multiply by the Jacobian"</text>
-  <text class="label-sub" x="300" y="270">reduces to scalar-per-element</text>
-  <text class="label-sub" x="300" y="288">multiplication.</text>
-
-  <rect class="code-pill" x="68" y="316" width="384" height="48" rx="8"/>
-  <text class="code-text" x="80" y="334">dinputs = dvalues * f_prime(Z)        # one element-wise multiply</text>
-  <text class="code-text" x="80" y="354">                                       # for ReLU: a 1-line mask</text>
-
-  <!-- ============================ RIGHT PANEL: coupled (softmax) ============================ -->
-  <rect class="panel-bad" x="488" y="96" width="424" height="288" rx="12"/>
-  <rect class="pill-bad"  x="488" y="96" width="6"   height="288" rx="3"/>
-  <text class="head-bad" x="508" y="124">Coupled: softmax</text>
-  <text class="panel-sub" x="508" y="142">Each a_k depends on every z_j. Jacobian is full.</text>
-
-  <text class="label-head" x="620" y="170" text-anchor="middle">∂A / ∂Z   (3 × 3)</text>
-  <g transform="translate(556, 184)">
-    <rect class="cell-bad" x="0"  y="0"  width="40" height="32"/>
-    <rect class="cell-bad" x="40" y="0"  width="40" height="32"/>
-    <rect class="cell-bad" x="80" y="0"  width="40" height="32"/>
-    <rect class="cell-bad" x="0"  y="32" width="40" height="32"/>
-    <rect class="cell-bad" x="40" y="32" width="40" height="32"/>
-    <rect class="cell-bad" x="80" y="32" width="40" height="32"/>
-    <rect class="cell-bad" x="0"  y="64" width="40" height="32"/>
-    <rect class="cell-bad" x="40" y="64" width="40" height="32"/>
-    <rect class="cell-bad" x="80" y="64" width="40" height="32"/>
-
-    <text class="cell-text" x="20"  y="21" text-anchor="middle">a₁(1−a₁)</text>
-    <text class="cell-text" x="60"  y="21" text-anchor="middle">−a₁a₂</text>
-    <text class="cell-text" x="100" y="21" text-anchor="middle">−a₁a₃</text>
-    <text class="cell-text" x="20"  y="53" text-anchor="middle">−a₂a₁</text>
-    <text class="cell-text" x="60"  y="53" text-anchor="middle">a₂(1−a₂)</text>
-    <text class="cell-text" x="100" y="53" text-anchor="middle">−a₂a₃</text>
-    <text class="cell-text" x="20"  y="85" text-anchor="middle">−a₃a₁</text>
-    <text class="cell-text" x="60"  y="85" text-anchor="middle">−a₃a₂</text>
-    <text class="cell-text" x="100" y="85" text-anchor="middle">a₃(1−a₃)</text>
-  </g>
-
-  <text class="label-sub" x="740" y="200">Every cell is non-zero.</text>
-  <text class="label-sub" x="740" y="218">Each output entangles all inputs</text>
-  <text class="label-sub" x="740" y="236">through the softmax denominator.</text>
-  <text class="label-sub" x="740" y="270">Backward needs a real matrix</text>
-  <text class="label-sub" x="740" y="288">product, one per sample.</text>
-
-  <rect class="code-pill" x="508" y="316" width="384" height="48" rx="8"/>
-  <text class="code-text" x="520" y="334">dinputs = dvalues @ J   # full matrix product</text>
-  <text class="code-text" x="520" y="354">                        # Part 19: clean shortcut when paired with CE</text>
-
-  <!-- ============================ Bottom band ============================ -->
-  <rect class="insight-band" x="48" y="400" width="864" height="56" rx="12"/>
-  <text class="insight-head" x="68" y="426">Rule of thumb</text>
-  <text class="insight-body" x="68" y="446">If a_k depends only on z_k → diagonal Jacobian → element-wise backward. Otherwise → full Jacobian → matrix product per sample.</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .f-purple-ink { fill: var(--nn-purple-ink); }
+  .f-purple-soft { fill: var(--nn-purple-soft); }
+  .s-green { stroke: var(--nn-green); }
+</style>
+<defs>
+<marker id="nn-01-elementwise-vs-coupled-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title" data-w="636">A diagonal Jacobian is one multiply; a full one is not</text>
+<text x="40" y="76" class="t-subtitle" data-w="551">One sample at <tspan class="i">z</tspan> = (1, −2, 3) with dvalues = (5, 6, 7), as in sections 3.2 and 4.</text>
+<text x="40" y="136" class="t-head" data-w="379">Sigmoid, element-wise: 3 of 9 entries non-zero</text>
+<rect x="256" y="200" width="104" height="40" class="cell f-green-soft"/>
+<rect x="360" y="200" width="104" height="40" class="cell"/>
+<rect x="464" y="200" width="104" height="40" class="cell"/>
+<rect x="256" y="240" width="104" height="40" class="cell"/>
+<rect x="360" y="240" width="104" height="40" class="cell f-green-soft"/>
+<rect x="464" y="240" width="104" height="40" class="cell"/>
+<rect x="256" y="280" width="104" height="40" class="cell"/>
+<rect x="360" y="280" width="104" height="40" class="cell"/>
+<rect x="464" y="280" width="104" height="40" class="cell f-green-soft"/>
+<rect x="256" y="200" width="312" height="120" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="308" y="225" text-anchor="middle" class="t-cell14" data-w="62">0.196612</text>
+<text x="412" y="225" text-anchor="middle" class="t-cell14" data-w="9">0</text>
+<text x="516" y="225" text-anchor="middle" class="t-cell14" data-w="9">0</text>
+<text x="308" y="265" text-anchor="middle" class="t-cell14" data-w="9">0</text>
+<text x="412" y="265" text-anchor="middle" class="t-cell14" data-w="62">0.104994</text>
+<text x="516" y="265" text-anchor="middle" class="t-cell14" data-w="9">0</text>
+<text x="308" y="305" text-anchor="middle" class="t-cell14" data-w="9">0</text>
+<text x="412" y="305" text-anchor="middle" class="t-cell14" data-w="9">0</text>
+<text x="516" y="305" text-anchor="middle" class="t-cell14" data-w="62">0.045177</text>
+</g>
+<g data-grid="skip">
+<text x="308" y="192" text-anchor="middle" class="t-tick" data-w="15"><tspan class="i">z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="412" y="192" text-anchor="middle" class="t-tick" data-w="15"><tspan class="i">z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<text x="516" y="192" text-anchor="middle" class="t-tick" data-w="15"><tspan class="i">z</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<g data-grid="skip">
+<text x="248" y="225" text-anchor="end" class="t-tick" data-w="16"><tspan class="i">a</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="248" y="265" text-anchor="end" class="t-tick" data-w="16"><tspan class="i">a</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<text x="248" y="305" text-anchor="end" class="t-tick" data-w="16"><tspan class="i">a</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<rect x="256" y="200" width="104" height="40" class="w15 nofill s-green" data-fit="skip"/>
+<rect x="360" y="240" width="104" height="40" class="w15 nofill s-green" data-fit="skip"/>
+<rect x="464" y="280" width="104" height="40" class="w15 nofill s-green" data-fit="skip"/>
+<text x="412" y="168" text-anchor="middle" class="t-label f-green-ink" data-w="154">Jacobian ∂<tspan class="i">a</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan>/∂<tspan class="i">z</tspan><tspan class="sub i" dy="4">j</tspan><tspan dy="-4">​</tspan>  (3, 3)</text>
+<rect x="40" y="240" width="48" height="40" class="cell f-purple-soft"/>
+<rect x="88" y="240" width="48" height="40" class="cell f-purple-soft"/>
+<rect x="136" y="240" width="48" height="40" class="cell f-purple-soft"/>
+<rect x="40" y="240" width="144" height="40" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="64" y="265" text-anchor="middle" class="t-cell14" data-w="9">5</text>
+<text x="112" y="265" text-anchor="middle" class="t-cell14" data-w="9">6</text>
+<text x="160" y="265" text-anchor="middle" class="t-cell14" data-w="9">7</text>
+</g>
+<g data-grid="skip">
+<text x="64" y="232" text-anchor="middle" class="t-tick" data-w="16"><tspan class="i">a</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="112" y="232" text-anchor="middle" class="t-tick" data-w="16"><tspan class="i">a</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<text x="160" y="232" text-anchor="middle" class="t-tick" data-w="16"><tspan class="i">a</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<text x="112" y="208" text-anchor="middle" class="t-label f-purple-ink" data-w="138">dvalues ∂<tspan class="i">L</tspan>/∂<tspan class="b">A</tspan>  (1, 3)</text>
+<circle cx="204" cy="260" r="2.5" class="f-ink-muted"/>
+<text x="592" y="268" text-anchor="middle" class="t-op" data-w="18">=</text>
+<rect x="616" y="240" width="96" height="40" class="cell f-purple-soft"/>
+<rect x="712" y="240" width="96" height="40" class="cell f-purple-soft"/>
+<rect x="808" y="240" width="96" height="40" class="cell f-purple-soft"/>
+<rect x="616" y="240" width="288" height="40" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="664" y="265" text-anchor="middle" class="t-cell14" data-w="54">0.98306</text>
+<text x="760" y="265" text-anchor="middle" class="t-cell14" data-w="54">0.62996</text>
+<text x="856" y="265" text-anchor="middle" class="t-cell14" data-w="54">0.31624</text>
+</g>
+<g data-grid="skip">
+<text x="664" y="232" text-anchor="middle" class="t-tick" data-w="15"><tspan class="i">z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="760" y="232" text-anchor="middle" class="t-tick" data-w="15"><tspan class="i">z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<text x="856" y="232" text-anchor="middle" class="t-tick" data-w="15"><tspan class="i">z</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<text x="760" y="208" text-anchor="middle" class="t-label f-purple-ink" data-w="136">dinputs ∂<tspan class="i">L</tspan>/∂<tspan class="b">Z</tspan>  (1, 3)</text>
+<text x="256" y="348" class="t-note" data-w="190">outlined, the diagonal: <tspan class="i">f</tspan> ′(<tspan class="i">z</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan>)</text>
+<text x="256" y="368" class="t-note" data-w="191">off it: 0, as <tspan class="i">a</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan> reads <tspan class="i">z</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan> alone</text>
+<text x="616" y="308" class="t-note" data-w="11">=</text>
+<text x="632" y="308" class="t-code" data-w="171">dvalues * f_prime(Z)</text>
+<text x="616" y="328" class="t-note" data-w="146">one multiply per entry</text>
+<text x="40" y="416" class="t-head" data-w="337">Softmax, coupled: 9 of 9 entries non-zero</text>
+<rect x="256" y="480" width="104" height="40" class="cell f-green-soft"/>
+<rect x="360" y="480" width="104" height="40" class="cell f-green-soft"/>
+<rect x="464" y="480" width="104" height="40" class="cell f-green-soft"/>
+<rect x="256" y="520" width="104" height="40" class="cell f-green-soft"/>
+<rect x="360" y="520" width="104" height="40" class="cell f-green-soft"/>
+<rect x="464" y="520" width="104" height="40" class="cell f-green-soft"/>
+<rect x="256" y="560" width="104" height="40" class="cell f-green-soft"/>
+<rect x="360" y="560" width="104" height="40" class="cell f-green-soft"/>
+<rect x="464" y="560" width="104" height="40" class="cell f-green-soft"/>
+<rect x="256" y="480" width="312" height="120" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="308" y="505" text-anchor="middle" class="t-cell14" data-w="62">0.104457</text>
+<text x="412" y="505" text-anchor="middle" class="t-cell14" data-w="72">−0.000699</text>
+<text x="516" y="505" text-anchor="middle" class="t-cell14" data-w="72">−0.103758</text>
+<text x="308" y="545" text-anchor="middle" class="t-cell14" data-w="72">−0.000699</text>
+<text x="412" y="545" text-anchor="middle" class="t-cell14" data-w="62">0.005865</text>
+<text x="516" y="545" text-anchor="middle" class="t-cell14" data-w="72">−0.005166</text>
+<text x="308" y="585" text-anchor="middle" class="t-cell14" data-w="72">−0.103758</text>
+<text x="412" y="585" text-anchor="middle" class="t-cell14" data-w="72">−0.005166</text>
+<text x="516" y="585" text-anchor="middle" class="t-cell14" data-w="62">0.108924</text>
+</g>
+<g data-grid="skip">
+<text x="308" y="472" text-anchor="middle" class="t-tick" data-w="15"><tspan class="i">z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="412" y="472" text-anchor="middle" class="t-tick" data-w="15"><tspan class="i">z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<text x="516" y="472" text-anchor="middle" class="t-tick" data-w="15"><tspan class="i">z</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<g data-grid="skip">
+<text x="248" y="505" text-anchor="end" class="t-tick" data-w="16"><tspan class="i">a</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="248" y="545" text-anchor="end" class="t-tick" data-w="16"><tspan class="i">a</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<text x="248" y="585" text-anchor="end" class="t-tick" data-w="16"><tspan class="i">a</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<rect x="256" y="480" width="104" height="40" class="w15 nofill s-green" data-fit="skip"/>
+<rect x="360" y="520" width="104" height="40" class="w15 nofill s-green" data-fit="skip"/>
+<rect x="464" y="560" width="104" height="40" class="w15 nofill s-green" data-fit="skip"/>
+<text x="412" y="448" text-anchor="middle" class="t-label f-green-ink" data-w="154">Jacobian ∂<tspan class="i">a</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan>/∂<tspan class="i">z</tspan><tspan class="sub i" dy="4">j</tspan><tspan dy="-4">​</tspan>  (3, 3)</text>
+<rect x="40" y="520" width="48" height="40" class="cell f-purple-soft"/>
+<rect x="88" y="520" width="48" height="40" class="cell f-purple-soft"/>
+<rect x="136" y="520" width="48" height="40" class="cell f-purple-soft"/>
+<rect x="40" y="520" width="144" height="40" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="64" y="545" text-anchor="middle" class="t-cell14" data-w="9">5</text>
+<text x="112" y="545" text-anchor="middle" class="t-cell14" data-w="9">6</text>
+<text x="160" y="545" text-anchor="middle" class="t-cell14" data-w="9">7</text>
+</g>
+<g data-grid="skip">
+<text x="64" y="512" text-anchor="middle" class="t-tick" data-w="16"><tspan class="i">a</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="112" y="512" text-anchor="middle" class="t-tick" data-w="16"><tspan class="i">a</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<text x="160" y="512" text-anchor="middle" class="t-tick" data-w="16"><tspan class="i">a</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<text x="112" y="488" text-anchor="middle" class="t-label f-purple-ink" data-w="138">dvalues ∂<tspan class="i">L</tspan>/∂<tspan class="b">A</tspan>  (1, 3)</text>
+<circle cx="204" cy="540" r="2.5" class="f-ink-muted"/>
+<text x="592" y="548" text-anchor="middle" class="t-op" data-w="18">=</text>
+<rect x="616" y="520" width="96" height="40" class="cell f-purple-soft"/>
+<rect x="712" y="520" width="96" height="40" class="cell f-purple-soft"/>
+<rect x="808" y="520" width="96" height="40" class="cell f-purple-soft"/>
+<rect x="616" y="520" width="288" height="40" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="664" y="545" text-anchor="middle" class="t-cell14" data-w="72">−0.208216</text>
+<text x="760" y="545" text-anchor="middle" class="t-cell14" data-w="72">−0.004467</text>
+<text x="856" y="545" text-anchor="middle" class="t-cell14" data-w="62">0.212683</text>
+</g>
+<g data-grid="skip">
+<text x="664" y="512" text-anchor="middle" class="t-tick" data-w="15"><tspan class="i">z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="760" y="512" text-anchor="middle" class="t-tick" data-w="15"><tspan class="i">z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<text x="856" y="512" text-anchor="middle" class="t-tick" data-w="15"><tspan class="i">z</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<text x="760" y="488" text-anchor="middle" class="t-label f-purple-ink" data-w="136">dinputs ∂<tspan class="i">L</tspan>/∂<tspan class="b">Z</tspan>  (1, 3)</text>
+<text x="256" y="628" class="t-note" data-w="220">outlined, the diagonal: <tspan class="i">a</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan>(1 − <tspan class="i">a</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan>)</text>
+<text x="256" y="648" class="t-note" data-w="133">off it: −<tspan class="i">a</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan><tspan class="i">a</tspan><tspan class="sub i" dy="4">j</tspan><tspan dy="-4">​</tspan>, never 0</text>
+<text x="616" y="588" class="t-note" data-w="204">matches the central difference</text>
+<text x="616" y="608" class="t-note" data-w="267">the element-wise line misses it by 0.731</text>
+<text x="40" y="684" class="t-note" data-w="609">Off-diagonal zeros reduce the product to one multiply per entry; softmax has none to drop.</text>
 </svg>
