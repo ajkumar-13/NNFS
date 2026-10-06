@@ -1,138 +1,251 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" role="img" aria-labelledby="t d">
-  <title id="t">The input gradient sums contributions from every neuron the input feeds</title>
-  <desc id="d">A two-panel diagram contrasting the weight gradient and the input gradient. Left panel: the weight W11 has exactly one forward path (from input X1 through to neuron Z1), so its gradient is one product. Right panel: the input X1 feeds all three neurons (Z1, Z2, Z3) via W11, W21, W31, so its gradient is the sum of three contributions. Bottom band shows the matrix form for the entire input-gradient vector and the shape arithmetic.</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-01-input-gradients-title" aria-describedby="nn-01-input-gradients-desc">
+<title id="nn-01-input-gradients-title">A weight has one path to the loss, an input has three</title>
+<desc id="nn-01-input-gradients-desc">Two copies of the layer of posts 13 and 14: four input nodes x1 to x4 joined to three neurons z1 to z3, every neuron with the upstream gradient 43.2 beside it. Left, the weight w11: one path, from x1 into z1, is drawn in the gradient colour, and its gradient is dL/dz1 times x1, 43.2 times 1 = 43.2; the upstream values of z2 and z3 are muted, with a bracket noting that w11 is not in z2 or z3. Right, the input x1: three paths, into z1, z2 and z3, are drawn in the gradient colour, a column beside the neurons lists the weights on them, wk1 = 0.1, 0.5 and 0.9, and its gradient is the sum over k of dL/dzk times wk1, 43.2 times 0.1 plus 43.2 times 0.5 plus 43.2 times 0.9 = 64.80.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .panel-bad{fill:var(--nn-warn);fill-opacity:0.06;stroke:var(--nn-warn);stroke-width:1.5;}
-    .panel-ok {fill:var(--nn-success);fill-opacity:0.07;stroke:var(--nn-success);stroke-width:1.5;}
-    .pill-bad{fill:var(--nn-warn);}
-    .pill-ok{fill:var(--nn-success);}
-    .head-bad{font-weight:700;font-size:14px;fill:var(--nn-warn);}
-    .head-ok {font-weight:700;font-size:14px;fill:var(--nn-success);}
-    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
-    .input-pill{fill:var(--nn-primary);fill-opacity:0.18;stroke:var(--nn-primary);stroke-width:1.5;}
-    .neuron-pill{fill:var(--nn-accent);fill-opacity:0.18;stroke:var(--nn-accent);stroke-width:1.5;}
-    .neuron-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:700;fill:var(--nn-ink);}
-    .var-name{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;fill:var(--nn-ink);}
-    .conn-active{stroke:var(--nn-success);stroke-width:2;fill:none;}
-    .conn-faint{stroke:var(--nn-ink-subtle);stroke-width:0.8;fill:none;opacity:0.3;}
-    .weight-label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--nn-success);}
-    .formula-pill{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
-    .formula-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--nn-ink);}
-    .insight-band{fill:var(--nn-primary);fill-opacity:0.08;stroke:var(--nn-primary);stroke-width:1.5;}
-    .insight-head{font-weight:700;font-size:13px;fill:var(--nn-primary);}
-    .insight-body{font-size:11px;fill:var(--nn-ink);}
-  ]]></style>
-
-  <rect class="bg" width="960" height="460"/>
-
-  <text class="title"    x="48" y="48">Input gradient = sum of contributions from every neuron</text>
-  <text class="subtitle" x="48" y="70">A weight has one path through the layer. An input has m paths, so its gradient sums them all.</text>
-
-  <!-- ============================ LEFT PANEL: weight has 1 path ============================ -->
-  <rect class="panel-bad" x="48" y="96" width="424" height="264" rx="12"/>
-  <rect class="pill-bad"  x="48" y="96" width="6"   height="264" rx="3"/>
-  <text class="head-bad" x="68" y="124">∂L/∂W₁₁: only one forward path</text>
-  <text class="panel-sub" x="68" y="142">W₁₁ connects X₁ to neuron Z₁, and only neuron Z₁.</text>
-
-  <!-- Inputs -->
-  <circle class="input-pill" cx="110" cy="178" r="18"/>
-  <text class="var-name" x="110" y="183" text-anchor="middle">X₁</text>
-  <circle class="input-pill" cx="110" cy="230" r="18"/>
-  <text class="var-name" x="110" y="235" text-anchor="middle">X₂</text>
-  <circle class="input-pill" cx="110" cy="282" r="18"/>
-  <text class="var-name" x="110" y="287" text-anchor="middle">X₃</text>
-
-  <!-- Neurons -->
-  <circle class="neuron-pill" cx="340" cy="178" r="22"/>
-  <text class="neuron-text" x="340" y="183" text-anchor="middle">Z₁</text>
-  <circle class="neuron-pill" cx="340" cy="230" r="22"/>
-  <text class="neuron-text" x="340" y="235" text-anchor="middle">Z₂</text>
-  <circle class="neuron-pill" cx="340" cy="282" r="22"/>
-  <text class="neuron-text" x="340" y="287" text-anchor="middle">Z₃</text>
-
-  <!-- Faint connections (all 9) -->
-  <line class="conn-faint" x1="128" y1="178" x2="318" y2="178"/>
-  <line class="conn-faint" x1="128" y1="178" x2="318" y2="230"/>
-  <line class="conn-faint" x1="128" y1="178" x2="318" y2="282"/>
-  <line class="conn-faint" x1="128" y1="230" x2="318" y2="178"/>
-  <line class="conn-faint" x1="128" y1="230" x2="318" y2="230"/>
-  <line class="conn-faint" x1="128" y1="230" x2="318" y2="282"/>
-  <line class="conn-faint" x1="128" y1="282" x2="318" y2="178"/>
-  <line class="conn-faint" x1="128" y1="282" x2="318" y2="230"/>
-  <line class="conn-faint" x1="128" y1="282" x2="318" y2="282"/>
-
-  <!-- Highlighted connection: only X₁ → Z₁ via W₁₁ -->
-  <line class="conn-active" x1="128" y1="178" x2="318" y2="178"/>
-  <text class="weight-label" x="223" y="170" text-anchor="middle">W₁₁ (only path)</text>
-
-  <!-- Formula -->
-  <rect class="formula-pill" x="68" y="320" width="384" height="28" rx="6"/>
-  <text class="formula-text" x="80" y="338">∂L/∂W₁₁ = ∂L/∂Z₁ · X₁   (one product, one term)</text>
-
-  <!-- ============================ RIGHT PANEL: input has 3 paths ============================ -->
-  <rect class="panel-ok" x="488" y="96" width="424" height="264" rx="12"/>
-  <rect class="pill-ok"  x="488" y="96" width="6"   height="264" rx="3"/>
-  <text class="head-ok" x="508" y="124">∂L/∂X₁: three forward paths</text>
-  <text class="panel-sub" x="508" y="142">X₁ connects to every neuron via W₁₁, W₂₁, W₃₁, so its gradient sums all three.</text>
-
-  <!-- Inputs -->
-  <circle class="input-pill" cx="550" cy="178" r="18"/>
-  <text class="var-name" x="550" y="183" text-anchor="middle">X₁</text>
-  <circle class="input-pill" cx="550" cy="230" r="18"/>
-  <text class="var-name" x="550" y="235" text-anchor="middle">X₂</text>
-  <circle class="input-pill" cx="550" cy="282" r="18"/>
-  <text class="var-name" x="550" y="287" text-anchor="middle">X₃</text>
-
-  <!-- Neurons -->
-  <circle class="neuron-pill" cx="780" cy="178" r="22"/>
-  <text class="neuron-text" x="780" y="183" text-anchor="middle">Z₁</text>
-  <circle class="neuron-pill" cx="780" cy="230" r="22"/>
-  <text class="neuron-text" x="780" y="235" text-anchor="middle">Z₂</text>
-  <circle class="neuron-pill" cx="780" cy="282" r="22"/>
-  <text class="neuron-text" x="780" y="287" text-anchor="middle">Z₃</text>
-
-  <!-- Faint connections (all 9 minus X₁'s) -->
-  <line class="conn-faint" x1="568" y1="230" x2="758" y2="178"/>
-  <line class="conn-faint" x1="568" y1="230" x2="758" y2="230"/>
-  <line class="conn-faint" x1="568" y1="230" x2="758" y2="282"/>
-  <line class="conn-faint" x1="568" y1="282" x2="758" y2="178"/>
-  <line class="conn-faint" x1="568" y1="282" x2="758" y2="230"/>
-  <line class="conn-faint" x1="568" y1="282" x2="758" y2="282"/>
-
-  <!-- Highlighted: X₁ → Z₁, Z₂, Z₃ -->
-  <line class="conn-active" x1="568" y1="178" x2="758" y2="178"/>
-  <line class="conn-active" x1="568" y1="178" x2="758" y2="230"/>
-  <line class="conn-active" x1="568" y1="178" x2="758" y2="282"/>
-  <text class="weight-label" x="665" y="170" text-anchor="middle">W₁₁</text>
-  <text class="weight-label" x="640" y="218" text-anchor="middle">W₂₁</text>
-  <text class="weight-label" x="640" y="270" text-anchor="middle">W₃₁</text>
-
-  <!-- Formula -->
-  <rect class="formula-pill" x="508" y="320" width="384" height="28" rx="6"/>
-  <text class="formula-text" x="520" y="338">∂L/∂X₁ = ∂L/∂Z₁·W₁₁ + ∂L/∂Z₂·W₂₁ + ∂L/∂Z₃·W₃₁</text>
-
-  <!-- ============================ Bottom band: matrix form ============================ -->
-  <rect class="insight-band" x="48" y="376" width="864" height="64" rx="12"/>
-  <text class="insight-head" x="68" y="402">Matrix form (all inputs at once):</text>
-  <text class="formula-text" x="68" y="424">∂L/∂X = ∂L/∂Z @ W            shape (1, m) · (m, n) = (1, n)            one matrix product, every input gradient</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-orange-ink { fill: var(--nn-orange-ink); }
+  .f-purple-ink { fill: var(--nn-purple-ink); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-green { stroke: var(--nn-green); }
+  .s-purple { stroke: var(--nn-purple); }
+  .s-rule { stroke: var(--nn-rule); }
+  .w25 { stroke-width: 2.5; }
+</style>
+<defs>
+<marker id="nn-01-input-gradients-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title">A weight has one path to the loss, an input has three</text>
+<text x="40" y="76" class="t-subtitle">The layer of posts 13 and 14 at <tspan class="i">x</tspan> = (1, 2, 3, 4). Every ReLU gate is open, so each neuron's ∂<tspan class="i">L</tspan>/∂<tspan class="i">z</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan> = 43.2.</text>
+<text x="40" y="136" class="t-head">A weight: <tspan class="i">w</tspan><tspan class="sub" dy="4">11</tspan><tspan dy="-4">​</tspan> lies on one path</text>
+<path d="M100,184 L252,268" class="s-rule w1 nofill"/>
+<path d="M100,184 L252,324" class="s-rule w1 nofill"/>
+<path d="M100,240 L252,212" class="s-rule w1 nofill"/>
+<path d="M100,240 L252,268" class="s-rule w1 nofill"/>
+<path d="M100,240 L252,324" class="s-rule w1 nofill"/>
+<path d="M100,296 L252,212" class="s-rule w1 nofill"/>
+<path d="M100,296 L252,268" class="s-rule w1 nofill"/>
+<path d="M100,296 L252,324" class="s-rule w1 nofill"/>
+<path d="M100,352 L252,212" class="s-rule w1 nofill"/>
+<path d="M100,352 L252,268" class="s-rule w1 nofill"/>
+<path d="M100,352 L252,324" class="s-rule w1 nofill"/>
+<path d="M100,184 L252,212" class="s-purple w15 nofill"/>
+<circle cx="80" cy="184" r="20" class="f-blue-soft s-blue w15"/>
+<g data-grid="skip">
+<text x="80" y="189" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<circle cx="80" cy="240" r="20" class="f-blue-soft s-blue w15"/>
+<g data-grid="skip">
+<text x="80" y="245" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<circle cx="80" cy="296" r="20" class="f-blue-soft s-blue w15"/>
+<g data-grid="skip">
+<text x="80" y="301" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<circle cx="80" cy="352" r="20" class="f-blue-soft s-blue w15"/>
+<g data-grid="skip">
+<text x="80" y="357" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">4</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<circle cx="272" cy="212" r="20" class="f-green-soft s-green w15"/>
+<g data-grid="skip">
+<text x="272" y="217" text-anchor="middle" class="t-label"><tspan class="i">z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<text x="312" y="216" class="t-value f-purple-ink">43.2</text>
+<circle cx="272" cy="268" r="20" class="f-green-soft s-green w15"/>
+<g data-grid="skip">
+<text x="272" y="273" text-anchor="middle" class="t-label"><tspan class="i">z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<text x="312" y="272" class="t-note">43.2</text>
+<circle cx="272" cy="324" r="20" class="f-green-soft s-green w15"/>
+<g data-grid="skip">
+<text x="272" y="329" text-anchor="middle" class="t-label"><tspan class="i">z</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<text x="312" y="328" class="t-note">43.2</text>
+<text x="312" y="176" class="t-label f-purple-ink">∂<tspan class="i">L</tspan>/∂<tspan class="i">z</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan></text>
+<path d="M368,252 H376 V340 H368" class="brace"/>
+<text x="384" y="292" class="t-note"><tspan class="i">w</tspan><tspan class="sub" dy="4">11</tspan><tspan dy="-4">​</tspan> is not</text>
+<text x="384" y="312" class="t-note">in <tspan class="i">z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> or <tspan class="i">z</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+<text x="176" y="184" text-anchor="middle" class="t-label"><tspan class="f-orange-ink"><tspan class="i">w</tspan><tspan class="sub" dy="4">11</tspan><tspan dy="-4">​</tspan></tspan></text>
+<text x="40" y="420" class="t-math">∂<tspan class="i">L</tspan>/∂<tspan class="i">w</tspan><tspan class="sub" dy="4">11</tspan><tspan dy="-4">​</tspan> = ∂<tspan class="i">L</tspan>/∂<tspan class="i">z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> · <tspan class="i">x</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="40" y="452" class="t-math"><tspan class="f-purple-ink">43.2</tspan> · <tspan class="f-blue-ink">1</tspan> = <tspan class="b f-purple-ink">43.2</tspan></text>
+<text x="496" y="136" class="t-head">An input: <tspan class="i">x</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> lies on three paths</text>
+<path d="M556,240 L708,212" class="s-rule w1 nofill"/>
+<path d="M556,240 L708,268" class="s-rule w1 nofill"/>
+<path d="M556,240 L708,324" class="s-rule w1 nofill"/>
+<path d="M556,296 L708,212" class="s-rule w1 nofill"/>
+<path d="M556,296 L708,268" class="s-rule w1 nofill"/>
+<path d="M556,296 L708,324" class="s-rule w1 nofill"/>
+<path d="M556,352 L708,212" class="s-rule w1 nofill"/>
+<path d="M556,352 L708,268" class="s-rule w1 nofill"/>
+<path d="M556,352 L708,324" class="s-rule w1 nofill"/>
+<path d="M556,184 L708,212" class="s-purple w15 nofill"/>
+<path d="M556,184 L708,268" class="s-purple w15 nofill"/>
+<path d="M556,184 L708,324" class="s-purple w15 nofill"/>
+<circle cx="536" cy="184" r="20" class="f-blue-soft s-blue w25"/>
+<g data-grid="skip">
+<text x="536" y="189" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<circle cx="536" cy="240" r="20" class="f-blue-soft s-blue w15"/>
+<g data-grid="skip">
+<text x="536" y="245" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<circle cx="536" cy="296" r="20" class="f-blue-soft s-blue w15"/>
+<g data-grid="skip">
+<text x="536" y="301" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<circle cx="536" cy="352" r="20" class="f-blue-soft s-blue w15"/>
+<g data-grid="skip">
+<text x="536" y="357" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">4</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<circle cx="728" cy="212" r="20" class="f-green-soft s-green w15"/>
+<g data-grid="skip">
+<text x="728" y="217" text-anchor="middle" class="t-label"><tspan class="i">z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<text x="768" y="216" class="t-value f-purple-ink">43.2</text>
+<circle cx="728" cy="268" r="20" class="f-green-soft s-green w15"/>
+<g data-grid="skip">
+<text x="728" y="273" text-anchor="middle" class="t-label"><tspan class="i">z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<text x="768" y="272" class="t-value f-purple-ink">43.2</text>
+<circle cx="728" cy="324" r="20" class="f-green-soft s-green w15"/>
+<g data-grid="skip">
+<text x="728" y="329" text-anchor="middle" class="t-label"><tspan class="i">z</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<text x="768" y="328" class="t-value f-purple-ink">43.2</text>
+<text x="768" y="176" class="t-label f-purple-ink">∂<tspan class="i">L</tspan>/∂<tspan class="i">z</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan></text>
+<text x="856" y="176" class="t-label f-orange-ink"><tspan class="i">w</tspan><tspan class="sub" dy="4"><tspan class="i">k</tspan>1</tspan><tspan dy="-4">​</tspan></text>
+<text x="856" y="216" class="t-value f-orange-ink">0.1</text>
+<text x="856" y="272" class="t-value f-orange-ink">0.5</text>
+<text x="856" y="328" class="t-value f-orange-ink">0.9</text>
+<text x="496" y="420" class="t-math">∂<tspan class="i">L</tspan>/∂<tspan class="i">x</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> = Σ<tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan> ∂<tspan class="i">L</tspan>/∂<tspan class="i">z</tspan><tspan class="sub i" dy="4">k</tspan><tspan dy="-4">​</tspan> · <tspan class="i">w</tspan><tspan class="sub" dy="4"><tspan class="i">k</tspan>1</tspan><tspan dy="-4">​</tspan></text>
+<text x="496" y="452" class="t-math"><tspan class="f-purple-ink">43.2</tspan> · <tspan class="f-orange-ink">0.1</tspan> + <tspan class="f-purple-ink">43.2</tspan> · <tspan class="f-orange-ink">0.5</tspan> + <tspan class="f-purple-ink">43.2</tspan> · <tspan class="f-orange-ink">0.9</tspan> = <tspan class="b f-purple-ink">64.80</tspan></text>
+<text x="40" y="504" class="t-note">Each path adds one product; the input's gradient adds one per neuron it feeds.</text>
 </svg>

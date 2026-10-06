@@ -13,9 +13,9 @@
 > - Explain why the input gradient keeps one row per sample while the weight and bias gradients sum over the batch.
 > - Write the three NumPy lines of a dense layer's backward pass and say which result is passed back to the layer before, and why.
 
-![Two panels of three inputs wired to three neurons. Left: one highlighted wire from the first input to the first neuron, and a weight gradient that is a single product. Right: the three wires leaving the first input, and an input gradient that is a sum of three products. A band below gives the matrix product and its shapes.](diagrams/01-input-gradients.svg)
+![Two copies of the layer of section 4, four inputs wired to three neurons, each neuron with the upstream gradient 43.2. Left: the one path of the weight w11, from x1 into z1, whose gradient is 43.2 times 1 = 43.2. Right: the three paths of the input x1, through the weights 0.1, 0.5 and 0.9, whose gradient is 43.2 times 0.1 plus 43.2 times 0.5 plus 43.2 times 0.9 = 64.80.](diagrams/01-input-gradients.svg)
 
-*A weight lies on one path through the layer; an input lies on $m$ paths, one per neuron, and its gradient adds them. The band writes the product for an array with one row of weights per neuron (section 3.1).*
+*A weight lies on one path through the layer; an input lies on $m$ paths, one per neuron, and its gradient adds them.*
 
 ---
 
@@ -25,11 +25,11 @@ Post 14 computed the gradient of the loss with respect to a dense layer's weight
 
 For a network with **two or more layers** that is not enough. The weight gradient of any layer is built from that layer's **upstream gradient**. In this post, as in post 14, the term means $\partial L / \partial \mathbf{Z}$, the gradient of the loss with respect to the layer's pre-activations; post 13 used it for the single number $\partial L / \partial \hat{y}$ that the loss hands back. The last layer receives its upstream gradient from the loss. Every earlier layer has to receive it from the layer after it, and a layer that returns only its own weight and bias gradients returns nothing an earlier layer can use.
 
-What an earlier layer can use is the gradient of the loss with respect to *its own output*. The output of one layer is the input of the next, so that quantity is the next layer's gradient with respect to its **inputs**, $\partial L / \partial \mathbf{X}$. This is the third gradient of a dense layer, and the only one of the three that leaves the layer.
+What an earlier layer can use is the gradient of the loss with respect to *its own output*. The output of one layer is the input of the next, so that quantity is the next layer's gradient with respect to its **inputs**, $\partial L / \partial \mathbf{X}$. This is the third gradient of a dense layer, and the only one of the three that leaves the layer. The figure below follows the three gradients of each layer through the backward pass of the two-layer network of section 7.3.
 
-![A card with the three lines of a dense layer's backward call, the upstream gradient of shape N by m arriving from the right. The weight gradient, n by m, and the bias gradient, 1 by m, stay and go to the optimiser. The input gradient, N by n, travels left to the previous layer.](diagrams/02-gradient-handoff.svg)
+![The backward pass of a two-layer network on a batch of three samples, drawn right to left. The loss hands dvalues2 of shape 3 by 2 to layer 2, which keeps dweights2, 3 by 2, and dbiases2, 1 by 2, for the optimiser and passes dinputs2, 3 by 3, back. Through layer 1's ReLU gate it becomes dvalues1, 3 by 3. Layer 1 keeps dweights1, 4 by 3, and dbiases1, 1 by 3, and passes dinputs1, 3 by 4, back to the data, where nothing reads it.](diagrams/02-gradient-handoff.svg)
 
-*Two of the three gradients are consumed by the optimiser. The third leaves the layer, and it is the only reason the layers before it can learn anything.*
+*Two of the three gradients of each layer are consumed by the optimiser. The third leaves the layer, and it is the only reason the layers before it can learn anything.*
 
 In one sentence: **a layer's input gradient becomes the upstream gradient of the layer before it**, once it has passed back through whatever activation sits between the two. Without it backpropagation stops at the first boundary between layers, and every weight before that boundary keeps its initial value. In the code names of the series, a component receives `dvalues` and returns `dinputs`, and its `dinputs` is the previous component's `dvalues`. The inputs themselves are never updated: they are data, or the outputs of an earlier layer, and neither is a parameter. Section 7.3 runs the hand-off on two layers.
 
@@ -43,7 +43,7 @@ $$z_k = \sum_{j=1}^{n} w_{kj} x_j + b_k.$$
 
 The weight $w_{kj}$ appears in the pre-activation of neuron $k$ and in no other, so its gradient involves the upstream gradient of that one neuron, $\partial L / \partial w_{kj} = (\partial L / \partial z_k) \cdot x_j$.
 
-An input $x_j$ has the opposite structure. **It feeds every neuron in the layer.** It contributes to $z_1, z_2, \dots, z_m$ through the weights $w_{1j}, w_{2j}, \dots, w_{mj}$, and the loss depends on $x_j$ through all of those pre-activations at once.
+An input $x_j$ has the opposite structure. **It feeds every neuron in the layer.** It contributes to $z_1, z_2, \dots, z_m$ through the weights $w_{1j}, w_{2j}, \dots, w_{mj}$, and the loss depends on $x_j$ through all of those pre-activations at once. The figure at the top of the post draws both cases on the layer of section 4: one path for $w_{11}$, three for $x_1$.
 
 Post 11 met the smallest case of this: a variable that reaches the loss along two paths, where the chain rule is applied along each path and the two results are added. Here there are $m$ paths, one per neuron, and the results are again **added**:
 
@@ -162,7 +162,11 @@ largest gap, loops against matrix product: 0.0e+00
 largest gap between the two layouts:       0.0e+00
 ```
 
-Each entry is the sum of three contributions, one per neuron. Because the three upstream entries are equal here, each sum is $43.2$ times one column sum of `weights`: $1.5$, $1.8$, $2.1$, and $2.4$. The loss is most sensitive to $x_4$ because the weights leaving $x_4$ are the largest, not because $x_4 = 4$ is the largest input.
+Each entry is the sum of three contributions, one per neuron. Because the three upstream entries are equal here, each sum is $43.2$ times one column sum of `weights`: $1.5$, $1.8$, $2.1$, and $2.4$. The loss is most sensitive to $x_4$ because the weights leaving $x_4$ are the largest, not because $x_4 = 4$ is the largest input. The figure below lays out the product: column $j$ of `weights` holds the weights leaving input $j$, and entry $j$ of the result is the dot product of the upstream row with that column.
+
+![The upstream row 43.2, 43.2, 43.2 times the array weights, shape 3 by 4, rows 0.1 to 0.4, 0.5 to 0.8 and 0.9 to 1.2, equals the input gradient 64.80, 77.76, 90.72, 103.68. The first column of the weights and the first entry of the result are outlined. Under the weights, the column sums 1.5, 1.8, 2.1 and 2.4; below, the central differences of section 7.1, with a largest gap of 1.0e-08.](diagrams/03-matrix-product.svg)
+
+*One dot product per input: the first column of `weights` holds the three paths of $x_1$, and the central difference of section 7.1 agrees with every entry.*
 
 Each component is read like any partial derivative. The script nudges $x_1$ by $0.01$ with the other inputs fixed: the predicted change in the loss is $64.8 \times 0.01 = 0.6480$ and the actual change is $0.6482$, larger by $0.000225 = (1.5 \times 0.01)^2$, the second-order term of a squared loss, which a first derivative does not see.
 
@@ -202,7 +206,11 @@ largest gap to a central difference on all 12 inputs: 2.8e-09
 largest gap to the three rows computed one sample at a time: 3.6e-15
 ```
 
-The first row can be confirmed by hand: $\hat{y}_1 = 18$, so the upstream entries are $2 \cdot 18 / 3 = 12$, and $12 \times [1.5, 1.8, 2.1, 2.4] = [18, 21.6, 25.2, 28.8]$, with the column sums of section 4. The last line of the output is the statement that samples do not interact: the three rows computed one sample at a time match the batched product to rounding error.
+The first row can be confirmed by hand: $\hat{y}_1 = 18$, so the upstream entries are $2 \cdot 18 / 3 = 12$, and $12 \times [1.5, 1.8, 2.1, 2.4] = [18, 21.6, 25.2, 28.8]$, with the column sums of section 4. The last line of the output is the statement that samples do not interact: the three rows computed one sample at a time match the batched product to rounding error. The figure below shows the batched product, with the first sample's row outlined in the upstream gradient and in the result.
+
+![The upstream gradient of the batch, shape 3 by 3, with rows 12.00, 10.20 and 5.48 for the outputs 18.00, 15.30 and 8.22, times the array weights, shape 3 by 4, equals the input gradient, shape 3 by 4, with rows 18.000, 21.600, 25.200, 28.800; 15.300, 18.360, 21.420, 24.480; and 8.220, 9.864, 11.508, 13.152. Row 1 of the upstream gradient and row 1 of the result are outlined.](diagrams/04-batch-rows.svg)
+
+*Row $i$ of the input gradient is computed from row $i$ of the upstream gradient alone; the weight and bias gradients, shared by all samples, sum over the batch instead.*
 
 ---
 
