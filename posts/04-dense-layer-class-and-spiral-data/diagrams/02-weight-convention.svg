@@ -1,124 +1,228 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" role="img" aria-labelledby="t d">
-  <title id="t">Two weight conventions: rows per neuron versus columns per neuron</title>
-  <desc id="d">A side-by-side comparison of the two weight-matrix conventions for a dense layer. Left panel shows the old convention: W has shape m by n with one row per neuron, and the forward pass needs a transpose: np.dot of X (N by n) and W transposed (n by m) gives output (N by m). Right panel shows the new convention adopted from Part 4 onward: W has shape n by m with one column per neuron, and the forward pass is np.dot of X and W directly (no transpose) yielding output (N by m). The arithmetic and the output numbers are identical; only the layout of W in memory differs.</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-02-weight-convention-title" aria-describedby="nn-02-weight-convention-desc">
+<title id="nn-02-weight-convention-title">Same weights, two layouts: a row or a column per neuron</title>
+<desc id="nn-02-weight-convention-desc">Two grids of the same 12 weights, the first layer of post 03. On the left, weights_old of shape (3, 4), one row per neuron and one column per input, used as np.dot(inputs, weights_old.T) + biases. On the right, weights_new of shape (4, 3), one row per input and one column per neuron, used as np.dot(inputs, weights_new) + biases. Neuron 1's weights, 0.20, 0.80, minus 0.50, 1.00, are the first row on the left and the first column on the right, both shaded and outlined. An arrow labelled transpose joins the two. Both calls give the same (3, 3) output, whose first row is 4.8, 1.21, 2.385.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;fill:var(--nn-ink);}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .panel-old{fill:var(--nn-warn);fill-opacity:0.06;stroke:var(--nn-warn);stroke-width:1.5;}
-    .panel-new{fill:var(--nn-success);fill-opacity:0.07;stroke:var(--nn-success);stroke-width:1.5;}
-    .pill-old{fill:var(--nn-warn);}
-    .pill-new{fill:var(--nn-success);}
-    .head-old{font-weight:700;font-size:15px;fill:var(--nn-warn);}
-    .head-new{font-weight:700;font-size:15px;fill:var(--nn-success);}
-    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
-    .label-head{font-weight:600;font-size:12px;fill:var(--nn-ink);}
-    .w-cell{fill:var(--nn-accent);fill-opacity:0.16;stroke:var(--nn-accent);stroke-width:1;}
-    .label-text{font-size:10px;fill:var(--nn-ink-muted);}
-    .label-arrow{stroke:var(--nn-ink-muted);stroke-width:1;fill:none;}
-    .arrow-head{fill:var(--nn-ink-muted);}
-    .call-pill{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
-    .takeaway{font-size:12px;fill:var(--nn-ink);}
-    .takeaway-good{font-size:12px;font-weight:600;fill:var(--nn-success);}
-    .takeaway-bad{font-size:12px;font-weight:600;fill:var(--nn-warn);}
-  ]]></style>
-
-  <defs>
-    <marker id="aM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" class="arrow-head"/>
-    </marker>
-  </defs>
-
-  <rect class="bg" width="960" height="460"/>
-
-  <text class="title"    x="48" y="48">Two weight conventions, same arithmetic</text>
-  <text class="subtitle" x="48" y="70">Storing W as rows-per-neuron requires a transpose at the call site. Storing W as columns-per-neuron removes it.</text>
-
-  <!-- =================== LEFT: OLD convention =================== -->
-  <rect class="panel-old" x="48" y="96" width="424" height="296" rx="12"/>
-  <rect class="pill-old"  x="48" y="96" width="6"   height="296" rx="3"/>
-  <text class="head-old" x="68" y="124">Old convention (Parts 01 – 03)</text>
-  <text class="panel-sub" x="68" y="142">one row of W = one neuron</text>
-
-  <!-- W matrix layout: 3 rows × 4 cols -->
-  <text class="label-head" x="170" y="174" text-anchor="middle">W : (m, n) = (3, 4)</text>
-  <g transform="translate(116, 184)">
-    <rect class="w-cell" x="0"  y="0"  width="28" height="24"/>
-    <rect class="w-cell" x="28" y="0"  width="28" height="24"/>
-    <rect class="w-cell" x="56" y="0"  width="28" height="24"/>
-    <rect class="w-cell" x="84" y="0"  width="28" height="24"/>
-    <rect class="w-cell" x="0"  y="24" width="28" height="24"/>
-    <rect class="w-cell" x="28" y="24" width="28" height="24"/>
-    <rect class="w-cell" x="56" y="24" width="28" height="24"/>
-    <rect class="w-cell" x="84" y="24" width="28" height="24"/>
-    <rect class="w-cell" x="0"  y="48" width="28" height="24"/>
-    <rect class="w-cell" x="28" y="48" width="28" height="24"/>
-    <rect class="w-cell" x="56" y="48" width="28" height="24"/>
-    <rect class="w-cell" x="84" y="48" width="28" height="24"/>
-  </g>
-  <!-- Row labels -->
-  <text class="label-text" x="108" y="200" text-anchor="end">neuron 1</text>
-  <text class="label-text" x="108" y="224" text-anchor="end">neuron 2</text>
-  <text class="label-text" x="108" y="248" text-anchor="end">neuron 3</text>
-
-  <!-- Call site -->
-  <rect class="call-pill" x="68" y="282" width="384" height="40" rx="8"/>
-  <text class="mono" x="84" y="307">layer_out = np.dot(X, W.T) + b</text>
-
-  <text class="takeaway-bad" x="68" y="350">Needs .T at every call site.</text>
-  <text class="takeaway"     x="68" y="370">A missing transpose breaks the call silently.</text>
-
-  <!-- =================== RIGHT: NEW convention =================== -->
-  <rect class="panel-new" x="488" y="96" width="424" height="296" rx="12"/>
-  <rect class="pill-new"  x="488" y="96" width="6"   height="296" rx="3"/>
-  <text class="head-new" x="508" y="124">New convention (Part 04 onward)</text>
-  <text class="panel-sub" x="508" y="142">one column of W = one neuron</text>
-
-  <!-- W matrix layout: 4 rows × 3 cols -->
-  <text class="label-head" x="610" y="174" text-anchor="middle">W : (n, m) = (4, 3)</text>
-  <g transform="translate(560, 184)">
-    <rect class="w-cell" x="0"  y="0"  width="32" height="20"/>
-    <rect class="w-cell" x="32" y="0"  width="32" height="20"/>
-    <rect class="w-cell" x="64" y="0"  width="32" height="20"/>
-    <rect class="w-cell" x="0"  y="20" width="32" height="20"/>
-    <rect class="w-cell" x="32" y="20" width="32" height="20"/>
-    <rect class="w-cell" x="64" y="20" width="32" height="20"/>
-    <rect class="w-cell" x="0"  y="40" width="32" height="20"/>
-    <rect class="w-cell" x="32" y="40" width="32" height="20"/>
-    <rect class="w-cell" x="64" y="40" width="32" height="20"/>
-    <rect class="w-cell" x="0"  y="60" width="32" height="20"/>
-    <rect class="w-cell" x="32" y="60" width="32" height="20"/>
-    <rect class="w-cell" x="64" y="60" width="32" height="20"/>
-  </g>
-  <!-- Column labels (short to avoid overlap; full names spelled out in text below) -->
-  <text class="label-text" x="576" y="278" text-anchor="middle">n₁</text>
-  <text class="label-text" x="608" y="278" text-anchor="middle">n₂</text>
-  <text class="label-text" x="640" y="278" text-anchor="middle">n₃</text>
-
-  <!-- Call site -->
-  <rect class="call-pill" x="508" y="292" width="384" height="40" rx="8"/>
-  <text class="mono" x="524" y="317">layer_out = np.dot(X, W) + b</text>
-
-  <text class="takeaway-good" x="508" y="360">No transpose. Cleaner code.</text>
-  <text class="takeaway"      x="508" y="380">np.random.randn(n_inputs, n_neurons) matches the call.</text>
-
-  <!-- =================== Footer ===================== -->
-  <text class="footer" x="48"  y="430">Both produce the same output numbers. The new convention saves a .T at every layer and matches the layout used by major frameworks.</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-orange-ink { fill: var(--nn-orange-ink); }
+  .f-orange-soft { fill: var(--nn-orange-soft); }
+  .s-orange { stroke: var(--nn-orange); }
+</style>
+<defs>
+<marker id="nn-02-weight-convention-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title">Same weights, two layouts: a row or a column per neuron</text>
+<text x="40" y="76" class="t-subtitle">The first layer of post 03, 3 neurons over 4 inputs, as weight_convention.py stores it.</text>
+<text x="40" y="128" class="t-head">Posts 01 to 03: a row per neuron</text>
+<rect x="128" y="200" width="64" height="48" class="cell f-orange-soft"/>
+<rect x="192" y="200" width="64" height="48" class="cell f-orange-soft"/>
+<rect x="256" y="200" width="64" height="48" class="cell f-orange-soft"/>
+<rect x="320" y="200" width="64" height="48" class="cell f-orange-soft"/>
+<rect x="128" y="248" width="64" height="48" class="cell"/>
+<rect x="192" y="248" width="64" height="48" class="cell"/>
+<rect x="256" y="248" width="64" height="48" class="cell"/>
+<rect x="320" y="248" width="64" height="48" class="cell"/>
+<rect x="128" y="296" width="64" height="48" class="cell"/>
+<rect x="192" y="296" width="64" height="48" class="cell"/>
+<rect x="256" y="296" width="64" height="48" class="cell"/>
+<rect x="320" y="296" width="64" height="48" class="cell"/>
+<rect x="128" y="200" width="256" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="160" y="230" text-anchor="middle" class="t-cell16">0.20</text>
+<text x="224" y="230" text-anchor="middle" class="t-cell16">0.80</text>
+<text x="288" y="230" text-anchor="middle" class="t-cell16">−0.50</text>
+<text x="352" y="230" text-anchor="middle" class="t-cell16">1.00</text>
+<text x="160" y="278" text-anchor="middle" class="t-cell16">0.50</text>
+<text x="224" y="278" text-anchor="middle" class="t-cell16">−0.91</text>
+<text x="288" y="278" text-anchor="middle" class="t-cell16">0.26</text>
+<text x="352" y="278" text-anchor="middle" class="t-cell16">−0.50</text>
+<text x="160" y="326" text-anchor="middle" class="t-cell16">−0.26</text>
+<text x="224" y="326" text-anchor="middle" class="t-cell16">−0.27</text>
+<text x="288" y="326" text-anchor="middle" class="t-cell16">0.17</text>
+<text x="352" y="326" text-anchor="middle" class="t-cell16">0.87</text>
+</g>
+<rect x="128" y="200" width="256" height="48" class="emph s-orange" data-fit="skip"/>
+<g data-grid="skip">
+<text x="120" y="229" text-anchor="end" class="t-tick">neuron 1</text>
+<text x="120" y="277" text-anchor="end" class="t-tick">neuron 2</text>
+<text x="120" y="325" text-anchor="end" class="t-tick">neuron 3</text>
+</g>
+<g data-grid="skip">
+<text x="160" y="192" text-anchor="middle" class="t-tick">input 1</text>
+<text x="224" y="192" text-anchor="middle" class="t-tick">input 2</text>
+<text x="288" y="192" text-anchor="middle" class="t-tick">input 3</text>
+<text x="352" y="192" text-anchor="middle" class="t-tick">input 4</text>
+</g>
+<text x="520" y="128" class="t-head">Post 04 on: a column per neuron</text>
+<rect x="632" y="176" width="64" height="48" class="cell f-orange-soft"/>
+<rect x="696" y="176" width="64" height="48" class="cell"/>
+<rect x="760" y="176" width="64" height="48" class="cell"/>
+<rect x="632" y="224" width="64" height="48" class="cell f-orange-soft"/>
+<rect x="696" y="224" width="64" height="48" class="cell"/>
+<rect x="760" y="224" width="64" height="48" class="cell"/>
+<rect x="632" y="272" width="64" height="48" class="cell f-orange-soft"/>
+<rect x="696" y="272" width="64" height="48" class="cell"/>
+<rect x="760" y="272" width="64" height="48" class="cell"/>
+<rect x="632" y="320" width="64" height="48" class="cell f-orange-soft"/>
+<rect x="696" y="320" width="64" height="48" class="cell"/>
+<rect x="760" y="320" width="64" height="48" class="cell"/>
+<rect x="632" y="176" width="192" height="192" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="664" y="206" text-anchor="middle" class="t-cell16">0.20</text>
+<text x="728" y="206" text-anchor="middle" class="t-cell16">0.50</text>
+<text x="792" y="206" text-anchor="middle" class="t-cell16">−0.26</text>
+<text x="664" y="254" text-anchor="middle" class="t-cell16">0.80</text>
+<text x="728" y="254" text-anchor="middle" class="t-cell16">−0.91</text>
+<text x="792" y="254" text-anchor="middle" class="t-cell16">−0.27</text>
+<text x="664" y="302" text-anchor="middle" class="t-cell16">−0.50</text>
+<text x="728" y="302" text-anchor="middle" class="t-cell16">0.26</text>
+<text x="792" y="302" text-anchor="middle" class="t-cell16">0.17</text>
+<text x="664" y="350" text-anchor="middle" class="t-cell16">1.00</text>
+<text x="728" y="350" text-anchor="middle" class="t-cell16">−0.50</text>
+<text x="792" y="350" text-anchor="middle" class="t-cell16">0.87</text>
+</g>
+<rect x="632" y="176" width="64" height="192" class="emph s-orange" data-fit="skip"/>
+<g data-grid="skip">
+<text x="624" y="205" text-anchor="end" class="t-tick">input 1</text>
+<text x="624" y="253" text-anchor="end" class="t-tick">input 2</text>
+<text x="624" y="301" text-anchor="end" class="t-tick">input 3</text>
+<text x="624" y="349" text-anchor="end" class="t-tick">input 4</text>
+</g>
+<g data-grid="skip">
+<text x="664" y="168" text-anchor="middle" class="t-tick">neuron 1</text>
+<text x="728" y="168" text-anchor="middle" class="t-tick">neuron 2</text>
+<text x="792" y="168" text-anchor="middle" class="t-tick">neuron 3</text>
+</g>
+<path d="M408,272 L557,272" class="flow" marker-end="url(#nn-02-weight-convention-arrow)"/>
+<text x="484" y="260" text-anchor="middle" class="t-note">transpose</text>
+<text x="40" y="416" class="t-code f-orange-ink">weights_old.shape == (3, 4)</text>
+<text x="40" y="444" class="t-code">np.dot(inputs, weights_old.T) + biases</text>
+<text x="520" y="416" class="t-code f-orange-ink">weights_new.shape == (4, 3)</text>
+<text x="520" y="444" class="t-code">np.dot(inputs, weights_new) + biases</text>
+<text x="40" y="504" class="t-note">Both calls return the same (3, 3) output; its first row is 4.8, 1.21, 2.385.</text>
 </svg>

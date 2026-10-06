@@ -1,206 +1,483 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
-  <title id="t">The spiral dataset: three intertwined classes</title>
-  <desc id="d">A scatter plot showing 300 points in two dimensions, divided into three classes that form three intertwined spirals emanating from the origin. The three classes are coloured in primary blue, accent orange, and success green respectively. A dashed line illustrates the failure mode of any linear classifier: no straight line can separate even two of the three classes cleanly. A side panel summarises the dataset properties: 300 samples, 2 features, 3 classes, non-linear, not separable.</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-01-spiral-data-title" aria-describedby="nn-01-spiral-data-desc">
+<title id="nn-01-spiral-data-title">Three spiral arms that no straight cut separates</title>
+<desc id="nn-01-spiral-data-desc">A scatter plot of all 300 points that spiral_data(samples=100, classes=3) returns after nnfs.init(), the first feature X[:, 0] across and the second X[:, 1] up, both from minus 1 to 1. Class 0 is drawn as blue circles, class 1 as orange squares and class 2 as green triangles, 100 points each, each class an arm that winds out from the origin. The background is split by straight edges into three tinted regions, where a trained Layer_Dense(2, 3) answers each class. The arms cross every edge: the layer gets 118 of 300 points right, 39.3%, against 100 of 300, 33.3%, for always giving one answer. A side panel lists X: (300, 2) float32 and y: (300,) uint8.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
-    .axis{stroke:var(--nn-ink-muted);stroke-width:1;fill:none;}
-    .grid{stroke:var(--nn-grid,rgba(26,26,26,0.06));stroke-width:0.75;fill:none;}
-    .axis-label{font-size:11px;fill:var(--nn-ink-muted);}
-    .axis-title{font-size:13px;font-weight:600;fill:var(--nn-ink);}
-    .pt-c0{fill:var(--nn-primary);}
-    .pt-c1{fill:var(--nn-accent);}
-    .pt-c2{fill:var(--nn-success);}
-    .bad-line{stroke:var(--nn-alert);stroke-width:1.5;stroke-dasharray:5 4;fill:none;}
-    .bad-label{font-size:11px;fill:var(--nn-alert);font-weight:600;}
-    .info-head{font-weight:700;font-size:13px;fill:var(--nn-ink);}
-    .info-body{font-size:12px;fill:var(--nn-ink);}
-    .info-muted{font-size:11px;fill:var(--nn-ink-muted);}
-    .pill-prim{fill:var(--nn-primary);}
-    .pill-acc{fill:var(--nn-accent);}
-    .pill-ok{fill:var(--nn-success);}
-    .legend-text{font-size:12px;fill:var(--nn-ink);}
-  ]]></style>
-
-  <rect class="bg" width="960" height="540"/>
-
-  <text class="title"    x="48" y="48">The spiral dataset</text>
-  <text class="subtitle" x="48" y="70">300 points, 3 classes, 2 features. The series' standard benchmark for non-linear classification.</text>
-
-  <!-- ====================== Scatter plot panel ====================== -->
-  <rect class="panel" x="48" y="96" width="500" height="380" rx="12"/>
-  <!-- Axes centred -->
-  <line class="axis" x1="298" y1="120" x2="298" y2="456"/>
-  <line class="axis" x1="68"  y1="288" x2="528" y2="288"/>
-  <text class="axis-title" x="298" y="476" text-anchor="middle">X₁</text>
-  <text class="axis-title" x="68"  y="284" text-anchor="end">X₂</text>
-
-  <!-- Three spirals. Approximated with circle markers along parametric spirals.
-       Spiral i (i=0,1,2): r in [0..1], theta = 4*r + (2*pi*i/3). cx = 298 + 120r*cos(theta), cy = 288 - 120r*sin(theta).
-       For visual quality, scatter ~30 points per spiral at jittered radii. -->
-
-  <!-- Spiral 0 (blue) -->
-  <g class="pt-c0">
-    <circle cx="298" cy="288" r="2.5"/>
-    <circle cx="310" cy="280" r="2.5"/>
-    <circle cx="322" cy="270" r="2.5"/>
-    <circle cx="332" cy="256" r="2.5"/>
-    <circle cx="338" cy="240" r="2.5"/>
-    <circle cx="342" cy="222" r="2.5"/>
-    <circle cx="338" cy="204" r="2.5"/>
-    <circle cx="328" cy="190" r="2.5"/>
-    <circle cx="312" cy="180" r="2.5"/>
-    <circle cx="294" cy="178" r="2.5"/>
-    <circle cx="276" cy="184" r="2.5"/>
-    <circle cx="262" cy="196" r="2.5"/>
-    <circle cx="252" cy="214" r="2.5"/>
-    <circle cx="246" cy="234" r="2.5"/>
-    <circle cx="244" cy="256" r="2.5"/>
-    <circle cx="246" cy="278" r="2.5"/>
-    <circle cx="232" cy="290" r="2.5"/>
-    <circle cx="218" cy="282" r="2.5"/>
-    <circle cx="206" cy="266" r="2.5"/>
-    <circle cx="198" cy="246" r="2.5"/>
-    <circle cx="194" cy="222" r="2.5"/>
-    <circle cx="194" cy="198" r="2.5"/>
-    <circle cx="200" cy="174" r="2.5"/>
-    <circle cx="212" cy="154" r="2.5"/>
-    <circle cx="230" cy="138" r="2.5"/>
-    <circle cx="252" cy="128" r="2.5"/>
-    <circle cx="278" cy="124" r="2.5"/>
-    <circle cx="306" cy="126" r="2.5"/>
-    <circle cx="332" cy="134" r="2.5"/>
-    <circle cx="356" cy="148" r="2.5"/>
-  </g>
-
-  <!-- Spiral 1 (orange) -->
-  <g class="pt-c1">
-    <circle cx="298" cy="288" r="2.5"/>
-    <circle cx="288" cy="298" r="2.5"/>
-    <circle cx="276" cy="308" r="2.5"/>
-    <circle cx="262" cy="316" r="2.5"/>
-    <circle cx="246" cy="320" r="2.5"/>
-    <circle cx="228" cy="322" r="2.5"/>
-    <circle cx="210" cy="320" r="2.5"/>
-    <circle cx="194" cy="314" r="2.5"/>
-    <circle cx="180" cy="306" r="2.5"/>
-    <circle cx="168" cy="294" r="2.5"/>
-    <circle cx="160" cy="280" r="2.5"/>
-    <circle cx="154" cy="262" r="2.5"/>
-    <circle cx="152" cy="242" r="2.5"/>
-    <circle cx="154" cy="222" r="2.5"/>
-    <circle cx="160" cy="202" r="2.5"/>
-    <circle cx="170" cy="184" r="2.5"/>
-    <circle cx="186" cy="166" r="2.5"/>
-    <circle cx="206" cy="150" r="2.5"/>
-    <circle cx="170" cy="320" r="2.5"/>
-    <circle cx="148" cy="324" r="2.5"/>
-    <circle cx="128" cy="320" r="2.5"/>
-    <circle cx="112" cy="308" r="2.5"/>
-    <circle cx="100" cy="292" r="2.5"/>
-    <circle cx="90"  cy="272" r="2.5"/>
-    <circle cx="86"  cy="250" r="2.5"/>
-    <circle cx="86"  cy="226" r="2.5"/>
-    <circle cx="92"  cy="200" r="2.5"/>
-    <circle cx="104" cy="176" r="2.5"/>
-    <circle cx="124" cy="154" r="2.5"/>
-    <circle cx="150" cy="138" r="2.5"/>
-  </g>
-
-  <!-- Spiral 2 (green) -->
-  <g class="pt-c2">
-    <circle cx="298" cy="288" r="2.5"/>
-    <circle cx="296" cy="304" r="2.5"/>
-    <circle cx="290" cy="320" r="2.5"/>
-    <circle cx="280" cy="334" r="2.5"/>
-    <circle cx="266" cy="346" r="2.5"/>
-    <circle cx="248" cy="356" r="2.5"/>
-    <circle cx="228" cy="362" r="2.5"/>
-    <circle cx="206" cy="364" r="2.5"/>
-    <circle cx="184" cy="362" r="2.5"/>
-    <circle cx="318" cy="304" r="2.5"/>
-    <circle cx="334" cy="320" r="2.5"/>
-    <circle cx="346" cy="340" r="2.5"/>
-    <circle cx="354" cy="362" r="2.5"/>
-    <circle cx="358" cy="386" r="2.5"/>
-    <circle cx="354" cy="410" r="2.5"/>
-    <circle cx="346" cy="430" r="2.5"/>
-    <circle cx="332" cy="446" r="2.5"/>
-    <circle cx="314" cy="456" r="2.5"/>
-    <circle cx="294" cy="460" r="2.5"/>
-    <circle cx="274" cy="456" r="2.5"/>
-    <circle cx="254" cy="446" r="2.5"/>
-    <circle cx="238" cy="430" r="2.5"/>
-    <circle cx="226" cy="408" r="2.5"/>
-    <circle cx="220" cy="386" r="2.5"/>
-    <circle cx="222" cy="364" r="2.5"/>
-    <circle cx="232" cy="346" r="2.5"/>
-    <circle cx="248" cy="334" r="2.5"/>
-    <circle cx="380" cy="350" r="2.5"/>
-    <circle cx="392" cy="330" r="2.5"/>
-    <circle cx="402" cy="306" r="2.5"/>
-  </g>
-
-  <!-- A failing linear boundary (dashed) showing it can't separate the spirals -->
-  <line class="bad-line" x1="120" y1="380" x2="490" y2="200"/>
-  <text class="bad-label" x="118" y="396">no straight line separates the classes</text>
-
-  <!-- ====================== Right info panel ====================== -->
-  <rect class="panel" x="572" y="96" width="340" height="380" rx="12"/>
-  <text class="info-head" x="592" y="124">Dataset properties</text>
-
-  <!-- Properties list -->
-  <text class="info-body"  x="592" y="156">Samples:</text>
-  <text class="mono"       x="892" y="156" text-anchor="end" style="font-size:12px;fill:var(--nn-ink);">300</text>
-  <text class="info-muted" x="592" y="172">(100 per class × 3 classes)</text>
-
-  <text class="info-body"  x="592" y="200">Features:</text>
-  <text class="mono"       x="892" y="200" text-anchor="end" style="font-size:12px;fill:var(--nn-ink);">2</text>
-  <text class="info-muted" x="592" y="216">(X₁, X₂) coordinates in the plane</text>
-
-  <text class="info-body"  x="592" y="244">Classes:</text>
-  <text class="mono"       x="892" y="244" text-anchor="end" style="font-size:12px;fill:var(--nn-ink);">3</text>
-  <text class="info-muted" x="592" y="260">labelled 0, 1, 2 in y</text>
-
-  <text class="info-body"  x="592" y="288">Linearly separable?</text>
-  <text class="info-body"  x="892" y="288" text-anchor="end" style="fill:var(--nn-alert);font-weight:600;">no</text>
-
-  <text class="info-body"  x="592" y="316">Chance baseline:</text>
-  <text class="info-body"  x="892" y="316" text-anchor="end">33.3%</text>
-
-  <!-- Legend -->
-  <text class="info-head" x="592" y="356">Legend</text>
-  <circle class="pt-c0" cx="600" cy="378" r="4"/>
-  <text class="legend-text" x="612" y="382">class 0 (label y = 0)</text>
-  <circle class="pt-c1" cx="600" cy="400" r="4"/>
-  <text class="legend-text" x="612" y="404">class 1 (label y = 1)</text>
-  <circle class="pt-c2" cx="600" cy="422" r="4"/>
-  <text class="legend-text" x="612" y="426">class 2 (label y = 2)</text>
-
-  <!-- Source / code hint -->
-  <text class="info-muted" x="592" y="454">Generated with:</text>
-  <text class="mono"       x="592" y="470" style="font-size:11px;fill:var(--nn-ink);">spiral_data(samples=100, classes=3)</text>
-
-  <!-- Footer -->
-  <text class="footer" x="48"  y="514">A linear model cannot solve this dataset. The series builds one that can, layer by layer.</text>
-  <text class="footer" x="912" y="514" text-anchor="end">Helper from nnfs (Kinsley &amp; Kukieła, 2020).</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--nn-blue); }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-green { fill: var(--nn-green); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-ink { fill: var(--nn-ink); }
+  .f-orange { fill: var(--nn-orange); }
+  .f-orange-soft { fill: var(--nn-orange-soft); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-01-spiral-data-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title">Three spiral arms that no straight cut separates</text>
+<text x="40" y="76" class="t-subtitle">spiral_data(samples=100, classes=3) after nnfs.init(): all 300 points.</text>
+<g data-grid="skip">
+<path d="M284.59,592.00 L568.00,592.00 L568.00,273.20 L333.40,361.15 Z" class="f-blue-soft s-ink-muted w1"/>
+<path d="M568.00,273.20 L568.00,128.00 L104.00,128.00 L104.00,312.81 L333.40,361.15 Z" class="f-orange-soft s-ink-muted w1"/>
+<path d="M104.00,592.00 L284.59,592.00 L333.40,361.15 L104.00,312.81 Z" class="f-green-soft s-ink-muted w1"/>
+<path d="M125.09,128V592M230.55,128V592M441.45,128V592M546.91,128V592M104,570.91H568M104,465.45H568M104,254.55H568M104,149.09H568" class="gridline"/>
+<circle cx="336.00" cy="360.00" r="4" class="f-blue s-surface w1"/>
+<circle cx="336.63" cy="357.97" r="4" class="f-blue s-surface w1"/>
+<circle cx="338.72" cy="356.72" r="4" class="f-blue s-surface w1"/>
+<circle cx="342.32" cy="359.06" r="4" class="f-blue s-surface w1"/>
+<circle cx="344.29" cy="358.03" r="4" class="f-blue s-surface w1"/>
+<circle cx="336.17" cy="349.35" r="4" class="f-blue s-surface w1"/>
+<circle cx="347.28" cy="353.99" r="4" class="f-blue s-surface w1"/>
+<circle cx="344.80" cy="347.96" r="4" class="f-blue s-surface w1"/>
+<circle cx="347.70" cy="347.61" r="4" class="f-blue s-surface w1"/>
+<circle cx="353.21" cy="351.55" r="4" class="f-blue s-surface w1"/>
+<circle cx="354.81" cy="350.00" r="4" class="f-blue s-surface w1"/>
+<circle cx="358.60" cy="366.19" r="4" class="f-blue s-surface w1"/>
+<circle cx="361.56" cy="360.56" r="4" class="f-blue s-surface w1"/>
+<circle cx="363.16" cy="354.58" r="4" class="f-blue s-surface w1"/>
+<circle cx="365.76" cy="361.95" r="4" class="f-blue s-surface w1"/>
+<circle cx="367.76" cy="363.55" r="4" class="f-blue s-surface w1"/>
+<circle cx="359.93" cy="384.27" r="4" class="f-blue s-surface w1"/>
+<circle cx="372.18" cy="361.59" r="4" class="f-blue s-surface w1"/>
+<circle cx="371.26" cy="375.07" r="4" class="f-blue s-surface w1"/>
+<circle cx="376.35" cy="356.82" r="4" class="f-blue s-surface w1"/>
+<circle cx="364.85" cy="328.64" r="4" class="f-blue s-surface w1"/>
+<circle cx="364.60" cy="394.40" r="4" class="f-blue s-surface w1"/>
+<circle cx="357.94" cy="401.42" r="4" class="f-blue s-surface w1"/>
+<circle cx="381.48" cy="378.24" r="4" class="f-blue s-surface w1"/>
+<circle cx="315.27" cy="406.74" r="4" class="f-blue s-surface w1"/>
+<circle cx="387.89" cy="372.00" r="4" class="f-blue s-surface w1"/>
+<circle cx="362.19" cy="408.81" r="4" class="f-blue s-surface w1"/>
+<circle cx="363.98" cy="410.26" r="4" class="f-blue s-surface w1"/>
+<circle cx="309.89" cy="413.63" r="4" class="f-blue s-surface w1"/>
+<circle cx="305.17" cy="413.54" r="4" class="f-blue s-surface w1"/>
+<circle cx="338.16" cy="423.88" r="4" class="f-blue s-surface w1"/>
+<circle cx="324.25" cy="424.99" r="4" class="f-blue s-surface w1"/>
+<circle cx="359.58" cy="423.97" r="4" class="f-blue s-surface w1"/>
+<circle cx="386.37" cy="409.05" r="4" class="f-blue s-surface w1"/>
+<circle cx="327.42" cy="431.92" r="4" class="f-blue s-surface w1"/>
+<circle cx="302.10" cy="426.41" r="4" class="f-blue s-surface w1"/>
+<circle cx="267.31" cy="394.11" r="4" class="f-blue s-surface w1"/>
+<circle cx="262.62" cy="388.79" r="4" class="f-blue s-surface w1"/>
+<circle cx="296.97" cy="430.92" r="4" class="f-blue s-surface w1"/>
+<circle cx="285.94" cy="426.31" r="4" class="f-blue s-surface w1"/>
+<circle cx="304.82" cy="439.31" r="4" class="f-blue s-surface w1"/>
+<circle cx="311.04" cy="443.70" r="4" class="f-blue s-surface w1"/>
+<circle cx="314.06" cy="446.75" r="4" class="f-blue s-surface w1"/>
+<circle cx="260.73" cy="307.79" r="4" class="f-blue s-surface w1"/>
+<circle cx="254.78" cy="406.80" r="4" class="f-blue s-surface w1"/>
+<circle cx="247.18" cy="396.09" r="4" class="f-blue s-surface w1"/>
+<circle cx="260.56" cy="422.55" r="4" class="f-blue s-surface w1"/>
+<circle cx="244.73" cy="318.82" r="4" class="f-blue s-surface w1"/>
+<circle cx="255.90" cy="423.57" r="4" class="f-blue s-surface w1"/>
+<circle cx="232.50" cy="346.39" r="4" class="f-blue s-surface w1"/>
+<circle cx="230.12" cy="371.65" r="4" class="f-blue s-surface w1"/>
+<circle cx="248.37" cy="295.76" r="4" class="f-blue s-surface w1"/>
+<circle cx="229.68" cy="328.88" r="4" class="f-blue s-surface w1"/>
+<circle cx="223.23" cy="354.26" r="4" class="f-blue s-surface w1"/>
+<circle cx="250.13" cy="283.45" r="4" class="f-blue s-surface w1"/>
+<circle cx="278.45" cy="257.94" r="4" class="f-blue s-surface w1"/>
+<circle cx="269.29" cy="261.09" r="4" class="f-blue s-surface w1"/>
+<circle cx="291.59" cy="246.98" r="4" class="f-blue s-surface w1"/>
+<circle cx="252.52" cy="268.90" r="4" class="f-blue s-surface w1"/>
+<circle cx="275.19" cy="249.99" r="4" class="f-blue s-surface w1"/>
+<circle cx="268.23" cy="251.62" r="4" class="f-blue s-surface w1"/>
+<circle cx="297.43" cy="235.90" r="4" class="f-blue s-surface w1"/>
+<circle cx="281.28" cy="239.78" r="4" class="f-blue s-surface w1"/>
+<circle cx="241.35" cy="264.84" r="4" class="f-blue s-surface w1"/>
+<circle cx="372.39" cy="228.60" r="4" class="f-blue s-surface w1"/>
+<circle cx="347.28" cy="221.98" r="4" class="f-blue s-surface w1"/>
+<circle cx="277.18" cy="232.29" r="4" class="f-blue s-surface w1"/>
+<circle cx="429.68" cy="252.30" r="4" class="f-blue s-surface w1"/>
+<circle cx="355.05" cy="216.39" r="4" class="f-blue s-surface w1"/>
+<circle cx="432.09" cy="248.76" r="4" class="f-blue s-surface w1"/>
+<circle cx="472.24" cy="299.36" r="4" class="f-blue s-surface w1"/>
+<circle cx="459.30" cy="272.39" r="4" class="f-blue s-surface w1"/>
+<circle cx="489.38" cy="358.23" r="4" class="f-blue s-surface w1"/>
+<circle cx="406.87" cy="221.57" r="4" class="f-blue s-surface w1"/>
+<circle cx="491.16" cy="332.08" r="4" class="f-blue s-surface w1"/>
+<circle cx="465.98" cy="267.08" r="4" class="f-blue s-surface w1"/>
+<circle cx="468.47" cy="266.90" r="4" class="f-blue s-surface w1"/>
+<circle cx="489.20" cy="301.35" r="4" class="f-blue s-surface w1"/>
+<circle cx="500.75" cy="338.30" r="4" class="f-blue s-surface w1"/>
+<circle cx="502.31" cy="385.80" r="4" class="f-blue s-surface w1"/>
+<circle cx="495.76" cy="300.64" r="4" class="f-blue s-surface w1"/>
+<circle cx="458.89" cy="481.14" r="4" class="f-blue s-surface w1"/>
+<circle cx="473.83" cy="467.34" r="4" class="f-blue s-surface w1"/>
+<circle cx="507.83" cy="318.27" r="4" class="f-blue s-surface w1"/>
+<circle cx="370.82" cy="535.53" r="4" class="f-blue s-surface w1"/>
+<circle cx="316.30" cy="540.01" r="4" class="f-blue s-surface w1"/>
+<circle cx="363.11" cy="541.20" r="4" class="f-blue s-surface w1"/>
+<circle cx="459.17" cy="498.50" r="4" class="f-blue s-surface w1"/>
+<circle cx="500.57" cy="449.80" r="4" class="f-blue s-surface w1"/>
+<circle cx="318.52" cy="548.80" r="4" class="f-blue s-surface w1"/>
+<circle cx="433.83" cy="524.90" r="4" class="f-blue s-surface w1"/>
+<circle cx="264.39" cy="540.15" r="4" class="f-blue s-surface w1"/>
+<circle cx="341.43" cy="555.92" r="4" class="f-blue s-surface w1"/>
+<circle cx="248.49" cy="537.75" r="4" class="f-blue s-surface w1"/>
+<circle cx="286.77" cy="554.11" r="4" class="f-blue s-surface w1"/>
+<circle cx="234.65" cy="535.18" r="4" class="f-blue s-surface w1"/>
+<circle cx="279.98" cy="556.70" r="4" class="f-blue s-surface w1"/>
+<circle cx="138.87" cy="421.99" r="4" class="f-blue s-surface w1"/>
+<circle cx="229.08" cy="539.32" r="4" class="f-blue s-surface w1"/>
+<circle cx="188.24" cy="510.50" r="4" class="f-blue s-surface w1"/>
+<rect x="332.50" y="356.50" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="332.49" y="358.63" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="331.90" y="360.72" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="326.25" y="357.82" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="329.24" y="364.37" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="323.06" y="351.57" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="321.92" y="363.68" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="320.74" y="365.67" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="320.31" y="344.59" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="317.28" y="344.84" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="320.08" y="339.19" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="312.75" y="343.88" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="307.52" y="361.93" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="324.36" y="330.03" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="303.87" y="348.13" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="313.16" y="331.06" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="316.86" y="326.21" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="303.54" y="334.75" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="316.13" y="321.82" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="325.01" y="316.72" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="317.57" y="316.59" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="294.98" y="332.13" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="323.42" y="310.52" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="352.48" y="311.76" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="308.46" y="311.37" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="326.34" y="303.60" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="323.80" y="301.80" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="383.38" y="329.67" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="366.09" y="307.20" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="365.66" y="304.37" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="337.54" y="292.79" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="381.44" y="312.15" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="354.51" y="291.98" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="382.09" y="306.66" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="370.36" y="294.75" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="404.49" y="337.07" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="407.47" y="340.32" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="401.53" y="318.44" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="413.04" y="348.36" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="393.61" y="300.21" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="389.23" y="292.91" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="417.67" y="375.90" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="420.39" y="373.27" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="411.83" y="402.32" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="339.24" y="449.99" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="393.54" y="430.42" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="430.36" y="361.68" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="371.67" y="448.65" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="434.61" y="361.95" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="419.73" y="413.84" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="400.43" y="438.55" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="300.37" y="460.29" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="414.08" y="431.44" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="410.91" y="437.74" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="366.79" y="466.31" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="387.04" y="460.21" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="274.06" y="460.51" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="389.69" y="463.62" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="383.23" y="469.17" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="328.39" y="482.13" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="319.28" y="483.64" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="204.05" y="376.23" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="219.31" y="424.57" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="246.09" y="459.20" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="312.94" y="491.43" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="199.84" y="396.22" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="270.26" y="482.58" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="292.05" y="493.38" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="190.08" y="330.00" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="187.17" y="378.55" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="188.10" y="319.26" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="181.45" y="348.59" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="192.59" y="293.62" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="181.10" y="392.04" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="182.91" y="406.26" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="204.13" y="261.36" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="170.59" y="357.10" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="170.41" y="331.30" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="177.71" y="296.06" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="204.84" y="246.82" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="194.29" y="256.77" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="163.93" y="319.59" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="196.91" y="246.35" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="155.68" y="357.67" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="323.18" y="177.79" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="174.11" y="268.72" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="212.40" y="218.14" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="325.90" y="171.27" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="271.67" y="179.17" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="482.41" y="240.41" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="256.94" y="180.28" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="421.32" y="184.18" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="413.09" y="177.84" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="324.64" y="158.53" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="490.24" y="233.12" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="456.69" y="196.69" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="525.48" y="288.78" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="534.58" y="313.30" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="509.36" y="467.45" width="7" height="7" class="f-orange s-surface w1"/>
+<rect x="536.96" y="408.25" width="7" height="7" class="f-orange s-surface w1"/>
+<path d="M336.00,355.00 L340.50,363.50 L331.50,363.50 Z" class="f-green s-surface w1"/>
+<path d="M337.93,354.09 L342.43,362.59 L333.43,362.59 Z" class="f-green s-surface w1"/>
+<path d="M340.03,356.39 L344.53,364.89 L335.53,364.89 Z" class="f-green s-surface w1"/>
+<path d="M342.25,356.33 L346.75,364.83 L337.75,364.83 Z" class="f-green s-surface w1"/>
+<path d="M344.13,357.55 L348.63,366.05 L339.63,366.05 Z" class="f-green s-surface w1"/>
+<path d="M343.98,347.95 L348.48,356.45 L339.48,356.45 Z" class="f-green s-surface w1"/>
+<path d="M348.59,357.21 L353.09,365.71 L344.09,365.71 Z" class="f-green s-surface w1"/>
+<path d="M350.86,353.77 L355.36,362.27 L346.36,362.27 Z" class="f-green s-surface w1"/>
+<path d="M350.72,363.58 L355.22,372.08 L346.22,372.08 Z" class="f-green s-surface w1"/>
+<path d="M353.35,363.16 L357.85,371.66 L348.85,371.66 Z" class="f-green s-surface w1"/>
+<path d="M346.70,373.42 L351.20,381.92 L342.20,381.92 Z" class="f-green s-surface w1"/>
+<path d="M351.48,372.60 L355.98,381.10 L346.98,381.10 Z" class="f-green s-surface w1"/>
+<path d="M345.62,378.69 L350.12,387.19 L341.12,387.19 Z" class="f-green s-surface w1"/>
+<path d="M357.89,371.97 L362.39,380.47 L353.39,380.47 Z" class="f-green s-surface w1"/>
+<path d="M361.86,369.86 L366.36,378.36 L357.36,378.36 Z" class="f-green s-surface w1"/>
+<path d="M356.12,379.83 L360.62,388.33 L351.62,388.33 Z" class="f-green s-surface w1"/>
+<path d="M348.75,386.61 L353.25,395.11 L344.25,395.11 Z" class="f-green s-surface w1"/>
+<path d="M339.05,391.09 L343.55,399.59 L334.55,399.59 Z" class="f-green s-surface w1"/>
+<path d="M304.66,377.10 L309.16,385.60 L300.16,385.60 Z" class="f-green s-surface w1"/>
+<path d="M339.76,395.30 L344.26,403.80 L335.26,403.80 Z" class="f-green s-surface w1"/>
+<path d="M354.49,393.39 L358.99,401.89 L349.99,401.89 Z" class="f-green s-surface w1"/>
+<path d="M337.92,399.70 L342.42,408.20 L333.42,408.20 Z" class="f-green s-surface w1"/>
+<path d="M336.03,401.87 L340.53,410.37 L331.53,410.37 Z" class="f-green s-surface w1"/>
+<path d="M309.44,396.18 L313.94,404.68 L304.94,404.68 Z" class="f-green s-surface w1"/>
+<path d="M352.92,403.25 L357.42,411.75 L348.42,411.75 Z" class="f-green s-surface w1"/>
+<path d="M307.45,399.96 L311.95,408.46 L302.95,408.46 Z" class="f-green s-surface w1"/>
+<path d="M299.75,396.88 L304.25,405.38 L295.25,405.38 Z" class="f-green s-surface w1"/>
+<path d="M292.70,392.87 L297.20,401.37 L288.20,401.37 Z" class="f-green s-surface w1"/>
+<path d="M305.41,406.21 L309.91,414.71 L300.91,414.71 Z" class="f-green s-surface w1"/>
+<path d="M290.86,397.19 L295.36,405.69 L286.36,405.69 Z" class="f-green s-surface w1"/>
+<path d="M315.46,415.52 L319.96,424.02 L310.96,424.02 Z" class="f-green s-surface w1"/>
+<path d="M284.54,396.39 L289.04,404.89 L280.04,404.89 Z" class="f-green s-surface w1"/>
+<path d="M279.78,393.55 L284.28,402.05 L275.28,402.05 Z" class="f-green s-surface w1"/>
+<path d="M265.71,356.45 L270.21,364.95 L261.21,364.95 Z" class="f-green s-surface w1"/>
+<path d="M280.87,401.98 L285.37,410.48 L276.37,410.48 Z" class="f-green s-surface w1"/>
+<path d="M266.32,328.45 L270.82,336.95 L261.82,336.95 Z" class="f-green s-surface w1"/>
+<path d="M283.77,298.84 L288.27,307.34 L279.27,307.34 Z" class="f-green s-surface w1"/>
+<path d="M284.55,414.71 L289.05,423.21 L280.05,423.21 Z" class="f-green s-surface w1"/>
+<path d="M264.55,316.93 L269.05,325.43 L260.05,325.43 Z" class="f-green s-surface w1"/>
+<path d="M273.31,300.47 L277.81,308.97 L268.81,308.97 Z" class="f-green s-surface w1"/>
+<path d="M251.87,341.45 L256.37,349.95 L247.37,349.95 Z" class="f-green s-surface w1"/>
+<path d="M254.91,322.53 L259.41,331.03 L250.41,331.03 Z" class="f-green s-surface w1"/>
+<path d="M262.87,303.45 L267.37,311.95 L258.37,311.95 Z" class="f-green s-surface w1"/>
+<path d="M262.12,300.84 L266.62,309.34 L257.62,309.34 Z" class="f-green s-surface w1"/>
+<path d="M266.02,292.63 L270.52,301.13 L261.52,301.13 Z" class="f-green s-surface w1"/>
+<path d="M241.15,341.10 L245.65,349.60 L236.65,349.60 Z" class="f-green s-surface w1"/>
+<path d="M344.80,257.40 L349.30,265.90 L340.30,265.90 Z" class="f-green s-surface w1"/>
+<path d="M351.41,256.06 L355.91,264.56 L346.91,264.56 Z" class="f-green s-surface w1"/>
+<path d="M270.83,276.19 L275.33,284.69 L266.33,284.69 Z" class="f-green s-surface w1"/>
+<path d="M253.17,291.47 L257.67,299.97 L248.67,299.97 Z" class="f-green s-surface w1"/>
+<path d="M354.89,250.17 L359.39,258.67 L350.39,258.67 Z" class="f-green s-surface w1"/>
+<path d="M307.11,250.26 L311.61,258.76 L302.61,258.76 Z" class="f-green s-surface w1"/>
+<path d="M357.00,246.23 L361.50,254.73 L352.50,254.73 Z" class="f-green s-surface w1"/>
+<path d="M342.90,242.30 L347.40,250.80 L338.40,250.80 Z" class="f-green s-surface w1"/>
+<path d="M407.22,264.66 L411.72,273.16 L402.72,273.16 Z" class="f-green s-surface w1"/>
+<path d="M417.58,270.90 L422.08,279.40 L413.08,279.40 Z" class="f-green s-surface w1"/>
+<path d="M355.13,237.24 L359.63,245.74 L350.63,245.74 Z" class="f-green s-surface w1"/>
+<path d="M327.89,233.84 L332.39,242.34 L323.39,242.34 Z" class="f-green s-surface w1"/>
+<path d="M327.90,231.70 L332.40,240.20 L323.40,240.20 Z" class="f-green s-surface w1"/>
+<path d="M449.79,301.60 L454.29,310.10 L445.29,310.10 Z" class="f-green s-surface w1"/>
+<path d="M377.84,234.22 L382.34,242.72 L373.34,242.72 Z" class="f-green s-surface w1"/>
+<path d="M426.97,262.20 L431.47,270.70 L422.47,270.70 Z" class="f-green s-surface w1"/>
+<path d="M433.62,266.03 L438.12,274.53 L429.12,274.53 Z" class="f-green s-surface w1"/>
+<path d="M461.32,306.94 L465.82,315.44 L456.82,315.44 Z" class="f-green s-surface w1"/>
+<path d="M384.51,227.58 L389.01,236.08 L380.01,236.08 Z" class="f-green s-surface w1"/>
+<path d="M474.34,348.98 L478.84,357.48 L469.84,357.48 Z" class="f-green s-surface w1"/>
+<path d="M473.06,386.38 L477.56,394.88 L468.56,394.88 Z" class="f-green s-surface w1"/>
+<path d="M477.90,370.44 L482.40,378.94 L473.40,378.94 Z" class="f-green s-surface w1"/>
+<path d="M480.86,356.41 L485.36,364.91 L476.36,364.91 Z" class="f-green s-surface w1"/>
+<path d="M475.77,400.52 L480.27,409.02 L471.27,409.02 Z" class="f-green s-surface w1"/>
+<path d="M461.82,435.06 L466.32,443.56 L457.32,443.56 Z" class="f-green s-surface w1"/>
+<path d="M427.86,234.83 L432.36,243.33 L423.36,243.33 Z" class="f-green s-surface w1"/>
+<path d="M339.63,508.35 L344.13,516.85 L335.13,516.85 Z" class="f-green s-surface w1"/>
+<path d="M436.85,473.39 L441.35,481.89 L432.35,481.89 Z" class="f-green s-surface w1"/>
+<path d="M478.30,422.86 L482.80,431.36 L473.80,431.36 Z" class="f-green s-surface w1"/>
+<path d="M460.57,455.06 L465.07,463.56 L456.07,463.56 Z" class="f-green s-surface w1"/>
+<path d="M391.62,507.06 L396.12,515.56 L387.12,515.56 Z" class="f-green s-surface w1"/>
+<path d="M422.39,494.45 L426.89,502.95 L417.89,502.95 Z" class="f-green s-surface w1"/>
+<path d="M500.05,381.46 L504.55,389.96 L495.55,389.96 Z" class="f-green s-surface w1"/>
+<path d="M222.80,479.54 L227.30,488.04 L218.30,488.04 Z" class="f-green s-surface w1"/>
+<path d="M377.97,520.18 L382.47,528.68 L373.47,528.68 Z" class="f-green s-surface w1"/>
+<path d="M266.02,512.73 L270.52,521.23 L261.52,521.23 Z" class="f-green s-surface w1"/>
+<path d="M393.85,519.84 L398.35,528.34 L389.35,528.34 Z" class="f-green s-surface w1"/>
+<path d="M199.98,467.98 L204.48,476.48 L195.48,476.48 Z" class="f-green s-surface w1"/>
+<path d="M274.02,522.88 L278.52,531.38 L269.52,531.38 Z" class="f-green s-surface w1"/>
+<path d="M231.38,502.81 L235.88,511.31 L226.88,511.31 Z" class="f-green s-surface w1"/>
+<path d="M356.13,537.10 L360.63,545.60 L351.63,545.60 Z" class="f-green s-surface w1"/>
+<path d="M169.24,435.90 L173.74,444.40 L164.74,444.40 Z" class="f-green s-surface w1"/>
+<path d="M182.48,462.60 L186.98,471.10 L177.98,471.10 Z" class="f-green s-surface w1"/>
+<path d="M150.34,393.47 L154.84,401.97 L145.84,401.97 Z" class="f-green s-surface w1"/>
+<path d="M243.65,523.03 L248.15,531.53 L239.15,531.53 Z" class="f-green s-surface w1"/>
+<path d="M214.54,506.10 L219.04,514.60 L210.04,514.60 Z" class="f-green s-surface w1"/>
+<path d="M174.21,244.37 L178.71,252.87 L169.71,252.87 Z" class="f-green s-surface w1"/>
+<path d="M225.84,519.68 L230.34,528.18 L221.34,528.18 Z" class="f-green s-surface w1"/>
+<path d="M153.00,436.32 L157.50,444.82 L148.50,444.82 Z" class="f-green s-surface w1"/>
+<path d="M143.84,291.47 L148.34,299.97 L139.34,299.97 Z" class="f-green s-surface w1"/>
+<path d="M132.49,375.27 L136.99,383.77 L127.99,383.77 Z" class="f-green s-surface w1"/>
+<path d="M135.49,305.01 L139.99,313.51 L130.99,313.51 Z" class="f-green s-surface w1"/>
+<path d="M129.44,385.35 L133.94,393.85 L124.94,393.85 Z" class="f-green s-surface w1"/>
+<path d="M137.16,284.68 L141.66,293.18 L132.66,293.18 Z" class="f-green s-surface w1"/>
+<text x="125.09" y="612" text-anchor="middle" class="t-tick">−1</text>
+<text x="96" y="574.91" text-anchor="end" class="t-tick">−1</text>
+<text x="230.55" y="612" text-anchor="middle" class="t-tick">−0.5</text>
+<text x="96" y="469.45" text-anchor="end" class="t-tick">−0.5</text>
+<text x="336" y="612" text-anchor="middle" class="t-tick">0</text>
+<text x="96" y="364" text-anchor="end" class="t-tick">0</text>
+<text x="441.45" y="612" text-anchor="middle" class="t-tick">0.5</text>
+<text x="96" y="258.55" text-anchor="end" class="t-tick">0.5</text>
+<text x="546.91" y="612" text-anchor="middle" class="t-tick">1</text>
+<text x="96" y="153.09" text-anchor="end" class="t-tick">1</text>
+</g>
+<rect x="104" y="128" width="464" height="464" class="frame" data-fit="skip"/>
+<text x="104" y="116" class="t-note">X[:, 1], second feature</text>
+<text x="336" y="636" text-anchor="middle" class="t-note">X[:, 0], first feature</text>
+<text x="624" y="152" class="t-head">100 points per class</text>
+<g data-grid="skip">
+<circle cx="632.00" cy="187.00" r="4" class="f-blue s-surface w1"/>
+<text x="652" y="192" class="t-label">class 0, rows 0 to 99</text>
+<rect x="628.50" y="215.50" width="7" height="7" class="f-orange s-surface w1"/>
+<text x="652" y="224" class="t-label">class 1, rows 100 to 199</text>
+<path d="M632.00,246.00 L636.50,254.50 L627.50,254.50 Z" class="f-green s-surface w1"/>
+<text x="652" y="256" class="t-label">class 2, rows 200 to 299</text>
+</g>
+<text x="624" y="320" class="t-code">X: (300, 2) float32</text>
+<text x="624" y="344" class="t-code">y: (300,) uint8</text>
+<text x="624" y="424" class="t-head">Tints: a trained Layer_Dense(2, 3)</text>
+<text x="624" y="456" class="t-note">Each tint is where the layer</text>
+<text x="624" y="476" class="t-note">answers that class.</text>
+<text x="624" y="528" class="t-value f-ink b">118 of 300 correct, 39.3%</text>
+<text x="624" y="556" class="t-note">one fixed answer: 100 of 300, 33.3%</text>
+<text x="40" y="684" class="t-note">Straight edges cut every arm into pieces; the layer does only a little better than chance.</text>
 </svg>

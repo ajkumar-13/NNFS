@@ -13,9 +13,9 @@
 > - Convert a layer between the two weight-matrix conventions and name the one the series uses from this post on.
 > - Trace the shape of every array as a batch passes through one or two Layer_Dense instances.
 
-![Scatter of three interleaved groups of markers, one colour per class, spiralling out from a shared origin and crossed by a dashed straight line, beside a panel that lists 300 samples, 2 features, 3 classes labelled 0 to 2, not linearly separable, and a chance baseline of 33.3 percent.](diagrams/01-spiral-data.svg)
+![Scatter of all 300 spiral points, class 0 as blue circles, class 1 as orange squares and class 2 as green triangles, each class an arm winding out from the origin, over three straight-edged tinted regions where a trained Layer_Dense(2, 3) answers each class. Every arm crosses the edges, and the layer gets 118 of 300 points right, 39.3 percent, against 100 of 300 for one fixed answer.](diagrams/01-spiral-data.svg)
 
-*The series' standard benchmark, sketched with 30 markers per class. No straight line separates the classes; the rest of the series builds a network whose boundary bends around the arms.*
+*The series' standard benchmark, all 300 points that `spiral_data(samples=100, classes=3)` returns. The tints are the regions of the straight-line model of section 2.1; the rest of the series builds a network whose boundary bends around the arms.*
 
 ---
 
@@ -80,15 +80,11 @@ The rows are ordered by class: rows 0 to 99 belong to class 0, rows 100 to 199 t
 
 A linear classifier for three classes computes three scores, each a weighted sum of the two coordinates plus a bias, and answers with the class whose score is largest. That cuts the plane into at most three regions with straight edges, and no arrangement of straight cuts can follow three arms that wrap around one another. A linear model, no matter how its inputs are weighted, therefore cannot separate the classes, and in practice it does only a little better than chance, which for three equally frequent classes is one in three, 33.3 percent.
 
-The script `snippets/linear_baseline.py` puts a number on it. One `Layer_Dense(2, 3)` followed by softmax is exactly such a linear classifier; trained until it stops improving on the 300 points, it gets 118 of them right, 39.3 percent. A least-squares fit, an unrelated way of fitting a straight-line model, also gets 118. Always answering the same class gets 100. Both fits minimise a smooth loss and not the number of wrong answers, so 118 is what a fitted linear model scores here, not the most that three straight-edged regions could get right. The script borrows its training loop from later posts (the softmax of post 06, the loss of post 08, the gradient of post 19, the update of post 22) and nothing else in this post depends on it; it is there to turn "hard" into a number.
+The script `snippets/linear_baseline.py` puts a number on it. One `Layer_Dense(2, 3)` followed by softmax is exactly such a linear classifier; trained until it stops improving on the 300 points, it gets 118 of them right, 39.3 percent; the tints of the figure at the top of the post are its three regions. A least-squares fit, an unrelated way of fitting a straight-line model, also gets 118. Always answering the same class gets 100. Both fits minimise a smooth loss and not the number of wrong answers, so 118 is what a fitted linear model scores here, not the most that three straight-edged regions could get right. The script borrows its training loop from later posts (the softmax of post 06, the loss of post 08, the gradient of post 19, the update of post 22) and nothing else in this post depends on it; it is there to turn "hard" into a number.
 
 ### 2.2. Why this dataset and not MNIST
 
-![Two hand-drawn panels: the spiral set with 300 samples, 2 features and 3 classes beside a small scatter of its three arms, and MNIST with 60,000 samples, 784 features and 10 classes beside a coarse pixel grid labelled 28 by 28 equals 784.](diagrams/04-why-spirals-not-mnist.svg)
-
-*Two features is what keeps the data, and later every decision boundary drawn through it, on a single chart that can be checked by eye, all the way to post 31.*
-
-MNIST is the canonical first dataset for deep learning, but for a from-scratch series it gets in the way: each image is 784 features, the training set is 60,000 samples, and the visualisations require a grid of greyscale tiles. The spiral dataset has 2 features and 300 samples, which means the data, and later the boundary a network draws through it, fit on a single chart and can be inspected by eye, as the figure above sets out. MNIST arrives in the [MNIST from scratch project](../../projects/mnist-from-scratch/README.md); for now, two features and three classes are the right scale.
+MNIST is the canonical first dataset for deep learning, but for a from-scratch series it gets in the way: each image is 784 features, the training set is 60,000 samples, and the visualisations require a grid of greyscale tiles. The spiral dataset has 2 features and 300 samples, which means the data, and later the boundary a network draws through it, fit on a single chart and can be inspected by eye, as the figure at the top of the post shows. MNIST arrives in the [MNIST from scratch project](../../projects/mnist-from-scratch/README.md); for now, two features and three classes are the right scale.
 
 ---
 
@@ -154,7 +150,11 @@ weights_new = np.array([[ 0.2,   0.5,  -0.26],
 output_new = np.dot(inputs, weights_new) + biases
 ```
 
-The first row of `weights_old` is the first column of `weights_new`: the same four weights of the same neuron, stored along the other axis. Both calls print the output of post 03, whose first row is 4.8, 1.21, 2.385, and the script ends with `outputs identical: True`.
+The first row of `weights_old` is the first column of `weights_new`: the same four weights of the same neuron, stored along the other axis. Both calls print the output of post 03, whose first row is 4.8, 1.21, 2.385, and the script ends with `outputs identical: True`. The figure below shades that neuron in both layouts.
+
+![Two grids of the same twelve weights from post 03. On the left weights_old, shape (3, 4), a row per neuron, used as np.dot(inputs, weights_old.T) + biases; on the right weights_new, shape (4, 3), a column per neuron, used as np.dot(inputs, weights_new) + biases. Neuron 1's weights 0.20, 0.80, minus 0.50 and 1.00 are shaded as a row on the left and as a column on the right, and an arrow labelled transpose joins the two grids.](diagrams/02-weight-convention.svg)
+
+*One transpose turns either layout into the other, and both calls return the same output, whose first row is 4.8, 1.21, 2.385.*
 
 The new layout is the one the `nnfs` book uses (Kinsley & Kukieła, 2020), and it is the one this series uses in every remaining post. Frameworks are split on the choice: Keras stores the kernel of a `Dense` layer as (inputs, units), the layout adopted here, while PyTorch's `nn.Linear` stores its weight as `(out_features, in_features)`, the layout of posts 01 to 03, and applies the transpose inside its own forward call. Neither is more correct; what matters is knowing which one a given piece of code uses.
 
@@ -187,7 +187,7 @@ class Layer_Dense:
 
 The figure below draws the class as a blueprint and, under it, the two instances that section 6 creates from it.
 
-![The Layer_Dense class drawn as a blueprint with two boxes, a constructor that allocates weights of 0.01 times randn and zero biases and a forward method that stores np.dot of inputs and weights plus biases in self.output, above two instances, dense1 with weights of shape 2 by 3 and dense2 with weights of shape 3 by 3, joined by an arrow that carries dense1.output.](diagrams/03-dense-layer-class.svg)
+![A card with the six lines of the Layer_Dense class, the constructor marked as running once when an instance is made and the forward method as running on every call, joined by dashed lines to two instance cards below. X, shape (300, 2), flows into dense1 = Layer_Dense(2, 3), with weights (2, 3) and biases (1, 3); its output, (300, 3), flows into dense2 = Layer_Dense(3, 3), with weights (3, 3) and biases (1, 3), which gives dense2.output, (300, 3). dense1 holds 9 parameters and dense2 12.](diagrams/03-dense-layer-class.svg)
 
 *One blueprint, two instances. Each instance owns its own weights, biases and output; the only thing that passes from one to the other is `dense1.output`.*
 
@@ -200,6 +200,12 @@ The constructor takes two integers: how many inputs each neuron consumes (`n_inp
 **`self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)`** draws each weight independently from a standard normal distribution and scales the result by 0.01. `np.random.normal(0, 1, (n_inputs, n_neurons))` draws from the same distribution; `randn` is the shorter form, and `normal` is preferred when the distribution's parameters are not 0 and 1. The reason for the scaling is to keep the layer outputs small at the start of training. Pure $\mathcal{N}(0, 1)$ weights are too large once layers are stacked: each layer multiplies the typical size of its input by roughly the weight scale times the square root of the number of inputs per neuron, so the outputs grow exponentially with depth.
 
 The script `snippets/init_scale.py` measures this on six stacked layers of 64 neurons fed with the spiral data. With a scale of 1.0 the standard deviation of the outputs is 0.57 after the first layer and 21,510 after the sixth, about 8 times larger per layer ($1.0 \times \sqrt{64} = 8$). With 0.01 the same stack runs the other way, from 0.0057 down to $2.2 \times 10^{-8}$, about 12 times smaller per layer ($0.01 \times \sqrt{64} = 0.08$). A multiplier of 0.01 is therefore a deliberately conservative default: it works for the shallow networks of this series, and in a deep one it fades the signal out instead of blowing it up. The scale that does neither depends on the width of the layer. For 64 inputs per neuron it is $1/\sqrt{64} = 0.125$, and with that scale the script's third column stays between 0.07 and 0.09 through all six layers. Choosing the scale per layer in this way is what Xavier/Glorot initialisation (Glorot & Bengio, 2010) and He initialisation (He et al., 2015) do; they are the subject of post 33, and neither is needed yet.
+
+The figure below plots the three columns of the script's table on a log scale.
+
+![Line chart on a log scale of the standard deviation of each layer's output through six 64-neuron layers. With scale 1.0 it climbs from 0.5651 to 21,510, times 8.243 per layer; with scale 0.125 it stays between 0.07063 and 0.08204, times 1.030 per layer; with scale 0.01 it falls from 0.005651 to 2.151 times 10 to the minus 8, times 0.082 per layer.](diagrams/04-init-scale.svg)
+
+*Each layer multiplies the spread by about the scale times $\sqrt{64}$, so only $0.125 = 1/\sqrt{64}$ holds it level.*
 
 **`self.biases = np.zeros((1, n_neurons))`** starts every bias at zero. Asymmetry between neurons comes from the random weights: if every weight started at the same value, all the neurons of a layer would compute the same output and, once training begins, receive the same update, so they would stay copies of one another. Random weights rule that out, which is known as symmetry breaking; adding random biases on top does not help and complicates debugging. The shape is `(1, n_neurons)` and not `(n_neurons,)`. Both work in the forward pass, because NumPy broadcasts the bias across the batch either way (post 05 gives the rule), but the `(1, n_neurons)` shape makes the intent ("this is a row vector that gets added to each row of the output") explicit, which helps when reading the code months later.
 

@@ -1,0 +1,199 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-04-init-scale-title" aria-describedby="nn-04-init-scale-desc">
+<title id="nn-04-init-scale-title">With 0.01 the spread fades; with 1.0 it explodes</title>
+<desc id="nn-04-init-scale-desc">A line chart of the standard deviation of each layer's output, layers 1 to 6 across, on a log scale from 10 to the minus 9 to 10 to the 5, for six stacked 64-neuron Layer_Dense layers on the spiral data with weights scale times randn. Scale 1.0 climbs from 5.651 times 10 to the -1 to 2.151 times 10 to the 4, times 8.243 per layer. Scale 0.125 stays level, from 7.063 times 10 to the -2 to 8.204 times 10 to the -2, times 1.030 per layer. Scale 0.01 falls from 5.651 times 10 to the -3 to 2.151 times 10 to the -8, times 0.082 per layer.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--nn-blue); }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-green { fill: var(--nn-green); }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-red { fill: var(--nn-red); }
+  .f-red-ink { fill: var(--nn-red-ink); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-green { stroke: var(--nn-green); }
+  .s-red { stroke: var(--nn-red); }
+</style>
+<defs>
+<marker id="nn-04-init-scale-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<clipPath id="nn-04-init-scale-clip-1"><rect x="90" y="122" width="620" height="312"/></clipPath>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title">With 0.01 the spread fades; with 1.0 it explodes</text>
+<text x="40" y="76" class="t-subtitle">Six 64-neuron layers on the spiral data, nothing between them; the same draws, only the scale differs.</text>
+<g data-grid="skip">
+<path d="M96,406.57H704M96,363.71H704M96,320.86H704M96,278H704M96,235.14H704M96,192.29H704M96,149.43H704" class="gridline"/>
+<text x="88" y="410.57" text-anchor="end" class="t-tick">10<tspan class="sub" dy="-6">−8</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="367.71" text-anchor="end" class="t-tick">10<tspan class="sub" dy="-6">−6</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="324.86" text-anchor="end" class="t-tick">10<tspan class="sub" dy="-6">−4</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="282" text-anchor="end" class="t-tick">10<tspan class="sub" dy="-6">−2</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="239.14" text-anchor="end" class="t-tick">1</text>
+<text x="88" y="196.29" text-anchor="end" class="t-tick">10<tspan class="sub" dy="-6">2</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="153.43" text-anchor="end" class="t-tick">10<tspan class="sub" dy="-6">4</tspan><tspan dy="6">​</tspan></text>
+<text x="137.93" y="448" text-anchor="middle" class="t-tick">1</text>
+<text x="242.76" y="448" text-anchor="middle" class="t-tick">2</text>
+<text x="347.59" y="448" text-anchor="middle" class="t-tick">3</text>
+<text x="452.41" y="448" text-anchor="middle" class="t-tick">4</text>
+<text x="557.24" y="448" text-anchor="middle" class="t-tick">5</text>
+<text x="662.07" y="448" text-anchor="middle" class="t-tick">6</text>
+<path d="M96,128V428H704" class="axis"/>
+<g clip-path="url(#nn-04-init-scale-clip-1)">
+<path d="M137.93,240.45 L242.76,220.57 L347.59,200.59 L452.41,181.01 L557.24,162.02 L662.07,142.3" class="s-red w15 nofill"/>
+<circle cx="137.93" cy="240.45" r="4" class="f-red"/>
+<circle cx="242.76" cy="220.57" r="4" class="f-red"/>
+<circle cx="347.59" cy="200.59" r="4" class="f-red"/>
+<circle cx="452.41" cy="181.01" r="4" class="f-red"/>
+<circle cx="557.24" cy="162.02" r="4" class="f-red"/>
+<circle cx="662.07" cy="142.3" r="4" class="f-red"/>
+<path d="M137.93,259.81 L242.76,259.27 L347.59,258.65 L452.41,258.42 L557.24,258.77 L662.07,258.41" class="s-green w15 nofill"/>
+<circle cx="137.93" cy="259.81" r="4" class="f-green"/>
+<circle cx="242.76" cy="259.27" r="4" class="f-green"/>
+<circle cx="347.59" cy="258.65" r="4" class="f-green"/>
+<circle cx="452.41" cy="258.42" r="4" class="f-green"/>
+<circle cx="557.24" cy="258.77" r="4" class="f-green"/>
+<circle cx="662.07" cy="258.41" r="4" class="f-green"/>
+<path d="M137.93,283.31 L242.76,306.28 L347.59,329.17 L452.41,352.44 L557.24,376.3 L662.07,399.44" class="s-blue w15 nofill"/>
+<circle cx="137.93" cy="283.31" r="4" class="f-blue"/>
+<circle cx="242.76" cy="306.28" r="4" class="f-blue"/>
+<circle cx="347.59" cy="329.17" r="4" class="f-blue"/>
+<circle cx="452.41" cy="352.44" r="4" class="f-blue"/>
+<circle cx="557.24" cy="376.3" r="4" class="f-blue"/>
+<circle cx="662.07" cy="399.44" r="4" class="f-blue"/>
+</g>
+<text x="674.07" y="147.3" class="t-note f-red-ink">scale 1.0, 2.151 × 10<tspan class="sub" dy="-6">4</tspan><tspan dy="6">​</tspan></text>
+<text x="674.07" y="263.41" class="t-note f-green-ink">scale 0.125, 8.204 × 10<tspan class="sub" dy="-6">−2</tspan><tspan dy="6">​</tspan></text>
+<text x="674.07" y="404.44" class="t-note f-blue-ink">scale 0.01, 2.151 × 10<tspan class="sub" dy="-6">−8</tspan><tspan dy="6">​</tspan></text>
+</g>
+<text x="96" y="116" class="t-note">standard deviation of the layer's output, log scale</text>
+<text x="400" y="472" text-anchor="middle" class="t-note">layer</text>
+<g data-grid="skip">
+<text x="400" y="162.8" text-anchor="middle" class="t-label f-red-ink">× 8.243 per layer</text>
+<text x="400" y="242.53" text-anchor="middle" class="t-label f-green-ink">× 1.030 per layer</text>
+<text x="400" y="372.8" text-anchor="middle" class="t-label f-blue-ink">× 0.082 per layer</text>
+</g>
+<text x="40" y="504" class="t-note">Per layer, about scale × √64: 8.00 for 1.0, 1.00 for 0.125, 0.08 for 0.01.</text>
+</svg>

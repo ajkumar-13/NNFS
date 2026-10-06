@@ -1,119 +1,218 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
-  <title id="t">The Layer_Dense class: anatomy and lifecycle</title>
-  <desc id="d">A schematic showing the structure and lifecycle of the Layer_Dense class. The top half shows the class as a box with two methods, __init__ and forward. __init__ takes n_inputs and n_neurons and allocates self.weights (shape n_inputs by n_neurons) and self.biases (shape 1 by n_neurons). forward takes the inputs and computes self.output = np.dot(inputs, self.weights) + self.biases. The bottom half shows two instances, dense1 of shape 2 by 3 and dense2 of shape 3 by 3, each with their own independent weights and biases. Arrows show that dense1.forward(X) feeds dense1.output into dense2.forward.</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-03-dense-layer-class-title" aria-describedby="nn-03-dense-layer-class-desc">
+<title id="nn-03-dense-layer-class-title">One class, two instances, each with its own weights</title>
+<desc id="nn-03-dense-layer-class-desc">At the top, a card holding the six lines of the Layer_Dense class: __init__, which runs once when an instance is created, sets self.weights to 0.01 times np.random.randn(n_inputs, n_neurons) and self.biases to zeros of shape (1, n_neurons); forward, which runs on every call, stores np.dot(inputs, self.weights) plus self.biases in self.output. Below, the two instances of section 6 in a chain: X of shape (300, 2) goes into dense1 = Layer_Dense(2, 3), with weights (2, 3) and biases (1, 3); dense1.output, (300, 3), goes into dense2 = Layer_Dense(3, 3), with weights (3, 3) and biases (1, 3); dense2.output is (300, 3). Dashed lines join the class to both instances. dense1 holds 9 parameters and dense2 12.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--nn-ink);}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .class-panel{fill:var(--nn-surface);stroke:var(--nn-ink);stroke-width:1.5;}
-    .class-pill{fill:var(--nn-primary);}
-    .class-head{font-weight:700;font-size:14px;fill:var(--nn-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .method-tag{font-weight:700;font-size:11px;fill:var(--nn-ink-muted);text-transform:uppercase;letter-spacing:0.08em;}
-    .method-box{fill:var(--nn-neutral-1);stroke:var(--nn-border);stroke-width:1;}
-    .method-name{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;fill:var(--nn-ink);}
-    .method-body-text{font-size:11px;fill:var(--nn-ink-muted);}
-    .attr-name{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:600;fill:var(--nn-primary);}
-    .attr-shape{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--nn-ink-muted);}
-    .instance-panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
-    .inst-head{font-weight:700;font-size:13px;fill:var(--nn-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .inst-sub{font-size:11px;fill:var(--nn-ink-muted);}
-    .arrow{stroke:var(--nn-ink-muted);stroke-width:1.5;fill:none;}
-    .arrow-head{fill:var(--nn-ink-muted);}
-    .flow-label{font-size:11px;fill:var(--nn-ink-muted);font-style:italic;}
-    .section-head{font-weight:700;font-size:12px;fill:var(--nn-ink-muted);text-transform:uppercase;letter-spacing:0.08em;}
-  ]]></style>
-
-  <defs>
-    <marker id="aM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" class="arrow-head"/>
-    </marker>
-  </defs>
-
-  <rect class="bg" width="960" height="540"/>
-
-  <text class="title"    x="48" y="48">The Layer_Dense class</text>
-  <text class="subtitle" x="48" y="70">Two methods, six lines of code. Each instance owns its own weights and biases.</text>
-
-  <!-- ====================== TOP: Class blueprint ====================== -->
-  <text class="section-head" x="48" y="100">Blueprint (the class)</text>
-
-  <rect class="class-panel" x="48" y="116" width="864" height="172" rx="14"/>
-  <rect class="class-pill"  x="48" y="116" width="6"   height="172" rx="3"/>
-  <text class="class-head" x="68" y="142">class Layer_Dense:</text>
-
-  <!-- __init__ method -->
-  <rect class="method-box" x="80" y="156" width="380" height="116" rx="8"/>
-  <text class="method-tag" x="96" y="178">__init__  (runs once, when an instance is created)</text>
-  <text class="method-name" x="96" y="200">def __init__(self, n_inputs, n_neurons):</text>
-  <text class="mono"        x="112" y="222">self.weights = 0.01 * np.random.randn(</text>
-  <text class="mono"        x="128" y="238">n_inputs, n_neurons)</text>
-  <text class="mono"        x="112" y="258">self.biases  = np.zeros((1, n_neurons))</text>
-
-  <!-- forward method -->
-  <rect class="method-box" x="492" y="156" width="408" height="116" rx="8"/>
-  <text class="method-tag" x="508" y="178">forward  (runs every time the layer is called)</text>
-  <text class="method-name" x="508" y="200">def forward(self, inputs):</text>
-  <text class="mono"        x="524" y="222">self.output = np.dot(inputs, self.weights)</text>
-  <text class="mono"        x="612" y="240">+ self.biases</text>
-  <text class="method-body-text" x="508" y="262">result is stored on self.output for the next layer to use</text>
-
-  <!-- ====================== BOTTOM: Two instances ====================== -->
-  <text class="section-head" x="48" y="316">Two instances (each one is a separate layer with its own state)</text>
-
-  <!-- Instance 1: dense1 -->
-  <rect class="instance-panel" x="48" y="332" width="280" height="140" rx="12"/>
-  <text class="inst-head" x="68" y="358">dense1 = Layer_Dense(2, 3)</text>
-  <text class="inst-sub"  x="68" y="376">layer 1: 2 inputs, 3 neurons</text>
-  <text class="attr-name" x="68" y="402">.weights</text>
-  <text class="attr-shape" x="228" y="402" text-anchor="end">shape (2, 3)</text>
-  <text class="attr-name" x="68" y="420">.biases</text>
-  <text class="attr-shape" x="228" y="420" text-anchor="end">shape (1, 3)</text>
-  <text class="attr-name" x="68" y="438">.output</text>
-  <text class="attr-shape" x="228" y="438" text-anchor="end">shape (N, 3)</text>
-  <text class="method-body-text" x="68" y="460">filled after dense1.forward(X)</text>
-
-  <!-- Flow arrow with X label -->
-  <line class="arrow" x1="20" y1="400" x2="48" y2="400" marker-end="url(#aM)"/>
-  <text class="flow-label" x="34" y="392" text-anchor="middle">X</text>
-
-  <!-- Flow arrow between instances -->
-  <line class="arrow" x1="328" y1="400" x2="488" y2="400" marker-end="url(#aM)"/>
-  <text class="flow-label" x="408" y="392" text-anchor="middle">dense1.output</text>
-
-  <!-- Instance 2: dense2 -->
-  <rect class="instance-panel" x="488" y="332" width="280" height="140" rx="12"/>
-  <text class="inst-head" x="508" y="358">dense2 = Layer_Dense(3, 3)</text>
-  <text class="inst-sub"  x="508" y="376">layer 2: 3 inputs, 3 neurons</text>
-  <text class="attr-name" x="508" y="402">.weights</text>
-  <text class="attr-shape" x="668" y="402" text-anchor="end">shape (3, 3)</text>
-  <text class="attr-name" x="508" y="420">.biases</text>
-  <text class="attr-shape" x="668" y="420" text-anchor="end">shape (1, 3)</text>
-  <text class="attr-name" x="508" y="438">.output</text>
-  <text class="attr-shape" x="668" y="438" text-anchor="end">shape (N, 3)</text>
-  <text class="method-body-text" x="508" y="460">filled after dense2.forward(dense1.output)</text>
-
-  <!-- Final output arrow -->
-  <line class="arrow" x1="768" y1="400" x2="920" y2="400" marker-end="url(#aM)"/>
-  <text class="flow-label" x="844" y="392" text-anchor="middle">dense2.output  (final)</text>
-
-  <!-- Footer -->
-  <text class="footer" x="48"  y="508">dense1.weights and dense2.weights are completely independent arrays.</text>
-  <text class="footer" x="912" y="508" text-anchor="end">Mirrors PyTorch nn.Module and Keras Layer.</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-orange-ink { fill: var(--nn-orange-ink); }
+  .f-orange-soft { fill: var(--nn-orange-soft); }
+</style>
+<defs>
+<marker id="nn-03-dense-layer-class-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title">One class, two instances, each with its own weights</text>
+<text x="40" y="76" class="t-subtitle">The class of section 5 and the two layers section 6 builds from it on the spiral data.</text>
+<text x="40" y="128" class="t-head">The class: a blueprint</text>
+<rect x="40" y="144" width="880" height="168" rx="8" class="card"/>
+<text x="64" y="176" class="t-code">class Layer_Dense:</text>
+<text x="96" y="200" class="t-code">def __init__(self, n_inputs, n_neurons):</text>
+<text x="128" y="224" class="t-code">self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)</text>
+<text x="128" y="248" class="t-code">self.biases = np.zeros((1, n_neurons))</text>
+<text x="96" y="272" class="t-code">def forward(self, inputs):</text>
+<text x="128" y="296" class="t-code">self.output = np.dot(inputs, self.weights) + self.biases</text>
+<text x="896" y="200" text-anchor="end" class="t-note">runs once, when an instance is made</text>
+<text x="896" y="272" text-anchor="end" class="t-note">runs on every call</text>
+<text x="40" y="368" class="t-head">Two instances</text>
+<rect x="48" y="432" width="16" height="160" class="cell f-blue-soft"/>
+<rect x="64" y="432" width="16" height="160" class="cell f-blue-soft"/>
+<rect x="48" y="432" width="32" height="160" class="frame" data-fit="skip"/>
+<text x="64" y="400" text-anchor="middle" class="t-code f-blue-ink">X</text>
+<text x="64" y="616" text-anchor="middle" class="t-tick">(300, 2)</text>
+<rect x="112" y="416" width="280" height="192" rx="8" class="card"/>
+<text x="128" y="444" class="t-code">dense1 = Layer_Dense(2, 3)</text>
+<text x="128" y="468" class="t-code">dense1.forward(X)</text>
+<rect x="128" y="512" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="152" y="512" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="176" y="512" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="128" y="536" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="152" y="536" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="176" y="536" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="128" y="512" width="72" height="48" class="frame" data-fit="skip"/>
+<rect x="264" y="512" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="288" y="512" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="312" y="512" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="264" y="512" width="72" height="24" class="frame" data-fit="skip"/>
+<text x="128" y="500" class="t-code f-orange-ink">.weights</text>
+<text x="208" y="500" class="t-tick">(2, 3)</text>
+<text x="264" y="500" class="t-code f-orange-ink">.biases</text>
+<text x="336" y="500" class="t-tick">(1, 3)</text>
+<rect x="424" y="432" width="16" height="160" class="cell f-green-soft"/>
+<rect x="440" y="432" width="16" height="160" class="cell f-green-soft"/>
+<rect x="456" y="432" width="16" height="160" class="cell f-green-soft"/>
+<rect x="424" y="432" width="48" height="160" class="frame" data-fit="skip"/>
+<text x="448" y="400" text-anchor="middle" class="t-code f-green-ink">dense1.output</text>
+<text x="448" y="616" text-anchor="middle" class="t-tick">(300, 3)</text>
+<rect x="504" y="416" width="280" height="192" rx="8" class="card"/>
+<text x="520" y="444" class="t-code">dense2 = Layer_Dense(3, 3)</text>
+<text x="520" y="468" class="t-code">dense2.forward(dense1.output)</text>
+<rect x="520" y="512" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="544" y="512" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="568" y="512" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="520" y="536" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="544" y="536" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="568" y="536" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="520" y="560" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="544" y="560" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="568" y="560" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="520" y="512" width="72" height="72" class="frame" data-fit="skip"/>
+<rect x="656" y="512" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="680" y="512" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="704" y="512" width="24" height="24" class="cell f-orange-soft"/>
+<rect x="656" y="512" width="72" height="24" class="frame" data-fit="skip"/>
+<text x="520" y="500" class="t-code f-orange-ink">.weights</text>
+<text x="600" y="500" class="t-tick">(3, 3)</text>
+<text x="656" y="500" class="t-code f-orange-ink">.biases</text>
+<text x="728" y="500" class="t-tick">(1, 3)</text>
+<rect x="816" y="432" width="16" height="160" class="cell f-green-soft"/>
+<rect x="832" y="432" width="16" height="160" class="cell f-green-soft"/>
+<rect x="848" y="432" width="16" height="160" class="cell f-green-soft"/>
+<rect x="816" y="432" width="48" height="160" class="frame" data-fit="skip"/>
+<text x="840" y="400" text-anchor="middle" class="t-code f-green-ink">dense2.output</text>
+<text x="840" y="616" text-anchor="middle" class="t-tick">(300, 3)</text>
+<path d="M84,512 L109,512" class="flow" marker-end="url(#nn-03-dense-layer-class-arrow)"/>
+<path d="M396,512 L421,512" class="flow" marker-end="url(#nn-03-dense-layer-class-arrow)"/>
+<path d="M476,512 L501,512" class="flow" marker-end="url(#nn-03-dense-layer-class-arrow)"/>
+<path d="M788,512 L813,512" class="flow" marker-end="url(#nn-03-dense-layer-class-arrow)"/>
+<path d="M252,312 L252,416" class="lead"/>
+<path d="M644,312 L644,416" class="lead"/>
+<text x="40" y="684" class="t-note">dense1 holds 9 parameters and dense2 12; only dense1.output passes from one to the other.</text>
 </svg>
