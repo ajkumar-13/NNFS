@@ -1,0 +1,891 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-034",
+  "next_ordinal": 22,
+  "questions": [
+    {
+      "id": "nn-034-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "1",
+      "est_minutes": 2,
+      "tags": [
+        "one-output",
+        "probability"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A binary classifier has one output neuron with a sigmoid. For one sample it outputs $\\hat{y} = 0.8$. How is the probability of class 0 obtained?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It is $1 - \\hat{y} = 0.2$, with no further computation by the network.",
+          "correct": true,
+          "feedback": "Correct: the two probabilities sum to 1, so one output fixes the other."
+        },
+        {
+          "key": "b",
+          "text": "It needs a second output neuron, since one neuron describes one class.",
+          "correct": false,
+          "feedback": "With two exclusive classes the second probability carries no information; it is one minus the first."
+        },
+        {
+          "key": "c",
+          "text": "It is also 0.8, because the sigmoid is symmetric about zero.",
+          "correct": false,
+          "feedback": "The symmetry is $\\sigma(-z) = 1 - \\sigma(z)$, which gives 0.2 for class 0, not 0.8."
+        },
+        {
+          "key": "d",
+          "text": "It cannot be recovered, because a sigmoid output is a score and not a probability.",
+          "correct": false,
+          "feedback": "The sigmoid output lies strictly between 0 and 1 and is read as the probability of class 1."
+        }
+      ],
+      "explanation": "Section 1: the output is read as the probability of class 1, and the two class probabilities sum to 1, so class 0 has $1 - \\hat{y} = 0.2$. No second neuron and no second forward pass is needed.",
+      "hints": [
+        "Two exclusive classes share one unit of probability."
+      ]
+    },
+    {
+      "id": "nn-034-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2.1",
+      "est_minutes": 3,
+      "tags": [
+        "overflow",
+        "sigmoid"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "In float64, the one-line form `1.0 / (1.0 + np.exp(-z))` is evaluated at $z = -1000$ with NumPy's default error settings. What happens?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It returns `nan` and prints a warning.",
+          "correct": false,
+          "feedback": "`nan` comes from the other one-line form, $e^z / (1 + e^z)$, at a large positive logit, where it computes infinity over infinity."
+        },
+        {
+          "key": "b",
+          "text": "It returns 0.0 and prints an overflow warning.",
+          "correct": true,
+          "feedback": "Correct: the exponential overflows to infinity and one over infinity is 0, the right value up to underflow."
+        },
+        {
+          "key": "c",
+          "text": "It raises `OverflowError` and returns nothing.",
+          "correct": false,
+          "feedback": "NumPy's default is to warn and continue; an exception needs `np.seterr(over='raise')`, and then it is `FloatingPointError`."
+        },
+        {
+          "key": "d",
+          "text": "It returns 0.0 silently, as the stable form does.",
+          "correct": false,
+          "feedback": "The value is the same as the stable form's, but the exponential of 1000 overflows and NumPy reports it."
+        }
+      ],
+      "explanation": "Section 2.1: `np.exp(1000)` overflows to `inf` with a `RuntimeWarning`, and $1/(1 + \\infty)$ is 0.0, which is the correct value to within the smallest representable numbers. The cost of this form is the warning, or an exception in a program that raises on overflow, not a wrong value.",
+      "hints": [
+        "Follow the argument of the exponential first, then the division."
+      ]
+    },
+    {
+      "id": "nn-034-q03",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3.1",
+      "est_minutes": 4,
+      "tags": [
+        "clip",
+        "nan"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A sample has the label $y = 1$ and the logit $z = 40$, so the prediction is right. In float64 the sigmoid returns exactly 1.0. The loss is computed as `-(y * np.log(y_hat) + (1 - y) * np.log(1 - y_hat))` without any clip. What is the result?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "0.0, because the active term is $-\\log 1$.",
+          "correct": false,
+          "feedback": "The active term is 0, but the inactive term is $0 \\cdot (-\\infty)$, which is not 0 in floating point."
+        },
+        {
+          "key": "b",
+          "text": "`inf`, because $\\log 0$ is infinite.",
+          "correct": false,
+          "feedback": "`inf` is the result for the label $y = 0$, where the infinite term is the active one. Here it is multiplied by zero."
+        },
+        {
+          "key": "c",
+          "text": "`nan`, because the inactive term is $0 \\cdot (-\\infty)$.",
+          "correct": true,
+          "feedback": "Correct: the term that should vanish is zero times minus infinity, which floating point cannot evaluate."
+        },
+        {
+          "key": "d",
+          "text": "About $4.2 \\times 10^{-18}$, the exact loss.",
+          "correct": false,
+          "feedback": "That is what the form computed from the logit returns. The probability route has lost it once the sigmoid has rounded to 1."
+        }
+      ],
+      "explanation": "Section 3.1: with $\\hat{y}$ exactly 1, $\\log(1 - \\hat{y})$ is $-\\infty$. For $y = 1$ that term is multiplied by $1 - y = 0$, and $0 \\cdot (-\\infty)$ is `nan` in floating point. A confident, correct prediction therefore poisons the batch mean unless the prediction is clipped first.",
+      "hints": [
+        "Evaluate both terms of the bracket, including the one whose factor is zero.",
+        "What does floating point return for zero times an infinite value?"
+      ]
+    },
+    {
+      "id": "nn-034-q04",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "saturation",
+        "gradient"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A sigmoid output is confidently wrong: $z = -10$ with the label $y = 1$. The slope of the sigmoid there is about $4.5 \\times 10^{-5}$. Why does binary cross-entropy still send a slope of about $-1$ to the logit?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The clip at $10^{-7}$ keeps the slope of the sigmoid away from zero.",
+          "correct": false,
+          "feedback": "The clip acts on the prediction inside the loss only. The gradient of the combined class does not use it."
+        },
+        {
+          "key": "b",
+          "text": "The division by the batch size $N$ is skipped for wrong samples.",
+          "correct": false,
+          "feedback": "Every sample's gradient is divided by $N$ once, whatever its prediction."
+        },
+        {
+          "key": "c",
+          "text": "The loss gradient contains $1 / (\\hat{y}(1 - \\hat{y}))$, which cancels the sigmoid's slope.",
+          "correct": true,
+          "feedback": "Correct: the small slope is cancelled by the large loss gradient, leaving prediction minus label."
+        },
+        {
+          "key": "d",
+          "text": "The sigmoid's slope is small only for confidently right outputs.",
+          "correct": false,
+          "feedback": "The slope depends on $z$ alone and is small at both ends, whether the output is right or wrong."
+        }
+      ],
+      "explanation": "Section 4: $\\partial L_i / \\partial \\hat{y} = (\\hat{y} - y) / (\\hat{y}(1 - \\hat{y}))$ and $\\partial \\hat{y} / \\partial z = \\hat{y}(1 - \\hat{y})$. The second factor is the denominator of the first, so the product is $\\hat{y} - y \\approx -1$. Squared error keeps the small factor and sends back about $-0.00009$.",
+      "hints": [
+        "Write the gradient as a product of two factors and look at what each contains."
+      ]
+    },
+    {
+      "id": "nn-034-q05",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "6",
+      "est_minutes": 5,
+      "tags": [
+        "gradient-check",
+        "clip"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A gradient check of the combined class in float64 is run on a single sample with $z = 20$ and $y = 0$. The class stores `dinputs` of 1.000000 and the central difference of the returned loss is 0.000000. Which diagnosis is right?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "`backward` lacks the division by the number of samples.",
+          "correct": false,
+          "feedback": "With one sample the division by $N = 1$ changes nothing, and a missing division scales the gradient, it does not make the difference zero."
+        },
+        {
+          "key": "b",
+          "text": "The step $h = 10^{-5}$ is too large for a logit of this size.",
+          "correct": false,
+          "feedback": "The loss is exactly flat here, so no step size would measure a slope other than 0."
+        },
+        {
+          "key": "c",
+          "text": "The sigmoid overflowed and returned a wrong prediction.",
+          "correct": false,
+          "feedback": "At $z = 20$ nothing overflows; the prediction is correct to rounding and below 1."
+        },
+        {
+          "key": "d",
+          "text": "The clipped loss is flat there, and the stored gradient is still the correct one.",
+          "correct": true,
+          "feedback": "Correct: the clip caps the reported loss at 16.1181 while the gradient is that of the unclipped loss."
+        }
+      ],
+      "explanation": "Section 6: beyond $|z| = 16.118$ the prediction is clipped before the logarithm, so the returned loss stays at 16.1181 and its measured slope is 0. `backward` uses the unclipped output and returns the slope of the unclipped loss, $\\sigma(20) - 0 \\approx 1$, which is the gradient that training needs.",
+      "hints": [
+        "Ask which of the two numbers is the slope of the loss the class actually returns.",
+        "Compute the logit at which a prediction reaches the upper clip bound."
+      ]
+    },
+    {
+      "id": "nn-034-q06",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "multi-label",
+        "head"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A network tags photographs with five labels (person, dog, car, tree, water), and a photograph can carry any number of them. Which output head fits?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Five neurons with a softmax and categorical cross-entropy.",
+          "correct": false,
+          "feedback": "Softmax forces the five outputs to sum to 1, so two labels could never both be near 1."
+        },
+        {
+          "key": "b",
+          "text": "Five neurons, each with its own sigmoid and binary cross-entropy.",
+          "correct": true,
+          "feedback": "Correct: five independent yes-or-no outputs."
+        },
+        {
+          "key": "c",
+          "text": "One neuron with a sigmoid and binary cross-entropy.",
+          "correct": false,
+          "feedback": "One output answers one yes-or-no question; here there are five."
+        },
+        {
+          "key": "d",
+          "text": "Two neurons with a softmax, as for any two-class problem.",
+          "correct": false,
+          "feedback": "Each label is binary, but there are five separate labels, not one label with two classes."
+        }
+      ],
+      "explanation": "Section 7: softmax makes its outputs sum to 1 and so asserts exactly one label per sample. Labels that can occur together each need their own yes-or-no output: five neurons, each with a sigmoid and a binary cross-entropy.",
+      "hints": [
+        "Decide whether the five answers compete for one unit of probability."
+      ]
+    },
+    {
+      "id": "nn-034-q07",
+      "type": "mcq",
+      "track": "connect",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 4,
+      "tags": [
+        "softmax",
+        "shift"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Post 06 subtracted the largest logit of each row before the softmax exponentials. For a two-output softmax head, what does that invariance to a shift of both logits say about the head?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Only the difference of the two logits affects the output, so one logit is enough.",
+          "correct": true,
+          "feedback": "Correct: the shift direction is redundant, and a single logit carries the difference."
+        },
+        {
+          "key": "b",
+          "text": "The two logits must sum to zero after training.",
+          "correct": false,
+          "feedback": "Nothing constrains their sum; the sum is exactly the direction that the output ignores."
+        },
+        {
+          "key": "c",
+          "text": "The softmax head can represent boundaries a single sigmoid cannot.",
+          "correct": false,
+          "feedback": "The two heads compute the same function of the hidden activations; the extra column adds no capacity."
+        },
+        {
+          "key": "d",
+          "text": "The shift changes the loss but not the predicted class.",
+          "correct": false,
+          "feedback": "The probabilities are unchanged by the shift, so the loss is unchanged as well."
+        }
+      ],
+      "explanation": "Section 7: adding a constant to $z_1$ and $z_2$ leaves $z_2 - z_1$ unchanged, and $\\hat{y}_2 = \\sigma(z_2 - z_1)$. One direction of the two-logit space has no effect on the output, and the one-output sigmoid head is the softmax head with that direction removed.",
+      "hints": [
+        "Write the class-1 probability of the softmax in terms of the two logits and simplify.",
+        "Which combination of the two logits survives a common shift?"
+      ],
+      "connects": [
+        "nn-006"
+      ]
+    },
+    {
+      "id": "nn-034-q08",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "gradient",
+        "arithmetic"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A batch has $N = 5$ samples. One of them has the logit $z = 0$ and the label $y = 1$. What does the combined class store in `dinputs` for that sample?",
+      "answer": {
+        "value": -0.1,
+        "tolerance": 0.001,
+        "unit": ""
+      },
+      "precision_note": "Closed form of section 4, (0.5 - 1) / 5; confirmed with Activation_Sigmoid_Loss_BinaryCrossentropy of snippets/binary_classes.py on a batch of five.",
+      "explanation": "Section 4: the entry is $(\\sigma(z) - y)/N$. With $\\sigma(0) = 0.5$ this is $(0.5 - 1)/5 = -0.1$. The sign is negative because the prediction is below the label, so a descent step raises the logit.",
+      "hints": [
+        "The sigmoid of 0 is known exactly; the rest is a subtraction and a division."
+      ]
+    },
+    {
+      "id": "nn-034-q09",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 6,
+      "tags": [
+        "loss",
+        "gradient"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A batch of $N = 2$ contains a sample with the logit $z = \\log 3$, for which $\\sigma(z) = 0.75$, and the label $y = 0$. Give that sample's loss $L_i$ and the gradient of the mean loss with respect to its logit.",
+      "answer": {
+        "parts": [
+          {
+            "label": "sample loss",
+            "value": 1.3863,
+            "tolerance": 0.001,
+            "unit": ""
+          },
+          {
+            "label": "gradient at the logit",
+            "value": 0.375,
+            "tolerance": 0.001,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed forms of sections 3 and 4: -log(0.25) = 1.3863 and 0.75 / 2 = 0.375; confirmed with the class of snippets/binary_classes.py.",
+      "explanation": "Sections 3 and 4: for $y = 0$ the active term is $-\\log(1 - \\hat{y}) = -\\log 0.25 = 1.3863$. The gradient of the mean loss is $(\\hat{y} - y)/N = 0.75/2 = 0.375$.",
+      "hints": [
+        "Only one of the two logarithms is active for this label.",
+        "The gradient is prediction minus label, divided once by the batch size."
+      ]
+    },
+    {
+      "id": "nn-034-q10",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 4,
+      "tags": [
+        "softmax",
+        "equivalence"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A two-output softmax head receives the logits $z_1 = 1.5$ for class 0 and $z_2 = -0.5$ for class 1. What probability does it give to class 1?",
+      "answer": {
+        "value": 0.1192,
+        "tolerance": 0.0005,
+        "unit": ""
+      },
+      "precision_note": "Closed form of section 7, sigma(-2) = 0.119203; the reversed difference gives 0.8808, outside the tolerance.",
+      "explanation": "Section 7: $\\hat{y}_2 = \\sigma(z_2 - z_1) = \\sigma(-2) = 1/(1 + e^{2}) = 0.1192$. The direct route gives the same: $e^{-0.5}/(e^{1.5} + e^{-0.5})$.",
+      "hints": [
+        "The probability depends on the two logits only through one combination of them.",
+        "Take the logit of the class in question minus the other, then apply the sigmoid."
+      ]
+    },
+    {
+      "id": "nn-034-q11",
+      "type": "numeric",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3.1",
+      "est_minutes": 3,
+      "tags": [
+        "clip",
+        "predict-output"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "`loss_activation` is the combined class of the post, in float64. What does the line below print, to three decimals?",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "print(loss_activation.forward(np.array([[30.0]]), np.array([0])))"
+      },
+      "answer": {
+        "value": 16.118,
+        "tolerance": 0.01,
+        "unit": ""
+      },
+      "precision_note": "-log(1e-7) = 16.1181, printed by snippets/loss_forms.py; confirmed by the call itself. The unclipped value 30 is outside the tolerance.",
+      "explanation": "Section 3.1: at $z = 30$ the sigmoid is above $1 - 10^{-7}$, so the prediction is clipped and the loss for $y = 0$ is $-\\log(10^{-7}) = 16.118$. The exact loss would be 30; the clip caps what the class reports.",
+      "hints": [
+        "Check whether a logit of 30 lies inside the range in which the clip leaves the prediction alone."
+      ]
+    },
+    {
+      "id": "nn-034-q12",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2.1",
+      "est_minutes": 2,
+      "tags": [
+        "stable-forward"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "The stable `forward` of `Activation_Sigmoid` uses two algebraically equal expressions. For which logits does it use $1 / (1 + e^{-z})$?",
+      "answer": {
+        "model": "For $z \\ge 0$, the non-negative logits.",
+        "accept": [
+          "^(?![\\s\\S]*(?:\\bnever\\b|\\bnot\\s+for\\b|\\b(?:does|do)\\s*(?:not|n't)\\s+use\\b|\\bnot\\s+used\\b|\\bunsafe\\b))(?:(?!(?:(?<![-−])\\b(?:z|logits?)\\s*\\$?\\s*(?:<|≤|\\\\l[et]|(?:is|are)\\s+(?:negative|less|below|smaller|non-?\\s?positive))|(?<!non)(?<!non-)(?<!not )negative\\s+(?:logits?|z\\b|inputs?|ones|values)|non-?\\s?positive|(?<!not )(?:below|less\\s+than|smaller\\s+than|under)\\s+(?:zero|0)))[\\s\\S])*?(?:non-?\\s?negative|not\\s+(?:negative|(?:below|less\\s+than|smaller\\s+than|under)\\s+(?:zero|0))|>\\s*=\\s*0|≥\\s*0|\\\\geq?\\s*0|at\\s+least\\s+(?:zero|0)|(?:zero|0)\\s+(?:or|and)\\s+(?:more|above|greater|positive|larger|higher|up|upwards?)|from\\s+(?:zero|0)\\s+(?:up|on)|positive\\s+(?:or|and)\\s+(?:zero|0)|greater\\s+than\\s+or\\s+equal|(?<!not )(?<!non)(?<!non-)\\bpositive\\b|>\\s*0|(?:greater\\s+than|above)\\s+(?:zero|0))(?!\\s*(?:and|or|,|/)\\s*(?:the\\s+)?(?:negative|non-?\\s?positive|z\\s*<))(?![\\s\\S]*\\b(?:so|therefore|hence|thus)\\b[^.;]*(?:(?<![-−])\\b(?:z|logits?)\\s*\\$?\\s*(?:<|≤|\\\\l[et]|(?:is|are)\\s+(?:negative|less|below|smaller|non-?\\s?positive))|(?<!non)(?<!non-)(?<!not )negative\\s+(?:logits?|z\\b|inputs?|ones|values)|non-?\\s?positive|(?<!not )(?:below|less\\s+than|smaller\\s+than|under)\\s+(?:zero|0)))"
+        ]
+      },
+      "explanation": "Section 2.1: the class uses $1/(1 + e^{-z})$ where $z \\ge 0$, because $-z$ is then at most 0 and the exponential cannot overflow, and $e^z/(1 + e^z)$ where $z < 0$ for the same reason.",
+      "hints": [
+        "The form is safe where the argument of its exponential is not positive."
+      ]
+    },
+    {
+      "id": "nn-034-q13",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "backward",
+        "argument"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "The training loop calls `loss_activation.backward(dvalues, y)` on the combined sigmoid class. Which array does it pass as `dvalues`?",
+      "answer": {
+        "model": "The sigmoid output cached by `forward`, `loss_activation.output`.",
+        "accept": [
+          "^(?![\\s\\S]*(?:(?<!not )(?<!not the )(?<!than )(?<!than the )(?<!of )(?<!of the )(?<!from )(?<!from the )(?<!to )(?<!to the )\\b(?:raw\\s+)?logits?\\b|\\b(?:not|never)\\s+(?:the\\s+)?(?:sigmoid\\s+|cached\\s+)?(?:outputs?|predictions?|probabilit)))(?:(?:(?!(?:\\bdinputs\\b|\\bupstream\\b|\\b(?:gradient|derivative)s?\\b|\\bdense|\\blabels?\\b|\\by_true\\b|\\binputs?\\s+of\\b))[\\s\\S])*?(?:loss_activation\\.output|self\\.output|(?:sigmoid|activation|class|head)(?:'s)?\\s+outputs?|outputs?\\s+of\\s+(?:the\\s+)?(?:sigmoid|activation|forward|class|combined|head|loss_activation)|cached\\s+outputs?|(?:its|their)\\s+(?:own\\s+)?outputs?|after\\s+the\\s+sigmoid|\\bsigmoid\\s+of\\b|\\bpredictions?\\b|\\bprobabilit|y_hat|\\\\hat\\{?y|ŷ|sigma\\s*\\(|σ\\s*\\()|\\W*(?:the\\s+)?outputs?\\W*$)"
+        ]
+      },
+      "explanation": "Section 5: as in post 19, the argument keeps the name of the backward convention and holds the predictions, `loss_activation.output`, the sigmoid output cached by `forward`. `backward` subtracts the labels from it and divides by the number of samples.",
+      "hints": [
+        "The formula of the gradient names the two arrays the method needs; the labels are the other one."
+      ]
+    },
+    {
+      "id": "nn-034-q14",
+      "type": "short",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "softmax",
+        "equivalence"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A two-output softmax head has the logits $z_1$ for class 0 and $z_2$ for class 1. Its probability for class 1 equals the sigmoid of which expression in $z_1$ and $z_2$?",
+      "answer": {
+        "model": "$z_2 - z_1$, the logit of class 1 minus the logit of class 0.",
+        "accept": [
+          "^(?:(?!(?:\\b(?:not|never|sum|plus|product)\\b|(?<![-−]\\()(?<![-−]\\(\\s)(?<![-−]\\s\\()z\\s*_?\\s*\\{?\\s*1\\s*\\}?\\s*\\$?\\s*(?:-|−|–|minus)\\s*\\$?\\s*z\\s*_?\\s*\\{?\\s*2\\s*\\}?))[\\s\\S])*?(?:(?<![-−]\\()(?<![-−]\\(\\s)(?<![-−]\\s\\()z\\s*_?\\s*\\{?\\s*2\\s*\\}?\\s*\\$?\\s*(?:-|−|–|minus)\\s*\\$?\\s*z\\s*_?\\s*\\{?\\s*1\\s*\\}?(?!\\d)|[-−]\\s*\\(\\s*z\\s*_?\\s*\\{?\\s*1\\s*\\}?\\s*\\$?\\s*(?:-|−|–|minus)\\s*\\$?\\s*z\\s*_?\\s*\\{?\\s*2\\s*\\}?\\s*\\)|(?<![\\w}])(?<![\\w}]\\s)(?<![\\w}]\\$\\s)[-−]\\s*z\\s*_?\\s*\\{?\\s*1\\s*\\}?\\s*\\$?\\s*\\+\\s*\\$?\\s*z\\s*_?\\s*\\{?\\s*2\\s*\\}?|(?:second|class[- ]?1|class[- ]one)(?:'s)?\\s+logit\\s*\\$?\\s*(?:-|−|–|minus)\\s*\\$?\\s*(?:the\\s+)?(?:first|class[- ]?0|class[- ]zero|other)|logit\\s+(?:of|for)\\s+class\\s+(?:1|one)\\s*\\$?\\s*(?:-|−|–|minus)\\s*\\$?\\s*(?:the\\s+)?(?:logit\\s+(?:of|for)\\s+)?class\\s+(?:0|zero))(?!\\s*\\$?\\s*(?:or|and|,|/|\\+|\\*|\\\\cdot|\\\\times)\\s*\\$?\\s*[-−(]?\\s*z)(?![^.;(]*\\b(?:is|would\\s+be)\\s+(?:wrong|incorrect|false)\\b)"
+        ]
+      },
+      "explanation": "Section 7: dividing the numerator and the denominator of $e^{z_2}/(e^{z_1} + e^{z_2})$ by $e^{z_2}$ gives $1/(1 + e^{-(z_2 - z_1)}) = \\sigma(z_2 - z_1)$. The reversed difference gives the probability of class 0.",
+      "hints": [
+        "Divide the softmax fraction by its own numerator."
+      ]
+    },
+    {
+      "id": "nn-034-q15",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 5,
+      "tags": [
+        "derivation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Put the steps of the derivation of the gradient of the mean binary cross-entropy with respect to a logit in their logical order.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Cancel against the slope of the sigmoid, $\\partial \\hat{y} / \\partial z = \\hat{y}(1 - \\hat{y})$, which leaves $\\partial L_i / \\partial z = \\hat{y} - y$."
+        },
+        {
+          "key": "b",
+          "text": "Differentiate term by term: $\\partial L_i / \\partial \\hat{y} = -y/\\hat{y} + (1 - y)/(1 - \\hat{y})$."
+        },
+        {
+          "key": "c",
+          "text": "Take the mean over the batch, in which $z_i$ enters $L_i$ alone: $\\partial L / \\partial z_i = (\\hat{y}_i - y_i)/N$."
+        },
+        {
+          "key": "d",
+          "text": "Write the loss of one sample, $L_i = -[y \\log \\hat{y} + (1 - y) \\log(1 - \\hat{y})]$ with $\\hat{y} = \\sigma(z)$."
+        },
+        {
+          "key": "e",
+          "text": "Combine the two fractions: $\\partial L_i / \\partial \\hat{y} = (\\hat{y} - y) / (\\hat{y}(1 - \\hat{y}))$."
+        }
+      ],
+      "answer": [
+        "d",
+        "b",
+        "e",
+        "a",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 4: the derivation starts from the loss of one sample, differentiates it with respect to the prediction, brings the result onto one denominator, multiplies by the slope of the sigmoid so that the denominator cancels, and only then passes from one sample to the mean over the batch.",
+      "hints": [
+        "The first step states the function that is differentiated; the last step is the only one that mentions the batch.",
+        "A fraction has to be on a common denominator before that denominator can be cancelled."
+      ]
+    },
+    {
+      "id": "nn-034-q16",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "9",
+      "est_minutes": 5,
+      "tags": [
+        "symptoms"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Match each symptom seen around the sigmoid head to its cause.",
+      "left": [
+        {
+          "key": "a",
+          "text": "A batch of eight samples that are all classified correctly reports an accuracy of 0.53."
+        },
+        {
+          "key": "b",
+          "text": "The loss is `nan` although every prediction of the batch is right."
+        },
+        {
+          "key": "c",
+          "text": "The loss falls below zero and keeps falling."
+        },
+        {
+          "key": "d",
+          "text": "`IndexError: index 1 is out of bounds for axis 1 with size 1`."
+        },
+        {
+          "key": "e",
+          "text": "With four samples, every gradient entry is 4 times the measured slope."
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "The labels are coded as $-1$ and $+1$."
+        },
+        {
+          "key": "q",
+          "text": "`backward` does not divide by `samples`."
+        },
+        {
+          "key": "r",
+          "text": "Predictions of shape $(N, 1)$ are compared with labels of shape $(N,)$."
+        },
+        {
+          "key": "s",
+          "text": "The logarithm is taken without clipping the prediction."
+        },
+        {
+          "key": "t",
+          "text": "One sigmoid output is handed to the categorical cross-entropy with integer labels."
+        },
+        {
+          "key": "u",
+          "text": "The sigmoid's `forward` is the one-line form of post 17."
+        }
+      ],
+      "answer": {
+        "a": "r",
+        "b": "s",
+        "c": "p",
+        "d": "t",
+        "e": "q"
+      },
+      "explanation": "Sections 3.1 and 9: a column compared with a flat array broadcasts to $(N, N)$; the unclipped logarithm gives `nan` once the sigmoid rounds to 1; labels of $-1$ make the loss negative; one sigmoid column indexed with the label 1 is out of bounds in the categorical loss; and a missing division by `samples` scales the gradient by $N$. The unused cause, the one-line sigmoid, produces an overflow warning and none of these symptoms.",
+      "hints": [
+        "Sort the symptoms into wrong numbers and raised errors first."
+      ]
+    },
+    {
+      "id": "nn-034-q17",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "2.1",
+      "est_minutes": 12,
+      "tags": [
+        "fix",
+        "overflow"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "The starter is the one-line sigmoid of post 17. It returns correct values and overflows inside `np.exp` on large negative logits. Rewrite `sigmoid` so that it returns the same values without any overflow or invalid operation, for float64 arrays of any shape and logits of any size. The tests call it with NumPy set to raise on overflow, and they check the arguments that `np.exp` receives, so silencing the warning is not a fix.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "import numpy as np\n\n\ndef sigmoid(z):\n    \"\"\"The sigmoid of every entry of the float array z.\"\"\"\n    return 1.0 / (1.0 + np.exp(-z))\n",
+      "solution": "import numpy as np\n\n\ndef sigmoid(z):\n    \"\"\"The sigmoid of every entry of the float array z.\"\"\"\n    out = np.empty_like(z, dtype=np.float64)\n    pos = z >= 0\n    out[pos] = 1.0 / (1.0 + np.exp(-z[pos]))\n    neg = ~pos\n    ex = np.exp(z[neg])\n    out[neg] = ex / (1.0 + ex)\n    return out\n",
+      "tests": "import numpy as np\n\nz = np.array([[-1000.0, -720.0, -40.0, -1.0], [0.0, 1.0, 40.0, 1000.0]])\nsaved = z.copy()\n\n# No overflow and no invalid operation, even when NumPy is told to raise on them.\nwith np.errstate(over=\"raise\", invalid=\"raise\", divide=\"raise\"):\n    out = sigmoid(z)\n\nassert isinstance(out, np.ndarray) and out.shape == z.shape, \"the output must be an array with the shape of the input\"\nassert np.array_equal(z, saved), \"the input array must not be changed\"\nassert np.all(np.isfinite(out)), \"no nan and no inf\"\nassert np.all((out >= 0.0) & (out <= 1.0)), \"every value must lie between 0 and 1\"\n\nwant = np.array([[0.0, 0.0, 4.248354255291589e-18, 0.2689414213699951],\n                 [0.5, 0.7310585786300049, 1.0, 1.0]])\nassert np.allclose(out, want, rtol=1e-12, atol=1e-200), \"wrong values\"\nassert out[1, 0] == 0.5, \"sigmoid(0) is exactly 0.5\"\n\n# Ordinary logits: the same values as the one-line form, and the symmetry sigma(-z) = 1 - sigma(z).\nordinary = np.linspace(-30.0, 30.0, 121)\nwith np.errstate(over=\"raise\", invalid=\"raise\", divide=\"raise\"):\n    got = sigmoid(ordinary)\n    mirrored = sigmoid(-ordinary)\nassert np.allclose(got, 1.0 / (1.0 + np.exp(-ordinary)), rtol=1e-12, atol=0.0), \"must agree with the one-line form on ordinary logits\"\nassert np.allclose(got + mirrored, 1.0, rtol=0.0, atol=1e-15), \"sigma(z) + sigma(-z) must be 1\"\n\n# A batch on one side of zero only, and a single column as a dense layer returns it.\nwith np.errstate(over=\"raise\", invalid=\"raise\", divide=\"raise\"):\n    assert np.allclose(sigmoid(np.array([[-800.0], [-2.0]])), [[0.0], [0.11920292202211755]], rtol=1e-12, atol=1e-200)\n    assert np.allclose(sigmoid(np.array([[800.0], [2.0]])), [[1.0], [0.8807970779778823]], rtol=1e-12)\n\n# Silencing the warning is not a fix: np.exp must not receive an argument that overflows.\n_exp = np.exp\n\n\ndef _checked_exp(x, *args, **kwargs):\n    assert np.all(np.asarray(x) < 709.0), \"np.exp received an argument that overflows in float64\"\n    return _exp(x, *args, **kwargs)\n\n\nnp.exp = _checked_exp\ntry:\n    sigmoid(np.array([[-1000.0, -720.0, 3.0], [720.0, 1000.0, -3.0]]))\nfinally:\n    np.exp = _exp\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "Section 2.1: the exponential must never receive a large positive argument. The reference uses $1/(1 + e^{-z})$ where $z \\ge 0$ and $e^z/(1 + e^z)$ where $z < 0$, each evaluated only on its own entries. Computing both expressions on every entry and selecting afterwards still overflows, because the unused branch is evaluated.",
+      "hints": [
+        "Each of the two ways to write the sigmoid is safe on one side of zero.",
+        "Evaluate each expression only on the entries where it is safe, for example through a boolean mask."
+      ]
+    },
+    {
+      "id": "nn-034-q18",
+      "type": "code",
+      "track": "run",
+      "difficulty": 4,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 15,
+      "tags": [
+        "complete",
+        "backward"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "The starter holds the stable `Activation_Sigmoid` and the combined class with its `forward` finished. Complete `backward` so that `self.dinputs` holds the gradient of the mean loss with respect to the logits. It must work for labels of shape $(N,)$ and $(N, 1)$, follow the conventions of the series for a `backward` method, and stay exact on logits at which the sigmoid has rounded to 0 or 1.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "import numpy as np\n\n\nclass Activation_Sigmoid:\n\n    def forward(self, inputs):\n        self.inputs = inputs\n        out = np.empty_like(inputs, dtype=np.float64)\n        pos = inputs >= 0\n        out[pos] = 1.0 / (1.0 + np.exp(-inputs[pos]))\n        neg = ~pos\n        ex = np.exp(inputs[neg])\n        out[neg] = ex / (1.0 + ex)\n        self.output = out\n\n    def backward(self, dvalues):\n        self.dinputs = dvalues * self.output * (1 - self.output)\n\n\nclass Activation_Sigmoid_Loss_BinaryCrossentropy:\n\n    def __init__(self):\n        self.activation = Activation_Sigmoid()\n\n    def forward(self, inputs, y_true):\n        self.activation.forward(inputs)\n        self.output = self.activation.output\n\n        y_true = np.asarray(y_true, dtype=np.float64).reshape(-1, 1)\n        y_pred_clipped = np.clip(self.output, 1e-7, 1 - 1e-7)\n        sample_losses = -(y_true * np.log(y_pred_clipped) +\n                          (1 - y_true) * np.log(1 - y_pred_clipped))\n        return float(np.mean(sample_losses))\n\n    def backward(self, dvalues, y_true):\n        # TODO: store in self.dinputs the gradient of the mean loss with respect\n        # to the logits, shape (N, 1). dvalues is the sigmoid output, shape (N, 1);\n        # y_true has shape (N,) or (N, 1).\n        self.dinputs = np.zeros_like(dvalues)\n",
+      "solution": "import numpy as np\n\n\nclass Activation_Sigmoid:\n\n    def forward(self, inputs):\n        self.inputs = inputs\n        out = np.empty_like(inputs, dtype=np.float64)\n        pos = inputs >= 0\n        out[pos] = 1.0 / (1.0 + np.exp(-inputs[pos]))\n        neg = ~pos\n        ex = np.exp(inputs[neg])\n        out[neg] = ex / (1.0 + ex)\n        self.output = out\n\n    def backward(self, dvalues):\n        self.dinputs = dvalues * self.output * (1 - self.output)\n\n\nclass Activation_Sigmoid_Loss_BinaryCrossentropy:\n\n    def __init__(self):\n        self.activation = Activation_Sigmoid()\n\n    def forward(self, inputs, y_true):\n        self.activation.forward(inputs)\n        self.output = self.activation.output\n\n        y_true = np.asarray(y_true, dtype=np.float64).reshape(-1, 1)\n        y_pred_clipped = np.clip(self.output, 1e-7, 1 - 1e-7)\n        sample_losses = -(y_true * np.log(y_pred_clipped) +\n                          (1 - y_true) * np.log(1 - y_pred_clipped))\n        return float(np.mean(sample_losses))\n\n    def backward(self, dvalues, y_true):\n        samples = len(dvalues)\n        y_true = np.asarray(y_true, dtype=np.float64).reshape(-1, 1)\n        self.dinputs = (dvalues - y_true) / samples\n",
+      "tests": "import numpy as np\n\nhead = Activation_Sigmoid_Loss_BinaryCrossentropy()\n\n\ndef slope(logits, y, h=1e-5):\n    \"\"\"Central difference of the mean loss with respect to every logit.\"\"\"\n    measured = np.zeros_like(logits)\n    for index in np.ndindex(logits.shape):\n        plus, minus = logits.copy(), logits.copy()\n        plus[index] += h\n        minus[index] -= h\n        measured[index] = (head.forward(plus, y) - head.forward(minus, y)) / (2 * h)\n    return measured\n\n\n# The worked batch of the post.\nlogits = np.array([[2.0], [-1.0], [0.5], [-3.0]])\ny = np.array([1, 0, 0, 1])\nmeasured = slope(logits, y)\nloss = head.forward(logits, y)\nassert abs(loss - 1.1157) < 1e-4, \"forward must not be changed\"\noutput = head.output.copy()\nresult = head.backward(head.output, y)\nassert result is None, \"backward stores dinputs and returns nothing\"\nassert head.dinputs.shape == (4, 1), \"dinputs must have the shape of the logits, (N, 1)\"\nassert np.allclose(head.dinputs, measured, rtol=0.0, atol=1e-8), \"dinputs must equal the measured slope of the mean loss\"\nassert np.allclose(head.dinputs[:, 0], [-0.029801, 0.067235, 0.155615, -0.238144], atol=1e-6)\nassert np.array_equal(head.output, output), \"backward must not change the cached output\"\n\n# Labels as a column, integer or float, give the same gradient.\nflat = head.dinputs.copy()\nfor labels in (y.reshape(-1, 1), y.reshape(-1, 1).astype(np.float64), y.astype(np.float64)):\n    head.forward(logits, labels)\n    head.backward(head.output, labels)\n    assert head.dinputs.shape == (4, 1) and np.allclose(head.dinputs, flat), \"labels of shape (N,) and (N, 1) must give the same gradient\"\n\n# A second call assigns and does not accumulate.\nhead.backward(head.output, y)\nassert np.allclose(head.dinputs, flat), \"a second call must give the same gradient\"\n\n# Another batch size: the division follows the batch.\nrng = np.random.default_rng(1)\nlogits = rng.normal(scale=2.0, size=(7, 1))\ny = rng.integers(0, 2, size=7)\nhead.forward(logits, y)\nhead.backward(head.output, y)\nassert np.allclose(head.dinputs, slope(logits, y), rtol=0.0, atol=1e-8), \"wrong gradient on a batch of seven\"\n\n# Saturated logits: the gradient stays finite and exact.\nlogits = np.array([[40.0], [40.0], [-40.0], [-800.0]])\ny = np.array([0, 1, 1, 1])\nhead.forward(logits, y)\nwith np.errstate(divide=\"raise\", invalid=\"raise\"):\n    head.backward(head.output, y)\nassert np.all(np.isfinite(head.dinputs)), \"no nan on saturated logits\"\nassert np.allclose(head.dinputs[:, 0], [0.25, 0.0, -0.25, -0.25], atol=1e-12), \"saturated logits: (sigma(z) - y) / N exactly\"\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "Section 5: the gradient is $(\\hat{y} - y)/N$, so `backward` reshapes the labels to a column, subtracts them from the cached output and divides by the number of samples. It needs no logarithm and no division by the prediction, which is why it stays exact on saturated logits where the route through the loss gradient and the sigmoid slope returns `nan` or 0.",
+      "hints": [
+        "The derivation ends in a formula with one subtraction and one division.",
+        "A column minus a flat array broadcasts to a square; bring the labels to the shape of the output first."
+      ]
+    },
+    {
+      "id": "nn-034-q19",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 12,
+      "tags": [
+        "derivation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Derive the gradient of the mean binary cross-entropy $L = \\frac{1}{N} \\sum_i L_i$ with respect to one logit $z_i$, where $L_i = -[y_i \\log \\hat{y}_i + (1 - y_i) \\log(1 - \\hat{y}_i)]$ and $\\hat{y}_i = \\sigma(z_i)$. The slope of the sigmoid, $\\sigma'(z) = \\sigma(z)(1 - \\sigma(z))$, may be used without proof. State where the factor $1/N$ comes from.",
+      "kind": "derive",
+      "answer_length": "half a page",
+      "solution": "1. For one sample, differentiate with respect to the prediction, using $\\frac{d}{dx} \\log x = 1/x$ and the inner derivative $-1$ of $1 - \\hat{y}$: $\\partial L_i / \\partial \\hat{y} = -y/\\hat{y} + (1 - y)/(1 - \\hat{y})$.\n2. Common denominator: the numerator is $-y(1 - \\hat{y}) + (1 - y)\\hat{y} = \\hat{y} - y$, so $\\partial L_i / \\partial \\hat{y} = (\\hat{y} - y)/(\\hat{y}(1 - \\hat{y}))$.\n3. The prediction with respect to the logit: $\\partial \\hat{y} / \\partial z = \\hat{y}(1 - \\hat{y})$.\n4. Chain rule: $\\partial L_i / \\partial z = \\frac{\\hat{y} - y}{\\hat{y}(1 - \\hat{y})} \\cdot \\hat{y}(1 - \\hat{y}) = \\hat{y} - y$.\n5. The batch: $L = \\frac{1}{N} \\sum_j L_j$, and $z_i$ appears in $L_i$ only, so every other term has derivative 0 and $\\partial L / \\partial z_i = \\frac{1}{N} \\, \\partial L_i / \\partial z_i = (\\hat{y}_i - y_i)/N = (\\sigma(z_i) - y_i)/N$. The $1/N$ is the factor of the mean.",
+      "rubric": [
+        {
+          "criterion": "Differentiates the sample loss with respect to the prediction, with the correct signs of both terms.",
+          "points": 2
+        },
+        {
+          "criterion": "Combines the two fractions into (prediction minus label) over prediction times one minus prediction.",
+          "points": 2
+        },
+        {
+          "criterion": "Multiplies by the sigmoid slope and cancels, arriving at prediction minus label for one sample.",
+          "points": 2
+        },
+        {
+          "criterion": "Obtains the factor 1/N from the mean and says that a logit enters only its own sample's loss.",
+          "points": 2
+        }
+      ],
+      "explanation": "Section 4: the loss gradient with respect to the prediction is $(\\hat{y} - y)/(\\hat{y}(1 - \\hat{y}))$, the sigmoid contributes $\\hat{y}(1 - \\hat{y})$, and the product is $\\hat{y} - y$. The mean over the batch contributes $1/N$ because each logit enters one sample's loss only.",
+      "hints": [
+        "Use the chain rule through the prediction: two factors.",
+        "Bring the derivative with respect to the prediction onto the denominator $\\hat{y}(1 - \\hat{y})$ before multiplying."
+      ]
+    },
+    {
+      "id": "nn-034-q20",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3.1",
+      "est_minutes": 12,
+      "tags": [
+        "clip",
+        "diagnosis"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "During training with the combined class of the post, one sample of a batch has the label 0 and a logit that grows from 18 to 25 over a few epochs. Explain what that sample contributes to the reported loss over those epochs, what gradient its logit receives, whether a reader of the loss curve could see the sample getting worse, and which way of computing the loss would show it.",
+      "kind": "explain",
+      "answer_length": "one or two paragraphs",
+      "solution": "The clip changes a prediction as soon as $|z|$ exceeds $\\log((1 - 10^{-7})/10^{-7}) = 16.118$. For the whole stretch from 18 to 25 the prediction used in the loss is $1 - 10^{-7}$, and with $y = 0$ the sample's loss is $-\\log(10^{-7}) = 16.118$, unchanged from epoch to epoch. Its contribution to the mean is $16.118/N$. The exact loss of the sample is $\\log(1 + e^{z})$, about 18 at the start and 25 at the end, so the reported loss understates it and does not move: the loss curve cannot show the sample getting worse.\n\nThe gradient is not affected. `backward` uses the unclipped sigmoid output, so the logit receives $(\\sigma(z) - 0)/N \\approx 1/N$, the slope of the unclipped loss, and a descent step lowers the logit. Training on that sample continues although the reported loss is flat, and a gradient check on that logit would report a mismatch that is not a bug.\n\nTo see the exact value, the loss is computed from the logit, $\\max(z, 0) - yz + \\log(1 + e^{-|z|})$, which needs no probability and no clip and returns 18 to 25 here.",
+      "rubric": [
+        {
+          "criterion": "States that the sample's reported loss is constant at 16.118, the cap -log(1e-7), over the whole stretch.",
+          "points": 2
+        },
+        {
+          "criterion": "States that the gradient at the logit is still about 1/N, from the unclipped output, so training continues.",
+          "points": 2
+        },
+        {
+          "criterion": "Concludes that the loss curve cannot show the deterioration, the exact loss being about 18 to 25.",
+          "points": 2
+        },
+        {
+          "criterion": "Names the loss computed from the logit (or an equivalent clip-free form) as the way to report the exact value.",
+          "points": 2
+        }
+      ],
+      "explanation": "Section 3.1 and section 6: beyond $|z| = 16.118$ the clip fixes the prediction at $1 - 10^{-7}$, so the sample's loss stays at 16.118 while its exact loss rises from about 18 to 25. The gradient is computed from the unclipped output and stays at about $1/N$, so training still pushes the logit down. The form computed from the logit, $\\log(1 + e^z) - yz$, reports the exact value.",
+      "hints": [
+        "Find the logit at which the prediction reaches the upper clip bound.",
+        "Separate two questions: what `forward` returns, and what `backward` stores."
+      ]
+    },
+    {
+      "id": "nn-034-q21",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 15,
+      "tags": [
+        "softmax",
+        "equivalence",
+        "choice"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Post 19 showed that softmax with categorical cross-entropy has the gradient $(\\hat{\\mathbf{y}} - \\mathbf{y})/N$ at the logits. For $K = 2$, with $z_1$ the logit of class 0 and $z_2$ the logit of class 1, show that this gradient is the gradient of the one-output sigmoid head acting on $z = z_2 - z_1$, and say what the two-output head has that the one-output head lacks. Then say which head fits (a) deciding whether a message is spam, and (b) assigning any number of five topic tags to a message.",
+      "kind": "connect",
+      "answer_length": "half a page",
+      "solution": "Dividing $e^{z_2}/(e^{z_1} + e^{z_2})$ by $e^{z_2}$ gives $\\hat{y}_2 = \\sigma(z_2 - z_1) = \\sigma(z)$, and $\\hat{y}_1 = 1 - \\sigma(z)$. A sample with label $y$ has the one-hot row $(1 - y, y)$. The softmax gradient is therefore $\\frac{1}{N}(\\hat{y}_1 - (1 - y), \\hat{y}_2 - y) = \\frac{1}{N}(-(\\sigma(z) - y), \\sigma(z) - y)$. The entry at $z_2$ is the gradient of the sigmoid head, $(\\sigma(z) - y)/N$, and the entry at $z_1$ is its negative, as it must be since $z = z_2 - z_1$ depends on $z_1$ with the factor $-1$. The losses agree as well, because categorical cross-entropy at $K = 2$ is binary cross-entropy.\n\nThe two-output head has a second column of weights and a second bias in the last layer. They add a direction, the common shift of both logits, that leaves the probabilities unchanged, so they add parameters and no capacity. In the post's measurement on two moons the two heads scored 197 to 200 of 200 test points over ten seeds each.\n\n(a) Spam or not spam is one yes-or-no question with exclusive answers: one sigmoid output with binary cross-entropy, or equivalently two softmax outputs. (b) Tags that can occur together are five separate yes-or-no questions: five outputs, each with its own sigmoid and binary cross-entropy. Softmax would force the five outputs to sum to 1 and assert exactly one tag.",
+      "rubric": [
+        {
+          "criterion": "Shows that the softmax probability of class 1 is the sigmoid of z_2 minus z_1.",
+          "points": 2
+        },
+        {
+          "criterion": "Shows that the softmax gradient at z_2 equals the sigmoid head's gradient and that the entry at z_1 is its negative.",
+          "points": 3
+        },
+        {
+          "criterion": "Identifies the extra column of the last layer as a redundant direction (a common shift of both logits) that adds no capacity.",
+          "points": 2
+        },
+        {
+          "criterion": "Chooses a single sigmoid output (or the equivalent two-output softmax) for (a) and one sigmoid per tag for (b), with the reason softmax fails for (b).",
+          "points": 3
+        }
+      ],
+      "explanation": "Section 7: $\\hat{y}_2 = \\sigma(z_2 - z_1)$, so the softmax gradient at $z_2$ is $(\\sigma(z) - y)/N$ and at $z_1$ its negative; the extra column is a direction that does not change the output. Two exclusive classes can use either head; labels that can occur together need one sigmoid per label.",
+      "hints": [
+        "Express both softmax probabilities through the sigmoid of a difference of logits.",
+        "For the one-hot label of a sample with label $y$, write the two entries of $\\hat{\\mathbf{y}} - \\mathbf{y}$ and compare them."
+      ],
+      "connects": [
+        "nn-019"
+      ]
+    }
+  ]
+}

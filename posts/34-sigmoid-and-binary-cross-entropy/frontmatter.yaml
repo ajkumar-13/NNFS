@@ -1,8 +1,23 @@
 id: nn-034
 slug: 34-sigmoid-and-binary-cross-entropy
-title: "Part 34 · Sigmoid and binary cross-entropy"
+title: "34 - Sigmoid and binary cross-entropy"
+summary: "With two classes, one sigmoid output and binary cross-entropy replace two softmax outputs. The post derives the gradient at the logit, builds a sigmoid that cannot overflow and the combined class, and checks both numerically."
 date: 2026-05-30
-tags: [neural-networks, from-scratch, binary-classification, sigmoid, bce, combined-derivative]
+updated: 2026-10-06
+status: complete
+part: "Part VIII - Practical training and extensions"
+level: intermediate
+reading_time: 26
+tags: [neural-networks, from-scratch, binary-classification, sigmoid, binary-cross-entropy, combined-derivative]
 hero: diagrams/01-sigmoid-bce-pipeline.svg
-reading_time: 10
-part: "Part VIII — Practical training and extensions"
+prerequisites: [nn-019]
+code: included
+outcomes:
+  - id: o1
+    text: "Derive the gradient of the mean binary cross-entropy with respect to a logit, the sigmoid output minus the label over the batch size."
+  - id: o2
+    text: "Implement a numerically stable Activation_Sigmoid and the combined class Activation_Sigmoid_Loss_BinaryCrossentropy."
+  - id: o3
+    text: "Choose between sigmoid plus binary cross-entropy and softmax plus categorical cross-entropy for a binary problem."
+recommended: [nn-033]
+compute: cpu
