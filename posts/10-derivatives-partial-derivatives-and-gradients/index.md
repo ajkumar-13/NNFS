@@ -12,9 +12,9 @@
 > - Read a gradient vector component by component as the sensitivity of the loss to one weight.
 > - Check an analytic derivative against a forward or a central finite difference at a sensibly chosen step size.
 
-![The parabola f(x) = x squared plotted for x from -3 to 3 with three tangent lines touching it: slope -3 at x = -1.5, slope +1 at x = 0.5, and slope +4 at x = 2.0. A side panel states the power rule, the derivative of a times x to the n is n times a times x to the n minus 1, lists f'(x) = 2x at the three points, and gives three readings of a derivative: large positive means f rises fast, near zero means f is locally flat, negative means f falls as x rises.](diagrams/01-derivative-as-slope.svg)
+![The parabola f(x) = x squared for x from -3 to 3, with its tangent line drawn at three points: slope -3 at x = -1.5, slope +1 at x = 0.5, and slope +4 at x = 2. A table beside it lists the rule f'(x) = 2x at the three points, -3, 1 and 4, next to the central differences with h = 10 to the -5, -3.000000, 1.000000 and 4.000000.](diagrams/01-derivative-as-slope.svg)
 
-*Three points on the same curve, three tangent lines, three slopes: $-3$, $+1$, and $+4$. The derivative is the function that returns the slope at any point.*
+*Three points on the same curve, three tangent lines, three slopes: $-3$, $+1$, and $+4$. The derivative is the function that returns the slope at any point, and a central difference measures the same three slopes.*
 
 ---
 
@@ -91,9 +91,9 @@ The numerical value of $f'(x)$ at a point has three readings, all useful for neu
 - **Near-zero slope.** A small change in $x$ causes almost no change in $f$. Sensitivity is low; the input barely matters near this point.
 - **Negative slope.** A small increase in $x$ causes a *decrease* in $f$. The input still matters, but the direction is reversed.
 
-The figure below applies the three readings to a single weight and the update rule of section 1.
+The figure below applies the three readings to a single weight, with the loss $L = (w - 1)^2$ of section 4.3 and the update rule of section 1.
 
-![Three cards show one loss curve against a single weight w, each with a tangent at a different point and the update w minus 0.1 times the slope. At w = 2.0 the slope is +2.0 and the weight falls to 1.8. At w = 1.0 the slope is 0.0 and the weight stays at 1.0. At w = 0.0 the slope is -2.0 and the weight rises to 0.2. A band below notes that all three moves are the same line of code with a learning rate of 0.1, and that each one steps towards w = 1, where the loss is lowest.](diagrams/03-slope-to-update.svg)
+![The loss L(w) = (w - 1) squared plotted against one weight w, with its tangent at w = 2, w = 1 and w = 0, of slope +2, 0 and -2. Arrows at w = 2 and w = 0 point towards w = 1, where the loss is lowest. Three cards apply the update w gets w minus alpha times dL/dw: at w = 2 it gives 2 minus 2 alpha and w falls, at w = 1 it gives 1 and w stays, and at w = 0 it gives 2 alpha and w rises.](diagrams/02-slope-to-update.svg)
 
 *One update rule at three points. The sign of the derivative decides which way the weight moves, and its size decides how far.*
 
@@ -192,11 +192,11 @@ $$\nabla f = \left( \frac{\partial f}{\partial w_1},\ \frac{\partial f}{\partial
 
 For a function of $n$ variables, the gradient is a vector of $n$ numbers, one per variable. It is the natural object to manipulate in code: NumPy, PyTorch, and JAX all store a gradient as an array of the same shape as the parameters it belongs to.
 
-For example 2 of section 3.1 the gradient is $\nabla f = (9x^2 z,\ -2y + 2z,\ 3x^3 + 5 + 2y)$, and at the point $(x, y, z) = (1, 2, 3)$ it is the three numbers $(27, 2, 12)$. The figure below assembles it.
+For example 2 of section 3.1 the gradient is $\nabla f = (9x^2 z,\ -2y + 2z,\ 3x^3 + 5 + 2y)$, and at the point $(x, y, z) = (1, 2, 3)$ it is the three numbers $(27, 2, 12)$. The figure below finds each component as the slope of $f$ along one axis through that point and assembles the three.
 
-![A flow diagram for the function f(x, y, z) = 3 x cubed z minus y squared plus 5z plus 2yz. Three branches each freeze two of the variables and differentiate in the third: the partial derivative in x is 9 x squared z, the partial derivative in y is minus 2y plus 2z, and the partial derivative in z is 3 x cubed plus 5 plus 2y. The three results are stacked into one column, the gradient of f, labelled a vector of three numbers. A band below states that the gradient points in the direction of steepest ascent and that gradient descent moves along its negative.](diagrams/02-partial-to-gradient.svg)
+![Three panels slice f(x, y, z) = 3 x cubed z minus y squared plus 5z plus 2yz through the point (1, 2, 3), where f = 32, each along one axis with the other two variables frozen. Along x the slice is 9 x cubed plus 23, with slope 9 x squared z = 27 at x = 1; along y it is minus y squared plus 6y plus 24, slope minus 2y plus 2z = 2; along z it is 12z minus 4, slope 3 x cubed plus 5 plus 2y = 12. Arrows carry the three slopes into the gradient (27, 2, 12), whose central differences are 27.00000000, 2.00000000 and 12.00000000 and whose length is the square root of 877, about 29.61.](diagrams/03-partials-to-gradient.svg)
 
-*One partial derivative per variable, each found by freezing the other two. The gradient bundles the three into a single vector that points uphill.*
+*One partial derivative per variable, each the slope of $f$ along one axis with the other two frozen. The gradient bundles the three into a single vector that points uphill.*
 
 ### 4.1. Two properties that matter for training
 
@@ -312,7 +312,11 @@ smallest central error on this grid: 2.1e-10 at h = 1e-05
 the smallest forward error is 344 times the smallest central error
 ```
 
-Read the two error columns from the top. Down to about $h = 10^{-7}$ the forward error is $6h$, as the algebra says for $x = 2$, and down to $h = 10^{-4}$ the central error is $h^2$. Then both columns turn round and grow. From $h = 10^{-8}$ to $h = 10^{-13}$ the two estimates print the same digits, so the central difference has lost its advantage, and at $h = 10^{-16}$ both report a derivative of exactly 0.
+Read the two error columns from the top. Down to about $h = 10^{-7}$ the forward error is $6h$, as the algebra says for $x = 2$, and down to $h = 10^{-4}$ the central error is $h^2$. Then both columns turn round and grow. From $h = 10^{-8}$ to $h = 10^{-13}$ the two estimates print the same digits, so the central difference has lost its advantage, and at $h = 10^{-16}$ both report a derivative of exactly 0. The figure below draws both error columns on logarithmic axes, with $h$ growing from left to right.
+
+![A log-log chart of the error of the forward and the central difference of x cubed at x = 2 against the step h, from 10 to the -16 up to 10 to the -1, in float64. From the right, the forward error falls as 6h and the central error as h squared; then both turn and rise along a dotted line, the rounding estimate 10 to the -15 over h. The best central error is 2.1 times 10 to the -10, at h = 10 to the -5, and the best forward error 7.3 times 10 to the -8, at h = 10 to the -8. At h = 10 to the -16 both estimates return 0, an error of 12.](diagrams/04-step-size-sweep.svg)
+
+*Right of each minimum the error is truncation, $6h$ or $h^2$; left of it, rounding, about $10^{-15}/h$. The central difference bottoms out at $2.1 \times 10^{-10}$ at $h = 10^{-5}$.*
 
 The cause is **rounding error**. A float64 number carries about 16 significant decimal digits; its machine epsilon, the relative gap between neighbouring numbers, is $2.2 \times 10^{-16}$. Near $f(2) = 8$ neighbouring float64 numbers are $1.8 \times 10^{-15}$ apart, so each computed value of $f$ can be wrong by about $10^{-15}$. The numerator of either estimate subtracts two almost equal values of $f$. Their leading digits cancel, and that $10^{-15}$ uncertainty is what remains to be divided by a tiny $h$. The rounding error of the estimate is therefore about $10^{-15} / h$, and it *grows* as $h$ shrinks: about $10^{-6}$ at $h = 10^{-9}$ and $10^{-3}$ at $h = 10^{-12}$, as the table shows. At $h = 10^{-16}$ the step is smaller than the gap between 2 and its float64 neighbours, so `2.0 + 1e-16 == 2.0` is `True`, the two function values are identical, and their difference is zero.
 

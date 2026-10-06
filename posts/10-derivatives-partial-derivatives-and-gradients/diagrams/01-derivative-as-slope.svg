@@ -1,180 +1,207 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" role="img" aria-labelledby="t d">
-  <title id="t">The derivative is the slope of the tangent line</title>
-  <desc id="d">A line plot of f(x) = x^2 with three tangent lines drawn at x = -1.5, x = 0.5, and x = 2.0. The leftmost tangent has slope -3 (steep, downward); the middle one has slope 1 (gentle, upward); the rightmost has slope 4 (steep, upward). Each tangent is labelled with its slope value and a small marker dot at the point of contact. A side panel summarises the power rule and the three readings of a derivative: steep positive, near-zero, negative.</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
-      --nn-grid:rgba(26,26,26,0.06);
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-01-derivative-as-slope-title" aria-describedby="nn-01-derivative-as-slope-desc">
+<title id="nn-01-derivative-as-slope-title">The derivative is the slope of the tangent</title>
+<desc id="nn-01-derivative-as-slope-desc">A plot of the parabola f(x) = x squared for x from minus 3 to 3, with its tangent line drawn at three points and each tangent labelled with its slope: minus 3 at x = minus 1.5, plus 1 at x = 0.5 and plus 4 at x = 2. A table beside the plot lists, for the same three points, x, the rule f prime of x = 2x, which gives minus 3, 1 and 4, and the central difference with h = 10 to the minus 5, which gives minus 3.000000, 1.000000 and 4.000000.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-        --nn-grid:rgba(241,238,232,0.08);
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
-    .axis{stroke:var(--nn-ink-muted);stroke-width:1.25;fill:none;}
-    .grid{stroke:var(--nn-grid);stroke-width:0.75;fill:none;}
-    .axis-label{font-size:11px;fill:var(--nn-ink-muted);}
-    .axis-title{font-size:13px;font-weight:600;fill:var(--nn-ink);}
-    .curve{stroke:var(--nn-primary);stroke-width:2.5;fill:none;}
-    .tangent-bad{stroke:var(--nn-alert);stroke-width:2;fill:none;}
-    .tangent-mid{stroke:var(--nn-warn);stroke-width:2;fill:none;}
-    .tangent-ok {stroke:var(--nn-success);stroke-width:2;fill:none;}
-    .dot-bad{fill:var(--nn-alert);}
-    .dot-mid{fill:var(--nn-warn);}
-    .dot-ok {fill:var(--nn-success);}
-    .slope-label-bad{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:600;fill:var(--nn-alert);}
-    .slope-label-mid{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:600;fill:var(--nn-warn);}
-    .slope-label-ok {font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:600;fill:var(--nn-success);}
-    .info-head{font-weight:700;font-size:13px;fill:var(--nn-ink);}
-    .info-body{font-size:12px;fill:var(--nn-ink);}
-    .info-muted{font-size:11px;fill:var(--nn-ink-muted);}
-    .rule-pill{fill:var(--nn-primary);fill-opacity:0.10;stroke:var(--nn-primary);stroke-width:1.2;}
-    .rule-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;fill:var(--nn-ink);font-weight:600;}
-  ]]></style>
-
-  <rect class="bg" width="960" height="500"/>
-
-  <text class="title"    x="48" y="48">The derivative is the slope of the tangent</text>
-  <text class="subtitle" x="48" y="70">Three tangent lines on the same curve f(x) = x². Each one's slope is f'(x) = 2x at that point.</text>
-
-  <!-- ==================== Chart panel ==================== -->
-  <rect class="panel" x="48" y="96" width="560" height="356" rx="12"/>
-
-  <!-- Plot coords: x in [-3, 3] → [80, 580]; y in [0, 9] → [432, 120]
-       So 1 x-unit = ~83.33 px; 1 y-unit = ~34.67 px. Origin (0,0) at (330, 432). -->
-
-  <!-- Gridlines (horizontal every 2 y-units; vertical at every integer x) -->
-  <g class="grid">
-    <line x1="80" y1="158" x2="580" y2="158"/>
-    <line x1="80" y1="228" x2="580" y2="228"/>
-    <line x1="80" y1="297" x2="580" y2="297"/>
-    <line x1="80" y1="367" x2="580" y2="367"/>
-
-    <line x1="163" y1="120" x2="163" y2="432"/>
-    <line x1="247" y1="120" x2="247" y2="432"/>
-    <line x1="413" y1="120" x2="413" y2="432"/>
-    <line x1="497" y1="120" x2="497" y2="432"/>
-  </g>
-
-  <!-- Axes -->
-  <line class="axis" x1="80"  y1="432" x2="580" y2="432"/>
-  <line class="axis" x1="330" y1="432" x2="330" y2="120"/>
-
-  <!-- Y-axis ticks: 0, 2, 4, 6, 8 (every 2 y units = 69.33 px) -->
-  <text class="axis-label" x="324" y="436" text-anchor="end">0</text>
-  <text class="axis-label" x="324" y="367" text-anchor="end">2</text>
-  <text class="axis-label" x="324" y="297" text-anchor="end">4</text>
-  <text class="axis-label" x="324" y="228" text-anchor="end">6</text>
-  <text class="axis-label" x="324" y="158" text-anchor="end">8</text>
-
-  <!-- X-axis ticks: -3, -2, -1, 0, 1, 2, 3 -->
-  <text class="axis-label" x="80"  y="450" text-anchor="middle">−3</text>
-  <text class="axis-label" x="163" y="450" text-anchor="middle">−2</text>
-  <text class="axis-label" x="247" y="450" text-anchor="middle">−1</text>
-  <text class="axis-label" x="330" y="450" text-anchor="middle">0</text>
-  <text class="axis-label" x="413" y="450" text-anchor="middle">1</text>
-  <text class="axis-label" x="497" y="450" text-anchor="middle">2</text>
-  <text class="axis-label" x="580" y="450" text-anchor="middle">3</text>
-
-  <!-- Axis titles -->
-  <text class="axis-title" x="330" y="478" text-anchor="middle">x</text>
-  <g transform="translate(36, 276) rotate(-90)">
-    <text class="axis-title" text-anchor="middle">f(x) = x²</text>
-  </g>
-
-  <!-- The parabola f(x) = x²: pix_x = 330 + 83.33*x; pix_y = 432 - 34.67*x². -->
-  <path class="curve"
-        d="M 80,120
-           L 105.0,170.0
-           L 130.0,217.0
-           L 163.0,294.0
-           L 196.7,341.4
-           L 230.0,378.0
-           L 263.3,401.7
-           L 296.7,422.7
-           L 330,432
-           L 363.3,422.7
-           L 396.7,401.7
-           L 430.0,378.0
-           L 463.3,341.4
-           L 497.0,294.0
-           L 530.0,217.0
-           L 555.0,170.0
-           L 580,120"/>
-
-  <!-- ==================== Tangent 1: x = -1.5, f' = -3 (steep negative) ==================== -->
-  <!-- Pixel: x_pix = 330 + 83.33*(-1.5) = 205; y_pix = 432 - 34.67*2.25 = 354 -->
-  <!-- Tangent slope in graph units = -3, in pixel units = -3 * (34.67 / 83.33) = -1.248 -->
-  <!-- Draw from x=-2.5 to x=-0.5: pix x = 121.7 to 288.3 -->
-  <!-- y_pix at x=-2.5: 354 + (-2.5-(-1.5)) * (-1.248)*(-1) … let me just compute: y = -3*(x-(-1.5)) + 2.25 = -3x - 2.25
-       At x=-2.5: y = 7.5 - 2.25 = 5.25 → y_pix = 432-34.67*5.25 = 250.0
-       At x=-0.5: y = 1.5 - 2.25 = -0.75 → off chart, use x=-0.7: y = 2.1 - 2.25 = -0.15 → y_pix=437.2 (off-chart)
-       Use x=-0.8: y = 2.4 - 2.25 = 0.15 → y_pix = 426.8 -->
-  <line class="tangent-bad" x1="122" y1="250" x2="263" y2="427"/>
-  <circle class="dot-bad" cx="205" cy="354" r="5"/>
-  <text class="slope-label-bad" x="118" y="244" text-anchor="start">slope = −3</text>
-  <text class="info-muted"      x="118" y="258" text-anchor="start">at x = −1.5</text>
-
-  <!-- ==================== Tangent 2: x = 0.5, f' = 1 (gentle positive) ==================== -->
-  <!-- Pixel: x_pix = 330 + 83.33*0.5 = 371.7; y_pix = 432 - 34.67*0.25 = 423.3 -->
-  <!-- Slope: y = (x-0.5) + 0.25 = x - 0.25
-       At x=-0.5: y = -0.75 → off chart
-       Use x=0.0: y = -0.25 → y_pix = 440.7 (slightly off)
-       Use x=1.5: y = 1.25 → y_pix = 388.7
-       Draw from (-0.2, -0.45) → off-chart; better: from x=0.0 (y=-0.25 → off) to x=1.5 (y=1.25 → 388.7)
-       Use x=0.2: y=-0.05 → y_pix = 433.7
-       Use x=1.5: y = 1.25 → y_pix = 388.7 -->
-  <line class="tangent-mid" x1="347" y1="431" x2="455" y2="389"/>
-  <circle class="dot-mid" cx="372" cy="423" r="5"/>
-  <text class="slope-label-mid" x="467" y="394" text-anchor="start">slope = +1</text>
-  <text class="info-muted"      x="467" y="408" text-anchor="start">at x = 0.5</text>
-
-  <!-- ==================== Tangent 3: x = 2.0, f' = 4 (steep positive) ==================== -->
-  <!-- Pixel: x_pix = 330 + 83.33*2 = 497; y_pix = 432 - 34.67*4 = 293.3 -->
-  <!-- Slope: y = 4(x-2) + 4 = 4x - 4
-       At x=1.0: y = 0 → y_pix = 432
-       At x=2.7: y = 6.8 → y_pix = 196.2 -->
-  <line class="tangent-ok" x1="413" y1="432" x2="555" y2="197"/>
-  <circle class="dot-ok" cx="497" cy="293" r="5"/>
-  <text class="slope-label-ok" x="560" y="200" text-anchor="start">slope = +4</text>
-  <text class="info-muted"     x="560" y="214" text-anchor="start">at x = 2.0</text>
-
-  <!-- ==================== Right info panel ==================== -->
-  <rect class="panel" x="624" y="96" width="288" height="356" rx="12"/>
-
-  <text class="info-head" x="644" y="124">Rule of thumb</text>
-  <rect class="rule-pill" x="644" y="138" width="248" height="48" rx="8"/>
-  <text class="rule-text" x="768" y="168" text-anchor="middle">d/dx[a·xⁿ] = n·a·xⁿ⁻¹</text>
-
-  <text class="info-head" x="644" y="216">For f(x) = x²</text>
-  <text class="info-body" x="644" y="236">f'(x) = 2x</text>
-  <text class="info-muted" x="644" y="254">f'(−1.5) = −3</text>
-  <text class="info-muted" x="644" y="270">f'(0.5)  = +1</text>
-  <text class="info-muted" x="644" y="286">f'(2.0)  = +4</text>
-
-  <text class="info-head" x="644" y="320">Three readings of f'(x):</text>
-  <text class="info-muted" x="644" y="340">· large positive: f rises fast</text>
-  <text class="info-muted" x="644" y="356">· near zero: f is locally flat</text>
-  <text class="info-muted" x="644" y="372">· negative: f falls as x rises</text>
-
-  <text class="info-muted" x="644" y="406">For weights and loss: each weight's</text>
-  <text class="info-muted" x="644" y="422">slope on the loss surface decides</text>
-  <text class="info-muted" x="644" y="438">which way the optimiser nudges it.</text>
-
-  <!-- Footer -->
-  <text class="footer" x="48"  y="490">The derivative is a function: input is x, output is the slope at that x. Tangents make that slope visible.</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-purple { fill: var(--nn-purple); }
+  .f-purple-ink { fill: var(--nn-purple-ink); }
+  .s-green { stroke: var(--nn-green); }
+  .s-purple { stroke: var(--nn-purple); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-01-derivative-as-slope-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<clipPath id="nn-01-derivative-as-slope-clip-1"><rect x="90" y="122" width="364" height="312"/></clipPath>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title">The derivative is the slope of the tangent</text>
+<text x="40" y="76" class="t-subtitle"><tspan class="i">f</tspan>(<tspan class="i">x</tspan>) = <tspan class="i">x</tspan><tspan class="sub" dy="-6">2</tspan><tspan dy="6">​</tspan>, and its tangent at three points; each slope is <tspan class="i">f</tspan>′(<tspan class="i">x</tspan>) = 2<tspan class="i">x</tspan> there.</text>
+<g data-grid="skip">
+<path d="M96,398H448M96,308H448M96,218H448M96,128H448" class="gridline"/>
+<text x="88" y="402" text-anchor="end" class="t-tick">0</text>
+<text x="88" y="312" text-anchor="end" class="t-tick">3</text>
+<text x="88" y="222" text-anchor="end" class="t-tick">6</text>
+<text x="88" y="132" text-anchor="end" class="t-tick">9</text>
+<text x="96" y="448" text-anchor="middle" class="t-tick">−3</text>
+<text x="154.67" y="448" text-anchor="middle" class="t-tick">−2</text>
+<text x="213.33" y="448" text-anchor="middle" class="t-tick">−1</text>
+<text x="272" y="448" text-anchor="middle" class="t-tick">0</text>
+<text x="330.67" y="448" text-anchor="middle" class="t-tick">1</text>
+<text x="389.33" y="448" text-anchor="middle" class="t-tick">2</text>
+<text x="448" y="448" text-anchor="middle" class="t-tick">3</text>
+<path d="M96,128V428H448" class="axis"/>
+<g clip-path="url(#nn-01-derivative-as-slope-clip-1)">
+<path d="M96,128 L98.93,136.93 L101.87,145.7 L104.8,154.32 L107.73,162.8 L110.67,171.12 L113.6,179.3 L116.53,187.32 L119.47,195.2 L122.4,202.93 L125.33,210.5 L128.27,217.92 L131.2,225.2 L134.13,232.32 L137.07,239.3 L140,246.12 L142.93,252.8 L145.87,259.33 L148.8,265.7 L151.73,271.93 L154.67,278 L157.6,283.93 L160.53,289.7 L163.47,295.32 L166.4,300.8 L169.33,306.12 L172.27,311.3 L175.2,316.32 L178.13,321.2 L181.07,325.92 L184,330.5 L186.93,334.93 L189.87,339.2 L192.8,343.32 L195.73,347.3 L198.67,351.12 L201.6,354.8 L204.53,358.33 L207.47,361.7 L210.4,364.93 L213.33,368 L216.27,370.93 L219.2,373.7 L222.13,376.32 L225.07,378.8 L228,381.12 L230.93,383.3 L233.87,385.32 L236.8,387.2 L239.73,388.93 L242.67,390.5 L245.6,391.93 L248.53,393.2 L251.47,394.32 L254.4,395.3 L257.33,396.12 L260.27,396.8 L263.2,397.32 L266.13,397.7 L269.07,397.93 L272,398 L274.93,397.93 L277.87,397.7 L280.8,397.32 L283.73,396.8 L286.67,396.12 L289.6,395.3 L292.53,394.32 L295.47,393.2 L298.4,391.93 L301.33,390.5 L304.27,388.93 L307.2,387.2 L310.13,385.32 L313.07,383.3 L316,381.12 L318.93,378.8 L321.87,376.32 L324.8,373.7 L327.73,370.93 L330.67,368 L333.6,364.93 L336.53,361.7 L339.47,358.32 L342.4,354.8 L345.33,351.12 L348.27,347.3 L351.2,343.33 L354.13,339.2 L357.07,334.92 L360,330.5 L362.93,325.93 L365.87,321.2 L368.8,316.32 L371.73,311.3 L374.67,306.12 L377.6,300.8 L380.53,295.33 L383.47,289.7 L386.4,283.93 L389.33,278 L392.27,271.93 L395.2,265.7 L398.13,259.32 L401.07,252.8 L404,246.12 L406.93,239.3 L409.87,232.33 L412.8,225.2 L415.73,217.92 L418.67,210.5 L421.6,202.93 L424.53,195.2 L427.47,187.32 L430.4,179.3 L433.33,171.12 L436.27,162.8 L439.2,154.33 L442.13,145.7 L445.07,136.93 L448,128" class="s-green w15 nofill"/>
+</g>
+<text x="460" y="133" class="t-note f-green-ink"><tspan class="i">f</tspan>(<tspan class="i">x</tspan>) = <tspan class="i">x</tspan><tspan class="sub" dy="-6">2</tspan><tspan dy="6">​</tspan></text>
+</g>
+<text x="96" y="116" class="t-note"><tspan class="i">f</tspan>(<tspan class="i">x</tspan>)</text>
+<text x="272" y="472" text-anchor="middle" class="t-note"><tspan class="i">x</tspan></text>
+<g data-grid="skip">
+<path d="M149.05,276.89 L218.95,384.11" class="s-purple w15 nofill"/>
+<path d="M244.35,419.64 L358.32,361.36" class="s-purple w15 nofill"/>
+<path d="M361.22,335.5 L417.44,220.5" class="s-purple w15 nofill"/>
+<circle cx="184" cy="330.5" r="5" class="f-purple s-surface w1"/>
+<text x="172" y="370.5" text-anchor="end" class="t-value f-purple-ink">slope −3</text>
+<circle cx="301.33" cy="390.5" r="5" class="f-purple s-surface w1"/>
+<text x="317.33" y="422.5" class="t-value f-purple-ink">slope +1</text>
+<circle cx="389.33" cy="278" r="5" class="f-purple s-surface w1"/>
+<text x="405.33" y="318" class="t-value f-purple-ink">slope +4</text>
+</g>
+<text x="552" y="184" class="t-head">Rule against measurement</text>
+<rect x="552" y="200" width="64" height="40" class="nofill"/>
+<rect x="616" y="200" width="128" height="40" class="nofill"/>
+<rect x="744" y="200" width="176" height="40" class="nofill"/>
+<rect x="552" y="240" width="64" height="40" class="nofill"/>
+<rect x="616" y="240" width="128" height="40" class="nofill"/>
+<rect x="744" y="240" width="176" height="40" class="nofill"/>
+<rect x="552" y="280" width="64" height="40" class="nofill"/>
+<rect x="616" y="280" width="128" height="40" class="nofill"/>
+<rect x="744" y="280" width="176" height="40" class="nofill"/>
+<rect x="552" y="320" width="64" height="40" class="nofill"/>
+<rect x="616" y="320" width="128" height="40" class="nofill"/>
+<rect x="744" y="320" width="176" height="40" class="nofill"/>
+<path d="M552,200H920M552,360H920" class="axis"/>
+<path d="M552,240H920" class="rule1"/>
+<text x="608" y="224" text-anchor="end" class="t-head"><tspan class="i">x</tspan></text>
+<text x="736" y="224" text-anchor="end" class="t-head"><tspan class="i">f</tspan>′(<tspan class="i">x</tspan>) = 2<tspan class="i">x</tspan></text>
+<text x="912" y="224" text-anchor="end" class="t-head">central difference</text>
+<text x="608" y="264" text-anchor="end" class="t-label">−1.5</text>
+<text x="736" y="264" text-anchor="end" class="t-label">−3</text>
+<text x="912" y="264" text-anchor="end" class="t-label">−3.000000</text>
+<text x="608" y="304" text-anchor="end" class="t-label">0.5</text>
+<text x="736" y="304" text-anchor="end" class="t-label">1</text>
+<text x="912" y="304" text-anchor="end" class="t-label">1.000000</text>
+<text x="608" y="344" text-anchor="end" class="t-label">2.0</text>
+<text x="736" y="344" text-anchor="end" class="t-label">4</text>
+<text x="912" y="344" text-anchor="end" class="t-label">4.000000</text>
+<text x="552" y="396" class="t-note">central difference: (<tspan class="i">f</tspan>(<tspan class="i">x</tspan> + <tspan class="i">h</tspan>) − <tspan class="i">f</tspan>(<tspan class="i">x</tspan> − <tspan class="i">h</tspan>)) / 2<tspan class="i">h</tspan></text>
+<text x="552" y="420" class="t-note">with <tspan class="i">h</tspan> = 10<tspan class="sub" dy="-6">−5</tspan><tspan dy="6">​</tspan>, from finite_differences.py</text>
+<text x="40" y="504" class="t-note">The derivative is a function: it returns the slope at every <tspan class="i">x</tspan>.</text>
 </svg>
