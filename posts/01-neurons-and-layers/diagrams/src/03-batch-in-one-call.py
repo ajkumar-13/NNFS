@@ -14,7 +14,7 @@ import numpy as np
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, r"C:\Users\admin\Desktop\series-standard\tools")
-from figkit import Figure, Raw, rich, sub, sup, num, CDOT  # noqa: E402
+from figkit import Figure, Raw, rich, var, sub, num  # noqa: E402
 
 SNIP = Path(__file__).resolve().parents[2] / "snippets" / "layer_batch.py"
 with contextlib.redirect_stdout(io.StringIO()) as out:
@@ -44,10 +44,17 @@ def rows(a, d):
     return "; ".join(", ".join(say(v, d) for v in r) for r in a)
 
 
-WTN = rich(bold("W"), sup("", "\u22a4", italic=False))
+def tr(base):
+    """A bold array name with the transpose sign as a superscript set close against it (W with a raised T)."""
+    return Raw(f'<tspan class="b">{base}</tspan><tspan class="sub" dy="-7" dx="-1">\u22a4</tspan>'
+               f'<tspan dy="7" dx="-2">\u200b</tspan>')
+
+
+WTN = tr("W")
 fig = Figure(
     "03-batch-in-one-call", "A batch goes through the layer in one call",
-    f"Four grids in a row: X, 3 by 4, one sample per row, rows {rows(X, 1)}; times W transposed, 4 by 3, one "
+    f"Above the grids, the equation Z equals X W transposed plus b and the call np.dot(X, W.T) + b. Four grids in a "
+    f"row: X, 3 by 4, one sample per row, rows {rows(X, 1)}; times W transposed, 4 by 3, one "
     f"neuron per column, rows {rows(WT, 2)}; plus b broadcast to 3 by 3, every row 2.0, 3.0, 0.5, copied from the "
     f"stored b of shape (3,) drawn above it; equals Z, 3 by 3, rows {rows(Z, 3)}. Sample 2's row of X, neuron 2's "
     f"column of W transposed, b2 and Z entry (2, 2) are outlined: minus 4.81 plus 3.0 is minus 1.81.",
@@ -55,24 +62,33 @@ fig = Figure(
 
 TOP, C = 216, 40
 XX = 104
-gx = fig.grid(XX, TOP, N, N_IN, cell_w=44, cell_h=C, values=X.tolist(), decimals=1, font=16, fill=lambda i, j: "input-soft")
+gx = fig.grid(XX, TOP, N, N_IN, cell_w=40, cell_h=C, values=X.tolist(), decimals=1, font=16, fill=lambda i, j: "input-soft")
 WX = gx.box.right + 32
-gw = fig.grid(WX, TOP, N_IN, N_NEU, cell_w=64, cell_h=C, values=WT.tolist(), decimals=2, font=14, fill=lambda i, j: "weight-soft")
+gw = fig.grid(WX, TOP, N_IN, N_NEU, cell_w=72, cell_h=C, values=WT.tolist(), decimals=2, font=14, fill=lambda i, j: "weight-soft")
 BX = gw.box.right + 32
-gb = fig.grid(BX, TOP, N, N_NEU, cell_w=48, cell_h=C, values=[B.tolist()] * N, decimals=1, font=16, fill=lambda i, j: "weight-soft")
+gb = fig.grid(BX, TOP, N, N_NEU, cell_w=40, cell_h=C, values=[B.tolist()] * N, decimals=1, font=16, fill=lambda i, j: "weight-soft")
 ZX = gb.box.right + 32
-gz = fig.grid(ZX, TOP, N, N_NEU, cell_w=64, cell_h=C, values=Z.tolist(), decimals=3, font=16,
+gz = fig.grid(ZX, TOP, N, N_NEU, cell_w=72, cell_h=C, values=Z.tolist(), decimals=3, font=16,
               fill=lambda i, j: "output-soft", strong={(S, K): "output"})
-for a, b, op in ((gx, gw, CDOT), (gw, gb, "+"), (gb, gz, "=")):
-    fig.text((a.box.right + b.box.x) / 2, TOP + C * N // 2 + 8, op, "op", anchor="middle")
+assert (WX, BX, ZX, gz.box.right) == (296, 544, 696, 912)
+OPY = TOP + C * N // 2                                  # the operators' centre line: the middle of the 3-row grids
+for a, b, op in ((gw, gb, "+"), (gb, gz, "=")):
+    fig.text((a.box.right + b.box.x) / 2, OPY + 8, op, "op", anchor="middle")
+with fig.data():                                        # the product sign: a solid dot, large enough to see
+    fig.add(f'<circle cx="{(gx.box.right + gw.box.x) / 2:g}" cy="{OPY}" r="3" '
+            f'class="{fig._cls("f", "ink-muted")}" data-fit="skip"/>')
 
 gx.row_labels([f"sample {i + 1}" for i in range(N)], style="tick")
 gx.col_labels([sub("x", str(j + 1)) for j in range(N_IN)])
 for g in (gw, gz):
     g.col_labels([f"neuron {j + 1}" for j in range(N_NEU)])
 
+# the equation and the call the grids spell out, in the space left of the stored bias
+fig.text(40, 136, rich(bold("Z"), " = ", bold("X"), WTN, " + ", bold("b")), "math")
+fig.text(40, 164, "np.dot(X, W.T) + b", "code")
+
 # the stored bias, above its broadcast copy
-sb = fig.strip(BX, 112, N_NEU, width=48 * N_NEU, height=C, values=B.tolist(), decimals=1, font=16, fill=lambda i: "weight-soft")
+sb = fig.strip(BX, 112, N_NEU, width=40 * N_NEU, height=C, values=B.tolist(), decimals=1, font=16, fill=lambda i: "weight-soft")
 fig.text(BX - 16, 136, rich(bold("b"), " (3,)"), "label", anchor="end")
 fig.arrow((sb.box.cx, sb.box.bottom), (gb.box.cx, gb.box.y), label="copied to every row", side="right")
 
@@ -87,5 +103,6 @@ for g, name, shape in ((gx, bold("X"), "(3, 4)"), (gw, WTN, "(4, 3)"), (gb, rich
     fig.text(g.box.cx, Y_NAME, rich(name, " ", shape), "label", anchor="middle")
 fig.text(gz.box.right, Y_NAME + 32, rich("Sample 2, neuron 2: ", num(float(P[S, K]), 2), " + ", num(float(B[K]), 1), " = ",
                                num(float(Z[S, K]), 2)), "label", anchor="end", color="output")
-fig.caption(rich("Entry (i, j) of ", bold("Z"), " is sample i times neuron j's weights, plus neuron j's bias."))
+fig.caption(rich("Entry (", var("i"), ", ", var("j"), ") of ", bold("Z"), " is sample ", var("i"), " times neuron ",
+                 var("j"), "'s weights, plus neuron ", var("j"), "'s bias."))
 fig.write()

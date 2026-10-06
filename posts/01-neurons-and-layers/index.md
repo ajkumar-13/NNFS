@@ -13,7 +13,7 @@
 > - Code a neuron and a layer in plain Python and then as one NumPy dot product plus the biases.
 > - Predict the shape of every intermediate array as a single sample becomes a batch.
 
-![The four-input neuron of section 5. Inputs 1.0, 2.0, 3.0, 2.5 are multiplied row by row by the weights 0.2, 0.8, minus 0.5, 1.0, giving the products 0.2, 1.6, minus 1.5, 2.5. Lines carry the products into a node marked sigma plus b, the bias 2.0 enters from above, and an arrow labelled 2.8 plus 2.0 leads to the output z, 4.8. Underneath, the whole sum is written out, and the count reads 4 weights plus 1 bias, 5 parameters.](diagrams/01-one-neuron.svg)
+![The four-input neuron of section 5. Inputs 1.0, 2.0, 3.0, 2.5 are multiplied row by row by the weights 0.2, 0.8, minus 0.5, 1.0, giving the products 0.2, 1.6, minus 1.5, 2.5. Lines carry the products into a node marked sigma plus b, the bias 2.0 enters from above, and an arrow labelled sigma plus b equals 2.8 plus 2.0 leads to the output z, 4.8. Underneath, the whole sum is written out, and the count reads 4 weights plus 1 bias, 5 parameters.](diagrams/01-one-neuron.svg)
 
 *One neuron, four inputs, five parameters: a weight for each input and a single bias. Every learnable parameter of the dense networks in this series is one or the other, and the rest of the series is rules for setting them.*
 
@@ -158,7 +158,7 @@ The shape of the operation is invariant: one weight per input, one bias per neur
 
 A **layer** is a group of neurons that all receive the same input vector while each keeps its own weights and its own bias. The figure below draws the layer of section 7, three such neurons over the four inputs of section 5, first as wiring and then as one matrix.
 
-![Two panels. On the left, four inputs x1 to x4 each connect to all three neuron boxes, sigma plus b1, sigma plus b2 and sigma plus b3, twelve lines, with neuron 2's lines in the weight colour; the boxes give z1, z2 and z3. On the right, the same layer as z equals W x plus b: W is a 3 by 4 grid with one row of weights per neuron, x holds 1.0, 2.0, 3.0, 2.5, b holds 2.0, 3.0, 0.5, and z holds 4.800, 1.210, 2.385. Row 2 of W, b2 and z2 are outlined: minus 1.79 plus 3.0 is 1.21.](diagrams/02-a-layer.svg)
+![Two panels. On the left, four inputs x1 to x4, holding 1.0, 2.0, 3.0, 2.5, each connect to all three neuron boxes, sigma plus b1, sigma plus b2 and sigma plus b3, twelve lines, with neuron 2's lines in the weight colour and a note that they are row 2 of W; the boxes give z1, z2 and z3. On the right, the same layer as z equals W x plus b: W is a 3 by 4 grid with one row of weights per neuron, x holds 1.0, 2.0, 3.0, 2.5, b holds 2.0, 3.0, 0.5, and z holds 4.800, 1.210, 2.385. Row 2 of W, b2 and z2 are outlined: minus 1.79 plus 3.0 is 1.21.](diagrams/02-a-layer.svg)
 
 *Every input reaches every neuron, so the weights multiply (3 neurons times 4 inputs is 12) while the biases only add (3). Row $k$ of $\mathbf{W}$ holds the weights of neuron $k$.*
 
@@ -401,7 +401,7 @@ print(np.dot(inputs, np.array(weights).T) + biases)
 
 Each row is the layer's output for one input sample; each column belongs to one neuron. The first row is the single-sample result of section 9. The figure below draws the same call as grids.
 
-![Four grids in a row. X, 3 by 4, one sample per row, times W transposed, 4 by 3, one neuron per column, plus b broadcast to 3 by 3, every row 2.0, 3.0, 0.5, copied from the stored b of shape (3,) above it, equals Z, 3 by 3: 4.800, 1.210, 2.385, then 8.900, minus 1.810, 0.200, then 1.410, 1.051, 0.026. Sample 2's row, neuron 2's column, its bias and Z entry (2, 2) are outlined: minus 4.81 plus 3.0 is minus 1.81.](diagrams/03-batch-in-one-call.svg)
+![The equation Z equals X W transposed plus b and the call np.dot(X, W.T) + b, above four grids in a row. X, 3 by 4, one sample per row, times W transposed, 4 by 3, one neuron per column, plus b broadcast to 3 by 3, every row 2.0, 3.0, 0.5, copied from the stored b of shape (3,) above it, equals Z, 3 by 3: 4.800, 1.210, 2.385, then 8.900, minus 1.810, 0.200, then 1.410, 1.051, 0.026. Sample 2's row, neuron 2's column, its bias and Z entry (2, 2) are outlined: minus 4.81 plus 3.0 is minus 1.81.](diagrams/03-batch-in-one-call.svg)
 
 *Three samples go through the same three neurons in one call. The bias row of shape $(3,)$ is added to every row of the $(3, 3)$ product, so each neuron's bias lands in its own column.*
 

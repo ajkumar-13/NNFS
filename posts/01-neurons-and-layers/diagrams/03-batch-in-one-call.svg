@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-03-batch-in-one-call-title" aria-describedby="nn-03-batch-in-one-call-desc">
 <title id="nn-03-batch-in-one-call-title">A batch goes through the layer in one call</title>
-<desc id="nn-03-batch-in-one-call-desc">Four grids in a row: X, 3 by 4, one sample per row, rows 1.0, 2.0, 3.0, 2.5; 2.0, 5.0, minus 1.0, 2.0; minus 1.5, 2.7, 3.3, minus 0.8; times W transposed, 4 by 3, one neuron per column, rows 0.20, 0.50, minus 0.26; 0.80, minus 0.91, minus 0.27; minus 0.50, 0.26, 0.17; 1.00, minus 0.50, 0.87; plus b broadcast to 3 by 3, every row 2.0, 3.0, 0.5, copied from the stored b of shape (3,) drawn above it; equals Z, 3 by 3, rows 4.800, 1.210, 2.385; 8.900, minus 1.810, 0.200; 1.410, 1.051, 0.026. Sample 2's row of X, neuron 2's column of W transposed, b2 and Z entry (2, 2) are outlined: minus 4.81 plus 3.0 is minus 1.81.</desc>
+<desc id="nn-03-batch-in-one-call-desc">Above the grids, the equation Z equals X W transposed plus b and the call np.dot(X, W.T) + b. Four grids in a row: X, 3 by 4, one sample per row, rows 1.0, 2.0, 3.0, 2.5; 2.0, 5.0, minus 1.0, 2.0; minus 1.5, 2.7, 3.3, minus 0.8; times W transposed, 4 by 3, one neuron per column, rows 0.20, 0.50, minus 0.26; 0.80, minus 0.91, minus 0.27; minus 0.50, 0.26, 0.17; 1.00, minus 0.50, 0.87; plus b broadcast to 3 by 3, every row 2.0, 3.0, 0.5, copied from the stored b of shape (3,) drawn above it; equals Z, 3 by 3, rows 4.800, 1.210, 2.385; 8.900, minus 1.810, 0.200; 1.410, 1.051, 0.026. Sample 2's row of X, neuron 2's column of W transposed, b2 and Z entry (2, 2) are outlined: minus 4.81 plus 3.0 is minus 1.81.</desc>
 <style>
   :root {
     --nn-bg: #FAFAF7;
@@ -131,6 +131,7 @@
   .f-blue-soft { fill: var(--nn-blue-soft); }
   .f-green-ink { fill: var(--nn-green-ink); }
   .f-green-soft { fill: var(--nn-green-soft); }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
   .f-orange-soft { fill: var(--nn-orange-soft); }
   .s-blue { stroke: var(--nn-blue); }
   .s-green { stroke: var(--nn-green); }
@@ -142,146 +143,150 @@
 <rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
 <text x="40" y="48" class="t-title">A batch goes through the layer in one call</text>
 <text x="40" y="76" class="t-subtitle">Section 10's batch: three samples, the layer of section 7, one np.dot call and one addition.</text>
-<rect x="104" y="216" width="44" height="40" class="cell f-blue-soft"/>
-<rect x="148" y="216" width="44" height="40" class="cell f-blue-soft"/>
-<rect x="192" y="216" width="44" height="40" class="cell f-blue-soft"/>
-<rect x="236" y="216" width="44" height="40" class="cell f-blue-soft"/>
-<rect x="104" y="256" width="44" height="40" class="cell f-blue-soft"/>
-<rect x="148" y="256" width="44" height="40" class="cell f-blue-soft"/>
-<rect x="192" y="256" width="44" height="40" class="cell f-blue-soft"/>
-<rect x="236" y="256" width="44" height="40" class="cell f-blue-soft"/>
-<rect x="104" y="296" width="44" height="40" class="cell f-blue-soft"/>
-<rect x="148" y="296" width="44" height="40" class="cell f-blue-soft"/>
-<rect x="192" y="296" width="44" height="40" class="cell f-blue-soft"/>
-<rect x="236" y="296" width="44" height="40" class="cell f-blue-soft"/>
-<rect x="104" y="216" width="176" height="120" class="frame" data-fit="skip"/>
+<rect x="104" y="216" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="144" y="216" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="184" y="216" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="224" y="216" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="104" y="256" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="144" y="256" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="184" y="256" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="224" y="256" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="104" y="296" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="144" y="296" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="184" y="296" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="224" y="296" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="104" y="216" width="160" height="120" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="126" y="242" text-anchor="middle" class="t-cell16">1.0</text>
-<text x="170" y="242" text-anchor="middle" class="t-cell16">2.0</text>
-<text x="214" y="242" text-anchor="middle" class="t-cell16">3.0</text>
-<text x="258" y="242" text-anchor="middle" class="t-cell16">2.5</text>
-<text x="126" y="282" text-anchor="middle" class="t-cell16">2.0</text>
-<text x="170" y="282" text-anchor="middle" class="t-cell16">5.0</text>
-<text x="214" y="282" text-anchor="middle" class="t-cell16">−1.0</text>
-<text x="258" y="282" text-anchor="middle" class="t-cell16">2.0</text>
-<text x="126" y="322" text-anchor="middle" class="t-cell16">−1.5</text>
-<text x="170" y="322" text-anchor="middle" class="t-cell16">2.7</text>
-<text x="214" y="322" text-anchor="middle" class="t-cell16">3.3</text>
-<text x="258" y="322" text-anchor="middle" class="t-cell16">−0.8</text>
+<text x="124" y="242" text-anchor="middle" class="t-cell16">1.0</text>
+<text x="164" y="242" text-anchor="middle" class="t-cell16">2.0</text>
+<text x="204" y="242" text-anchor="middle" class="t-cell16">3.0</text>
+<text x="244" y="242" text-anchor="middle" class="t-cell16">2.5</text>
+<text x="124" y="282" text-anchor="middle" class="t-cell16">2.0</text>
+<text x="164" y="282" text-anchor="middle" class="t-cell16">5.0</text>
+<text x="204" y="282" text-anchor="middle" class="t-cell16">−1.0</text>
+<text x="244" y="282" text-anchor="middle" class="t-cell16">2.0</text>
+<text x="124" y="322" text-anchor="middle" class="t-cell16">−1.5</text>
+<text x="164" y="322" text-anchor="middle" class="t-cell16">2.7</text>
+<text x="204" y="322" text-anchor="middle" class="t-cell16">3.3</text>
+<text x="244" y="322" text-anchor="middle" class="t-cell16">−0.8</text>
 </g>
-<rect x="312" y="216" width="64" height="40" class="cell f-orange-soft"/>
-<rect x="376" y="216" width="64" height="40" class="cell f-orange-soft"/>
-<rect x="440" y="216" width="64" height="40" class="cell f-orange-soft"/>
-<rect x="312" y="256" width="64" height="40" class="cell f-orange-soft"/>
-<rect x="376" y="256" width="64" height="40" class="cell f-orange-soft"/>
-<rect x="440" y="256" width="64" height="40" class="cell f-orange-soft"/>
-<rect x="312" y="296" width="64" height="40" class="cell f-orange-soft"/>
-<rect x="376" y="296" width="64" height="40" class="cell f-orange-soft"/>
-<rect x="440" y="296" width="64" height="40" class="cell f-orange-soft"/>
-<rect x="312" y="336" width="64" height="40" class="cell f-orange-soft"/>
-<rect x="376" y="336" width="64" height="40" class="cell f-orange-soft"/>
-<rect x="440" y="336" width="64" height="40" class="cell f-orange-soft"/>
-<rect x="312" y="216" width="192" height="160" class="frame" data-fit="skip"/>
+<rect x="296" y="216" width="72" height="40" class="cell f-orange-soft"/>
+<rect x="368" y="216" width="72" height="40" class="cell f-orange-soft"/>
+<rect x="440" y="216" width="72" height="40" class="cell f-orange-soft"/>
+<rect x="296" y="256" width="72" height="40" class="cell f-orange-soft"/>
+<rect x="368" y="256" width="72" height="40" class="cell f-orange-soft"/>
+<rect x="440" y="256" width="72" height="40" class="cell f-orange-soft"/>
+<rect x="296" y="296" width="72" height="40" class="cell f-orange-soft"/>
+<rect x="368" y="296" width="72" height="40" class="cell f-orange-soft"/>
+<rect x="440" y="296" width="72" height="40" class="cell f-orange-soft"/>
+<rect x="296" y="336" width="72" height="40" class="cell f-orange-soft"/>
+<rect x="368" y="336" width="72" height="40" class="cell f-orange-soft"/>
+<rect x="440" y="336" width="72" height="40" class="cell f-orange-soft"/>
+<rect x="296" y="216" width="216" height="160" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="344" y="241" text-anchor="middle" class="t-cell14">0.20</text>
-<text x="408" y="241" text-anchor="middle" class="t-cell14">0.50</text>
-<text x="472" y="241" text-anchor="middle" class="t-cell14">−0.26</text>
-<text x="344" y="281" text-anchor="middle" class="t-cell14">0.80</text>
-<text x="408" y="281" text-anchor="middle" class="t-cell14">−0.91</text>
-<text x="472" y="281" text-anchor="middle" class="t-cell14">−0.27</text>
-<text x="344" y="321" text-anchor="middle" class="t-cell14">−0.50</text>
-<text x="408" y="321" text-anchor="middle" class="t-cell14">0.26</text>
-<text x="472" y="321" text-anchor="middle" class="t-cell14">0.17</text>
-<text x="344" y="361" text-anchor="middle" class="t-cell14">1.00</text>
-<text x="408" y="361" text-anchor="middle" class="t-cell14">−0.50</text>
-<text x="472" y="361" text-anchor="middle" class="t-cell14">0.87</text>
+<text x="332" y="241" text-anchor="middle" class="t-cell14">0.20</text>
+<text x="404" y="241" text-anchor="middle" class="t-cell14">0.50</text>
+<text x="476" y="241" text-anchor="middle" class="t-cell14">−0.26</text>
+<text x="332" y="281" text-anchor="middle" class="t-cell14">0.80</text>
+<text x="404" y="281" text-anchor="middle" class="t-cell14">−0.91</text>
+<text x="476" y="281" text-anchor="middle" class="t-cell14">−0.27</text>
+<text x="332" y="321" text-anchor="middle" class="t-cell14">−0.50</text>
+<text x="404" y="321" text-anchor="middle" class="t-cell14">0.26</text>
+<text x="476" y="321" text-anchor="middle" class="t-cell14">0.17</text>
+<text x="332" y="361" text-anchor="middle" class="t-cell14">1.00</text>
+<text x="404" y="361" text-anchor="middle" class="t-cell14">−0.50</text>
+<text x="476" y="361" text-anchor="middle" class="t-cell14">0.87</text>
 </g>
-<rect x="536" y="216" width="48" height="40" class="cell f-orange-soft"/>
-<rect x="584" y="216" width="48" height="40" class="cell f-orange-soft"/>
-<rect x="632" y="216" width="48" height="40" class="cell f-orange-soft"/>
-<rect x="536" y="256" width="48" height="40" class="cell f-orange-soft"/>
-<rect x="584" y="256" width="48" height="40" class="cell f-orange-soft"/>
-<rect x="632" y="256" width="48" height="40" class="cell f-orange-soft"/>
-<rect x="536" y="296" width="48" height="40" class="cell f-orange-soft"/>
-<rect x="584" y="296" width="48" height="40" class="cell f-orange-soft"/>
-<rect x="632" y="296" width="48" height="40" class="cell f-orange-soft"/>
-<rect x="536" y="216" width="144" height="120" class="frame" data-fit="skip"/>
+<rect x="544" y="216" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="584" y="216" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="624" y="216" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="544" y="256" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="584" y="256" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="624" y="256" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="544" y="296" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="584" y="296" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="624" y="296" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="544" y="216" width="120" height="120" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="560" y="242" text-anchor="middle" class="t-cell16">2.0</text>
-<text x="608" y="242" text-anchor="middle" class="t-cell16">3.0</text>
-<text x="656" y="242" text-anchor="middle" class="t-cell16">0.5</text>
-<text x="560" y="282" text-anchor="middle" class="t-cell16">2.0</text>
-<text x="608" y="282" text-anchor="middle" class="t-cell16">3.0</text>
-<text x="656" y="282" text-anchor="middle" class="t-cell16">0.5</text>
-<text x="560" y="322" text-anchor="middle" class="t-cell16">2.0</text>
-<text x="608" y="322" text-anchor="middle" class="t-cell16">3.0</text>
-<text x="656" y="322" text-anchor="middle" class="t-cell16">0.5</text>
+<text x="564" y="242" text-anchor="middle" class="t-cell16">2.0</text>
+<text x="604" y="242" text-anchor="middle" class="t-cell16">3.0</text>
+<text x="644" y="242" text-anchor="middle" class="t-cell16">0.5</text>
+<text x="564" y="282" text-anchor="middle" class="t-cell16">2.0</text>
+<text x="604" y="282" text-anchor="middle" class="t-cell16">3.0</text>
+<text x="644" y="282" text-anchor="middle" class="t-cell16">0.5</text>
+<text x="564" y="322" text-anchor="middle" class="t-cell16">2.0</text>
+<text x="604" y="322" text-anchor="middle" class="t-cell16">3.0</text>
+<text x="644" y="322" text-anchor="middle" class="t-cell16">0.5</text>
 </g>
-<rect x="712" y="216" width="64" height="40" class="cell f-green-soft"/>
-<rect x="776" y="216" width="64" height="40" class="cell f-green-soft"/>
-<rect x="840" y="216" width="64" height="40" class="cell f-green-soft"/>
-<rect x="712" y="256" width="64" height="40" class="cell f-green-soft"/>
-<rect x="776" y="256" width="64" height="40" class="cell f-green-soft"/>
-<rect x="840" y="256" width="64" height="40" class="cell f-green-soft"/>
-<rect x="712" y="296" width="64" height="40" class="cell f-green-soft"/>
-<rect x="776" y="296" width="64" height="40" class="cell f-green-soft"/>
-<rect x="840" y="296" width="64" height="40" class="cell f-green-soft"/>
-<rect x="712" y="216" width="192" height="120" class="frame" data-fit="skip"/>
+<rect x="696" y="216" width="72" height="40" class="cell f-green-soft"/>
+<rect x="768" y="216" width="72" height="40" class="cell f-green-soft"/>
+<rect x="840" y="216" width="72" height="40" class="cell f-green-soft"/>
+<rect x="696" y="256" width="72" height="40" class="cell f-green-soft"/>
+<rect x="768" y="256" width="72" height="40" class="cell f-green-soft"/>
+<rect x="840" y="256" width="72" height="40" class="cell f-green-soft"/>
+<rect x="696" y="296" width="72" height="40" class="cell f-green-soft"/>
+<rect x="768" y="296" width="72" height="40" class="cell f-green-soft"/>
+<rect x="840" y="296" width="72" height="40" class="cell f-green-soft"/>
+<rect x="696" y="216" width="216" height="120" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="744" y="242" text-anchor="middle" class="t-cell16">4.800</text>
-<text x="808" y="242" text-anchor="middle" class="t-cell16">1.210</text>
-<text x="872" y="242" text-anchor="middle" class="t-cell16">2.385</text>
-<text x="744" y="282" text-anchor="middle" class="t-cell16">8.900</text>
-<text x="808" y="282" text-anchor="middle" class="t-cell16 f-green-ink b">−1.810</text>
-<text x="872" y="282" text-anchor="middle" class="t-cell16">0.200</text>
-<text x="744" y="322" text-anchor="middle" class="t-cell16">1.410</text>
-<text x="808" y="322" text-anchor="middle" class="t-cell16">1.051</text>
-<text x="872" y="322" text-anchor="middle" class="t-cell16">0.026</text>
+<text x="732" y="242" text-anchor="middle" class="t-cell16">4.800</text>
+<text x="804" y="242" text-anchor="middle" class="t-cell16">1.210</text>
+<text x="876" y="242" text-anchor="middle" class="t-cell16">2.385</text>
+<text x="732" y="282" text-anchor="middle" class="t-cell16">8.900</text>
+<text x="804" y="282" text-anchor="middle" class="t-cell16 f-green-ink b">−1.810</text>
+<text x="876" y="282" text-anchor="middle" class="t-cell16">0.200</text>
+<text x="732" y="322" text-anchor="middle" class="t-cell16">1.410</text>
+<text x="804" y="322" text-anchor="middle" class="t-cell16">1.051</text>
+<text x="876" y="322" text-anchor="middle" class="t-cell16">0.026</text>
 </g>
-<text x="296" y="284" text-anchor="middle" class="t-op">·</text>
-<text x="520" y="284" text-anchor="middle" class="t-op">+</text>
-<text x="696" y="284" text-anchor="middle" class="t-op">=</text>
+<text x="528" y="284" text-anchor="middle" class="t-op">+</text>
+<text x="680" y="284" text-anchor="middle" class="t-op">=</text>
+<g data-grid="skip">
+<circle cx="280" cy="276" r="3" class="f-ink-muted" data-fit="skip"/>
+</g>
 <g data-grid="skip">
 <text x="96" y="241" text-anchor="end" class="t-tick">sample 1</text>
 <text x="96" y="281" text-anchor="end" class="t-tick">sample 2</text>
 <text x="96" y="321" text-anchor="end" class="t-tick">sample 3</text>
 </g>
 <g data-grid="skip">
-<text x="126" y="208" text-anchor="middle" class="t-tick"><tspan class="i">x</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
-<text x="170" y="208" text-anchor="middle" class="t-tick"><tspan class="i">x</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
-<text x="214" y="208" text-anchor="middle" class="t-tick"><tspan class="i">x</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
-<text x="258" y="208" text-anchor="middle" class="t-tick"><tspan class="i">x</tspan><tspan class="sub" dy="4">4</tspan><tspan dy="-4">​</tspan></text>
+<text x="124" y="208" text-anchor="middle" class="t-tick"><tspan class="i">x</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="164" y="208" text-anchor="middle" class="t-tick"><tspan class="i">x</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<text x="204" y="208" text-anchor="middle" class="t-tick"><tspan class="i">x</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+<text x="244" y="208" text-anchor="middle" class="t-tick"><tspan class="i">x</tspan><tspan class="sub" dy="4">4</tspan><tspan dy="-4">​</tspan></text>
 </g>
 <g data-grid="skip">
-<text x="344" y="208" text-anchor="middle" class="t-tick">neuron 1</text>
-<text x="408" y="208" text-anchor="middle" class="t-tick">neuron 2</text>
-<text x="472" y="208" text-anchor="middle" class="t-tick">neuron 3</text>
+<text x="332" y="208" text-anchor="middle" class="t-tick">neuron 1</text>
+<text x="404" y="208" text-anchor="middle" class="t-tick">neuron 2</text>
+<text x="476" y="208" text-anchor="middle" class="t-tick">neuron 3</text>
 </g>
 <g data-grid="skip">
-<text x="744" y="208" text-anchor="middle" class="t-tick">neuron 1</text>
-<text x="808" y="208" text-anchor="middle" class="t-tick">neuron 2</text>
-<text x="872" y="208" text-anchor="middle" class="t-tick">neuron 3</text>
+<text x="732" y="208" text-anchor="middle" class="t-tick">neuron 1</text>
+<text x="804" y="208" text-anchor="middle" class="t-tick">neuron 2</text>
+<text x="876" y="208" text-anchor="middle" class="t-tick">neuron 3</text>
 </g>
-<rect x="536" y="112" width="48" height="40" class="cell f-orange-soft"/>
-<rect x="584" y="112" width="48" height="40" class="cell f-orange-soft"/>
-<rect x="632" y="112" width="48" height="40" class="cell f-orange-soft"/>
-<rect x="536" y="112" width="144" height="40" class="frame" data-fit="skip"/>
+<text x="40" y="136" class="t-math"><tspan class="b">Z</tspan> = <tspan class="b">X</tspan><tspan class="b">W</tspan><tspan class="sub" dy="-7" dx="-1">⊤</tspan><tspan dy="7" dx="-2">​</tspan> + <tspan class="b">b</tspan></text>
+<text x="40" y="164" class="t-code">np.dot(X, W.T) + b</text>
+<rect x="544" y="112" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="584" y="112" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="624" y="112" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="544" y="112" width="120" height="40" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="560" y="138" text-anchor="middle" class="t-cell16">2.0</text>
-<text x="608" y="138" text-anchor="middle" class="t-cell16">3.0</text>
-<text x="656" y="138" text-anchor="middle" class="t-cell16">0.5</text>
+<text x="564" y="138" text-anchor="middle" class="t-cell16">2.0</text>
+<text x="604" y="138" text-anchor="middle" class="t-cell16">3.0</text>
+<text x="644" y="138" text-anchor="middle" class="t-cell16">0.5</text>
 </g>
-<text x="520" y="136" text-anchor="end" class="t-label"><tspan class="b">b</tspan> (3,)</text>
-<path d="M608,152 L608,213" class="flow" marker-end="url(#nn-03-batch-in-one-call-arrow)"/>
-<text x="620" y="188" class="t-note">copied to every row</text>
-<rect x="104" y="256" width="176" height="40" class="emph s-blue" data-fit="skip"/>
-<rect x="376" y="216" width="64" height="160" class="w15 nofill s-orange" data-fit="skip"/>
-<rect x="584" y="256" width="48" height="40" class="w15 nofill s-orange" data-fit="skip"/>
-<rect x="776" y="256" width="64" height="40" class="emph s-green" data-fit="skip"/>
-<text x="192" y="404" text-anchor="middle" class="t-label"><tspan class="b">X</tspan> (3, 4)</text>
-<text x="408" y="404" text-anchor="middle" class="t-label"><tspan class="b">W</tspan><tspan class="sub" dy="-6">⊤</tspan><tspan dy="6">​</tspan> (4, 3)</text>
-<text x="608" y="404" text-anchor="middle" class="t-label"><tspan class="b">b</tspan>, broadcast (3, 3)</text>
-<text x="808" y="404" text-anchor="middle" class="t-label"><tspan class="b">Z</tspan> (3, 3)</text>
-<text x="904" y="436" text-anchor="end" class="t-label f-green-ink">Sample 2, neuron 2: −4.81 + 3.0 = −1.81</text>
-<text x="40" y="504" class="t-note">Entry (i, j) of <tspan class="b">Z</tspan> is sample i times neuron j's weights, plus neuron j's bias.</text>
+<text x="528" y="136" text-anchor="end" class="t-label"><tspan class="b">b</tspan> (3,)</text>
+<path d="M604,152 L604,213" class="flow" marker-end="url(#nn-03-batch-in-one-call-arrow)"/>
+<text x="616" y="188" class="t-note">copied to every row</text>
+<rect x="104" y="256" width="160" height="40" class="emph s-blue" data-fit="skip"/>
+<rect x="368" y="216" width="72" height="160" class="w15 nofill s-orange" data-fit="skip"/>
+<rect x="584" y="256" width="40" height="40" class="w15 nofill s-orange" data-fit="skip"/>
+<rect x="768" y="256" width="72" height="40" class="emph s-green" data-fit="skip"/>
+<text x="184" y="404" text-anchor="middle" class="t-label"><tspan class="b">X</tspan> (3, 4)</text>
+<text x="404" y="404" text-anchor="middle" class="t-label"><tspan class="b">W</tspan><tspan class="sub" dy="-7" dx="-1">⊤</tspan><tspan dy="7" dx="-2">​</tspan> (4, 3)</text>
+<text x="604" y="404" text-anchor="middle" class="t-label"><tspan class="b">b</tspan>, broadcast (3, 3)</text>
+<text x="804" y="404" text-anchor="middle" class="t-label"><tspan class="b">Z</tspan> (3, 3)</text>
+<text x="912" y="436" text-anchor="end" class="t-label f-green-ink">Sample 2, neuron 2: −4.81 + 3.0 = −1.81</text>
+<text x="40" y="504" class="t-note">Entry (<tspan class="i">i</tspan>, <tspan class="i">j</tspan>) of <tspan class="b">Z</tspan> is sample <tspan class="i">i</tspan> times neuron <tspan class="i">j</tspan>'s weights, plus neuron <tspan class="i">j</tspan>'s bias.</text>
 </svg>
