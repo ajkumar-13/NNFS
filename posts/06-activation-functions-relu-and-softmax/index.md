@@ -13,7 +13,7 @@
 > - Explain why softmax subtracts the per-row maximum before exponentiating, and what goes wrong without that step.
 > - Explain why hidden layers use ReLU while the output layer of a classifier uses softmax.
 
-![Two panels plot y against x for the same two dense layers. Left, without an activation: the formula Z = (X W1 + b1) W2 + b2 collapses to one linear map, X (W1 W2) + (b1 W2 + b2), and the network's single straight line cannot follow a dashed zigzag target. Right, with ReLU between the layers: the output is piecewise linear, with a marked kink wherever a hidden neuron crosses zero, and it follows the same zigzag.](diagrams/01-why-nonlinearity.svg)
+![Two line charts of the output against the input x from -1 to 3 for the network of section 1.1, one input, three hidden neurons and one output, with its nine printed outputs as dots. Left, without an activation: the two layers collapse to one layer with W star = 1 and b star = -2, and the output is the straight line x - 2, slope 1 throughout. Right, with ReLU between the same layers: a zigzag that is 0 up to x = 0, rises to 1 at x = 1, falls to 0 at x = 2 and rises to 1 at x = 3, with slopes 0, 1, -1 and 1; diamonds mark the kinks at x = 0, 1 and 2, one per hidden neuron, and the output is written as a1 - 2 a2 + 2 a3 with a k = max(0, x + b k) and b1 = (0, -1, -2).](diagrams/01-why-nonlinearity.svg)
 
 *The same two layers, without and with a ReLU between them. The straight line on the left is everything a stack of linear layers can produce; every kink on the right comes from one hidden neuron.*
 
@@ -108,11 +108,11 @@ The rectified linear unit (**ReLU**) is the function:
 
 $$\text{ReLU}(z) = \max(0, z).$$
 
-Negative inputs become zero. Positive inputs pass through unchanged. The plot is two straight lines meeting at the origin, with a sharp kink at $z = 0$.
+Negative inputs become zero. Positive inputs pass through unchanged. The plot is two straight lines meeting at the origin, with a sharp kink at $z = 0$. The left half of the figure below draws it, with the five inputs of section 2.3 marked; the right half draws its slope beside those of the sigmoid and tanh, which section 2.1 compares.
 
-![A plot of f(x) = max(0, x): flat along the horizontal axis for negative inputs, labelled negative in gives 0 out, a marked kink at x = 0, and a straight diagonal for positive inputs, labelled positive in passes unchanged. Four cards beside the plot name what ReLU is not: not smooth, not zero-centred, not safe from dying, and not a probability.](diagrams/04-relu-anatomy.svg)
+![Two charts. Left, ReLU of z = max(0, z) for z from -3 to 3: a flat line at 0 for negative inputs, labelled negative in, 0 out, a kink at z = 0, and a diagonal labelled positive in, unchanged, with dots at the five inputs 1, -2, 3, -0.5 and 0 and their outputs 1, 0, 3, 0 and 0. Right, the slopes for z from -5 to 5: ReLU's is 0 below zero and 1 above it, with a solid dot at 0 and an open dot at 1 for z = 0; the sigmoid's peaks at 0.25 at z = 0 and tanh's at 1, and both fall towards 0 on either side.](diagrams/02-relu.svg)
 
-*Two straight lines meeting at the origin; the figure writes the input as $x$ where the text writes $z$. Every bend a network makes traces back to this one kink, and the four cards are the limits that section 2.2 goes through.*
+*Left, two straight lines meeting at the origin: every bend a network makes traces back to this one kink. Right, the slopes: ReLU's stays at 1 for every positive input, the sigmoid's never exceeds 0.25.*
 
 That kink is everything. A single ReLU adds one bend to the function the network represents. Giving many neurons different weights and biases shifts and scales these bends, as the three neurons of section 1.1 did. Putting them in two or three layers lets the network compose hundreds of bends into a close approximation of any continuous shape: spirals, decision boundaries, image edges.
 
@@ -233,9 +233,9 @@ $$\frac{e^{z_k - c}}{\sum_j e^{z_j - c}} = \frac{e^{-c} e^{z_k}}{e^{-c} \sum_j e
 
 Softmax therefore sees only the differences between the logits of a row, never their overall level. The script confirms it: the rows $[1, 2, 3]$, $[1001, 1002, 1003]$, and $[-999, -998, -997]$ all give $[0.09003, 0.24473, 0.66524]$.
 
-![Two worked columns for the logits 1000, 1001, 999. Naive, exp of the logits: every exponential is inf and every softmax entry is nan. Stable, exp of the logits minus the max of 1001: the shifted logits are -1, 0, -2, their exponentials 0.368, 1.000, 0.135, and the softmax 0.245, 0.665, 0.090. A band below writes out the identity in which the factor e to the power minus c cancels between numerator and denominator.](diagrams/02-softmax-stability.svg)
+![Two columns of three steps for the logits 1000, 1001, 999 in float64, where np.exp returns inf above 709.78, or 88.72 in float32. Naive: the exponents are the logits themselves, np.exp gives inf, inf, inf, and dividing by the row sum gives nan, nan, nan, under the two RuntimeWarning lines NumPy prints, overflow encountered in exp and invalid value encountered in divide. An arrow labelled minus 1001, the row's max, leads to the stable column: the exponents are -1, 0, -2, np.exp gives 0.368, 1.000, 0.135, and dividing by the row sum gives 0.245, 0.665, 0.090.](diagrams/03-softmax-stability.svg)
 
-*Same probabilities, far safer intermediates: after the subtraction every exponent is at most 0 and every exponential lies in the interval from 0 to 1. The figure writes a logit as $o_i$, and its "above ~700" is the `float64` limit; in `float32` the limit is 88.72.*
+*Same probabilities, far safer intermediates: after the subtraction every exponent is at most 0 and every exponential lies in the interval from 0 to 1.*
 
 After the subtraction the largest exponent is exactly zero, so the largest exponential is exactly one. No overflow is possible, and the denominator is at least 1, so the division is always safe. The script runs the figure's row both ways:
 
@@ -324,11 +324,11 @@ Every entry of these five rows is within 0.000002 of one third, because the netw
 
 Each row sums to 1 up to `float32` rounding: the smallest of the 300 row sums is 0.9999999 and the largest 1.0000001. The hidden layer shows what ReLU does on real data. Of the 900 weighted sums that `dense1` produces, 447 are negative, 9 are exactly zero, and 444 are positive, so ReLU hands 456 zeros to `dense2`, a little over half of its outputs.
 
-![A left-to-right pipeline. X of shape (N, 2), the spiral input, enters dense1, Layer_Dense(2, 3), which computes X times W1 plus b1. Next, act1, Activation_ReLU, applies max(0, .). Then dense2, Layer_Dense(3, 3), computes A1 times W2 plus b2 and produces the logits, and act2, Activation_Softmax, turns them into the probabilities y-hat. Every array after the input carries the shape badge (N, 3).](diagrams/03-forward-pass-pipeline.svg)
+![A left-to-right pipeline over the spiral batch of 300 samples, every array float32. Five array nodes: X, shape (300, 2); dense1.output, Z1, (300, 3); activation1.output, A1, (300, 3); dense2.output, Z2, (300, 3); and activation2.output, y hat, (300, 3). Under each arrow, a card for the object that makes the next array: dense1, Layer_Dense(2, 3), Z1 = X W1 + b1 with W1 of shape (2, 3) and 3 hidden neurons; activation1, Activation_ReLU, A1 = max(0, Z1), which sets 456 of the 900 entries to 0, 447 negative and 9 exactly 0; dense2, Layer_Dense(3, 3), Z2 = A1 W2 + b2 with W2 of shape (3, 3), the logits; activation2, Activation_Softmax, y hat = softmax(Z2), the probabilities, each row summing to 1.](diagrams/04-forward-pass.svg)
 
-*Four objects in a row. Each one stores its output on `self`, and the next object reads the previous one's `self.output`; no external state, no glue code. The figure's `act1` and `act2` are the script's `activation1` and `activation2`.*
+*Four objects in a row. Each one stores its output on `self`, and the next object reads the previous one's `self.output`; no external state, no glue code.*
 
-The script also prints the shape and type of every array on the way through:
+The figure follows the batch through the four objects, with the shape of every array above its node. The script also prints the shape and type of every array on the way through:
 
 ```text
 X                  (300, 2)  float32

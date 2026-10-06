@@ -1,0 +1,209 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-04-forward-pass-title" aria-describedby="nn-04-forward-pass-desc">
+<title id="nn-04-forward-pass-title">Four objects in a row, each reading the last one's output</title>
+<desc id="nn-04-forward-pass-desc">A left-to-right pipeline over the spiral batch of 300 samples. Five array nodes: X, shape (300, 2); dense1.output, Z1, (300, 3); activation1.output, A1, (300, 3); dense2.output, Z2, the logits, (300, 3); and activation2.output, y hat, the probabilities, (300, 3). Under each arrow between two nodes, a card for the object that makes the next array: dense1 = Layer_Dense(2, 3), Z1 = X W1 + b1 with W1 of shape (2, 3); activation1 = Activation_ReLU, A1 = max(0, Z1), which sets 456 of the 900 entries to 0 (447 negative and 9 exactly zero); dense2 = Layer_Dense(3, 3), Z2 = A1 W2 + b2 with W2 of shape (3, 3); activation2 = Activation_Softmax, y hat = softmax(Z2) per row, every row summing to 1.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-surface { fill: var(--nn-surface); }
+  .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-green { stroke: var(--nn-green); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .t-code13 { font-size: 13px; font-weight: 400; font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+</style>
+<defs>
+<marker id="nn-04-forward-pass-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title">Four objects in a row, each reading the last one's output</text>
+<text x="40" y="76" class="t-subtitle">The spiral batch of 300 samples; every array is float32. Shapes as the snippet prints them.</text>
+<text x="112" y="136" text-anchor="middle" class="t-code13">X</text>
+<text x="112" y="160" text-anchor="middle" class="t-tick">(300, 2)</text>
+<text x="296" y="136" text-anchor="middle" class="t-code13">dense1.output</text>
+<text x="296" y="160" text-anchor="middle" class="t-tick">(300, 3)</text>
+<text x="480" y="136" text-anchor="middle" class="t-code13">activation1.output</text>
+<text x="480" y="160" text-anchor="middle" class="t-tick">(300, 3)</text>
+<text x="664" y="136" text-anchor="middle" class="t-code13">dense2.output</text>
+<text x="664" y="160" text-anchor="middle" class="t-tick">(300, 3)</text>
+<text x="848" y="136" text-anchor="middle" class="t-code13">activation2.output</text>
+<text x="848" y="160" text-anchor="middle" class="t-tick">(300, 3)</text>
+<path d="M140,200 L265,200" class="flow" marker-end="url(#nn-04-forward-pass-arrow)"/>
+<path d="M324,200 L449,200" class="flow" marker-end="url(#nn-04-forward-pass-arrow)"/>
+<path d="M508,200 L633,200" class="flow" marker-end="url(#nn-04-forward-pass-arrow)"/>
+<path d="M692,200 L817,200" class="flow" marker-end="url(#nn-04-forward-pass-arrow)"/>
+<circle cx="112" cy="200" r="24" class="f-blue-soft s-blue w15"/>
+<g data-grid="skip">
+<text x="112" y="205" text-anchor="middle" class="t-label"><tspan class="b">X</tspan></text>
+</g>
+<circle cx="296" cy="200" r="24" class="f-surface s-ink-muted w15"/>
+<g data-grid="skip">
+<text x="296" y="205" text-anchor="middle" class="t-label"><tspan class="b">Z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<circle cx="480" cy="200" r="24" class="f-surface s-ink-muted w15"/>
+<g data-grid="skip">
+<text x="480" y="205" text-anchor="middle" class="t-label"><tspan class="b">A</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<circle cx="664" cy="200" r="24" class="f-surface s-ink-muted w15"/>
+<g data-grid="skip">
+<text x="664" y="205" text-anchor="middle" class="t-label"><tspan class="b">Z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<circle cx="848" cy="200" r="24" class="f-green-soft s-green w15"/>
+<g data-grid="skip">
+<text x="848" y="205" text-anchor="middle" class="t-label"><tspan class="b">ŷ</tspan></text>
+</g>
+<path d="M204,208 L204,264" class="lead"/>
+<rect x="116" y="264" width="176" height="184" rx="8" class="card"/>
+<text x="132" y="296" class="t-head"><tspan class="mono">dense1</tspan></text>
+<text x="132" y="328" class="t-code13">Layer_Dense(2, 3)</text>
+<text x="132" y="364" class="t-label"><tspan class="b">Z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> = <tspan class="b">X</tspan> <tspan class="b">W</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> + <tspan class="b">b</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="132" y="400" class="t-note"><tspan class="b">W</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan>: (2, 3)</text>
+<text x="132" y="420" class="t-note">3 hidden neurons</text>
+<path d="M388,208 L388,264" class="lead"/>
+<rect x="300" y="264" width="176" height="184" rx="8" class="card"/>
+<text x="316" y="296" class="t-head"><tspan class="mono">activation1</tspan></text>
+<text x="316" y="328" class="t-code13">Activation_ReLU</text>
+<text x="316" y="364" class="t-label"><tspan class="b">A</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> = max(0, <tspan class="b">Z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan>)</text>
+<text x="316" y="400" class="t-note">456 of 900 set to 0</text>
+<text x="316" y="420" class="t-note">447 negative, 9 exactly 0</text>
+<path d="M572,208 L572,264" class="lead"/>
+<rect x="484" y="264" width="176" height="184" rx="8" class="card"/>
+<text x="500" y="296" class="t-head"><tspan class="mono">dense2</tspan></text>
+<text x="500" y="328" class="t-code13">Layer_Dense(3, 3)</text>
+<text x="500" y="364" class="t-label"><tspan class="b">Z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> = <tspan class="b">A</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> <tspan class="b">W</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> + <tspan class="b">b</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<text x="500" y="400" class="t-note"><tspan class="b">W</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan>: (3, 3)</text>
+<text x="500" y="420" class="t-note">the logits</text>
+<path d="M756,208 L756,264" class="lead"/>
+<rect x="668" y="264" width="176" height="184" rx="8" class="card"/>
+<text x="684" y="296" class="t-head"><tspan class="mono">activation2</tspan></text>
+<text x="684" y="328" class="t-code13">Activation_Softmax</text>
+<text x="684" y="364" class="t-label"><tspan class="b">ŷ</tspan> = softmax(<tspan class="b">Z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan>)</text>
+<text x="684" y="400" class="t-note">the probabilities</text>
+<text x="684" y="420" class="t-note">each row sums to 1</text>
+<text x="40" y="504" class="t-note">Only the dense layers change a shape, and only its second number.</text>
+</svg>
