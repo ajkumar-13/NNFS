@@ -16,6 +16,7 @@ The symbols, shapes, and code names used across Neural Networks from Scratch. Wh
 | $L$ | loss, the mean over the batch | scalar | `loss` |
 | $N$ | batch size (number of samples) | scalar | `samples`, `len(X)` |
 | $K$ | number of classes | scalar | `classes` |
+| $B$ | batch size in mini-batch training; $N$ is then the size of the training set (post 32) | scalar | `batch_size` |
 
 A dense layer computes
 

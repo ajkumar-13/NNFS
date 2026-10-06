@@ -73,7 +73,7 @@ After this part you have six optimisers and can say what each one fixes in the o
 
 ### Part VII - Generalisation and regularisation
 
-After this part you can measure the gap between training and test performance, choose hyperparameters without touching the test set, and add L1, L2, or dropout to close the gap.
+After this part you can measure the gap between training and test performance, choose hyperparameters without touching the test set, and add L1, L2, or dropout and measure what each does to the gap.
 
 28. [Generalization and testing](posts/28-generalization-and-testing/index.md)
 29. [Validation and hyperparameter tuning](posts/29-validation-and-hyperparameter-tuning/index.md)

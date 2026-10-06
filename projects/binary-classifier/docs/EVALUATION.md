@@ -233,7 +233,7 @@ small    lowest 173   highest 181   mean 176.1
 
 The third part of the claim holds. With He initialisation every seed fits all 800 training points and scores between 197 and 200 on the test set, 200 on eight seeds of ten. With the small initialisation no seed exceeds 181 of 200, 90.5 percent, and on every seed the network is a linear classifier to at least $R^2 = 0.9999$. The gap between the worst He run and the best small run is 16 test points.
 
-Xavier initialisation, which `nn-033` recommends for tanh and sigmoid hidden layers, does as well as He here: its lowest score is also 197 and its mean 199.5 against 199.6. Its standard deviations for the three layers are $\sqrt{2/18} = 0.33$, $\sqrt{2/32} = 0.25$, and $\sqrt{2/17} = 0.34$, within a factor of three of He's and at least 25 times the small one. The failure belongs to the scale 0.01, not to the choice between the two principled schemes.
+Xavier initialisation, which `nn-033` derives for tanh hidden layers, does as well as He here: its lowest score is also 197 and its mean 199.5 against 199.6. Its standard deviations for the three layers are $\sqrt{2/18} = 0.33$, $\sqrt{2/32} = 0.25$, and $\sqrt{2/17} = 0.34$, within a factor of three of He's and at least 25 times the small one. The failure belongs to the scale 0.01, not to the choice between the two principled schemes.
 
 ## What the tests establish
 
@@ -251,4 +251,4 @@ The numbers above are only as good as the code that produced them. `uv run pytes
 ## Use
 
 - 2026-10-05: the quickstart of the README was run from a fresh environment on the machine above, and the figures on this page are from that run.
-- 2026-10-05: the post `nn-034` of the series presents `Activation_Sigmoid_Loss_BinaryCrossentropy` as it stands in this project's `nn.py`, and sends its readers here to trace the forward and backward pass.
+- 2026-10-05: the post `nn-034` of the series presents `Activation_Sigmoid_Loss_BinaryCrossentropy` with the same arithmetic as this project's `nn.py`, and sends its readers here to trace the forward and backward pass.

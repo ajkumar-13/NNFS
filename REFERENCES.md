@@ -18,34 +18,52 @@ The bibliography of Neural Networks from Scratch. Every source cited in a post's
 - Nielsen, M., *Neural Networks and Deep Learning* (online, 2015).
 - Petersen, K. B. and Pedersen, M. S., *The Matrix Cookbook* (2012).
 - Ramalho, L., *Fluent Python* (O'Reilly, 2nd edition, 2022).
-- Stanford CS231n, *Convolutional Neural Networks for Visual Recognition*, course notes, ["Putting it together: Minimal Neural Network Case Study"](https://cs231n.github.io/neural-networks-case-study/).
+- Stanford CS231n, *Convolutional Neural Networks for Visual Recognition*, course notes, ["Putting it together: Minimal Neural Network Case Study"](https://cs231n.github.io/neural-networks-case-study/); also the notes on convolutional networks and the NumPy convolution of assignment 2.
 - Strang, G., *Calculus* (Wellesley-Cambridge, 2010).
 - Strang, G., *Introduction to Linear Algebra* (Wellesley-Cambridge, 6th edition, 2023).
+- Sutton, R. S. and Barto, A. G., *Reinforcement Learning: An Introduction* (MIT Press, 2nd edition, 2018).
 - Vapnik, V., *Statistical Learning Theory* (Wiley, 1998).
+- Zhang, A., Lipton, Z. C., Li, M., and Smola, A. J., *Dive into Deep Learning* (Cambridge University Press, 2023).
 
 ## Papers and articles
 
+- Achiam, J., *Spinning Up in Deep RL* (OpenAI, 2018).
+- Alammar, J., *"The Illustrated Transformer"* (blog essay, 2018).
+- Ba, J. L., Kiros, J. R., and Hinton, G. E., *"Layer Normalization"* (arXiv:1607.06450, 2016).
+- Bahdanau, D., Cho, K., and Bengio, Y., *"Neural Machine Translation by Jointly Learning to Align and Translate"* (ICLR, 2015).
+- Bengio, Y., Simard, P., and Frasconi, P., *"Learning Long-Term Dependencies with Gradient Descent Is Difficult"* (IEEE Transactions on Neural Networks, 1994).
 - Bergstra, J. and Bengio, Y., *"Random Search for Hyper-Parameter Optimization"* (Journal of Machine Learning Research, 2012).
 - Bottou, L., *"Stochastic Gradient Descent Tricks"* (Neural Networks: Tricks of the Trade, 2012).
 - Bottou, L., Curtis, F. E., and Nocedal, J., *"Optimization Methods for Large-Scale Machine Learning"* (SIAM Review, 2018).
 - Bridle, J. S., *"Probabilistic Interpretation of Feedforward Classification Network Outputs"* (Neurocomputing, NATO ASI Series, 1990).
 - Cauchy, A.-L., *"Méthode générale pour la résolution des systèmes d'équations simultanées"* (Comptes rendus de l'Académie des sciences, 1847).
 - Chen, X., et al., *"Symbolic Discovery of Optimization Algorithms"* (NeurIPS, 2023). Introduced Lion.
+- Cho, K., et al., *"Learning Phrase Representations using RNN Encoder-Decoder for Statistical Machine Translation"* (EMNLP, 2014). The GRU.
 - Cybenko, G., *"Approximation by Superpositions of a Sigmoidal Function"* (Mathematics of Control, Signals and Systems, 1989).
+- Devlin, J., Chang, M.-W., Lee, K., and Toutanova, K., *"BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding"* (NAACL, 2019).
 - Dozat, T., *"Incorporating Nesterov Momentum into Adam"* (ICLR Workshop, 2016). NAdam.
 - Duchi, J., Hazan, E., and Singer, Y., *"Adaptive Subgradient Methods for Online Learning and Stochastic Optimization"* (Journal of Machine Learning Research, 2011). The original AdaGrad paper.
 - Gal, Y. and Ghahramani, Z., *"Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning"* (ICML, 2016).
 - Geman, S., Bienenstock, E., and Doursat, R., *"Neural Networks and the Bias / Variance Dilemma"* (Neural Computation, 1992).
+- Gers, F. A., Schmidhuber, J., and Cummins, F., *"Learning to Forget: Continual Prediction with LSTM"* (Neural Computation, 2000).
 - Glorot, X. and Bengio, Y., *"Understanding the Difficulty of Training Deep Feedforward Neural Networks"* (AISTATS, 2010). The original Xavier paper.
 - Glorot, X., Bordes, A., and Bengio, Y., *"Deep Sparse Rectifier Neural Networks"* (AISTATS, 2011).
 - Goyal, P., et al., *"Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour"* (arXiv:1706.02677, 2017).
 - Harris, C. R., et al., *"Array Programming with NumPy"* (Nature, 2020).
+- He, K., Chen, X., Xie, S., Li, Y., Dollár, P., and Girshick, R., *"Masked Autoencoders Are Scalable Vision Learners"* (CVPR, 2022).
+- He, K., Zhang, X., Ren, S., and Sun, J., *"Deep Residual Learning for Image Recognition"* (CVPR, 2016).
 - He, K., Zhang, X., Ren, S., and Sun, J., *"Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification"* (ICCV, 2015). The He / Kaiming init paper.
 - Hendrycks, D. and Gimpel, K., *"Gaussian Error Linear Units (GELUs)"* (arXiv:1606.08415, 2016).
 - Hinton, G., Srivastava, N., Krizhevsky, A., Sutskever, I., and Salakhutdinov, R., *"Improving Neural Networks by Preventing Co-adaptation of Feature Detectors"* (arXiv:1207.0580, 2012).
+- Ho, J., Jain, A., and Abbeel, P., *"Denoising Diffusion Probabilistic Models"* (NeurIPS, 2020).
+- Hochreiter, S. and Schmidhuber, J., *"Long Short-Term Memory"* (Neural Computation, 1997).
 - Hochreiter, S., *"Untersuchungen zu dynamischen neuronalen Netzen"* (Diploma thesis, TU München, 1991).
 - Hornik, K., *"Approximation Capabilities of Multilayer Feedforward Networks"* (Neural Networks, 1991).
+- Hu, E. J., et al., *"LoRA: Low-Rank Adaptation of Large Language Models"* (ICLR, 2022).
+- Ioffe, S. and Szegedy, C., *"Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift"* (ICML, 2015).
 - Ivakhnenko, A. G. and Lapa, V. G., *"Cybernetic Predicting Devices"* (CCM Information Corporation, 1965).
+- Karpathy, A., *"Let's build GPT: from scratch, in code, spelled out"* (video lecture, 2023), part of the series *"Neural Networks: Zero to Hero"*; and `micrograd` (2020).
+- Karpathy, A., *"The Unreasonable Effectiveness of Recurrent Neural Networks"* (blog essay, 2015), with the script `min-char-rnn`.
 - Keskar, N. S., et al., *"On Large-Batch Training for Deep Learning: Generalization Gap and Sharp Minima"* (ICLR, 2017).
 - Kaufman, S., Rosset, S., Perlich, C., and Stitelman, O., *"Leakage in Data Mining: Formulation, Detection, and Avoidance"* (ACM Transactions on Knowledge Discovery from Data, 2012).
 - Kingma, D. P. and Ba, J., *"Adam: A Method for Stochastic Optimization"* (ICLR, 2015). The original Adam paper.
@@ -54,6 +72,7 @@ The bibliography of Neural Networks from Scratch. Every source cited in a post's
 - Krizhevsky, A., Sutskever, I., and Hinton, G., *"ImageNet Classification with Deep Convolutional Neural Networks"* (NeurIPS, 2012).
 - Krogh, A. and Hertz, J. A., *"A Simple Weight Decay Can Improve Generalization"* (NeurIPS, 1992).
 - Lawson, C., Hanson, R., Kincaid, D., and Krogh, F., *"Basic Linear Algebra Subprograms for FORTRAN Usage"* (ACM Transactions on Mathematical Software, 1979).
+- LeCun, Y., Bottou, L., Bengio, Y., and Haffner, P., *"Gradient-Based Learning Applied to Document Recognition"* (Proceedings of the IEEE, 1998). LeNet-5.
 - LeCun, Y., Bottou, L., Orr, G. B., and Müller, K.-R., *"Efficient BackProp"* (Neural Networks: Tricks of the Trade, 1998).
 - Leibniz, G. W., *"Nova Methodus pro Maximis et Minimis"* (Acta Eruditorum, 1684).
 - Leshno, M., Lin, V. Ya., Pinkus, A., and Schocken, S., *"Multilayer Feedforward Networks with a Nonpolynomial Activation Function Can Approximate Any Function"* (Neural Networks, 1993).
@@ -61,31 +80,43 @@ The bibliography of Neural Networks from Scratch. Every source cited in a post's
 - Linnainmaa, S., *"The Representation of the Cumulative Rounding Error of an Algorithm as a Taylor Expansion of the Local Rounding Errors"* (Master's thesis, University of Helsinki, 1970).
 - Loshchilov, I. and Hutter, F., *"SGDR: Stochastic Gradient Descent with Warm Restarts"* (ICLR, 2017).
 - Loshchilov, I. and Hutter, F., *"Decoupled Weight Decay Regularization"* (ICLR, 2019). AdamW.
+- Masters, D. and Luschi, C., *"Revisiting Small Batch Training for Deep Neural Networks"* (arXiv:1804.07612, 2018).
 - McCulloch, W. S. and Pitts, W., *"A Logical Calculus of the Ideas Immanent in Nervous Activity"* (Bulletin of Mathematical Biophysics, 1943).
+- Micikevicius, P., et al., *"Mixed Precision Training"* (ICLR, 2018).
+- Mnih, V., et al., *"Playing Atari with Deep Reinforcement Learning"* (NeurIPS Deep Learning Workshop, 2013).
 - Nair, V. and Hinton, G. E., *"Rectified Linear Units Improve Restricted Boltzmann Machines"* (ICML, 2010).
+- Olah, C., *"Understanding LSTM Networks"* (blog essay, 2015).
 - Paszke, A., et al., *"PyTorch: An Imperative Style, High-Performance Deep Learning Library"* (NeurIPS, 2019).
 - Polyak, B. T., *"Some Methods of Speeding up the Convergence of Iteration Methods"* (USSR Computational Mathematics and Mathematical Physics, 1964). The original "heavy ball" paper.
 - Prechelt, L., *"Early Stopping: But When?"* (Neural Networks: Tricks of the Trade, 1998).
 - Qian, N., *"On the Momentum Term in Gradient Descent Learning Algorithms"* (Neural Networks, 1999).
+- Radford, A., Wu, J., Child, R., Luan, D., Amodei, D., and Sutskever, I., *"Language Models are Unsupervised Multitask Learners"* (OpenAI, 2019). GPT-2.
 - Reddi, S. J., Kale, S., and Kumar, S., *"On the Convergence of Adam and Beyond"* (ICLR, 2018). AMSGrad.
 - Robbins, H. and Monro, S., *"A Stochastic Approximation Method"* (Annals of Mathematical Statistics, 1951).
 - Rosenblatt, F., *"The Perceptron: A Probabilistic Model for Information Storage and Organization in the Brain"* (Psychological Review, 1958).
 - Ruder, S., *"An Overview of Gradient Descent Optimization Algorithms"* (arXiv:1609.04747, 2016).
 - Rumelhart, D., Hinton, G., and Williams, R., *"Learning Representations by Back-Propagating Errors"* (Nature, 1986).
+- Santurkar, S., Tsipras, D., Ilyas, A., and Madry, A., *"How Does Batch Normalization Help Optimization?"* (NeurIPS, 2018).
 - Saxe, A. M., McClelland, J. L., and Ganguli, S., *"Exact Solutions to the Nonlinear Dynamics of Learning in Deep Linear Neural Networks"* (ICLR, 2014). Orthogonal initialisation.
 - Shannon, C. E., *"A Mathematical Theory of Communication"* (Bell System Technical Journal, 1948).
+- Smith, L. N., *"A Disciplined Approach to Neural Network Hyper-Parameters: Part 1 - Learning Rate, Batch Size, Momentum, and Weight Decay"* (arXiv:1803.09820, 2018). The one-cycle policy.
 - Smith, S. L., et al., *"Don't Decay the Learning Rate, Increase the Batch Size"* (ICLR, 2018).
 - Snoek, J., Larochelle, H., and Adams, R. P., *"Practical Bayesian Optimization of Machine Learning Algorithms"* (NeurIPS, 2012).
+- Sohl-Dickstein, J., Weiss, E., Maheswaranathan, N., and Ganguli, S., *"Deep Unsupervised Learning using Nonequilibrium Thermodynamics"* (ICML, 2015).
 - Srivastava, N., Hinton, G., Krizhevsky, A., Sutskever, I., and Salakhutdinov, R., *"Dropout: A Simple Way to Prevent Neural Networks from Overfitting"* (Journal of Machine Learning Research, 2014). The canonical dropout reference.
 - Sutskever, I., Martens, J., Dahl, G., and Hinton, G., *"On the Importance of Initialization and Momentum in Deep Learning"* (ICML, 2013).
 - Tibshirani, R., *"Regression Shrinkage and Selection via the Lasso"* (Journal of the Royal Statistical Society, 1996). The original L1 / Lasso paper.
 - Tieleman, T. and Hinton, G., *"Lecture 6.5: RMSProp"* (Coursera: Neural Networks for Machine Learning, 2012). The original (unpublished) source.
+- Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., and Polosukhin, I., *"Attention Is All You Need"* (NeurIPS, 2017).
 - Wager, S., Wang, S., and Liang, P., *"Dropout Training as Adaptive Regularization"* (NeurIPS, 2013).
+- Weng, L., *"What are Diffusion Models?"* (blog essay, 2021).
 - Werbos, P. J., *"Beyond Regression: New Tools for Prediction and Analysis in the Behavioral Sciences"* (PhD thesis, Harvard University, 1974).
+- Williams, R. J., *"Simple Statistical Gradient-Following Algorithms for Connectionist Reinforcement Learning"* (Machine Learning, 1992). REINFORCE.
 - Wilson, A. C., Roelofs, R., Stern, M., Srebro, N., and Recht, B., *"The Marginal Value of Adaptive Gradient Methods in Machine Learning"* (NeurIPS, 2017).
 
 ## Documentation
 
+- JAX documentation: `jax.grad`, `jax.jit`, `jax.vmap` (latest).
 - NumPy documentation: `numpy.dot`, `numpy.matmul`, the `@` operator, broadcasting, and the reduction functions `numpy.sum` / `numpy.max` / `numpy.mean` / `numpy.argmax` (latest).
-- PyTorch documentation: `torch.nn.CrossEntropyLoss` (latest).
-- TensorFlow documentation: `tf.nn.softmax_cross_entropy_with_logits` (latest).
+- PyTorch documentation: `torch.nn.CrossEntropyLoss`, `torch.nn.Linear`, `torch.optim.Adam`, `torch.autocast`, `torch.nn.parallel.DistributedDataParallel` (latest).
+- TensorFlow documentation: `tf.nn.softmax_cross_entropy_with_logits`, Keras (latest).

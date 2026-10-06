@@ -6,7 +6,7 @@ standard: "2.2.0"
 key: nnfs
 code: nn
 title: Neural Networks from Scratch
-status: in-progress
+status: complete
 author: Ajay
 library: null
 slug_patterns:

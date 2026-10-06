@@ -26,7 +26,7 @@ The formulas, shapes, and code of Neural Networks from Scratch on one page. A ba
 | dense layer | $\mathbf{Z} = \mathbf{X}\mathbf{W} + \mathbf{b}$ | `np.dot(inputs, self.weights) + self.biases` |
 | ReLU | $\max(0, z)$ | `np.maximum(0, inputs)` |
 | softmax | $\hat{y}_k = e^{z_k} / \sum_j e^{z_j}$ per row | `e = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))`, then `e / np.sum(e, axis=1, keepdims=True)` |
-| sigmoid | $\sigma(z) = 1/(1 + e^{-z})$ | `1 / (1 + np.exp(-inputs))` |
+| sigmoid | $\sigma(z) = 1/(1 + e^{-z})$ | `1 / (1 + np.exp(-z))` where $z \ge 0$; `e / (1 + e)` with `e = np.exp(z)` where $z < 0$ (post 34) |
 
 Subtracting the row maximum before `np.exp` changes nothing mathematically and prevents overflow. Equal logits give a uniform softmax, $1/K$ for every class.
 
@@ -120,7 +120,7 @@ self.output = inputs * self.binary_mask                # training only
 self.dinputs = dvalues * self.binary_mask              # backward uses the same mask
 ```
 
-Dividing by the keep rate $1 - p$ (inverted dropout) keeps the expected activation the same in training and evaluation, so evaluation simply skips the layer. A new mask is drawn on every forward pass.
+Dividing by the keep rate $1 - p$ (inverted dropout) keeps the expected activation the same in training and evaluation, so evaluation needs no rescaling: the layer is called with `training=False` and passes its input through. A new mask is drawn on every training forward pass. A training accuracy printed by the loop is measured through the mask and is not comparable with a test accuracy (post 31).
 
 ## Practical training
 
@@ -136,15 +136,15 @@ for epoch in range(EPOCHS):
         # optimizer.post_update_params()
 ```
 
-Create the optimiser once, before the loops, so its counters and caches persist. A batch size $B$ of 32 to 512 is typical, 128 for MNIST on a CPU.
+Create the optimiser once, before the loops, so its counter and buffers persist. The counter counts updates, so a decay chosen per epoch is divided by $\lceil N/B \rceil$. Batch sizes of 32 to 512 are customary; `nn-p01` uses 128 for MNIST.
 
 | Initialisation | Weight standard deviation | Use with |
 |---|---|---|
 | fixed scale (Posts 04 to 32) | 0.01 | shallow networks only |
-| Glorot (Xavier) | $\sqrt{2 / (n_\text{in} + n_\text{out})}$ | tanh, sigmoid, linear |
+| Glorot (Xavier) | $\sqrt{2 / (n_\text{in} + n_\text{out})}$ | tanh, linear (customary for sigmoid) |
 | He | $\sqrt{2 / n_\text{in}}$ | ReLU |
 
-Each layer multiplies the activation variance by about $n_\text{in} \cdot \text{Var}(W)$; Glorot and He choose $\text{Var}(W)$ so that the factor stays near 1. Biases start at zero.
+Each dense layer multiplies the mean square of its input by $n_\text{in} \cdot \text{Var}(W)$, and a ReLU keeps half of that; Glorot and He choose $\text{Var}(W)$ so that the factor stays near 1. With the fixed 0.01 and 64 neurons the factor is 0.0032 per ReLU layer. Biases start at zero. `Layer_Dense(..., init="he")` is the default from post 33; `init="small"` is the 0.01 of posts 04 to 32.
 
 | Task | Output layer | Loss | Gradient into the logits |
 |---|---|---|---|
