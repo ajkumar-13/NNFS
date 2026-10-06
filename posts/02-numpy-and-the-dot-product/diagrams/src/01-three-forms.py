@@ -4,9 +4,11 @@ Run from anywhere:  python posts/02-numpy-and-the-dot-product/diagrams/src/01-th
 Writes posts/02-numpy-and-the-dot-product/diagrams/01-three-forms.svg.
 
 Layout (960 x 720), neurons-first as section 3 frames the third form: W holds one neuron per row and the
-second argument one sample per column. Three rows, one per form, each first argument at the left edge, the
-second argument and the result in fixed columns, so the column x of row 2 is column 1 of X.T in row 3 and
-the result 2.800 sits in the same place in all three rows. No bias: the figure shows np.dot alone.
+second argument one sample per column. Three rows, one per form, each first argument at the left edge and
+the second argument in a fixed column, so the column x of rows 1 and 2 is column 1 of X.T in row 3. Each
+"=", the result and the row's code, shapes and notes follow at the same spacing as the product dot, so no
+row has a gap inside its equation and every note sits beside its own result. No bias: the figure shows
+np.dot alone.
 Every value is computed here from the arrays of snippets/batch_layer.py and checked against the post.
 """
 import contextlib
@@ -19,7 +21,7 @@ import numpy as np
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, r"C:\Users\admin\Desktop\series-standard\tools")
-from figkit import Figure, num  # noqa: E402
+from figkit import Figure, Raw, rich, num  # noqa: E402
 
 SNIPPET = Path(__file__).resolve().parents[2] / "snippets" / "batch_layer.py"
 with contextlib.redirect_stdout(io.StringIO()):
@@ -60,14 +62,17 @@ fig = Figure(
     f"result with one column per sample, rows {'; '.join(says(r, D_Z) for r in BATCH)}; shapes (3, 4) and (4, 3) "
     f"give (3, 3). Row 1 of the weights and column 1 of the samples are outlined, and {say(ONE, D_Z)} is bold in "
     "every result. A caption line says every form sums over the 4 inputs.",
-    subtitle="Section 8's layer before the bias, neurons-first: one neuron per row of W, one sample per column.",
+    subtitle=rich("Section 8's layer before the bias, neurons-first: one neuron per row of ", Raw('<tspan class="b">W</tspan>'),
+                  ", one sample per column."),
     height=720)
 
+DOT_R = 2.5                                     # the product dot: the 24 px glyph is too faint
 CW, CS, CH, FONT = 56, 64, 32, 14              # weight and result cells 56 wide, sample cells 64 (room for labels)
-XW, XS, XZ, XT = 40, 312, 552, 752              # first argument, second argument, result, text column
-OP1, OP2 = (XW + 4 * CW + XS) // 2, (XS + 3 * CS + XZ) // 2       # 288 and 528: the operator glyphs
+XW, XS = 40, 312                                # first argument, second argument
+GAP = XS - (XW + 4 * CW)                        # 48: every operator sits in the middle of a gap this wide
+OP1 = XW + 4 * CW + GAP // 2                    # 288: the product dot
 TOPS = [144, 336, 528]
-assert OP1 == 288 and OP2 == 528 and TOPS[2] + 4 * CH == fig.content.bottom
+assert GAP == 48 and OP1 == 288 and TOPS[2] + 4 * CH == fig.content.bottom
 
 ROWS = [
     dict(head="Vector by vector", code="np.dot(w, x)", shapes="(4,) \u00b7 (4,) \u2192 scalar",
@@ -85,12 +90,15 @@ for k, (top, r) in enumerate(zip(TOPS, ROWS)):
                   fill=lambda i, j: "weight-soft")
     gs = fig.grid(XS, top, *s.shape, cell_w=CS, cell_h=CH, values=s.tolist(), decimals=D_X, font=FONT,
                   fill=lambda i, j: "input-soft")
+    XZ = gs.box.right + GAP                                   # the result follows its second argument
+    OP2 = gs.box.right + GAP // 2
     fig.grid(XZ, top, *z.shape, cell_w=CW, cell_h=CH, values=z.tolist(), decimals=D_Z, font=FONT,
              fill=lambda i, j: "output-soft", strong={(0, 0): "output"})
     ymid = top + a.shape[0] * CH // 2 + 8                     # the operators sit on the first argument's middle
-    with fig.data():                                          # the product dot, drawn: the glyph is too small
-        fig.add(f'<circle cx="{OP1}" cy="{ymid - 8}" r="3" class="{fig._cls("f", "ink-muted")}"/>')
+    with fig.data():                                          # the product dot, drawn on the "=" sign's axis
+        fig.add(f'<circle cx="{OP1}" cy="{ymid - 8}" r="{DOT_R}" class="{fig._cls("f", "ink-muted")}"/>')
     fig.text(OP2, ymid, "=", "op", anchor="middle")
+    XT = XZ + z.shape[1] * CW + GAP                           # the row's text follows its result
     fig.text(XT, top + 20, r["code"], "code")
     fig.text(XT, top + 44, r["shapes"], "label")
     for i, line in enumerate(r["notes"]):

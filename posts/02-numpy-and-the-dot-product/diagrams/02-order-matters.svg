@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-02-order-matters-title" aria-describedby="nn-02-order-matters-desc">
 <title id="nn-02-order-matters-title">Swap the arguments and the answer changes</title>
-<desc id="nn-02-order-matters-desc">Two panels with the same vector a, holding 1, 2, 3, and the same 3 by 3 matrix B, holding 4 to 12 row by row. Left, np.dot(a, B): a drawn as a row meets each column of B and gives the row 48, 54, 60; column 1 of B is outlined and the worked line reads 1 times 4 plus 2 times 7 plus 3 times 10 equals 48. Right, np.dot(B, a): each row of B meets a drawn as a column and gives the column 32, 50, 68; row 1 of B is outlined and the worked line reads 4 times 1 plus 5 times 2 plus 6 times 3 equals 32. A caption line says both orders run only because B is square, and that with C of shape (2, 3) np.dot(a, C) raises.</desc>
+<desc id="nn-02-order-matters-desc">Two panels with the same vector a, holding 1, 2, 3, and the same 3 by 3 matrix B, holding 4 to 12 row by row. Left, np.dot(a, B): a drawn as a row meets each column of B and gives the row 48, 54, 60; column 1 of B is outlined and the worked line reads 1 times 4 plus 2 times 7 plus 3 times 10 equals 48. Right, np.dot(B, a): each row of B meets a drawn as a column and gives the column 32, 50, 68; row 1 of B is outlined and the worked line reads 4 times 1 plus 5 times 2 plus 6 times 3 equals 32. Under every operand sits its shape: a, (3,); B, (3, 3); and (3,) under each result. A caption line says both orders run only because B is square, and that with C of shape (2, 3) np.dot(a, C) raises.</desc>
 <style>
   :root {
     --nn-bg: #FAFAF7;
@@ -140,100 +140,106 @@
 </defs>
 <rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
 <text x="40" y="48" class="t-title">Swap the arguments and the answer changes</text>
-<text x="40" y="76" class="t-subtitle">Section 5's <tspan class="i">a</tspan> and <tspan class="i">B</tspan>. A 1-D first argument acts as a row; a 1-D second argument as a column.</text>
-<rect x="40" y="256" width="48" height="48" class="cell f-blue-soft"/>
-<rect x="88" y="256" width="48" height="48" class="cell f-blue-soft"/>
-<rect x="136" y="256" width="48" height="48" class="cell f-blue-soft"/>
-<rect x="40" y="256" width="144" height="48" class="frame" data-fit="skip"/>
+<text x="40" y="76" class="t-subtitle">Section 5's <tspan class="b">a</tspan> and <tspan class="b">B</tspan>. A 1-D first argument acts as a row; a 1-D second argument as a column.</text>
+<rect x="40" y="232" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="88" y="232" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="136" y="232" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="40" y="232" width="144" height="48" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="64" y="286" text-anchor="middle" class="t-cell18">1</text>
-<text x="112" y="286" text-anchor="middle" class="t-cell18">2</text>
-<text x="160" y="286" text-anchor="middle" class="t-cell18">3</text>
+<text x="64" y="262" text-anchor="middle" class="t-cell18">1</text>
+<text x="112" y="262" text-anchor="middle" class="t-cell18">2</text>
+<text x="160" y="262" text-anchor="middle" class="t-cell18">3</text>
 </g>
-<rect x="216" y="208" width="48" height="48" class="cell f-orange-soft"/>
-<rect x="264" y="208" width="48" height="48" class="cell f-orange-soft"/>
-<rect x="312" y="208" width="48" height="48" class="cell f-orange-soft"/>
-<rect x="216" y="256" width="48" height="48" class="cell f-orange-soft"/>
-<rect x="264" y="256" width="48" height="48" class="cell f-orange-soft"/>
-<rect x="312" y="256" width="48" height="48" class="cell f-orange-soft"/>
-<rect x="216" y="304" width="48" height="48" class="cell f-orange-soft"/>
-<rect x="264" y="304" width="48" height="48" class="cell f-orange-soft"/>
-<rect x="312" y="304" width="48" height="48" class="cell f-orange-soft"/>
-<rect x="216" y="208" width="144" height="144" class="frame" data-fit="skip"/>
+<rect x="216" y="184" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="264" y="184" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="312" y="184" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="216" y="232" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="264" y="232" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="312" y="232" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="216" y="280" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="264" y="280" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="312" y="280" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="216" y="184" width="144" height="144" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="240" y="238" text-anchor="middle" class="t-cell18">4</text>
-<text x="288" y="238" text-anchor="middle" class="t-cell18">5</text>
-<text x="336" y="238" text-anchor="middle" class="t-cell18">6</text>
-<text x="240" y="286" text-anchor="middle" class="t-cell18">7</text>
-<text x="288" y="286" text-anchor="middle" class="t-cell18">8</text>
-<text x="336" y="286" text-anchor="middle" class="t-cell18">9</text>
-<text x="240" y="334" text-anchor="middle" class="t-cell18">10</text>
-<text x="288" y="334" text-anchor="middle" class="t-cell18">11</text>
-<text x="336" y="334" text-anchor="middle" class="t-cell18">12</text>
+<text x="240" y="214" text-anchor="middle" class="t-cell18">4</text>
+<text x="288" y="214" text-anchor="middle" class="t-cell18">5</text>
+<text x="336" y="214" text-anchor="middle" class="t-cell18">6</text>
+<text x="240" y="262" text-anchor="middle" class="t-cell18">7</text>
+<text x="288" y="262" text-anchor="middle" class="t-cell18">8</text>
+<text x="336" y="262" text-anchor="middle" class="t-cell18">9</text>
+<text x="240" y="310" text-anchor="middle" class="t-cell18">10</text>
+<text x="288" y="310" text-anchor="middle" class="t-cell18">11</text>
+<text x="336" y="310" text-anchor="middle" class="t-cell18">12</text>
 </g>
-<rect x="392" y="256" width="48" height="48" class="cell f-green-soft"/>
-<rect x="440" y="256" width="48" height="48" class="cell f-green-soft"/>
-<rect x="488" y="256" width="48" height="48" class="cell f-green-soft"/>
-<rect x="392" y="256" width="144" height="48" class="frame" data-fit="skip"/>
+<rect x="392" y="232" width="48" height="48" class="cell f-green-soft"/>
+<rect x="440" y="232" width="48" height="48" class="cell f-green-soft"/>
+<rect x="488" y="232" width="48" height="48" class="cell f-green-soft"/>
+<rect x="392" y="232" width="144" height="48" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="416" y="286" text-anchor="middle" class="t-cell18 f-green-ink b">48</text>
-<text x="464" y="286" text-anchor="middle" class="t-cell18">54</text>
-<text x="512" y="286" text-anchor="middle" class="t-cell18">60</text>
+<text x="416" y="262" text-anchor="middle" class="t-cell18 f-green-ink b">48</text>
+<text x="464" y="262" text-anchor="middle" class="t-cell18">54</text>
+<text x="512" y="262" text-anchor="middle" class="t-cell18">60</text>
 </g>
-<rect x="216" y="208" width="48" height="144" class="emph s-orange" data-fit="skip"/>
+<rect x="216" y="184" width="48" height="144" class="emph s-orange" data-fit="skip"/>
 <g data-grid="skip">
-<circle cx="200" cy="280" r="3" class="f-ink-muted"/>
+<circle cx="200" cy="256" r="2.5" class="f-ink-muted"/>
 </g>
-<text x="376" y="288" text-anchor="middle" class="t-op">=</text>
-<text x="40" y="176" class="t-head">np.dot(<tspan class="i">a</tspan>, <tspan class="i">B</tspan>): vector first</text>
-<text x="40" y="384" class="t-label"><tspan class="i">a</tspan> acts as a row and meets each column of <tspan class="i">B</tspan></text>
-<text x="40" y="416" class="t-math">1 · 4 + 2 · 7 + 3 · 10 = 48</text>
-<rect x="600" y="208" width="48" height="48" class="cell f-orange-soft"/>
-<rect x="648" y="208" width="48" height="48" class="cell f-orange-soft"/>
-<rect x="696" y="208" width="48" height="48" class="cell f-orange-soft"/>
-<rect x="600" y="256" width="48" height="48" class="cell f-orange-soft"/>
-<rect x="648" y="256" width="48" height="48" class="cell f-orange-soft"/>
-<rect x="696" y="256" width="48" height="48" class="cell f-orange-soft"/>
-<rect x="600" y="304" width="48" height="48" class="cell f-orange-soft"/>
-<rect x="648" y="304" width="48" height="48" class="cell f-orange-soft"/>
-<rect x="696" y="304" width="48" height="48" class="cell f-orange-soft"/>
-<rect x="600" y="208" width="144" height="144" class="frame" data-fit="skip"/>
+<text x="376" y="264" text-anchor="middle" class="t-op">=</text>
+<text x="112" y="308" text-anchor="middle" class="t-label"><tspan class="b">a</tspan>, (3,)</text>
+<text x="288" y="356" text-anchor="middle" class="t-label"><tspan class="b">B</tspan>, (3, 3)</text>
+<text x="464" y="308" text-anchor="middle" class="t-label">(3,)</text>
+<text x="40" y="152" class="t-head">np.dot(a, B): vector first</text>
+<text x="40" y="396" class="t-label"><tspan class="b">a</tspan> acts as a row and meets each column of <tspan class="b">B</tspan></text>
+<text x="40" y="428" class="t-math">1 · 4 + 2 · 7 + 3 · 10 = 48</text>
+<rect x="600" y="184" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="648" y="184" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="696" y="184" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="600" y="232" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="648" y="232" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="696" y="232" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="600" y="280" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="648" y="280" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="696" y="280" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="600" y="184" width="144" height="144" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="624" y="238" text-anchor="middle" class="t-cell18">4</text>
-<text x="672" y="238" text-anchor="middle" class="t-cell18">5</text>
-<text x="720" y="238" text-anchor="middle" class="t-cell18">6</text>
-<text x="624" y="286" text-anchor="middle" class="t-cell18">7</text>
-<text x="672" y="286" text-anchor="middle" class="t-cell18">8</text>
-<text x="720" y="286" text-anchor="middle" class="t-cell18">9</text>
-<text x="624" y="334" text-anchor="middle" class="t-cell18">10</text>
-<text x="672" y="334" text-anchor="middle" class="t-cell18">11</text>
-<text x="720" y="334" text-anchor="middle" class="t-cell18">12</text>
+<text x="624" y="214" text-anchor="middle" class="t-cell18">4</text>
+<text x="672" y="214" text-anchor="middle" class="t-cell18">5</text>
+<text x="720" y="214" text-anchor="middle" class="t-cell18">6</text>
+<text x="624" y="262" text-anchor="middle" class="t-cell18">7</text>
+<text x="672" y="262" text-anchor="middle" class="t-cell18">8</text>
+<text x="720" y="262" text-anchor="middle" class="t-cell18">9</text>
+<text x="624" y="310" text-anchor="middle" class="t-cell18">10</text>
+<text x="672" y="310" text-anchor="middle" class="t-cell18">11</text>
+<text x="720" y="310" text-anchor="middle" class="t-cell18">12</text>
 </g>
-<rect x="776" y="208" width="48" height="48" class="cell f-blue-soft"/>
-<rect x="776" y="256" width="48" height="48" class="cell f-blue-soft"/>
-<rect x="776" y="304" width="48" height="48" class="cell f-blue-soft"/>
-<rect x="776" y="208" width="48" height="144" class="frame" data-fit="skip"/>
+<rect x="776" y="184" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="776" y="232" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="776" y="280" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="776" y="184" width="48" height="144" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="800" y="238" text-anchor="middle" class="t-cell18">1</text>
-<text x="800" y="286" text-anchor="middle" class="t-cell18">2</text>
-<text x="800" y="334" text-anchor="middle" class="t-cell18">3</text>
+<text x="800" y="214" text-anchor="middle" class="t-cell18">1</text>
+<text x="800" y="262" text-anchor="middle" class="t-cell18">2</text>
+<text x="800" y="310" text-anchor="middle" class="t-cell18">3</text>
 </g>
-<rect x="856" y="208" width="48" height="48" class="cell f-green-soft"/>
-<rect x="856" y="256" width="48" height="48" class="cell f-green-soft"/>
-<rect x="856" y="304" width="48" height="48" class="cell f-green-soft"/>
-<rect x="856" y="208" width="48" height="144" class="frame" data-fit="skip"/>
+<rect x="856" y="184" width="48" height="48" class="cell f-green-soft"/>
+<rect x="856" y="232" width="48" height="48" class="cell f-green-soft"/>
+<rect x="856" y="280" width="48" height="48" class="cell f-green-soft"/>
+<rect x="856" y="184" width="48" height="144" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="880" y="238" text-anchor="middle" class="t-cell18 f-green-ink b">32</text>
-<text x="880" y="286" text-anchor="middle" class="t-cell18">50</text>
-<text x="880" y="334" text-anchor="middle" class="t-cell18">68</text>
+<text x="880" y="214" text-anchor="middle" class="t-cell18 f-green-ink b">32</text>
+<text x="880" y="262" text-anchor="middle" class="t-cell18">50</text>
+<text x="880" y="310" text-anchor="middle" class="t-cell18">68</text>
 </g>
-<rect x="600" y="208" width="144" height="48" class="emph s-orange" data-fit="skip"/>
+<rect x="600" y="184" width="144" height="48" class="emph s-orange" data-fit="skip"/>
 <g data-grid="skip">
-<circle cx="760" cy="280" r="3" class="f-ink-muted"/>
+<circle cx="760" cy="256" r="2.5" class="f-ink-muted"/>
 </g>
-<text x="840" y="288" text-anchor="middle" class="t-op">=</text>
-<text x="600" y="176" class="t-head">np.dot(<tspan class="i">B</tspan>, <tspan class="i">a</tspan>): matrix first</text>
-<text x="600" y="384" class="t-label"><tspan class="i">a</tspan> acts as a column and meets each row of <tspan class="i">B</tspan></text>
-<text x="600" y="416" class="t-math">4 · 1 + 5 · 2 + 6 · 3 = 32</text>
-<text x="40" y="504" class="t-note">Both orders run only because <tspan class="i">B</tspan> is square; with <tspan class="i">C</tspan> of shape (2, 3), np.dot(<tspan class="i">a</tspan>, <tspan class="i">C</tspan>) raises.</text>
+<text x="840" y="264" text-anchor="middle" class="t-op">=</text>
+<text x="672" y="356" text-anchor="middle" class="t-label"><tspan class="b">B</tspan>, (3, 3)</text>
+<text x="800" y="356" text-anchor="middle" class="t-label"><tspan class="b">a</tspan>, (3,)</text>
+<text x="880" y="356" text-anchor="middle" class="t-label">(3,)</text>
+<text x="600" y="152" class="t-head">np.dot(B, a): matrix first</text>
+<text x="600" y="396" class="t-label"><tspan class="b">a</tspan> acts as a column and meets each row of <tspan class="b">B</tspan></text>
+<text x="600" y="428" class="t-math">4 · 1 + 5 · 2 + 6 · 3 = 32</text>
+<text x="40" y="504" class="t-note">Both orders run only because <tspan class="b">B</tspan> is square; with <tspan class="b">C</tspan> of shape (2, 3), np.dot(a, C) raises.</text>
 </svg>

@@ -141,7 +141,7 @@
 </defs>
 <rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
 <text x="40" y="48" class="t-title">One function, three forms: the shapes decide</text>
-<text x="40" y="76" class="t-subtitle">Section 8's layer before the bias, neurons-first: one neuron per row of W, one sample per column.</text>
+<text x="40" y="76" class="t-subtitle">Section 8's layer before the bias, neurons-first: one neuron per row of <tspan class="b">W</tspan>, one sample per column.</text>
 <text x="40" y="128" class="t-head">Vector by vector</text>
 <rect x="40" y="144" width="56" height="32" class="cell f-orange-soft"/>
 <rect x="96" y="144" width="56" height="32" class="cell f-orange-soft"/>
@@ -165,18 +165,18 @@
 <text x="344" y="229" text-anchor="middle" class="t-cell14">3.0</text>
 <text x="344" y="261" text-anchor="middle" class="t-cell14">2.5</text>
 </g>
-<rect x="552" y="144" width="56" height="32" class="cell f-green-soft"/>
-<rect x="552" y="144" width="56" height="32" class="frame" data-fit="skip"/>
+<rect x="424" y="144" width="56" height="32" class="cell f-green-soft"/>
+<rect x="424" y="144" width="56" height="32" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="580" y="165" text-anchor="middle" class="t-cell14 f-green-ink b">2.800</text>
+<text x="452" y="165" text-anchor="middle" class="t-cell14 f-green-ink b">2.800</text>
 </g>
 <g data-grid="skip">
-<circle cx="288" cy="160" r="3" class="f-ink-muted"/>
+<circle cx="288" cy="160" r="2.5" class="f-ink-muted"/>
 </g>
-<text x="528" y="168" text-anchor="middle" class="t-op">=</text>
-<text x="752" y="164" class="t-code">np.dot(w, x)</text>
-<text x="752" y="188" class="t-label">(4,) · (4,) → scalar</text>
-<text x="752" y="212" class="t-note">one neuron, one sample</text>
+<text x="400" y="168" text-anchor="middle" class="t-op">=</text>
+<text x="528" y="164" class="t-code">np.dot(w, x)</text>
+<text x="528" y="188" class="t-label">(4,) · (4,) → scalar</text>
+<text x="528" y="212" class="t-note">one neuron, one sample</text>
 <g data-grid="skip">
 <text x="344" y="136" text-anchor="middle" class="t-tick">sample 1</text>
 </g>
@@ -219,23 +219,23 @@
 <text x="344" y="421" text-anchor="middle" class="t-cell14">3.0</text>
 <text x="344" y="453" text-anchor="middle" class="t-cell14">2.5</text>
 </g>
-<rect x="552" y="336" width="56" height="32" class="cell f-green-soft"/>
-<rect x="552" y="368" width="56" height="32" class="cell f-green-soft"/>
-<rect x="552" y="400" width="56" height="32" class="cell f-green-soft"/>
-<rect x="552" y="336" width="56" height="96" class="frame" data-fit="skip"/>
+<rect x="424" y="336" width="56" height="32" class="cell f-green-soft"/>
+<rect x="424" y="368" width="56" height="32" class="cell f-green-soft"/>
+<rect x="424" y="400" width="56" height="32" class="cell f-green-soft"/>
+<rect x="424" y="336" width="56" height="96" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="580" y="357" text-anchor="middle" class="t-cell14 f-green-ink b">2.800</text>
-<text x="580" y="389" text-anchor="middle" class="t-cell14">−1.790</text>
-<text x="580" y="421" text-anchor="middle" class="t-cell14">1.885</text>
+<text x="452" y="357" text-anchor="middle" class="t-cell14 f-green-ink b">2.800</text>
+<text x="452" y="389" text-anchor="middle" class="t-cell14">−1.790</text>
+<text x="452" y="421" text-anchor="middle" class="t-cell14">1.885</text>
 </g>
 <g data-grid="skip">
-<circle cx="288" cy="384" r="3" class="f-ink-muted"/>
+<circle cx="288" cy="384" r="2.5" class="f-ink-muted"/>
 </g>
-<text x="528" y="392" text-anchor="middle" class="t-op">=</text>
-<text x="752" y="356" class="t-code">np.dot(W, x)</text>
-<text x="752" y="380" class="t-label">(3, 4) · (4,) → (3,)</text>
-<text x="752" y="404" class="t-note">a layer of 3 neurons,</text>
-<text x="752" y="424" class="t-note">one sample</text>
+<text x="400" y="392" text-anchor="middle" class="t-op">=</text>
+<text x="528" y="356" class="t-code">np.dot(W, x)</text>
+<text x="528" y="380" class="t-label">(3, 4) · (4,) → (3,)</text>
+<text x="528" y="404" class="t-note">a layer of 3 neurons,</text>
+<text x="528" y="424" class="t-note">one sample</text>
 <g data-grid="skip">
 <text x="344" y="328" text-anchor="middle" class="t-tick">sample 1</text>
 </g>
@@ -316,13 +316,13 @@
 <text x="692" y="613" text-anchor="middle" class="t-cell14">−0.474</text>
 </g>
 <g data-grid="skip">
-<circle cx="288" cy="576" r="3" class="f-ink-muted"/>
+<circle cx="288" cy="576" r="2.5" class="f-ink-muted"/>
 </g>
 <text x="528" y="584" text-anchor="middle" class="t-op">=</text>
-<text x="752" y="548" class="t-code">np.dot(W, X.T)</text>
-<text x="752" y="572" class="t-label">(3, 4) · (4, 3) → (3, 3)</text>
-<text x="752" y="596" class="t-note">a layer of 3 neurons,</text>
-<text x="752" y="616" class="t-note">3 samples as columns</text>
+<text x="768" y="548" class="t-code">np.dot(W, X.T)</text>
+<text x="768" y="572" class="t-label">(3, 4) · (4, 3) → (3, 3)</text>
+<text x="768" y="596" class="t-note">a layer of 3 neurons,</text>
+<text x="768" y="616" class="t-note">3 samples as columns</text>
 <g data-grid="skip">
 <text x="344" y="520" text-anchor="middle" class="t-tick">sample 1</text>
 <text x="408" y="520" text-anchor="middle" class="t-tick">sample 2</text>

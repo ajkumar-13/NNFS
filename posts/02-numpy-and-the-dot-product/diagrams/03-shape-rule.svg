@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-03-shape-rule-title" aria-describedby="nn-03-shape-rule-desc">
 <title id="nn-03-shape-rule-title">Inner sizes must match; outer sizes make the result</title>
-<desc id="nn-03-shape-rule-desc">Two rows. Top, np.dot(A, B): A of shape (3, 4), holding 1 to 12 row by row, times B of shape (4, 3), holding 1 to 12 row by row, equals the 3 by 3 result 70, 80, 90; 158, 184, 210; 246, 288, 330. Row 1 of A and column 1 of B are outlined, 70 is bold, and the worked line reads 1 times 1 plus 2 times 4 plus 3 times 7 plus 4 times 10 equals 70. Bottom, np.dot(B, A): the same two matrices swapped give a 4 by 4 result, drawn without values. Under every grid its shape, with the inner sizes, the 4s in the top row and the 3s in the bottom row, in purple and the outer sizes in green. A last line states the rule in general: (m, n) times (n, p) gives (m, p).</desc>
+<desc id="nn-03-shape-rule-desc">Two rows. Top, np.dot(A, B): A of shape (3, 4), holding 1 to 12 row by row, times B of shape (4, 3), holding 1 to 12 row by row, equals the 3 by 3 result 70, 80, 90; 158, 184, 210; 246, 288, 330. Row 1 of A and column 1 of B are outlined, 70 is bold, and the worked line reads 1 times 1 plus 2 times 4 plus 3 times 7 plus 4 times 10 equals 70. Bottom, np.dot(B, A): the same two matrices swapped give a 4 by 4 result, drawn without values. Under every grid its shape, with the inner sizes, the 4s in the top row and the 3s in the bottom row, in purple and joined by a purple bracket labelled inner, and the outer sizes in green. At the right the rule in general, (m, n) times (n, p) gives (m, p), with a bracket over m and p labelled outer: form the result, and a bracket under the two n labelled inner: must be equal, summed away.</desc>
 <style>
   :root {
     --nn-bg: #FAFAF7;
@@ -135,101 +135,107 @@
   .f-orange-soft { fill: var(--nn-orange-soft); }
   .f-purple-ink { fill: var(--nn-purple-ink); }
   .s-blue { stroke: var(--nn-blue); }
+  .s-green { stroke: var(--nn-green); }
   .s-orange { stroke: var(--nn-orange); }
+  .s-purple { stroke: var(--nn-purple); }
 </style>
 <defs>
 <marker id="nn-03-shape-rule-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
 </defs>
 <rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
 <text x="40" y="48" class="t-title">Inner sizes must match; outer sizes make the result</text>
-<text x="40" y="76" class="t-subtitle">Section 6's <tspan class="i">A</tspan> and <tspan class="i">B</tspan>. Both orders run here, and give results of different shapes.</text>
-<rect x="40" y="168" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="80" y="168" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="120" y="168" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="160" y="168" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="40" y="208" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="80" y="208" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="120" y="208" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="160" y="208" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="40" y="248" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="80" y="248" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="120" y="248" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="160" y="248" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="40" y="168" width="160" height="120" class="frame" data-fit="skip"/>
+<text x="40" y="76" class="t-subtitle">Section 6's <tspan class="b">A</tspan> and <tspan class="b">B</tspan>. Both orders run here, and give results of different shapes.</text>
+<rect x="40" y="192" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="80" y="192" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="120" y="192" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="160" y="192" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="40" y="232" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="80" y="232" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="120" y="232" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="160" y="232" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="40" y="272" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="80" y="272" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="120" y="272" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="160" y="272" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="40" y="192" width="160" height="120" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="60" y="194" text-anchor="middle" class="t-cell16">1</text>
-<text x="100" y="194" text-anchor="middle" class="t-cell16">2</text>
-<text x="140" y="194" text-anchor="middle" class="t-cell16">3</text>
-<text x="180" y="194" text-anchor="middle" class="t-cell16">4</text>
-<text x="60" y="234" text-anchor="middle" class="t-cell16">5</text>
-<text x="100" y="234" text-anchor="middle" class="t-cell16">6</text>
-<text x="140" y="234" text-anchor="middle" class="t-cell16">7</text>
-<text x="180" y="234" text-anchor="middle" class="t-cell16">8</text>
-<text x="60" y="274" text-anchor="middle" class="t-cell16">9</text>
-<text x="100" y="274" text-anchor="middle" class="t-cell16">10</text>
-<text x="140" y="274" text-anchor="middle" class="t-cell16">11</text>
-<text x="180" y="274" text-anchor="middle" class="t-cell16">12</text>
+<text x="60" y="218" text-anchor="middle" class="t-cell16">1</text>
+<text x="100" y="218" text-anchor="middle" class="t-cell16">2</text>
+<text x="140" y="218" text-anchor="middle" class="t-cell16">3</text>
+<text x="180" y="218" text-anchor="middle" class="t-cell16">4</text>
+<text x="60" y="258" text-anchor="middle" class="t-cell16">5</text>
+<text x="100" y="258" text-anchor="middle" class="t-cell16">6</text>
+<text x="140" y="258" text-anchor="middle" class="t-cell16">7</text>
+<text x="180" y="258" text-anchor="middle" class="t-cell16">8</text>
+<text x="60" y="298" text-anchor="middle" class="t-cell16">9</text>
+<text x="100" y="298" text-anchor="middle" class="t-cell16">10</text>
+<text x="140" y="298" text-anchor="middle" class="t-cell16">11</text>
+<text x="180" y="298" text-anchor="middle" class="t-cell16">12</text>
 </g>
-<rect x="232" y="168" width="40" height="40" class="cell f-orange-soft"/>
-<rect x="272" y="168" width="40" height="40" class="cell f-orange-soft"/>
-<rect x="312" y="168" width="40" height="40" class="cell f-orange-soft"/>
-<rect x="232" y="208" width="40" height="40" class="cell f-orange-soft"/>
-<rect x="272" y="208" width="40" height="40" class="cell f-orange-soft"/>
-<rect x="312" y="208" width="40" height="40" class="cell f-orange-soft"/>
-<rect x="232" y="248" width="40" height="40" class="cell f-orange-soft"/>
-<rect x="272" y="248" width="40" height="40" class="cell f-orange-soft"/>
-<rect x="312" y="248" width="40" height="40" class="cell f-orange-soft"/>
-<rect x="232" y="288" width="40" height="40" class="cell f-orange-soft"/>
-<rect x="272" y="288" width="40" height="40" class="cell f-orange-soft"/>
-<rect x="312" y="288" width="40" height="40" class="cell f-orange-soft"/>
-<rect x="232" y="168" width="120" height="160" class="frame" data-fit="skip"/>
+<rect x="232" y="152" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="272" y="152" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="312" y="152" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="232" y="192" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="272" y="192" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="312" y="192" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="232" y="232" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="272" y="232" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="312" y="232" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="232" y="272" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="272" y="272" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="312" y="272" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="232" y="152" width="120" height="160" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="252" y="194" text-anchor="middle" class="t-cell16">1</text>
-<text x="292" y="194" text-anchor="middle" class="t-cell16">2</text>
-<text x="332" y="194" text-anchor="middle" class="t-cell16">3</text>
-<text x="252" y="234" text-anchor="middle" class="t-cell16">4</text>
-<text x="292" y="234" text-anchor="middle" class="t-cell16">5</text>
-<text x="332" y="234" text-anchor="middle" class="t-cell16">6</text>
-<text x="252" y="274" text-anchor="middle" class="t-cell16">7</text>
-<text x="292" y="274" text-anchor="middle" class="t-cell16">8</text>
-<text x="332" y="274" text-anchor="middle" class="t-cell16">9</text>
-<text x="252" y="314" text-anchor="middle" class="t-cell16">10</text>
-<text x="292" y="314" text-anchor="middle" class="t-cell16">11</text>
-<text x="332" y="314" text-anchor="middle" class="t-cell16">12</text>
+<text x="252" y="178" text-anchor="middle" class="t-cell16">1</text>
+<text x="292" y="178" text-anchor="middle" class="t-cell16">2</text>
+<text x="332" y="178" text-anchor="middle" class="t-cell16">3</text>
+<text x="252" y="218" text-anchor="middle" class="t-cell16">4</text>
+<text x="292" y="218" text-anchor="middle" class="t-cell16">5</text>
+<text x="332" y="218" text-anchor="middle" class="t-cell16">6</text>
+<text x="252" y="258" text-anchor="middle" class="t-cell16">7</text>
+<text x="292" y="258" text-anchor="middle" class="t-cell16">8</text>
+<text x="332" y="258" text-anchor="middle" class="t-cell16">9</text>
+<text x="252" y="298" text-anchor="middle" class="t-cell16">10</text>
+<text x="292" y="298" text-anchor="middle" class="t-cell16">11</text>
+<text x="332" y="298" text-anchor="middle" class="t-cell16">12</text>
 </g>
-<rect x="384" y="168" width="40" height="40" class="cell f-green-soft"/>
-<rect x="424" y="168" width="40" height="40" class="cell f-green-soft"/>
-<rect x="464" y="168" width="40" height="40" class="cell f-green-soft"/>
-<rect x="384" y="208" width="40" height="40" class="cell f-green-soft"/>
-<rect x="424" y="208" width="40" height="40" class="cell f-green-soft"/>
-<rect x="464" y="208" width="40" height="40" class="cell f-green-soft"/>
-<rect x="384" y="248" width="40" height="40" class="cell f-green-soft"/>
-<rect x="424" y="248" width="40" height="40" class="cell f-green-soft"/>
-<rect x="464" y="248" width="40" height="40" class="cell f-green-soft"/>
-<rect x="384" y="168" width="120" height="120" class="frame" data-fit="skip"/>
+<rect x="384" y="192" width="40" height="40" class="cell f-green-soft"/>
+<rect x="424" y="192" width="40" height="40" class="cell f-green-soft"/>
+<rect x="464" y="192" width="40" height="40" class="cell f-green-soft"/>
+<rect x="384" y="232" width="40" height="40" class="cell f-green-soft"/>
+<rect x="424" y="232" width="40" height="40" class="cell f-green-soft"/>
+<rect x="464" y="232" width="40" height="40" class="cell f-green-soft"/>
+<rect x="384" y="272" width="40" height="40" class="cell f-green-soft"/>
+<rect x="424" y="272" width="40" height="40" class="cell f-green-soft"/>
+<rect x="464" y="272" width="40" height="40" class="cell f-green-soft"/>
+<rect x="384" y="192" width="120" height="120" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="404" y="194" text-anchor="middle" class="t-cell16 f-green-ink b">70</text>
-<text x="444" y="194" text-anchor="middle" class="t-cell16">80</text>
-<text x="484" y="194" text-anchor="middle" class="t-cell16">90</text>
-<text x="404" y="234" text-anchor="middle" class="t-cell16">158</text>
-<text x="444" y="234" text-anchor="middle" class="t-cell16">184</text>
-<text x="484" y="234" text-anchor="middle" class="t-cell16">210</text>
-<text x="404" y="274" text-anchor="middle" class="t-cell16">246</text>
-<text x="444" y="274" text-anchor="middle" class="t-cell16">288</text>
-<text x="484" y="274" text-anchor="middle" class="t-cell16">330</text>
+<text x="404" y="218" text-anchor="middle" class="t-cell16 f-green-ink b">70</text>
+<text x="444" y="218" text-anchor="middle" class="t-cell16">80</text>
+<text x="484" y="218" text-anchor="middle" class="t-cell16">90</text>
+<text x="404" y="258" text-anchor="middle" class="t-cell16">158</text>
+<text x="444" y="258" text-anchor="middle" class="t-cell16">184</text>
+<text x="484" y="258" text-anchor="middle" class="t-cell16">210</text>
+<text x="404" y="298" text-anchor="middle" class="t-cell16">246</text>
+<text x="444" y="298" text-anchor="middle" class="t-cell16">288</text>
+<text x="484" y="298" text-anchor="middle" class="t-cell16">330</text>
 </g>
 <g data-grid="skip">
-<circle cx="216" cy="228" r="3" class="f-ink-muted"/>
+<circle cx="216" cy="252.0" r="2.5" class="f-ink-muted"/>
 </g>
-<text x="368" y="236" text-anchor="middle" class="t-op">=</text>
-<text x="120" y="356" text-anchor="middle" class="t-math">(<tspan class="f-green-ink">3</tspan>, <tspan class="f-purple-ink">4</tspan>)</text>
-<text x="292" y="356" text-anchor="middle" class="t-math">(<tspan class="f-purple-ink">4</tspan>, <tspan class="f-green-ink">3</tspan>)</text>
-<text x="444" y="356" text-anchor="middle" class="t-math">(<tspan class="f-green-ink">3</tspan>, <tspan class="f-green-ink">3</tspan>)</text>
-<rect x="40" y="168" width="160" height="40" class="emph s-blue" data-fit="skip"/>
-<rect x="232" y="168" width="40" height="160" class="emph s-orange" data-fit="skip"/>
-<text x="40" y="152" class="t-head">np.dot(<tspan class="i">A</tspan>, <tspan class="i">B</tspan>): the 4s meet</text>
-<text x="592" y="216" class="t-label">row 1 of <tspan class="i">A</tspan> with column 1 of <tspan class="i">B</tspan>:</text>
-<text x="592" y="248" class="t-math">1 · 1 + 2 · 4 + 3 · 7 + 4 · 10 = 70</text>
+<text x="368" y="260" text-anchor="middle" class="t-op">=</text>
+<text x="120" y="340" text-anchor="middle" class="t-math">(<tspan class="f-green-ink">3</tspan>, <tspan class="f-purple-ink">4</tspan>)</text>
+<text x="292" y="340" text-anchor="middle" class="t-math">(<tspan class="f-purple-ink">4</tspan>, <tspan class="f-green-ink">3</tspan>)</text>
+<text x="444" y="340" text-anchor="middle" class="t-math">(<tspan class="f-green-ink">3</tspan>, <tspan class="f-green-ink">3</tspan>)</text>
+<g data-grid="skip">
+<path d="M129,346 V354 H283 V346" class="nofill w1 s-purple"/>
+</g>
+<text x="208" y="376" text-anchor="middle" class="t-note f-purple-ink">inner</text>
+<rect x="40" y="192" width="160" height="40" class="emph s-blue" data-fit="skip"/>
+<rect x="232" y="152" width="40" height="160" class="emph s-orange" data-fit="skip"/>
+<text x="40" y="136" class="t-head">np.dot(A, B): the 4s meet</text>
+<text x="592" y="224" class="t-label">row 1 of <tspan class="b">A</tspan> with column 1 of <tspan class="b">B</tspan>:</text>
+<text x="592" y="256" class="t-math">1 · 1 + 2 · 4 + 3 · 7 + 4 · 10 = 70</text>
 <rect x="40" y="432" width="40" height="40" class="cell f-orange-soft"/>
 <rect x="80" y="432" width="40" height="40" class="cell f-orange-soft"/>
 <rect x="120" y="432" width="40" height="40" class="cell f-orange-soft"/>
@@ -257,10 +263,6 @@
 <text x="100" y="578" text-anchor="middle" class="t-cell16">11</text>
 <text x="140" y="578" text-anchor="middle" class="t-cell16">12</text>
 </g>
-<rect x="192" y="432" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="232" y="432" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="272" y="432" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="312" y="432" width="40" height="40" class="cell f-blue-soft"/>
 <rect x="192" y="472" width="40" height="40" class="cell f-blue-soft"/>
 <rect x="232" y="472" width="40" height="40" class="cell f-blue-soft"/>
 <rect x="272" y="472" width="40" height="40" class="cell f-blue-soft"/>
@@ -269,20 +271,24 @@
 <rect x="232" y="512" width="40" height="40" class="cell f-blue-soft"/>
 <rect x="272" y="512" width="40" height="40" class="cell f-blue-soft"/>
 <rect x="312" y="512" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="192" y="432" width="160" height="120" class="frame" data-fit="skip"/>
+<rect x="192" y="552" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="232" y="552" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="272" y="552" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="312" y="552" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="192" y="472" width="160" height="120" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="212" y="458" text-anchor="middle" class="t-cell16">1</text>
-<text x="252" y="458" text-anchor="middle" class="t-cell16">2</text>
-<text x="292" y="458" text-anchor="middle" class="t-cell16">3</text>
-<text x="332" y="458" text-anchor="middle" class="t-cell16">4</text>
-<text x="212" y="498" text-anchor="middle" class="t-cell16">5</text>
-<text x="252" y="498" text-anchor="middle" class="t-cell16">6</text>
-<text x="292" y="498" text-anchor="middle" class="t-cell16">7</text>
-<text x="332" y="498" text-anchor="middle" class="t-cell16">8</text>
-<text x="212" y="538" text-anchor="middle" class="t-cell16">9</text>
-<text x="252" y="538" text-anchor="middle" class="t-cell16">10</text>
-<text x="292" y="538" text-anchor="middle" class="t-cell16">11</text>
-<text x="332" y="538" text-anchor="middle" class="t-cell16">12</text>
+<text x="212" y="498" text-anchor="middle" class="t-cell16">1</text>
+<text x="252" y="498" text-anchor="middle" class="t-cell16">2</text>
+<text x="292" y="498" text-anchor="middle" class="t-cell16">3</text>
+<text x="332" y="498" text-anchor="middle" class="t-cell16">4</text>
+<text x="212" y="538" text-anchor="middle" class="t-cell16">5</text>
+<text x="252" y="538" text-anchor="middle" class="t-cell16">6</text>
+<text x="292" y="538" text-anchor="middle" class="t-cell16">7</text>
+<text x="332" y="538" text-anchor="middle" class="t-cell16">8</text>
+<text x="212" y="578" text-anchor="middle" class="t-cell16">9</text>
+<text x="252" y="578" text-anchor="middle" class="t-cell16">10</text>
+<text x="292" y="578" text-anchor="middle" class="t-cell16">11</text>
+<text x="332" y="578" text-anchor="middle" class="t-cell16">12</text>
 </g>
 <rect x="384" y="432" width="40" height="40" class="cell f-green-soft"/>
 <rect x="424" y="432" width="40" height="40" class="cell f-green-soft"/>
@@ -302,16 +308,30 @@
 <rect x="504" y="552" width="40" height="40" class="cell f-green-soft"/>
 <rect x="384" y="432" width="160" height="160" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<circle cx="176" cy="512" r="3" class="f-ink-muted"/>
+<circle cx="176" cy="512.0" r="2.5" class="f-ink-muted"/>
 </g>
 <text x="368" y="520" text-anchor="middle" class="t-op">=</text>
 <text x="100" y="620" text-anchor="middle" class="t-math">(<tspan class="f-green-ink">4</tspan>, <tspan class="f-purple-ink">3</tspan>)</text>
 <text x="272" y="620" text-anchor="middle" class="t-math">(<tspan class="f-purple-ink">3</tspan>, <tspan class="f-green-ink">4</tspan>)</text>
 <text x="464" y="620" text-anchor="middle" class="t-math">(<tspan class="f-green-ink">4</tspan>, <tspan class="f-green-ink">4</tspan>)</text>
-<text x="40" y="416" class="t-head">np.dot(<tspan class="i">B</tspan>, <tspan class="i">A</tspan>): the 3s meet</text>
-<text x="592" y="480" class="t-label">the same two matrices, swapped:</text>
-<text x="592" y="512" class="t-label">a different product, of shape (4, 4)</text>
-<text x="592" y="584" class="t-label">in general:</text>
-<text x="592" y="620" class="t-math">(<tspan class="f-green-ink"><tspan class="i">m</tspan></tspan>, <tspan class="f-purple-ink"><tspan class="i">n</tspan></tspan>) · (<tspan class="f-purple-ink"><tspan class="i">n</tspan></tspan>, <tspan class="f-green-ink"><tspan class="i">p</tspan></tspan>)  →  (<tspan class="f-green-ink"><tspan class="i">m</tspan></tspan>, <tspan class="f-green-ink"><tspan class="i">p</tspan></tspan>)</text>
-<text x="40" y="684" class="t-note">Inner sizes, in purple, must be equal and are summed away; outer sizes, in green, form the result.</text>
+<g data-grid="skip">
+<path d="M109,626 V634 H263 V626" class="nofill w1 s-purple"/>
+</g>
+<text x="184" y="656" text-anchor="middle" class="t-note f-purple-ink">inner</text>
+<text x="40" y="416" class="t-head">np.dot(B, A): the 3s meet</text>
+<text x="592" y="448" class="t-label">the same two matrices, swapped:</text>
+<text x="592" y="472" class="t-label">a different product, of shape (4, 4)</text>
+<text x="612" y="568" text-anchor="middle" class="t-math">(<tspan class="f-green-ink"><tspan class="i">m</tspan></tspan>, <tspan class="f-purple-ink"><tspan class="i">n</tspan></tspan>)</text>
+<text x="644" y="568" text-anchor="middle" class="t-math">·</text>
+<text x="676" y="568" text-anchor="middle" class="t-math">(<tspan class="f-purple-ink"><tspan class="i">n</tspan></tspan>, <tspan class="f-green-ink"><tspan class="i">p</tspan></tspan>)</text>
+<text x="712" y="568" text-anchor="middle" class="t-math">→</text>
+<text x="748" y="568" text-anchor="middle" class="t-math">(<tspan class="f-green-ink"><tspan class="i">m</tspan></tspan>, <tspan class="f-green-ink"><tspan class="i">p</tspan></tspan>)</text>
+<g data-grid="skip">
+<path d="M603,550 V542 H685 V550" class="nofill w1 s-green"/>
+</g>
+<text x="592" y="528" class="t-note f-green-ink">outer: form the result</text>
+<g data-grid="skip">
+<path d="M623,574 V582 H668 V574" class="nofill w1 s-purple"/>
+</g>
+<text x="592" y="600" class="t-note f-purple-ink">inner: must be equal, summed away</text>
 </svg>
