@@ -1,0 +1,848 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-032",
+  "next_ordinal": 20,
+  "questions": [
+    {
+      "id": "nn-032-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 1,
+      "tags": [
+        "regimes"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A training set has $N$ rows. Which regime makes exactly $N$ parameter updates in one epoch?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Full-batch gradient descent",
+          "correct": false,
+          "feedback": "A full batch holds all $N$ rows, so one epoch is a single update, the fewest of the three regimes."
+        },
+        {
+          "key": "b",
+          "text": "Mini-batch SGD with $1 < B < N$",
+          "correct": false,
+          "feedback": "With batches of $B$ rows an epoch holds $\\lceil N/B \\rceil$ updates, which is fewer than $N$ whenever $B$ is above 1."
+        },
+        {
+          "key": "c",
+          "text": "True SGD, with $B = 1$",
+          "correct": true,
+          "feedback": "Right: every row is its own batch, so each of the $N$ rows produces one update."
+        },
+        {
+          "key": "d",
+          "text": "None of them: an epoch is one update by definition",
+          "correct": false,
+          "feedback": "An epoch is one pass over the training set. It is one update only when the whole set is one batch."
+        }
+      ],
+      "explanation": "Section 2: an epoch holds $\\lceil N/B \\rceil$ updates. With $B = 1$ that is $N$, with $B = N$ it is 1, and anything between gives a count between the two.",
+      "hints": [
+        "Count the batches that one pass over the rows produces in each regime."
+      ]
+    },
+    {
+      "id": "nn-032-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "noise",
+        "unbiased"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A batch of $B$ rows is drawn at random, without replacement, from a training set of $N$ rows, with $1 < B < N$. The network's weights are fixed. Which statement about the gradient of that batch's mean loss is correct?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Its expectation over the draw is the full-batch gradient, and a single draw deviates from it.",
+          "correct": true,
+          "feedback": "Right: the estimate is unbiased, and its deviation shrinks as the batch grows, reaching zero at $B = N$."
+        },
+        {
+          "key": "b",
+          "text": "It equals the full-batch gradient multiplied by $B/N$, since only that share of the rows is used.",
+          "correct": false,
+          "feedback": "Both gradients are gradients of a mean loss, so neither is scaled by a row count. The batch gradient differs by sampling noise, not by a factor."
+        },
+        {
+          "key": "c",
+          "text": "It is biased towards zero, because fewer single-row gradients are summed than in the full batch.",
+          "correct": false,
+          "feedback": "The combined class divides by the number of rows in the batch, so the batch gradient is a mean and its expected value is not smaller than the full gradient."
+        },
+        {
+          "key": "d",
+          "text": "It equals the full-batch gradient whenever the batch contains rows of every class.",
+          "correct": false,
+          "feedback": "Containing every class does not make the rows representative in every other respect. Only the whole set reproduces the full gradient exactly."
+        }
+      ],
+      "explanation": "Section 2: the batch gradient is the mean of $B$ single-row gradients drawn at random, so its expectation is the mean of all $N$ of them, the full-batch gradient. A single batch deviates from it by sampling noise whose mean square is $\\frac{\\sigma^2}{B} \\cdot \\frac{N - B}{N - 1}$.",
+      "hints": [
+        "Both gradients are means of single-row gradients; ask what the mean of a random sample estimates."
+      ]
+    },
+    {
+      "id": "nn-032-q03",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "10",
+      "est_minutes": 3,
+      "tags": [
+        "shuffle",
+        "diagnosis"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A dataset of 300 rows is stored as 100 rows of class 0, then 100 of class 1, then 100 of class 2. Trained full-batch, a network reaches about 90 percent training accuracy. With batches of 100 in a two-loop script the same network stays near 50 percent, and no error is raised. Which cause fits these observations best?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The batches are cut from the stored order, so every batch holds a single class.",
+          "correct": true,
+          "feedback": "Right: each update then pulls every output towards one label and the next update towards another, so no batch gradient resembles the full gradient."
+        },
+        {
+          "key": "b",
+          "text": "Batches of 100 are too large for 300 rows, so the gradient has too little noise.",
+          "correct": false,
+          "feedback": "Less noise makes a batch gradient closer to the full gradient, and the full-batch run on the same data trained well."
+        },
+        {
+          "key": "c",
+          "text": "The last batch is shorter than the others and distorts the epoch.",
+          "correct": false,
+          "feedback": "100 divides 300, so all three batches have the same size and there is no short batch."
+        },
+        {
+          "key": "d",
+          "text": "The optimiser's counter is three times as large as before, so the bias correction is wrong.",
+          "correct": false,
+          "feedback": "The bias correction needs the number of updates, which is exactly what the counter holds. Counting three updates per epoch is correct behaviour."
+        }
+      ],
+      "explanation": "Section 10: without a shuffle, batches cut from data stored class by class each hold one class, the batch gradient is no longer an unbiased estimate of the full gradient, and training stalls without any error. Shuffling rows and labels together once per epoch removes the problem.",
+      "hints": [
+        "Look at which labels each of the three batches contains.",
+        "Ask what a gradient computed from rows of one class alone asks the output layer to do."
+      ]
+    },
+    {
+      "id": "nn-032-q04",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 4,
+      "tags": [
+        "decay",
+        "counter"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A full-batch run of 1,000 epochs used `Optimizer_Adam(learning_rate=0.02, decay=1e-2)`. The script is changed to batches of 32 on 300 rows, with the optimiser line and the 1,000 epochs unchanged, and the training loss ends higher than before although ten times as many updates were made. Which change addresses the cause?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Create a new optimiser at the start of every epoch, so that the counter restarts.",
+          "correct": false,
+          "feedback": "A restarted counter would undo the decay, and it would also apply the bias correction of a first step to moving averages that are long past their start."
+        },
+        {
+          "key": "b",
+          "text": "Divide the decay by the 10 updates of an epoch, giving `decay=1e-3`.",
+          "correct": true,
+          "feedback": "Right: the counter now advances ten times per epoch, so a tenth of the decay brings the rate to the same value after the same number of epochs."
+        },
+        {
+          "key": "c",
+          "text": "Multiply the decay by 10, because each batch gradient is noisier.",
+          "correct": false,
+          "feedback": "A larger decay shrinks the rate even faster per update, which is the problem that is already present."
+        },
+        {
+          "key": "d",
+          "text": "Stop shuffling, so that the batches are identical in every epoch.",
+          "correct": false,
+          "feedback": "The shuffle is not the cause. Removing it leaves the rate schedule unchanged and adds batches that are not random samples."
+        }
+      ],
+      "explanation": "Section 5: `iterations` counts updates, and the decayed rate is $\\alpha_0 / (1 + \\text{decay} \\cdot t)$. With 10 updates per epoch the unchanged decay brings the rate to about a hundredth of its start after 1,000 epochs instead of about a tenth. Dividing the decay by the number of updates per epoch restores the schedule in epochs.",
+      "hints": [
+        "Work out what the learning rate is in the last update of each run.",
+        "The decayed rate depends on the product of the decay and the number of updates so far."
+      ]
+    },
+    {
+      "id": "nn-032-q05",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "epoch-loss",
+        "reporting"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "The loop adds `float(loss)` of every batch to `epoch_loss` and reports `epoch_loss / n_batches` after the inner loop. Which description of the reported figure is accurate?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The loss of the network as it stands after the last update of the epoch, on the whole training set",
+          "correct": false,
+          "feedback": "That figure needs a separate forward-only pass over all rows. The batch losses were measured on earlier weights, before each update."
+        },
+        {
+          "key": "b",
+          "text": "The plain mean of the batch losses, each measured before its batch's update",
+          "correct": true,
+          "feedback": "Right: it averages over weights that were moving during the epoch, and it counts a short last batch like a full one."
+        },
+        {
+          "key": "c",
+          "text": "The mean loss over rows, because every row is in exactly one batch",
+          "correct": false,
+          "feedback": "Every row is in exactly one batch, but the mean over rows weighs each batch loss by its batch size. The plain mean equals it only when all batches have the same size."
+        },
+        {
+          "key": "d",
+          "text": "The loss of the last batch of the epoch",
+          "correct": false,
+          "feedback": "That is what the variable `loss` holds after the inner loop. The reported figure divides the sum of all batch losses by their number."
+        }
+      ],
+      "explanation": "Section 4: each batch loss is computed before that batch's update, so the epoch figure describes a network that was changing, and dividing by the number of batches gives a short last batch the weight of a full one. In the documented run the last epoch reports 0.3275 while a forward-only pass over all 300 rows gives 0.3025.",
+      "hints": [
+        "Ask on which weights each of the summed losses was computed, and what the division counts."
+      ]
+    },
+    {
+      "id": "nn-032-q06",
+      "type": "mcq",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 3,
+      "tags": [
+        "comparison",
+        "updates"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "On 300 rows, runs with batches of 32 for 1,000 epochs are compared with full-batch runs over ten seeds. Against full-batch runs of 1,000 epochs, the batches of 32 end with the lower training loss on 9 seeds. Against full-batch runs of 10,000 epochs, they end with the lower training loss on 5 seeds. Which reading do these two results support?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "An update on 32 rows is reliably worth more than an update on all 300 rows.",
+          "correct": false,
+          "feedback": "The second comparison gives both runs about 10,000 updates, and there the seeds split 5 to 5, which is no order."
+        },
+        {
+          "key": "b",
+          "text": "At equal epochs the batches of 32 did better; at equal updates neither did.",
+          "correct": true,
+          "feedback": "Right: 1,000 epochs are 10,000 updates at batch size 32 and 1,000 updates at full batch, so the first comparison is at equal epochs and the second at equal updates."
+        },
+        {
+          "key": "c",
+          "text": "Full-batch training is better, because it wins once it is given enough epochs.",
+          "correct": false,
+          "feedback": "With ten times the epochs the full batch only draws level, 5 seeds to 5, and it spends ten times the arithmetic to do so."
+        },
+        {
+          "key": "d",
+          "text": "The results contradict each other, so one of the two sets of runs must be faulty.",
+          "correct": false,
+          "feedback": "The two comparisons hold different things equal. One fixes the number of epochs and the other the number of updates, so they answer different questions."
+        }
+      ],
+      "explanation": "Section 6: with 10 updates per epoch, 1,000 epochs at batch size 32 are 10,000 updates. Compared at equal epochs the smaller batch made ten times as many updates and won on 9 of 10 seeds; compared at equal updates there was no order, while the full batch needed ten times as many passes over the data.",
+      "hints": [
+        "Count the updates each of the three kinds of run makes.",
+        "Decide for each comparison whether it holds the epochs or the updates equal."
+      ]
+    },
+    {
+      "id": "nn-032-q07",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 2,
+      "tags": [
+        "counting"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A training set has 50,000 rows and the batch size is 64. How many updates does one epoch hold, and how many rows are in the last batch?",
+      "answer": {
+        "parts": [
+          {
+            "label": "updates per epoch",
+            "value": 782,
+            "tolerance": 0,
+            "unit": ""
+          },
+          {
+            "label": "rows in the last batch",
+            "value": 16,
+            "tolerance": 0,
+            "unit": "rows"
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 3: ceil(50000 / 64) = 782 and 50000 - 64 * 781 = 16; the batches() function of snippets/counts.py returns (782, 16).",
+      "explanation": "Section 3: the inner loop runs $\\lceil N/B \\rceil$ times. $50{,}000 / 64 = 781.25$, so there are 782 batches, of which 781 are full. They hold $781 \\cdot 64 = 49{,}984$ rows and the last batch holds the remaining 16.",
+      "hints": [
+        "The division does not come out even, and the leftover rows still form a batch."
+      ]
+    },
+    {
+      "id": "nn-032-q08",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 6,
+      "tags": [
+        "decay",
+        "counter"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A full-batch run of 2,000 epochs uses a learning rate of 0.05 and a decay of $10^{-3}$, with the rate of update $t$ given by $\\alpha_0 / (1 + \\text{decay} \\cdot t)$ and $t$ counted from 0. The run is repeated on its 1,000 rows with batches of 50 for the same 2,000 epochs. Give the rate in the last update if the decay is left unchanged, and the decay that ends the mini-batch run at the rate at which the full-batch run ended.",
+      "answer": {
+        "parts": [
+          {
+            "label": "last rate with the decay unchanged",
+            "value": 0.0012195,
+            "tolerance": 2e-05,
+            "unit": ""
+          },
+          {
+            "label": "decay that restores the final rate",
+            "value": 5e-05,
+            "tolerance": 1e-06,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 5, as decayed() of snippets/counts.py computes it: 20 updates per epoch, 40,000 updates, last counter 39,999, 0.05 / (1 + 39.999) = 0.0012195; the full-batch run ends at 0.05 / 2.999 = 0.016672, and 1.999 / 39,999 = 4.998e-5, which is the decay divided by 20 to within the tolerance.",
+      "explanation": "Section 5: the counter counts updates. With $1{,}000 / 50 = 20$ updates per epoch the run makes 40,000 updates, and the last one has $t = 39{,}999$, so the unchanged decay gives $0.05 / 40.999 = 0.00122$. The full-batch run ended at $0.05 / (1 + 1.999) = 0.0167$. The same factor needs $\\text{decay} \\cdot 39{,}999 = 1.999$, a decay of $5 \\times 10^{-5}$: the old value divided by the 20 updates of an epoch.",
+      "hints": [
+        "First count the updates of the mini-batch run.",
+        "The final rate depends only on the product of the decay and the counter of the last update."
+      ]
+    },
+    {
+      "id": "nn-032-q09",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 5,
+      "tags": [
+        "noise",
+        "finite-population"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "For batches drawn without replacement from $N$ rows, the mean squared deviation of the batch gradient from the full-batch gradient is $\\frac{\\sigma^2}{B} \\cdot \\frac{N - B}{N - 1}$. On a training set of 300 rows, by what factor is the root-mean-square noise at $B = 32$ larger than at $B = 128$?",
+      "answer": {
+        "value": 2.4965,
+        "tolerance": 0.02,
+        "unit": ""
+      },
+      "precision_note": "Closed form of section 2: sqrt((128 / 32) * (268 / 172)) = 2.4965. snippets/gradient_noise.py measures 0.5124 / 0.2069 = 2.48 on its fixed network. The 1/sqrt(B) rule alone gives 2.0, outside the tolerance.",
+      "explanation": "Section 2: the ratio of the two mean squares is $\\frac{128}{32} \\cdot \\frac{300 - 32}{300 - 128} = 4 \\cdot \\frac{268}{172} = 6.233$, and its square root is 2.50. The rule $1/\\sqrt{B}$ alone gives 2, which ignores that a batch of 128 is a large share of 300 rows and therefore loses more noise than the rule says.",
+      "hints": [
+        "Write the formula once for each batch size and divide; $\\sigma^2$ and $N - 1$ cancel.",
+        "The question asks for the noise, which is the square root of the mean squared deviation."
+      ]
+    },
+    {
+      "id": "nn-032-q10",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "epoch-loss",
+        "last-batch"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "An epoch over 100 rows with a batch size of 40 produces the batch losses 0.50, 0.50 and 0.20, each a mean over the rows of its batch. Ignoring that the weights change between batches, give the figure that `epoch_loss / n_batches` reports and the mean loss over the 100 rows.",
+      "answer": {
+        "parts": [
+          {
+            "label": "epoch_loss / n_batches",
+            "value": 0.4,
+            "tolerance": 0.002,
+            "unit": ""
+          },
+          {
+            "label": "mean over the 100 rows",
+            "value": 0.44,
+            "tolerance": 0.002,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed forms of section 4: (0.50 + 0.50 + 0.20) / 3 = 0.40 and (40 * 0.50 + 40 * 0.50 + 20 * 0.20) / 100 = 0.44, the same two means snippets/network.py prints for its trained network.",
+      "explanation": "Section 4: the batches hold 40, 40 and 20 rows. The plain mean counts each batch once, $(0.50 + 0.50 + 0.20)/3 = 0.40$. The mean over rows weighs each batch loss by its size, $(40 \\cdot 0.50 + 40 \\cdot 0.50 + 20 \\cdot 0.20)/100 = 0.44$. The short batch has the lowest loss here, and the plain mean gives its 20 rows the weight of 40.",
+      "hints": [
+        "Find the size of each of the three batches first.",
+        "A mean over rows is a sum over rows divided by the number of rows."
+      ]
+    },
+    {
+      "id": "nn-032-q11",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 5,
+      "tags": [
+        "budget",
+        "choosing"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A run on 60,000 rows has a budget of 20 epochs, and experience with the model says it needs at least 5,000 updates. What is the largest batch size that still gives 5,000 updates within the budget?",
+      "answer": {
+        "value": 240,
+        "tolerance": 0,
+        "unit": "rows"
+      },
+      "precision_note": "Closed form from section 3: 20 * ceil(60000 / B) >= 5000 needs ceil(60000 / B) >= 250, so B <= 240; a search over B = 1..60000 in the bank's build script returns 240, and B = 241 gives 4,980 updates.",
+      "explanation": "Sections 3 and 7: 20 epochs hold $20 \\cdot \\lceil 60{,}000 / B \\rceil$ updates, so each epoch needs at least 250 batches. $60{,}000 / 240 = 250$ exactly, and at $B = 241$ the quotient is 248.96, which rounds up to 249 batches and 4,980 updates. The largest batch size is 240. A fixed epoch budget therefore puts an upper bound on the batch size.",
+      "hints": [
+        "Turn the number of updates needed into a number of batches per epoch.",
+        "Solve $\\lceil 60{,}000 / B \\rceil \\ge 250$ for the largest whole $B$, and check the next larger one."
+      ]
+    },
+    {
+      "id": "nn-032-q12",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 1,
+      "tags": [
+        "counting",
+        "formula"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A training set has $N$ rows and the loop keeps a short last batch. State, as a formula in $N$ and the batch size $B$, how many times the inner loop runs in one epoch.",
+      "answer": {
+        "model": "$\\lceil N/B \\rceil$: $N$ divided by $B$, rounded up.",
+        "accept": [
+          "^(?![\\s\\S]*(?:\\bB\\s*/\\s*N\\b|\\bB\\s+(?:divided\\s+by|over)\\s+N\\b|\\\\frac\\s*\\{\\s*B\\s*\\}\\s*\\{\\s*N\\s*\\}))(?![\\s\\S]*\\b(?:not|never|isn't)\\b(?:(?!\\bbut\\b)[^.;,]){0,25}(?:\\bround(?:ed|ing|s)?\\s+up\\b|\\bceil|\\\\lceil|⌈))(?![\\s\\S]*(?:\\bround(?:ed|ing|s)?\\s+up|\\bup|\\\\rceil|⌉|\\bceil(?:ing)?\\s*\\([^)]*\\))\\s*\\$?\\s*(?:[+\\-−]|plus|minus)\\s*(?:1|one)\\b)(?![\\s\\S]*(?<!not )(?<!not the )(?<!never )(?<!never the )(?<!than )(?<!than the )\\bfloor\\b)(?![\\s\\S]*\\bor\\s+(?:round(?:ed|ing|s)?\\s+)?down\\b)(?=[\\s\\S]*(?:\\\\lceil|⌈|\\bceil(?:ing)?\\b|\\bround(?:ed|ing|s)?\\b(?:(?!\\bdown\\b|\\bnot\\b)[^.;,]){0,20}\\bup\\b|\\bnext\\s+(?:whole|integer)))[\\s\\S]*(?:\\bN\\s*/\\s*B\\b|\\\\frac\\s*\\{\\s*N\\s*\\}\\s*\\{\\s*B\\s*\\}|\\bN\\s+(?:divided\\s+by|over)\\s+B\\b|(?:rows|samples|training\\s+set|dataset)[^.]{0,40}divided\\s+by[^.]{0,20}batch\\s+size|number\\s+of\\s+(?:rows|samples)\\s*/\\s*(?:the\\s+)?batch\\s+size)",
+          "\\(\\s*N\\s*\\+\\s*B\\s*[-−]\\s*1\\s*\\)\\s*//\\s*B\\b|-\\s*\\(\\s*-\\s*N\\s*//\\s*B\\s*\\)",
+          "(?:\\bN\\s*//\\s*B\\b|\\bfloor\\s*\\(\\s*N\\s*/\\s*B\\s*\\)|\\bN\\s*/\\s*B\\s+rounded\\s+down)[^.;]{0,15}(?:\\+|\\bplus)\\s*(?:1|one)\\b[^.;]{0,15}\\b(?:if|when|whenever|for)\\b[^.;]{0,60}(?:\\bnot\\s+(?:divide|a\\s+multiple|divisible|exact|even)|\\bremainder|\\bleft\\s*-?over|\\bshort\\b|%|n[o']t\\s+divide)"
+        ]
+      },
+      "explanation": "Section 3: `range(0, n_samples, batch_size)` yields one start per batch, including a last batch that may be short, so the inner loop runs $\\lceil N/B \\rceil$ times. Rounding down would leave out the short batch.",
+      "hints": [
+        "Decide whether the leftover rows after the last full batch still count as a batch."
+      ]
+    },
+    {
+      "id": "nn-032-q13",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 1,
+      "tags": [
+        "counter"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "In the two-loop script, `post_update_params` is called in the inner loop. Say in a few words what `optimizer.iterations` holds at any moment of training.",
+      "answer": {
+        "model": "The number of parameter updates made so far: one per batch, summed over all epochs.",
+        "accept": [
+          "^(?!\\s*(?:it\\s+(?:counts|holds|is)\\s+)?(?:the\\s+)?(?:number\\s+of\\s+)?(?:completed\\s+)?epochs\\b(?![^.;,]{0,12}(?:\\btimes\\b|\\bx\\b|\\*|×|\\bmultiplied)))(?![\\s\\S]*\\b(?:counts?|counting|is|are|equals?|=|holds)\\s+(?:the\\s+)?(?:number\\s+of\\s+)?(?:completed\\s+)?epochs\\b(?![^.;,]{0,12}(?:\\btimes\\b|\\bx\\b|\\*|×|\\bmultiplied)))(?![\\s\\S]*\\b(?:rows|samples)\\b(?!\\s+per\\b)[^.]{0,20}\\b(?:seen|processed|counted)\\b)(?![\\s\\S]*\\b(?:rows|samples)\\s+(?:in|of|per)\\s+(?:(?:the|a|an|each|one|every)\\s+)?(?:mini-?)?batch\\b)(?![\\s\\S]*(?:^\\s*(?:it\\s+(?:holds|is)\\s+)?(?:the\\s+)?|\\b(?:holds|is|equals|=|times|x|\\*|×|multiplied\\s+by)\\s+(?:the\\s+)?)batch\\s+size\\b)(?:(?=[\\s\\S]*\\bepochs?\\b[^.;,]{0,12}(?:\\btimes\\b|\\bx\\b|\\*|×|\\bmultiplied\\s+by\\b))|(?![\\s\\S]*(?:\\b(?:in|of|within|during)\\s+(?:the\\s+|an?\\s+)?(?:current\\s+|this\\s+|single\\s+|one\\s+|each\\s+|every\\s+)?epoch\\b|\\bper[\\s-]+epoch\\b|\\b(?:each|every)\\s+epoch\\s+(?:it\\s+)?(?:starts|restarts|begins))))(?![\\s\\S]*(?<!not )(?<!never )(?<!n't )(?<!nothing )(?<!without )(?<!without a )(?<!without being )(?<!no )(?<!not be )(?<!never be )\\breset)(?![\\s\\S]*\\b(?:not|n't|never)\\b(?:(?!\\bbut\\b)[^.;,]){0,20}\\b(?:updates|batches|steps)\\b)[\\s\\S]*(?:\\b(?:number|count|total|tally|sum)\\b[^.;,]{0,40}\\b(?:(?:parameter\\s+|weight\\s+|gradient\\s+|optimi[sz]er\\s+)?(?:updates?|batch(?:es)?|mini-?batch(?:es)?|steps?|iterations)|calls)\\b|\\b(?:parameter\\s+|weight\\s+|gradient\\s+|optimi[sz]er\\s+)?(?:updates?|batch(?:es)?|mini-?batch(?:es)?|steps?|iterations)\\b[^.;,]{0,15}\\b(?:count|total|so\\s+far|made|seen|processed|taken|performed|done)\\b|\\bhow\\s+many\\b[^.;]{0,40}\\b(?:updates?|updated|batch(?:es)?|steps?)\\b|\\bcounts?\\s+(?:the\\s+)?(?:parameter\\s+|weight\\s+|gradient\\s+|optimi[sz]er\\s+)?(?:updates?|batch(?:es)?|mini-?batch(?:es)?|steps?|iterations)\\b|\\bone\\s+(?:more\\s+)?(?:per|for\\s+(?:each|every))\\s+(?:mini-?)?(?:batch|update|step)\\b|\\bepochs?\\b[^.;,]{0,12}(?:\\btimes\\b|\\bx\\b|\\*|×|\\bmultiplied\\s+by\\b)\\s+(?:the\\s+)?(?:number\\s+of\\s+)?(?:batches|updates|steps))"
+        ]
+      },
+      "explanation": "Section 5: `post_update_params` raises the counter once per call, which is once per batch, and nothing resets it, so it holds the total number of updates since the optimiser was created. Both the decay and Adam's bias correction read it as the update count.",
+      "hints": [
+        "Find the line that raises the counter and ask how often the loop reaches it."
+      ]
+    },
+    {
+      "id": "nn-032-q14",
+      "type": "match",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "10",
+      "est_minutes": 5,
+      "tags": [
+        "diagnosis",
+        "symptoms"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Each symptom was observed in a two-loop training script on a three-class problem whose rows are stored class by class. Match each symptom to the mistake that produces it.",
+      "left": [
+        {
+          "key": "a",
+          "text": "Training accuracy near one half after 1,000 epochs; the same script reaches about 85 percent when one line is restored."
+        },
+        {
+          "key": "b",
+          "text": "The epoch loss is above $\\ln 3$ from the first epoch and stays there; training accuracy is exactly one third."
+        },
+        {
+          "key": "c",
+          "text": "The run learns, but worse than expected; after training `optimizer.iterations` reads 1 and the rate never left its initial value."
+        },
+        {
+          "key": "d",
+          "text": "The printed loss swings between 0.03 and 0.9 from one epoch to the next, while the mean of the batch losses barely moves."
+        },
+        {
+          "key": "e",
+          "text": "After the planned epochs the learning rate is a hundredth of its start, and the loss is higher than in the full-batch run."
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "The optimiser is created inside the batch loop."
+        },
+        {
+          "key": "q",
+          "text": "The script prints the loss of the last batch."
+        },
+        {
+          "key": "r",
+          "text": "The rows are not shuffled, so each batch holds one class."
+        },
+        {
+          "key": "s",
+          "text": "A decay chosen for full-batch epochs was kept."
+        },
+        {
+          "key": "t",
+          "text": "`X` is indexed with the shuffled order and `y` is not."
+        },
+        {
+          "key": "u",
+          "text": "The batch size equals the number of rows."
+        },
+        {
+          "key": "v",
+          "text": "The short last batch is dropped."
+        }
+      ],
+      "answer": {
+        "a": "r",
+        "b": "t",
+        "c": "p",
+        "d": "q",
+        "e": "s"
+      },
+      "explanation": "Sections 5 and 10: batches of one class stall training near half accuracy; labels detached from their rows leave nothing to learn, so the loss stays at that of a uniform guess; a new optimiser per batch keeps the counter at 0, so the decay never acts; the loss of a 12-row batch swings widely; and an unchanged decay acts once per batch. A batch size equal to $N$ and a dropped last batch produce none of these symptoms.",
+      "hints": [
+        "Sort the symptoms by what is wrong: the data order, the labels, the counter, or the reporting.",
+        "Two symptoms concern the learning rate; one has a rate that never falls and the other a rate that falls too fast."
+      ]
+    },
+    {
+      "id": "nn-032-q15",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 4,
+      "tags": [
+        "loop",
+        "structure"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Put the steps of one epoch of the two-loop training script in the order in which they first happen.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Run the forward pass on the batch and obtain its loss."
+        },
+        {
+          "key": "b",
+          "text": "Divide the summed batch losses by the number of batches."
+        },
+        {
+          "key": "c",
+          "text": "Draw a random order of the row numbers."
+        },
+        {
+          "key": "d",
+          "text": "Call the optimiser's three methods, which raises its counter by one."
+        },
+        {
+          "key": "e",
+          "text": "Take the next slice of `batch_size` rows and labels from the reordered arrays."
+        },
+        {
+          "key": "f",
+          "text": "Reorder the rows and the labels with that same order."
+        },
+        {
+          "key": "g",
+          "text": "Run the backward pass from the loss to the first layer."
+        }
+      ],
+      "answer": [
+        "c",
+        "f",
+        "e",
+        "a",
+        "g",
+        "d",
+        "b"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 3: the epoch starts with one shuffle, applied to rows and labels together. Each batch is then sliced, passed forward, passed backward and used for one update, in that order, because the backward pass needs the forward pass's cached values and the optimiser needs the gradients. The epoch figures are computed after the last batch.",
+      "hints": [
+        "Two steps happen once per epoch before any batch is processed, and one happens once after the last batch."
+      ]
+    },
+    {
+      "id": "nn-032-q16",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 15,
+      "tags": [
+        "implement",
+        "batches"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Write `minibatches(X, y, batch_size, idx)`, the data side of one epoch of the two-loop script. `idx` is the row order of the epoch. The function returns a list of `(X_batch, y_batch)` pairs that take the rows in the order `idx` gives, cut into consecutive batches of `batch_size` rows, with a shorter last batch when the sizes do not divide. Every row keeps its label, and `X` and `y` are left unchanged.",
+      "kind": "implement",
+      "language": "python",
+      "starter": "import numpy as np\n\n\ndef minibatches(X, y, batch_size, idx):\n    \"\"\"Return a list of (X_batch, y_batch) pairs for one epoch.\n\n    idx is the row order of the epoch, an array holding each row number once.\n    \"\"\"\n    # TODO: reorder rows and labels with idx, then cut consecutive slices of batch_size rows.\n    raise NotImplementedError\n",
+      "solution": "import numpy as np\n\n\ndef minibatches(X, y, batch_size, idx):\n    \"\"\"Return a list of (X_batch, y_batch) pairs for one epoch.\n\n    idx is the row order of the epoch, an array holding each row number once.\n    \"\"\"\n    X_shuf = X[idx]\n    y_shuf = y[idx]\n    pairs = []\n    for start in range(0, len(X), batch_size):\n        pairs.append((X_shuf[start:start + batch_size], y_shuf[start:start + batch_size]))\n    return pairs\n",
+      "tests": "import numpy as np\n\n\ndef check(n_samples, batch_size, seed):\n    rng = np.random.default_rng(seed)\n    X = np.stack([np.arange(n_samples), 10.0 * np.arange(n_samples)], axis=1).astype(float)   # row i is (i, 10 i)\n    y = np.arange(n_samples)                                                                  # label i belongs to row i\n    X_before, y_before = X.copy(), y.copy()\n    idx = rng.permutation(n_samples)\n\n    pairs = minibatches(X, y, batch_size, idx)\n\n    n_batches = -(-n_samples // batch_size)\n    assert len(pairs) == n_batches, f\"expected {n_batches} batches for N = {n_samples}, B = {batch_size}, got {len(pairs)}\"\n    sizes = [len(X_batch) for X_batch, _ in pairs]\n    want = [batch_size] * (n_batches - 1) + [n_samples - batch_size * (n_batches - 1)]\n    assert sizes == want, f\"batch sizes {sizes}, expected {want}: full batches, then the short one\"\n    for X_batch, y_batch in pairs:\n        assert X_batch.shape == (len(y_batch), 2), \"each X_batch has one row per label\"\n        assert np.array_equal(X_batch[:, 0], y_batch), \"a row was separated from its label\"\n    labels = np.concatenate([y_batch for _, y_batch in pairs])\n    assert sorted(labels.tolist()) == list(range(n_samples)), \"every row must appear exactly once per epoch\"\n    assert np.array_equal(labels, idx), \"the batches must follow the order idx gives\"\n    assert np.array_equal(X, X_before) and np.array_equal(y, y_before), \"X and y must not be changed\"\n\n\ncheck(10, 4, 0)       # 4, 4, 2\ncheck(8, 4, 1)        # the batch size divides N: no short batch\ncheck(300, 32, 2)     # ten batches, the last of 12 rows\ncheck(7, 1, 3)        # true SGD\ncheck(5, 5, 4)        # full batch\ncheck(5, 20, 5)       # a batch size above N gives one batch of N rows\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "Section 3: one index array reorders rows and labels together, so each row keeps its label, and `range(0, len(X), batch_size)` gives one start per batch. A slice that runs past the end of the array simply stops there, which produces the short last batch without a special case. Indexing `X[idx[start:start + batch_size]]` gives the same batches.",
+      "hints": [
+        "Reordering and slicing are two separate steps, and the same order has to reach both arrays.",
+        "A NumPy slice whose end lies beyond the array returns the rows that exist, so the last batch needs no special case."
+      ]
+    },
+    {
+      "id": "nn-032-q17",
+      "type": "long",
+      "track": "intuition",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 12,
+      "tags": [
+        "regimes",
+        "noise"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Compare full-batch gradient descent, mini-batch SGD and true SGD on a training set of $N$ rows. For each, say what one update consumes, how many updates an epoch holds, and how far the gradient it uses is from the full-batch gradient. Then explain why enlarging a batch brings diminishing returns, and why the noise is exactly zero at $B = N$.",
+      "kind": "compare",
+      "solution": "Full-batch gradient descent uses all $N$ rows for every update, so an epoch is one update, and the gradient is the exact gradient of the training loss. True SGD uses one row per update, so an epoch holds $N$ updates, and each gradient is a single-row gradient, the noisiest estimate. Mini-batch SGD uses $B$ rows with $1 < B < N$, so an epoch holds $\\lceil N/B \\rceil$ updates, and its gradient is the mean of $B$ single-row gradients.\n\nIf the batch is drawn at random, the batch gradient is unbiased: its expectation is the full-batch gradient. Its mean squared deviation is $\\frac{\\sigma^2}{B} \\cdot \\frac{N - B}{N - 1}$, with $\\sigma^2$ the summed variance of the single-row gradients.\n\nDiminishing returns follow from the first factor. The variance falls as $1/B$, so the noise, its square root, falls as $1/\\sqrt{B}$: four times the rows, and four times the arithmetic, halve the noise. The first few rows of a batch buy most of the accuracy of the estimate.\n\nThe second factor is the correction for drawing without replacement from a finite set. At $B = N$ it is zero, because the batch is then the whole training set whatever the draw, and the mean of all $N$ single-row gradients is the full-batch gradient itself. Nothing is left to chance.",
+      "rubric": [
+        {
+          "criterion": "States for each regime the rows per update and the updates per epoch ($N$ and 1, $B$ and $\\lceil N/B \\rceil$, 1 and $N$)",
+          "points": 3
+        },
+        {
+          "criterion": "States that a randomly drawn batch gives an unbiased estimate of the full-batch gradient, and that the estimate is noisier the smaller the batch",
+          "points": 2
+        },
+        {
+          "criterion": "Explains diminishing returns from the variance falling as $1/B$ and the noise as $1/\\sqrt{B}$ while the cost grows as $B$",
+          "points": 2
+        },
+        {
+          "criterion": "Explains zero noise at $B = N$: the batch is the whole set for every draw, or the factor $(N - B)/(N - 1)$ vanishes",
+          "points": 1
+        }
+      ],
+      "answer_length": "three or four short paragraphs",
+      "explanation": "Section 2: the three regimes differ in the batch size alone. A random batch gradient is unbiased with mean squared deviation $\\frac{\\sigma^2}{B} \\cdot \\frac{N - B}{N - 1}$, so the noise falls only as $1/\\sqrt{B}$ while the cost of an update grows as $B$, and it vanishes when the batch is the whole set.",
+      "hints": [
+        "Organise the answer by the single number that distinguishes the regimes.",
+        "For the last two parts, look at each of the two factors of the noise formula separately."
+      ]
+    },
+    {
+      "id": "nn-032-q18",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 15,
+      "tags": [
+        "critique",
+        "comparison"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A report reads: 'With a batch size of 32 the network reached 89 percent training accuracy after 1,000 epochs, and with the full batch of 300 rows only 82 percent. Small batches therefore generalise better, and 32 is the best batch size for this problem.' Each figure comes from one run. Critique the report: say what the comparison does and does not show, and what would have to be measured to support each of its two conclusions.",
+      "kind": "critique",
+      "solution": "The comparison holds the number of epochs equal, and equal epochs is not equal updates. With 300 rows, a batch size of 32 gives 10 updates per epoch, so the mini-batch run made 10,000 updates and the full-batch run 1,000. The figures show that the same number of passes over the data produced a better-trained network with the smaller batch. They do not show that an update on 32 rows is as good as an update on 300: for that the runs have to be compared at an equal number of updates, for example 1,000 epochs against 10,000. In the post's runs that comparison gave no order between the two.\n\nThe figures are training accuracies, so they say nothing about generalisation. Generalisation is measured on held-out data, by a forward-only pass, and a claim that small batches generalise better would need test or validation accuracy, ideally at a matched training loss so that better optimisation is not mistaken for better generalisation.\n\nOne run of each setting is not a result. The outcome of a run depends on the seed, and a mini-batch run's epoch figures also jump from epoch to epoch. The comparison needs several seeds with the same seeds in both settings, read seed by seed, and figures measured forward-only after training and not taken from the running epoch report.\n\nThe phrase 'the best batch size' is a claim about all batch sizes after testing two. It needs a sweep, with the learning rate tuned for each batch size, because the two are coupled: batches of 8 failed at a rate that suited batches of 32. The choice among candidates belongs on validation data, with the test set read once at the end.",
+      "rubric": [
+        {
+          "criterion": "Points out that equal epochs are not equal updates and gives the two update counts (10,000 against 1,000)",
+          "points": 2
+        },
+        {
+          "criterion": "States that training accuracy does not measure generalisation and that held-out data is needed",
+          "points": 2
+        },
+        {
+          "criterion": "States that one run per setting is insufficient and asks for several seeds, compared seed by seed",
+          "points": 2
+        },
+        {
+          "criterion": "States that two batch sizes cannot establish a best one, and that the learning rate has to be tuned with the batch size or the choice made on validation data",
+          "points": 2
+        }
+      ],
+      "answer_length": "four short paragraphs",
+      "explanation": "Section 6: the report compares at equal epochs, where the smaller batch has ten times the updates, reads training accuracy as generalisation, and rests on one run per setting. Section 7 adds that a batch size is chosen together with the learning rate, on validation data, over several seeds.",
+      "hints": [
+        "Count the updates behind each of the two figures.",
+        "Check which data the figures were measured on, how many runs stand behind them, and how many batch sizes were tried."
+      ]
+    },
+    {
+      "id": "nn-032-q19",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o2",
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 15,
+      "tags": [
+        "decay",
+        "counter",
+        "adam"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Post 23 chose a decay for a loop with one update per epoch, and post 27 uses the same counter as $t$ in Adam's bias correction. A script is changed from full-batch training to batches of $B$ rows on $N$ rows with the same number of epochs $E$. Derive the decay that brings the learning rate to the same value at the end of training, and say whether the bias correction needs any change. State what goes wrong if the counter is reset at the start of each epoch.",
+      "kind": "connect",
+      "solution": "1. The decayed rate is $\\alpha_t = \\alpha_0 / (1 + d \\cdot t)$, where $d$ is the decay and $t$ is `iterations`, the number of updates made so far. The counter is raised in `post_update_params`, once per update.\n\n2. Full-batch training makes one update per epoch, so after $E$ epochs the rate is $\\alpha_0 / (1 + d E)$, up to the difference of one in the last counter value.\n\n3. With batches of $B$ rows an epoch holds $k = \\lceil N/B \\rceil$ updates, so after $E$ epochs the counter is $kE$ and the rate is $\\alpha_0 / (1 + d' k E)$ for a decay $d'$.\n\n4. The two final rates are equal when $d' k E = d E$, so $d' = d / k$: the decay is divided by the number of updates per epoch. With the decay unchanged the rate falls $k$ times as fast per epoch.\n\n5. The bias correction needs no change. It divides the moving averages by $1 - \\beta^t$ to undo their start at zero, and the averages are updated once per update, so $t$ must be the number of updates. That is what the counter holds.\n\n6. Resetting the counter each epoch breaks both. The decay starts again every epoch, so the rate never falls below its value after $k$ updates. The bias correction is applied with a small $t$ to averages that are long past their start, since the momentum and cache arrays are stored on the layers and survive; in the first update of each epoch, where $t = 1$, the step is scaled by $\\frac{1/(1 - \\beta_1)}{\\sqrt{1/(1 - \\beta_2)}} = 10/\\sqrt{1{,}000} = 0.316$.",
+      "rubric": [
+        {
+          "criterion": "States the decayed rate as a function of the number of updates and identifies the counter as counting updates",
+          "points": 2
+        },
+        {
+          "criterion": "Counts $\\lceil N/B \\rceil$ updates per epoch and derives $d' = d / \\lceil N/B \\rceil$ from equal final rates",
+          "points": 3
+        },
+        {
+          "criterion": "States that the bias correction needs no change because $t$ is meant to count updates of the moving averages",
+          "points": 2
+        },
+        {
+          "criterion": "Explains a consequence of resetting the counter: the decay restarts, or the bias correction is misapplied to averages that are no longer at their start",
+          "points": 1
+        }
+      ],
+      "answer_length": "a numbered derivation of five or six steps",
+      "explanation": "Section 5: `iterations` counts updates, so the decayed rate after $E$ epochs is $\\alpha_0 / (1 + d \\lceil N/B \\rceil E)$, and dividing the decay by the updates per epoch restores the full-batch schedule. The bias correction of post 27 wants the update count and is correct as it stands; section 10 shows what a counter stuck at its start does.",
+      "hints": [
+        "Write the final learning rate of each run in terms of the decay and the number of updates.",
+        "For the bias correction, ask what event $t$ is supposed to count, and how often that event now happens per epoch."
+      ],
+      "connects": [
+        "nn-023",
+        "nn-027"
+      ]
+    }
+  ]
+}

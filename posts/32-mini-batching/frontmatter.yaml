@@ -1,8 +1,23 @@
 id: nn-032
 slug: 32-mini-batching
-title: "Part 32 · Mini-batching"
+title: "32 - Mini-batching"
+summary: "The full-batch loop gains an inner loop over shuffled batches. The post builds it on the series' classes, measures gradient noise against batch size, recounts the decay in updates, and compares batch sizes on the spiral over seeds."
 date: 2026-05-30
+updated: 2026-10-06
+status: complete
+part: "Part VIII - Practical training and extensions"
+level: intermediate
+reading_time: 25
 tags: [neural-networks, from-scratch, training, mini-batch, sgd, practical-training]
 hero: diagrams/01-batch-size-trajectories.svg
-reading_time: 11
-part: "Part VIII — Practical training and extensions"
+prerequisites: [nn-022, nn-028]
+code: included
+outcomes:
+  - id: o1
+    text: "Distinguish full-batch gradient descent, true SGD and mini-batch SGD by what each step consumes and the gradient noise that results."
+  - id: o2
+    text: "Extend the single-loop training pattern into the two-loop epoch-by-batch structure with shuffling."
+  - id: o3
+    text: "Choose a batch size for a given dataset."
+recommended: [nn-027]
+compute: cpu
