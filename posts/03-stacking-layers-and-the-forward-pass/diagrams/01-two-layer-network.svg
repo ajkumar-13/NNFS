@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-01-two-layer-network-title" aria-describedby="nn-01-two-layer-network-desc">
 <title id="nn-01-two-layer-network-title">Layer 1's output is layer 2's input</title>
-<desc id="nn-01-two-layer-network-desc">The post's network drawn left to right: 4 input nodes x1 to x4, 3 neurons in layer 1, the hidden layer, and 3 neurons in layer 2, the output layer. Every neuron is joined to every node of the column before it; the 4 connections into the first neuron of layer 1 and the 3 into the first neuron of layer 2 are drawn in the weight colour. Above the connections are the arrays they carry: X of shape (N, 4), then Z1 of shape (N, 3); a brace over the three output arrows labels them Z2 of shape (N, 3), the output. Under layer 1: W1 of shape (3, 4), 3 neurons with 4 weights each, b1 of shape (3,), 12 plus 3 is 15 parameters, and Z1 = X W1 transposed + b1. Under layer 2: W2 of shape (3, 3), 3 neurons with 3 weights each, b2 of shape (3,), 9 plus 3 is 12 parameters, and Z2 = Z1 W2 transposed + b2. The whole network has 15 plus 12, which is 27 parameters. A key at the top right reads: into neuron 1, 4 weights in layer 1 and 3 weights in layer 2. A caption line reads: each layer runs the same call; only the sizes change.</desc>
+<desc id="nn-01-two-layer-network-desc">The post's network drawn left to right: 4 input nodes x1 to x4, 3 neurons in layer 1, the hidden layer, and 3 neurons in layer 2, the output layer. Every neuron is joined to every node of the column before it; the 4 connections into the first neuron of layer 1 and the 3 into the first neuron of layer 2 are drawn in the weight colour. Above the connections are the arrays they carry: X of shape (N, 4), then Z1 of shape (N, 3); a brace over the three output arrows labels them Z2 of shape (N, 3), 3 values per sample, the output. Under layer 1: W1 of shape (3, 4), 3 neurons with 4 weights each, b1 of shape (3,), 12 plus 3 is 15 parameters, and Z1 = X W1 transposed + b1. Under layer 2: W2 of shape (3, 3), 3 neurons with 3 weights each, b2 of shape (3,), 9 plus 3 is 12 parameters, and Z2 = Z1 W2 transposed + b2. The whole network has 15 plus 12, which is 27 parameters. A key at the top right reads: into neuron 1, 4 weights in layer 1 and 3 weights in layer 2. A caption line reads: each layer runs the same call; only the sizes change.</desc>
 <style>
   :root {
     --nn-bg: #FAFAF7;
@@ -130,10 +130,12 @@
   .d-lead { stroke-dasharray: 4 4; }
   .f-blue-soft { fill: var(--nn-blue-soft); }
   .f-orange-ink { fill: var(--nn-orange-ink); }
+  .f-orange-soft { fill: var(--nn-orange-soft); }
   .f-surface { fill: var(--nn-surface); }
   .s-blue { stroke: var(--nn-blue); }
   .s-ink-muted { stroke: var(--nn-ink-muted); }
   .s-orange { stroke: var(--nn-orange); }
+  .s-rule { stroke: var(--nn-rule); }
 </style>
 <defs>
 <marker id="nn-01-two-layer-network-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
@@ -141,26 +143,49 @@
 <rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
 <text x="40" y="48" class="t-title">Layer 1's output is layer 2's input</text>
 <text x="40" y="76" class="t-subtitle">The post's network: 4 inputs, 3 neurons in each layer, a batch of <tspan class="i">N</tspan> samples.</text>
-<g data-grid="skip">
-<path d="M160,216 L368,336M160,296 L368,336M160,376 L368,336M160,456 L368,336M160,216 L368,416M160,296 L368,416M160,376 L368,416M160,456 L368,416M416,256 L624,336M416,336 L624,336M416,416 L624,336M416,256 L624,416M416,336 L624,416M416,416 L624,416" class="rule1"/>
-<path d="M160,216 L368,256M160,296 L368,256M160,376 L368,256M160,456 L368,256M416,256 L624,256M416,336 L624,256M416,416 L624,256" class="s-orange w15 nofill"/>
-</g>
-<g data-grid="skip">
+<path d="M160,216 L368,336" class="s-rule w1 nofill"/>
+<path d="M160,296 L368,336" class="s-rule w1 nofill"/>
+<path d="M160,376 L368,336" class="s-rule w1 nofill"/>
+<path d="M160,456 L368,336" class="s-rule w1 nofill"/>
+<path d="M160,216 L368,416" class="s-rule w1 nofill"/>
+<path d="M160,296 L368,416" class="s-rule w1 nofill"/>
+<path d="M160,376 L368,416" class="s-rule w1 nofill"/>
+<path d="M160,456 L368,416" class="s-rule w1 nofill"/>
+<path d="M160,216 L368,256" class="s-orange w15 nofill"/>
+<path d="M160,296 L368,256" class="s-orange w15 nofill"/>
+<path d="M160,376 L368,256" class="s-orange w15 nofill"/>
+<path d="M160,456 L368,256" class="s-orange w15 nofill"/>
+<path d="M416,256 L624,336" class="s-rule w1 nofill"/>
+<path d="M416,336 L624,336" class="s-rule w1 nofill"/>
+<path d="M416,416 L624,336" class="s-rule w1 nofill"/>
+<path d="M416,256 L624,416" class="s-rule w1 nofill"/>
+<path d="M416,336 L624,416" class="s-rule w1 nofill"/>
+<path d="M416,416 L624,416" class="s-rule w1 nofill"/>
+<path d="M416,256 L624,256" class="s-orange w15 nofill"/>
+<path d="M416,336 L624,256" class="s-orange w15 nofill"/>
+<path d="M416,416 L624,256" class="s-orange w15 nofill"/>
 <circle cx="136" cy="216" r="24" class="f-blue-soft s-blue w15"/>
+<g data-grid="skip">
+<text x="136" y="221" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+</g>
 <circle cx="136" cy="296" r="24" class="f-blue-soft s-blue w15"/>
+<g data-grid="skip">
+<text x="136" y="301" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+</g>
 <circle cx="136" cy="376" r="24" class="f-blue-soft s-blue w15"/>
+<g data-grid="skip">
+<text x="136" y="381" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+</g>
 <circle cx="136" cy="456" r="24" class="f-blue-soft s-blue w15"/>
-<circle cx="392" cy="256" r="24" class="f-surface s-orange w15"/>
+<g data-grid="skip">
+<text x="136" y="461" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">4</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<circle cx="392" cy="256" r="24" class="f-orange-soft s-orange w15"/>
 <circle cx="392" cy="336" r="24" class="f-surface s-ink-muted w15"/>
 <circle cx="392" cy="416" r="24" class="f-surface s-ink-muted w15"/>
-<circle cx="648" cy="256" r="24" class="f-surface s-orange w15"/>
+<circle cx="648" cy="256" r="24" class="f-orange-soft s-orange w15"/>
 <circle cx="648" cy="336" r="24" class="f-surface s-ink-muted w15"/>
 <circle cx="648" cy="416" r="24" class="f-surface s-ink-muted w15"/>
-</g>
-<text x="136" y="220" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
-<text x="136" y="300" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
-<text x="136" y="380" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
-<text x="136" y="460" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">4</tspan><tspan dy="-4">​</tspan></text>
 <path d="M672,256 L757,256" class="flow" marker-end="url(#nn-01-two-layer-network-arrow)"/>
 <path d="M672,336 L757,336" class="flow" marker-end="url(#nn-01-two-layer-network-arrow)"/>
 <path d="M672,416 L757,416" class="flow" marker-end="url(#nn-01-two-layer-network-arrow)"/>
@@ -169,23 +194,24 @@
 <text x="520" y="136" text-anchor="middle" class="t-label"><tspan class="b">Z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan>  (<tspan class="i">N</tspan>, 3)</text>
 <text x="520" y="160" text-anchor="middle" class="t-note">3 values per sample</text>
 <path d="M768,240 Q772,240 772,248 L772,328 Q772,336 776,336 Q772,336 772,344 L772,424 Q772,432 768,432" class="brace"/>
-<text x="784" y="332" class="t-label"><tspan class="b">Z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan>  (<tspan class="i">N</tspan>, 3)</text>
-<text x="784" y="356" class="t-note">the output</text>
+<text x="784" y="320" class="t-label"><tspan class="b">Z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan>  (<tspan class="i">N</tspan>, 3)</text>
+<text x="784" y="344" class="t-note">3 values per sample</text>
+<text x="784" y="364" class="t-note">the output</text>
 <text x="136" y="528" text-anchor="middle" class="t-head">Input</text>
 <text x="136" y="556" text-anchor="middle" class="t-note">4 features</text>
 <text x="392" y="528" text-anchor="middle" class="t-head">Layer 1: hidden</text>
 <text x="392" y="556" text-anchor="middle" class="t-label f-orange-ink"><tspan class="b">W</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> (3, 4),  <tspan class="b">b</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> (3,)</text>
 <text x="392" y="580" text-anchor="middle" class="t-note">3 neurons, 4 weights each</text>
 <text x="392" y="604" text-anchor="middle" class="t-note">12 + 3 = 15 parameters</text>
-<text x="392" y="640" text-anchor="middle" class="t-math"><tspan class="b">Z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> = <tspan class="b">X</tspan> <tspan class="b">W</tspan><tspan class="sub" dy="-9">T</tspan><tspan class="sub" dx="-7" dy="13">1</tspan><tspan dy="-4">​</tspan> + <tspan class="b">b</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="392" y="640" text-anchor="middle" class="t-math"><tspan class="b">Z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> = <tspan class="b">X</tspan> <tspan class="b">W</tspan><tspan class="sub" dy="-6">T</tspan><tspan class="sub" dx="-6.81" dy="10">1</tspan><tspan dx="1.33" dy="-4">​</tspan> + <tspan class="b">b</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
 <text x="648" y="528" text-anchor="middle" class="t-head">Layer 2: output</text>
 <text x="648" y="556" text-anchor="middle" class="t-label f-orange-ink"><tspan class="b">W</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> (3, 3),  <tspan class="b">b</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> (3,)</text>
 <text x="648" y="580" text-anchor="middle" class="t-note">3 neurons, 3 weights each</text>
 <text x="648" y="604" text-anchor="middle" class="t-note">9 + 3 = 12 parameters</text>
-<text x="648" y="640" text-anchor="middle" class="t-math"><tspan class="b">Z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> = <tspan class="b">Z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> <tspan class="b">W</tspan><tspan class="sub" dy="-9">T</tspan><tspan class="sub" dx="-7" dy="13">2</tspan><tspan dy="-4">​</tspan> + <tspan class="b">b</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
-<text x="848" y="528" text-anchor="middle" class="t-head">Network</text>
-<text x="848" y="556" text-anchor="middle" class="t-value">15 + 12 = 27</text>
-<text x="848" y="580" text-anchor="middle" class="t-note">parameters</text>
+<text x="648" y="640" text-anchor="middle" class="t-math"><tspan class="b">Z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> = <tspan class="b">Z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> <tspan class="b">W</tspan><tspan class="sub" dy="-6">T</tspan><tspan class="sub" dx="-6.81" dy="10">2</tspan><tspan dx="1.33" dy="-4">​</tspan> + <tspan class="b">b</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<text x="784" y="528" class="t-head">Network</text>
+<text x="784" y="556" class="t-value">15 + 12 = 27</text>
+<text x="784" y="580" class="t-note">parameters</text>
 <path d="M784,132 H808" class="s-orange w15 nofill"/>
 <text x="816" y="136" class="t-label">Into neuron 1</text>
 <text x="784" y="164" class="t-note">4 weights in layer 1</text>

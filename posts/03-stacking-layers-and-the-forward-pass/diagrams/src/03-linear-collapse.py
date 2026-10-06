@@ -16,7 +16,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, r"C:\Users\admin\Desktop\series-standard\tools")
-from figkit import Figure, Box, Raw, rich, num, MINUS  # noqa: E402
+from figkit import Figure, rich, num, arr, tr, MINUS  # noqa: E402
 
 SNIP = Path(__file__).resolve().parents[2] / "snippets" / "linear_collapse.py"
 with contextlib.redirect_stdout(io.StringIO()):
@@ -49,17 +49,8 @@ STAR = "\u2217"                         # the post's W_* and b_*: a subscript as
 
 
 def bold(base, s=None, t=False):
-    out = f'<tspan class="b">{base}</tspan>'
-    if t and s is not None:
-        # the transpose sits straight over the subscript: T raised, then the subscript pulled back under it
-        # by the width of a 13 px T, then back to the baseline
-        out += (f'<tspan class="sub" dy="-9">T</tspan><tspan class="sub" dx="-7" dy="13">{s}</tspan>'
-                f'<tspan dy="-4">\u200b</tspan>')
-    elif t:
-        out += '<tspan class="sub" dy="-9">T</tspan><tspan dy="9">\u200b</tspan>'
-    elif s is not None:
-        out += f'<tspan class="sub" dy="4">{s}</tspan><tspan dy="-4">\u200b</tspan>'
-    return Raw(out)
+    """A whole array: bold upright, an optional subscript, and with t the transpose stacked over it."""
+    return tr(arr(base), s) if t else arr(base, sub=s)
 
 
 def say(a, d=6):
@@ -136,8 +127,10 @@ fig.text(mx, gs.box.cy + 68, rich(bold("b", STAR), " = ", bold("b", "1"), " ", b
                                   bold("b", "2")), "label", anchor="middle")
 
 # -- the two outputs agree: an equals sign between the two Z2 grids, the note under it
-ex = z_two.box.cx
-fig.text(ex, z_two.box.bottom + 48, "=", "op", anchor="middle")
+# (drawn as two 32-unit rules: the 24 px glyph is too slight against two 144-unit grids)
+ex, ey = z_two.box.cx, z_two.box.bottom + 40
+for dy in (-4, 4):
+    fig.edge((ex - 16, ey + dy), (ex + 16, ey + dy), "ink-muted", 1.5)
 fig.text(ex, z_two.box.bottom + 76, "Same values, up to rounding", "note", anchor="middle")
 fig.caption("With no activation between them, the second layer adds parameters, not capability.")
 fig.write()

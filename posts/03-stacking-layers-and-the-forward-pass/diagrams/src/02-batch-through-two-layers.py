@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, r"C:\Users\admin\Desktop\series-standard\tools")
-from figkit import Figure, Box, Raw, rich, var, num, CDOT, MINUS  # noqa: E402
+from figkit import Figure, Box, rich, var, num, arr, tr, text_width, CDOT, MINUS  # noqa: E402
 
 SNIP = Path(__file__).resolve().parents[2] / "snippets" / "two_layer_forward.py"
 with contextlib.redirect_stdout(io.StringIO()):
@@ -46,17 +46,8 @@ assert all(f"{out} = {c}" in _src for out, c in zip(("layer1_outputs", "layer2_o
 
 
 def bold(base, s=None, t=False):
-    out = f'<tspan class="b">{base}</tspan>'
-    if t and s is not None:
-        # the transpose sits straight over the subscript: T raised, then the subscript pulled back under it
-        # by the width of a 13 px T, then back to the baseline
-        out += (f'<tspan class="sub" dy="-9">T</tspan><tspan class="sub" dx="-7" dy="13">{s}</tspan>'
-                f'<tspan dy="-4">\u200b</tspan>')
-    elif t:
-        out += '<tspan class="sub" dy="-9">T</tspan><tspan dy="9">\u200b</tspan>'
-    elif s is not None:
-        out += f'<tspan class="sub" dy="4">{s}</tspan><tspan dy="-4">\u200b</tspan>'
-    return Raw(out)
+    """A whole array: bold upright, an optional subscript, and with t the transpose stacked over it."""
+    return tr(arr(base), s) if t else arr(base, sub=s)
 
 
 def shape(t):
@@ -86,9 +77,10 @@ fig = Figure(
 C = 48                       # square cells
 CW = 72                      # the wider cells of the layer-2 column, for five-decimal values
 F = 14
-XX, Z1X, Z2X = 136, 384, 584           # left edges of the three columns
-YW1, YB, YZ = 152, 360, 432            # top of W1 transposed, of the bias strips, of the batch rows
+XX, Z1X, Z2X = 184, 432, 632           # left edges of the three columns
+YW1, YB, YZ = 168, 376, 448            # top of W1 transposed, of the bias strips, of the batch rows
 YW2 = YB - 16 - 3 * C                  # W2 transposed ends where W1 transposed ends
+TXT = Z1X - 16                         # the right edge of the free top-left corner's text column
 
 gx = fig.grid(XX, YZ, 3, 4, C, values=lambda i, j: fmt(X[i, j]), fill=lambda i, j: "input-soft", font=F)
 gw1 = fig.grid(Z1X, YW1, 4, 3, C, values=lambda i, j: fmt(W1.T[i, j]), fill=lambda i, j: "weight-soft", font=F)
@@ -109,35 +101,28 @@ hit = gz2.cell(0, 0)
 fig.arrow((gz1.box.right + 8, hit.cy), (hit.x - 8, hit.cy))
 fig.arrow((hit.cx, gb2.box.bottom), (hit.cx, hit.y))
 
-# how to read the layout, first, in the free top-left corner
-fig.text(40, 136, "How to read it", "head")
+# the free top-left corner, three groups spread down to the batch rows: how to read the layout, the two layer
+# calls as maths, and the same calls as the snippet's code, each on one line
+fig.text(40, 128, "How to read it", "head")
 fig.note(Box(40, 128, 0, 0), [rich("Row ", var("i"), " on the left meets column ", var("k"), " above"),
                                  rich("at entry (", var("i"), ", ", var("k"), ") of the result.")])
-# the two layer calls the grids carry out, as maths and as the snippet's code, under the note
-# (the second call is too wide for the 344 units left of W1 transposed, so it wraps inside its parentheses,
-# as Python allows, with a hanging indent)
-fig.text(40, 216, rich(bold("Z", "1"), " = ", bold("X"), " ", bold("W", "1", t=True), " + ", bold("b", "1")), "math")
-fig.text(40, 244, rich(bold("Z", "2"), " = ", bold("Z", "1"), " ", bold("W", "2", t=True), " + ", bold("b", "2")),
+fig.text(40, 240, rich(bold("Z", "1"), " = ", bold("X"), " ", bold("W", "1", t=True), " + ", bold("b", "1")), "math")
+fig.text(40, 268, rich(bold("Z", "2"), " = ", bold("Z", "1"), " ", bold("W", "2", t=True), " + ", bold("b", "2")),
          "math")
-WRAP = CALLS[1].index(" ") + 1                       # after "np.dot(layer1_outputs, "
-assert CALLS[1][:WRAP] == "np.dot(layer1_outputs, "
-fig.text(40, 300, CALLS[0], "code")
-fig.text(40, 324, CALLS[1][:WRAP].rstrip(), "code")
-fig.text(72, 348, CALLS[1][WRAP:], "code")
+assert all(40 + text_width(c, 14, mono=True) <= TXT for c in CALLS)   # neither call wraps
+fig.code_block(40, 336, CALLS)
 
 # rows are samples
 gx.row_labels(["sample 1", "sample 2", "sample 3"], side="left", style="note")
 
-# the weights and biases: layer 1 labelled on the left, layer 2 on the right
-fig.text(Z1X - 16, gw1.box.cy - 4, rich(bold("W", "1", t=True), "  ", shape(W1.T.shape)), "label",
-         anchor="end", color="weight")
-fig.text(Z1X - 16, gw1.box.cy + 20, rich("column ", var("k"), ": the weights of neuron ", var("k")), "note",
-         anchor="end")
-fig.text(Z1X - 16, YB + 29, rich("+ ", bold("b", "1"), "  ", shape(B1.shape)), "label", anchor="end", color="weight")
-R = gw2.box.right + 16
-fig.text(R, gw2.box.cy - 4, rich(bold("W", "2", t=True), "  ", shape(W2.T.shape)), "label", color="weight")
-fig.text(R, gw2.box.cy + 20, "the same layout", "note")
-fig.text(R, YB + 29, rich("+ ", bold("b", "2"), "  ", shape(B2.shape)), "label", color="weight")
+# the weights: each named over its grid, the label and a note, 16 above it; the biases beside their strips,
+# layer 1 on the left, layer 2 on the right
+for g, k, shp, why in ((gw1, "1", W1.T.shape, rich("column ", var("k"), ": neuron ", var("k"), "'s weights")),
+                       (gw2, "2", W2.T.shape, "the same layout")):
+    fig.text(g.box.x, g.box.y - 40, rich(bold("W", k, t=True), "  ", shape(shp)), "label", color="weight")
+    fig.text(g.box.x, g.box.y - 16, why, "note")
+fig.text(TXT, YB + 29, rich("+ ", bold("b", "1"), "  ", shape(B1.shape)), "label", anchor="end", color="weight")
+fig.text(gb2.box.right + 16, YB + 29, rich("+ ", bold("b", "2"), "  ", shape(B2.shape)), "label", color="weight")
 
 # the batch rows: what each array is, and the shapes that made it
 YH = gz1.box.bottom + 32
