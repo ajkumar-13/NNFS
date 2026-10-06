@@ -12,9 +12,9 @@
 > - Spot the silent bug where a 1-D (n,) array broadcasts as a row when a column was intended.
 > - Trace how a (1, n) bias row is broadcast across the N rows of a layer's output in a forward pass.
 
-![Three panels reduce the same 3 by 3 array holding 1 to 9. With no axis, np.sum adds everything and gives the scalar 45. With axis=0 the rows collapse and each column is summed, giving 12, 15, 18 with shape (3,). With axis=1 the columns collapse and each row is summed, giving 6, 15, 24, also with shape (3,); the three sums are drawn beside their rows and marked as a 1-D array, not a column.](diagrams/01-axis-summation.svg)
+![The 3 by 3 array a holding 1 to 9, with axis 0 running down its rows and axis 1 across its columns. With keepdims=True the column sums 12, 15, 18 sit under the columns as a row of shape (1, 3), and the row sums 6, 15, 24 sit beside the rows as a column of shape (3, 1). Without keepdims, np.sum(a, axis=0) gives 12, 15, 18 and np.sum(a, axis=1) gives 6, 15, 24, both drawn flat with the same shape (3,), and np.sum(a) gives the scalar 45 with shape ().](diagrams/01-axis-summation.svg)
 
-*The axis named in the call is the one that disappears. Everything in this post hinges on that single sentence.*
+*The axis named in the call is the one that disappears. With `keepdims=True` it stays at size 1, so the row sums remain a column beside the rows and the column sums a row under the columns.*
 
 ---
 
@@ -89,11 +89,7 @@ Axes can also be counted from the end, as list indices can: `axis=-1` is the las
 
 ### 2.5. What is *not* obvious about the result
 
-Both `np.sum(a, axis=0)` and `np.sum(a, axis=1)` return a 1-D array of shape `(3,)`. Nothing in that shape records which axis was reduced, and that 1-D shape is the source of the silent bug that section 3 works through.
-
-![Three cards. np.max(a, axis=1) prints as 3 6 9 inside one pair of brackets, has shape (3,), and broadcasts as a row, drawn as the top row of a 3 by 3 grid stretching downward. np.max(a, axis=0, keepdims=True) prints as 7 8 9 inside two pairs of brackets, has shape (1, 3), and also broadcasts as a row. np.max(a, axis=1, keepdims=True) prints as a stack of 3, 6, 9, has shape (3, 1), and broadcasts as a column, drawn as the left column of the grid stretching sideways.](diagrams/04-three-shapes.svg)
-
-*Against a 2-D array, `(n,)` behaves exactly as `(1, n)` does: both act as a row. `(n, 1)` is the only one of the three that acts as a column, and the silent bug of section 3 is a reduction that returned the first when the third was wanted.*
+Both `np.sum(a, axis=0)` and `np.sum(a, axis=1)` return a 1-D array of shape `(3,)`. Nothing in that shape records which axis was reduced, and that 1-D shape is the source of the silent bug that section 3 works through. The right half of the figure at the top of the post draws the two results flat, side by side, with the same shape; its left half shows the row and the column that `keepdims=True` (section 3) returns instead.
 
 A 1-D `(n,)` array is not the same thing as a row vector of shape `(1, n)` or a column vector of shape `(n, 1)`: the first has one axis and the other two have two. Section 4 shows that broadcasting against a 2-D array treats the first exactly like the second and never like the third. At the `print` site the only trace of the difference is the bracketing: `[12 15 18]` for the 1-D array, `[[12 15 18]]` for the row vector.
 
@@ -136,7 +132,9 @@ A pattern from softmax: subtract the largest value in each row from every entry 
  [-2 -1  0]]
 ```
 
-![Two panels subtract the per-row maximum from the 3 by 3 array. Left, without keepdims: max_vals is 3, 6, 9 with shape (3,), it broadcasts as a row, and the result has rows -2 -4 -6, then 1 -1 -3, then 4 2 0, with no error raised. Right, with keepdims=True: max_vals is a column of shape (3, 1), it broadcasts as a column, and every row of the result is -2, -1, 0.](diagrams/02-keepdims-matters.svg)
+The figure below runs the subtraction both ways and draws `max_vals` as broadcasting stretches it, which is where the two versions part.
+
+![Two rows, each the 3 by 3 array a minus max_vals as broadcast equals the result. Without keepdims, max_vals is 3, 6, 9 with shape (3,), copied down the rows, so column j loses the maximum of row j; the result rows are -2 -4 -6, then 1 -1 -3, then 4 2 0, and no error is raised. With keepdims=True, max_vals is a column of shape (3, 1), copied across the columns, and every row of the result is -2, -1, 0.](diagrams/02-max-subtraction.svg)
 
 *Same call style on both sides; the only difference is `keepdims=True`. One result is correct and the other is silently wrong.*
 
@@ -235,7 +233,9 @@ The rules NumPy applies are, in order:
 3. **Stretch the 1s.** Any dimension of size 1 in either operand is conceptually replicated to match the other operand's size in that dimension, so the result takes the larger of the two sizes along every axis.
 4. **Operate element-wise.** The (now equal-shape) operands are combined.
 
-![Four worked cases. A (3, 3) array plus a (3, 1) column gives (3, 3), the column stretching rightward. A (3, 3) array plus a (1, 3) row gives (3, 3), the row stretching downward. A (3, 3) array plus a 1-D (3,) array gives (3, 3) after the 1-D shape is padded to (1, 3). A (3, 3) array plus a (2, 3) array raises ValueError, 3 against 2 in the row dimension with neither equal to 1. A footer lists the four rules in order: left-pad with 1s, check each aligned pair, stretch the 1s, operate.](diagrams/03-broadcasting-rules.svg)
+The figure below applies rules 1 to 3 to four pairs of shapes, writing each pair as a small table with one column per aligned axis.
+
+![Four small tables, each with one column per aligned axis and rows for the left shape, the right shape and the result. (300, 3) plus (1, 3): the 1 stretches to 300 and the result is (300, 3). (3, 3) plus (3,): the 1-D shape is padded to (1, 3), its 1 stretches, and the result is (3, 3). (3, 1) plus (3,): the 1-D shape is padded to (1, 3), both operands stretch, and the result is (3, 3). (5, 3) plus (5,): the 1-D shape is padded to (1, 5), 3 meets 5 on axis 1 with neither equal to 1, and the result is ValueError. A legend marks a stretched 1, a padded 1, the clash and the result.](diagrams/03-shape-alignment.svg)
 
 *Against a 2-D array, a 1-D shape `(n,)` is always padded to `(1, n)`. It can never be interpreted as a column on its own.*
 

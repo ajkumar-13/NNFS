@@ -1,0 +1,292 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-02-max-subtraction-title" aria-describedby="nn-02-max-subtraction-desc">
+<title id="nn-02-max-subtraction-title">Without keepdims the row maxima line up with the columns</title>
+<desc id="nn-02-max-subtraction-desc">Two rows, each the 3 by 3 array a minus max_vals as broadcast equals the result. Top, without keepdims: max_vals is 3, 6, 9 with shape (3,), drawn as the first row of the stretched operand and copied down, so every row has 3, 6, 9 subtracted; the result rows are minus 2, minus 4, minus 6; 1, minus 1, minus 3; 4, 2, 0, no error is raised, and the rows do not end in 0, because column j loses the maximum of row j. Bottom, with keepdims=True: max_vals is a column of shape (3, 1) copied across, so row i loses its own maximum, and every row of the result is minus 2, minus 1, 0.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-red-ink { fill: var(--nn-red-ink); }
+  .f-red-soft { fill: var(--nn-red-soft); }
+  .s-blue { stroke: var(--nn-blue); }
+</style>
+<defs>
+<marker id="nn-02-max-subtraction-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title">Without keepdims the row maxima line up with the columns</text>
+<text x="40" y="76" class="t-subtitle"><tspan class="i">a</tspan> − np.max(<tspan class="i">a</tspan>, axis=1), with and without keepdims=True. Filled cells: what max_vals holds.</text>
+<text x="256" y="136" class="t-head"><tspan class="i">a</tspan></text>
+<text x="424" y="136" class="t-head">max_vals, broadcast</text>
+<text x="592" y="136" class="t-head"><tspan class="i">a</tspan> − max_vals</text>
+<text x="40" y="180" class="t-head">Without keepdims</text>
+<text x="40" y="208" class="t-note">max_vals: (3,)</text>
+<text x="40" y="228" class="t-note">copied down the rows</text>
+<rect x="256" y="160" width="40" height="40" class="cell"/>
+<rect x="296" y="160" width="40" height="40" class="cell"/>
+<rect x="336" y="160" width="40" height="40" class="cell"/>
+<rect x="256" y="200" width="40" height="40" class="cell"/>
+<rect x="296" y="200" width="40" height="40" class="cell"/>
+<rect x="336" y="200" width="40" height="40" class="cell"/>
+<rect x="256" y="240" width="40" height="40" class="cell"/>
+<rect x="296" y="240" width="40" height="40" class="cell"/>
+<rect x="336" y="240" width="40" height="40" class="cell"/>
+<rect x="256" y="160" width="120" height="120" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="276" y="186" text-anchor="middle" class="t-cell16">1</text>
+<text x="316" y="186" text-anchor="middle" class="t-cell16">2</text>
+<text x="356" y="186" text-anchor="middle" class="t-cell16">3</text>
+<text x="276" y="226" text-anchor="middle" class="t-cell16">4</text>
+<text x="316" y="226" text-anchor="middle" class="t-cell16">5</text>
+<text x="356" y="226" text-anchor="middle" class="t-cell16">6</text>
+<text x="276" y="266" text-anchor="middle" class="t-cell16">7</text>
+<text x="316" y="266" text-anchor="middle" class="t-cell16">8</text>
+<text x="356" y="266" text-anchor="middle" class="t-cell16">9</text>
+</g>
+<rect x="424" y="160" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="464" y="160" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="504" y="160" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="424" y="200" width="40" height="40" class="cell"/>
+<rect x="464" y="200" width="40" height="40" class="cell"/>
+<rect x="504" y="200" width="40" height="40" class="cell"/>
+<rect x="424" y="240" width="40" height="40" class="cell"/>
+<rect x="464" y="240" width="40" height="40" class="cell"/>
+<rect x="504" y="240" width="40" height="40" class="cell"/>
+<rect x="424" y="160" width="120" height="120" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="444" y="186" text-anchor="middle" class="t-cell16">3</text>
+<text x="484" y="186" text-anchor="middle" class="t-cell16">6</text>
+<text x="524" y="186" text-anchor="middle" class="t-cell16">9</text>
+<text x="444" y="226" text-anchor="middle" class="t-cell16">3</text>
+<text x="484" y="226" text-anchor="middle" class="t-cell16">6</text>
+<text x="524" y="226" text-anchor="middle" class="t-cell16">9</text>
+<text x="444" y="266" text-anchor="middle" class="t-cell16">3</text>
+<text x="484" y="266" text-anchor="middle" class="t-cell16">6</text>
+<text x="524" y="266" text-anchor="middle" class="t-cell16">9</text>
+</g>
+<rect x="424" y="160" width="120" height="40" class="emph s-blue" data-fit="skip"/>
+<rect x="592" y="160" width="40" height="40" class="cell f-red-soft"/>
+<rect x="632" y="160" width="40" height="40" class="cell f-red-soft"/>
+<rect x="672" y="160" width="40" height="40" class="cell f-red-soft"/>
+<rect x="592" y="200" width="40" height="40" class="cell f-red-soft"/>
+<rect x="632" y="200" width="40" height="40" class="cell f-red-soft"/>
+<rect x="672" y="200" width="40" height="40" class="cell f-red-soft"/>
+<rect x="592" y="240" width="40" height="40" class="cell f-red-soft"/>
+<rect x="632" y="240" width="40" height="40" class="cell f-red-soft"/>
+<rect x="672" y="240" width="40" height="40" class="cell f-red-soft"/>
+<rect x="592" y="160" width="120" height="120" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="612" y="186" text-anchor="middle" class="t-cell16">−2</text>
+<text x="652" y="186" text-anchor="middle" class="t-cell16">−4</text>
+<text x="692" y="186" text-anchor="middle" class="t-cell16">−6</text>
+<text x="612" y="226" text-anchor="middle" class="t-cell16">1</text>
+<text x="652" y="226" text-anchor="middle" class="t-cell16">−1</text>
+<text x="692" y="226" text-anchor="middle" class="t-cell16">−3</text>
+<text x="612" y="266" text-anchor="middle" class="t-cell16">4</text>
+<text x="652" y="266" text-anchor="middle" class="t-cell16">2</text>
+<text x="692" y="266" text-anchor="middle" class="t-cell16">0</text>
+</g>
+<text x="400" y="228" text-anchor="middle" class="t-op">−</text>
+<text x="568" y="228" text-anchor="middle" class="t-op">=</text>
+<text x="736" y="180" class="t-label f-red-ink">No error raised</text>
+<text x="736" y="208" class="t-note">Rows do not end in 0:</text>
+<text x="736" y="228" class="t-note">column <tspan class="i">j</tspan> loses row <tspan class="i">j</tspan>'s max.</text>
+<text x="40" y="356" class="t-head">With keepdims=True</text>
+<text x="40" y="384" class="t-note">max_vals: (3, 1)</text>
+<text x="40" y="404" class="t-note">copied across the columns</text>
+<rect x="256" y="336" width="40" height="40" class="cell"/>
+<rect x="296" y="336" width="40" height="40" class="cell"/>
+<rect x="336" y="336" width="40" height="40" class="cell"/>
+<rect x="256" y="376" width="40" height="40" class="cell"/>
+<rect x="296" y="376" width="40" height="40" class="cell"/>
+<rect x="336" y="376" width="40" height="40" class="cell"/>
+<rect x="256" y="416" width="40" height="40" class="cell"/>
+<rect x="296" y="416" width="40" height="40" class="cell"/>
+<rect x="336" y="416" width="40" height="40" class="cell"/>
+<rect x="256" y="336" width="120" height="120" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="276" y="362" text-anchor="middle" class="t-cell16">1</text>
+<text x="316" y="362" text-anchor="middle" class="t-cell16">2</text>
+<text x="356" y="362" text-anchor="middle" class="t-cell16">3</text>
+<text x="276" y="402" text-anchor="middle" class="t-cell16">4</text>
+<text x="316" y="402" text-anchor="middle" class="t-cell16">5</text>
+<text x="356" y="402" text-anchor="middle" class="t-cell16">6</text>
+<text x="276" y="442" text-anchor="middle" class="t-cell16">7</text>
+<text x="316" y="442" text-anchor="middle" class="t-cell16">8</text>
+<text x="356" y="442" text-anchor="middle" class="t-cell16">9</text>
+</g>
+<rect x="424" y="336" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="464" y="336" width="40" height="40" class="cell"/>
+<rect x="504" y="336" width="40" height="40" class="cell"/>
+<rect x="424" y="376" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="464" y="376" width="40" height="40" class="cell"/>
+<rect x="504" y="376" width="40" height="40" class="cell"/>
+<rect x="424" y="416" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="464" y="416" width="40" height="40" class="cell"/>
+<rect x="504" y="416" width="40" height="40" class="cell"/>
+<rect x="424" y="336" width="120" height="120" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="444" y="362" text-anchor="middle" class="t-cell16">3</text>
+<text x="484" y="362" text-anchor="middle" class="t-cell16">3</text>
+<text x="524" y="362" text-anchor="middle" class="t-cell16">3</text>
+<text x="444" y="402" text-anchor="middle" class="t-cell16">6</text>
+<text x="484" y="402" text-anchor="middle" class="t-cell16">6</text>
+<text x="524" y="402" text-anchor="middle" class="t-cell16">6</text>
+<text x="444" y="442" text-anchor="middle" class="t-cell16">9</text>
+<text x="484" y="442" text-anchor="middle" class="t-cell16">9</text>
+<text x="524" y="442" text-anchor="middle" class="t-cell16">9</text>
+</g>
+<rect x="424" y="336" width="40" height="120" class="emph s-blue" data-fit="skip"/>
+<rect x="592" y="336" width="40" height="40" class="cell f-green-soft"/>
+<rect x="632" y="336" width="40" height="40" class="cell f-green-soft"/>
+<rect x="672" y="336" width="40" height="40" class="cell f-green-soft"/>
+<rect x="592" y="376" width="40" height="40" class="cell f-green-soft"/>
+<rect x="632" y="376" width="40" height="40" class="cell f-green-soft"/>
+<rect x="672" y="376" width="40" height="40" class="cell f-green-soft"/>
+<rect x="592" y="416" width="40" height="40" class="cell f-green-soft"/>
+<rect x="632" y="416" width="40" height="40" class="cell f-green-soft"/>
+<rect x="672" y="416" width="40" height="40" class="cell f-green-soft"/>
+<rect x="592" y="336" width="120" height="120" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="612" y="362" text-anchor="middle" class="t-cell16">−2</text>
+<text x="652" y="362" text-anchor="middle" class="t-cell16">−1</text>
+<text x="692" y="362" text-anchor="middle" class="t-cell16">0</text>
+<text x="612" y="402" text-anchor="middle" class="t-cell16">−2</text>
+<text x="652" y="402" text-anchor="middle" class="t-cell16">−1</text>
+<text x="692" y="402" text-anchor="middle" class="t-cell16">0</text>
+<text x="612" y="442" text-anchor="middle" class="t-cell16">−2</text>
+<text x="652" y="442" text-anchor="middle" class="t-cell16">−1</text>
+<text x="692" y="442" text-anchor="middle" class="t-cell16">0</text>
+</g>
+<text x="400" y="404" text-anchor="middle" class="t-op">−</text>
+<text x="568" y="404" text-anchor="middle" class="t-op">=</text>
+<text x="736" y="356" class="t-label f-green-ink">Correct</text>
+<text x="736" y="384" class="t-note">Every row ends in 0:</text>
+<text x="736" y="404" class="t-note">row <tspan class="i">i</tspan> loses its own max.</text>
+<text x="40" y="504" class="t-note">The same call, one keyword apart: only the (3, 1) column subtracts each row's own maximum.</text>
+</svg>

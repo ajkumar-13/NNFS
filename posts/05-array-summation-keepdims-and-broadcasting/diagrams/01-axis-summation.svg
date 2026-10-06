@@ -1,182 +1,224 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" role="img" aria-labelledby="t d">
-  <title id="t">Summing a 3-by-3 array along each axis</title>
-  <desc id="d">Three panels showing the same 3-by-3 array being summed in three ways. The leftmost panel shows axis equals None, which flattens the entire array and produces the scalar 45. The middle panel shows axis equals 0, which collapses each column and produces the row vector 12, 15, 18 of shape 3 comma. The rightmost panel shows axis equals 1, which collapses each row and produces the values 6, 15, 24 of shape 3 comma. A footer reminds the reader that the axis named in the call is the axis that disappears.</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-01-axis-summation-title" aria-describedby="nn-01-axis-summation-desc">
+<title id="nn-01-axis-summation-title">The axis named in a reduction is the axis that disappears</title>
+<desc id="nn-01-axis-summation-desc">The post's array a, shape (3, 3), holding 1 to 9, with axis 0 running down its rows and axis 1 across its columns. With keepdims=True the reduced axis stays at size 1: the column sums 12, 15, 18 sit under a's columns as a row of shape (1, 3) (axis=0), and the row sums 6, 15, 24 sit beside a's rows as a column of shape (3, 1) (axis=1). Without keepdims, np.sum(a, axis=0) gives 12, 15, 18 and np.sum(a, axis=1) gives 6, 15, 24, both drawn flat with the same shape (3,), and np.sum(a) gives the scalar 45, shape (). A note says that the 1-D shape does not record which axis was summed.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
-    .pill-prim{fill:var(--nn-primary);}
-    .pill-acc{fill:var(--nn-accent);}
-    .pill-ok{fill:var(--nn-success);}
-    .panel-head{font-weight:700;font-size:14px;fill:var(--nn-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
-    .cell{fill:var(--nn-neutral-1);stroke:var(--nn-border);stroke-width:1;}
-    .cell-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;fill:var(--nn-ink);font-weight:600;}
-    .col-hl{fill:var(--nn-accent);fill-opacity:0.20;stroke:var(--nn-accent);stroke-width:1.5;}
-    .row-hl{fill:var(--nn-success);fill-opacity:0.20;stroke:var(--nn-success);stroke-width:1.5;}
-    .all-hl{fill:var(--nn-primary);fill-opacity:0.16;stroke:var(--nn-primary);stroke-width:1.5;}
-    .arrow{stroke:var(--nn-ink-muted);stroke-width:1.5;fill:none;}
-    .arrow-head{fill:var(--nn-ink-muted);}
-    .result-pill-prim{fill:var(--nn-primary);fill-opacity:0.22;stroke:var(--nn-primary);stroke-width:1.5;}
-    .result-pill-acc{fill:var(--nn-accent);fill-opacity:0.22;stroke:var(--nn-accent);stroke-width:1.5;}
-    .result-pill-ok{fill:var(--nn-success);fill-opacity:0.22;stroke:var(--nn-success);stroke-width:1.5;}
-    .shape-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--nn-ink-muted);}
-  ]]></style>
-
-  <defs>
-    <marker id="aM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" class="arrow-head"/>
-    </marker>
-  </defs>
-
-  <rect class="bg" width="960" height="460"/>
-
-  <text class="title"    x="48" y="48">np.sum along different axes</text>
-  <text class="subtitle" x="48" y="70">The axis you name is the axis that disappears.</text>
-
-  <!-- ====================== Panel 1: axis=None ====================== -->
-  <rect class="panel"     x="48" y="96" width="280" height="304" rx="12"/>
-  <rect class="pill-prim" x="48" y="96" width="6"   height="304" rx="3"/>
-  <text class="panel-head" x="68" y="124">np.sum(a)</text>
-  <text class="panel-sub"  x="68" y="142">axis = None: sum everything</text>
-
-  <!-- 3x3 array (all highlighted) -->
-  <g transform="translate(92, 168)">
-    <rect class="all-hl" x="0"  y="0"  width="40" height="32"/>
-    <rect class="all-hl" x="40" y="0"  width="40" height="32"/>
-    <rect class="all-hl" x="80" y="0"  width="40" height="32"/>
-    <rect class="all-hl" x="0"  y="32" width="40" height="32"/>
-    <rect class="all-hl" x="40" y="32" width="40" height="32"/>
-    <rect class="all-hl" x="80" y="32" width="40" height="32"/>
-    <rect class="all-hl" x="0"  y="64" width="40" height="32"/>
-    <rect class="all-hl" x="40" y="64" width="40" height="32"/>
-    <rect class="all-hl" x="80" y="64" width="40" height="32"/>
-    <text class="cell-text" x="20"  y="20" text-anchor="middle">1</text>
-    <text class="cell-text" x="60"  y="20" text-anchor="middle">2</text>
-    <text class="cell-text" x="100" y="20" text-anchor="middle">3</text>
-    <text class="cell-text" x="20"  y="52" text-anchor="middle">4</text>
-    <text class="cell-text" x="60"  y="52" text-anchor="middle">5</text>
-    <text class="cell-text" x="100" y="52" text-anchor="middle">6</text>
-    <text class="cell-text" x="20"  y="84" text-anchor="middle">7</text>
-    <text class="cell-text" x="60"  y="84" text-anchor="middle">8</text>
-    <text class="cell-text" x="100" y="84" text-anchor="middle">9</text>
-  </g>
-
-  <line class="arrow" x1="152" y1="290" x2="152" y2="320" marker-end="url(#aM)"/>
-
-  <rect class="result-pill-prim" x="132" y="328" width="40" height="32" rx="6"/>
-  <text class="cell-text" x="152" y="349" text-anchor="middle">45</text>
-  <text class="shape-text" x="152" y="378" text-anchor="middle">scalar</text>
-
-  <!-- ====================== Panel 2: axis=0 ====================== -->
-  <rect class="panel"    x="344" y="96" width="280" height="304" rx="12"/>
-  <rect class="pill-acc" x="344" y="96" width="6"   height="304" rx="3"/>
-  <text class="panel-head" x="364" y="124">np.sum(a, axis=0)</text>
-  <text class="panel-sub"  x="364" y="142">collapse rows, sum each column</text>
-
-  <!-- 3x3 array with column highlights -->
-  <g transform="translate(388, 168)">
-    <rect class="col-hl" x="0"  y="0"  width="40" height="32"/>
-    <rect class="col-hl" x="40" y="0"  width="40" height="32"/>
-    <rect class="col-hl" x="80" y="0"  width="40" height="32"/>
-    <rect class="col-hl" x="0"  y="32" width="40" height="32"/>
-    <rect class="col-hl" x="40" y="32" width="40" height="32"/>
-    <rect class="col-hl" x="80" y="32" width="40" height="32"/>
-    <rect class="col-hl" x="0"  y="64" width="40" height="32"/>
-    <rect class="col-hl" x="40" y="64" width="40" height="32"/>
-    <rect class="col-hl" x="80" y="64" width="40" height="32"/>
-    <text class="cell-text" x="20"  y="20" text-anchor="middle">1</text>
-    <text class="cell-text" x="60"  y="20" text-anchor="middle">2</text>
-    <text class="cell-text" x="100" y="20" text-anchor="middle">3</text>
-    <text class="cell-text" x="20"  y="52" text-anchor="middle">4</text>
-    <text class="cell-text" x="60"  y="52" text-anchor="middle">5</text>
-    <text class="cell-text" x="100" y="52" text-anchor="middle">6</text>
-    <text class="cell-text" x="20"  y="84" text-anchor="middle">7</text>
-    <text class="cell-text" x="60"  y="84" text-anchor="middle">8</text>
-    <text class="cell-text" x="100" y="84" text-anchor="middle">9</text>
-  </g>
-
-  <!-- Down arrows for each column -->
-  <line class="arrow" x1="408" y1="270" x2="408" y2="320" marker-end="url(#aM)"/>
-  <line class="arrow" x1="448" y1="270" x2="448" y2="320" marker-end="url(#aM)"/>
-  <line class="arrow" x1="488" y1="270" x2="488" y2="320" marker-end="url(#aM)"/>
-
-  <!-- result row: (3,) -->
-  <g transform="translate(388, 328)">
-    <rect class="result-pill-acc" x="0"  y="0" width="40" height="32" rx="6"/>
-    <rect class="result-pill-acc" x="40" y="0" width="40" height="32" rx="6"/>
-    <rect class="result-pill-acc" x="80" y="0" width="40" height="32" rx="6"/>
-    <text class="cell-text" x="20"  y="21" text-anchor="middle">12</text>
-    <text class="cell-text" x="60"  y="21" text-anchor="middle">15</text>
-    <text class="cell-text" x="100" y="21" text-anchor="middle">18</text>
-  </g>
-  <text class="shape-text" x="448" y="378" text-anchor="middle">shape (3,)</text>
-
-  <!-- ====================== Panel 3: axis=1 ====================== -->
-  <rect class="panel"   x="640" y="96" width="272" height="304" rx="12"/>
-  <rect class="pill-ok" x="640" y="96" width="6"   height="304" rx="3"/>
-  <text class="panel-head" x="660" y="124">np.sum(a, axis=1)</text>
-  <text class="panel-sub"  x="660" y="142">collapse columns, sum each row</text>
-
-  <g transform="translate(684, 168)">
-    <rect class="row-hl" x="0"  y="0"  width="40" height="32"/>
-    <rect class="row-hl" x="40" y="0"  width="40" height="32"/>
-    <rect class="row-hl" x="80" y="0"  width="40" height="32"/>
-    <rect class="row-hl" x="0"  y="32" width="40" height="32"/>
-    <rect class="row-hl" x="40" y="32" width="40" height="32"/>
-    <rect class="row-hl" x="80" y="32" width="40" height="32"/>
-    <rect class="row-hl" x="0"  y="64" width="40" height="32"/>
-    <rect class="row-hl" x="40" y="64" width="40" height="32"/>
-    <rect class="row-hl" x="80" y="64" width="40" height="32"/>
-    <text class="cell-text" x="20"  y="20" text-anchor="middle">1</text>
-    <text class="cell-text" x="60"  y="20" text-anchor="middle">2</text>
-    <text class="cell-text" x="100" y="20" text-anchor="middle">3</text>
-    <text class="cell-text" x="20"  y="52" text-anchor="middle">4</text>
-    <text class="cell-text" x="60"  y="52" text-anchor="middle">5</text>
-    <text class="cell-text" x="100" y="52" text-anchor="middle">6</text>
-    <text class="cell-text" x="20"  y="84" text-anchor="middle">7</text>
-    <text class="cell-text" x="60"  y="84" text-anchor="middle">8</text>
-    <text class="cell-text" x="100" y="84" text-anchor="middle">9</text>
-  </g>
-
-  <!-- Right arrows for each row -->
-  <line class="arrow" x1="814" y1="184" x2="844" y2="184" marker-end="url(#aM)"/>
-  <line class="arrow" x1="814" y1="216" x2="844" y2="216" marker-end="url(#aM)"/>
-  <line class="arrow" x1="814" y1="248" x2="844" y2="248" marker-end="url(#aM)"/>
-
-  <!-- result column: (3,) shown as column for visual symmetry but the actual shape is 1-D -->
-  <g transform="translate(848, 168)">
-    <rect class="result-pill-ok" x="0" y="0"  width="44" height="32" rx="6"/>
-    <rect class="result-pill-ok" x="0" y="32" width="44" height="32" rx="6"/>
-    <rect class="result-pill-ok" x="0" y="64" width="44" height="32" rx="6"/>
-    <text class="cell-text" x="22" y="20" text-anchor="middle">6</text>
-    <text class="cell-text" x="22" y="52" text-anchor="middle">15</text>
-    <text class="cell-text" x="22" y="84" text-anchor="middle">24</text>
-  </g>
-  <text class="shape-text" x="870" y="282" text-anchor="middle">shape (3,)</text>
-
-  <!-- Note about the (3,) shape -->
-  <text class="shape-text" x="660" y="318" style="font-size:11px;fill:var(--nn-warn);">↑ a 1-D array, not a column.</text>
-  <text class="shape-text" x="660" y="334" style="font-size:11px;fill:var(--nn-warn);">  See keepdims (next figure).</text>
-
-  <!-- Footer -->
-  <text class="footer" x="48"  y="436">Both axis=0 and axis=1 produce a 1-D array of shape (3,) when keepdims is left as False.</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+</style>
+<defs>
+<marker id="nn-01-axis-summation-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title">The axis named in a reduction is the axis that disappears</text>
+<text x="40" y="76" class="t-subtitle">np.sum on the post's array <tspan class="i">a</tspan>, with keepdims=True on the left and without it on the right.</text>
+<text x="40" y="128" class="t-head">keepdims=True: the axis stays, size 1</text>
+<rect x="184" y="176" width="48" height="48" class="cell"/>
+<rect x="232" y="176" width="48" height="48" class="cell"/>
+<rect x="280" y="176" width="48" height="48" class="cell"/>
+<rect x="184" y="224" width="48" height="48" class="cell"/>
+<rect x="232" y="224" width="48" height="48" class="cell"/>
+<rect x="280" y="224" width="48" height="48" class="cell"/>
+<rect x="184" y="272" width="48" height="48" class="cell"/>
+<rect x="232" y="272" width="48" height="48" class="cell"/>
+<rect x="280" y="272" width="48" height="48" class="cell"/>
+<rect x="184" y="176" width="144" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="208" y="206" text-anchor="middle" class="t-cell18">1</text>
+<text x="256" y="206" text-anchor="middle" class="t-cell18">2</text>
+<text x="304" y="206" text-anchor="middle" class="t-cell18">3</text>
+<text x="208" y="254" text-anchor="middle" class="t-cell18">4</text>
+<text x="256" y="254" text-anchor="middle" class="t-cell18">5</text>
+<text x="304" y="254" text-anchor="middle" class="t-cell18">6</text>
+<text x="208" y="302" text-anchor="middle" class="t-cell18">7</text>
+<text x="256" y="302" text-anchor="middle" class="t-cell18">8</text>
+<text x="304" y="302" text-anchor="middle" class="t-cell18">9</text>
+</g>
+<path d="M184,160 L325,160" class="flow" marker-end="url(#nn-01-axis-summation-arrow)"/>
+<text x="256" y="148" text-anchor="middle" class="t-label">axis 1</text>
+<path d="M168,176 L168,317" class="flow" marker-end="url(#nn-01-axis-summation-arrow)"/>
+<text x="156" y="252" text-anchor="end" class="t-label">axis 0</text>
+<text x="156" y="204" text-anchor="end" class="t-note"><tspan class="i">a</tspan>, (3, 3)</text>
+<rect x="360" y="176" width="48" height="48" class="cell f-green-soft"/>
+<rect x="360" y="224" width="48" height="48" class="cell f-green-soft"/>
+<rect x="360" y="272" width="48" height="48" class="cell f-green-soft"/>
+<rect x="360" y="176" width="48" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="384" y="206" text-anchor="middle" class="t-cell18">6</text>
+<text x="384" y="254" text-anchor="middle" class="t-cell18">15</text>
+<text x="384" y="302" text-anchor="middle" class="t-cell18">24</text>
+</g>
+<rect x="184" y="352" width="48" height="48" class="cell f-green-soft"/>
+<rect x="232" y="352" width="48" height="48" class="cell f-green-soft"/>
+<rect x="280" y="352" width="48" height="48" class="cell f-green-soft"/>
+<rect x="184" y="352" width="144" height="48" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="208" y="382" text-anchor="middle" class="t-cell18">12</text>
+<text x="256" y="382" text-anchor="middle" class="t-cell18">15</text>
+<text x="304" y="382" text-anchor="middle" class="t-cell18">18</text>
+</g>
+<text x="424" y="196" class="t-code">axis=1</text>
+<text x="424" y="220" class="t-note">row sums</text>
+<text x="424" y="312" class="t-code f-green-ink">(3, 1)</text>
+<text x="184" y="428" class="t-code">axis=0</text>
+<text x="244" y="428" class="t-note">column sums</text>
+<text x="344" y="380" class="t-code f-green-ink">(1, 3)</text>
+<text x="600" y="128" class="t-head">Default: the axis is gone</text>
+<text x="600" y="168" class="t-code">np.sum(a, axis=0)</text>
+<rect x="600" y="184" width="48" height="48" class="cell f-green-soft"/>
+<rect x="648" y="184" width="48" height="48" class="cell f-green-soft"/>
+<rect x="696" y="184" width="48" height="48" class="cell f-green-soft"/>
+<rect x="600" y="184" width="144" height="48" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="624" y="214" text-anchor="middle" class="t-cell18">12</text>
+<text x="672" y="214" text-anchor="middle" class="t-cell18">15</text>
+<text x="720" y="214" text-anchor="middle" class="t-cell18">18</text>
+</g>
+<text x="760" y="212" class="t-code f-green-ink">(3,)</text>
+<text x="600" y="264" class="t-code">np.sum(a, axis=1)</text>
+<rect x="600" y="280" width="48" height="48" class="cell f-green-soft"/>
+<rect x="648" y="280" width="48" height="48" class="cell f-green-soft"/>
+<rect x="696" y="280" width="48" height="48" class="cell f-green-soft"/>
+<rect x="600" y="280" width="144" height="48" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="624" y="310" text-anchor="middle" class="t-cell18">6</text>
+<text x="672" y="310" text-anchor="middle" class="t-cell18">15</text>
+<text x="720" y="310" text-anchor="middle" class="t-cell18">24</text>
+</g>
+<text x="760" y="308" class="t-code f-green-ink">(3,)</text>
+<text x="600" y="360" class="t-code">np.sum(a)</text>
+<rect x="600" y="376" width="48" height="48" class="cell f-green-soft"/>
+<rect x="600" y="376" width="48" height="48" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="624" y="406" text-anchor="middle" class="t-cell18">45</text>
+</g>
+<text x="664" y="404" class="t-code f-green-ink">()</text>
+<text x="600" y="452" class="t-note">Both 1-D results have shape (3,):</text>
+<text x="600" y="472" class="t-note">nothing records which axis was summed.</text>
+<text x="40" y="504" class="t-note">Kept at size 1, each sum stays lined up with the rows or columns it came from.</text>
 </svg>
