@@ -14,7 +14,7 @@ from pathlib import Path
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, r"C:\Users\admin\Desktop\series-standard\tools")
-from figkit import Figure, Box, rich, sup, num, TIMES  # noqa: E402
+from figkit import Figure, Box, rich, sup, num, text_width, TIMES  # noqa: E402
 
 SNIPPET = Path(__file__).resolve().parents[2] / "snippets" / "init_scale.py"
 buf = io.StringIO()
@@ -75,11 +75,35 @@ plot = fig.line_chart(box, SER, x=(X_LO, X_HI, list(range(1, N + 1))), y=(Y_LO, 
 
 sx = lambda v: plot.x + plot.w * (v - X_LO) / (X_HI - X_LO)       # noqa: E731
 sy = lambda v: plot.bottom - plot.h * (v - Y_LO) / (Y_HI - Y_LO)  # noqa: E731
+
+def line_y(d, v):
+    """The series' height (log10) at layer v, on the straight segments the chart draws."""
+    i = min(max(int(math.floor(v)) - 1, 0), N - 2)
+    t = v - (i + 1)
+    return d["ys"][i] + t * (d["ys"][i + 1] - d["ys"][i])
+
+
+# Each "x factor per layer" label is centred on an odd power of ten, halfway between two grid lines, and beside
+# its own line: 1.0 above its line on the left, 0.125 below its line on the right (where 0.01 has fallen
+# away), 0.01 below its line on the left. The asserts keep every label clear of every grid line
+# and of all three lines over its whole width.
 with fig.data():
-    for d, dy in [(SER[0], -28), (SER[1], -16), (SER[2], 32)]:
-        mid = (d["ys"][2] + d["ys"][3]) / 2
-        fig.text(sx(3.5), sy(mid) + dy, rich(TIMES, " ", FACTOR[d["sc"]], " per layer"), "label",
-                 color=d["color"], anchor="middle", snap=False)
+    for d, xc, yc in [(SER[0], 2.5, 3), (SER[1], 5.0, -3), (SER[2], 2.0, -5)]:
+        s = rich(TIMES, " ", FACTOR[d["sc"]], " per layer")
+        base = sy(yc) + 5                                           # 14 px text, its x-height centred on yc
+        top, bottom = base - 11, base + 3
+        half = text_width(s, 14) / 2
+        x0, x1 = sx(xc) - half, sx(xc) + half
+        v0 = X_LO + (x0 - plot.x) / plot.w * (X_HI - X_LO)
+        v1 = X_LO + (x1 - plot.x) / plot.w * (X_HI - X_LO)
+        assert 1 <= v0 and v1 <= N, (d["label"], v0, v1)
+        for t in YT:
+            assert min(abs(sy(t) - top), abs(sy(t) - bottom)) >= 8 and not top < sy(t) < bottom, (t, d["sc"])
+        for other in SER:
+            for k in range(41):
+                ly = sy(line_y(other, v0 + (v1 - v0) * k / 40))
+                assert ly < top - 12 or ly > bottom + 12, (d["sc"], other["sc"], ly, top, bottom)
+        fig.text(sx(xc), base, s, "label", color=d["color"], anchor="middle", snap=False)
 fig.caption(rich("Per layer, about scale ", TIMES, " √64: ", RULE[1.0], " for 1.0, ", RULE[0.125],
                  " for 0.125, ", RULE[0.01], " for 0.01."))
 fig.write()

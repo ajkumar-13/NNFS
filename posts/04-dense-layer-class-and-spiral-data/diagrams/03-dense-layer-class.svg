@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-03-dense-layer-class-title" aria-describedby="nn-03-dense-layer-class-desc">
 <title id="nn-03-dense-layer-class-title">One class, two instances, each with its own weights</title>
-<desc id="nn-03-dense-layer-class-desc">At the top, a card holding the six lines of the Layer_Dense class: __init__, which runs once when an instance is created, sets self.weights to 0.01 times np.random.randn(n_inputs, n_neurons) and self.biases to zeros of shape (1, n_neurons); forward, which runs on every call, stores np.dot(inputs, self.weights) plus self.biases in self.output. Below, the two instances of section 6 in a chain: X of shape (300, 2) goes into dense1 = Layer_Dense(2, 3), with weights (2, 3) and biases (1, 3); dense1.output, (300, 3), goes into dense2 = Layer_Dense(3, 3), with weights (3, 3) and biases (1, 3); dense2.output is (300, 3). Dashed lines join the class to both instances. dense1 holds 9 parameters and dense2 12.</desc>
+<desc id="nn-03-dense-layer-class-desc">At the top, a card holding the six lines of the Layer_Dense class: __init__, which runs once when an instance is created, sets self.weights to 0.01 times np.random.randn(n_inputs, n_neurons) and self.biases to zeros of shape (1, n_neurons); forward, which runs on every call, stores np.dot(inputs, self.weights) plus self.biases in self.output. Below, the two instances of section 6 in a chain: X of shape (300, 2) goes into dense1 = Layer_Dense(2, 3), with weights (2, 3) and biases (1, 3); dense1.output, (300, 3), goes into dense2 = Layer_Dense(3, 3), with weights (3, 3) and biases (1, 3); dense2.output is (300, 3). Dashed lines labelled instance of the class join the class to both instances. The weight and bias cells are drawn without values, one cell per number: dense1 holds 9 parameters, 6 weights and 3 biases, and dense2 12, 9 weights and 3 biases.</desc>
 <style>
   :root {
     --nn-bg: #FAFAF7;
@@ -149,15 +149,21 @@
 <text x="128" y="248" class="t-code">self.biases = np.zeros((1, n_neurons))</text>
 <text x="96" y="272" class="t-code">def forward(self, inputs):</text>
 <text x="128" y="296" class="t-code">self.output = np.dot(inputs, self.weights) + self.biases</text>
-<text x="896" y="200" text-anchor="end" class="t-note">runs once, when an instance is made</text>
-<text x="896" y="272" text-anchor="end" class="t-note">runs on every call</text>
+<path d="M608,184 H616 V252 H608" class="brace"/>
+<g data-grid="skip">
+<text x="624" y="223" class="t-note">runs once, when an instance is made</text>
+</g>
+<path d="M608,260 H616 V300 H608" class="brace"/>
+<g data-grid="skip">
+<text x="624" y="285" class="t-note">runs on every call</text>
+</g>
 <text x="40" y="368" class="t-head">Two instances</text>
-<rect x="48" y="432" width="16" height="160" class="cell f-blue-soft"/>
-<rect x="64" y="432" width="16" height="160" class="cell f-blue-soft"/>
-<rect x="48" y="432" width="32" height="160" class="frame" data-fit="skip"/>
+<rect x="48" y="448" width="16" height="160" class="cell f-blue-soft"/>
+<rect x="64" y="448" width="16" height="160" class="cell f-blue-soft"/>
+<rect x="48" y="448" width="32" height="160" class="frame" data-fit="skip"/>
 <text x="64" y="400" text-anchor="middle" class="t-code f-blue-ink">X</text>
-<text x="64" y="616" text-anchor="middle" class="t-tick">(300, 2)</text>
-<rect x="112" y="416" width="280" height="192" rx="8" class="card"/>
+<text x="64" y="632" text-anchor="middle" class="t-tick">(300, 2)</text>
+<rect x="112" y="416" width="280" height="224" rx="8" class="card"/>
 <text x="128" y="444" class="t-code">dense1 = Layer_Dense(2, 3)</text>
 <text x="128" y="468" class="t-code">dense1.forward(X)</text>
 <rect x="128" y="512" width="24" height="24" class="cell f-orange-soft"/>
@@ -175,13 +181,14 @@
 <text x="208" y="500" class="t-tick">(2, 3)</text>
 <text x="264" y="500" class="t-code f-orange-ink">.biases</text>
 <text x="336" y="500" class="t-tick">(1, 3)</text>
-<rect x="424" y="432" width="16" height="160" class="cell f-green-soft"/>
-<rect x="440" y="432" width="16" height="160" class="cell f-green-soft"/>
-<rect x="456" y="432" width="16" height="160" class="cell f-green-soft"/>
-<rect x="424" y="432" width="48" height="160" class="frame" data-fit="skip"/>
+<text x="128" y="616" class="t-note">9 parameters: 6 weights + 3 biases</text>
+<rect x="424" y="448" width="16" height="160" class="cell f-green-soft"/>
+<rect x="440" y="448" width="16" height="160" class="cell f-green-soft"/>
+<rect x="456" y="448" width="16" height="160" class="cell f-green-soft"/>
+<rect x="424" y="448" width="48" height="160" class="frame" data-fit="skip"/>
 <text x="448" y="400" text-anchor="middle" class="t-code f-green-ink">dense1.output</text>
-<text x="448" y="616" text-anchor="middle" class="t-tick">(300, 3)</text>
-<rect x="504" y="416" width="280" height="192" rx="8" class="card"/>
+<text x="448" y="632" text-anchor="middle" class="t-tick">(300, 3)</text>
+<rect x="504" y="416" width="280" height="224" rx="8" class="card"/>
 <text x="520" y="444" class="t-code">dense2 = Layer_Dense(3, 3)</text>
 <text x="520" y="468" class="t-code">dense2.forward(dense1.output)</text>
 <rect x="520" y="512" width="24" height="24" class="cell f-orange-soft"/>
@@ -202,17 +209,20 @@
 <text x="600" y="500" class="t-tick">(3, 3)</text>
 <text x="656" y="500" class="t-code f-orange-ink">.biases</text>
 <text x="728" y="500" class="t-tick">(1, 3)</text>
-<rect x="816" y="432" width="16" height="160" class="cell f-green-soft"/>
-<rect x="832" y="432" width="16" height="160" class="cell f-green-soft"/>
-<rect x="848" y="432" width="16" height="160" class="cell f-green-soft"/>
-<rect x="816" y="432" width="48" height="160" class="frame" data-fit="skip"/>
+<text x="520" y="616" class="t-note">12 parameters: 9 weights + 3 biases</text>
+<rect x="816" y="448" width="16" height="160" class="cell f-green-soft"/>
+<rect x="832" y="448" width="16" height="160" class="cell f-green-soft"/>
+<rect x="848" y="448" width="16" height="160" class="cell f-green-soft"/>
+<rect x="816" y="448" width="48" height="160" class="frame" data-fit="skip"/>
 <text x="840" y="400" text-anchor="middle" class="t-code f-green-ink">dense2.output</text>
-<text x="840" y="616" text-anchor="middle" class="t-tick">(300, 3)</text>
-<path d="M84,512 L109,512" class="flow" marker-end="url(#nn-03-dense-layer-class-arrow)"/>
-<path d="M396,512 L421,512" class="flow" marker-end="url(#nn-03-dense-layer-class-arrow)"/>
-<path d="M476,512 L501,512" class="flow" marker-end="url(#nn-03-dense-layer-class-arrow)"/>
-<path d="M788,512 L813,512" class="flow" marker-end="url(#nn-03-dense-layer-class-arrow)"/>
+<text x="840" y="632" text-anchor="middle" class="t-tick">(300, 3)</text>
+<path d="M84,528 L109,528" class="flow" marker-end="url(#nn-03-dense-layer-class-arrow)"/>
+<path d="M396,528 L421,528" class="flow" marker-end="url(#nn-03-dense-layer-class-arrow)"/>
+<path d="M476,528 L501,528" class="flow" marker-end="url(#nn-03-dense-layer-class-arrow)"/>
+<path d="M788,528 L813,528" class="flow" marker-end="url(#nn-03-dense-layer-class-arrow)"/>
 <path d="M252,312 L252,416" class="lead"/>
+<text x="264" y="348" class="t-note">instance of the class</text>
 <path d="M644,312 L644,416" class="lead"/>
-<text x="40" y="684" class="t-note">dense1 holds 9 parameters and dense2 12; only dense1.output passes from one to the other.</text>
+<text x="656" y="348" class="t-note">instance of the class</text>
+<text x="40" y="684" class="t-note">Only dense1.output passes from one instance to the other.</text>
 </svg>

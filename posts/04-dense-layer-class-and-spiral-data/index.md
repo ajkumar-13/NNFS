@@ -13,7 +13,7 @@
 > - Convert a layer between the two weight-matrix conventions and name the one the series uses from this post on.
 > - Trace the shape of every array as a batch passes through one or two Layer_Dense instances.
 
-![Scatter of all 300 spiral points, class 0 as blue circles, class 1 as orange squares and class 2 as green triangles, each class an arm winding out from the origin, over three straight-edged tinted regions where a trained Layer_Dense(2, 3) answers each class. Every arm crosses the edges, and the layer gets 118 of 300 points right, 39.3 percent, against 100 of 300 for one fixed answer.](diagrams/01-spiral-data.svg)
+![Scatter of all 300 spiral points, class 0 as blue circles, class 1 as orange squares and class 2 as green triangles, each class an arm winding out from the origin, over three straight-edged regions, each tinted in the colour of the class a trained Layer_Dense(2, 3) answers there. Every arm crosses the edges, and the layer gets 118 of 300 points right, 39.3 percent, against 100 of 300 for one fixed answer.](diagrams/01-spiral-data.svg)
 
 *The series' standard benchmark, all 300 points that `spiral_data(samples=100, classes=3)` returns. The tints are the regions of the straight-line model of section 2.1; the rest of the series builds a network whose boundary bends around the arms.*
 
@@ -187,7 +187,7 @@ class Layer_Dense:
 
 The figure below draws the class as a blueprint and, under it, the two instances that section 6 creates from it.
 
-![A card with the six lines of the Layer_Dense class, the constructor marked as running once when an instance is made and the forward method as running on every call, joined by dashed lines to two instance cards below. X, shape (300, 2), flows into dense1 = Layer_Dense(2, 3), with weights (2, 3) and biases (1, 3); its output, (300, 3), flows into dense2 = Layer_Dense(3, 3), with weights (3, 3) and biases (1, 3), which gives dense2.output, (300, 3). dense1 holds 9 parameters and dense2 12.](diagrams/03-dense-layer-class.svg)
+![A card with the six lines of the Layer_Dense class, the constructor marked as running once when an instance is made and the forward method as running on every call, joined by dashed lines to two instance cards below. X, shape (300, 2), flows into dense1 = Layer_Dense(2, 3), with weights (2, 3) and biases (1, 3); its output, (300, 3), flows into dense2 = Layer_Dense(3, 3), with weights (3, 3) and biases (1, 3), which gives dense2.output, (300, 3). dense1 holds 9 parameters, 6 weights and 3 biases, and dense2 12, 9 weights and 3 biases.](diagrams/03-dense-layer-class.svg)
 
 *One blueprint, two instances. Each instance owns its own weights, biases and output; the only thing that passes from one to the other is `dense1.output`.*
 

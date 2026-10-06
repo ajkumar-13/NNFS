@@ -138,91 +138,91 @@
 <rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
 <text x="40" y="48" class="t-title">Same weights, two layouts: a row or a column per neuron</text>
 <text x="40" y="76" class="t-subtitle">The first layer of post 03, 3 neurons over 4 inputs, as weight_convention.py stores it.</text>
-<text x="40" y="128" class="t-head">Posts 01 to 03: a row per neuron</text>
-<rect x="128" y="200" width="64" height="48" class="cell f-orange-soft"/>
-<rect x="192" y="200" width="64" height="48" class="cell f-orange-soft"/>
-<rect x="256" y="200" width="64" height="48" class="cell f-orange-soft"/>
-<rect x="320" y="200" width="64" height="48" class="cell f-orange-soft"/>
-<rect x="128" y="248" width="64" height="48" class="cell"/>
-<rect x="192" y="248" width="64" height="48" class="cell"/>
-<rect x="256" y="248" width="64" height="48" class="cell"/>
-<rect x="320" y="248" width="64" height="48" class="cell"/>
-<rect x="128" y="296" width="64" height="48" class="cell"/>
-<rect x="192" y="296" width="64" height="48" class="cell"/>
-<rect x="256" y="296" width="64" height="48" class="cell"/>
-<rect x="320" y="296" width="64" height="48" class="cell"/>
-<rect x="128" y="200" width="256" height="144" class="frame" data-fit="skip"/>
+<rect x="104" y="200" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="176" y="200" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="248" y="200" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="320" y="200" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="104" y="248" width="72" height="48" class="cell"/>
+<rect x="176" y="248" width="72" height="48" class="cell"/>
+<rect x="248" y="248" width="72" height="48" class="cell"/>
+<rect x="320" y="248" width="72" height="48" class="cell"/>
+<rect x="104" y="296" width="72" height="48" class="cell"/>
+<rect x="176" y="296" width="72" height="48" class="cell"/>
+<rect x="248" y="296" width="72" height="48" class="cell"/>
+<rect x="320" y="296" width="72" height="48" class="cell"/>
+<rect x="104" y="200" width="288" height="144" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="160" y="230" text-anchor="middle" class="t-cell16">0.20</text>
-<text x="224" y="230" text-anchor="middle" class="t-cell16">0.80</text>
-<text x="288" y="230" text-anchor="middle" class="t-cell16">−0.50</text>
-<text x="352" y="230" text-anchor="middle" class="t-cell16">1.00</text>
-<text x="160" y="278" text-anchor="middle" class="t-cell16">0.50</text>
-<text x="224" y="278" text-anchor="middle" class="t-cell16">−0.91</text>
-<text x="288" y="278" text-anchor="middle" class="t-cell16">0.26</text>
-<text x="352" y="278" text-anchor="middle" class="t-cell16">−0.50</text>
-<text x="160" y="326" text-anchor="middle" class="t-cell16">−0.26</text>
-<text x="224" y="326" text-anchor="middle" class="t-cell16">−0.27</text>
-<text x="288" y="326" text-anchor="middle" class="t-cell16">0.17</text>
-<text x="352" y="326" text-anchor="middle" class="t-cell16">0.87</text>
+<text x="140" y="230" text-anchor="middle" class="t-cell16">0.20</text>
+<text x="212" y="230" text-anchor="middle" class="t-cell16">0.80</text>
+<text x="284" y="230" text-anchor="middle" class="t-cell16">−0.50</text>
+<text x="356" y="230" text-anchor="middle" class="t-cell16">1.00</text>
+<text x="140" y="278" text-anchor="middle" class="t-cell16">0.50</text>
+<text x="212" y="278" text-anchor="middle" class="t-cell16">−0.91</text>
+<text x="284" y="278" text-anchor="middle" class="t-cell16">0.26</text>
+<text x="356" y="278" text-anchor="middle" class="t-cell16">−0.50</text>
+<text x="140" y="326" text-anchor="middle" class="t-cell16">−0.26</text>
+<text x="212" y="326" text-anchor="middle" class="t-cell16">−0.27</text>
+<text x="284" y="326" text-anchor="middle" class="t-cell16">0.17</text>
+<text x="356" y="326" text-anchor="middle" class="t-cell16">0.87</text>
 </g>
-<rect x="128" y="200" width="256" height="48" class="emph s-orange" data-fit="skip"/>
+<rect x="104" y="200" width="288" height="48" class="emph s-orange" data-fit="skip"/>
 <g data-grid="skip">
-<text x="120" y="229" text-anchor="end" class="t-tick">neuron 1</text>
-<text x="120" y="277" text-anchor="end" class="t-tick">neuron 2</text>
-<text x="120" y="325" text-anchor="end" class="t-tick">neuron 3</text>
-</g>
-<g data-grid="skip">
-<text x="160" y="192" text-anchor="middle" class="t-tick">input 1</text>
-<text x="224" y="192" text-anchor="middle" class="t-tick">input 2</text>
-<text x="288" y="192" text-anchor="middle" class="t-tick">input 3</text>
-<text x="352" y="192" text-anchor="middle" class="t-tick">input 4</text>
-</g>
-<text x="520" y="128" class="t-head">Post 04 on: a column per neuron</text>
-<rect x="632" y="176" width="64" height="48" class="cell f-orange-soft"/>
-<rect x="696" y="176" width="64" height="48" class="cell"/>
-<rect x="760" y="176" width="64" height="48" class="cell"/>
-<rect x="632" y="224" width="64" height="48" class="cell f-orange-soft"/>
-<rect x="696" y="224" width="64" height="48" class="cell"/>
-<rect x="760" y="224" width="64" height="48" class="cell"/>
-<rect x="632" y="272" width="64" height="48" class="cell f-orange-soft"/>
-<rect x="696" y="272" width="64" height="48" class="cell"/>
-<rect x="760" y="272" width="64" height="48" class="cell"/>
-<rect x="632" y="320" width="64" height="48" class="cell f-orange-soft"/>
-<rect x="696" y="320" width="64" height="48" class="cell"/>
-<rect x="760" y="320" width="64" height="48" class="cell"/>
-<rect x="632" y="176" width="192" height="192" class="frame" data-fit="skip"/>
-<g data-grid="skip">
-<text x="664" y="206" text-anchor="middle" class="t-cell16">0.20</text>
-<text x="728" y="206" text-anchor="middle" class="t-cell16">0.50</text>
-<text x="792" y="206" text-anchor="middle" class="t-cell16">−0.26</text>
-<text x="664" y="254" text-anchor="middle" class="t-cell16">0.80</text>
-<text x="728" y="254" text-anchor="middle" class="t-cell16">−0.91</text>
-<text x="792" y="254" text-anchor="middle" class="t-cell16">−0.27</text>
-<text x="664" y="302" text-anchor="middle" class="t-cell16">−0.50</text>
-<text x="728" y="302" text-anchor="middle" class="t-cell16">0.26</text>
-<text x="792" y="302" text-anchor="middle" class="t-cell16">0.17</text>
-<text x="664" y="350" text-anchor="middle" class="t-cell16">1.00</text>
-<text x="728" y="350" text-anchor="middle" class="t-cell16">−0.50</text>
-<text x="792" y="350" text-anchor="middle" class="t-cell16">0.87</text>
-</g>
-<rect x="632" y="176" width="64" height="192" class="emph s-orange" data-fit="skip"/>
-<g data-grid="skip">
-<text x="624" y="205" text-anchor="end" class="t-tick">input 1</text>
-<text x="624" y="253" text-anchor="end" class="t-tick">input 2</text>
-<text x="624" y="301" text-anchor="end" class="t-tick">input 3</text>
-<text x="624" y="349" text-anchor="end" class="t-tick">input 4</text>
+<text x="96" y="229" text-anchor="end" class="t-tick">neuron 1</text>
+<text x="96" y="277" text-anchor="end" class="t-tick">neuron 2</text>
+<text x="96" y="325" text-anchor="end" class="t-tick">neuron 3</text>
 </g>
 <g data-grid="skip">
-<text x="664" y="168" text-anchor="middle" class="t-tick">neuron 1</text>
-<text x="728" y="168" text-anchor="middle" class="t-tick">neuron 2</text>
-<text x="792" y="168" text-anchor="middle" class="t-tick">neuron 3</text>
+<text x="140" y="192" text-anchor="middle" class="t-tick">input 1</text>
+<text x="212" y="192" text-anchor="middle" class="t-tick">input 2</text>
+<text x="284" y="192" text-anchor="middle" class="t-tick">input 3</text>
+<text x="356" y="192" text-anchor="middle" class="t-tick">input 4</text>
 </g>
-<path d="M408,272 L557,272" class="flow" marker-end="url(#nn-02-weight-convention-arrow)"/>
-<text x="484" y="260" text-anchor="middle" class="t-note">transpose</text>
-<text x="40" y="416" class="t-code f-orange-ink">weights_old.shape == (3, 4)</text>
-<text x="40" y="444" class="t-code">np.dot(inputs, weights_old.T) + biases</text>
-<text x="520" y="416" class="t-code f-orange-ink">weights_new.shape == (4, 3)</text>
-<text x="520" y="444" class="t-code">np.dot(inputs, weights_new) + biases</text>
+<rect x="608" y="176" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="680" y="176" width="72" height="48" class="cell"/>
+<rect x="752" y="176" width="72" height="48" class="cell"/>
+<rect x="608" y="224" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="680" y="224" width="72" height="48" class="cell"/>
+<rect x="752" y="224" width="72" height="48" class="cell"/>
+<rect x="608" y="272" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="680" y="272" width="72" height="48" class="cell"/>
+<rect x="752" y="272" width="72" height="48" class="cell"/>
+<rect x="608" y="320" width="72" height="48" class="cell f-orange-soft"/>
+<rect x="680" y="320" width="72" height="48" class="cell"/>
+<rect x="752" y="320" width="72" height="48" class="cell"/>
+<rect x="608" y="176" width="216" height="192" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="644" y="206" text-anchor="middle" class="t-cell16">0.20</text>
+<text x="716" y="206" text-anchor="middle" class="t-cell16">0.50</text>
+<text x="788" y="206" text-anchor="middle" class="t-cell16">−0.26</text>
+<text x="644" y="254" text-anchor="middle" class="t-cell16">0.80</text>
+<text x="716" y="254" text-anchor="middle" class="t-cell16">−0.91</text>
+<text x="788" y="254" text-anchor="middle" class="t-cell16">−0.27</text>
+<text x="644" y="302" text-anchor="middle" class="t-cell16">−0.50</text>
+<text x="716" y="302" text-anchor="middle" class="t-cell16">0.26</text>
+<text x="788" y="302" text-anchor="middle" class="t-cell16">0.17</text>
+<text x="644" y="350" text-anchor="middle" class="t-cell16">1.00</text>
+<text x="716" y="350" text-anchor="middle" class="t-cell16">−0.50</text>
+<text x="788" y="350" text-anchor="middle" class="t-cell16">0.87</text>
+</g>
+<rect x="608" y="176" width="72" height="192" class="emph s-orange" data-fit="skip"/>
+<g data-grid="skip">
+<text x="600" y="205" text-anchor="end" class="t-tick">input 1</text>
+<text x="600" y="253" text-anchor="end" class="t-tick">input 2</text>
+<text x="600" y="301" text-anchor="end" class="t-tick">input 3</text>
+<text x="600" y="349" text-anchor="end" class="t-tick">input 4</text>
+</g>
+<g data-grid="skip">
+<text x="644" y="168" text-anchor="middle" class="t-tick">neuron 1</text>
+<text x="716" y="168" text-anchor="middle" class="t-tick">neuron 2</text>
+<text x="788" y="168" text-anchor="middle" class="t-tick">neuron 3</text>
+</g>
+<path d="M416,272 L533,272" class="flow" marker-end="url(#nn-02-weight-convention-arrow)"/>
+<text x="476" y="260" text-anchor="middle" class="t-note">transpose</text>
+<text x="104" y="128" class="t-head">Posts 01 to 03: a row per neuron</text>
+<text x="104" y="416" class="t-code f-orange-ink">weights_old.shape == (3, 4)</text>
+<text x="104" y="444" class="t-code">np.dot(inputs, weights_old.T) + biases</text>
+<text x="608" y="128" class="t-head">Post 04 on: a column per neuron</text>
+<text x="608" y="416" class="t-code f-orange-ink">weights_new.shape == (4, 3)</text>
+<text x="608" y="444" class="t-code">np.dot(inputs, weights_new) + biases</text>
 <text x="40" y="504" class="t-note">Both calls return the same (3, 3) output; its first row is 4.8, 1.21, 2.385.</text>
 </svg>

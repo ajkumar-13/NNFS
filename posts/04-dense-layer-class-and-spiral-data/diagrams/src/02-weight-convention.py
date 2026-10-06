@@ -41,34 +41,36 @@ fig = Figure(
     "the two. Both calls give the same (3, 3) output, whose first row is " + ", ".join(ROW) + ".",
     subtitle="The first layer of post 03, 3 neurons over 4 inputs, as weight_convention.py stores it.")
 
-CW, CH = 64, 48
+CW, CH = 72, 48
 NEURONS = [f"neuron {k + 1}" for k in range(3)]
 INPUTS = [f"input {j + 1}" for j in range(4)]
+LX, RX = 104, 608                     # left edges of the two grids; heading and code lines align on them
 
 # -- left: the old layout, centred on the right grid's height
-fig.text(40, 128, "Posts 01 to 03: a row per neuron", "head")
-g_old = fig.grid(128, 200, 3, 4, cell_w=CW, cell_h=CH, values=OLD.tolist(), decimals=2, font=16,
+g_old = fig.grid(LX, 200, 3, 4, cell_w=CW, cell_h=CH, values=OLD.tolist(), decimals=2, font=16,
                  fill=lambda i, j: "weight-soft" if i == 0 else None)
 g_old.window(0, 0, 1, 4, "weight")
 g_old.row_labels(NEURONS)
 g_old.col_labels(INPUTS)
 
 # -- right: the new layout
-fig.text(520, 128, "Post 04 on: a column per neuron", "head")
-g_new = fig.grid(632, 176, 4, 3, cell_w=CW, cell_h=CH, values=NEW.tolist(), decimals=2, font=16,
+g_new = fig.grid(RX, 176, 4, 3, cell_w=CW, cell_h=CH, values=NEW.tolist(), decimals=2, font=16,
                  fill=lambda i, j: "weight-soft" if j == 0 else None)
 g_new.window(0, 0, 4, 1, "weight")
 g_new.row_labels(INPUTS)
 g_new.col_labels(NEURONS)
 assert g_old.box.cy == g_new.box.cy
 
+# the arrow runs from the left grid to just short of the right grid's row labels ("input 1", about 48 wide)
 fig.arrow((g_old.box.right + 24, g_old.box.cy), (g_new.box.x - 72, g_new.box.cy), label="transpose")
 
-# -- under each grid: its shape and its forward call, on one baseline across the two panels
-for x, name, shape, call in [(40, "weights_old", "(3, 4)", "np.dot(inputs, weights_old.T) + biases"),
-                             (520, "weights_new", "(4, 3)", "np.dot(inputs, weights_new) + biases")]:
-    fig.text(x, 416, f"{name}.shape == {shape}", "code", color="weight")
-    fig.text(x, 444, call, "code")
+# -- over and under each grid, aligned on its left edge: the heading, its shape and its forward call
+for g, head, name, shape, call in [
+        (g_old, "Posts 01 to 03: a row per neuron", "weights_old", "(3, 4)", "np.dot(inputs, weights_old.T) + biases"),
+        (g_new, "Post 04 on: a column per neuron", "weights_new", "(4, 3)", "np.dot(inputs, weights_new) + biases")]:
+    fig.text(g.box.x, 128, head, "head")
+    fig.text(g.box.x, 416, f"{name}.shape == {shape}", "code", color="weight")
+    fig.text(g.box.x, 444, call, "code")
 
 fig.caption("Both calls return the same (3, 3) output; its first row is " + ", ".join(ROW) + ".")
 fig.write()

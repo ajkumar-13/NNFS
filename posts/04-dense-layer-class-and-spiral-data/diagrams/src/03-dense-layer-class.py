@@ -24,6 +24,7 @@ P1, P2 = d1.weights.size + d1.biases.size, d2.weights.size + d2.biases.size
 assert X.shape == (300, 2) and d1.weights.shape == (2, 3) and d1.biases.shape == (1, 3)
 assert d1.output.shape == (300, 3) and d2.weights.shape == (3, 3) and d2.output.shape == (300, 3)
 assert (P1, P2) == (9, 12) and d1.weights is not d2.weights
+assert (d1.weights.size, d1.biases.size, d2.weights.size, d2.biases.size) == (6, 3, 9, 3)
 assert "dense1 and dense2 share a weight array: False" in out.getvalue()
 
 # The class as dense_layer.py writes it, line by line (indent, text); the double space before "=" is dropped
@@ -51,7 +52,9 @@ fig = Figure(
     "plus self.biases in self.output. Below, the two instances of section 6 in a chain: X of shape (300, 2) "
     "goes into dense1 = Layer_Dense(2, 3), with weights (2, 3) and biases (1, 3); dense1.output, (300, 3), goes "
     "into dense2 = Layer_Dense(3, 3), with weights (3, 3) and biases (1, 3); dense2.output is (300, 3). Dashed "
-    f"lines join the class to both instances. dense1 holds {P1} parameters and dense2 {P2}.",
+    "lines labelled instance of the class join the class to both instances. The weight and bias cells are "
+    f"drawn without values, one cell per number: dense1 holds {P1} parameters, {d1.weights.size} weights and "
+    f"{d1.biases.size} biases, and dense2 {P2}, {d2.weights.size} weights and {d2.biases.size} biases.",
     subtitle="The class of section 5 and the two layers section 6 builds from it on the spiral data.",
     height=720)
 
@@ -61,15 +64,16 @@ card = Box(40, 144, 880, 168)
 fig.panel(card, None, card=True)
 for k, (ind, line) in enumerate(CODE):
     fig.text(64 + 32 * ind, 176 + 24 * k, line, "code")
-fig.text(896, 200, "runs once, when an instance is made", "note", anchor="end")
-fig.text(896, 272, "runs on every call", "note", anchor="end")
+# a bracket beside each method's lines (baselines 200 to 248, and 272 to 296), just right of the longest line
+fig.brace(184, 252, 608, "runs once, when an instance is made", side="right", kind="bracket", vertical=True)
+fig.brace(260, 300, 608, "runs on every call", side="right", kind="bracket", vertical=True)
 
 # -- the two instances, left to right along the data
 fig.text(40, 368, "Two instances", "head")
-CT, CH = 416, 192                                    # instance cards: top and height
-TOP, BH = 432, 160                                   # the data bands: 160 high, 16 per column
+CT, CH = 416, 224                                    # instance cards: top and height
+TOP, BH = 448, 160                                   # the data bands: 160 high, 16 per column
 CY = TOP + BH // 2
-assert CY == CT + CH // 2
+assert CY == CT + CH // 2 and TOP + BH + 24 <= 656 and CT + CH <= 656
 
 
 def band(x, cols, color, name, arr):
@@ -90,6 +94,9 @@ def instance(x, name, layer, call, fwd):
     for g, attr, arr in [(w, ".weights", layer.weights), (b, ".biases", layer.biases)]:
         fig.text(g.box.x, CT + 84, attr, "code", color="weight")
         fig.text(g.box.x + 80 if attr == ".weights" else g.box.x + 72, CT + 84, shape(arr), "tick")
+    # one cell per number; the cells carry no values because the weights are random draws
+    nw, nb = layer.weights.size, layer.biases.size
+    fig.text(x + 16, CT + CH - 24, f"{nw + nb} parameters: {nw} weights + {nb} biases", "note")
     return c
 
 
@@ -104,6 +111,7 @@ for a, b in [(bx, c1), (c1, o1), (o1, c2), (c2, o2)]:
 # instances made from the class
 for c in (c1, c2):
     fig.leader((c.cx, card.bottom), (c.cx, c.y))
+    fig.text(c.cx + 12, 348, "instance of the class", "note")
 
-fig.caption(f"dense1 holds {P1} parameters and dense2 {P2}; only dense1.output passes from one to the other.")
+fig.caption("Only dense1.output passes from one instance to the other.")
 fig.write()

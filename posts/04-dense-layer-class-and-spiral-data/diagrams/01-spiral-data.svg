@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-01-spiral-data-title" aria-describedby="nn-01-spiral-data-desc">
 <title id="nn-01-spiral-data-title">Three spiral arms that no straight cut separates</title>
-<desc id="nn-01-spiral-data-desc">A scatter plot of all 300 points that spiral_data(samples=100, classes=3) returns after nnfs.init(), the first feature X[:, 0] across and the second X[:, 1] up, both from minus 1 to 1. Class 0 is drawn as blue circles, class 1 as orange squares and class 2 as green triangles, 100 points each, each class an arm that winds out from the origin. The background is split by straight edges into three tinted regions, where a trained Layer_Dense(2, 3) answers each class. The arms cross every edge: the layer gets 118 of 300 points right, 39.3%, against 100 of 300, 33.3%, for always giving one answer. A side panel lists X: (300, 2) float32 and y: (300,) uint8.</desc>
+<desc id="nn-01-spiral-data-desc">A scatter plot of all 300 points that spiral_data(samples=100, classes=3) returns after nnfs.init(), the first feature X[:, 0] across and the second X[:, 1] up, both from minus 1 to 1. Class 0 is drawn as blue circles, class 1 as orange squares and class 2 as green triangles, 100 points each, each class an arm that winds out from the origin. The background is split by straight edges into three tinted regions, where a trained Layer_Dense(2, 3) answers each class: blue for class 0, orange for class 1, green for class 2, as the key beside the plot shows. The arms cross every edge: the layer gets 118 of 300 points right, 39.3 percent, against 100 of 300, 33.3 percent, for always giving one answer. A side panel lists X: (300, 2) float32 and y: (300,) uint8.</desc>
 <style>
   :root {
     --nn-bg: #FAFAF7;
@@ -135,7 +135,10 @@
   .f-ink { fill: var(--nn-ink); }
   .f-orange { fill: var(--nn-orange); }
   .f-orange-soft { fill: var(--nn-orange-soft); }
+  .s-blue-line { stroke: var(--nn-blue-line); }
+  .s-green-line { stroke: var(--nn-green-line); }
   .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-orange-line { stroke: var(--nn-orange-line); }
   .s-surface { stroke: var(--nn-surface); }
 </style>
 <defs>
@@ -463,21 +466,28 @@
 <rect x="104" y="128" width="464" height="464" class="frame" data-fit="skip"/>
 <text x="104" y="116" class="t-note">X[:, 1], second feature</text>
 <text x="336" y="636" text-anchor="middle" class="t-note">X[:, 0], first feature</text>
-<text x="624" y="152" class="t-head">100 points per class</text>
+<text x="624" y="152" class="t-head">Key: 100 points per class</text>
+<rect x="624" y="176" width="24" height="24" class="f-blue-soft s-blue-line w1"/>
 <g data-grid="skip">
-<circle cx="632.00" cy="187.00" r="4" class="f-blue s-surface w1"/>
-<text x="652" y="192" class="t-label">class 0, rows 0 to 99</text>
-<rect x="628.50" y="215.50" width="7" height="7" class="f-orange s-surface w1"/>
-<text x="652" y="224" class="t-label">class 1, rows 100 to 199</text>
-<path d="M632.00,246.00 L636.50,254.50 L627.50,254.50 Z" class="f-green s-surface w1"/>
-<text x="652" y="256" class="t-label">class 2, rows 200 to 299</text>
+<circle cx="636.00" cy="188.00" r="4" class="f-blue s-surface w1"/>
 </g>
+<text x="660" y="192" class="t-label">class 0, rows 0 to 99</text>
+<rect x="624" y="208" width="24" height="24" class="f-orange-soft s-orange-line w1"/>
+<g data-grid="skip">
+<rect x="632.50" y="216.50" width="7" height="7" class="f-orange s-surface w1"/>
+</g>
+<text x="660" y="224" class="t-label">class 1, rows 100 to 199</text>
+<rect x="624" y="240" width="24" height="24" class="f-green-soft s-green-line w1"/>
+<g data-grid="skip">
+<path d="M636.00,247.00 L640.50,255.50 L631.50,255.50 Z" class="f-green s-surface w1"/>
+</g>
+<text x="660" y="256" class="t-label">class 2, rows 200 to 299</text>
 <text x="624" y="320" class="t-code">X: (300, 2) float32</text>
 <text x="624" y="344" class="t-code">y: (300,) uint8</text>
 <text x="624" y="424" class="t-head">Tints: a trained Layer_Dense(2, 3)</text>
-<text x="624" y="456" class="t-note">Each tint is where the layer</text>
-<text x="624" y="476" class="t-note">answers that class.</text>
-<text x="624" y="528" class="t-value f-ink b">118 of 300 correct, 39.3%</text>
-<text x="624" y="556" class="t-note">one fixed answer: 100 of 300, 33.3%</text>
+<text x="624" y="456" class="t-note">Each tint, as in the key, is where</text>
+<text x="624" y="476" class="t-note">the layer answers that class.</text>
+<text x="624" y="528" class="t-value f-ink b">118 of 300 correct, 39.3 percent</text>
+<text x="624" y="556" class="t-note">one fixed answer: 100 of 300, 33.3 percent</text>
 <text x="40" y="684" class="t-note">Straight edges cut every arm into pieces; the layer does only a little better than chance.</text>
 </svg>

@@ -45,7 +45,8 @@ FIXED = int(np.max(np.bincount(y)))
 assert CORRECT == 118 and FIXED == 100
 assert "step 1000: loss 1.0830, 118 of 300 correct, 39.3%" in base_out
 assert "always answering one class: 100 of 300 correct, 33.3%" in base_out
-PCT, PCT_FIXED = f"{CORRECT / 300:.1%}", f"{FIXED / 300:.1%}"
+PCT, PCT_FIXED = f"{CORRECT / 3:.1f} percent", f"{FIXED / 3:.1f} percent"   # as the post writes it
+assert (PCT, PCT_FIXED) == ("39.3 percent", "33.3 percent")
 
 # -- geometry: a square plot of the plane from -1.1 to 1.1 on both axes
 LO, HI = -1.1, 1.1
@@ -95,7 +96,8 @@ fig = Figure(
     "first feature X[:, 0] across and the second X[:, 1] up, both from minus 1 to 1. Class 0 is drawn as blue "
     "circles, class 1 as orange squares and class 2 as green triangles, 100 points each, each class an arm "
     "that winds out from the origin. The background is split by straight edges into three tinted regions, "
-    "where a trained Layer_Dense(2, 3) answers each class. The arms cross every edge: the layer gets "
+    "where a trained Layer_Dense(2, 3) answers each class: blue for class 0, orange for class 1, green for "
+    "class 2, as the key beside the plot shows. The arms cross every edge: the layer gets "
     f"{CORRECT} of 300 points right, {PCT}, against {FIXED} of 300, {PCT_FIXED}, for always giving one answer. "
     "A side panel lists X: (300, 2) float32 and y: (300,) uint8.",
     subtitle="spiral_data(samples=100, classes=3) after nnfs.init(): all 300 points.",
@@ -124,18 +126,21 @@ fig.text(PX + PS // 2, PY + PS + 44, "X[:, 0], first feature", "note", anchor="m
 
 # -- side panel
 RX = 624
-fig.text(RX, 152, "100 points per class", "head")
-with fig.data():
-    for k in range(3):
-        by = 192 + 32 * k
-        marker(fig, SHAPES[k], RX + 8, by - 5, f'{fig._cls("f", COLORS[k])} {fig._cls("s", "surface")} w1')
-        fig.text(RX + 28, by, f"class {k}, rows {100 * k} to {100 * k + 99}", "label", snap=False)
+fig.text(RX, 152, "Key: 100 points per class", "head")
+for k in range(3):
+    by = 192 + 32 * k
+    # the key: each class's mark on its class's tint, so the tint of a region names its class
+    fig.add(f'<rect x="{RX}" y="{by - 16}" width="24" height="24" '
+            f'class="{fig._cls("f", COLORS[k] + "-soft")} {fig._cls("s", COLORS[k] + "-line")} w1"/>')
+    with fig.data():
+        marker(fig, SHAPES[k], RX + 12, by - 4, f'{fig._cls("f", COLORS[k])} {fig._cls("s", "surface")} w1')
+    fig.text(RX + 36, by, f"class {k}, rows {100 * k} to {100 * k + 99}", "label")
 fig.text(RX, 320, "X: (300, 2) float32", "code")
 fig.text(RX, 344, "y: (300,) uint8", "code")
 
 fig.text(RX, 424, "Tints: a trained Layer_Dense(2, 3)", "head")
-fig.text(RX, 456, "Each tint is where the layer", "note")
-fig.text(RX, 476, "answers that class.", "note")
+fig.text(RX, 456, "Each tint, as in the key, is where", "note")
+fig.text(RX, 476, "the layer answers that class.", "note")
 fig.text(RX, 528, f"{CORRECT} of 300 correct, {PCT}", "value", color="ink", bold=True)
 fig.text(RX, 556, f"one fixed answer: {FIXED} of 300, {PCT_FIXED}", "note")
 

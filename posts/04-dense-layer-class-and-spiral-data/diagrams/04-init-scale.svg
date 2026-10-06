@@ -191,9 +191,9 @@
 <text x="96" y="116" class="t-note">standard deviation of the layer's output, log scale</text>
 <text x="400" y="472" text-anchor="middle" class="t-note">layer</text>
 <g data-grid="skip">
-<text x="400" y="162.8" text-anchor="middle" class="t-label f-red-ink">× 8.243 per layer</text>
-<text x="400" y="242.53" text-anchor="middle" class="t-label f-green-ink">× 1.030 per layer</text>
-<text x="400" y="372.8" text-anchor="middle" class="t-label f-blue-ink">× 0.082 per layer</text>
+<text x="295.17" y="175.86" text-anchor="middle" class="t-label f-red-ink">× 8.243 per layer</text>
+<text x="557.24" y="304.43" text-anchor="middle" class="t-label f-green-ink">× 1.030 per layer</text>
+<text x="242.76" y="347.29" text-anchor="middle" class="t-label f-blue-ink">× 0.082 per layer</text>
 </g>
 <text x="40" y="504" class="t-note">Per layer, about scale × √64: 8.00 for 1.0, 1.00 for 0.125, 0.08 for 0.01.</text>
 </svg>
