@@ -1,94 +1,317 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" role="img" aria-labelledby="t d">
-  <title id="t">The shape rule for matrix multiplication: inner dimensions match, outer dimensions survive</title>
-  <desc id="d">A schematic of the shape rule for np.dot of two matrices. On the left, a generic shape diagram shows (m, n) times (n, p) producing (m, p), with the two n axes highlighted as inner dimensions that are contracted away, and m and p shown as outer dimensions that survive. On the right, a concrete worked example: A of shape (3, 4) times B of shape (4, 3) gives an output of shape (3, 3), with the inner-dimension 4s circled. A bottom band states the rule in one sentence.</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-03-shape-rule-title" aria-describedby="nn-03-shape-rule-desc">
+<title id="nn-03-shape-rule-title">Inner sizes must match; outer sizes make the result</title>
+<desc id="nn-03-shape-rule-desc">Two rows. Top, np.dot(A, B): A of shape (3, 4), holding 1 to 12 row by row, times B of shape (4, 3), holding 1 to 12 row by row, equals the 3 by 3 result 70, 80, 90; 158, 184, 210; 246, 288, 330. Row 1 of A and column 1 of B are outlined, 70 is bold, and the worked line reads 1 times 1 plus 2 times 4 plus 3 times 7 plus 4 times 10 equals 70. Bottom, np.dot(B, A): the same two matrices swapped give a 4 by 4 result, drawn without values. Under every grid its shape, with the inner sizes, the 4s in the top row and the 3s in the bottom row, in purple and the outer sizes in green. A last line states the rule in general: (m, n) times (n, p) gives (m, p).</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
-    .panel-head{font-weight:700;font-size:14px;fill:var(--nn-ink);}
-    .panel-sub{font-size:12px;fill:var(--nn-ink-muted);}
-    .formula-outer{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:24px;fill:var(--nn-ink);font-weight:700;}
-    .formula-inner{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:24px;font-weight:700;fill:var(--nn-alert);}
-    .formula-result{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:24px;font-weight:700;fill:var(--nn-success);}
-    .arrow-inner{stroke:var(--nn-alert);stroke-width:1.5;fill:none;}
-    .arrow-outer{stroke:var(--nn-success);stroke-width:1.5;fill:none;}
-    .label-inner{font-size:12px;font-weight:700;fill:var(--nn-alert);}
-    .label-outer{font-size:12px;font-weight:700;fill:var(--nn-success);}
-    .label-text{font-size:11px;fill:var(--nn-ink-muted);}
-    .circle-hl{fill:none;stroke:var(--nn-alert);stroke-width:1.5;stroke-dasharray:3 2;}
-    .rule-band{fill:var(--nn-primary);fill-opacity:0.08;stroke:var(--nn-primary);stroke-width:1.5;}
-    .rule-head{font-weight:700;font-size:14px;fill:var(--nn-primary);}
-    .rule-body{font-size:12px;fill:var(--nn-ink);}
-  ]]></style>
-
-  <rect class="bg" width="960" height="420"/>
-
-  <text class="title"    x="48" y="48">The shape rule, in one image</text>
-  <text class="subtitle" x="48" y="70">Inner dimensions match and get contracted away. Outer dimensions survive into the result.</text>
-
-  <!-- ====================== LEFT: Generic form ====================== -->
-  <rect class="panel" x="48" y="96" width="424" height="220" rx="12"/>
-  <text class="panel-head" x="68" y="124">Generic shape</text>
-  <text class="panel-sub"  x="68" y="142">np.dot(A, B)</text>
-
-  <!-- Big formula in the middle -->
-  <text class="formula-outer"  x="80"  y="220">(m,</text>
-  <text class="formula-inner"  x="135" y="220">n</text>
-  <text class="formula-outer"  x="150" y="220">) · (</text>
-  <text class="formula-inner"  x="216" y="220">n</text>
-  <text class="formula-outer"  x="231" y="220">, p) = (m, p)</text>
-
-  <!-- arrow connecting the two inner ns -->
-  <path class="arrow-inner" d="M 140 196 C 150 184, 210 184, 220 196"/>
-  <text class="label-inner" x="180" y="168" text-anchor="middle">must match</text>
-  <text class="label-text"  x="180" y="182" text-anchor="middle">inner dimensions</text>
-
-  <!-- arrow showing outer m and p going to result -->
-  <path class="arrow-outer" d="M 96 232 C 96 268, 388 268, 388 232"/>
-  <text class="label-outer" x="242" y="284" text-anchor="middle">survive into the output</text>
-  <text class="label-text"  x="242" y="298" text-anchor="middle">outer dimensions</text>
-
-  <!-- ====================== RIGHT: Concrete worked example ====================== -->
-  <rect class="panel" x="488" y="96" width="424" height="220" rx="12"/>
-  <text class="panel-head" x="508" y="124">Concrete example</text>
-  <text class="panel-sub"  x="508" y="142">A is (3, 4)   ·   B is (4, 3)</text>
-
-  <text class="formula-outer"  x="520" y="220">(3,</text>
-  <text class="formula-inner"  x="568" y="220">4</text>
-  <text class="formula-outer"  x="583" y="220">) · (</text>
-  <text class="formula-inner"  x="648" y="220">4</text>
-  <text class="formula-outer"  x="663" y="220">, 3) = </text>
-  <text class="formula-result" x="754" y="220">(3, 3)</text>
-
-  <!-- Circles around the inner 4s -->
-  <circle class="circle-hl" cx="575" cy="212" r="12"/>
-  <circle class="circle-hl" cx="655" cy="212" r="12"/>
-  <path class="arrow-inner" d="M 575 196 C 580 184, 650 184, 655 196"/>
-  <text class="label-inner" x="615" y="178" text-anchor="middle">4 matches 4</text>
-
-  <text class="label-text"  x="528" y="280">If the inner numbers were 4 and 5, np.dot would raise</text>
-  <text class="label-text"  x="528" y="296">ValueError: shapes (3,4) and (5,3) not aligned.</text>
-
-  <!-- ====================== Rule band ====================== -->
-  <rect class="rule-band" x="48" y="340" width="864" height="56" rx="12"/>
-  <text class="rule-head" x="68" y="366">Inner dimensions match. Outer dimensions become the result shape.</text>
-  <text class="rule-body" x="68" y="384">Every np.dot, np.matmul, and @ call between two matrices follows this rule.</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .f-orange-soft { fill: var(--nn-orange-soft); }
+  .f-purple-ink { fill: var(--nn-purple-ink); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-orange { stroke: var(--nn-orange); }
+</style>
+<defs>
+<marker id="nn-03-shape-rule-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title">Inner sizes must match; outer sizes make the result</text>
+<text x="40" y="76" class="t-subtitle">Section 6's <tspan class="i">A</tspan> and <tspan class="i">B</tspan>. Both orders run here, and give results of different shapes.</text>
+<rect x="40" y="168" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="80" y="168" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="120" y="168" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="160" y="168" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="40" y="208" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="80" y="208" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="120" y="208" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="160" y="208" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="40" y="248" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="80" y="248" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="120" y="248" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="160" y="248" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="40" y="168" width="160" height="120" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="60" y="194" text-anchor="middle" class="t-cell16">1</text>
+<text x="100" y="194" text-anchor="middle" class="t-cell16">2</text>
+<text x="140" y="194" text-anchor="middle" class="t-cell16">3</text>
+<text x="180" y="194" text-anchor="middle" class="t-cell16">4</text>
+<text x="60" y="234" text-anchor="middle" class="t-cell16">5</text>
+<text x="100" y="234" text-anchor="middle" class="t-cell16">6</text>
+<text x="140" y="234" text-anchor="middle" class="t-cell16">7</text>
+<text x="180" y="234" text-anchor="middle" class="t-cell16">8</text>
+<text x="60" y="274" text-anchor="middle" class="t-cell16">9</text>
+<text x="100" y="274" text-anchor="middle" class="t-cell16">10</text>
+<text x="140" y="274" text-anchor="middle" class="t-cell16">11</text>
+<text x="180" y="274" text-anchor="middle" class="t-cell16">12</text>
+</g>
+<rect x="232" y="168" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="272" y="168" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="312" y="168" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="232" y="208" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="272" y="208" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="312" y="208" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="232" y="248" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="272" y="248" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="312" y="248" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="232" y="288" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="272" y="288" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="312" y="288" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="232" y="168" width="120" height="160" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="252" y="194" text-anchor="middle" class="t-cell16">1</text>
+<text x="292" y="194" text-anchor="middle" class="t-cell16">2</text>
+<text x="332" y="194" text-anchor="middle" class="t-cell16">3</text>
+<text x="252" y="234" text-anchor="middle" class="t-cell16">4</text>
+<text x="292" y="234" text-anchor="middle" class="t-cell16">5</text>
+<text x="332" y="234" text-anchor="middle" class="t-cell16">6</text>
+<text x="252" y="274" text-anchor="middle" class="t-cell16">7</text>
+<text x="292" y="274" text-anchor="middle" class="t-cell16">8</text>
+<text x="332" y="274" text-anchor="middle" class="t-cell16">9</text>
+<text x="252" y="314" text-anchor="middle" class="t-cell16">10</text>
+<text x="292" y="314" text-anchor="middle" class="t-cell16">11</text>
+<text x="332" y="314" text-anchor="middle" class="t-cell16">12</text>
+</g>
+<rect x="384" y="168" width="40" height="40" class="cell f-green-soft"/>
+<rect x="424" y="168" width="40" height="40" class="cell f-green-soft"/>
+<rect x="464" y="168" width="40" height="40" class="cell f-green-soft"/>
+<rect x="384" y="208" width="40" height="40" class="cell f-green-soft"/>
+<rect x="424" y="208" width="40" height="40" class="cell f-green-soft"/>
+<rect x="464" y="208" width="40" height="40" class="cell f-green-soft"/>
+<rect x="384" y="248" width="40" height="40" class="cell f-green-soft"/>
+<rect x="424" y="248" width="40" height="40" class="cell f-green-soft"/>
+<rect x="464" y="248" width="40" height="40" class="cell f-green-soft"/>
+<rect x="384" y="168" width="120" height="120" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="404" y="194" text-anchor="middle" class="t-cell16 f-green-ink b">70</text>
+<text x="444" y="194" text-anchor="middle" class="t-cell16">80</text>
+<text x="484" y="194" text-anchor="middle" class="t-cell16">90</text>
+<text x="404" y="234" text-anchor="middle" class="t-cell16">158</text>
+<text x="444" y="234" text-anchor="middle" class="t-cell16">184</text>
+<text x="484" y="234" text-anchor="middle" class="t-cell16">210</text>
+<text x="404" y="274" text-anchor="middle" class="t-cell16">246</text>
+<text x="444" y="274" text-anchor="middle" class="t-cell16">288</text>
+<text x="484" y="274" text-anchor="middle" class="t-cell16">330</text>
+</g>
+<g data-grid="skip">
+<circle cx="216" cy="228" r="3" class="f-ink-muted"/>
+</g>
+<text x="368" y="236" text-anchor="middle" class="t-op">=</text>
+<text x="120" y="356" text-anchor="middle" class="t-math">(<tspan class="f-green-ink">3</tspan>, <tspan class="f-purple-ink">4</tspan>)</text>
+<text x="292" y="356" text-anchor="middle" class="t-math">(<tspan class="f-purple-ink">4</tspan>, <tspan class="f-green-ink">3</tspan>)</text>
+<text x="444" y="356" text-anchor="middle" class="t-math">(<tspan class="f-green-ink">3</tspan>, <tspan class="f-green-ink">3</tspan>)</text>
+<rect x="40" y="168" width="160" height="40" class="emph s-blue" data-fit="skip"/>
+<rect x="232" y="168" width="40" height="160" class="emph s-orange" data-fit="skip"/>
+<text x="40" y="152" class="t-head">np.dot(<tspan class="i">A</tspan>, <tspan class="i">B</tspan>): the 4s meet</text>
+<text x="592" y="216" class="t-label">row 1 of <tspan class="i">A</tspan> with column 1 of <tspan class="i">B</tspan>:</text>
+<text x="592" y="248" class="t-math">1 · 1 + 2 · 4 + 3 · 7 + 4 · 10 = 70</text>
+<rect x="40" y="432" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="80" y="432" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="120" y="432" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="40" y="472" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="80" y="472" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="120" y="472" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="40" y="512" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="80" y="512" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="120" y="512" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="40" y="552" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="80" y="552" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="120" y="552" width="40" height="40" class="cell f-orange-soft"/>
+<rect x="40" y="432" width="120" height="160" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="60" y="458" text-anchor="middle" class="t-cell16">1</text>
+<text x="100" y="458" text-anchor="middle" class="t-cell16">2</text>
+<text x="140" y="458" text-anchor="middle" class="t-cell16">3</text>
+<text x="60" y="498" text-anchor="middle" class="t-cell16">4</text>
+<text x="100" y="498" text-anchor="middle" class="t-cell16">5</text>
+<text x="140" y="498" text-anchor="middle" class="t-cell16">6</text>
+<text x="60" y="538" text-anchor="middle" class="t-cell16">7</text>
+<text x="100" y="538" text-anchor="middle" class="t-cell16">8</text>
+<text x="140" y="538" text-anchor="middle" class="t-cell16">9</text>
+<text x="60" y="578" text-anchor="middle" class="t-cell16">10</text>
+<text x="100" y="578" text-anchor="middle" class="t-cell16">11</text>
+<text x="140" y="578" text-anchor="middle" class="t-cell16">12</text>
+</g>
+<rect x="192" y="432" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="232" y="432" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="272" y="432" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="312" y="432" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="192" y="472" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="232" y="472" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="272" y="472" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="312" y="472" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="192" y="512" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="232" y="512" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="272" y="512" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="312" y="512" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="192" y="432" width="160" height="120" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="212" y="458" text-anchor="middle" class="t-cell16">1</text>
+<text x="252" y="458" text-anchor="middle" class="t-cell16">2</text>
+<text x="292" y="458" text-anchor="middle" class="t-cell16">3</text>
+<text x="332" y="458" text-anchor="middle" class="t-cell16">4</text>
+<text x="212" y="498" text-anchor="middle" class="t-cell16">5</text>
+<text x="252" y="498" text-anchor="middle" class="t-cell16">6</text>
+<text x="292" y="498" text-anchor="middle" class="t-cell16">7</text>
+<text x="332" y="498" text-anchor="middle" class="t-cell16">8</text>
+<text x="212" y="538" text-anchor="middle" class="t-cell16">9</text>
+<text x="252" y="538" text-anchor="middle" class="t-cell16">10</text>
+<text x="292" y="538" text-anchor="middle" class="t-cell16">11</text>
+<text x="332" y="538" text-anchor="middle" class="t-cell16">12</text>
+</g>
+<rect x="384" y="432" width="40" height="40" class="cell f-green-soft"/>
+<rect x="424" y="432" width="40" height="40" class="cell f-green-soft"/>
+<rect x="464" y="432" width="40" height="40" class="cell f-green-soft"/>
+<rect x="504" y="432" width="40" height="40" class="cell f-green-soft"/>
+<rect x="384" y="472" width="40" height="40" class="cell f-green-soft"/>
+<rect x="424" y="472" width="40" height="40" class="cell f-green-soft"/>
+<rect x="464" y="472" width="40" height="40" class="cell f-green-soft"/>
+<rect x="504" y="472" width="40" height="40" class="cell f-green-soft"/>
+<rect x="384" y="512" width="40" height="40" class="cell f-green-soft"/>
+<rect x="424" y="512" width="40" height="40" class="cell f-green-soft"/>
+<rect x="464" y="512" width="40" height="40" class="cell f-green-soft"/>
+<rect x="504" y="512" width="40" height="40" class="cell f-green-soft"/>
+<rect x="384" y="552" width="40" height="40" class="cell f-green-soft"/>
+<rect x="424" y="552" width="40" height="40" class="cell f-green-soft"/>
+<rect x="464" y="552" width="40" height="40" class="cell f-green-soft"/>
+<rect x="504" y="552" width="40" height="40" class="cell f-green-soft"/>
+<rect x="384" y="432" width="160" height="160" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<circle cx="176" cy="512" r="3" class="f-ink-muted"/>
+</g>
+<text x="368" y="520" text-anchor="middle" class="t-op">=</text>
+<text x="100" y="620" text-anchor="middle" class="t-math">(<tspan class="f-green-ink">4</tspan>, <tspan class="f-purple-ink">3</tspan>)</text>
+<text x="272" y="620" text-anchor="middle" class="t-math">(<tspan class="f-purple-ink">3</tspan>, <tspan class="f-green-ink">4</tspan>)</text>
+<text x="464" y="620" text-anchor="middle" class="t-math">(<tspan class="f-green-ink">4</tspan>, <tspan class="f-green-ink">4</tspan>)</text>
+<text x="40" y="416" class="t-head">np.dot(<tspan class="i">B</tspan>, <tspan class="i">A</tspan>): the 3s meet</text>
+<text x="592" y="480" class="t-label">the same two matrices, swapped:</text>
+<text x="592" y="512" class="t-label">a different product, of shape (4, 4)</text>
+<text x="592" y="584" class="t-label">in general:</text>
+<text x="592" y="620" class="t-math">(<tspan class="f-green-ink"><tspan class="i">m</tspan></tspan>, <tspan class="f-purple-ink"><tspan class="i">n</tspan></tspan>) · (<tspan class="f-purple-ink"><tspan class="i">n</tspan></tspan>, <tspan class="f-green-ink"><tspan class="i">p</tspan></tspan>)  →  (<tspan class="f-green-ink"><tspan class="i">m</tspan></tspan>, <tspan class="f-green-ink"><tspan class="i">p</tspan></tspan>)</text>
+<text x="40" y="684" class="t-note">Inner sizes, in purple, must be equal and are summed away; outer sizes, in green, form the result.</text>
 </svg>

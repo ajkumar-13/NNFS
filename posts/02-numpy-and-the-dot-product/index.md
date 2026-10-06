@@ -12,9 +12,9 @@
 > - Explain why swapping the arguments is harmless for two vectors and changes or breaks the call once a matrix is involved.
 > - Decide when a layer call needs the transpose of the weight matrix, and write the batch call that uses it.
 
-![Three panels, one per form of np.dot. Vector by vector: shapes (n,) and (n,) give a single cell, one neuron on one sample. Matrix by vector: a grid of shape (m, n) and a vector of shape (n,) give a column of shape (m,), a layer of m neurons on one sample. Matrix by matrix: grids of shape (m, n) and (n, p) give a grid of shape (m, p), a layer of m neurons on a batch of p samples. A band below states the one rule: the last axis of the first array is contracted with the first axis of the second, the two lengths must be equal, and the surviving axes form the output shape.](diagrams/01-three-forms.svg)
+![Three rows, one per form of np.dot, drawn neurons-first with the weights and inputs of section 8 and no bias. Vector by vector, np.dot(w, x): the weights of neuron 1 as a row meet sample 1 as a column and give 2.800; shapes (4,) and (4,) give a scalar. Matrix by vector, np.dot(W, x): the 3 by 4 weight matrix meets the same column and gives 2.800, minus 1.790 and 1.885; shapes (3, 4) and (4,) give (3,). Matrix by matrix, np.dot(W, X.T): the same weights meet a 4 by 3 matrix whose columns are samples 1 to 3 and give a 3 by 3 result with one column per sample, the first column again 2.800, minus 1.790 and 1.885; shapes (3, 4) and (4, 3) give (3, 3).](diagrams/01-three-forms.svg)
 
-*Three forms of one call. The shapes of the arguments decide which arithmetic runs, and with it which neural-network object the call stands for.*
+*Three forms of one call, drawn neurons-first: one neuron per row of the weights, one sample per column of the second argument. The shapes decide which arithmetic runs, and the same dot product, neuron 1 with sample 1, appears in all three results.*
 
 ---
 
@@ -60,10 +60,6 @@ One function carries three behaviours for historical reasons. `np.dot` predates 
 ### 3.1. What `np.dot` is *not*
 
 A short boundary section, because NumPy has several operations that look similar and behave differently.
-
-![Three cards. np.dot of A and B, a contraction: shapes (m, n) and (n, p) give (m, p), the shared axis is summed and vanishes; marked as the layer call. A star B, element-wise: shapes (m, n) and (m, n) give (m, n), circled because the shape going in is the shape coming out; marked never a layer call. A at B, matmul: shapes (m, n) and (n, p) give (m, p), identical to np.dot at one and two dimensions and broadcasting at rank three and above. A band below says that np.dot and the at operator agree throughout this series.](diagrams/05-not-the-same-call.svg)
-
-*What separates the three is what each one does to the shape. Only `*` returns an array shaped like its inputs, so when two shapes happen to match it raises nothing and the mistake surfaces later as a wrong answer.*
 
 - **`np.dot` is not element-wise multiplication.** The product `A * B` requires the two arrays to have identical or broadcast-compatible shapes, multiplies them position by position, and returns an array of the shape they share. Nothing is summed. It is a different operation entirely.
 - **`np.dot` is not always interchangeable with `@` (the `__matmul__` operator) or `np.matmul`.** They agree for 1-D and 2-D arrays and diverge in two places. For arrays of three or more dimensions `@` treats each argument as a stack of matrices and broadcasts over the leading axes, while `np.dot` contracts the last axis of the first argument with the second-to-last axis of the second: shapes $(2, 3, 4)$ and $(2, 4, 5)$ give $(2, 3, 5)$ under `@` and $(2, 3, 2, 5)$ under `np.dot`. And `np.dot` accepts a scalar argument, which `np.matmul` rejects. The dense layers of this series only ever pass 1-D and 2-D arrays, so the two are interchangeable here.
@@ -120,9 +116,9 @@ print(np.dot(B, a))   # matrix first: one dot product per row of B
 [32 50 68]
 ```
 
-Both calls succeed and both produce a 3-element vector, but the vectors are different. The reason is that `np.dot(a, B)` and `np.dot(B, a)` compute different sums.
+Both calls succeed and both produce a 3-element vector, but the vectors are different. The reason is that `np.dot(a, B)` and `np.dot(B, a)` compute different sums, as the figure below draws them.
 
-![Two panels with the same vector a, holding 1, 2, 3, and the same 3 by 3 matrix B, holding 4 to 12. Left, np.dot(a, B): a drawn as a row meets each column of B and gives 48, 54, 60, the first being 4 times 1 plus 7 times 2 plus 10 times 3. Right, np.dot(B, a): each row of B meets a drawn as a column and gives 32, 50, 68, the first being 4 times 1 plus 5 times 2 plus 6 times 3. A footer notes that both calls run only because B is square.](diagrams/02-order-matters.svg)
+![Two panels with the same vector a, holding 1, 2, 3, and the same 3 by 3 matrix B, holding 4 to 12. Left, np.dot(a, B): a drawn as a row meets each column of B and gives 48, 54, 60; column 1 of B is outlined, with the worked line 1 times 4 plus 2 times 7 plus 3 times 10 equals 48. Right, np.dot(B, a): each row of B meets a drawn as a column and gives 32, 50, 68; row 1 of B is outlined, with 4 times 1 plus 5 times 2 plus 6 times 3 equals 32. A caption line notes that both calls run only because B is square.](diagrams/02-order-matters.svg)
 
 *The order of the arguments decides whether the vector meets the columns of the matrix or its rows. With a matrix in the call, `np.dot` is no longer commutative.*
 
@@ -178,9 +174,11 @@ For two 2-D arrays `A` of shape $(m, n)$ and `B` of shape $(n, p)$, the call `np
 
 $$(\mathbf{A}\mathbf{B})_{ij} = \sum_{k=1}^{n} A_{ik} B_{kj}.$$
 
-![The shape rule drawn twice. Generic: (m, n) times (n, p) equals (m, p), the two n marked must match, inner dimensions, and m and p marked survive into the output, outer dimensions. Concrete: (3, 4) times (4, 3) equals (3, 3), the two 4s circled, with a note that inner numbers 4 and 5 would raise ValueError: shapes (3,4) and (5,3) not aligned.](diagrams/03-shape-rule.svg)
+The figure below draws the product for the two matrices of the code further down, in both orders.
 
-*The two $n$ in $(m, n) \cdot (n, p)$ must be equal; they are contracted away. The $m$ and the $p$ survive into the result.*
+![Two rows. Top, np.dot(A, B): A of shape (3, 4), holding 1 to 12, times B of shape (4, 3), holding 1 to 12, gives the 3 by 3 result 70, 80, 90; 158, 184, 210; 246, 288, 330, with row 1 of A and column 1 of B outlined and the worked line 1 times 1 plus 2 times 4 plus 3 times 7 plus 4 times 10 equals 70. Bottom, np.dot(B, A): the same matrices swapped give a 4 by 4 result, drawn without values. Every shape label sets the inner sizes in purple and the outer sizes in green, and a last line gives the general rule, (m, n) times (n, p) gives (m, p).](diagrams/03-shape-rule.svg)
+
+*The two $n$ in $(m, n) \cdot (n, p)$ must be equal; they are contracted away. The $m$ and the $p$ survive into the result, so swapping the arguments here turns a $(3, 3)$ result into a $(4, 4)$ one.*
 
 The summary is one sentence and one rule:
 
@@ -291,11 +289,11 @@ In both cases the answer comes out the same way: every output is the dot product
 
 ## 8. Batching, end to end
 
-The matrix by matrix form of section 3 was framed neurons-first, as $(m, n) \cdot (n, p)$. A batch turns that round to samples-first, which is why the transpose appears: the inputs lead with the sample count, so the weights are transposed to bring the shared feature axis inward. A batch of three samples through a layer of three neurons:
+The matrix by matrix form of section 3 was framed neurons-first, as $(m, n) \cdot (n, p)$. A batch turns that round to samples-first, which is why the transpose appears: the inputs lead with the sample count, so the weights are transposed to bring the shared feature axis inward. A batch of three samples through a layer of three neurons, drawn in the figure and computed in the code below it:
 
-![Two rows. Top, without the transpose: inputs, a 3 by 4 grid labelled N=3, n=4, and weights, a 3 by 4 grid labelled m=3, n=4, have inner sizes 4 and 3 crossed out, and the call ends in ValueError: shapes (3,4) and (3,4) not aligned. Bottom, with the transpose: inputs and weights.T, a 4 by 3 grid, have inner sizes 4 and 4 marked match and give a 3 by 3 grid of outputs, 4.80, 1.21, 2.39, then 8.90, -1.81, 0.20, then 1.41, 1.05, 0.03, one row per sample and one column per neuron.](diagrams/04-batch-transpose.svg)
+![Section 8's batch, samples-first. The stored weights, shape (3, 4), one row per neuron, lead through an arrow labelled transpose to weights.T, shape (4, 3), one column per neuron. Under it sits the bias row 2.0, 3.0, 0.5, added to every row, and under that the outputs, shape (3, 3): 4.800, 1.210, 2.385; 8.900, minus 1.810, 0.200; 1.410, 1.051, 0.026. The inputs, shape (3, 4), one row per sample, sit to the left of the outputs. The row of sample 1 and the column of neuron 1 are outlined and meet in 4.800, worked out as 1.0 times 0.20 plus 2.0 times 0.80 plus 3.0 times minus 0.50 plus 2.5 times 1.00 plus the bias 2.0. A note says that without the transpose the 4 meets a 3 and NumPy raises ValueError.](diagrams/04-batch-transpose.svg)
 
-*The transpose is what makes the inner sizes meet. The output grid holds the result printed below, biases included, rounded to two decimals.*
+*Samples-first: one sample per row of the inputs and of the outputs, one neuron per column of `weights.T`. The transpose is what makes the inner sizes meet, and the bias row is added to every row of the product.*
 
 ```python
 import numpy as np

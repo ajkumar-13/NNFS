@@ -1,184 +1,239 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" role="img" aria-labelledby="t d">
-  <title id="t">Order of arguments matters: np.dot(a, B) versus np.dot(B, a)</title>
-  <desc id="d">Two side-by-side panels show the same 3-by-3 matrix B and the same length-3 vector a, but with the arguments to np.dot swapped between the two panels. The left panel, np.dot(a, B), treats a as a row vector that walks across the columns of B and produces the result vector 48, 54, 60. The right panel, np.dot(B, a), treats a as a column vector that walks down the rows of B and produces the result vector 32, 50, 68. The two results are different even though the inputs are the same; the matrix-vector dot product is not commutative.</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-02-order-matters-title" aria-describedby="nn-02-order-matters-desc">
+<title id="nn-02-order-matters-title">Swap the arguments and the answer changes</title>
+<desc id="nn-02-order-matters-desc">Two panels with the same vector a, holding 1, 2, 3, and the same 3 by 3 matrix B, holding 4 to 12 row by row. Left, np.dot(a, B): a drawn as a row meets each column of B and gives the row 48, 54, 60; column 1 of B is outlined and the worked line reads 1 times 4 plus 2 times 7 plus 3 times 10 equals 48. Right, np.dot(B, a): each row of B meets a drawn as a column and gives the column 32, 50, 68; row 1 of B is outlined and the worked line reads 4 times 1 plus 5 times 2 plus 6 times 3 equals 32. A caption line says both orders run only because B is square, and that with C of shape (2, 3) np.dot(a, C) raises.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
-    .pill-prim{fill:var(--nn-primary);}
-    .pill-acc{fill:var(--nn-accent);}
-    .panel-head{font-weight:700;font-size:15px;fill:var(--nn-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
-    .a-cell{fill:var(--nn-primary);fill-opacity:0.14;stroke:var(--nn-primary);stroke-width:1;}
-    .b-cell{fill:var(--nn-accent);fill-opacity:0.16;stroke:var(--nn-accent);stroke-width:1;}
-    .out-cell{fill:var(--nn-success);fill-opacity:0.20;stroke:var(--nn-success);stroke-width:1.2;}
-    .cell-num{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--nn-ink);font-weight:600;}
-    .op{font-weight:700;font-size:18px;fill:var(--nn-ink);}
-    .arrow-hint{stroke:var(--nn-primary);stroke-width:1.2;fill:none;}
-    .arrow-hint-2{stroke:var(--nn-accent);stroke-width:1.2;fill:none;}
-    .arrow-head-prim{fill:var(--nn-primary);}
-    .arrow-head-acc{fill:var(--nn-accent);}
-    .hint-text{font-size:11px;fill:var(--nn-ink-muted);}
-    .hint-text-strong{font-size:12px;font-weight:600;fill:var(--nn-ink);}
-  ]]></style>
-
-  <defs>
-    <marker id="aP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" class="arrow-head-prim"/>
-    </marker>
-    <marker id="aA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" class="arrow-head-acc"/>
-    </marker>
-  </defs>
-
-  <rect class="bg" width="960" height="500"/>
-
-  <!-- Header -->
-  <text class="title"    x="48" y="48">Order matters once a matrix is in the call</text>
-  <text class="subtitle" x="48" y="70">Same inputs, swapped order, different answers. np.dot is not commutative with matrices.</text>
-
-  <!-- ====================== LEFT PANEL: np.dot(a, B) ====================== -->
-  <rect class="panel"     x="48" y="96" width="424" height="320" rx="12"/>
-  <rect class="pill-prim" x="48" y="96" width="6"   height="320" rx="3"/>
-  <text class="panel-head" x="68" y="124">np.dot(a, B)</text>
-  <text class="panel-sub"  x="68" y="142">a is a row; walk across columns of B</text>
-
-  <!-- a as a row of 3 cells -->
-  <g transform="translate(80, 188)">
-    <rect class="a-cell" x="0"  y="0" width="32" height="32"/>
-    <rect class="a-cell" x="32" y="0" width="32" height="32"/>
-    <rect class="a-cell" x="64" y="0" width="32" height="32"/>
-    <text class="cell-num" x="16"  y="20" text-anchor="middle">1</text>
-    <text class="cell-num" x="48"  y="20" text-anchor="middle">2</text>
-    <text class="cell-num" x="80"  y="20" text-anchor="middle">3</text>
-  </g>
-
-  <text class="op" x="194" y="208" text-anchor="middle">·</text>
-
-  <!-- B as 3x3 matrix -->
-  <g transform="translate(208, 168)">
-    <rect class="b-cell" x="0"  y="0"  width="32" height="32"/>
-    <rect class="b-cell" x="32" y="0"  width="32" height="32"/>
-    <rect class="b-cell" x="64" y="0"  width="32" height="32"/>
-    <rect class="b-cell" x="0"  y="32" width="32" height="32"/>
-    <rect class="b-cell" x="32" y="32" width="32" height="32"/>
-    <rect class="b-cell" x="64" y="32" width="32" height="32"/>
-    <rect class="b-cell" x="0"  y="64" width="32" height="32"/>
-    <rect class="b-cell" x="32" y="64" width="32" height="32"/>
-    <rect class="b-cell" x="64" y="64" width="32" height="32"/>
-    <text class="cell-num" x="16" y="20" text-anchor="middle">4</text>
-    <text class="cell-num" x="48" y="20" text-anchor="middle">5</text>
-    <text class="cell-num" x="80" y="20" text-anchor="middle">6</text>
-    <text class="cell-num" x="16" y="52" text-anchor="middle">7</text>
-    <text class="cell-num" x="48" y="52" text-anchor="middle">8</text>
-    <text class="cell-num" x="80" y="52" text-anchor="middle">9</text>
-    <text class="cell-num" x="16" y="84" text-anchor="middle">10</text>
-    <text class="cell-num" x="48" y="84" text-anchor="middle">11</text>
-    <text class="cell-num" x="80" y="84" text-anchor="middle">12</text>
-  </g>
-
-  <text class="op" x="324" y="208" text-anchor="middle">=</text>
-
-  <!-- Result row of 3 cells -->
-  <g transform="translate(340, 188)">
-    <rect class="out-cell" x="0"  y="0" width="36" height="32"/>
-    <rect class="out-cell" x="36" y="0" width="36" height="32"/>
-    <rect class="out-cell" x="72" y="0" width="36" height="32"/>
-    <text class="cell-num" x="18"  y="20" text-anchor="middle">48</text>
-    <text class="cell-num" x="54"  y="20" text-anchor="middle">54</text>
-    <text class="cell-num" x="90"  y="20" text-anchor="middle">60</text>
-  </g>
-
-  <!-- Hint: arrow showing row dot column -->
-  <line class="arrow-hint" x1="180" y1="204" x2="208" y2="184" marker-end="url(#aP)"/>
-  <text class="hint-text" x="72"  y="262">row of a (length 3)</text>
-  <text class="hint-text" x="208" y="290">walks down each column</text>
-  <text class="hint-text" x="208" y="304">of B (3 columns → 3 outputs)</text>
-
-  <text class="hint-text-strong" x="68" y="358">Result: [48, 54, 60]</text>
-  <text class="hint-text"        x="68" y="378">column-1 · a = 4·1 + 7·2 + 10·3 = 48</text>
-  <text class="hint-text"        x="68" y="394">column-2 · a = 5·1 + 8·2 + 11·3 = 54</text>
-
-  <!-- ====================== RIGHT PANEL: np.dot(B, a) ====================== -->
-  <rect class="panel"    x="488" y="96" width="424" height="320" rx="12"/>
-  <rect class="pill-acc" x="488" y="96" width="6"   height="320" rx="3"/>
-  <text class="panel-head" x="508" y="124">np.dot(B, a)</text>
-  <text class="panel-sub"  x="508" y="142">a is a column; walk across rows of B</text>
-
-  <!-- B as 3x3 matrix -->
-  <g transform="translate(520, 168)">
-    <rect class="b-cell" x="0"  y="0"  width="32" height="32"/>
-    <rect class="b-cell" x="32" y="0"  width="32" height="32"/>
-    <rect class="b-cell" x="64" y="0"  width="32" height="32"/>
-    <rect class="b-cell" x="0"  y="32" width="32" height="32"/>
-    <rect class="b-cell" x="32" y="32" width="32" height="32"/>
-    <rect class="b-cell" x="64" y="32" width="32" height="32"/>
-    <rect class="b-cell" x="0"  y="64" width="32" height="32"/>
-    <rect class="b-cell" x="32" y="64" width="32" height="32"/>
-    <rect class="b-cell" x="64" y="64" width="32" height="32"/>
-    <text class="cell-num" x="16" y="20" text-anchor="middle">4</text>
-    <text class="cell-num" x="48" y="20" text-anchor="middle">5</text>
-    <text class="cell-num" x="80" y="20" text-anchor="middle">6</text>
-    <text class="cell-num" x="16" y="52" text-anchor="middle">7</text>
-    <text class="cell-num" x="48" y="52" text-anchor="middle">8</text>
-    <text class="cell-num" x="80" y="52" text-anchor="middle">9</text>
-    <text class="cell-num" x="16" y="84" text-anchor="middle">10</text>
-    <text class="cell-num" x="48" y="84" text-anchor="middle">11</text>
-    <text class="cell-num" x="80" y="84" text-anchor="middle">12</text>
-  </g>
-
-  <text class="op" x="636" y="216" text-anchor="middle">·</text>
-
-  <!-- a as a column of 3 cells -->
-  <g transform="translate(652, 168)">
-    <rect class="a-cell" x="0" y="0"  width="32" height="32"/>
-    <rect class="a-cell" x="0" y="32" width="32" height="32"/>
-    <rect class="a-cell" x="0" y="64" width="32" height="32"/>
-    <text class="cell-num" x="16" y="20" text-anchor="middle">1</text>
-    <text class="cell-num" x="16" y="52" text-anchor="middle">2</text>
-    <text class="cell-num" x="16" y="84" text-anchor="middle">3</text>
-  </g>
-
-  <text class="op" x="704" y="216" text-anchor="middle">=</text>
-
-  <!-- Result column of 3 cells -->
-  <g transform="translate(720, 168)">
-    <rect class="out-cell" x="0" y="0"  width="44" height="32"/>
-    <rect class="out-cell" x="0" y="32" width="44" height="32"/>
-    <rect class="out-cell" x="0" y="64" width="44" height="32"/>
-    <text class="cell-num" x="22" y="20" text-anchor="middle">32</text>
-    <text class="cell-num" x="22" y="52" text-anchor="middle">50</text>
-    <text class="cell-num" x="22" y="84" text-anchor="middle">68</text>
-  </g>
-
-  <!-- Hint -->
-  <line class="arrow-hint-2" x1="616" y1="184" x2="652" y2="184" marker-end="url(#aA)"/>
-  <text class="hint-text" x="508" y="290">each row of B (3 rows → 3 outputs)</text>
-  <text class="hint-text" x="508" y="304">walks across the column a</text>
-
-  <text class="hint-text-strong" x="508" y="358">Result: [32, 50, 68]</text>
-  <text class="hint-text"        x="508" y="378">row-1 · a = 4·1 + 5·2 + 6·3 = 32</text>
-  <text class="hint-text"        x="508" y="394">row-2 · a = 7·1 + 8·2 + 9·3 = 50</text>
-
-  <!-- ====================== Footer ====================== -->
-  <text class="footer" x="48"  y="452">Both calls succeed only because B is square. With a non-square B, just one of the two orderings is shape-legal.</text>
-  <text class="footer" x="48"  y="468">In neural-network code the convention is np.dot(W, x): the matrix on the left, the vector on the right.</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .f-orange-soft { fill: var(--nn-orange-soft); }
+  .s-orange { stroke: var(--nn-orange); }
+</style>
+<defs>
+<marker id="nn-02-order-matters-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title">Swap the arguments and the answer changes</text>
+<text x="40" y="76" class="t-subtitle">Section 5's <tspan class="i">a</tspan> and <tspan class="i">B</tspan>. A 1-D first argument acts as a row; a 1-D second argument as a column.</text>
+<rect x="40" y="256" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="88" y="256" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="136" y="256" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="40" y="256" width="144" height="48" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="64" y="286" text-anchor="middle" class="t-cell18">1</text>
+<text x="112" y="286" text-anchor="middle" class="t-cell18">2</text>
+<text x="160" y="286" text-anchor="middle" class="t-cell18">3</text>
+</g>
+<rect x="216" y="208" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="264" y="208" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="312" y="208" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="216" y="256" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="264" y="256" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="312" y="256" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="216" y="304" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="264" y="304" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="312" y="304" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="216" y="208" width="144" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="240" y="238" text-anchor="middle" class="t-cell18">4</text>
+<text x="288" y="238" text-anchor="middle" class="t-cell18">5</text>
+<text x="336" y="238" text-anchor="middle" class="t-cell18">6</text>
+<text x="240" y="286" text-anchor="middle" class="t-cell18">7</text>
+<text x="288" y="286" text-anchor="middle" class="t-cell18">8</text>
+<text x="336" y="286" text-anchor="middle" class="t-cell18">9</text>
+<text x="240" y="334" text-anchor="middle" class="t-cell18">10</text>
+<text x="288" y="334" text-anchor="middle" class="t-cell18">11</text>
+<text x="336" y="334" text-anchor="middle" class="t-cell18">12</text>
+</g>
+<rect x="392" y="256" width="48" height="48" class="cell f-green-soft"/>
+<rect x="440" y="256" width="48" height="48" class="cell f-green-soft"/>
+<rect x="488" y="256" width="48" height="48" class="cell f-green-soft"/>
+<rect x="392" y="256" width="144" height="48" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="416" y="286" text-anchor="middle" class="t-cell18 f-green-ink b">48</text>
+<text x="464" y="286" text-anchor="middle" class="t-cell18">54</text>
+<text x="512" y="286" text-anchor="middle" class="t-cell18">60</text>
+</g>
+<rect x="216" y="208" width="48" height="144" class="emph s-orange" data-fit="skip"/>
+<g data-grid="skip">
+<circle cx="200" cy="280" r="3" class="f-ink-muted"/>
+</g>
+<text x="376" y="288" text-anchor="middle" class="t-op">=</text>
+<text x="40" y="176" class="t-head">np.dot(<tspan class="i">a</tspan>, <tspan class="i">B</tspan>): vector first</text>
+<text x="40" y="384" class="t-label"><tspan class="i">a</tspan> acts as a row and meets each column of <tspan class="i">B</tspan></text>
+<text x="40" y="416" class="t-math">1 · 4 + 2 · 7 + 3 · 10 = 48</text>
+<rect x="600" y="208" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="648" y="208" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="696" y="208" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="600" y="256" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="648" y="256" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="696" y="256" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="600" y="304" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="648" y="304" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="696" y="304" width="48" height="48" class="cell f-orange-soft"/>
+<rect x="600" y="208" width="144" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="624" y="238" text-anchor="middle" class="t-cell18">4</text>
+<text x="672" y="238" text-anchor="middle" class="t-cell18">5</text>
+<text x="720" y="238" text-anchor="middle" class="t-cell18">6</text>
+<text x="624" y="286" text-anchor="middle" class="t-cell18">7</text>
+<text x="672" y="286" text-anchor="middle" class="t-cell18">8</text>
+<text x="720" y="286" text-anchor="middle" class="t-cell18">9</text>
+<text x="624" y="334" text-anchor="middle" class="t-cell18">10</text>
+<text x="672" y="334" text-anchor="middle" class="t-cell18">11</text>
+<text x="720" y="334" text-anchor="middle" class="t-cell18">12</text>
+</g>
+<rect x="776" y="208" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="776" y="256" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="776" y="304" width="48" height="48" class="cell f-blue-soft"/>
+<rect x="776" y="208" width="48" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="800" y="238" text-anchor="middle" class="t-cell18">1</text>
+<text x="800" y="286" text-anchor="middle" class="t-cell18">2</text>
+<text x="800" y="334" text-anchor="middle" class="t-cell18">3</text>
+</g>
+<rect x="856" y="208" width="48" height="48" class="cell f-green-soft"/>
+<rect x="856" y="256" width="48" height="48" class="cell f-green-soft"/>
+<rect x="856" y="304" width="48" height="48" class="cell f-green-soft"/>
+<rect x="856" y="208" width="48" height="144" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="880" y="238" text-anchor="middle" class="t-cell18 f-green-ink b">32</text>
+<text x="880" y="286" text-anchor="middle" class="t-cell18">50</text>
+<text x="880" y="334" text-anchor="middle" class="t-cell18">68</text>
+</g>
+<rect x="600" y="208" width="144" height="48" class="emph s-orange" data-fit="skip"/>
+<g data-grid="skip">
+<circle cx="760" cy="280" r="3" class="f-ink-muted"/>
+</g>
+<text x="840" y="288" text-anchor="middle" class="t-op">=</text>
+<text x="600" y="176" class="t-head">np.dot(<tspan class="i">B</tspan>, <tspan class="i">a</tspan>): matrix first</text>
+<text x="600" y="384" class="t-label"><tspan class="i">a</tspan> acts as a column and meets each row of <tspan class="i">B</tspan></text>
+<text x="600" y="416" class="t-math">4 · 1 + 5 · 2 + 6 · 3 = 32</text>
+<text x="40" y="504" class="t-note">Both orders run only because <tspan class="i">B</tspan> is square; with <tspan class="i">C</tspan> of shape (2, 3), np.dot(<tspan class="i">a</tspan>, <tspan class="i">C</tspan>) raises.</text>
 </svg>

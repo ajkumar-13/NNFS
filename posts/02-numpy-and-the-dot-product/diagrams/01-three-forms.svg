@@ -1,205 +1,334 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
-  <title id="t">The three forms of np.dot</title>
-  <desc id="d">Three side-by-side panels showing the three forms of np.dot. Left panel: vector by vector, two 1-D arrays of length n give a single scalar; neural-network meaning is one neuron with one sample. Middle panel: matrix by vector, an m-by-n weight matrix times a length-n input gives a length-m output vector; meaning is a layer of m neurons on one sample. Right panel: matrix by matrix, an m-by-n weight matrix times an n-by-p input matrix gives an m-by-p result; meaning is a layer of m neurons on a batch of p samples. A footer band reminds the reader that the inner dimensions must always match.</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-01-three-forms-title" aria-describedby="nn-01-three-forms-desc">
+<title id="nn-01-three-forms-title">One function, three forms: the shapes decide</title>
+<desc id="nn-01-three-forms-desc">Three rows, one per form of np.dot, drawn neurons-first with the weights and inputs of section 8 and no bias. Vector by vector, np.dot(w, x): the weights of neuron 1, 0.20, 0.80, minus 0.50, 1.00, as a row, meet sample 1, 1.0, 2.0, 3.0, 2.5, as a column, and give the scalar 2.800; shapes (4,) and (4,), one neuron and one sample. Matrix by vector, np.dot(W, x): the 3 by 4 weight matrix, rows 0.20, 0.80, minus 0.50, 1.00; 0.50, minus 0.91, 0.26, minus 0.50; minus 0.26, minus 0.27, 0.17, 0.87, meets the same column and gives the column 2.800, minus 1.790, 1.885; shapes (3, 4) and (4,) give (3,), a layer of 3 neurons on one sample. Matrix by matrix, np.dot(W, X.T): the same weights meet a 4 by 3 matrix whose columns are labelled samples 1 to 3 and give a 3 by 3 result with one column per sample, rows 2.800, 6.900, minus 0.590; minus 1.790, minus 4.810, minus 1.949; 1.885, minus 0.300, minus 0.474; shapes (3, 4) and (4, 3) give (3, 3). Row 1 of the weights and column 1 of the samples are outlined, and 2.800 is bold in every result. A caption line says every form sums over the 4 inputs.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .panel{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
-    .pill-prim{fill:var(--nn-primary);}
-    .pill-acc{fill:var(--nn-accent);}
-    .pill-ok{fill:var(--nn-success);}
-    .panel-head{font-weight:700;font-size:14px;fill:var(--nn-ink);}
-    .panel-sub{font-size:11px;fill:var(--nn-ink-muted);}
-    .cell-vec{fill:var(--nn-primary);fill-opacity:0.14;stroke:var(--nn-primary);stroke-width:1;}
-    .cell-mat{fill:var(--nn-accent);fill-opacity:0.16;stroke:var(--nn-accent);stroke-width:1;}
-    .cell-out{fill:var(--nn-success);fill-opacity:0.18;stroke:var(--nn-success);stroke-width:1;}
-    .op{font-weight:700;font-size:18px;fill:var(--nn-ink);}
-    .shape-badge{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
-    .shape-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--nn-ink);}
-    .meaning-head{font-weight:700;font-size:11px;fill:var(--nn-ink-muted);text-transform:uppercase;letter-spacing:0.06em;}
-    .meaning-body{font-size:12px;fill:var(--nn-ink);}
-    .rule-band{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
-    .rule-head{font-weight:700;font-size:13px;fill:var(--nn-ink);}
-    .rule-body{font-size:12px;fill:var(--nn-ink-muted);}
-  ]]></style>
-
-  <rect class="bg" width="960" height="540"/>
-
-  <!-- Header -->
-  <text class="title"    x="48" y="48">Three forms of np.dot</text>
-  <text class="subtitle" x="48" y="70">One function, three behaviours. The shape of the inputs decides which.</text>
-
-  <!-- ============================ Panel 1: Vector · Vector ============================ -->
-  <rect class="panel"     x="48" y="96" width="280" height="280" rx="12"/>
-  <rect class="pill-prim" x="48" y="96" width="6"   height="280" rx="3"/>
-  <text class="panel-head" x="68" y="124">Vector · Vector</text>
-  <text class="panel-sub"  x="68" y="142">np.dot(a, b)</text>
-
-  <!-- a (1xN row of 4 cells) -->
-  <g transform="translate(78, 180)">
-    <rect class="cell-vec" x="0"  y="0" width="24" height="24"/>
-    <rect class="cell-vec" x="24" y="0" width="24" height="24"/>
-    <rect class="cell-vec" x="48" y="0" width="24" height="24"/>
-    <rect class="cell-vec" x="72" y="0" width="24" height="24"/>
-  </g>
-  <text class="op" x="190" y="198" text-anchor="middle">·</text>
-  <!-- b (1xN row of 4 cells) -->
-  <g transform="translate(204, 180)">
-    <rect class="cell-vec" x="0"  y="0" width="24" height="24"/>
-    <rect class="cell-vec" x="24" y="0" width="24" height="24"/>
-    <rect class="cell-vec" x="48" y="0" width="24" height="24"/>
-    <rect class="cell-vec" x="72" y="0" width="24" height="24"/>
-  </g>
-
-  <text class="op" x="170" y="240" text-anchor="middle">=</text>
-  <!-- Scalar output -->
-  <rect class="cell-out" x="178" y="226" width="32" height="32"/>
-
-  <rect class="shape-badge" x="78"  y="284" width="96" height="24" rx="6"/>
-  <text class="shape-text"  x="126" y="301" text-anchor="middle">(n,)</text>
-  <rect class="shape-badge" x="204" y="284" width="96" height="24" rx="6"/>
-  <text class="shape-text"  x="252" y="301" text-anchor="middle">(n,)</text>
-
-  <text class="meaning-head" x="68" y="334">Means</text>
-  <text class="meaning-body" x="68" y="352">one neuron,</text>
-  <text class="meaning-body" x="68" y="368">one sample → scalar</text>
-
-  <!-- ============================ Panel 2: Matrix · Vector ============================ -->
-  <rect class="panel"    x="344" y="96" width="280" height="280" rx="12"/>
-  <rect class="pill-acc" x="344" y="96" width="6"   height="280" rx="3"/>
-  <text class="panel-head" x="364" y="124">Matrix · Vector</text>
-  <text class="panel-sub"  x="364" y="142">np.dot(W, x)</text>
-
-  <!-- W (3x4) -->
-  <g transform="translate(368, 168)">
-    <rect class="cell-mat" x="0"  y="0"  width="24" height="24"/>
-    <rect class="cell-mat" x="24" y="0"  width="24" height="24"/>
-    <rect class="cell-mat" x="48" y="0"  width="24" height="24"/>
-    <rect class="cell-mat" x="72" y="0"  width="24" height="24"/>
-    <rect class="cell-mat" x="0"  y="24" width="24" height="24"/>
-    <rect class="cell-mat" x="24" y="24" width="24" height="24"/>
-    <rect class="cell-mat" x="48" y="24" width="24" height="24"/>
-    <rect class="cell-mat" x="72" y="24" width="24" height="24"/>
-    <rect class="cell-mat" x="0"  y="48" width="24" height="24"/>
-    <rect class="cell-mat" x="24" y="48" width="24" height="24"/>
-    <rect class="cell-mat" x="48" y="48" width="24" height="24"/>
-    <rect class="cell-mat" x="72" y="48" width="24" height="24"/>
-  </g>
-  <text class="op" x="480" y="208" text-anchor="middle">·</text>
-  <!-- x (4-vector, vertical column for clarity) -->
-  <g transform="translate(500, 168)">
-    <rect class="cell-vec" x="0" y="0"  width="24" height="24"/>
-    <rect class="cell-vec" x="0" y="24" width="24" height="24"/>
-    <rect class="cell-vec" x="0" y="48" width="24" height="24"/>
-  </g>
-  <!-- only 3 cells visible, but it's "(n,)" abstractly; will note via badge -->
-
-  <text class="op" x="555" y="216" text-anchor="middle">=</text>
-  <!-- Output: 3-vector -->
-  <g transform="translate(575, 168)">
-    <rect class="cell-out" x="0" y="0"  width="28" height="24"/>
-    <rect class="cell-out" x="0" y="24" width="28" height="24"/>
-    <rect class="cell-out" x="0" y="48" width="28" height="24"/>
-  </g>
-
-  <rect class="shape-badge" x="368" y="252" width="96" height="24" rx="6"/>
-  <text class="shape-text"  x="416" y="269" text-anchor="middle">(m, n)</text>
-  <rect class="shape-badge" x="488" y="252" width="48" height="24" rx="6"/>
-  <text class="shape-text"  x="512" y="269" text-anchor="middle">(n,)</text>
-  <rect class="shape-badge" x="568" y="252" width="48" height="24" rx="6"/>
-  <text class="shape-text"  x="592" y="269" text-anchor="middle">(m,)</text>
-
-  <text class="meaning-head" x="364" y="334">Means</text>
-  <text class="meaning-body" x="364" y="352">a layer of m neurons,</text>
-  <text class="meaning-body" x="364" y="368">one sample → vector</text>
-
-  <!-- ============================ Panel 3: Matrix · Matrix ============================ -->
-  <rect class="panel"   x="640" y="96" width="272" height="280" rx="12"/>
-  <rect class="pill-ok" x="640" y="96" width="6"   height="280" rx="3"/>
-  <text class="panel-head" x="660" y="124">Matrix · Matrix</text>
-  <text class="panel-sub"  x="660" y="142">np.dot(A, B)</text>
-
-  <!-- A (3x4) -->
-  <g transform="translate(664, 168)">
-    <rect class="cell-mat" x="0"  y="0"  width="20" height="20"/>
-    <rect class="cell-mat" x="20" y="0"  width="20" height="20"/>
-    <rect class="cell-mat" x="40" y="0"  width="20" height="20"/>
-    <rect class="cell-mat" x="60" y="0"  width="20" height="20"/>
-    <rect class="cell-mat" x="0"  y="20" width="20" height="20"/>
-    <rect class="cell-mat" x="20" y="20" width="20" height="20"/>
-    <rect class="cell-mat" x="40" y="20" width="20" height="20"/>
-    <rect class="cell-mat" x="60" y="20" width="20" height="20"/>
-    <rect class="cell-mat" x="0"  y="40" width="20" height="20"/>
-    <rect class="cell-mat" x="20" y="40" width="20" height="20"/>
-    <rect class="cell-mat" x="40" y="40" width="20" height="20"/>
-    <rect class="cell-mat" x="60" y="40" width="20" height="20"/>
-  </g>
-  <text class="op" x="758" y="200" text-anchor="middle">·</text>
-  <!-- B (4x3) -->
-  <g transform="translate(772, 168)">
-    <rect class="cell-mat" x="0"  y="0"  width="20" height="20"/>
-    <rect class="cell-mat" x="20" y="0"  width="20" height="20"/>
-    <rect class="cell-mat" x="40" y="0"  width="20" height="20"/>
-    <rect class="cell-mat" x="0"  y="20" width="20" height="20"/>
-    <rect class="cell-mat" x="20" y="20" width="20" height="20"/>
-    <rect class="cell-mat" x="40" y="20" width="20" height="20"/>
-    <rect class="cell-mat" x="0"  y="40" width="20" height="20"/>
-    <rect class="cell-mat" x="20" y="40" width="20" height="20"/>
-    <rect class="cell-mat" x="40" y="40" width="20" height="20"/>
-    <rect class="cell-mat" x="0"  y="60" width="20" height="20"/>
-    <rect class="cell-mat" x="20" y="60" width="20" height="20"/>
-    <rect class="cell-mat" x="40" y="60" width="20" height="20"/>
-  </g>
-  <text class="op" x="847" y="216" text-anchor="middle">=</text>
-  <!-- output (3x3) -->
-  <g transform="translate(861, 168)">
-    <rect class="cell-out" x="0"  y="0"  width="14" height="20"/>
-    <rect class="cell-out" x="14" y="0"  width="14" height="20"/>
-    <rect class="cell-out" x="28" y="0"  width="14" height="20"/>
-    <rect class="cell-out" x="0"  y="20" width="14" height="20"/>
-    <rect class="cell-out" x="14" y="20" width="14" height="20"/>
-    <rect class="cell-out" x="28" y="20" width="14" height="20"/>
-    <rect class="cell-out" x="0"  y="40" width="14" height="20"/>
-    <rect class="cell-out" x="14" y="40" width="14" height="20"/>
-    <rect class="cell-out" x="28" y="40" width="14" height="20"/>
-  </g>
-
-  <rect class="shape-badge" x="660" y="252" width="80" height="24" rx="6"/>
-  <text class="shape-text"  x="700" y="269" text-anchor="middle">(m, n)</text>
-  <rect class="shape-badge" x="752" y="252" width="80" height="24" rx="6"/>
-  <text class="shape-text"  x="792" y="269" text-anchor="middle">(n, p)</text>
-  <rect class="shape-badge" x="844" y="252" width="64" height="24" rx="6"/>
-  <text class="shape-text"  x="876" y="269" text-anchor="middle">(m, p)</text>
-
-  <text class="meaning-head" x="660" y="334">Means</text>
-  <text class="meaning-body" x="660" y="352">a layer of m neurons,</text>
-  <text class="meaning-body" x="660" y="368">batch of p samples → matrix</text>
-
-  <!-- ============================ Rule band ============================ -->
-  <rect class="rule-band" x="48" y="408" width="864" height="76" rx="12"/>
-  <text class="rule-head" x="68" y="436">One rule covers all three:</text>
-  <text class="rule-body" x="68" y="458">The last axis of the first array is contracted with the first axis of the second array.</text>
-  <text class="rule-body" x="68" y="474">Those two lengths must be equal. The surviving axes form the output shape.</text>
-
-  <!-- Footer -->
-  <text class="footer" x="48"  y="518">Vector · vector is commutative; the other two are not.</text>
-  <text class="footer" x="912" y="518" text-anchor="end">BLAS underneath: Lawson et al., 1979.</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .f-orange-soft { fill: var(--nn-orange-soft); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-orange { stroke: var(--nn-orange); }
+</style>
+<defs>
+<marker id="nn-01-three-forms-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title">One function, three forms: the shapes decide</text>
+<text x="40" y="76" class="t-subtitle">Section 8's layer before the bias, neurons-first: one neuron per row of W, one sample per column.</text>
+<text x="40" y="128" class="t-head">Vector by vector</text>
+<rect x="40" y="144" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="96" y="144" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="152" y="144" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="208" y="144" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="40" y="144" width="224" height="32" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="68" y="165" text-anchor="middle" class="t-cell14">0.20</text>
+<text x="124" y="165" text-anchor="middle" class="t-cell14">0.80</text>
+<text x="180" y="165" text-anchor="middle" class="t-cell14">−0.50</text>
+<text x="236" y="165" text-anchor="middle" class="t-cell14">1.00</text>
+</g>
+<rect x="312" y="144" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="312" y="176" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="312" y="208" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="312" y="240" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="312" y="144" width="64" height="128" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="344" y="165" text-anchor="middle" class="t-cell14">1.0</text>
+<text x="344" y="197" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="344" y="229" text-anchor="middle" class="t-cell14">3.0</text>
+<text x="344" y="261" text-anchor="middle" class="t-cell14">2.5</text>
+</g>
+<rect x="552" y="144" width="56" height="32" class="cell f-green-soft"/>
+<rect x="552" y="144" width="56" height="32" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="580" y="165" text-anchor="middle" class="t-cell14 f-green-ink b">2.800</text>
+</g>
+<g data-grid="skip">
+<circle cx="288" cy="160" r="3" class="f-ink-muted"/>
+</g>
+<text x="528" y="168" text-anchor="middle" class="t-op">=</text>
+<text x="752" y="164" class="t-code">np.dot(w, x)</text>
+<text x="752" y="188" class="t-label">(4,) · (4,) → scalar</text>
+<text x="752" y="212" class="t-note">one neuron, one sample</text>
+<g data-grid="skip">
+<text x="344" y="136" text-anchor="middle" class="t-tick">sample 1</text>
+</g>
+<text x="40" y="320" class="t-head">Matrix by vector</text>
+<rect x="40" y="336" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="96" y="336" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="152" y="336" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="208" y="336" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="40" y="368" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="96" y="368" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="152" y="368" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="208" y="368" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="40" y="400" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="96" y="400" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="152" y="400" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="208" y="400" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="40" y="336" width="224" height="96" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="68" y="357" text-anchor="middle" class="t-cell14">0.20</text>
+<text x="124" y="357" text-anchor="middle" class="t-cell14">0.80</text>
+<text x="180" y="357" text-anchor="middle" class="t-cell14">−0.50</text>
+<text x="236" y="357" text-anchor="middle" class="t-cell14">1.00</text>
+<text x="68" y="389" text-anchor="middle" class="t-cell14">0.50</text>
+<text x="124" y="389" text-anchor="middle" class="t-cell14">−0.91</text>
+<text x="180" y="389" text-anchor="middle" class="t-cell14">0.26</text>
+<text x="236" y="389" text-anchor="middle" class="t-cell14">−0.50</text>
+<text x="68" y="421" text-anchor="middle" class="t-cell14">−0.26</text>
+<text x="124" y="421" text-anchor="middle" class="t-cell14">−0.27</text>
+<text x="180" y="421" text-anchor="middle" class="t-cell14">0.17</text>
+<text x="236" y="421" text-anchor="middle" class="t-cell14">0.87</text>
+</g>
+<rect x="312" y="336" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="312" y="368" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="312" y="400" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="312" y="432" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="312" y="336" width="64" height="128" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="344" y="357" text-anchor="middle" class="t-cell14">1.0</text>
+<text x="344" y="389" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="344" y="421" text-anchor="middle" class="t-cell14">3.0</text>
+<text x="344" y="453" text-anchor="middle" class="t-cell14">2.5</text>
+</g>
+<rect x="552" y="336" width="56" height="32" class="cell f-green-soft"/>
+<rect x="552" y="368" width="56" height="32" class="cell f-green-soft"/>
+<rect x="552" y="400" width="56" height="32" class="cell f-green-soft"/>
+<rect x="552" y="336" width="56" height="96" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="580" y="357" text-anchor="middle" class="t-cell14 f-green-ink b">2.800</text>
+<text x="580" y="389" text-anchor="middle" class="t-cell14">−1.790</text>
+<text x="580" y="421" text-anchor="middle" class="t-cell14">1.885</text>
+</g>
+<g data-grid="skip">
+<circle cx="288" cy="384" r="3" class="f-ink-muted"/>
+</g>
+<text x="528" y="392" text-anchor="middle" class="t-op">=</text>
+<text x="752" y="356" class="t-code">np.dot(W, x)</text>
+<text x="752" y="380" class="t-label">(3, 4) · (4,) → (3,)</text>
+<text x="752" y="404" class="t-note">a layer of 3 neurons,</text>
+<text x="752" y="424" class="t-note">one sample</text>
+<g data-grid="skip">
+<text x="344" y="328" text-anchor="middle" class="t-tick">sample 1</text>
+</g>
+<text x="40" y="512" class="t-head">Matrix by matrix</text>
+<rect x="40" y="528" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="96" y="528" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="152" y="528" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="208" y="528" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="40" y="560" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="96" y="560" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="152" y="560" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="208" y="560" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="40" y="592" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="96" y="592" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="152" y="592" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="208" y="592" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="40" y="528" width="224" height="96" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="68" y="549" text-anchor="middle" class="t-cell14">0.20</text>
+<text x="124" y="549" text-anchor="middle" class="t-cell14">0.80</text>
+<text x="180" y="549" text-anchor="middle" class="t-cell14">−0.50</text>
+<text x="236" y="549" text-anchor="middle" class="t-cell14">1.00</text>
+<text x="68" y="581" text-anchor="middle" class="t-cell14">0.50</text>
+<text x="124" y="581" text-anchor="middle" class="t-cell14">−0.91</text>
+<text x="180" y="581" text-anchor="middle" class="t-cell14">0.26</text>
+<text x="236" y="581" text-anchor="middle" class="t-cell14">−0.50</text>
+<text x="68" y="613" text-anchor="middle" class="t-cell14">−0.26</text>
+<text x="124" y="613" text-anchor="middle" class="t-cell14">−0.27</text>
+<text x="180" y="613" text-anchor="middle" class="t-cell14">0.17</text>
+<text x="236" y="613" text-anchor="middle" class="t-cell14">0.87</text>
+</g>
+<rect x="312" y="528" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="376" y="528" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="440" y="528" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="312" y="560" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="376" y="560" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="440" y="560" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="312" y="592" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="376" y="592" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="440" y="592" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="312" y="624" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="376" y="624" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="440" y="624" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="312" y="528" width="192" height="128" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="344" y="549" text-anchor="middle" class="t-cell14">1.0</text>
+<text x="408" y="549" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="472" y="549" text-anchor="middle" class="t-cell14">−1.5</text>
+<text x="344" y="581" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="408" y="581" text-anchor="middle" class="t-cell14">5.0</text>
+<text x="472" y="581" text-anchor="middle" class="t-cell14">2.7</text>
+<text x="344" y="613" text-anchor="middle" class="t-cell14">3.0</text>
+<text x="408" y="613" text-anchor="middle" class="t-cell14">−1.0</text>
+<text x="472" y="613" text-anchor="middle" class="t-cell14">3.3</text>
+<text x="344" y="645" text-anchor="middle" class="t-cell14">2.5</text>
+<text x="408" y="645" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="472" y="645" text-anchor="middle" class="t-cell14">−0.8</text>
+</g>
+<rect x="552" y="528" width="56" height="32" class="cell f-green-soft"/>
+<rect x="608" y="528" width="56" height="32" class="cell f-green-soft"/>
+<rect x="664" y="528" width="56" height="32" class="cell f-green-soft"/>
+<rect x="552" y="560" width="56" height="32" class="cell f-green-soft"/>
+<rect x="608" y="560" width="56" height="32" class="cell f-green-soft"/>
+<rect x="664" y="560" width="56" height="32" class="cell f-green-soft"/>
+<rect x="552" y="592" width="56" height="32" class="cell f-green-soft"/>
+<rect x="608" y="592" width="56" height="32" class="cell f-green-soft"/>
+<rect x="664" y="592" width="56" height="32" class="cell f-green-soft"/>
+<rect x="552" y="528" width="168" height="96" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="580" y="549" text-anchor="middle" class="t-cell14 f-green-ink b">2.800</text>
+<text x="636" y="549" text-anchor="middle" class="t-cell14">6.900</text>
+<text x="692" y="549" text-anchor="middle" class="t-cell14">−0.590</text>
+<text x="580" y="581" text-anchor="middle" class="t-cell14">−1.790</text>
+<text x="636" y="581" text-anchor="middle" class="t-cell14">−4.810</text>
+<text x="692" y="581" text-anchor="middle" class="t-cell14">−1.949</text>
+<text x="580" y="613" text-anchor="middle" class="t-cell14">1.885</text>
+<text x="636" y="613" text-anchor="middle" class="t-cell14">−0.300</text>
+<text x="692" y="613" text-anchor="middle" class="t-cell14">−0.474</text>
+</g>
+<g data-grid="skip">
+<circle cx="288" cy="576" r="3" class="f-ink-muted"/>
+</g>
+<text x="528" y="584" text-anchor="middle" class="t-op">=</text>
+<text x="752" y="548" class="t-code">np.dot(W, X.T)</text>
+<text x="752" y="572" class="t-label">(3, 4) · (4, 3) → (3, 3)</text>
+<text x="752" y="596" class="t-note">a layer of 3 neurons,</text>
+<text x="752" y="616" class="t-note">3 samples as columns</text>
+<g data-grid="skip">
+<text x="344" y="520" text-anchor="middle" class="t-tick">sample 1</text>
+<text x="408" y="520" text-anchor="middle" class="t-tick">sample 2</text>
+<text x="472" y="520" text-anchor="middle" class="t-tick">sample 3</text>
+</g>
+<rect x="40" y="528" width="224" height="32" class="emph s-orange" data-fit="skip"/>
+<rect x="312" y="528" width="64" height="128" class="emph s-blue" data-fit="skip"/>
+<text x="40" y="684" class="t-note">Every form sums over the 4 inputs, where the first argument's last axis meets the second's first.</text>
 </svg>

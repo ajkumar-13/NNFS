@@ -1,194 +1,290 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" role="img" aria-labelledby="t d">
-  <title id="t">Why batching needs a transpose</title>
-  <desc id="d">A two-row diagram. The top row shows that without a transpose, np.dot of inputs of shape (N, n) and weights of shape (m, n) fails because the inner dimensions n and m do not match. The bottom row shows the fix: transposing the weights to shape (n, m) makes the inner dimensions align as n and n, so np.dot of (N, n) and (n, m) produces a clean (N, m) output. Each row is annotated with the resulting shape and a brief explanation.</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-04-batch-transpose-title" aria-describedby="nn-04-batch-transpose-desc">
+<title id="nn-04-batch-transpose-title">The transpose lets a batch meet the weights</title>
+<desc id="nn-04-batch-transpose-desc">Section 8's batch, samples-first. Top left, the stored weights, shape (3, 4), one row per neuron: 0.20, 0.80, minus 0.50, 1.00; 0.50, minus 0.91, 0.26, minus 0.50; minus 0.26, minus 0.27, 0.17, 0.87. An arrow labelled transpose leads to weights.T, shape (4, 3), one column per neuron. Under the transpose sits the bias row 2.0, 3.0, 0.5, added to every row, and under that the outputs, shape (3, 3): 4.800, 1.210, 2.385; 8.900, minus 1.810, 0.200; 1.410, 1.051, 0.026. Left of the outputs are the inputs, shape (3, 4), one row per sample: 1.0, 2.0, 3.0, 2.5; 2.0, 5.0, minus 1.0, 2.0; minus 1.5, 2.7, 3.3, minus 0.8. The row of sample 1 and the column of neuron 1 are outlined and meet in the output cell 4.800, which is bold; the worked line reads 1.0 times 0.20 plus 2.0 times 0.80 plus 3.0 times minus 0.50 plus 2.5 times 1.00, plus the bias 2.0, equals 4.800. A note says that without the transpose, np.dot(inputs, weights) pairs (3, 4) with (3, 4), the 4 meets a 3, and NumPy raises ValueError.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--nn-ink);}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .row-bad{fill:var(--nn-alert);fill-opacity:0.06;stroke:var(--nn-alert);stroke-width:1.5;}
-    .row-ok {fill:var(--nn-success);fill-opacity:0.07;stroke:var(--nn-success);stroke-width:1.5;}
-    .pill-bad{fill:var(--nn-alert);}
-    .pill-ok {fill:var(--nn-success);}
-    .head-bad{font-weight:700;font-size:14px;fill:var(--nn-alert);}
-    .head-ok {font-weight:700;font-size:14px;fill:var(--nn-success);}
-    .row-sub{font-size:11px;fill:var(--nn-ink-muted);}
-    .input-cell{fill:var(--nn-primary);fill-opacity:0.14;stroke:var(--nn-primary);stroke-width:1;}
-    .w-cell{fill:var(--nn-accent);fill-opacity:0.16;stroke:var(--nn-accent);stroke-width:1;}
-    .out-cell{fill:var(--nn-success);fill-opacity:0.18;stroke:var(--nn-success);stroke-width:1.2;}
-    .fail-cell{fill:var(--nn-alert);fill-opacity:0.18;stroke:var(--nn-alert);stroke-width:1.5;stroke-dasharray:4 3;}
-    .op{font-weight:700;font-size:18px;fill:var(--nn-ink);}
-    .label-head{font-weight:600;font-size:12px;fill:var(--nn-ink);}
-    .shape-good{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--nn-success);}
-    .shape-bad{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--nn-alert);}
-    .shape-neutral{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--nn-ink-muted);}
-    .err-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--nn-alert);font-weight:600;}
-    .ok-text{font-size:11px;fill:var(--nn-success);font-weight:600;}
-    .x-mark{stroke:var(--nn-alert);stroke-width:2.5;fill:none;stroke-linecap:round;}
-  ]]></style>
-
-  <rect class="bg" width="960" height="500"/>
-
-  <text class="title"    x="48" y="48">Why batching needs a transpose</text>
-  <text class="subtitle" x="48" y="70">With one sample at a time, shapes line up. With a batch, the convention "one row per neuron" collides with itself.</text>
-
-  <!-- =============== ROW 1: WITHOUT transpose (broken) =============== -->
-  <rect class="row-bad" x="48" y="96" width="864" height="172" rx="12"/>
-  <rect class="pill-bad" x="48" y="96" width="6"   height="172" rx="3"/>
-  <text class="head-bad" x="68" y="124">Without transpose: shape mismatch</text>
-  <text class="row-sub"  x="68" y="142">np.dot(inputs, weights)</text>
-
-  <!-- inputs (3x4) -->
-  <text class="label-head" x="120" y="170" text-anchor="middle">inputs</text>
-  <g transform="translate(80, 178)">
-    <rect class="input-cell" x="0"  y="0"  width="20" height="20"/>
-    <rect class="input-cell" x="20" y="0"  width="20" height="20"/>
-    <rect class="input-cell" x="40" y="0"  width="20" height="20"/>
-    <rect class="input-cell" x="60" y="0"  width="20" height="20"/>
-    <rect class="input-cell" x="0"  y="20" width="20" height="20"/>
-    <rect class="input-cell" x="20" y="20" width="20" height="20"/>
-    <rect class="input-cell" x="40" y="20" width="20" height="20"/>
-    <rect class="input-cell" x="60" y="20" width="20" height="20"/>
-    <rect class="input-cell" x="0"  y="40" width="20" height="20"/>
-    <rect class="input-cell" x="20" y="40" width="20" height="20"/>
-    <rect class="input-cell" x="40" y="40" width="20" height="20"/>
-    <rect class="input-cell" x="60" y="40" width="20" height="20"/>
-  </g>
-  <text class="shape-neutral" x="120" y="262" text-anchor="middle">(N=3, n=4)</text>
-
-  <text class="op" x="200" y="216" text-anchor="middle">·</text>
-
-  <!-- weights (3x4) — also (m=3, n=4) -->
-  <text class="label-head" x="260" y="170" text-anchor="middle">weights</text>
-  <g transform="translate(220, 178)">
-    <rect class="w-cell" x="0"  y="0"  width="20" height="20"/>
-    <rect class="w-cell" x="20" y="0"  width="20" height="20"/>
-    <rect class="w-cell" x="40" y="0"  width="20" height="20"/>
-    <rect class="w-cell" x="60" y="0"  width="20" height="20"/>
-    <rect class="w-cell" x="0"  y="20" width="20" height="20"/>
-    <rect class="w-cell" x="20" y="20" width="20" height="20"/>
-    <rect class="w-cell" x="40" y="20" width="20" height="20"/>
-    <rect class="w-cell" x="60" y="20" width="20" height="20"/>
-    <rect class="w-cell" x="0"  y="40" width="20" height="20"/>
-    <rect class="w-cell" x="20" y="40" width="20" height="20"/>
-    <rect class="w-cell" x="40" y="40" width="20" height="20"/>
-    <rect class="w-cell" x="60" y="40" width="20" height="20"/>
-  </g>
-  <text class="shape-neutral" x="260" y="262" text-anchor="middle">(m=3, n=4)</text>
-
-  <!-- inner-dim mismatch banner -->
-  <text class="shape-bad" x="170" y="240" text-anchor="middle">inner: 4</text>
-  <text class="shape-bad" x="232" y="240" text-anchor="middle">inner: 3</text>
-  <line class="x-mark" x1="182" y1="250" x2="222" y2="260"/>
-  <line class="x-mark" x1="182" y1="260" x2="222" y2="250"/>
-
-  <!-- result: ValueError -->
-  <text class="op" x="340" y="216" text-anchor="middle">→</text>
-  <rect class="fail-cell" x="376" y="178" width="240" height="60" rx="8"/>
-  <text class="err-text" x="496" y="206" text-anchor="middle">ValueError:</text>
-  <text class="err-text" x="496" y="224" text-anchor="middle">shapes (3,4) and (3,4) not aligned</text>
-
-  <text class="row-sub" x="660" y="184">Last axis of inputs is 4.</text>
-  <text class="row-sub" x="660" y="200">First axis of weights is 3.</text>
-  <text class="row-sub" x="660" y="216">4 ≠ 3 → call cannot proceed.</text>
-
-  <!-- =============== ROW 2: WITH transpose (fix) =============== -->
-  <rect class="row-ok" x="48" y="284" width="864" height="172" rx="12"/>
-  <rect class="pill-ok" x="48" y="284" width="6"   height="172" rx="3"/>
-  <text class="head-ok" x="68" y="312">With transpose: shapes align</text>
-  <text class="row-sub" x="68" y="330">np.dot(inputs, weights.T) + bias</text>
-
-  <!-- inputs (3x4) -->
-  <text class="label-head" x="120" y="350" text-anchor="middle">inputs</text>
-  <g transform="translate(80, 358)">
-    <rect class="input-cell" x="0"  y="0"  width="20" height="20"/>
-    <rect class="input-cell" x="20" y="0"  width="20" height="20"/>
-    <rect class="input-cell" x="40" y="0"  width="20" height="20"/>
-    <rect class="input-cell" x="60" y="0"  width="20" height="20"/>
-    <rect class="input-cell" x="0"  y="20" width="20" height="20"/>
-    <rect class="input-cell" x="20" y="20" width="20" height="20"/>
-    <rect class="input-cell" x="40" y="20" width="20" height="20"/>
-    <rect class="input-cell" x="60" y="20" width="20" height="20"/>
-    <rect class="input-cell" x="0"  y="40" width="20" height="20"/>
-    <rect class="input-cell" x="20" y="40" width="20" height="20"/>
-    <rect class="input-cell" x="40" y="40" width="20" height="20"/>
-    <rect class="input-cell" x="60" y="40" width="20" height="20"/>
-  </g>
-  <text class="shape-neutral" x="120" y="434" text-anchor="middle">(N=3, n=4)</text>
-
-  <text class="op" x="200" y="396" text-anchor="middle">·</text>
-
-  <!-- weights.T (4x3) — transposed -->
-  <text class="label-head" x="260" y="350" text-anchor="middle">weights.T</text>
-  <g transform="translate(230, 358)">
-    <rect class="w-cell" x="0"  y="0"  width="20" height="20"/>
-    <rect class="w-cell" x="20" y="0"  width="20" height="20"/>
-    <rect class="w-cell" x="40" y="0"  width="20" height="20"/>
-    <rect class="w-cell" x="0"  y="20" width="20" height="20"/>
-    <rect class="w-cell" x="20" y="20" width="20" height="20"/>
-    <rect class="w-cell" x="40" y="20" width="20" height="20"/>
-    <rect class="w-cell" x="0"  y="40" width="20" height="20"/>
-    <rect class="w-cell" x="20" y="40" width="20" height="20"/>
-    <rect class="w-cell" x="40" y="40" width="20" height="20"/>
-    <rect class="w-cell" x="0"  y="60" width="20" height="20"/>
-    <rect class="w-cell" x="20" y="60" width="20" height="20"/>
-    <rect class="w-cell" x="40" y="60" width="20" height="20"/>
-  </g>
-  <text class="shape-neutral" x="260" y="452" text-anchor="middle">(n=4, m=3)</text>
-
-  <!-- inner-dim match -->
-  <text class="shape-good" x="170" y="418" text-anchor="middle">inner: 4</text>
-  <text class="shape-good" x="232" y="418" text-anchor="middle">inner: 4</text>
-  <path d="M 174 424 C 188 434, 218 434, 232 424" stroke="var(--nn-success)" stroke-width="1.5" fill="none"/>
-  <text class="ok-text" x="203" y="442" text-anchor="middle">match</text>
-
-  <text class="op" x="340" y="396" text-anchor="middle">→</text>
-
-  <!-- output (3x3) with real values -->
-  <text class="label-head" x="430" y="350" text-anchor="middle">outputs (= np.dot(inputs, weights.T))</text>
-  <g transform="translate(376, 358)">
-    <rect class="out-cell" x="0"  y="0"  width="36" height="20"/>
-    <rect class="out-cell" x="36" y="0"  width="36" height="20"/>
-    <rect class="out-cell" x="72" y="0"  width="36" height="20"/>
-    <rect class="out-cell" x="0"  y="20" width="36" height="20"/>
-    <rect class="out-cell" x="36" y="20" width="36" height="20"/>
-    <rect class="out-cell" x="72" y="20" width="36" height="20"/>
-    <rect class="out-cell" x="0"  y="40" width="36" height="20"/>
-    <rect class="out-cell" x="36" y="40" width="36" height="20"/>
-    <rect class="out-cell" x="72" y="40" width="36" height="20"/>
-    <text class="mono" x="18" y="15" text-anchor="middle">4.80</text>
-    <text class="mono" x="54" y="15" text-anchor="middle">1.21</text>
-    <text class="mono" x="90" y="15" text-anchor="middle">2.39</text>
-    <text class="mono" x="18" y="35" text-anchor="middle">8.90</text>
-    <text class="mono" x="54" y="35" text-anchor="middle">-1.81</text>
-    <text class="mono" x="90" y="35" text-anchor="middle">0.20</text>
-    <text class="mono" x="18" y="55" text-anchor="middle">1.41</text>
-    <text class="mono" x="54" y="55" text-anchor="middle">1.05</text>
-    <text class="mono" x="90" y="55" text-anchor="middle">0.03</text>
-  </g>
-  <text class="shape-good" x="430" y="442" text-anchor="middle">(N=3, m=3)</text>
-
-  <text class="row-sub" x="540" y="370">Each row is one sample's predictions</text>
-  <text class="row-sub" x="540" y="386">across all m neurons.</text>
-  <text class="row-sub" x="540" y="408">Each column belongs to one neuron's</text>
-  <text class="row-sub" x="540" y="424">predictions across all N samples.</text>
-
-  <!-- Footer -->
-  <text class="footer" x="48"  y="486">For one sample: np.dot(weights, x) needs no transpose. For a batch: np.dot(inputs, weights.T) does.</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-orange-soft { fill: var(--nn-orange-soft); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-orange { stroke: var(--nn-orange); }
+</style>
+<defs>
+<marker id="nn-04-batch-transpose-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title">The transpose lets a batch meet the weights</text>
+<text x="40" y="76" class="t-subtitle">Section 8's batch, samples-first: every sample is a row. The weights are stored one row per neuron.</text>
+<rect x="120" y="152" width="56" height="40" class="cell f-orange-soft"/>
+<rect x="176" y="152" width="56" height="40" class="cell f-orange-soft"/>
+<rect x="232" y="152" width="56" height="40" class="cell f-orange-soft"/>
+<rect x="288" y="152" width="56" height="40" class="cell f-orange-soft"/>
+<rect x="120" y="192" width="56" height="40" class="cell f-orange-soft"/>
+<rect x="176" y="192" width="56" height="40" class="cell f-orange-soft"/>
+<rect x="232" y="192" width="56" height="40" class="cell f-orange-soft"/>
+<rect x="288" y="192" width="56" height="40" class="cell f-orange-soft"/>
+<rect x="120" y="232" width="56" height="40" class="cell f-orange-soft"/>
+<rect x="176" y="232" width="56" height="40" class="cell f-orange-soft"/>
+<rect x="232" y="232" width="56" height="40" class="cell f-orange-soft"/>
+<rect x="288" y="232" width="56" height="40" class="cell f-orange-soft"/>
+<rect x="120" y="152" width="224" height="120" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="148" y="177" text-anchor="middle" class="t-cell14">0.20</text>
+<text x="204" y="177" text-anchor="middle" class="t-cell14">0.80</text>
+<text x="260" y="177" text-anchor="middle" class="t-cell14">−0.50</text>
+<text x="316" y="177" text-anchor="middle" class="t-cell14">1.00</text>
+<text x="148" y="217" text-anchor="middle" class="t-cell14">0.50</text>
+<text x="204" y="217" text-anchor="middle" class="t-cell14">−0.91</text>
+<text x="260" y="217" text-anchor="middle" class="t-cell14">0.26</text>
+<text x="316" y="217" text-anchor="middle" class="t-cell14">−0.50</text>
+<text x="148" y="257" text-anchor="middle" class="t-cell14">−0.26</text>
+<text x="204" y="257" text-anchor="middle" class="t-cell14">−0.27</text>
+<text x="260" y="257" text-anchor="middle" class="t-cell14">0.17</text>
+<text x="316" y="257" text-anchor="middle" class="t-cell14">0.87</text>
+</g>
+<g data-grid="skip">
+<text x="112" y="177" text-anchor="end" class="t-tick">neuron 1</text>
+<text x="112" y="217" text-anchor="end" class="t-tick">neuron 2</text>
+<text x="112" y="257" text-anchor="end" class="t-tick">neuron 3</text>
+</g>
+<text x="120" y="136" class="t-head">weights, (3, 4)</text>
+<rect x="424" y="152" width="64" height="40" class="cell f-orange-soft"/>
+<rect x="488" y="152" width="64" height="40" class="cell f-orange-soft"/>
+<rect x="552" y="152" width="64" height="40" class="cell f-orange-soft"/>
+<rect x="424" y="192" width="64" height="40" class="cell f-orange-soft"/>
+<rect x="488" y="192" width="64" height="40" class="cell f-orange-soft"/>
+<rect x="552" y="192" width="64" height="40" class="cell f-orange-soft"/>
+<rect x="424" y="232" width="64" height="40" class="cell f-orange-soft"/>
+<rect x="488" y="232" width="64" height="40" class="cell f-orange-soft"/>
+<rect x="552" y="232" width="64" height="40" class="cell f-orange-soft"/>
+<rect x="424" y="272" width="64" height="40" class="cell f-orange-soft"/>
+<rect x="488" y="272" width="64" height="40" class="cell f-orange-soft"/>
+<rect x="552" y="272" width="64" height="40" class="cell f-orange-soft"/>
+<rect x="424" y="152" width="192" height="160" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="456" y="177" text-anchor="middle" class="t-cell14">0.20</text>
+<text x="520" y="177" text-anchor="middle" class="t-cell14">0.50</text>
+<text x="584" y="177" text-anchor="middle" class="t-cell14">−0.26</text>
+<text x="456" y="217" text-anchor="middle" class="t-cell14">0.80</text>
+<text x="520" y="217" text-anchor="middle" class="t-cell14">−0.91</text>
+<text x="584" y="217" text-anchor="middle" class="t-cell14">−0.27</text>
+<text x="456" y="257" text-anchor="middle" class="t-cell14">−0.50</text>
+<text x="520" y="257" text-anchor="middle" class="t-cell14">0.26</text>
+<text x="584" y="257" text-anchor="middle" class="t-cell14">0.17</text>
+<text x="456" y="297" text-anchor="middle" class="t-cell14">1.00</text>
+<text x="520" y="297" text-anchor="middle" class="t-cell14">−0.50</text>
+<text x="584" y="297" text-anchor="middle" class="t-cell14">0.87</text>
+</g>
+<g data-grid="skip">
+<text x="456" y="144" text-anchor="middle" class="t-tick">neuron 1</text>
+<text x="520" y="144" text-anchor="middle" class="t-tick">neuron 2</text>
+<text x="584" y="144" text-anchor="middle" class="t-tick">neuron 3</text>
+</g>
+<rect x="424" y="152" width="64" height="160" class="emph s-orange" data-fit="skip"/>
+<path d="M352,212 L413,212" class="flow" marker-end="url(#nn-04-batch-transpose-arrow)"/>
+<text x="384" y="200" text-anchor="middle" class="t-note">transpose</text>
+<text x="648" y="176" class="t-head">weights.T, (4, 3)</text>
+<text x="648" y="204" class="t-note">one column per neuron</text>
+<rect x="424" y="336" width="64" height="40" class="cell f-orange-soft"/>
+<rect x="488" y="336" width="64" height="40" class="cell f-orange-soft"/>
+<rect x="552" y="336" width="64" height="40" class="cell f-orange-soft"/>
+<rect x="424" y="336" width="192" height="40" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="456" y="361" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="520" y="361" text-anchor="middle" class="t-cell14">3.0</text>
+<text x="584" y="361" text-anchor="middle" class="t-cell14">0.5</text>
+</g>
+<text x="408" y="364" text-anchor="middle" class="t-op">+</text>
+<text x="648" y="364" class="t-label">biases, (3,): added to every row</text>
+<rect x="424" y="400" width="64" height="40" class="cell f-green-soft"/>
+<rect x="488" y="400" width="64" height="40" class="cell f-green-soft"/>
+<rect x="552" y="400" width="64" height="40" class="cell f-green-soft"/>
+<rect x="424" y="440" width="64" height="40" class="cell f-green-soft"/>
+<rect x="488" y="440" width="64" height="40" class="cell f-green-soft"/>
+<rect x="552" y="440" width="64" height="40" class="cell f-green-soft"/>
+<rect x="424" y="480" width="64" height="40" class="cell f-green-soft"/>
+<rect x="488" y="480" width="64" height="40" class="cell f-green-soft"/>
+<rect x="552" y="480" width="64" height="40" class="cell f-green-soft"/>
+<rect x="424" y="400" width="192" height="120" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="456" y="425" text-anchor="middle" class="t-cell14 f-green-ink b">4.800</text>
+<text x="520" y="425" text-anchor="middle" class="t-cell14">1.210</text>
+<text x="584" y="425" text-anchor="middle" class="t-cell14">2.385</text>
+<text x="456" y="465" text-anchor="middle" class="t-cell14">8.900</text>
+<text x="520" y="465" text-anchor="middle" class="t-cell14">−1.810</text>
+<text x="584" y="465" text-anchor="middle" class="t-cell14">0.200</text>
+<text x="456" y="505" text-anchor="middle" class="t-cell14">1.410</text>
+<text x="520" y="505" text-anchor="middle" class="t-cell14">1.051</text>
+<text x="584" y="505" text-anchor="middle" class="t-cell14">0.026</text>
+</g>
+<text x="648" y="424" class="t-head">outputs, (3, 3)</text>
+<text x="648" y="452" class="t-note">one row per sample,</text>
+<text x="648" y="472" class="t-note">one column per neuron</text>
+<rect x="120" y="400" width="56" height="40" class="cell f-blue-soft"/>
+<rect x="176" y="400" width="56" height="40" class="cell f-blue-soft"/>
+<rect x="232" y="400" width="56" height="40" class="cell f-blue-soft"/>
+<rect x="288" y="400" width="56" height="40" class="cell f-blue-soft"/>
+<rect x="120" y="440" width="56" height="40" class="cell f-blue-soft"/>
+<rect x="176" y="440" width="56" height="40" class="cell f-blue-soft"/>
+<rect x="232" y="440" width="56" height="40" class="cell f-blue-soft"/>
+<rect x="288" y="440" width="56" height="40" class="cell f-blue-soft"/>
+<rect x="120" y="480" width="56" height="40" class="cell f-blue-soft"/>
+<rect x="176" y="480" width="56" height="40" class="cell f-blue-soft"/>
+<rect x="232" y="480" width="56" height="40" class="cell f-blue-soft"/>
+<rect x="288" y="480" width="56" height="40" class="cell f-blue-soft"/>
+<rect x="120" y="400" width="224" height="120" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="148" y="425" text-anchor="middle" class="t-cell14">1.0</text>
+<text x="204" y="425" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="260" y="425" text-anchor="middle" class="t-cell14">3.0</text>
+<text x="316" y="425" text-anchor="middle" class="t-cell14">2.5</text>
+<text x="148" y="465" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="204" y="465" text-anchor="middle" class="t-cell14">5.0</text>
+<text x="260" y="465" text-anchor="middle" class="t-cell14">−1.0</text>
+<text x="316" y="465" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="148" y="505" text-anchor="middle" class="t-cell14">−1.5</text>
+<text x="204" y="505" text-anchor="middle" class="t-cell14">2.7</text>
+<text x="260" y="505" text-anchor="middle" class="t-cell14">3.3</text>
+<text x="316" y="505" text-anchor="middle" class="t-cell14">−0.8</text>
+</g>
+<g data-grid="skip">
+<text x="112" y="425" text-anchor="end" class="t-tick">sample 1</text>
+<text x="112" y="465" text-anchor="end" class="t-tick">sample 2</text>
+<text x="112" y="505" text-anchor="end" class="t-tick">sample 3</text>
+</g>
+<rect x="120" y="400" width="224" height="40" class="emph s-blue" data-fit="skip"/>
+<text x="120" y="384" class="t-head">inputs, (3, 4)</text>
+<g data-grid="skip">
+<path d="M344,420 L424,420" class="lead"/>
+</g>
+<text x="120" y="568" class="t-label">sample 1 with neuron 1, plus its bias:</text>
+<text x="120" y="600" class="t-math">1.0 · 0.20 + 2.0 · 0.80 + 3.0 · (−0.50) + 2.5 · 1.00 + 2.0 = 4.800</text>
+<text x="120" y="640" class="t-note">Without .T, np.dot(inputs, weights) pairs (3, 4) with (3, 4): the 4 meets a 3, and NumPy raises ValueError.</text>
+<text x="40" y="684" class="t-note">np.dot(inputs, weights.T) + biases: (3, 4) · (4, 3) + (3,) → (3, 3).</text>
 </svg>
