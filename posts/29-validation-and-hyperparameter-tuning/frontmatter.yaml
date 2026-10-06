@@ -9,7 +9,7 @@ part: "Part VII - Generalisation and regularisation"
 level: intermediate
 reading_time: 24
 tags: [neural-networks, from-scratch, validation, hyperparameters, cross-validation, generalisation]
-hero: diagrams/01-three-way-split-and-kfold.svg
+hero: diagrams/01-kfold-and-test-set.svg
 prerequisites: [nn-028]
 code: included
 outcomes:

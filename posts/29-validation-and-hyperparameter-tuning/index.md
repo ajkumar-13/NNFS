@@ -12,9 +12,9 @@
 > - Compare hyperparameter candidates by their k-fold scores and read the result against its spread.
 > - Recognise the common forms of data leakage and state the preprocessing rules that prevent them.
 
-![Two panels. On the left one bar is cut into 60 percent training, 20 percent validation and 20 percent test data, with a card for the role of each. On the right five rows show five equal folds, a different one marked as the validation slot in each row, with an accuracy per row and their mean. A timeline below: train, tune, open the test set once.](diagrams/01-three-way-split-and-kfold.svg)
+![Five rows, folds 1 to 5, each a strip of the five parts A to E of the 300 spiral points of seed 0, 60 points each, with part i in blue as the validation part of fold i and the other four, 240 points, training a new network with learning rate 0.1 and 64 hidden neurons. The validation accuracies are 0.800, 0.817, 0.717, 0.800 and 0.733, mean 0.773. A sixth row, the final model, trains on all 300 points, training accuracy 0.927, and is scored once on a test set of 300 further points that the search never used: 0.793, 238 of 300.](diagrams/01-kfold-and-test-set.svg)
 
-*The three-way split on the left, the 5-fold rotation on the right. The fold accuracies drawn in the figure are placeholders; the measured ones are in section 5.*
+*Seed 0 and the setting that wins the search of section 8: every one of the 300 points is validated once, by the model that did not train on it, and the test set is opened once, at the end.*
 
 ---
 
@@ -66,7 +66,11 @@ chosen by test accuracy, 60 points       over the five seeds: +0.0286 to +0.0502
 chosen on one set, reported on the next  over the five seeds: -0.0021 to +0.0015, mean -0.0002
 ```
 
-The reported number is too high on average in every one of the five seeds: by 0.05 to 1.8 percentage points when the test set has 300 points, and by 2.9 to 5.0 points when it has 60. The third line of the summary is the three-way split: the candidate is chosen on one set, which plays the validation set, and reported on the next, which plays the test set. Averaged over the 200 sets, that report is off by 0.21 points at most, in either direction.
+The reported number is too high on average in every one of the five seeds: by 0.05 to 1.8 percentage points when the test set has 300 points, and by 2.9 to 5.0 points when it has 60. The third line of the summary is the three-way split: the candidate is chosen on one set, which plays the validation set, and reported on the next, which plays the test set. Averaged over the 200 sets, that report is off by 0.21 points at most, in either direction. The figure below draws the three averages for every seed.
+
+![A dot plot with one row per seed 0 to 4 of the mean, over 200 test sets, of the reported test accuracy minus the accuracy on 30,000 further points, in percentage points, beside a dotted line at zero. Chosen by test accuracy on 60 points, red diamonds: 3.29, 2.86, 4.74, 5.02 and 3.68. On 300 points, hollow red circles: 0.53, 0.05, 1.24, 1.82 and 0.62. Chosen on one set and reported on the next, blue squares: 0.02, −0.21, 0.15, 0.11 and −0.18.](diagrams/02-test-set-tuning.svg)
+
+*The best of eight test accuracies overstates the accuracy on further points in every seed, most when the test set has 60 points; a choice made on one set and reported on the next stays at zero.*
 
 The sizes follow from the noise. A model with a true accuracy of 0.8 scores $0.8 \pm \sqrt{0.8 \cdot 0.2 / 300} \approx 0.8 \pm 0.023$ on 300 points and $0.8 \pm 0.052$ on 60. In seed 3 five of the eight candidates lie between 0.750 and 0.767, closer together than that noise, so the choice among them is made almost entirely by luck, and the inflation is the largest of the five seeds. In seed 1 one candidate is clearly ahead of the rest (0.839 against at most 0.797 on the further points), and the inflation almost vanishes. Tuning on the test set costs most when the candidates are close and the test set is small, and, because the largest of more noisy numbers is larger, when the candidates are many. At 300 points the bias is real and small: its mean of 0.85 points over the five seeds lies well inside the 2.3 points by which a single test accuracy scatters, and in every seed the report fell below the truth on 31 to 96 of the 200 test sets.
 
@@ -102,11 +106,15 @@ one split of 60 (40 values):  0.600 to 0.883, standard deviation 0.064
 ratio of the standard deviations 2.59   sqrt(5) = 2.24
 ```
 
-One and the same setting scores anything from 0.600 to 0.883 on a single split of 60, depending on which 60 points are held out. The 5-fold mean stays between 0.723 and 0.800. The ratio of 2.59 comes from eight means and is itself rough, and it counts only the noise of the shuffle: all eight means are scored on the same 300 points, and no reshuffling removes the luck of having drawn those 300.
+One and the same setting scores anything from 0.600 to 0.883 on a single split of 60, depending on which 60 points are held out. The 5-fold mean stays between 0.723 and 0.800. The ratio of 2.59 comes from eight means and is itself rough, and it counts only the noise of the shuffle: all eight means are scored on the same 300 points, and no reshuffling removes the luck of having drawn those 300. The figure below draws every fold of the eight shuffles.
+
+![Eight rows, shuffles 0 to 7 of the same 300 points of seed 0 with learning rate 0.1 and the same initial weights, each a green band over its five fold accuracies with a tick per fold and a blue dot at their mean, from 0.717 to 0.817 with mean 0.773 for shuffle 0 to 0.600 to 0.850 with mean 0.737 for shuffle 3. A last row is a blue band over the eight means, 0.723 to 0.800. The 40 single folds have a standard deviation of 0.064, the eight means one of 0.025.](diagrams/03-steadiness.svg)
+
+*One setting, one set of 300 points, eight shuffles: single folds of 60 range from 0.600 to 0.883, the 5-fold means only from 0.723 to 0.800.*
 
 The price is $k$ trainings per candidate instead of one. The common choices are $k = 5$ and $k = 10$; Kohavi (1995) compared cross-validation and the bootstrap on real datasets and recommended stratified 10-fold cross-validation for model selection.
 
-Cross-validation takes the place of the validation set only. The test set stays outside the rotation, untouched.
+Cross-validation takes the place of the validation set only. The test set stays outside the rotation, untouched. The figure at the top of the post draws both for seed 0: the five folds of the setting that wins the search of section 8, and its one test.
 
 ---
 
@@ -205,7 +213,11 @@ learning rates   seed 4  0.01: 0.730  0.05: 0.760  0.1: 0.797  0.5: 0.453  1.0: 
 
 **The large learning rates lose in every seed.** With $\alpha = 0.5$ the mean lies between 0.350 and 0.453, and with $\alpha = 1.0$ between 0.343 and 0.403, little above the 0.333 of guessing among three classes. The three smaller rates score at least 0.603 in every seed. A gap of that size is far beyond the spread across folds, and cross-validation settles it.
 
-**The two best learning rates are not separated.** In seed 0 the lead of 0.1 over 0.05 is 0.003, which is one validation sample out of 300, while the accuracies of one candidate differ between folds with a standard deviation of 0.04 to 0.06. Over the five seeds 0.1 has the highest mean four times and 0.05 once, and the difference between the two, 0.1 minus 0.05, is +0.003, +0.010, -0.023, +0.110 and +0.037: a single seed could report anything from a small loss to a clear win. These runs favour 0.1 and do not establish it; an honest report says that 0.05 and 0.1 are not distinguished by this data. The rate 0.01 is another matter: it lies behind 0.1 in all five seeds, by 0.040 to 0.077.
+**The two best learning rates are not separated.** In seed 0 the lead of 0.1 over 0.05 is 0.003, which is one validation sample out of 300, while the accuracies of one candidate differ between folds with a standard deviation of 0.04 to 0.06. Over the five seeds 0.1 has the highest mean four times and 0.05 once, and the difference between the two, 0.1 minus 0.05, is +0.003, +0.010, -0.023, +0.110 and +0.037: a single seed could report anything from a small loss to a clear win. These runs favour 0.1 and do not establish it; an honest report says that 0.05 and 0.1 are not distinguished by this data. The rate 0.01 is another matter: it lies behind 0.1 in all five seeds, by 0.040 to 0.077. The figure below draws the five seeds of every learning rate, together with the two settings of section 8 that have 16 hidden neurons.
+
+![Seven rows, each a green band over seeds 0 to 4 of the 5-fold mean accuracy, with a tick per seed and a dot for seed 0, beside a dotted line at 0.333, guessing. Learning rate 0.01: 0.640 to 0.730; 0.05: 0.603 to 0.770, best in 1 of 5 seeds; 0.1: 0.713 to 0.797, best in 4 of 5 seeds; 0.5: 0.350 to 0.453; 1.0: 0.343 to 0.403. With 16 hidden neurons, 0.05: 0.423 to 0.537 and 0.1: 0.423 to 0.517.](diagrams/04-learning-rates-over-seeds.svg)
+
+*Learning rates of 0.5 and 1.0 and a width of 16 lie below the rest in every seed; the bands of 0.05 and 0.1 overlap.*
 
 The last printed line shows what a single validation split would have done on seed 0: three of the five folds, taken alone, choose 0.1 and two choose 0.05.
 
@@ -220,10 +232,6 @@ A clean split only helps if nothing about the held-out data reaches the model. *
 **Look-ahead features in sequential data.** A feature that depends on a value from after the moment of prediction, such as a moving average that includes tomorrow's price in a forecast of tomorrow, cannot exist when the model is used. Sequential data is the exception to shuffling: it is split by time, training on the past and testing on the future.
 
 **Features that stand in for the label.** A feature can be so tightly coupled to the label that it acts as one. In a model that predicts whether a customer will buy, a feature such as "called to cancel the order" exists only after the outcome is known. It predicts perfectly in the collected data and is absent for a new customer.
-
-![Two pipelines over the same three steps. The left one, labelled split first, shuffles and splits, fits the scaler on the training part and applies it to the validation and test parts, and is marked clean. The right one, labelled preprocess first, fits the scaler on everything, then splits and trains, and is marked leaked. Three cards below name global preprocessing, look-ahead features and label-correlated metadata.](diagrams/02-data-leakage.svg)
-
-*The same three operations in two orders. In the right-hand pipeline one step happens a position too early.*
 
 How much a preprocessing leak costs depends on the step. `snippets/leakage.py` takes a case in which the leak is the whole result, a mistake described by Hastie, Tibshirani and Friedman in their chapter on model assessment. The data are pure noise: 100 rows, 2,000 random features, and labels that are a random half 0 and half 1, so no classifier can do better than 0.5 on new rows on average. The preprocessing step keeps the 20 features whose class means differ most, and a nearest-class-mean classifier is scored by 5-fold cross-validation.
 
@@ -248,7 +256,11 @@ selected inside each fold   [0.58 0.48 0.55 0.38 0.58 0.62 0.46 0.49 0.57 0.52] 
 leaky pipeline on new rows  [0.52 0.5  0.51 0.49 0.51 0.5  0.51 0.51 0.5  0.49]  mean 0.503
 ```
 
-With the selection made before the split, cross-validation reports 0.82 to 0.92 over ten seeds, on data that contain nothing to learn. Among 2,000 noise features some agree with 100 random labels by chance, and the selection has already seen the labels of the validation rows. With the selection inside the loop the score is 0.523 on average, and the leaky pipeline's own model scores 0.503 on 2,000 new rows. The split was correct in both versions; one line was in the wrong place.
+With the selection made before the split, cross-validation reports 0.82 to 0.92 over ten seeds, on data that contain nothing to learn. Among 2,000 noise features some agree with 100 random labels by chance, and the selection has already seen the labels of the validation rows. With the selection inside the loop the score is 0.523 on average, and the leaky pipeline's own model scores 0.503 on 2,000 new rows. The split was correct in both versions; one line was in the wrong place. The figure below draws the ten seeds of each row.
+
+![Three rows on an accuracy axis from 0.3 to 1.0 beside a dotted line at 0.5, chance on these random labels, each a band over ten seeds with a tick per seed and a dot at the mean. Features selected on all 100 rows, then 5-fold, in red: 0.82 to 0.92, mean 0.887. Selected again on the 80 training rows of each fold, in blue: 0.38 to 0.62, mean 0.523. The leaky pipeline's model on 2,000 new rows, in green: 0.49 to 0.52, mean 0.503.](diagrams/05-leakage.svg)
+
+*On data with nothing to learn, the selection made before the split scores 0.82 to 0.92 in cross-validation; made inside each fold it scores near chance, as the leaky model does on new rows.*
 
 A standardiser has far less to leak, because it uses no labels and two numbers per feature barely depend on 60 rows out of 300: on the spiral, whose features have a standard deviation of about 0.41, the full-data means differ from those of a training fold by at most 0.029 and the standard deviations by at most 0.017. The rule is the same in both cases, because the size of a leak is not known in advance:
 
@@ -311,7 +323,7 @@ k-fold mean of the winner 0.773
 retrained on all 300 points: training accuracy 0.927, test accuracy 0.793 (238 of 300)
 ```
 
-The width is settled and the learning rate is not, as in section 5. In all five seeds both settings with 64 neurons (0.603 to 0.797) lie above both settings with 16 (0.423 to 0.537). The winner is $(0.1, 64)$ in four seeds and $(0.05, 64)$ in seed 2.
+The width is settled and the learning rate is not, as in section 5. In all five seeds both settings with 64 neurons (0.603 to 0.797) lie above both settings with 16 (0.423 to 0.537), as the last two rows of the figure in section 5 show. The winner is $(0.1, 64)$ in four seeds and $(0.05, 64)$ in seed 2.
 
 The number to report for seed 0 is the test accuracy, **0.793**. It is neither the k-fold mean of 0.773 nor the training accuracy of 0.927, which is 0.13 higher than the test accuracy: the gap of post 28. The other four seeds, each with its own data and its own test set, print test accuracies of 0.857, 0.713, 0.770 and 0.863 beside k-fold means of 0.737, 0.737, 0.713 and 0.797. Whatever the test number is, the search is over once it has been read.
 

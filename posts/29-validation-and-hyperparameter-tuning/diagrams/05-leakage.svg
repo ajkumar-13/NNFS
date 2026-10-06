@@ -1,0 +1,193 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-05-leakage-title" aria-describedby="nn-05-leakage-desc">
+<title id="nn-05-leakage-title">Selecting features before the split finds signal in noise</title>
+<desc id="nn-05-leakage-desc">Three rows on an accuracy axis from 0.3 to 1.0 with a dotted line at 0.5, chance on these random labels; each row is a band over ten seeds with a tick per seed and a dot at the mean. 5-fold cross-validation with the 20 features selected on all 100 rows: 0.82 to 0.92, mean 0.887. Selected inside each fold on its 80 training rows: 0.38 to 0.62, mean 0.523. The leaky pipeline's model on 2,000 new rows: 0.49 to 0.52, mean 0.503.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--nn-blue); }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-green { fill: var(--nn-green); }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .f-red { fill: var(--nn-red); }
+  .f-red-ink { fill: var(--nn-red-ink); }
+  .f-red-soft { fill: var(--nn-red-soft); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-blue-line { stroke: var(--nn-blue-line); }
+  .s-green { stroke: var(--nn-green); }
+  .s-green-line { stroke: var(--nn-green-line); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-red { stroke: var(--nn-red); }
+  .s-red-line { stroke: var(--nn-red-line); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-05-leakage-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="667">Selecting features before the split finds signal in noise</text>
+<text x="40" y="76" class="t-subtitle" data-w="769">Pure noise: 100 rows, 2,000 random features, random labels. A band spans ten seeds; its dot is their mean.</text>
+<g data-grid="skip">
+<path d="M400,136V424M461.71,136V424M523.43,136V424M585.14,136V424M646.86,136V424M708.57,136V424M770.29,136V424M832,136V424" class="gridline"/>
+<text x="400" y="444" text-anchor="middle" class="t-tick" data-w="19">0.3</text>
+<text x="461.71" y="444" text-anchor="middle" class="t-tick" data-w="19">0.4</text>
+<text x="523.43" y="444" text-anchor="middle" class="t-tick" data-w="19">0.5</text>
+<text x="585.14" y="444" text-anchor="middle" class="t-tick" data-w="19">0.6</text>
+<text x="646.86" y="444" text-anchor="middle" class="t-tick" data-w="19">0.7</text>
+<text x="708.57" y="444" text-anchor="middle" class="t-tick" data-w="19">0.8</text>
+<text x="770.29" y="444" text-anchor="middle" class="t-tick" data-w="19">0.9</text>
+<text x="832" y="444" text-anchor="middle" class="t-tick" data-w="19">1.0</text>
+<path d="M400,424H832" class="axis"/>
+<path d="M523.43,136V424" class="s-ink-muted w1 nofill d-ref"/>
+<text x="529.43" y="128" class="t-note f-ink-muted" data-w="77">chance, 0.5</text>
+<text x="40" y="189" class="t-label" data-w="162">selected before the split</text>
+<text x="40" y="285" class="t-label" data-w="166">selected inside each fold</text>
+<text x="40" y="381" class="t-label" data-w="180">leaky pipeline on new rows</text>
+</g>
+<text x="616" y="468" text-anchor="middle" class="t-note" data-w="60">accuracy</text>
+<text x="920" y="128" text-anchor="end" class="t-note" data-w="38">mean</text>
+<g data-grid="skip">
+<text x="40" y="209" class="t-note" data-w="368">20 of 2,000 features picked on all 100 rows, then 5-fold</text>
+<rect x="720.91" y="172" width="61.71" height="24" class="f-red-soft s-red-line w1" data-fit="skip"/>
+<path d="M782.63,176V192M764.11,176V192M751.77,176V192M720.91,176V192M764.11,176V192M770.29,176V192M782.63,176V192M739.43,176V192M782.63,176V192M764.11,176V192" class="s-red w1 nofill"/>
+<circle cx="762.26" cy="184" r="5" class="f-red s-surface w1"/>
+<text x="920" y="189" text-anchor="end" class="t-value f-red-ink" data-w="38">0.887</text>
+<text x="40" y="305" class="t-note" data-w="326">picked again on the 80 training rows of each fold</text>
+<rect x="449.37" y="268" width="148.11" height="24" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M572.8,272V288M511.09,272V288M554.29,272V288M449.37,272V288M572.8,272V288M597.49,272V288M498.74,272V288M517.26,272V288M566.63,272V288M535.77,272V288" class="s-blue w1 nofill"/>
+<circle cx="537.62" cy="280" r="5" class="f-blue s-surface w1"/>
+<text x="920" y="285" text-anchor="end" class="t-value f-blue-ink" data-w="38">0.523</text>
+<text x="40" y="401" class="t-note" data-w="277">its final model, scored on 2,000 new rows</text>
+<rect x="517.26" y="364" width="18.51" height="24" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M535.77,368V384M523.43,368V384M529.6,368V384M517.26,368V384M529.6,368V384M523.43,368V384M529.6,368V384M529.6,368V384M523.43,368V384M517.26,368V384" class="s-green w1 nofill"/>
+<circle cx="525.28" cy="376" r="5" class="f-green s-surface w1"/>
+<text x="920" y="381" text-anchor="end" class="t-value f-green-ink" data-w="38">0.503</text>
+</g>
+<text x="40" y="504" class="t-note" data-w="682">The split is the same in both pipelines; in the first, the selection has already seen the validation labels.</text>
+</svg>

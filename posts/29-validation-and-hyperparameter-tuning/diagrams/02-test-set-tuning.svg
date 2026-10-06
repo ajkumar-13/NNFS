@@ -1,0 +1,214 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-02-test-set-tuning-title" aria-describedby="nn-02-test-set-tuning-desc">
+<title id="nn-02-test-set-tuning-title">Picking the best test score reports too high a number</title>
+<desc id="nn-02-test-set-tuning-desc">A dot plot, one row per seed 0 to 4, of the mean over 200 test sets of the reported test accuracy minus the accuracy on 30,000 further points, in percentage points, for eight learning rates trained on 300 points. Chosen by test accuracy on test sets of 60 points: 3.29, 2.86, 4.74, 5.02, 3.68; on test sets of 300 points: 0.53, 0.05, 1.24, 1.82, 0.62; chosen on one set and reported on the next: 0.02, −0.21, 0.15, 0.11, −0.18. A dotted line marks zero.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--nn-blue); }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .f-red { fill: var(--nn-red); }
+  .f-red-ink { fill: var(--nn-red-ink); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-red { stroke: var(--nn-red); }
+  .s-rule { stroke: var(--nn-rule); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-02-test-set-tuning-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="652">Picking the best test score reports too high a number</text>
+<text x="40" y="76" class="t-subtitle" data-w="779">Mean of (reported test accuracy − accuracy on 30,000 further points) over 200 test sets; eight learning rates.</text>
+<g data-grid="skip">
+<path d="M120,152V376M196.57,152V376M273.14,152V376M349.71,152V376M426.29,152V376M502.86,152V376M579.43,152V376M656,152V376" class="gridline"/>
+<text x="120" y="396" text-anchor="middle" class="t-tick" data-w="17">−1</text>
+<text x="196.57" y="396" text-anchor="middle" class="t-tick" data-w="8">0</text>
+<text x="273.14" y="396" text-anchor="middle" class="t-tick" data-w="8">1</text>
+<text x="349.71" y="396" text-anchor="middle" class="t-tick" data-w="8">2</text>
+<text x="426.29" y="396" text-anchor="middle" class="t-tick" data-w="8">3</text>
+<text x="502.86" y="396" text-anchor="middle" class="t-tick" data-w="8">4</text>
+<text x="579.43" y="396" text-anchor="middle" class="t-tick" data-w="8">5</text>
+<text x="656" y="396" text-anchor="middle" class="t-tick" data-w="8">6</text>
+<path d="M120,376H656" class="axis"/>
+<path d="M196.57,152V376" class="s-ink-muted w1 nofill d-ref"/>
+<text x="202.57" y="144" class="t-note f-ink-muted" data-w="49">no bias</text>
+<text x="40" y="179.4" class="t-label" data-w="45">seed 0</text>
+<text x="40" y="224.2" class="t-label" data-w="45">seed 1</text>
+<text x="40" y="269" class="t-label" data-w="45">seed 2</text>
+<text x="40" y="313.8" class="t-label" data-w="45">seed 3</text>
+<text x="40" y="358.6" class="t-label" data-w="45">seed 4</text>
+</g>
+<text x="388" y="420" text-anchor="middle" class="t-note" data-w="122">percentage points</text>
+<g data-grid="skip">
+<path d="M198.1,174.4 L448.49,174.4" class="s-rule w15 nofill"/>
+<path d="M448.49,168.4 L454.49,174.4 L448.49,180.4 L442.49,174.4 Z" class="f-red s-surface w1"/>
+<circle cx="237.15" cy="174.4" r="5" class="nofill s-red w15"/>
+<path d="M193.6,169.9 H202.6 V178.9 H193.6 Z" class="f-blue s-surface w1"/>
+<text x="712" y="179.4" text-anchor="end" class="t-value f-red-ink" data-w="30">3.29</text>
+<text x="816" y="179.4" text-anchor="end" class="t-value f-red-ink" data-w="30">0.53</text>
+<text x="920" y="179.4" text-anchor="end" class="t-value f-blue-ink" data-w="30">0.02</text>
+<path d="M180.49,219.2 L415.57,219.2" class="s-rule w15 nofill"/>
+<path d="M415.57,213.2 L421.57,219.2 L415.57,225.2 L409.57,219.2 Z" class="f-red s-surface w1"/>
+<circle cx="200.4" cy="219.2" r="5" class="nofill s-red w15"/>
+<path d="M175.99,214.7 H184.99 V223.7 H175.99 Z" class="f-blue s-surface w1"/>
+<text x="712" y="224.2" text-anchor="end" class="t-value f-red-ink" data-w="30">2.86</text>
+<text x="816" y="224.2" text-anchor="end" class="t-value f-red-ink" data-w="30">0.05</text>
+<text x="920" y="224.2" text-anchor="end" class="t-value f-blue-ink" data-w="40">−0.21</text>
+<path d="M208.06,264 L559.52,264" class="s-rule w15 nofill"/>
+<path d="M559.52,258 L565.52,264 L559.52,270 L553.52,264 Z" class="f-red s-surface w1"/>
+<circle cx="291.52" cy="264" r="5" class="nofill s-red w15"/>
+<path d="M203.56,259.5 H212.56 V268.5 H203.56 Z" class="f-blue s-surface w1"/>
+<text x="712" y="269" text-anchor="end" class="t-value f-red-ink" data-w="30">4.74</text>
+<text x="816" y="269" text-anchor="end" class="t-value f-red-ink" data-w="30">1.24</text>
+<text x="920" y="269" text-anchor="end" class="t-value f-blue-ink" data-w="30">0.15</text>
+<path d="M204.99,308.8 L580.96,308.8" class="s-rule w15 nofill"/>
+<path d="M580.96,302.8 L586.96,308.8 L580.96,314.8 L574.96,308.8 Z" class="f-red s-surface w1"/>
+<circle cx="335.93" cy="308.8" r="5" class="nofill s-red w15"/>
+<path d="M200.49,304.3 H209.49 V313.3 H200.49 Z" class="f-blue s-surface w1"/>
+<text x="712" y="313.8" text-anchor="end" class="t-value f-red-ink" data-w="30">5.02</text>
+<text x="816" y="313.8" text-anchor="end" class="t-value f-red-ink" data-w="30">1.82</text>
+<text x="920" y="313.8" text-anchor="end" class="t-value f-blue-ink" data-w="30">0.11</text>
+<path d="M182.79,353.6 L478.35,353.6" class="s-rule w15 nofill"/>
+<path d="M478.35,347.6 L484.35,353.6 L478.35,359.6 L472.35,353.6 Z" class="f-red s-surface w1"/>
+<circle cx="244.05" cy="353.6" r="5" class="nofill s-red w15"/>
+<path d="M178.29,349.1 H187.29 V358.1 H178.29 Z" class="f-blue s-surface w1"/>
+<text x="712" y="358.6" text-anchor="end" class="t-value f-red-ink" data-w="30">3.68</text>
+<text x="816" y="358.6" text-anchor="end" class="t-value f-red-ink" data-w="30">0.62</text>
+<text x="920" y="358.6" text-anchor="end" class="t-value f-blue-ink" data-w="40">−0.18</text>
+</g>
+<text x="712" y="144" text-anchor="end" class="t-note" data-w="62">60 points</text>
+<text x="816" y="144" text-anchor="end" class="t-note" data-w="71">300 points</text>
+<text x="920" y="144" text-anchor="end" class="t-note" data-w="54">next set</text>
+<path d="M48,458 L54,464 L48,470 L42,464 Z" class="f-red s-surface w1"/>
+<text x="72" y="468" class="t-label" data-w="172">best of eight on 60 points</text>
+<circle cx="288" cy="464" r="5" class="nofill s-red w15"/>
+<text x="312" y="468" class="t-label" data-w="134">best of eight on 300</text>
+<path d="M483.5,459.5 H492.5 V468.5 H483.5 Z" class="f-blue s-surface w1"/>
+<text x="512" y="468" class="t-label" data-w="244">chosen on one, reported on the next</text>
+<text x="40" y="504" class="t-note" data-w="522">The fewer the test points, the more the luckiest of eight scores lifts the report.</text>
+</svg>

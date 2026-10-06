@@ -1,0 +1,214 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-03-steadiness-title" aria-describedby="nn-03-steadiness-desc">
+<title id="nn-03-steadiness-title">One split of 60 swings; the mean of five swings less</title>
+<desc id="nn-03-steadiness-desc">Eight rows, shuffles 0 to 7 of the same 300 points of seed 0, learning rate 0.1 and the same initial weights. Each row is a band over its five fold accuracies, with a tick per fold and a dot at their mean: shuffle 0: 0.717 to 0.817, mean 0.773; shuffle 1: 0.733 to 0.833, mean 0.780; shuffle 2: 0.667 to 0.883, mean 0.773; shuffle 3: 0.600 to 0.850, mean 0.737; shuffle 4: 0.750 to 0.867, mean 0.783; shuffle 5: 0.717 to 0.867, mean 0.800; shuffle 6: 0.633 to 0.800, mean 0.723; shuffle 7: 0.683 to 0.783, mean 0.743. A last row is a band over the eight means, 0.723 to 0.800. The 40 single folds have a standard deviation of 0.064, the eight means one of 0.025, a ratio of 2.59.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--nn-blue); }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-blue-line { stroke: var(--nn-blue-line); }
+  .s-border { stroke: var(--nn-border); }
+  .s-green { stroke: var(--nn-green); }
+  .s-green-line { stroke: var(--nn-green-line); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-03-steadiness-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title" data-w="633">One split of 60 swings; the mean of five swings less</text>
+<text x="40" y="76" class="t-subtitle" data-w="675">Seed 0, learning rate 0.1, the same initial weights; only the shuffle that cuts the folds changes.</text>
+<g data-grid="skip">
+<path d="M168,144V552M261.71,144V552M355.43,144V552M449.14,144V552M542.86,144V552M636.57,144V552M730.29,144V552M824,144V552" class="gridline"/>
+<text x="168" y="572" text-anchor="middle" class="t-tick" data-w="27">0.55</text>
+<text x="261.71" y="572" text-anchor="middle" class="t-tick" data-w="27">0.60</text>
+<text x="355.43" y="572" text-anchor="middle" class="t-tick" data-w="27">0.65</text>
+<text x="449.14" y="572" text-anchor="middle" class="t-tick" data-w="27">0.70</text>
+<text x="542.86" y="572" text-anchor="middle" class="t-tick" data-w="27">0.75</text>
+<text x="636.57" y="572" text-anchor="middle" class="t-tick" data-w="27">0.80</text>
+<text x="730.29" y="572" text-anchor="middle" class="t-tick" data-w="27">0.85</text>
+<text x="824" y="572" text-anchor="middle" class="t-tick" data-w="27">0.90</text>
+<path d="M168,552H824" class="axis"/>
+<text x="40" y="171.67" class="t-label" data-w="58">shuffle 0</text>
+<text x="40" y="217" class="t-label" data-w="58">shuffle 1</text>
+<text x="40" y="262.33" class="t-label" data-w="58">shuffle 2</text>
+<text x="40" y="307.67" class="t-label" data-w="58">shuffle 3</text>
+<text x="40" y="353" class="t-label" data-w="58">shuffle 4</text>
+<text x="40" y="398.33" class="t-label" data-w="58">shuffle 5</text>
+<text x="40" y="443.67" class="t-label" data-w="58">shuffle 6</text>
+<text x="40" y="489" class="t-label" data-w="58">shuffle 7</text>
+<text x="40" y="534.33" class="t-label" data-w="83">eight means</text>
+</g>
+<text x="496" y="596" text-anchor="middle" class="t-note" data-w="129">validation accuracy</text>
+<text x="920" y="136" text-anchor="end" class="t-note" data-w="38">mean</text>
+<g data-grid="skip">
+<rect x="481.01" y="154.67" width="187.43" height="24" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M636.57,158.67V174.67M668.43,158.67V174.67M481.01,158.67V174.67M636.57,158.67V174.67M510.99,158.67V174.67" class="s-green w1 nofill"/>
+<circle cx="585.97" cy="166.67" r="5" class="f-blue s-surface w1"/>
+<text x="920" y="171.67" text-anchor="end" class="t-value f-blue-ink" data-w="38">0.773</text>
+<rect x="510.99" y="200" width="187.43" height="24" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M604.71,204V220M698.42,204V220M510.99,204V220M510.99,204V220M668.43,204V220" class="s-green w1 nofill"/>
+<circle cx="599.09" cy="212" r="5" class="f-blue s-surface w1"/>
+<text x="920" y="217" text-anchor="end" class="t-value f-blue-ink" data-w="38">0.780</text>
+<rect x="387.29" y="245.33" width="404.85" height="24" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M730.29,249.33V265.33M792.14,249.33V265.33M636.57,249.33V265.33M387.29,249.33V265.33M387.29,249.33V265.33" class="s-green w1 nofill"/>
+<circle cx="585.97" cy="257.33" r="5" class="f-blue s-surface w1"/>
+<text x="920" y="262.33" text-anchor="end" class="t-value f-blue-ink" data-w="38">0.773</text>
+<rect x="261.71" y="290.67" width="468.57" height="24" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M261.71,294.67V310.67M574.72,294.67V310.67M730.29,294.67V310.67M604.71,294.67V310.67M417.28,294.67V310.67" class="s-green w1 nofill"/>
+<circle cx="518.49" cy="302.67" r="5" class="f-blue s-surface w1"/>
+<text x="920" y="307.67" text-anchor="end" class="t-value f-blue-ink" data-w="38">0.737</text>
+<rect x="542.86" y="336" width="219.29" height="24" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M604.71,340V356M762.15,340V356M542.86,340V356M542.86,340V356M574.72,340V356" class="s-green w1 nofill"/>
+<circle cx="604.71" cy="348" r="5" class="f-blue s-surface w1"/>
+<text x="920" y="353" text-anchor="end" class="t-value f-blue-ink" data-w="38">0.783</text>
+<rect x="481.01" y="381.33" width="281.14" height="24" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M481.01,385.33V401.33M698.42,385.33V401.33M604.71,385.33V401.33M636.57,385.33V401.33M762.15,385.33V401.33" class="s-green w1 nofill"/>
+<circle cx="636.57" cy="393.33" r="5" class="f-blue s-surface w1"/>
+<text x="920" y="398.33" text-anchor="end" class="t-value f-blue-ink" data-w="38">0.800</text>
+<rect x="323.57" y="426.67" width="313.01" height="24" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M449.14,430.67V446.67M636.57,430.67V446.67M481.01,430.67V446.67M323.57,430.67V446.67M574.72,430.67V446.67" class="s-green w1 nofill"/>
+<circle cx="492.25" cy="438.67" r="5" class="f-blue s-surface w1"/>
+<text x="920" y="443.67" text-anchor="end" class="t-value f-blue-ink" data-w="38">0.723</text>
+<rect x="417.28" y="472" width="187.43" height="24" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M481.01,476V492M574.72,476V492M417.28,476V492M604.71,476V492M574.72,476V492" class="s-green w1 nofill"/>
+<circle cx="529.74" cy="484" r="5" class="f-blue s-surface w1"/>
+<text x="920" y="489" text-anchor="end" class="t-value f-blue-ink" data-w="38">0.743</text>
+<path d="M168,506.67 L920,506.67" class="s-border w1 nofill"/>
+<rect x="492.25" y="517.33" width="144.32" height="24" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M585.97,521.33V537.33M599.09,521.33V537.33M585.97,521.33V537.33M518.49,521.33V537.33M604.71,521.33V537.33M636.57,521.33V537.33M492.25,521.33V537.33M529.74,521.33V537.33" class="s-blue w1 nofill"/>
+</g>
+<rect x="168" y="620" width="24" height="16" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M180,622.67V633.33" class="s-green w1 nofill"/>
+<text x="200" y="632" class="t-label" data-w="417">the five folds of one shuffle; standard deviation of all 40: 0.064</text>
+<circle cx="176" cy="652" r="5" class="f-blue s-surface w1"/>
+<text x="200" y="656" class="t-label" data-w="445">their mean, the 5-fold score; standard deviation of the eight: 0.025</text>
+<text x="40" y="684" class="t-note" data-w="452">The 40 single folds spread 2.59 times as widely as the eight means.</text>
+</svg>
