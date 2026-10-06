@@ -1,0 +1,247 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-01-one-rate-two-weights-title" aria-describedby="nn-01-one-rate-two-weights-desc">
+<title id="nn-01-one-rate-two-weights-title">One rate strands the slow weight; AdaGrad moves both alike</title>
+<desc id="nn-01-one-rate-two-weights-desc">Two charts of the weights w1 and w2 of the loss w1 squared over 100 plus w2 squared, against the step, from the start (1, 1), where the gradients are 0.02 and 2.0, for 100 steps with a learning rate of 0.1. Dots mark the steps the script prints. Gradient descent, left: w2 falls to 0.8 after one step and is at 2.037 times 10 to the minus 10 after 100, while w1 moves 0.002 in the first step and ends at 0.8186. AdaGrad, right: the two weights take the same path, 0.9 after one step, 0.5537 after 10, and both end at 0.027387; their caches after 100 steps are 0.004011 and 40.11.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-ink { fill: var(--nn-ink); }
+  .f-orange { fill: var(--nn-orange); }
+  .f-orange-ink { fill: var(--nn-orange-ink); }
+  .s-ink { stroke: var(--nn-ink); }
+  .s-orange { stroke: var(--nn-orange); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-01-one-rate-two-weights-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<clipPath id="nn-01-one-rate-two-weights-clip-1"><rect x="90" y="154" width="268" height="244"/></clipPath>
+<clipPath id="nn-01-one-rate-two-weights-clip-2"><rect x="546" y="154" width="268" height="244"/></clipPath>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="740">One rate strands the slow weight; AdaGrad moves both alike</text>
+<text x="40" y="76" class="t-subtitle" data-w="705"><tspan class="i">L</tspan> = <tspan class="i">w</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan><tspan class="sub" dy="-6">2</tspan><tspan dy="6">​</tspan>/100 + <tspan class="i">w</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan><tspan class="sub" dy="-6">2</tspan><tspan dy="6">​</tspan> from (1, 1), where the gradients are 0.02 and 2.0. Both runs: <tspan class="i">α</tspan> = 0.1, 100 steps.</text>
+<text x="40" y="120" class="t-head" data-w="205">Gradient descent, <tspan class="i">α</tspan> = 0.1</text>
+<g data-grid="skip">
+<path d="M96,392H352M96,334H352M96,276H352M96,218H352M96,160H352" class="gridline"/>
+<text x="88" y="396" text-anchor="end" class="t-tick" data-w="8">0</text>
+<text x="88" y="338" text-anchor="end" class="t-tick" data-w="27">0.25</text>
+<text x="88" y="280" text-anchor="end" class="t-tick" data-w="19">0.5</text>
+<text x="88" y="222" text-anchor="end" class="t-tick" data-w="27">0.75</text>
+<text x="88" y="164" text-anchor="end" class="t-tick" data-w="8">1</text>
+<text x="96" y="412" text-anchor="middle" class="t-tick" data-w="8">0</text>
+<text x="160" y="412" text-anchor="middle" class="t-tick" data-w="16">25</text>
+<text x="224" y="412" text-anchor="middle" class="t-tick" data-w="16">50</text>
+<text x="288" y="412" text-anchor="middle" class="t-tick" data-w="16">75</text>
+<text x="352" y="412" text-anchor="middle" class="t-tick" data-w="23">100</text>
+<path d="M96,160V392H352" class="axis"/>
+<g clip-path="url(#nn-01-one-rate-two-weights-clip-1)">
+<path d="M96,160 L98.56,206.4 L101.12,243.52 L103.68,273.22 L106.24,296.97 L108.8,315.98 L111.36,331.18 L113.92,343.35 L116.48,353.08 L119.04,360.86 L121.6,367.09 L124.16,372.07 L126.72,376.06 L129.28,379.25 L131.84,381.8 L134.4,383.84 L136.96,385.47 L139.52,386.78 L142.08,387.82 L144.64,388.66 L147.2,389.33 L149.76,389.86 L152.32,390.29 L154.88,390.63 L157.44,390.9 L160,391.12 L162.56,391.3 L165.12,391.44 L167.68,391.55 L170.24,391.64 L172.8,391.71 L175.36,391.77 L177.92,391.82 L180.48,391.85 L183.04,391.88 L185.6,391.91 L188.16,391.92 L190.72,391.94 L193.28,391.95 L195.84,391.96 L198.4,391.97 L200.96,391.98 L203.52,391.98 L206.08,391.98 L208.64,391.99 L211.2,391.99 L213.76,391.99 L216.32,391.99 L218.88,391.99 L221.44,392 L224,392 L226.56,392 L229.12,392 L231.68,392 L234.24,392 L236.8,392 L239.36,392 L241.92,392 L244.48,392 L247.04,392 L249.6,392 L252.16,392 L254.72,392 L257.28,392 L259.84,392 L262.4,392 L264.96,392 L267.52,392 L270.08,392 L272.64,392 L275.2,392 L277.76,392 L280.32,392 L282.88,392 L285.44,392 L288,392 L290.56,392 L293.12,392 L295.68,392 L298.24,392 L300.8,392 L303.36,392 L305.92,392 L308.48,392 L311.04,392 L313.6,392 L316.16,392 L318.72,392 L321.28,392 L323.84,392 L326.4,392 L328.96,392 L331.52,392 L334.08,392 L336.64,392 L339.2,392 L341.76,392 L344.32,392 L346.88,392 L349.44,392 L352,392" class="s-ink w15 nofill"/>
+<path d="M96,160 L98.56,160.46 L101.12,160.93 L103.68,161.39 L106.24,161.85 L108.8,162.31 L111.36,162.77 L113.92,163.23 L116.48,163.69 L119.04,164.14 L121.6,164.6 L124.16,165.05 L126.72,165.51 L129.28,165.96 L131.84,166.41 L134.4,166.86 L136.96,167.31 L139.52,167.76 L142.08,168.21 L144.64,168.66 L147.2,169.11 L149.76,169.55 L152.32,170 L154.88,170.44 L157.44,170.88 L160,171.33 L162.56,171.77 L165.12,172.21 L167.68,172.65 L170.24,173.09 L172.8,173.52 L175.36,173.96 L177.92,174.4 L180.48,174.83 L183.04,175.27 L185.6,175.7 L188.16,176.13 L190.72,176.56 L193.28,177 L195.84,177.43 L198.4,177.85 L200.96,178.28 L203.52,178.71 L206.08,179.14 L208.64,179.56 L211.2,179.99 L213.76,180.41 L216.32,180.83 L218.88,181.26 L221.44,181.68 L224,182.1 L226.56,182.52 L229.12,182.94 L231.68,183.36 L234.24,183.77 L236.8,184.19 L239.36,184.6 L241.92,185.02 L244.48,185.43 L247.04,185.85 L249.6,186.26 L252.16,186.67 L254.72,187.08 L257.28,187.49 L259.84,187.9 L262.4,188.31 L264.96,188.72 L267.52,189.12 L270.08,189.53 L272.64,189.93 L275.2,190.34 L277.76,190.74 L280.32,191.14 L282.88,191.54 L285.44,191.95 L288,192.35 L290.56,192.75 L293.12,193.14 L295.68,193.54 L298.24,193.94 L300.8,194.33 L303.36,194.73 L305.92,195.12 L308.48,195.52 L311.04,195.91 L313.6,196.3 L316.16,196.69 L318.72,197.09 L321.28,197.47 L323.84,197.86 L326.4,198.25 L328.96,198.64 L331.52,199.03 L334.08,199.41 L336.64,199.8 L339.2,200.18 L341.76,200.57 L344.32,200.95 L346.88,201.33 L349.44,201.71 L352,202.09" class="s-orange w15 nofill"/>
+</g>
+</g>
+<text x="96" y="148" class="t-note" data-w="127">value of the weight</text>
+<text x="224" y="436" text-anchor="middle" class="t-note" data-w="30">step</text>
+<g data-grid="skip">
+<path d="M94.06,201.9 H103.06 V210.9 H94.06 Z" class="nofill s-ink w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="98.56" cy="160.46" r="4" class="f-orange s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M347.5,387.5 H356.5 V396.5 H347.5 Z" class="nofill s-ink w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="352" cy="202.09" r="4" class="f-orange s-surface w1"/>
+</g>
+<g data-grid="skip">
+<text x="364" y="207.09" class="t-value f-orange-ink" data-w="85"><tspan class="i">w</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> = 0.8186</text>
+</g>
+<g data-grid="skip">
+<text x="364" y="397" class="t-value f-ink" data-w="120"><tspan class="i">w</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> = 2.0 × 10<tspan class="sub" dy="-6">−10</tspan><tspan dy="6">​</tspan></text>
+</g>
+<g data-grid="skip">
+<text x="110.56" y="211.4" class="t-note" data-w="155"><tspan class="i">w</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> = 0.8 after one step</text>
+</g>
+<text x="496" y="120" class="t-head" data-w="137">AdaGrad, <tspan class="i">α</tspan> = 0.1</text>
+<g data-grid="skip">
+<path d="M552,392H808M552,334H808M552,276H808M552,218H808M552,160H808" class="gridline"/>
+<text x="544" y="396" text-anchor="end" class="t-tick" data-w="8">0</text>
+<text x="544" y="338" text-anchor="end" class="t-tick" data-w="27">0.25</text>
+<text x="544" y="280" text-anchor="end" class="t-tick" data-w="19">0.5</text>
+<text x="544" y="222" text-anchor="end" class="t-tick" data-w="27">0.75</text>
+<text x="544" y="164" text-anchor="end" class="t-tick" data-w="8">1</text>
+<text x="552" y="412" text-anchor="middle" class="t-tick" data-w="8">0</text>
+<text x="616" y="412" text-anchor="middle" class="t-tick" data-w="16">25</text>
+<text x="680" y="412" text-anchor="middle" class="t-tick" data-w="16">50</text>
+<text x="744" y="412" text-anchor="middle" class="t-tick" data-w="16">75</text>
+<text x="808" y="412" text-anchor="middle" class="t-tick" data-w="23">100</text>
+<path d="M552,160V392H808" class="axis"/>
+<g clip-path="url(#nn-01-one-rate-two-weights-clip-2)">
+<path d="M552,160 L554.56,183.2 L557.12,198.72 L559.68,210.93 L562.24,221.2 L564.8,230.13 L567.36,238.08 L569.92,245.27 L572.48,251.85 L575.04,257.91 L577.6,263.53 L580.16,268.78 L582.72,273.71 L585.28,278.33 L587.84,282.7 L590.4,286.84 L592.96,290.76 L595.52,294.48 L598.08,298.03 L600.64,301.41 L603.2,304.63 L605.76,307.72 L608.32,310.67 L610.88,313.5 L613.44,316.21 L616,318.81 L618.56,321.3 L621.12,323.7 L623.68,326.01 L626.24,328.22 L628.8,330.36 L631.36,332.41 L633.92,334.39 L636.48,336.3 L639.04,338.13 L641.6,339.91 L644.16,341.61 L646.72,343.26 L649.28,344.85 L651.84,346.39 L654.4,347.87 L656.96,349.3 L659.52,350.69 L662.08,352.02 L664.64,353.31 L667.2,354.56 L669.76,355.76 L672.32,356.93 L674.88,358.06 L677.44,359.14 L680,360.2 L682.56,361.21 L685.12,362.2 L687.68,363.15 L690.24,364.07 L692.8,364.96 L695.36,365.83 L697.92,366.66 L700.48,367.47 L703.04,368.25 L705.6,369 L708.16,369.73 L710.72,370.44 L713.28,371.13 L715.84,371.79 L718.4,372.43 L720.96,373.05 L723.52,373.65 L726.08,374.23 L728.64,374.8 L731.2,375.34 L733.76,375.87 L736.32,376.38 L738.88,376.88 L741.44,377.36 L744,377.82 L746.56,378.27 L749.12,378.7 L751.68,379.12 L754.24,379.53 L756.8,379.92 L759.36,380.31 L761.92,380.68 L764.48,381.03 L767.04,381.38 L769.6,381.72 L772.16,382.04 L774.72,382.36 L777.28,382.66 L779.84,382.96 L782.4,383.24 L784.96,383.52 L787.52,383.79 L790.08,384.05 L792.64,384.3 L795.2,384.54 L797.76,384.78 L800.32,385 L802.88,385.23 L805.44,385.44 L808,385.65" class="s-ink w15 nofill"/>
+<path d="M552,160 L554.56,183.2 L557.12,198.72 L559.68,210.93 L562.24,221.2 L564.8,230.13 L567.36,238.08 L569.92,245.27 L572.48,251.85 L575.04,257.91 L577.6,263.53 L580.16,268.78 L582.72,273.7 L585.28,278.33 L587.84,282.7 L590.4,286.84 L592.96,290.76 L595.52,294.48 L598.08,298.03 L600.64,301.41 L603.2,304.63 L605.76,307.72 L608.32,310.67 L610.88,313.5 L613.44,316.21 L616,318.81 L618.56,321.3 L621.12,323.7 L623.68,326.01 L626.24,328.22 L628.8,330.36 L631.36,332.41 L633.92,334.39 L636.48,336.3 L639.04,338.13 L641.6,339.91 L644.16,341.61 L646.72,343.26 L649.28,344.85 L651.84,346.39 L654.4,347.87 L656.96,349.3 L659.52,350.69 L662.08,352.02 L664.64,353.31 L667.2,354.56 L669.76,355.76 L672.32,356.93 L674.88,358.05 L677.44,359.14 L680,360.2 L682.56,361.21 L685.12,362.2 L687.68,363.15 L690.24,364.07 L692.8,364.96 L695.36,365.83 L697.92,366.66 L700.48,367.47 L703.04,368.25 L705.6,369 L708.16,369.73 L710.72,370.44 L713.28,371.13 L715.84,371.79 L718.4,372.43 L720.96,373.05 L723.52,373.65 L726.08,374.23 L728.64,374.8 L731.2,375.34 L733.76,375.87 L736.32,376.38 L738.88,376.88 L741.44,377.35 L744,377.82 L746.56,378.27 L749.12,378.7 L751.68,379.12 L754.24,379.53 L756.8,379.92 L759.36,380.31 L761.92,380.68 L764.48,381.03 L767.04,381.38 L769.6,381.72 L772.16,382.04 L774.72,382.36 L777.28,382.66 L779.84,382.96 L782.4,383.24 L784.96,383.52 L787.52,383.79 L790.08,384.05 L792.64,384.3 L795.2,384.54 L797.76,384.78 L800.32,385 L802.88,385.23 L805.44,385.44 L808,385.65" class="s-orange w15 nofill"/>
+</g>
+</g>
+<text x="552" y="148" class="t-note" data-w="127">value of the weight</text>
+<text x="680" y="436" text-anchor="middle" class="t-note" data-w="30">step</text>
+<g data-grid="skip">
+<path d="M550.06,178.7 H559.06 V187.7 H550.06 Z" class="nofill s-ink w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="554.56" cy="183.2" r="4" class="f-orange s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M573.1,259.03 H582.1 V268.03 H573.1 Z" class="nofill s-ink w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="577.6" cy="263.53" r="4" class="f-orange s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M803.5,381.15 H812.5 V390.15 H803.5 Z" class="nofill s-ink w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="808" cy="385.65" r="4" class="f-orange s-surface w1"/>
+</g>
+<g data-grid="skip">
+<text x="820" y="390.65" class="t-value f-orange-ink" data-w="64">0.027387</text>
+</g>
+<g data-grid="skip">
+<text x="820" y="368.65" class="t-note" data-w="70"><tspan class="i">w</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> and <tspan class="i">w</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<g data-grid="skip">
+<text x="589.6" y="257.53" class="t-note" data-w="142">0.5537 after 10 steps</text>
+</g>
+<g data-grid="skip">
+<text x="680" y="194.8" text-anchor="middle" class="t-note" data-w="156">caches after 100 steps:</text>
+</g>
+<g data-grid="skip">
+<text x="680" y="214.8" text-anchor="middle" class="t-note" data-w="151"><tspan class="i">w</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> 0.004011, <tspan class="i">w</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> 40.11</text>
+</g>
+<circle cx="104" cy="464" r="5" class="f-orange s-surface w1"/>
+<text x="128" y="468" class="t-label" data-w="193"><tspan class="i">w</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan>, gradient 0.02 at the start</text>
+<path d="M371.5,459.5 H380.5 V468.5 H371.5 Z" class="nofill s-ink w15"/>
+<text x="400" y="468" class="t-label" data-w="185"><tspan class="i">w</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan>, gradient 2.0 at the start</text>
+<text x="40" y="504" class="t-note" data-w="575">Dots: the steps the script prints. The caches differ 10,000 times, their roots 100 times.</text>
+</svg>

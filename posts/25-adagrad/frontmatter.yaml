@@ -9,7 +9,7 @@ part: "Part VI - Optimisers"
 level: intermediate
 reading_time: 22
 tags: [neural-networks, from-scratch, optimisation, adagrad, adaptive-rates]
-hero: diagrams/01-per-parameter-rates.svg
+hero: diagrams/01-one-rate-two-weights.svg
 prerequisites: [nn-024]
 code: included
 outcomes:

@@ -1,0 +1,261 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-02-constant-gradient-title" aria-describedby="nn-02-constant-gradient-desc">
+<title id="nn-02-constant-gradient-title">Every effective rate falls as 1/√t</title>
+<desc id="nn-02-constant-gradient-desc">Two log-log charts over 1 to 10,000 updates with a learning rate of 1. Left, the effective learning rate alpha over the root of the cache for three constant gradients: for 0.2 it falls from 5 to 0.05, for 0.5 from 2 to 0.02, for 2.0 from 0.5 to 0.005, three parallel lines. Dots on the 0.5 line at the updates of section 3's table, 2, 1.4142, 0.6325, 0.2, 0.0632 and 0.02; at update 1,000 the parameter with gradient 0.2 has a cache of 40 and a rate of 0.158, the one with 2.0 a cache of 4,000 and a rate of 0.0158. Right, for the gradient 0.5, the distance moved: AdaGrad 1.00, 1.71, 5.02, 18.59, 61.80 and 198.54, gradient descent 0.5 per step, 5,000 after 10,000 updates.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-ink { fill: var(--nn-ink); }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .s-ink { stroke: var(--nn-ink); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-02-constant-gradient-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<clipPath id="nn-02-constant-gradient-clip-1"><rect x="90" y="154" width="292" height="268"/></clipPath>
+<clipPath id="nn-02-constant-gradient-clip-2"><rect x="546" y="154" width="252" height="268"/></clipPath>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="390">Every effective rate falls as 1/√<tspan class="i">t</tspan></text>
+<text x="40" y="76" class="t-subtitle" data-w="664"><tspan class="i">α</tspan> = 1. Left: the effective rate for three gradient sizes. Right: the distance moved for |<tspan class="i">g</tspan>| = 0.5.</text>
+<text x="40" y="120" class="t-head" data-w="227">Effective learning rate <tspan class="i">α</tspan>/√<tspan class="i">G</tspan></text>
+<g data-grid="skip">
+<path d="M96,416H376M96,352H376M96,288H376M96,224H376M96,160H376" class="gridline"/>
+<path d="M96,396.73H376M96,385.46H376M96,377.47H376M96,371.27H376M96,366.2H376M96,361.91H376M96,358.2H376M96,354.93H376M96,332.73H376M96,321.46H376M96,313.47H376M96,307.27H376M96,302.2H376M96,297.91H376M96,294.2H376M96,290.93H376M96,268.73H376M96,257.46H376M96,249.47H376M96,243.27H376M96,238.2H376M96,233.91H376M96,230.2H376M96,226.93H376M96,204.73H376M96,193.46H376M96,185.47H376M96,179.27H376M96,174.2H376M96,169.91H376M96,166.2H376M96,162.93H376M117.07,160V416M129.4,160V416M138.14,160V416M144.93,160V416M150.47,160V416M155.16,160V416M159.22,160V416M162.8,160V416M187.07,160V416M199.4,160V416M208.14,160V416M214.93,160V416M220.47,160V416M225.16,160V416M229.22,160V416M232.8,160V416M257.07,160V416M269.4,160V416M278.14,160V416M284.93,160V416M290.47,160V416M295.16,160V416M299.22,160V416M302.8,160V416M327.07,160V416M339.4,160V416M348.14,160V416M354.93,160V416M360.47,160V416M365.16,160V416M369.22,160V416M372.8,160V416" class="gridline d-ref"/>
+<text x="88" y="420" text-anchor="end" class="t-tick" data-w="33">10<tspan class="sub" dy="-6">−3</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="356" text-anchor="end" class="t-tick" data-w="33">10<tspan class="sub" dy="-6">−2</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="292" text-anchor="end" class="t-tick" data-w="33">10<tspan class="sub" dy="-6">−1</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="228" text-anchor="end" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">0</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="164" text-anchor="end" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">1</tspan><tspan dy="6">​</tspan></text>
+<text x="96" y="440" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">0</tspan><tspan dy="6">​</tspan></text>
+<text x="166" y="440" text-anchor="middle" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">1</tspan><tspan dy="6">​</tspan></text>
+<text x="236" y="440" text-anchor="middle" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">2</tspan><tspan dy="6">​</tspan></text>
+<text x="306" y="440" text-anchor="middle" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">3</tspan><tspan dy="6">​</tspan></text>
+<text x="376" y="440" text-anchor="middle" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">4</tspan><tspan dy="6">​</tspan></text>
+<path d="M96,160V416H376" class="axis"/>
+<g clip-path="url(#nn-02-constant-gradient-clip-1)">
+<path d="M96,179.27 L117.07,188.9 L129.4,194.53 L138.14,198.53 L144.93,201.63 L150.47,204.17 L155.16,206.31 L159.22,208.16 L162.8,209.8 L166,211.27 L168.9,212.59 L171.54,213.8 L173.98,214.91 L176.23,215.94 L178.33,216.9 L180.29,217.8 L182.13,218.64 L183.87,219.43 L185.51,220.19 L187.07,220.9 L188.56,221.58 L189.97,222.22 L191.32,222.84 L192.61,223.43 L193.86,224 L195.05,224.55 L196.2,225.07 L197.3,225.57 L198.37,226.06 L199.4,226.53 L201.36,227.43 L202.3,227.86 L203.2,228.27 L204.08,228.68 L205.77,229.45 L206.58,229.82 L208.14,230.53 L208.89,230.88 L210.34,231.54 L211.72,232.17 L212.39,232.47 L213.69,233.07 L214.93,233.63 L216.12,234.18 L217.27,234.7 L218.37,235.21 L219.44,235.7 L220.97,236.4 L221.95,236.84 L223.37,237.49 L224.28,237.91 L225.59,238.51 L226.85,239.08 L227.66,239.45 L228.83,239.99 L230.34,240.68 L231.41,241.17 L232.46,241.65 L233.79,242.26 L234.76,242.7 L236,243.27 L237.19,243.81 L238.34,244.34 L239.45,244.84 L240.77,245.45 L241.79,245.92 L243.03,246.48 L244.21,247.02 L245.35,247.54 L246.45,248.04 L247.71,248.62 L248.93,249.18 L249.91,249.62 L251.22,250.23 L252.31,250.72 L253.53,251.28 L254.7,251.82 L255.83,252.33 L257.07,252.9 L258.12,253.38 L259.27,253.9 L260.52,254.47 L261.71,255.02 L262.87,255.55 L263.98,256.06 L265.16,256.6 L266.31,257.12 L267.52,257.67 L268.68,258.21 L269.8,258.72 L270.98,259.26 L272.2,259.82 L273.29,260.31 L274.52,260.87 L275.69,261.41 L276.82,261.93 L277.99,262.46 L279.19,263.01 L280.34,263.54 L281.52,264.08 L282.66,264.59 L283.81,265.12 L284.99,265.66 L286.18,266.2 L287.32,266.73 L288.48,267.26 L289.65,267.79 L290.82,268.33 L292,268.87 L293.18,269.41 L294.32,269.93 L295.5,270.47 L296.68,271.01 L297.82,271.52 L298.99,272.06 L300.15,272.59 L301.34,273.14 L302.49,273.66 L303.66,274.2 L304.82,274.73 L306,275.27 L307.16,275.8 L308.34,276.34 L309.5,276.87 L310.67,277.4 L311.85,277.94 L313,278.47 L314.16,279 L315.33,279.53 L316.51,280.07 L317.67,280.6 L318.83,281.13 L320,281.67 L321.17,282.2 L322.33,282.73 L323.5,283.26 L324.67,283.8 L325.83,284.33 L327,284.86 L328.16,285.4 L329.33,285.93 L330.5,286.47 L331.66,287 L332.83,287.53 L334,288.07 L335.16,288.6 L336.33,289.13 L337.5,289.66 L338.67,290.2 L339.83,290.73 L341,291.26 L342.17,291.8 L343.34,292.33 L344.5,292.87 L345.67,293.4 L346.83,293.93 L348,294.47 L349.17,295 L350.34,295.53 L351.5,296.07 L352.67,296.6 L353.83,297.13 L355,297.67 L356.17,298.2 L357.34,298.73 L358.5,299.26 L359.66,299.8 L360.83,300.33 L362,300.87 L363.16,301.4 L364.33,301.93 L365.5,302.47 L366.66,303 L367.83,303.53 L369,304.07 L370.17,304.6 L371.33,305.13 L372.5,305.67 L373.67,306.2 L374.83,306.73 L376,307.27" class="s-ink-muted w15 nofill"/>
+<path d="M96,204.73 L117.07,214.37 L129.4,220 L138.14,224 L144.93,227.1 L150.47,229.63 L155.16,231.78 L159.22,233.63 L162.8,235.27 L166,236.73 L168.9,238.06 L171.54,239.27 L173.98,240.38 L176.23,241.41 L178.33,242.37 L180.29,243.27 L182.13,244.11 L183.87,244.9 L185.51,245.65 L187.07,246.37 L188.56,247.05 L189.97,247.69 L191.32,248.31 L192.61,248.9 L193.86,249.47 L195.05,250.01 L196.2,250.54 L197.3,251.04 L198.37,251.53 L199.4,252 L201.36,252.9 L202.3,253.33 L203.2,253.74 L204.08,254.14 L205.77,254.92 L206.58,255.29 L208.14,256 L208.89,256.34 L210.34,257.01 L211.72,257.64 L212.39,257.94 L213.69,258.53 L214.93,259.1 L216.12,259.65 L217.27,260.17 L218.37,260.68 L219.44,261.16 L220.97,261.86 L221.95,262.31 L223.37,262.96 L224.28,263.37 L225.59,263.97 L226.85,264.55 L227.66,264.92 L228.83,265.46 L230.34,266.14 L231.41,266.64 L232.46,267.11 L233.79,267.73 L234.76,268.17 L236,268.73 L237.19,269.28 L238.34,269.8 L239.45,270.31 L240.77,270.92 L241.79,271.38 L243.03,271.95 L244.21,272.49 L245.35,273.01 L246.45,273.51 L247.71,274.09 L248.93,274.64 L249.91,275.09 L251.22,275.69 L252.31,276.19 L253.53,276.75 L254.7,277.28 L255.83,277.8 L257.07,278.37 L258.12,278.85 L259.27,279.37 L260.52,279.94 L261.71,280.49 L262.87,281.02 L263.98,281.52 L265.16,282.07 L266.31,282.59 L267.52,283.14 L268.68,283.67 L269.8,284.19 L270.98,284.72 L272.2,285.28 L273.29,285.78 L274.52,286.34 L275.69,286.88 L276.82,287.4 L277.99,287.93 L279.19,288.48 L280.34,289.01 L281.52,289.54 L282.66,290.06 L283.81,290.59 L284.99,291.13 L286.18,291.67 L287.32,292.2 L288.48,292.73 L289.65,293.26 L290.82,293.8 L292,294.34 L293.18,294.88 L294.32,295.39 L295.5,295.94 L296.68,296.47 L297.82,296.99 L298.99,297.53 L300.15,298.06 L301.34,298.61 L302.49,299.13 L303.66,299.67 L304.82,300.2 L306,300.73 L307.16,301.27 L308.34,301.8 L309.5,302.33 L310.67,302.87 L311.85,303.41 L313,303.93 L314.16,304.47 L315.33,305 L316.51,305.54 L317.67,306.07 L318.83,306.6 L320,307.14 L321.17,307.67 L322.33,308.2 L323.5,308.73 L324.67,309.27 L325.83,309.8 L327,310.33 L328.16,310.87 L329.33,311.4 L330.5,311.94 L331.66,312.47 L332.83,313 L334,313.53 L335.16,314.07 L336.33,314.6 L337.5,315.13 L338.67,315.67 L339.83,316.2 L341,316.73 L342.17,317.27 L343.34,317.8 L344.5,318.33 L345.67,318.87 L346.83,319.4 L348,319.93 L349.17,320.47 L350.34,321 L351.5,321.53 L352.67,322.07 L353.83,322.6 L355,323.13 L356.17,323.67 L357.34,324.2 L358.5,324.73 L359.66,325.27 L360.83,325.8 L362,326.34 L363.16,326.87 L364.33,327.4 L365.5,327.93 L366.66,328.47 L367.83,329 L369,329.53 L370.17,330.07 L371.33,330.6 L372.5,331.13 L373.67,331.67 L374.83,332.2 L376,332.73" class="s-ink w15 nofill"/>
+<path d="M96,243.27 L117.07,252.9 L129.4,258.53 L138.14,262.53 L144.93,265.63 L150.47,268.17 L155.16,270.31 L159.22,272.16 L162.8,273.8 L166,275.27 L168.9,276.59 L171.54,277.8 L173.98,278.91 L176.23,279.94 L178.33,280.9 L180.29,281.8 L182.13,282.64 L183.87,283.43 L185.51,284.19 L187.07,284.9 L188.56,285.58 L189.97,286.22 L191.32,286.84 L192.61,287.43 L193.86,288 L195.05,288.55 L196.2,289.07 L197.3,289.57 L198.37,290.06 L199.4,290.53 L201.36,291.43 L202.3,291.86 L203.2,292.27 L204.08,292.68 L205.77,293.45 L206.58,293.82 L208.14,294.53 L208.89,294.88 L210.34,295.54 L211.72,296.17 L212.39,296.47 L213.69,297.07 L214.93,297.63 L216.12,298.18 L217.27,298.7 L218.37,299.21 L219.44,299.7 L220.97,300.4 L221.95,300.84 L223.37,301.49 L224.28,301.91 L225.59,302.51 L226.85,303.08 L227.66,303.45 L228.83,303.99 L230.34,304.68 L231.41,305.17 L232.46,305.65 L233.79,306.26 L234.76,306.7 L236,307.27 L237.19,307.81 L238.34,308.34 L239.45,308.84 L240.77,309.45 L241.79,309.92 L243.03,310.48 L244.21,311.02 L245.35,311.54 L246.45,312.04 L247.71,312.62 L248.93,313.18 L249.91,313.62 L251.22,314.23 L252.31,314.72 L253.53,315.28 L254.7,315.82 L255.83,316.33 L257.07,316.9 L258.12,317.38 L259.27,317.9 L260.52,318.47 L261.71,319.02 L262.87,319.55 L263.98,320.06 L265.16,320.6 L266.31,321.12 L267.52,321.67 L268.68,322.21 L269.8,322.72 L270.98,323.26 L272.2,323.82 L273.29,324.31 L274.52,324.87 L275.69,325.41 L276.82,325.93 L277.99,326.46 L279.19,327.01 L280.34,327.54 L281.52,328.08 L282.66,328.59 L283.81,329.12 L284.99,329.66 L286.18,330.2 L287.32,330.73 L288.48,331.26 L289.65,331.79 L290.82,332.33 L292,332.87 L293.18,333.41 L294.32,333.93 L295.5,334.47 L296.68,335.01 L297.82,335.52 L298.99,336.06 L300.15,336.59 L301.34,337.14 L302.49,337.66 L303.66,338.2 L304.82,338.73 L306,339.27 L307.16,339.8 L308.34,340.34 L309.5,340.87 L310.67,341.4 L311.85,341.94 L313,342.47 L314.16,343 L315.33,343.53 L316.51,344.07 L317.67,344.6 L318.83,345.13 L320,345.67 L321.17,346.2 L322.33,346.73 L323.5,347.26 L324.67,347.8 L325.83,348.33 L327,348.86 L328.16,349.4 L329.33,349.93 L330.5,350.47 L331.66,351 L332.83,351.53 L334,352.07 L335.16,352.6 L336.33,353.13 L337.5,353.66 L338.67,354.2 L339.83,354.73 L341,355.26 L342.17,355.8 L343.34,356.33 L344.5,356.87 L345.67,357.4 L346.83,357.93 L348,358.47 L349.17,359 L350.34,359.53 L351.5,360.07 L352.67,360.6 L353.83,361.13 L355,361.67 L356.17,362.2 L357.34,362.73 L358.5,363.26 L359.66,363.8 L360.83,364.33 L362,364.87 L363.16,365.4 L364.33,365.93 L365.5,366.47 L366.66,367 L367.83,367.53 L369,368.07 L370.17,368.6 L371.33,369.13 L372.5,369.67 L373.67,370.2 L374.83,370.73 L376,371.27" class="s-ink-muted w15 nofill"/>
+</g>
+</g>
+<text x="96" y="148" class="t-note" data-w="95">rate, log scale</text>
+<text x="236" y="460" text-anchor="middle" class="t-note" data-w="124">update <tspan class="i">t</tspan>, log scale</text>
+<g data-grid="skip">
+<text x="388" y="312.27" class="t-note f-ink-muted" data-w="55">|<tspan class="i">g</tspan>| = 0.2</text>
+</g>
+<g data-grid="skip">
+<text x="388" y="337.73" class="t-note f-ink" data-w="55">|<tspan class="i">g</tspan>| = 0.5</text>
+</g>
+<g data-grid="skip">
+<text x="388" y="376.27" class="t-note f-ink-muted" data-w="55">|<tspan class="i">g</tspan>| = 2.0</text>
+</g>
+<g data-grid="skip">
+<circle cx="96" cy="204.73" r="4" class="f-ink s-surface w1"/>
+</g>
+<g data-grid="skip">
+<circle cx="117.07" cy="214.37" r="4" class="f-ink s-surface w1"/>
+</g>
+<g data-grid="skip">
+<circle cx="166" cy="236.73" r="4" class="f-ink s-surface w1"/>
+</g>
+<g data-grid="skip">
+<circle cx="236" cy="268.73" r="4" class="f-ink s-surface w1"/>
+</g>
+<g data-grid="skip">
+<circle cx="306" cy="300.73" r="4" class="f-ink s-surface w1"/>
+</g>
+<g data-grid="skip">
+<circle cx="376" cy="332.73" r="4" class="f-ink s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M301.5,334.77 H310.5 V343.77 H301.5 Z" class="f-ink-muted s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M306,268.77 L311.63,278.52 L300.37,278.52 Z" class="f-ink-muted s-surface w1"/>
+</g>
+<g data-grid="skip">
+<text x="314" y="261.27" class="t-note" data-w="122"><tspan class="i">G</tspan> = 40, rate 0.158</text>
+</g>
+<g data-grid="skip">
+<text x="294" y="365.27" text-anchor="end" class="t-note" data-w="151"><tspan class="i">G</tspan> = 4,000, rate 0.0158</text>
+</g>
+<text x="496" y="120" class="t-head" data-w="207">Distance moved, |<tspan class="i">g</tspan>| = 0.5</text>
+<g data-grid="skip">
+<path d="M552,416H792M552,364.8H792M552,313.6H792M552,262.4H792M552,211.2H792M552,160H792" class="gridline"/>
+<path d="M552,400.59H792M552,391.57H792M552,385.17H792M552,380.21H792M552,376.16H792M552,372.73H792M552,369.76H792M552,367.14H792M552,349.39H792M552,340.37H792M552,333.97H792M552,329.01H792M552,324.96H792M552,321.53H792M552,318.56H792M552,315.94H792M552,298.19H792M552,289.17H792M552,282.77H792M552,277.81H792M552,273.76H792M552,270.33H792M552,267.36H792M552,264.74H792M552,246.99H792M552,237.97H792M552,231.57H792M552,226.61H792M552,222.56H792M552,219.13H792M552,216.16H792M552,213.54H792M552,195.79H792M552,186.77H792M552,180.37H792M552,175.41H792M552,171.36H792M552,167.93H792M552,164.96H792M552,162.34H792M570.06,160V416M580.63,160V416M588.12,160V416M593.94,160V416M598.69,160V416M602.71,160V416M606.19,160V416M609.25,160V416M630.06,160V416M640.63,160V416M648.12,160V416M653.94,160V416M658.69,160V416M662.71,160V416M666.19,160V416M669.25,160V416M690.06,160V416M700.63,160V416M708.12,160V416M713.94,160V416M718.69,160V416M722.71,160V416M726.19,160V416M729.25,160V416M750.06,160V416M760.63,160V416M768.12,160V416M773.94,160V416M778.69,160V416M782.71,160V416M786.19,160V416M789.25,160V416" class="gridline d-ref"/>
+<text x="544" y="420" text-anchor="end" class="t-tick" data-w="33">10<tspan class="sub" dy="-6">−1</tspan><tspan dy="6">​</tspan></text>
+<text x="544" y="368.8" text-anchor="end" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">0</tspan><tspan dy="6">​</tspan></text>
+<text x="544" y="317.6" text-anchor="end" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">1</tspan><tspan dy="6">​</tspan></text>
+<text x="544" y="266.4" text-anchor="end" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">2</tspan><tspan dy="6">​</tspan></text>
+<text x="544" y="215.2" text-anchor="end" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">3</tspan><tspan dy="6">​</tspan></text>
+<text x="544" y="164" text-anchor="end" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">4</tspan><tspan dy="6">​</tspan></text>
+<text x="552" y="440" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">0</tspan><tspan dy="6">​</tspan></text>
+<text x="612" y="440" text-anchor="middle" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">1</tspan><tspan dy="6">​</tspan></text>
+<text x="672" y="440" text-anchor="middle" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">2</tspan><tspan dy="6">​</tspan></text>
+<text x="732" y="440" text-anchor="middle" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">3</tspan><tspan dy="6">​</tspan></text>
+<text x="792" y="440" text-anchor="middle" class="t-tick" data-w="23">10<tspan class="sub" dy="-6">4</tspan><tspan dy="6">​</tspan></text>
+<path d="M552,160V416H792" class="axis"/>
+<g clip-path="url(#nn-02-constant-gradient-clip-2)">
+<path d="M552,380.21 L570.06,364.8 L580.63,355.78 L588.12,349.39 L593.94,344.43 L598.69,340.37 L602.71,336.94 L606.19,333.97 L609.25,331.36 L612,329.01 L614.48,326.89 L616.75,324.96 L618.84,323.18 L620.77,321.53 L622.57,320 L624.25,318.56 L625.83,317.21 L627.32,315.94 L628.73,314.74 L630.06,313.6 L631.33,312.52 L632.55,311.48 L633.7,310.49 L634.81,309.55 L635.88,308.64 L636.9,307.77 L637.88,306.93 L638.83,306.12 L639.74,305.34 L640.63,304.58 L642.31,303.15 L643.11,302.46 L643.89,301.8 L644.64,301.16 L646.09,299.92 L646.79,299.33 L648.12,298.19 L648.77,297.64 L650.01,296.58 L651.19,295.57 L651.77,295.08 L652.87,294.13 L653.94,293.23 L654.96,292.35 L655.94,291.51 L656.89,290.71 L657.81,289.93 L659.12,288.8 L659.96,288.09 L661.17,287.05 L661.95,286.39 L663.08,285.43 L664.15,284.51 L664.85,283.92 L665.86,283.05 L667.14,281.96 L668.07,281.17 L668.96,280.4 L670.11,279.43 L670.94,278.72 L672,277.81 L673.02,276.94 L674.01,276.1 L674.95,275.29 L676.09,274.32 L676.97,273.57 L678.02,272.67 L679.04,271.81 L680.01,270.98 L680.95,270.17 L682.04,269.25 L683.08,268.36 L683.92,267.64 L685.05,266.68 L685.98,265.88 L687.03,264.99 L688.03,264.13 L689,263.31 L690.06,262.4 L690.96,261.64 L691.95,260.79 L693.01,259.88 L694.04,259 L695.03,258.16 L695.98,257.35 L697,256.48 L697.98,255.64 L699.01,254.76 L700.01,253.91 L700.97,253.09 L701.98,252.23 L703.03,251.33 L703.97,250.54 L705.01,249.64 L706.02,248.78 L706.99,247.95 L707.99,247.1 L709.02,246.22 L710.01,245.38 L711.02,244.52 L711.99,243.69 L712.98,242.84 L713.99,241.98 L715.01,241.11 L715.99,240.27 L716.98,239.43 L717.98,238.57 L718.99,237.71 L720,236.85 L721.01,235.99 L721.99,235.16 L723,234.29 L724.01,233.43 L724.99,232.6 L725.99,231.74 L726.99,230.89 L728.01,230.02 L728.99,229.18 L730,228.32 L730.99,227.47 L732,226.61 L733,225.76 L734.01,224.9 L735,224.05 L736,223.2 L737.01,222.34 L738,221.49 L739,220.64 L739.99,219.79 L741.01,218.93 L742,218.08 L743,217.23 L744,216.37 L745,215.52 L746,214.67 L747,213.82 L748,212.96 L749,212.11 L750,211.26 L751,210.4 L751.99,209.55 L753,208.69 L754,207.84 L755,206.99 L756,206.13 L757,205.28 L758,204.43 L759,203.58 L760,202.72 L761,201.87 L762,201.01 L763,200.16 L764,199.3 L765,198.45 L766,197.6 L767,196.75 L768,195.89 L769,195.04 L770,194.18 L771,193.33 L772,192.48 L773,191.63 L774,190.77 L775,189.92 L776,189.06 L777,188.21 L778,187.36 L779,186.51 L780,185.65 L781,184.8 L782,183.95 L783,183.09 L784,182.24 L785,181.39 L786,180.53 L787,179.68 L788,178.83 L789,177.97 L790,177.12 L791,176.26 L792,175.41" class="s-ink-muted w15 nofill"/>
+<path d="M552,364.8 L570.06,352.91 L580.63,346.43 L588.12,342.03 L593.94,338.72 L598.69,336.07 L602.71,333.88 L606.19,332 L609.25,330.37 L612,328.92 L614.48,327.62 L616.75,326.45 L618.84,325.38 L620.77,324.39 L622.57,323.48 L624.25,322.62 L625.83,321.83 L627.32,321.08 L628.73,320.38 L630.06,319.72 L631.33,319.09 L632.55,318.49 L633.7,317.92 L634.81,317.37 L635.88,316.85 L636.9,316.35 L637.88,315.87 L638.83,315.41 L639.74,314.97 L640.63,314.54 L642.31,313.73 L643.11,313.34 L643.89,312.97 L644.64,312.61 L646.09,311.92 L646.79,311.58 L648.12,310.95 L648.77,310.64 L650.01,310.05 L651.19,309.49 L651.77,309.22 L652.87,308.7 L653.94,308.19 L654.96,307.71 L655.94,307.25 L656.89,306.81 L657.81,306.38 L659.12,305.77 L659.96,305.37 L661.17,304.81 L661.95,304.45 L663.08,303.93 L664.15,303.43 L664.85,303.1 L665.86,302.64 L667.14,302.04 L668.07,301.62 L668.96,301.21 L670.11,300.68 L670.94,300.3 L672,299.81 L673.02,299.35 L674.01,298.9 L674.95,298.46 L676.09,297.94 L676.97,297.55 L678.02,297.07 L679.04,296.61 L680.01,296.16 L680.95,295.74 L682.04,295.24 L683.08,294.77 L683.92,294.4 L685.05,293.89 L685.98,293.47 L687.03,293 L688.03,292.54 L689,292.11 L690.06,291.63 L690.96,291.23 L691.95,290.79 L693.01,290.31 L694.04,289.85 L695.03,289.41 L695.98,288.98 L697,288.53 L697.98,288.09 L699.01,287.63 L700.01,287.18 L700.97,286.76 L701.98,286.31 L703.03,285.84 L703.97,285.43 L705.01,284.96 L706.02,284.52 L706.99,284.09 L707.99,283.64 L709.02,283.19 L710.01,282.75 L711.02,282.31 L711.99,281.88 L712.98,281.44 L713.99,281 L715.01,280.55 L715.99,280.12 L716.98,279.68 L717.98,279.24 L718.99,278.8 L720,278.35 L721.01,277.91 L721.99,277.48 L723,277.04 L724.01,276.59 L724.99,276.17 L725.99,275.73 L726.99,275.29 L728.01,274.84 L728.99,274.41 L730,273.98 L730.99,273.54 L732,273.1 L733,272.67 L734.01,272.23 L735,271.79 L736,271.36 L737.01,270.92 L738,270.48 L739,270.05 L739.99,269.62 L741.01,269.18 L742,268.74 L743,268.31 L744,267.87 L745,267.44 L746,267.01 L747,266.57 L748,266.14 L749,265.71 L750,265.27 L751,264.84 L751.99,264.41 L753,263.97 L754,263.54 L755,263.11 L756,262.67 L757,262.24 L758,261.81 L759,261.37 L760,260.94 L761,260.51 L762,260.08 L763,259.64 L764,259.21 L765,258.78 L766,258.35 L767,257.92 L768,257.48 L769,257.05 L770,256.62 L771,256.19 L772,255.76 L773,255.33 L774,254.9 L775,254.47 L776,254.03 L777,253.6 L778,253.17 L779,252.74 L780,252.31 L781,251.88 L782,251.45 L783,251.02 L784,250.59 L785,250.16 L786,249.73 L787,249.3 L788,248.87 L789,248.44 L790,248.01 L791,247.58 L792,247.15" class="s-ink w15 nofill"/>
+</g>
+</g>
+<text x="552" y="148" class="t-note" data-w="125">distance, log scale</text>
+<text x="672" y="460" text-anchor="middle" class="t-note" data-w="124">update <tspan class="i">t</tspan>, log scale</text>
+<g data-grid="skip">
+<circle cx="552" cy="364.8" r="4" class="f-ink s-surface w1"/>
+</g>
+<g data-grid="skip">
+<circle cx="570.06" cy="352.91" r="4" class="f-ink s-surface w1"/>
+</g>
+<g data-grid="skip">
+<circle cx="612" cy="328.92" r="4" class="f-ink s-surface w1"/>
+</g>
+<g data-grid="skip">
+<circle cx="672" cy="299.81" r="4" class="f-ink s-surface w1"/>
+</g>
+<g data-grid="skip">
+<circle cx="732" cy="273.1" r="4" class="f-ink s-surface w1"/>
+</g>
+<g data-grid="skip">
+<circle cx="792" cy="247.15" r="4" class="f-ink s-surface w1"/>
+</g>
+<g data-grid="skip">
+<text x="804" y="164.41" class="t-note f-ink-muted" data-w="117">gradient descent,</text>
+</g>
+<g data-grid="skip">
+<text x="804" y="184.41" class="t-note f-ink-muted" data-w="37">5,000</text>
+</g>
+<g data-grid="skip">
+<text x="804" y="236.15" class="t-note" data-w="65">AdaGrad,</text>
+</g>
+<g data-grid="skip">
+<text x="804" y="256.15" class="t-note" data-w="45">198.54</text>
+</g>
+<text x="40" y="504" class="t-note" data-w="770">Dots: section 3's table; triangle and square: update 1,000. A hundred times the updates buy ten times the distance.</text>
+</svg>

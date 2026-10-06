@@ -11,9 +11,9 @@
 > - Implement Optimizer_Adagrad with a per-layer weight_cache and bias_cache.
 > - Predict when AdaGrad helps and when its shrinking effective learning rates dominate.
 
-![The AdaGrad update rule above a log-log chart of the effective learning rate over 10,000 iterations for two parameters. Parameter A, with gradients of size 2.0, falls from 0.5 to 0.005. Parameter B, with gradients of size 0.2, falls from 5 to 0.05. A side panel gives the caches at iteration 1,000 as 4,000 and 40.](diagrams/01-per-parameter-rates.svg)
+![Two charts of the weights w1 and w2 of the loss w1 squared over 100 plus w2 squared against the step, from the start (1, 1), where the gradients are 0.02 and 2.0, for 100 steps with a learning rate of 0.1. Under gradient descent, left, w2 is at 0.8 after one step and at 2.0 times 10 to the minus 10 after 100, while w1 ends at 0.8186. Under AdaGrad, right, the two weights take one path, 0.5537 after 10 steps and 0.027387 after 100, with caches of 0.004011 and 40.11.](diagrams/01-one-rate-two-weights.svg)
 
-*Two parameters, two caches, two effective learning rates. The lines are parallel because both rates fall as $1/\sqrt{t}$, and B's stays ten times higher because its gradients are ten times smaller. The figure's "Part 26" is post 26.*
+*The same loss, the same start and the same $\alpha$. One learning rate moves each weight in proportion to its gradient; AdaGrad divides each step by the root of that weight's own cache, and the hundredfold gap between the gradients cancels.*
 
 ---
 
@@ -36,10 +36,6 @@ gradient descent, alpha = 10.0: first steps 0.2 and 20; after   5 steps w1 = 0.3
 With $\alpha = 0.1$, $w_2$ has arrived after 100 steps and $w_1$ has covered 18 percent of its way. $\alpha = 0.5$ is the best possible rate for $w_2$, which lands on its minimum in one step, and $w_1$ is still at 0.366 after 100. $\alpha = 10$ gives $w_1$ a sensible first step of 0.2 and throws $w_2$ from 1 to $-19$; five steps later it is at $-2.5$ million.
 
 The reason is in the update. One step multiplies $w_2$ by $1 - 2\alpha$ and $w_1$ by $1 - \alpha/50$. The first factor is below 1 in size only for $\alpha < 1$, and for every such $\alpha$ the second factor is above 0.98: $w_1$ loses at most 2 percent of its value per step. A rate sized for the large gradient leaves the small-gradient weight crawling, and a rate sized for the small gradient makes the other one diverge.
-
-![Two cards. The left gives the loss W1 squared over 100 plus W2 squared and its two gradients at the point 1, 1: 0.02 and 2.0, a hundred times apart. The right works two learning rates: at 0.1, W1 moves 0.002 and W2 moves 0.2; at 10, W1 moves 0.2 and W2 moves 20 and diverges. A band states that AdaGrad makes the two steps equal.](diagrams/02-one-rate-two-params.svg)
-
-*The first steps of the two rates in the output above. The figure writes the weights as $W_1$ and $W_2$.*
 
 A network has the same problem with more parameters. In the first backward pass of the spiral classifier of this post, the 387 gradients range in size from $3.4 \times 10^{-8}$ to $1.4 \times 10^{-3}$ (section 7), a factor of about 40,000.
 
@@ -71,7 +67,7 @@ AdaGrad, alpha = 0.1: after  10 steps w1 = 0.553732, w2 = 0.553731, caches 0.002
 AdaGrad, alpha = 0.1: after 100 steps w1 = 0.027387, w2 = 0.027387, caches 0.004011 and 40.11
 ```
 
-The two weights travel together, to within the effect of $\epsilon$. The caches differ by a factor of 10,000, their roots by 100, and that cancels the factor of 100 between the gradients. What remains of each gradient is its sign and its size relative to its own history.
+The two weights travel together, to within the effect of $\epsilon$. The caches differ by a factor of 10,000, their roots by 100, and that cancels the factor of 100 between the gradients. What remains of each gradient is its sign and its size relative to its own history. The figure at the top of the post follows both runs with $\alpha = 0.1$ step by step: gradient descent on the left, AdaGrad on the right.
 
 ---
 
@@ -91,7 +87,11 @@ A single parameter receives the gradient $g = 0.5$ at every update, with $\alpha
 
 The cache is $G_t = 0.25\,t$, so the effective learning rate is $2/\sqrt{t}$ and the step at update $t$, the rate times the gradient, is $1/\sqrt{t}$. The first step is 1, the size of $\alpha$, and the step at update 10,000 is 0.01. The last column is the sum of those steps, which approaches $2\sqrt{t}$: a hundred times the updates buy ten times the distance. Gradient descent with the same $\alpha$ and the same gradient moves 0.5 at every step, 5,000 in all.
 
-This resembles the schedule of post 23, with two differences. It is **per parameter**: the rate of each parameter falls according to its own gradients. The two parameters of the hero figure, with gradients of size 2.0 and 0.2, hold caches of 4,000 and 40 after 1,000 updates and effective rates of 0.0158 and 0.158. And it is **implicit**: no `decay` argument sets it, the bookkeeping of the optimiser produces it.
+This resembles the schedule of post 23, with two differences. It is **per parameter**: the rate of each parameter falls according to its own gradients. Two parameters with constant gradients of size 2.0 and 0.2 hold caches of 4,000 and 40 after 1,000 updates and effective rates of 0.0158 and 0.158. And it is **implicit**: no `decay` argument sets it, the bookkeeping of the optimiser produces it. The figure below draws the rates of those two parameters beside the one of the table, and the distance the table's parameter moves.
+
+![Two log-log charts over 1 to 10,000 updates with a learning rate of 1. Left, the effective learning rate for three constant gradients, three parallel lines: for 0.2 it falls from 5 to 0.05, for 0.5 from 2 to 0.02, through the table's values, and for 2.0 from 0.5 to 0.005; at update 1,000 the caches are 40 and 4,000 and the rates 0.158 and 0.0158. Right, for the gradient 0.5, the distance moved: AdaGrad through the table's values to 198.54, gradient descent 0.5 per step to 5,000.](diagrams/02-constant-gradient.svg)
+
+*Under a constant gradient the cache grows as $t$, so every effective rate falls as $1/\sqrt{t}$ and the lines are parallel. A gradient ten times smaller keeps a rate ten times larger.*
 
 ---
 
@@ -247,7 +247,11 @@ epoch   100: 204 parameters of dead neurons, rate median 7.34, 197 above 1; the 
 epoch 10000: 204 parameters of dead neurons, rate median 3.71, 175 above 1; the other 183, rate median 0.41, 35 above 1
 ```
 
-Among the 183 parameters that still learn, the median rate falls from 2.36 to 0.41, a factor of 5.8, of which the schedule is 2.0 and the cache 2.9, and 148 of them end below 1. The loss is still falling at the end, by 0.0085 over the last 1,000 epochs, against 0.1149 between epochs 1,000 and 2,000. The run does not show how much of that slowdown is the shrinking rates and how much the loss surface.
+Among the 183 parameters that still learn, the median rate falls from 2.36 to 0.41, a factor of 5.8, of which the schedule is 2.0 and the cache 2.9, and 148 of them end below 1. The loss is still falling at the end, by 0.0085 over the last 1,000 epochs, against 0.1149 between epochs 1,000 and 2,000. The run does not show how much of that slowdown is the shrinking rates and how much the loss surface. The figure below draws the run at every epoch, the loss above and the rates below, with dots at the rows of the table.
+
+![Two charts of the documented run on seed 0 on one logarithmic epoch axis from 1 to 10,000. Top, the loss on a log scale: 6.2613 at epoch 1 and 9.9083 at epoch 2, back to 1.1331 at epoch 10, when 32 of the 64 hidden neurons are dead, then below ln 3 and down to 0.3847. Bottom, the effective rates on a log scale: the median of the 387 falls from 18.42 at epoch 1 to 1.20, the smallest from 1.171 to 0.045, and at epoch 10,000 the 204 parameters of dead neurons have a median of 3.71 and the other 183 one of 0.41.](diagrams/03-spiral-run.svg)
+
+*Epoch 0, with the loss $\ln 3$ and a median rate of 10,685, lies left of the log axis. By epoch 10, 32 of the 64 hidden neurons are dead; afterwards the rates fall slowly and never rise.*
 
 One seed is not a result. `seeds_adagrad.py`, `seeds_momentum.py` and `seeds_sgd.py` repeat the run for seeds 0 to 4 with the optimiser of this post and with the documented settings of posts 24 and 22. Each cell holds the final loss, the accuracy, and the number of dead neurons of 64:
 
@@ -263,7 +267,11 @@ Seed 0 reproduces the figures of posts 22 and 24: 0.87 and 64.7 percent, 0.12 an
 
 **Against plain gradient descent, AdaGrad is ahead on accuracy in all five seeds**, by 1.0 to 28.0 percentage points, and on loss in four of the five (on seed 1 its loss is 0.5319 against 0.5091).
 
-**Against momentum there is no winner.** Momentum is ahead on seeds 0 and 4, with 95.7 and 98.0 percent against 84.0 and 79.7. AdaGrad is ahead on seeds 1, 2 and 3, with 75.7, 81.7 and 92.7 percent against 68.7, 73.0 and 81.7, and the losses order the same way. Seed 0 alone would say that AdaGrad loses to momentum by 11.7 points; five seeds do not support that. AdaGrad's accuracies lie between 75.7 and 92.7 percent and momentum's between 68.7 and 98.0.
+**Against momentum there is no winner.** Momentum is ahead on seeds 0 and 4, with 95.7 and 98.0 percent against 84.0 and 79.7. AdaGrad is ahead on seeds 1, 2 and 3, with 75.7, 81.7 and 92.7 percent against 68.7, 73.0 and 81.7, and the losses order the same way. Seed 0 alone would say that AdaGrad loses to momentum by 11.7 points; five seeds do not support that. AdaGrad's accuracies lie between 75.7 and 92.7 percent and momentum's between 68.7 and 98.0. The figure below puts the three accuracies of every seed on one axis.
+
+![A dot plot of the final accuracy on the spiral after 10,001 epochs, one row per seed, on an axis from 50 to 100 percent, with a dot each for gradient descent, momentum and AdaGrad. AdaGrad's diamonds, labelled 84.0, 75.7, 81.7, 92.7 and 79.7 for seeds 0 to 4, lie right of gradient descent on every row, right of momentum on seeds 1, 2 and 3, and left of it on seeds 0 and 4.](diagrams/04-five-seeds.svg)
+
+*The values of the table, accuracy only. Which of momentum and AdaGrad ends higher changes with the seed.*
 
 **Momentum and AdaGrad both pay in dead neurons.** In every seed each of them ends with more dead neurons than plain gradient descent: 13 to 48 for momentum and 22 to 42 for AdaGrad, against 2 to 11. For AdaGrad the first table of this section shows when it happens on seed 0: in the first ten updates, whose steps have the size of the learning rate.
 
