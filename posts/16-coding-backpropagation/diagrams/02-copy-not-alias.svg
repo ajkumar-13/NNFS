@@ -1,15 +1,216 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 470" role="img" aria-labelledby="t d">
-  <title id="t">Why ReLU’s backward copies dvalues instead of aliasing it</title>
-  <desc id="d">Two hand-drawn panels tracing what the same masking operation does to memory. The left panel, in alert red and labelled without copy, assigns self.dinputs to dvalues directly: a single array holding five, six, seven has two names pointing at it. After writing a zero at the masked position, the one array reads five, nought, seven and both names see the zero, so the caller’s dvalues has been changed as well. The right panel, in success green and labelled with copy, assigns self.dinputs to a copy: two separate arrays each hold five, six, seven. After the same masking, dvalues is unchanged at five, six, seven while self.dinputs reads five, nought, seven. A band notes that both versions compute the right answer for this layer, and only one of them leaves the layer behind it able to compute anything.</desc>
-
-  <style><![CDATA[
-    :root{--nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;--nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;--nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;--nn-neutral-2:#CFCFC8;--nn-neutral-3:#8E8E88;--nn-on-fill:#FFFDF9;--nn-on-accent:#1A1A1A;}
-    @media (prefers-color-scheme:dark){:root{--nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;--nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;--nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;--nn-neutral-2:#2C3038;--nn-neutral-3:#6E6E68;--nn-on-fill:#14161A;--nn-on-accent:#1A1A1A;}}
-    .bg{fill:var(--nn-bg);}
-    text{dominant-baseline:auto;}
-  ]]></style>
-
-  <rect class="bg" width="960" height="470"/>
-<text xml:space="preserve" x="40" y="38.24" text-anchor="start" font-family='"Excalifont","Virgil","Segoe Print","Comic Sans MS",ui-rounded,cursive' font-size="22" fill="var(--nn-ink)">One array, or two</text><text xml:space="preserve" x="40" y="61.96" text-anchor="start" font-family='"Excalifont","Virgil","Segoe Print","Comic Sans MS",ui-rounded,cursive' font-size="13" fill="var(--nn-ink-muted)">ReLU’s backward writes zeros into a gradient. Whether that damages the caller depends on one method call.</text><path d="M65.2 86.74C204.35 87.1 342.13 87.18 435.6 86.06C451.53 88.47 458.73 93.74 457.43 108.95C461.98 187.97 458.22 268.26 461.57 361.75C462.59 377.66 450.85 388.43 434.76 384.58C300.96 385.12 165.25 387.02 64.66 386.7C49.92 387.41 41.75 376.02 41.35 360.34C40.55 277.3 41.06 187.96 40.39 110.92C39.17 93.34 48.54 86.47 62.36 86.12C64 86 64 86 64 86" fill="var(--nn-surface)" stroke="none"/><path d="M63.55 85.32C179.71 88.48 296.23 87.06 436.6 86.64M64.61 86.41C141.38 86.5 219.84 85.65 435.8 85.67M436 86C450.3 86.19 461.28 95.58 460.09 108.31M437.5 87.94C453.59 85.4 458.5 96.07 458.79 112.06M460.11 109.29C461.13 174.15 461.65 239.83 461.28 360.52M460.48 109.71C460.31 188.71 460.65 266.22 460.58 361.73M460 362C461.04 376.72 453.32 387.44 435.18 385.25M459.16 361.88C459.78 378 451.65 386.92 436.88 383.73M435.51 386.65C290.27 385.01 142 386.16 62.78 386.66M435.64 386.41C308.29 387.74 180.11 387.32 64.24 386.29M64 386C46.81 384.56 41.78 376.7 42 361.68M65.94 386.38C47.78 385.43 40.56 377.47 41.17 364.02M38.69 362.38C37.58 299.22 36.72 237.77 41.3 109.93M39.65 362.66C40.75 299.33 40.84 236.9 40.64 109.3M40 110C38.85 94.63 49.19 87.75 63 84.57M38.19 110.77C40.93 95.97 50.07 85.09 64.38 86.88M64 86C64 86 64 86 64 86M64 86C64 86 64 86 64 86" fill="none" stroke="var(--nn-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M45.89 95.87C45.85 193.64 44.78 290.25 44.31 377.9M44.64 94.55C44.6 177.77 44.33 261.43 45.32 377.01" fill="none" stroke="var(--nn-alert)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><text xml:space="preserve" x="60" y="111.8" text-anchor="start" font-family='"Excalifont","Virgil","Segoe Print","Comic Sans MS",ui-rounded,cursive' font-size="15" fill="var(--nn-alert)">Without .copy()</text><text xml:space="preserve" x="60" y="132.12" text-anchor="start" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="11" fill="var(--nn-ink)">self.dinputs = dvalues</text><path d="M56.34 149.81C154.32 149.84 252.61 149.9 443.84 150.12M55.97 150.02C192.24 150.65 328.51 150.59 443.95 149.94" fill="none" stroke="var(--nn-border)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><text xml:space="preserve" x="60" y="169.2" text-anchor="start" font-family='"Excalifont","Virgil","Segoe Print","Comic Sans MS",ui-rounded,cursive' font-size="10" fill="var(--nn-ink-subtle)">after the assignment</text><text xml:space="preserve" x="60" y="277.2" text-anchor="start" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="10" fill="var(--nn-ink-subtle)">after dinputs[inputs &lt;= 0] = 0</text><text xml:space="preserve" x="60" y="366.12" text-anchor="start" font-family='"Excalifont","Virgil","Segoe Print","Comic Sans MS",ui-rounded,cursive' font-size="11" fill="var(--nn-alert)">The caller’s dvalues is now [5, 0, 7] as well.</text><path d="M199.13 185.78L331.24 186.04L332.52 218.96L200.92 218.78" fill="var(--nn-surface)" stroke="none"/><path d="M200.63 184.92C251.1 188.07 304.63 187.1 333.17 186.29M200.73 185.52C238.51 186.18 277.52 186.9 331.8 185.85M333.47 185.17C331.45 196.76 333.99 205.45 331.77 216.01M332.09 186.76C331.28 194.91 331.61 204.51 331.51 217.84M333.3 216C292.23 219.36 256.7 217.94 200.35 219.95M331.63 217.92C294.37 220.08 257.58 219.63 199.92 218.86M200.29 218.14C200.98 208.86 202.01 199.22 198.94 187.43M199.97 218.43C200.49 209.1 200.44 200.66 199.21 186.34" fill="none" stroke="var(--nn-alert)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M243.79 186.58C244.2 193.12 243.53 201.34 243.61 218.36M244.28 185.96C244.14 198.42 243.64 210.41 244.25 218.12" fill="none" stroke="var(--nn-border)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><path d="M288.59 186.28C287.64 194.6 288.32 202.67 288.06 217.43M287.75 186.07C287.98 194.37 288.11 202.92 287.95 218.29" fill="none" stroke="var(--nn-border)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><text xml:space="preserve" x="222" y="206.04" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="12" fill="var(--nn-ink)">5</text><text xml:space="preserve" x="266" y="206.04" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="12" fill="var(--nn-ink)">6</text><text xml:space="preserve" x="310" y="206.04" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="12" fill="var(--nn-ink)">7</text><text xml:space="preserve" x="62" y="194.12" text-anchor="start" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="11" fill="var(--nn-ink-muted)">dvalues</text><text xml:space="preserve" x="62" y="216.12" text-anchor="start" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="11" fill="var(--nn-ink-muted)">self.dinputs</text><path d="M126.79 189.58C141.85 191.75 155.95 194.16 180.54 197.81M126.19 190.15C146.42 192.9 166.54 196.26 179.97 198.1" fill="none" stroke="var(--nn-alert)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M142.26 212.78C153.88 209.5 166.65 206.99 179.55 204.17M142.27 212.29C152.4 210.08 162.16 207.79 180.38 204.32" fill="none" stroke="var(--nn-alert)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><text xml:space="preserve" x="266" y="235.2" text-anchor="middle" font-family='"Excalifont","Virgil","Segoe Print","Comic Sans MS",ui-rounded,cursive' font-size="10" fill="var(--nn-alert)">one array, two names</text><path d="M199.42 291.75L332.71 291.57L331.19 323.88L200.07 324.31" fill="var(--nn-surface)" stroke="none"/><path d="M201.99 291.96C250.55 290.46 300.6 293.87 333.93 290.24M199.12 291.44C232.12 292.7 262.74 293.81 332.98 291.89M332.24 293.77C333.55 303.58 331.08 314.35 331 323.37M331.49 291.8C331.6 304.68 332.73 316.17 331.15 324.44M331.79 323.44C292 322.47 250.94 323.16 198.25 325.42M331.68 324.56C298.87 325.23 264.76 323.79 199.89 324.88M199.19 323.75C198.76 310.8 201.24 301.84 200.07 290.94M200.97 323.64C199.82 310.45 199.66 299.45 200.68 291.65" fill="none" stroke="var(--nn-alert)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M244.2 291.69C244.39 299.05 244.21 305.92 243.84 323.74M243.8 291.94C244.06 302.43 243.94 312.67 244 324.13" fill="none" stroke="var(--nn-border)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><path d="M287.8 292.59C287.83 300.54 287.8 308.45 288.29 324.02M287.87 292.05C287.68 298.37 288.2 305.19 287.7 324.3" fill="none" stroke="var(--nn-border)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><text xml:space="preserve" x="222" y="312.04" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="12" fill="var(--nn-alert)">5</text><text xml:space="preserve" x="266" y="312.04" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="12" fill="var(--nn-alert)">0</text><text xml:space="preserve" x="310" y="312.04" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="12" fill="var(--nn-alert)">7</text><text xml:space="preserve" x="62" y="310.12" text-anchor="start" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="11" fill="var(--nn-ink-muted)">both names</text><text xml:space="preserve" x="62" y="328.12" text-anchor="start" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="11" fill="var(--nn-alert)">see the zero</text><path d="M523.67 84.65C603.13 85.32 684.5 84.81 896.63 85.36C911.14 87.97 917.41 94.67 917.88 111.67C920.34 193.44 919.04 278.05 919.68 361.65C917.95 378.5 911.82 387.99 896.03 387.18C780.33 385.48 666.97 386.22 524.54 386.72C509.17 385.58 499.5 379.7 498.42 363.64C500.28 302.74 501.51 240.89 499.21 108.57C499.06 94.8 510.01 84.51 523.16 85.02C524 86 524 86 524 86" fill="var(--nn-surface)" stroke="none"/><path d="M523.6 85.99C624.35 83.99 727.54 84.46 894.85 86.91M524.53 86.18C642.86 86.99 762.47 87.73 895.45 86.17M896 86C911.15 87.53 919.67 93.7 920.5 110.07M896.68 85.42C911.99 87.73 918.49 94.38 918.34 111.12M921.23 110.88C922 184.24 920.07 261.09 921.14 362.89M919.66 109.64C921.17 197.28 922.36 283.1 919.86 361.6M920 362C918.09 378.49 912.63 387.98 895.45 387.71M920.47 361.61C919.02 377.4 912.22 384.99 895.98 384.89M895.88 385.58C781.24 385.89 667.21 386.79 522.86 386.27M896.29 385.59C752.01 383.05 607.79 383.52 523.58 386.23M524 386C507.38 384.58 499.86 378.94 499.99 360.49M524.1 387.13C508.39 385.18 501.54 376.42 498.86 361.58M501.05 360.39C499.06 270.79 497.2 176.25 500.1 111.35M500.57 361.48C501.9 290.99 501.22 218.65 499.68 109.96M500 110C501.29 92.83 508.22 86.53 524.82 85.56M500.05 109.82C497.97 95.83 509.59 86.46 522.52 87.76M524 86C524 86 524 86 524 86M524 86C524 86 524 86 524 86" fill="none" stroke="var(--nn-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M504.09 94.54C505.27 182.31 505.03 269.4 504.84 376.26M504.58 95.3C505.3 153.21 505.55 211.42 505.06 377.38" fill="none" stroke="var(--nn-success)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><text xml:space="preserve" x="520" y="111.8" text-anchor="start" font-family='"Excalifont","Virgil","Segoe Print","Comic Sans MS",ui-rounded,cursive' font-size="15" fill="var(--nn-success)">With .copy()</text><text xml:space="preserve" x="520" y="132.12" text-anchor="start" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="11" fill="var(--nn-ink)">self.dinputs = dvalues.copy()</text><path d="M515.65 150C599.71 150 682.57 149.9 904.04 150.19M515.95 149.95C618.06 149.66 720.4 149.71 903.85 150.08" fill="none" stroke="var(--nn-border)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><text xml:space="preserve" x="520" y="169.2" text-anchor="start" font-family='"Excalifont","Virgil","Segoe Print","Comic Sans MS",ui-rounded,cursive' font-size="10" fill="var(--nn-ink-subtle)">after the assignment</text><text xml:space="preserve" x="520" y="277.2" text-anchor="start" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="10" fill="var(--nn-ink-subtle)">after dinputs[inputs &lt;= 0] = 0</text><text xml:space="preserve" x="520" y="366.12" text-anchor="start" font-family='"Excalifont","Virgil","Segoe Print","Comic Sans MS",ui-rounded,cursive' font-size="11" fill="var(--nn-success)">The caller’s dvalues is untouched. One extra allocation.</text><path d="M560.56 194.26L692.48 193.98L691.43 226.86L559.92 226.18" fill="var(--nn-surface)" stroke="none"/><path d="M560.69 194.01C608.45 195.81 654.67 193.95 690.31 194.72M560.6 193.14C586.57 195.51 615.1 194.82 691.23 194.67M690.82 195.56C693.18 204.6 691.07 214.39 690.96 226.62M692.45 194.58C691.92 206.85 692.59 217.79 692.07 225.13M693.97 225.72C655.95 224.55 622.04 226.49 560.65 227.38M691.76 225.14C655.28 226.75 618 227.68 560.58 226.73M559.76 226.63C559.13 216.43 559.38 209.24 559.54 193.68M560.99 226.5C560.44 218.9 559.41 209.91 560.27 193.02" fill="none" stroke="var(--nn-ink-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M603.81 193.7C603.75 206.02 603.62 219.13 603.95 226.49M604.24 193.85C604.1 203.16 603.94 212.51 604.08 225.77" fill="none" stroke="var(--nn-border)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><path d="M647.41 193.4C648.39 201.1 648.42 208.86 648.41 225.56M647.71 193.96C647.73 206.11 647.6 218.43 647.78 225.93" fill="none" stroke="var(--nn-border)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><text xml:space="preserve" x="582" y="214.04" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="12" fill="var(--nn-ink)">5</text><text xml:space="preserve" x="626" y="214.04" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="12" fill="var(--nn-ink)">6</text><text xml:space="preserve" x="670" y="214.04" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="12" fill="var(--nn-ink)">7</text><text xml:space="preserve" x="626" y="185.2" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="10" fill="var(--nn-ink-muted)">dvalues</text><path d="M760.56 194.61L892.51 194.4L892.04 226.53L760.1 226.25" fill="var(--nn-surface)" stroke="none"/><path d="M759.38 195.03C785.63 194.65 815.52 194.47 892.98 193.05M760.12 193.64C787.66 193.88 814.93 194.52 892.35 194.52M892.95 193.22C890.89 203.67 890.7 214.77 891.19 225.67M892.62 193.42C891.13 206.37 891.22 217.65 891.48 226.06M891.92 224.09C861.33 227.26 828.69 228 758.95 224.87M891.8 226.65C860.18 227.74 827.37 226.59 760.38 225.28M760.51 226.02C760.98 216.46 759.25 202.51 758.81 195.01M759.99 225.99C760.62 216.34 759.7 206.49 760.85 193.49" fill="none" stroke="var(--nn-success)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M803.41 194.01C804 201.21 803.74 210.01 803.55 225.99M804.1 194C803.9 203.39 803.99 212.52 803.81 225.72" fill="none" stroke="var(--nn-border)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><path d="M848.22 193.71C847.44 202.7 848.53 211.34 848.01 226.26M848.17 194.1C848.13 206.33 847.65 217.83 848.11 225.88" fill="none" stroke="var(--nn-border)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><text xml:space="preserve" x="782" y="214.04" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="12" fill="var(--nn-ink)">5</text><text xml:space="preserve" x="826" y="214.04" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="12" fill="var(--nn-ink)">6</text><text xml:space="preserve" x="870" y="214.04" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="12" fill="var(--nn-ink)">7</text><text xml:space="preserve" x="826" y="185.2" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="10" fill="var(--nn-success)">self.dinputs</text><text xml:space="preserve" x="726" y="241.2" text-anchor="middle" font-family='"Excalifont","Virgil","Segoe Print","Comic Sans MS",ui-rounded,cursive' font-size="10" fill="var(--nn-success)">two arrays, two names</text><path d="M559.13 291.86L691.39 292.61L692.17 323.02L560.03 323.18" fill="var(--nn-surface)" stroke="none"/><path d="M560.73 293.06C599.78 288.87 636.96 290.06 693.17 290.29M559.86 292.49C599.09 291.29 636.51 292.03 692.48 292.91M690.23 293.11C693.06 301.18 691.05 313.79 693.17 324.29M691.1 291.81C692.65 304.45 691.5 316.46 691.94 323.4M693.01 324.23C650.11 323.85 607.85 323.21 558.15 322.85M691.84 324.94C657.39 324.05 624.99 323.09 560.72 324.21M560.8 324.46C561.52 314.28 558.67 307.21 558.54 293.38M560 323.42C560.93 316.57 559.57 309.72 560.64 291.17" fill="none" stroke="var(--nn-ink-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M603.82 292.02C603.68 302.29 603.45 313.02 603.61 323.76M604.02 292.25C603.93 303.95 604.29 315.84 603.85 323.84" fill="none" stroke="var(--nn-border)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><path d="M647.42 291.72C648.32 303.78 648.24 315.54 648.07 324.03M648.09 291.76C648.15 300.5 647.95 308.95 648.15 324" fill="none" stroke="var(--nn-border)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><text xml:space="preserve" x="582" y="312.04" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="12" fill="var(--nn-ink)">5</text><text xml:space="preserve" x="626" y="312.04" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="12" fill="var(--nn-ink)">6</text><text xml:space="preserve" x="670" y="312.04" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="12" fill="var(--nn-ink)">7</text><path d="M760.56 291.3L892.56 291.26L891.26 323.89L760.47 324.39" fill="var(--nn-surface)" stroke="none"/><path d="M760.75 291.08C800.8 293.21 838.83 292.43 890.32 291.72M759.16 292.63C787.86 290.62 814.6 291.93 892.57 292.2M893.2 290.53C890.33 303.81 893.96 313.55 891.66 325.76M892.95 291.1C892.26 303.42 891.18 313.37 892.28 323.91M891.82 322.84C841.69 323.79 789.21 322.12 759.55 325.83M891.87 323.65C843.59 323.73 795.3 324.41 759.98 324.4M758.02 322.8C761.39 312.94 759.71 303.84 761.34 291.66M760 324.99C759.66 317.63 760.97 310.44 759.99 292.43" fill="none" stroke="var(--nn-success)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M803.83 291.42C803.49 302.41 804.18 314.17 803.95 324.19M803.81 292.29C803.89 301.23 803.86 310.53 803.88 324.22" fill="none" stroke="var(--nn-border)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><path d="M847.43 292.32C848.13 303.89 847.77 315.49 848.41 324.46M847.88 291.8C848.33 304.18 848.33 315.84 848.18 323.79" fill="none" stroke="var(--nn-border)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><text xml:space="preserve" x="782" y="312.04" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="12" fill="var(--nn-success)">5</text><text xml:space="preserve" x="826" y="312.04" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="12" fill="var(--nn-success)">0</text><text xml:space="preserve" x="870" y="312.04" text-anchor="middle" font-family='"JetBrains Mono",ui-monospace,Menlo,monospace' font-size="12" fill="var(--nn-success)">7</text><text xml:space="preserve" x="626" y="339.2" text-anchor="middle" font-family='"Excalifont","Virgil","Segoe Print","Comic Sans MS",ui-rounded,cursive' font-size="10" fill="var(--nn-ink-muted)">unchanged</text><text xml:space="preserve" x="826" y="339.2" text-anchor="middle" font-family='"Excalifont","Virgil","Segoe Print","Comic Sans MS",ui-rounded,cursive' font-size="10" fill="var(--nn-success)">masked</text><path d="M47.68 405.25C343.98 404.06 641.23 405.2 912.3 405.65C915.05 404.78 920.8 408.03 921.77 416.26C922.42 422.02 918.82 436.32 918.92 446.67C920.44 454.49 915.28 457.38 909.58 454.01C627.32 454.25 341.37 454.93 47.96 455.64C45.04 458.26 39.5 454.4 40.77 447.67C39.11 441.64 40.49 436.05 42.44 416.32C41.03 406.77 44.29 404.12 46.66 406.96C48.33 406 48.33 406 48.33 406" fill="var(--nn-neutral-1)" stroke="none"/><path d="M47.57 405.64C384.6 402.76 721.82 402.99 911.07 405.58M48.69 405.79C297.66 404.59 547.63 404.36 911.95 406.24M911.67 406C916.2 404.49 920.42 408.86 921.07 412.67M911.67 407.89C915.37 406.84 919.67 407.53 919.94 416.22M921.46 413.36C921.1 423.94 918.32 429.86 918.94 446.53M919.6 413.94C920.26 425.22 921.09 438.16 920.91 447.05M920 447.67C921.76 455.09 915.43 455.6 911.49 455.89M920.64 446.31C922.23 451.27 916.35 457.8 911.42 458.18M912.1 456.01C738.77 458.68 565.68 458.04 48.67 455.65M911.58 456.04C660.81 455.3 410.43 454.86 48.09 456.15M48.33 456C44.57 454.3 38.84 455.01 40.79 446.31M49.91 456.22C44.17 457.9 38.78 451.22 38.24 448.15M40.67 448.26C38.82 440.59 40.62 433 38.25 413.93M39.44 447.63C39.85 436.65 40.19 425.1 39.55 413.56M40 414.33C39.02 408.24 41.37 406.79 46.46 407.35M41.87 415.06C40.39 410.25 44.22 405.97 48.74 406.91M48.33 406C48.33 406 48.33 406 48.33 406M48.33 406C48.33 406 48.33 406 48.33 406" fill="none" stroke="var(--nn-border)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><text xml:space="preserve" x="480" y="431.04" text-anchor="middle" font-family='"Excalifont","Virgil","Segoe Print","Comic Sans MS",ui-rounded,cursive' font-size="12" fill="var(--nn-ink)">Both versions compute the right answer for this layer. Only one of them leaves the layer behind it able to compute anything.</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-02-copy-not-alias-title" aria-describedby="nn-02-copy-not-alias-desc">
+<title id="nn-02-copy-not-alias-title">Without .copy(), the mask writes into the caller's array</title>
+<desc id="nn-02-copy-not-alias-desc">The ReLU backward of section 4 on inputs 1, minus 2 and 3, whose gate at minus 2 is closed, and the array 5, 6, 7 the caller hands in as dvalues. Two panels run the two lines of backward. Left, without .copy(): self.dinputs = dvalues makes dvalues and self.dinputs two names for one array, and after the masking line self.dinputs[self.inputs &lt;= 0] = 0 that one array reads 5, 0, 7, so the caller's 6 has become 0, outlined in red. Right, with .copy(): two arrays, dvalues still 5, 6, 7, unchanged, and self.dinputs 5, 0, 7, masked.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-purple-ink { fill: var(--nn-purple-ink); }
+  .f-purple-soft { fill: var(--nn-purple-soft); }
+  .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .s-red { stroke: var(--nn-red); }
+  .t-code16 { font-size: 16px; font-weight: 400; font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+</style>
+<defs>
+<marker id="nn-02-copy-not-alias-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="663">Without .copy(), the mask writes into the caller's array</text>
+<text x="40" y="76" class="t-subtitle" data-w="566">The three-element example of section 4, after both lines of backward have run.</text>
+<rect x="216" y="112" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="256" y="112" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="296" y="112" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="216" y="112" width="120" height="40" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="236" y="138" text-anchor="middle" class="t-cell16" data-w="10">1</text>
+<text x="276" y="138" text-anchor="middle" class="t-cell16" data-w="21">−2</text>
+<text x="316" y="138" text-anchor="middle" class="t-cell16" data-w="10">3</text>
+</g>
+<text x="200" y="136" text-anchor="end" class="t-code" data-w="94"><tspan class="mono f-blue-ink">self.inputs</tspan></text>
+<text x="352" y="136" class="t-note" data-w="118">gate closed at −2</text>
+<rect x="672" y="112" width="40" height="40" class="cell f-purple-soft"/>
+<rect x="712" y="112" width="40" height="40" class="cell f-purple-soft"/>
+<rect x="752" y="112" width="40" height="40" class="cell f-purple-soft"/>
+<rect x="672" y="112" width="120" height="40" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="692" y="138" text-anchor="middle" class="t-cell16" data-w="10">5</text>
+<text x="732" y="138" text-anchor="middle" class="t-cell16" data-w="10">6</text>
+<text x="772" y="138" text-anchor="middle" class="t-cell16" data-w="10">7</text>
+</g>
+<text x="656" y="136" text-anchor="end" class="t-code" data-w="60"><tspan class="mono f-purple-ink">dvalues</tspan></text>
+<text x="808" y="136" class="t-note" data-w="97">from the caller</text>
+<text x="40" y="216" class="t-head" data-w="71">Without </text>
+<text x="104" y="216" class="t-code16" data-w="69">.copy()</text>
+<rect x="40" y="232" width="424" height="76" rx="8" class="card"/>
+<text x="56" y="264" class="t-code" data-w="188">self.dinputs = dvalues</text>
+<text x="56" y="288" class="t-code" data-w="291">self.dinputs[self.inputs &lt;= 0] = 0</text>
+<text x="496" y="216" class="t-head" data-w="44">With </text>
+<text x="536" y="216" class="t-code16" data-w="69">.copy()</text>
+<rect x="496" y="232" width="424" height="76" rx="8" class="card"/>
+<text x="512" y="264" class="t-code" data-w="248">self.dinputs = dvalues.copy()</text>
+<text x="512" y="288" class="t-code" data-w="291">self.dinputs[self.inputs &lt;= 0] = 0</text>
+<rect x="216" y="368" width="40" height="40" class="cell f-purple-soft"/>
+<rect x="256" y="368" width="40" height="40" class="cell"/>
+<rect x="296" y="368" width="40" height="40" class="cell f-purple-soft"/>
+<rect x="216" y="368" width="120" height="40" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="236" y="394" text-anchor="middle" class="t-cell16" data-w="10">5</text>
+<text x="276" y="394" text-anchor="middle" class="t-cell16" data-w="10">0</text>
+<text x="316" y="394" text-anchor="middle" class="t-cell16" data-w="10">7</text>
+</g>
+<text x="180" y="372" text-anchor="end" class="t-code" data-w="60"><tspan class="mono f-purple-ink">dvalues</tspan></text>
+<text x="180" y="412" text-anchor="end" class="t-code" data-w="103"><tspan class="mono f-purple-ink">self.dinputs</tspan></text>
+<path d="M188,356 H196 V420 H188" class="brace"/>
+<rect x="256" y="368" width="40" height="40" class="emph s-red" data-fit="skip"/>
+<text x="352" y="384" class="t-note" data-w="68">one array,</text>
+<text x="352" y="404" class="t-note" data-w="73">two names</text>
+<text x="216" y="436" class="t-note" data-w="144">the caller's 6 is now 0</text>
+<rect x="672" y="336" width="40" height="40" class="cell f-purple-soft"/>
+<rect x="712" y="336" width="40" height="40" class="cell f-purple-soft"/>
+<rect x="752" y="336" width="40" height="40" class="cell f-purple-soft"/>
+<rect x="672" y="336" width="120" height="40" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="692" y="362" text-anchor="middle" class="t-cell16" data-w="10">5</text>
+<text x="732" y="362" text-anchor="middle" class="t-cell16" data-w="10">6</text>
+<text x="772" y="362" text-anchor="middle" class="t-cell16" data-w="10">7</text>
+</g>
+<rect x="672" y="400" width="40" height="40" class="cell f-purple-soft"/>
+<rect x="712" y="400" width="40" height="40" class="cell"/>
+<rect x="752" y="400" width="40" height="40" class="cell f-purple-soft"/>
+<rect x="672" y="400" width="120" height="40" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="692" y="426" text-anchor="middle" class="t-cell16" data-w="10">5</text>
+<text x="732" y="426" text-anchor="middle" class="t-cell16" data-w="10">0</text>
+<text x="772" y="426" text-anchor="middle" class="t-cell16" data-w="10">7</text>
+</g>
+<text x="656" y="360" text-anchor="end" class="t-code" data-w="60"><tspan class="mono f-purple-ink">dvalues</tspan></text>
+<text x="656" y="424" text-anchor="end" class="t-code" data-w="103"><tspan class="mono f-purple-ink">self.dinputs</tspan></text>
+<text x="808" y="360" class="t-note" data-w="75">unchanged</text>
+<text x="808" y="424" class="t-note" data-w="53">masked</text>
+<text x="40" y="504" class="t-note" data-w="587">Both versions return the same gradient; only the copy leaves the caller's array as it was.</text>
 </svg>

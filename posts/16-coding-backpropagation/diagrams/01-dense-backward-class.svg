@@ -1,97 +1,198 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 500" role="img" aria-labelledby="t d">
-  <title id="t">Layer_Dense with forward and backward methods, and what each one caches</title>
-  <desc id="d">A class blueprint diagram for Layer_Dense with two methods drawn side by side. Left column, forward(inputs): caches self.inputs, computes self.output = inputs @ weights + biases. Right column, backward(dvalues): computes self.dweights = self.inputs.T @ dvalues, self.dbiases = sum(dvalues axis=0 keepdims), and self.dinputs = dvalues @ weights.T. Three gradient cards on the right show what each one is used for: dweights feeds the optimiser, dbiases feeds the optimiser, dinputs flows to the previous layer.</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-01-dense-backward-class-title" aria-describedby="nn-01-dense-backward-class-desc">
+<title id="nn-01-dense-backward-class-title">One forward call, one backward call, three gradients out</title>
+<desc id="nn-01-dense-backward-class-desc">A card with the two methods of Layer_Dense, forward above backward. forward stores self.inputs = inputs, tagged cached because backward reads it, and computes self.output = np.dot(inputs, self.weights) + self.biases. backward takes dvalues and computes self.dweights = np.dot(self.inputs.T, dvalues), self.dbiases = np.sum(dvalues, axis=0, keepdims=True) and self.dinputs = np.dot(dvalues, self.weights.T). Grey arrows, the forward pass, run left to right: inputs of shape (N, n) in, output of shape (N, m) out. Purple arrows, the backward pass, run right to left: dvalues of shape (N, m) in from the next layer, dinputs of shape (N, n) out to the previous layer, which reads it as its dvalues. dweights, shape (n, m), and dbiases, shape (1, m), stay on the layer for the optimiser. Each gradient has the shape of its array.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .class-panel{fill:var(--nn-surface);stroke:var(--nn-ink);stroke-width:1.5;}
-    .pill-prim{fill:var(--nn-primary);}
-    .pill-acc{fill:var(--nn-accent);}
-    .class-head{font-weight:700;font-size:16px;fill:var(--nn-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .method-tag{font-weight:700;font-size:11px;fill:var(--nn-ink-muted);text-transform:uppercase;letter-spacing:0.08em;}
-    .method-name{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;fill:var(--nn-ink);}
-    .method-line{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;fill:var(--nn-ink);}
-    .cache-note{font-size:11px;fill:var(--nn-warn);font-style:italic;}
-    .grad-card{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
-    .grad-pill-w{fill:var(--nn-primary);}
-    .grad-pill-b{fill:var(--nn-accent);}
-    .grad-pill-x{fill:var(--nn-success);}
-    .grad-name{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;font-weight:700;fill:var(--nn-ink);}
-    .grad-shape{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;fill:var(--nn-ink-muted);}
-    .grad-use{font-size:11px;fill:var(--nn-ink-muted);}
-  ]]></style>
-
-  <rect class="bg" width="960" height="500"/>
-
-  <text class="title"    x="48" y="48">Layer_Dense with forward and backward</text>
-  <text class="subtitle" x="48" y="70">Two methods, two patterns. Forward caches inputs; backward consumes them to produce three gradients.</text>
-
-  <!-- ============================ Class panel ============================ -->
-  <rect class="class-panel" x="48" y="96" width="560" height="356" rx="14"/>
-  <rect class="pill-prim"   x="48" y="96" width="6"   height="356" rx="3"/>
-  <text class="class-head" x="68" y="124">class Layer_Dense:</text>
-
-  <!-- forward method -->
-  <text class="method-tag"  x="68" y="158">forward (cache and compute)</text>
-  <text class="method-name" x="68" y="180">def forward(self, inputs):</text>
-  <text class="method-line" x="92" y="202">self.inputs = inputs</text>
-  <text class="cache-note"  x="276" y="202">← cached for backward</text>
-  <text class="method-line" x="92" y="222">self.output = inputs @ self.weights + self.biases</text>
-
-  <!-- divider -->
-  <line x1="68" y1="250" x2="588" y2="250" stroke="var(--nn-border)" stroke-width="1"/>
-
-  <!-- backward method -->
-  <text class="method-tag"  x="68" y="278">backward (consume dvalues, produce three gradients)</text>
-  <text class="method-name" x="68" y="300">def backward(self, dvalues):</text>
-  <text class="method-line" x="92" y="322">self.dweights = self.inputs.T @ dvalues</text>
-  <text class="method-line" x="92" y="342">self.dbiases  = np.sum(dvalues, axis=0, keepdims=True)</text>
-  <text class="method-line" x="92" y="362">self.dinputs  = dvalues @ self.weights.T</text>
-
-  <!-- Three gradient annotations -->
-  <text class="method-tag" x="68" y="394">three gradients out (stored on self)</text>
-  <text class="method-line" x="92" y="416">self.dweights · self.dbiases · self.dinputs</text>
-
-  <!-- ============================ Right-side gradient cards ============================ -->
-  <rect class="grad-card" x="624" y="96" width="288" height="108" rx="10"/>
-  <rect class="grad-pill-w" x="624" y="96" width="6" height="108" rx="3"/>
-  <text class="grad-name"  x="644" y="124">self.dweights</text>
-  <text class="grad-shape" x="644" y="144">shape (n_inputs, n_neurons)</text>
-  <text class="grad-shape" x="644" y="164">= self.inputs.T @ dvalues</text>
-  <text class="grad-use"   x="644" y="190">→ used by the optimiser to update weights</text>
-
-  <rect class="grad-card" x="624" y="216" width="288" height="108" rx="10"/>
-  <rect class="grad-pill-b" x="624" y="216" width="6" height="108" rx="3"/>
-  <text class="grad-name"  x="644" y="244">self.dbiases</text>
-  <text class="grad-shape" x="644" y="264">shape (1, n_neurons)</text>
-  <text class="grad-shape" x="644" y="284">= np.sum(dvalues, axis=0, keepdims=True)</text>
-  <text class="grad-use"   x="644" y="310">→ used by the optimiser to update biases</text>
-
-  <rect class="grad-card" x="624" y="336" width="288" height="108" rx="10"/>
-  <rect class="grad-pill-x" x="624" y="336" width="6" height="108" rx="3"/>
-  <text class="grad-name"  x="644" y="364">self.dinputs</text>
-  <text class="grad-shape" x="644" y="384">shape (N, n_inputs)</text>
-  <text class="grad-shape" x="644" y="404">= dvalues @ self.weights.T</text>
-  <text class="grad-use"   x="644" y="430">→ becomes the previous layer's dvalues</text>
-
-  <!-- Footer -->
-  <text class="footer" x="48"  y="486">Activation_ReLU.backward is one extra line: a masked copy that zeros gradient wherever the cached input was ≤ 0.</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .f-purple { fill: var(--nn-purple); }
+  .f-purple-ink { fill: var(--nn-purple-ink); }
+  .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .s-arrow { stroke: var(--nn-arrow); }
+  .s-green-line { stroke: var(--nn-green-line); }
+  .s-purple { stroke: var(--nn-purple); }
+</style>
+<defs>
+<marker id="nn-01-dense-backward-class-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<marker id="nn-01-dense-backward-class-arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="f-purple"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="681">One forward call, one backward call, three gradients out</text>
+<text x="40" y="76" class="t-subtitle" data-w="524">The class of section 2, for a batch of <tspan class="i">N</tspan> samples, <tspan class="i">n</tspan> inputs and <tspan class="i">m</tspan> neurons.</text>
+<rect x="216" y="104" width="536" height="244" rx="8" class="card"/>
+<text x="232" y="136" class="t-code" data-w="154">class Layer_Dense:</text>
+<text x="248" y="160" class="t-code" data-w="223">def forward(self, inputs):</text>
+<text x="264" y="184" class="t-code" data-w="171">self.inputs = inputs</text>
+<text x="264" y="208" class="t-code" data-w="479">self.output = np.dot(inputs, self.weights) + self.biases</text>
+<text x="248" y="256" class="t-code" data-w="240">def backward(self, dvalues):</text>
+<text x="264" y="280" class="t-code" data-w="393"><tspan class="mono f-purple-ink">self.dweights</tspan><tspan class="mono"> = np.dot(self.inputs.T, dvalues)</tspan></text>
+<text x="264" y="304" class="t-code" data-w="453"><tspan class="mono f-purple-ink">self.dbiases</tspan><tspan class="mono"> = np.sum(dvalues, axis=0, keepdims=True)</tspan></text>
+<text x="264" y="328" class="t-code" data-w="393"><tspan class="mono f-purple-ink">self.dinputs</tspan><tspan class="mono"> = np.dot(dvalues, self.weights.T)</tspan></text>
+<rect x="440" y="168" width="64" height="24" rx="4" class="f-green-soft"/>
+<rect x="440" y="168" width="64" height="24" rx="4" class="w1 nofill s-green-line" data-fit="skip"/>
+<text x="472" y="184" text-anchor="middle" class="t-tick f-green-ink" data-w="45">cached</text>
+<path d="M56,180 L205,180" class="flow" marker-end="url(#nn-01-dense-backward-class-arrow)"/>
+<text x="132" y="168" text-anchor="middle" class="t-code" data-w="52"><tspan class="mono">inputs</tspan></text>
+<text x="132" y="204" text-anchor="middle" class="t-label" data-w="38">(<tspan class="i">N</tspan>, <tspan class="i">n</tspan>)</text>
+<path d="M760,180 L901,180" class="flow" marker-end="url(#nn-01-dense-backward-class-arrow)"/>
+<text x="832" y="168" text-anchor="middle" class="t-code" data-w="52"><tspan class="mono">output</tspan></text>
+<text x="832" y="204" text-anchor="middle" class="t-label" data-w="42">(<tspan class="i">N</tspan>, <tspan class="i">m</tspan>)</text>
+<path d="M904,288 L763,288" class="s-purple w15 nofill" marker-end="url(#nn-01-dense-backward-class-arrow-purple)"/>
+<text x="832" y="276" text-anchor="middle" class="t-code" data-w="60"><tspan class="mono f-purple-ink">dvalues</tspan></text>
+<text x="832" y="312" text-anchor="middle" class="t-label" data-w="42">(<tspan class="i">N</tspan>, <tspan class="i">m</tspan>)</text>
+<path d="M208,288 L59,288" class="s-purple w15 nofill" marker-end="url(#nn-01-dense-backward-class-arrow-purple)"/>
+<text x="132" y="276" text-anchor="middle" class="t-code" data-w="60"><tspan class="mono f-purple-ink">dinputs</tspan></text>
+<text x="132" y="312" text-anchor="middle" class="t-label" data-w="38">(<tspan class="i">N</tspan>, <tspan class="i">n</tspan>)</text>
+<text x="56" y="340" class="t-note" data-w="141">to the previous layer,</text>
+<text x="56" y="360" class="t-note" data-w="92">as its <tspan class="mono">dvalues</tspan></text>
+<text x="904" y="340" text-anchor="end" class="t-note" data-w="126">from the next layer</text>
+<path d="M484,356 L484,385" class="s-purple w15 nofill" marker-end="url(#nn-01-dense-backward-class-arrow-purple)"/>
+<text x="496" y="376" class="t-note" data-w="238">stays on the layer, for the optimiser</text>
+<rect x="332" y="396" width="304" height="76" rx="8" class="card"/>
+<text x="348" y="428" class="t-label" data-w="0"></text>
+<text x="348" y="452" class="t-label" data-w="0"></text>
+<text x="356" y="428" class="t-code" data-w="69"><tspan class="mono f-purple-ink">dweights</tspan></text>
+<text x="452" y="428" class="t-label" data-w="39">(<tspan class="i">n</tspan>, <tspan class="i">m</tspan>)</text>
+<text x="612" y="428" text-anchor="end" class="t-code f-ink-muted" data-w="60"><tspan class="mono">weights</tspan></text>
+<text x="548" y="428" text-anchor="end" class="t-note" data-w="16">as</text>
+<text x="356" y="452" class="t-code" data-w="60"><tspan class="mono f-purple-ink">dbiases</tspan></text>
+<text x="452" y="452" class="t-label" data-w="39">(1, <tspan class="i">m</tspan>)</text>
+<text x="612" y="452" text-anchor="end" class="t-code f-ink-muted" data-w="52"><tspan class="mono">biases</tspan></text>
+<text x="556" y="452" text-anchor="end" class="t-note" data-w="16">as</text>
+<path d="M40,424 H64" class="s-arrow w15 nofill"/>
+<text x="72" y="428" class="t-label" data-w="101">forward: arrays</text>
+<path d="M40,448 H64" class="s-purple w15 nofill"/>
+<text x="72" y="452" class="t-label" data-w="136">backward: gradients</text>
+<rect x="736" y="412" width="64" height="24" rx="4" class="f-green-soft"/>
+<rect x="736" y="412" width="64" height="24" rx="4" class="w1 nofill s-green-line" data-fit="skip"/>
+<text x="768" y="428" text-anchor="middle" class="t-tick f-green-ink" data-w="45">cached</text>
+<text x="812" y="428" class="t-label" data-w="105">kept by forward</text>
+<text x="812" y="452" class="t-label" data-w="87">for backward</text>
+<text x="40" y="504" class="t-note" data-w="369">Every gradient has the shape of the array it belongs to.</text>
 </svg>

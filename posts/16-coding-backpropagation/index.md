@@ -11,9 +11,9 @@
 > - Implement Activation_ReLU.backward(dvalues) as a masked copy of the upstream gradient.
 > - Name what each layer caches in forward and say why its backward method needs it.
 
-![A class card for Layer_Dense. The forward panel stores self.inputs, marked as cached for backward, and computes self.output. The backward panel takes dvalues and writes three lines. Three boxes below give each result's shape and reader: dweights, shape (n_inputs, n_neurons), and dbiases, shape (1, n_neurons), go to the optimiser; dinputs, shape (N, n_inputs), becomes the previous layer's dvalues.](diagrams/01-dense-backward-class.svg)
+![A card with the forward and backward methods of Layer_Dense, for a batch of N samples, n inputs and m neurons. forward stores self.inputs, tagged as cached, and computes self.output; backward takes dvalues and computes self.dweights, self.dbiases and self.dinputs. Grey arrows run left to right: inputs of shape (N, n) in, output of shape (N, m) out. Purple arrows run right to left: dvalues of shape (N, m) in from the next layer, dinputs of shape (N, n) out to the previous layer as its dvalues. dweights, shape (n, m), and dbiases, shape (1, m), stay on the layer for the optimiser.](diagrams/01-dense-backward-class.svg)
 
-*One forward call, one backward call, three gradients out. The figure writes the products with `@`; for two-dimensional arrays that is the same operation as the `np.dot` the class uses.*
+*One forward call, one backward call, three gradients out: `dweights` and `dbiases` stay on the layer, and `dinputs` goes back to the layer before.*
 
 ---
 
@@ -27,7 +27,7 @@
 | `self.dbiases` | $\partial L / \partial \mathbf{b}$ | the optimiser, to update the biases |
 | `self.dinputs` | $\partial L / \partial \mathbf{X}$ | the previous component, as *its* `dvalues` |
 
-This is the whole contract: a component that offers `forward`, `backward`, and `dinputs` can sit anywhere in a stack, and a component with parameters adds one gradient per parameter array. `dvalues` always has the shape of the component's `output`, because it is the gradient with respect to that output; an array of any other shape is a bug in whatever produced it.
+This is the whole contract: a component that offers `forward`, `backward`, and `dinputs` can sit anywhere in a stack, and a component with parameters adds one gradient per parameter array. `dvalues` always has the shape of the component's `output`, because it is the gradient with respect to that output; an array of any other shape is a bug in whatever produced it. The figure at the top of the post draws this contract for `Layer_Dense`, with the shape of every array that enters or leaves it.
 
 The three matrix expressions were derived in posts 14 and 15, and the notation guide lists them in this layout:
 
@@ -171,11 +171,11 @@ The middle input was $-2$, so its gate is closed and the 6 that arrived there is
 
 ### 4.1. Why a copy and not an assignment
 
-![Two panels on the arrays 5, 6, 7 and the masking line dinputs where inputs is at most 0 becomes 0. In the left panel, headed Without .copy(), dvalues and self.dinputs are two names for one array, and after the masking line both names read 5, 0, 7. In the right panel, headed With .copy(), they are two arrays, and after the masking line dvalues still reads 5, 6, 7, labelled unchanged, while self.dinputs reads 5, 0, 7, labelled masked.](diagrams/02-copy-not-alias.svg)
+![At the top, self.inputs reads 1, minus 2, 3, with the gate at minus 2 closed, and the caller hands in dvalues 5, 6, 7. Two panels run the two lines of backward. In the left panel, headed Without .copy(), dvalues and self.dinputs are two names for one array, which reads 5, 0, 7 after the masking line; its 0 is outlined in red, because the caller's 6 is now 0. In the right panel, headed With .copy(), they are two arrays: dvalues still reads 5, 6, 7, labelled unchanged, and self.dinputs reads 5, 0, 7, labelled masked.](diagrams/02-copy-not-alias.svg)
 
 *Both versions leave the same numbers in `dinputs`. Only the right-hand one leaves the array it was handed as it found it.*
 
-`self.dinputs = dvalues`, without `.copy()`, does not create an array. It gives a second name to the caller's array, and the masking line then writes zeros into the array the caller still holds. In the chain of section 6 that array is `dense2.dinputs`, and anything that reads it later would read a gradient the layer never computed. The copy costs one allocation and buys a simple guarantee: `backward` reads its argument and never writes to it. Section 8 runs both versions.
+`self.dinputs = dvalues`, without `.copy()`, does not create an array. It gives a second name to the caller's array, and the masking line then writes zeros into the array the caller still holds, as the left panel of the figure shows. In the chain of section 6 that array is `dense2.dinputs`, and anything that reads it later would read a gradient the layer never computed. The copy costs one allocation and buys a simple guarantee: `backward` reads its argument and never writes to it. Section 8 runs both versions.
 
 ---
 
@@ -308,7 +308,11 @@ seed   without the mask   as written   at an entry of     analytic value   absol
    9            1.9e+00      1.7e-09   dense1.dweights          4.36e-03        7.3e-12
 ```
 
-The broken ReLU fails on all ten seeds, with errors between 1.1 and 1.9. The correct classes stay below $10^{-7}$ on nine seeds and reach $4.8 \times 10^{-6}$ on seed 2, where the code is no different. The last three columns explain it. The entry concerned is a gradient of $-2.58 \times 10^{-6}$, and the measurement differs from it by $1.2 \times 10^{-11}$, an absolute gap of the same order as on the other seeds. Dividing an ordinary rounding error by a very small gradient gives a large relative error. This is the caveat the glossary attaches to the $10^{-7}$ threshold: it holds for gradients that are not themselves tiny. The absolute gap separates the two cases: a relative error of $10^{-6}$ on one entry near zero, with a gap no larger than on the seeds that pass, is a rounding effect, and relative errors near 1 are a bug. Post 21 returns to the point for a whole network.
+![A chart of the largest relative error over the five gradients, on a log scale from 10 to the minus 12 up to 10, for seeds 0 to 9. Red triangles, the ReLU backward without the mask, lie between 1.1 and 1.9 on every seed. Blue circles, the classes as written, lie in the shaded region below the pass line at 10 to the minus 7 on nine seeds, from 1.2 times 10 to the minus 10 upwards; seed 2 sits above it at 4.8 times 10 to the minus 6, at an entry of minus 2.58 times 10 to the minus 6 that is off by only 1.2 times 10 to the minus 11.](diagrams/03-gradient-check.svg)
+
+*The two error columns of the table on one log scale: the broken ReLU sits near 1 on every seed, the classes as written below the pass line on nine of ten.*
+
+The figure plots the two error columns of the table. The broken ReLU fails on all ten seeds, with errors between 1.1 and 1.9. The correct classes stay below $10^{-7}$ on nine seeds and reach $4.8 \times 10^{-6}$ on seed 2, where the code is no different. The last three columns explain it. The entry concerned is a gradient of $-2.58 \times 10^{-6}$, and the measurement differs from it by $1.2 \times 10^{-11}$, an absolute gap of the same order as on the other seeds. Dividing an ordinary rounding error by a very small gradient gives a large relative error. This is the caveat the glossary attaches to the $10^{-7}$ threshold: it holds for gradients that are not themselves tiny. The absolute gap separates the two cases: a relative error of $10^{-6}$ on one entry near zero, with a gap no larger than on the seeds that pass, is a rounding effect, and relative errors near 1 are a bug. Post 21 returns to the point for a whole network.
 
 ---
 
