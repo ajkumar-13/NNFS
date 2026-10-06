@@ -9,7 +9,7 @@ part: "Part VIII - Practical training and extensions"
 level: intermediate
 reading_time: 26
 tags: [neural-networks, from-scratch, binary-classification, sigmoid, binary-cross-entropy, combined-derivative]
-hero: diagrams/01-sigmoid-bce-pipeline.svg
+hero: diagrams/01-combined-class.svg
 prerequisites: [nn-019]
 code: included
 outcomes:

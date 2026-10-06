@@ -11,9 +11,9 @@
 > - Implement a numerically stable Activation_Sigmoid and the combined class Activation_Sigmoid_Loss_BinaryCrossentropy.
 > - Choose between sigmoid plus binary cross-entropy and softmax plus categorical cross-entropy for a binary problem.
 
-![A pipeline: a logit z enters a sigmoid box that outputs a probability p, which enters a binary cross-entropy box with a target y and gives a loss. A dashed arrow runs back from the loss to the logit, past the sigmoid, labelled p minus y over N. On the right, the sigmoid curve and the algebra of the cancellation.](diagrams/01-sigmoid-bce-pipeline.svg)
+![The combined class Activation_Sigmoid_Loss_BinaryCrossentropy between the last dense layer and the loss. Its forward card takes the logits, shape N by 1, stores self.output, tagged cached, clips it and returns the mean loss, a float. A purple arrow carries loss_activation.output down into the backward card as dvalues, which computes dvalues minus y_true over samples, y-hat minus y over N, and a purple arrow carries dinputs, N by 1, left to the dense layer. A note says the clip acts in forward only; on the worked batch of 4 samples the loss is 1.1157 and the gradient -0.0298, 0.0672, 0.1556, -0.2381.](diagrams/01-combined-class.svg)
 
-*Forward: logit, sigmoid, loss. Backward: one subtraction. The figure writes $p$ for the prediction $\hat{y}$; its note "no division anywhere" means no division by the prediction, since the division by $N$ remains.*
+*Forward: the sigmoid, the clip and the mean loss. Backward: one subtraction and one division by $N$, with no division by the prediction.*
 
 ---
 
@@ -81,7 +81,11 @@ float64: np.exp overflows above 709.78, so the naive form warns for z below -709
 float32: np.exp overflows above 88.72, so the naive form warns for z below -88.72
 ```
 
-The damage of the naive form is smaller than its warning suggests. In float64, $e^{720}$ overflows to `inf` and $1/(1 + \infty)$ is 0, which is the right answer to within $4.5 \times 10^{-309}$: the two forms differ only for $z$ between $-710$ and $-744$, and between $-700$ and $700$ they agree to $5.6 \times 10^{-17}$. What the naive form costs is a `RuntimeWarning` on a correct result, and a `FloatingPointError` in a program that has asked NumPy to raise on overflow. The other one-line form is the dangerous one: at $z = 720$ it computes $\infty / \infty$ and returns `nan`.
+The damage of the naive form is smaller than its warning suggests. In float64, $e^{720}$ overflows to `inf` and $1/(1 + \infty)$ is 0, which is the right answer to within $4.5 \times 10^{-309}$: the two forms differ only for $z$ between $-710$ and $-744$, and between $-700$ and $700$ they agree to $5.6 \times 10^{-17}$. What the naive form costs is a `RuntimeWarning` on a correct result, and a `FloatingPointError` in a program that has asked NumPy to raise on overflow. The other one-line form is the dangerous one: at $z = 720$ it computes $\infty / \infty$ and returns `nan`. The figure below marks, in the first table, where each form warns and where it fails.
+
+![A grid of three rows, the naive form 1/(1 + e to the minus z), the other form e to the z over (1 + e to the z) and the stable form, and seven columns, the logits -1,000, -720, -40, 0, 40, 720 and 1,000, holding the printed float64 values. The naive form returns 0 with an overflow warning at -1,000 and -720, marked by dashed outlines; the other form returns nan at 720 and 1,000, filled red; the stable row, filled green, returns 0, 2.032 times 10 to the minus 313, 4.248 times 10 to the minus 18, 0.5, 1, 1, 1 with no warning. Braces under the grid show the stable form using e to the z over (1 + e to the z) for z below 0 and 1/(1 + e to the minus z) from 0 on.](diagrams/02-three-sigmoids.svg)
+
+*Each one-line form overflows on one side of zero; the stable form picks, by the sign of $z$, the expression that cannot.*
 
 The stable form uses each expression where it is safe, $1/(1 + e^{-z})$ for $z \ge 0$ and $e^z/(1 + e^z)$ for $z < 0$, so `np.exp` never receives a positive argument. It is the principle of post 06, where the largest logit was subtracted before the softmax exponentials. The class of post 17 changes in `forward` only:
 
@@ -151,7 +155,11 @@ y = 1  from logits            40         17      5.007     0.6931   0.006715   4
 
 **Without the clip a confident correct prediction returns `nan`.** At $z = 40$ the sigmoid is exactly 1 and $\log(1 - \hat{y})$ is $-\infty$. For $y = 0$ the loss is `inf`. For $y = 1$ the inactive term is $0 \cdot (-\infty)$, which floating point evaluates to `nan`, although the prediction is right. One such sample turns the batch mean into `nan`. At $z = -40$ nothing fails, since $\sigma(-40)$ is $4.2 \times 10^{-18}$ and not 0: the lopsided saturation of section 2.1.
 
-**The clip removes both, and caps the loss.** A prediction is changed whenever $|z|$ exceeds $\log\bigl((1 - 10^{-7})/10^{-7}\bigr) = 16.118$. Beyond that the reported loss of a wrong prediction stays at $-\log(10^{-7}) = 16.118$ however wrong the logit is, and the loss of a right one stays at $10^{-7}$. On 100,000 logits drawn uniformly from $[-40, 40]$ with random labels the clipped mean loss is 6.4622 where the exact one is 10.0339. The clip protects the arithmetic and not the value: a loss near 16 means "at least 16".
+**The clip removes both, and caps the loss.** A prediction is changed whenever $|z|$ exceeds $\log\bigl((1 - 10^{-7})/10^{-7}\bigr) = 16.118$. Beyond that the reported loss of a wrong prediction stays at $-\log(10^{-7}) = 16.118$ however wrong the logit is, and the loss of a right one stays at $10^{-7}$. On 100,000 logits drawn uniformly from $[-40, 40]$ with random labels the clipped mean loss is 6.4622 where the exact one is 10.0339. The clip protects the arithmetic and not the value: a loss near 16 means "at least 16". The figure below draws the sigmoid of section 2 with its slope, and the loss of a sample with label 1 against its logit, exact and clipped.
+
+![Two charts. Left, over z from -6 to 6, the sigmoid rising from near 0 to near 1 through 0.5 at z = 0, and its slope peaking at 0.25 at z = 0, with the printed values at z = -5, -2, 0, 2 and 5 marked. Right, the binary cross-entropy of one sample with label 1 over z from -40 to 40: the exact loss, dashed, falls along a line from 40 to near 0; the clipped loss, solid red, follows it from z = -16.118 on and stays at 16.118 below that. Points mark the printed values at z = -40, -17, -5, 0, 5, 17 and 40, and a note says that without the clip z = 40 gives nan.](diagrams/03-sigmoid-and-loss.svg)
+
+*The clip caps the reported loss at 16.118 for a wrong logit; the loss computed from the logit keeps rising.*
 
 **The loss can be computed from the logit.** Substituting $\hat{y} = \sigma(z)$ and simplifying gives $L_i = \log(1 + e^{z}) - y z$, which the script evaluates without overflow as
 
@@ -232,7 +240,7 @@ It is called as the softmax class is:
     loss_activation.backward(loss_activation.output, y)
 ```
 
-On the worked batch this returns the loss 1.1157 and stores `dinputs` $(-0.0298, 0.0672, 0.1556, -0.2381)$ with shape $(4, 1)$, the numbers of sections 3 and 4.
+On the worked batch this returns the loss 1.1157 and stores `dinputs` $(-0.0298, 0.0672, 0.1556, -0.2381)$ with shape $(4, 1)$, the numbers of sections 3 and 4. The figure at the top of the post draws the class between the last dense layer and the loss, with the shape of everything that goes in and out.
 
 **`dvalues` is the sigmoid output.** As in post 19, the argument keeps the name of the backward convention and holds the predictions. `backward` stores `dinputs`, returns nothing, and the layer below receives `loss_activation.dinputs`.
 
@@ -324,6 +332,12 @@ The probabilities, the losses and the gradients agree. The softmax gradient at $
 | sigmoid, 1 output | 337 | 800 on all ten seeds | 197 to 200 | 8 of 10 | 0.0004 to 0.0333 |
 | softmax, 2 outputs | 354 | 800 on all ten seeds | 197 to 200 | 7 of 10 | 0.0003 to 0.0433 |
 
+The figure below draws the test counts and the test losses of both heads seed by seed.
+
+![One row per seed, 0 to 9. Left, test points correct of 200 on an axis from 196 to 200: the sigmoid head, blue diamonds, and the softmax head, hollow circles, sit on the same value on every seed but seed 3, where the sigmoid head has 200 and the softmax head 199; seed 6 has 197 and seed 8 199 for both. Right, the test data loss on a log axis from 10 to the minus 4 to 10 to the minus 1, the two heads joined by a line on each seed; neither head is lower on most seeds, and seed 6 has the highest loss for both, 0.0333 and 0.0433.](diagrams/04-heads-per-seed.svg)
+
+*The two heads end on the same test count on nine seeds; which has the lower test loss changes from seed to seed.*
+
 Seed by seed the test counts are equal on nine seeds and the sigmoid head has one point more on seed 3; the test loss is lower with the sigmoid head on five seeds and with the softmax head on five. One test point of 200 on one seed is no evidence for either. The training data loss does differ: it is lower with the softmax head on eight of the ten seeds. The sigmoid counts are, seed by seed, the ones `nn-p02` publishes for this setup, 200 of 200 on seed 0 with a test loss of 0.0045.
 
 **Which head for which task.**
@@ -334,10 +348,6 @@ Seed by seed the test counts are equal on nine seeds and the sigmoid head has on
 | $K \ge 3$ classes, one per sample | $K$ neurons | softmax and categorical cross-entropy (post 19) |
 | $K$ labels, any number per sample | $K$ neurons | one sigmoid and one binary cross-entropy per output |
 | A real number | 1 or more neurons | no activation, mean squared error (`nn-p04`) |
-
-![Four cards for binary, multi-class, multi-label and regression tasks, each listing output size, activation, loss and target: one sigmoid neuron with BCE; K softmax neurons with CCE; K sigmoid neurons with summed BCE; no activation with MSE. The multi-label card is marked as the trap.](diagrams/02-choosing-the-head.svg)
-
-*Multi-label sits beside multi-class because that is where the mistake happens: the same neuron count and a different activation. The cards say "Part" where this series now says "post".*
 
 For two classes either head is correct, and the choice is one of convenience: one output and scalar labels, or the same code path as a multi-class problem. The choice matters for **multi-label** data: softmax makes the outputs sum to 1 and so asserts exactly one label, and the class of section 5 does not cover several outputs as written (section 9). A dense layer followed directly by the sigmoid head, with no hidden layer, is **logistic regression**.
 

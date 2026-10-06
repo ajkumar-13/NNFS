@@ -1,0 +1,263 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-04-heads-per-seed-title" aria-describedby="nn-04-heads-per-seed-desc">
+<title id="nn-04-heads-per-seed-title">The two heads tie on nine seeds of ten</title>
+<desc id="nn-04-heads-per-seed-desc">One row per seed, 0 to 9, for the two-moons network trained 2,000 epochs with each head. Left, test points correct of 200 on an axis from 196 to 200; right, the test data loss on a log axis from 10 to the minus 4 to 10 to the minus 1, the two heads joined by a line. Sigmoid head, 1 output, blue diamonds, test points correct and test data loss: seed 0 200, 0.0045; seed 1 200, 0.0004; seed 2 200, 0.0007; seed 3 200, 0.0036; seed 4 200, 0.0049; seed 5 200, 0.0007; seed 6 197, 0.0333; seed 7 200, 0.0009; seed 8 199, 0.0053; seed 9 200, 0.0005. Softmax head, 2 outputs, hollow ink circles: seed 0 200, 0.0042; seed 1 200, 0.0005; seed 2 200, 0.0008; seed 3 199, 0.0047; seed 4 200, 0.0052; seed 5 200, 0.0004; seed 6 197, 0.0433; seed 7 200, 0.0005; seed 8 199, 0.0048; seed 9 200, 0.0003. The counts are equal on every seed but seed 3, where the sigmoid head has 200 and the softmax head 199; the test loss is lower with the sigmoid head on five seeds and with the softmax head on five.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--nn-blue); }
+  .s-grid { stroke: var(--nn-grid); }
+  .s-ink { stroke: var(--nn-ink); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-rule { stroke: var(--nn-rule); }
+  .s-surface { stroke: var(--nn-surface); }
+  .w075 { stroke-width: 0.75; }
+</style>
+<defs>
+<marker id="nn-04-heads-per-seed-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title" data-w="469">The two heads tie on nine seeds of ten</text>
+<text x="40" y="76" class="t-subtitle" data-w="630">Two moons, 800 training and 200 test points, 2,000 epochs of Adam. One row per seed.</text>
+<text x="40" y="136" class="t-head" data-w="215">Test points correct, of 200</text>
+<text x="536" y="136" class="t-head" data-w="115">Test data loss</text>
+<text x="40" y="168" class="t-note" data-w="33">seed</text>
+<g data-grid="skip">
+<path d="M104,184 L104,592" class="s-grid w075 nofill"/>
+<text x="104" y="612" text-anchor="middle" class="t-tick" data-w="23">196</text>
+<path d="M184,184 L184,592" class="s-grid w075 nofill"/>
+<text x="184" y="612" text-anchor="middle" class="t-tick" data-w="23">197</text>
+<path d="M264,184 L264,592" class="s-grid w075 nofill"/>
+<text x="264" y="612" text-anchor="middle" class="t-tick" data-w="23">198</text>
+<path d="M344,184 L344,592" class="s-grid w075 nofill"/>
+<text x="344" y="612" text-anchor="middle" class="t-tick" data-w="23">199</text>
+<path d="M424,184 L424,592" class="s-grid w075 nofill"/>
+<text x="424" y="612" text-anchor="middle" class="t-tick" data-w="23">200</text>
+<path d="M104,592 L424,592" class="s-ink-muted w1 nofill"/>
+<path d="M536,184 L536,592" class="s-grid w075 nofill"/>
+<text x="536" y="616" text-anchor="middle" class="t-tick" data-w="33">10<tspan class="sub" dy="-6">−4</tspan><tspan dy="6">​</tspan></text>
+<path d="M656,184 L656,592" class="s-grid w075 nofill"/>
+<text x="656" y="616" text-anchor="middle" class="t-tick" data-w="33">10<tspan class="sub" dy="-6">−3</tspan><tspan dy="6">​</tspan></text>
+<path d="M776,184 L776,592" class="s-grid w075 nofill"/>
+<text x="776" y="616" text-anchor="middle" class="t-tick" data-w="33">10<tspan class="sub" dy="-6">−2</tspan><tspan dy="6">​</tspan></text>
+<path d="M896,184 L896,592" class="s-grid w075 nofill"/>
+<text x="896" y="616" text-anchor="middle" class="t-tick" data-w="33">10<tspan class="sub" dy="-6">−1</tspan><tspan dy="6">​</tspan></text>
+<path d="M572.12,184 L572.12,592" class="s-grid w075 nofill d-ref"/>
+<path d="M593.25,184 L593.25,592" class="s-grid w075 nofill d-ref"/>
+<path d="M608.25,184 L608.25,592" class="s-grid w075 nofill d-ref"/>
+<path d="M619.88,184 L619.88,592" class="s-grid w075 nofill d-ref"/>
+<path d="M629.38,184 L629.38,592" class="s-grid w075 nofill d-ref"/>
+<path d="M637.41,184 L637.41,592" class="s-grid w075 nofill d-ref"/>
+<path d="M644.37,184 L644.37,592" class="s-grid w075 nofill d-ref"/>
+<path d="M650.51,184 L650.51,592" class="s-grid w075 nofill d-ref"/>
+<path d="M692.12,184 L692.12,592" class="s-grid w075 nofill d-ref"/>
+<path d="M713.25,184 L713.25,592" class="s-grid w075 nofill d-ref"/>
+<path d="M728.25,184 L728.25,592" class="s-grid w075 nofill d-ref"/>
+<path d="M739.88,184 L739.88,592" class="s-grid w075 nofill d-ref"/>
+<path d="M749.38,184 L749.38,592" class="s-grid w075 nofill d-ref"/>
+<path d="M757.41,184 L757.41,592" class="s-grid w075 nofill d-ref"/>
+<path d="M764.37,184 L764.37,592" class="s-grid w075 nofill d-ref"/>
+<path d="M770.51,184 L770.51,592" class="s-grid w075 nofill d-ref"/>
+<path d="M812.12,184 L812.12,592" class="s-grid w075 nofill d-ref"/>
+<path d="M833.25,184 L833.25,592" class="s-grid w075 nofill d-ref"/>
+<path d="M848.25,184 L848.25,592" class="s-grid w075 nofill d-ref"/>
+<path d="M859.88,184 L859.88,592" class="s-grid w075 nofill d-ref"/>
+<path d="M869.38,184 L869.38,592" class="s-grid w075 nofill d-ref"/>
+<path d="M877.41,184 L877.41,592" class="s-grid w075 nofill d-ref"/>
+<path d="M884.37,184 L884.37,592" class="s-grid w075 nofill d-ref"/>
+<path d="M890.51,184 L890.51,592" class="s-grid w075 nofill d-ref"/>
+<path d="M536,592 L896,592" class="s-ink-muted w1 nofill"/>
+<text x="40" y="205" class="t-label" data-w="9">0</text>
+<circle cx="424" cy="200" r="8" class="nofill s-ink w15"/>
+<path d="M424,194 L430,200 L424,206 L418,200 Z" class="f-blue s-surface w1"/>
+<path d="M734.39,200 L730.79,200" class="s-rule w15 nofill"/>
+<circle cx="730.79" cy="200" r="6" class="nofill s-ink w15"/>
+<path d="M734.39,194 L740.39,200 L734.39,206 L728.39,200 Z" class="f-blue s-surface w1"/>
+<text x="40" y="245" class="t-label" data-w="9">1</text>
+<circle cx="424" cy="240" r="8" class="nofill s-ink w15"/>
+<path d="M424,234 L430,240 L424,246 L418,240 Z" class="f-blue s-surface w1"/>
+<path d="M608.25,240 L619.88,240" class="s-rule w15 nofill"/>
+<circle cx="619.88" cy="240" r="6" class="nofill s-ink w15"/>
+<path d="M608.25,234 L614.25,240 L608.25,246 L602.25,240 Z" class="f-blue s-surface w1"/>
+<text x="40" y="285" class="t-label" data-w="9">2</text>
+<circle cx="424" cy="280" r="8" class="nofill s-ink w15"/>
+<path d="M424,274 L430,280 L424,286 L418,280 Z" class="f-blue s-surface w1"/>
+<path d="M637.41,280 L644.37,280" class="s-rule w15 nofill"/>
+<circle cx="644.37" cy="280" r="6" class="nofill s-ink w15"/>
+<path d="M637.41,274 L643.41,280 L637.41,286 L631.41,280 Z" class="f-blue s-surface w1"/>
+<text x="40" y="325" class="t-label" data-w="9">3</text>
+<circle cx="344" cy="320" r="8" class="nofill s-ink w15"/>
+<path d="M424,314 L430,320 L424,326 L418,320 Z" class="f-blue s-surface w1"/>
+<path d="M722.76,320 L736.65,320" class="s-rule w15 nofill"/>
+<circle cx="736.65" cy="320" r="6" class="nofill s-ink w15"/>
+<path d="M722.76,314 L728.76,320 L722.76,326 L716.76,320 Z" class="f-blue s-surface w1"/>
+<text x="40" y="365" class="t-label" data-w="9">4</text>
+<circle cx="424" cy="360" r="8" class="nofill s-ink w15"/>
+<path d="M424,354 L430,360 L424,366 L418,360 Z" class="f-blue s-surface w1"/>
+<path d="M738.82,360 L741.92,360" class="s-rule w15 nofill"/>
+<circle cx="741.92" cy="360" r="6" class="nofill s-ink w15"/>
+<path d="M738.82,354 L744.82,360 L738.82,366 L732.82,360 Z" class="f-blue s-surface w1"/>
+<text x="40" y="405" class="t-label" data-w="9">5</text>
+<circle cx="424" cy="400" r="8" class="nofill s-ink w15"/>
+<path d="M424,394 L430,400 L424,406 L418,400 Z" class="f-blue s-surface w1"/>
+<path d="M637.41,400 L608.25,400" class="s-rule w15 nofill"/>
+<circle cx="608.25" cy="400" r="6" class="nofill s-ink w15"/>
+<path d="M637.41,394 L643.41,400 L637.41,406 L631.41,400 Z" class="f-blue s-surface w1"/>
+<text x="40" y="445" class="t-label" data-w="9">6</text>
+<circle cx="184" cy="440" r="8" class="nofill s-ink w15"/>
+<path d="M184,434 L190,440 L184,446 L178,440 Z" class="f-blue s-surface w1"/>
+<path d="M838.69,440 L852.38,440" class="s-rule w15 nofill"/>
+<circle cx="852.38" cy="440" r="6" class="nofill s-ink w15"/>
+<path d="M838.69,434 L844.69,440 L838.69,446 L832.69,440 Z" class="f-blue s-surface w1"/>
+<text x="40" y="485" class="t-label" data-w="9">7</text>
+<circle cx="424" cy="480" r="8" class="nofill s-ink w15"/>
+<path d="M424,474 L430,480 L424,486 L418,480 Z" class="f-blue s-surface w1"/>
+<path d="M650.51,480 L619.88,480" class="s-rule w15 nofill"/>
+<circle cx="619.88" cy="480" r="6" class="nofill s-ink w15"/>
+<path d="M650.51,474 L656.51,480 L650.51,486 L644.51,480 Z" class="f-blue s-surface w1"/>
+<text x="40" y="525" class="t-label" data-w="9">8</text>
+<circle cx="344" cy="520" r="8" class="nofill s-ink w15"/>
+<path d="M344,514 L350,520 L344,526 L338,520 Z" class="f-blue s-surface w1"/>
+<path d="M742.91,520 L737.75,520" class="s-rule w15 nofill"/>
+<circle cx="737.75" cy="520" r="6" class="nofill s-ink w15"/>
+<path d="M742.91,514 L748.91,520 L742.91,526 L736.91,520 Z" class="f-blue s-surface w1"/>
+<text x="40" y="565" class="t-label" data-w="9">9</text>
+<circle cx="424" cy="560" r="8" class="nofill s-ink w15"/>
+<path d="M424,554 L430,560 L424,566 L418,560 Z" class="f-blue s-surface w1"/>
+<path d="M619.88,560 L593.25,560" class="s-rule w15 nofill"/>
+<circle cx="593.25" cy="560" r="6" class="nofill s-ink w15"/>
+<path d="M619.88,554 L625.88,560 L619.88,566 L613.88,560 Z" class="f-blue s-surface w1"/>
+</g>
+<text x="264" y="640" text-anchor="middle" class="t-note" data-w="93">points correct</text>
+<text x="716" y="644" text-anchor="middle" class="t-note" data-w="129">data loss, log scale</text>
+<g data-grid="skip">
+<path d="M112,157 L118,163 L112,169 L106,163 Z" class="f-blue s-surface w1"/>
+<text x="128" y="168" class="t-label" data-w="118">sigmoid, 1 output</text>
+<circle cx="294" cy="163" r="6" class="nofill s-ink w15"/>
+<text x="310" y="168" class="t-label" data-w="126">softmax, 2 outputs</text>
+</g>
+<text x="40" y="684" class="t-note" data-w="638">Seed 3 is the one difference in test counts: 200 for the sigmoid head, 199 for the softmax head.</text>
+</svg>
