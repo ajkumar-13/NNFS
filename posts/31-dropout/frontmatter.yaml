@@ -1,8 +1,23 @@
 id: nn-031
 slug: 31-dropout
-title: "Part 31 · Dropout"
+title: "31 - Dropout"
+summary: "Dropout zeroes random activations in training and leaves every neuron on at evaluation. The post builds the layer with the inverted scale, checks its expectation and gradient, and measures it on the spiral with the mask on and off."
 date: 2026-05-29
+updated: 2026-10-06
+status: complete
+part: "Part VII - Generalisation and regularisation"
+level: intermediate
+reading_time: 29
 tags: [neural-networks, from-scratch, regularisation, dropout, generalisation]
 hero: diagrams/01-dropout-train-vs-test.svg
-reading_time: 12
-part: "Part VII — Generalisation and regularisation"
+prerequisites: [nn-028]
+code: included
+outcomes:
+  - id: o1
+    text: "Explain why random masking attacks co-adaptation and why the ensemble view makes the gain unsurprising."
+  - id: o2
+    text: "Implement Layer_Dropout with the inverted convention: scale by 1/(1 - p) in training, identity at test time."
+  - id: o3
+    text: "Wire dropout into the forward and backward passes of the pipeline with the train-versus-test switch."
+recommended: [nn-005, nn-029]
+compute: cpu

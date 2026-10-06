@@ -1,0 +1,809 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-031",
+  "next_ordinal": 20,
+  "questions": [
+    {
+      "id": "nn-031-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 1,
+      "tags": [
+        "train-test-switch"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "In which passes does a dropout layer set activations to zero?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "In the forward passes of training only.",
+          "correct": true,
+          "feedback": "Right: the mask is drawn in training-mode forward passes, and evaluation leaves every neuron on."
+        },
+        {
+          "key": "b",
+          "text": "In evaluation passes only, to test how robust the network is.",
+          "correct": false,
+          "feedback": "This is the switch inverted. A mask at evaluation reports one random thinned network instead of the full one."
+        },
+        {
+          "key": "c",
+          "text": "In every forward pass, in training and in evaluation alike.",
+          "correct": false,
+          "feedback": "A mask left on at evaluation makes the reported figure change from pass to pass; the layer is the identity there."
+        },
+        {
+          "key": "d",
+          "text": "Once, when the layer is created, so that the same neurons stay off.",
+          "correct": false,
+          "feedback": "A mask fixed at construction would train a single thinned network. The mask is drawn again on every training forward pass."
+        }
+      ],
+      "explanation": "Section 7: the mask is on in the passes that are followed by an update and off in every pass whose figures are reported. With `training=False` the layer copies its input and draws nothing.",
+      "hints": [
+        "Ask which passes are followed by a parameter update."
+      ]
+    },
+    {
+      "id": "nn-031-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 1,
+      "tags": [
+        "rate",
+        "convention"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A layer is created with `Layer_Dropout(0.2)`, using the class of this post. What does its attribute `rate` hold afterwards?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "0.2",
+          "correct": false,
+          "feedback": "0.2 is the argument, the drop probability. The constructor stores `1 - rate`, the keep probability."
+        },
+        {
+          "key": "b",
+          "text": "0.8",
+          "correct": true,
+          "feedback": "Right: the constructor stores the keep probability, $1 - 0.2$, because the draw and the division both need it."
+        },
+        {
+          "key": "c",
+          "text": "1.25",
+          "correct": false,
+          "feedback": "1.25 is $1 / 0.8$, the value of the kept entries of the mask. The attribute holds the keep probability itself."
+        },
+        {
+          "key": "d",
+          "text": "0.25",
+          "correct": false,
+          "feedback": "0.25 is $p / (1 - p)$, the factor in the variance of a scaled activation. It is not stored anywhere."
+        }
+      ],
+      "explanation": "Section 5: the argument is the drop probability $p$ and the attribute is the keep probability $1 - p$, here 0.8. The mask is drawn with probability `self.rate` of a 1 and divided by `self.rate`.",
+      "hints": [
+        "The argument and the attribute are two different probabilities that sum to 1."
+      ]
+    },
+    {
+      "id": "nn-031-q03",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "ensemble",
+        "thinned-networks"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A network has one dropout layer acting on a hidden layer of $n$ neurons. How does the number of distinct thinned networks it contains depend on $n$ and on the drop rate $p$, for $0 < p < 1$?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It is $(1 - p) \\, n$, the expected number of neurons kept.",
+          "correct": false,
+          "feedback": "That is how many neurons one mask keeps on average, a property of a single draw, not the number of possible patterns."
+        },
+        {
+          "key": "b",
+          "text": "It is $2^{(1 - p) n}$, so a higher rate leaves fewer thinned networks.",
+          "correct": false,
+          "feedback": "Every on-off pattern has a positive probability for $0 < p < 1$, so none is excluded. The rate reweights the patterns."
+        },
+        {
+          "key": "c",
+          "text": "It is $2^n$ at every such rate; $p$ sets how often each is drawn.",
+          "correct": true,
+          "feedback": "Right: the count is of on-off patterns of $n$ neurons. The rate sets their probabilities, not their number."
+        },
+        {
+          "key": "d",
+          "text": "It is $n$, one thinned network per neuron that can be dropped.",
+          "correct": false,
+          "feedback": "That counts only the patterns with exactly one neuron off. Any subset of the neurons can be off at once."
+        }
+      ],
+      "explanation": "Section 2: a layer of $n$ neurons has $2^n$ subsets, one thinned network for each. The count does not depend on $p$, which only sets how often each pattern is drawn.",
+      "hints": [
+        "Count the on-off patterns of $n$ switches."
+      ]
+    },
+    {
+      "id": "nn-031-q04",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "11",
+      "est_minutes": 3,
+      "tags": [
+        "diagnosis",
+        "train-test-switch"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A trained network with a dropout layer is evaluated twice on the same test set, with no update in between. The two test accuracies differ by several points. Which mistake produces this?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The backward pass multiplies by the mask without the factor $1 / (1 - p)$.",
+          "correct": false,
+          "feedback": "That gives wrong gradients for the first dense layer during training. With no update between the two passes it cannot make them differ."
+        },
+        {
+          "key": "b",
+          "text": "The layer was created with the keep probability where the drop probability was meant.",
+          "correct": false,
+          "feedback": "That trains with another rate than intended. With the mask off, two evaluations of fixed weights still agree exactly."
+        },
+        {
+          "key": "c",
+          "text": "The test set was drawn after training instead of before it.",
+          "correct": false,
+          "feedback": "That changes which test points are used, once. The same points evaluated twice with fixed weights and no mask give the same figure."
+        },
+        {
+          "key": "d",
+          "text": "The dropout layer's `forward` was called in training mode during evaluation.",
+          "correct": true,
+          "feedback": "Right: each evaluation pass then draws a fresh mask and reports a different random thinned network."
+        }
+      ],
+      "explanation": "Section 11: with `training=True` in the test pass, 100 passes over the same weights gave test accuracies spread over several points, where `training=False` gives the same figure on every pass. A forward-only pass over fixed weights can only vary if something random is drawn in it.",
+      "hints": [
+        "Fixed weights and fixed data give a fixed output unless the pass itself draws random numbers.",
+        "Find the one call in the forward pass that draws from the random stream."
+      ]
+    },
+    {
+      "id": "nn-031-q05",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "1",
+      "est_minutes": 2,
+      "tags": [
+        "co-adaptation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Which statement describes how dropout acts against co-adaptation?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "It removes weights from the network, so that fewer parameters are left to fit noise.",
+          "correct": false,
+          "feedback": "Dropout removes no parameter. Every weight is still there at evaluation, when every neuron is on."
+        },
+        {
+          "key": "b",
+          "text": "No neuron can count on a particular other neuron being present on a pass.",
+          "correct": true,
+          "feedback": "Right: a feature that works only alongside one specific partner stops being reliable, so training favours features that help on their own."
+        },
+        {
+          "key": "c",
+          "text": "It adds a term to the loss that grows with the size of the weights.",
+          "correct": false,
+          "feedback": "That describes the L1 and L2 penalties. Dropout changes the forward pass and adds nothing to the loss."
+        },
+        {
+          "key": "d",
+          "text": "It lowers the learning rate of neurons whose outputs are correlated.",
+          "correct": false,
+          "feedback": "Dropout does not touch the optimiser or measure correlations. It masks activations at random."
+        }
+      ],
+      "explanation": "Section 1: co-adaptation is a neuron being useful only in combination with particular others. Under dropout any of those may be absent on a pass, so the dependency is unreliable and features that help without a specific partner are favoured.",
+      "hints": [
+        "Co-adaptation is a dependency between specific neurons. Ask what a random mask does to such a dependency."
+      ]
+    },
+    {
+      "id": "nn-031-q06",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "inverted-dropout",
+        "scale"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A network is trained with a bare mask of 0 and 1 at drop rate $p$, with no division, and is then evaluated with every neuron on and no rescaling. Compared with training, the inputs that the next layer receives at evaluation are, on average,",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "smaller by the factor $1 - p$.",
+          "correct": false,
+          "feedback": "The direction is reversed. Masking shrinks the training-time inputs; evaluation, with nothing masked, has the larger ones."
+        },
+        {
+          "key": "b",
+          "text": "the same, because the mask has mean 1.",
+          "correct": false,
+          "feedback": "A bare mask of 0 and 1 has mean $1 - p$. Only the mask divided by $1 - p$ has mean 1."
+        },
+        {
+          "key": "c",
+          "text": "larger by the factor $1 / (1 - p)$.",
+          "correct": true,
+          "feedback": "Right: in training the expected input was $(1 - p)$ times the full activation, so the full activation is $1 / (1 - p)$ times what the layer was trained on."
+        },
+        {
+          "key": "d",
+          "text": "larger by the factor $1 + p$.",
+          "correct": false,
+          "feedback": "The ratio of full to expected masked activation is $1 / (1 - p)$, which equals $1 + p$ only to first order in $p$: at $p = 0.5$ it is 2, not 1.5."
+        }
+      ],
+      "explanation": "Section 4: a bare mask multiplies the expected activation by $1 - p$, so with every neuron on the next layer receives inputs larger by $1 / (1 - p)$, 25 percent at $p = 0.2$. Inverted dropout removes the mismatch by dividing by $1 - p$ in training.",
+      "hints": [
+        "Compute the mean of a mask entry that is 1 with probability $1 - p$ and 0 otherwise.",
+        "Divide the evaluation-time input by the expected training-time input."
+      ]
+    },
+    {
+      "id": "nn-031-q07",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "inverted-dropout",
+        "arithmetic"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A dropout layer of this series runs in training mode with drop rate $p = 0.25$. An activation of 3.0 is kept by the mask. What value does the layer output for it?",
+      "answer": {
+        "value": 4.0,
+        "tolerance": 0.01,
+        "unit": ""
+      },
+      "precision_note": "Closed form of section 4: a / (1 - p) = 3.0 / 0.75.",
+      "explanation": "Section 4: a kept activation is divided by the keep probability $1 - p = 0.75$, so the output is $3.0 / 0.75 = 4.0$. Multiplying by 0.75 instead, which gives 2.25, is the test-time rule of the non-inverted method.",
+      "hints": [
+        "A kept activation is scaled up, not down.",
+        "The scale is one over the keep probability."
+      ]
+    },
+    {
+      "id": "nn-031-q08",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 4,
+      "tags": [
+        "variance",
+        "inverted-dropout"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "An activation $a = 2$ passes through inverted dropout with drop rate $p = 0.2$. Over the random mask, what is the variance of the layer's output for this activation?",
+      "answer": {
+        "value": 1.0,
+        "tolerance": 0.02,
+        "unit": ""
+      },
+      "precision_note": "Closed form of section 4, a^2 * p / (1 - p) = 4 * 0.2 / 0.8; snippets/layer_dropout.py prints 1.0002 for this entry over 200,000 masks.",
+      "explanation": "Section 4: the output is $a / (1 - p) = 2.5$ with probability 0.8 and 0 otherwise. Its mean is 2 and its second moment is $0.8 \\cdot 2.5^2 = 5$, so the variance is $5 - 4 = 1$, which is $a^2 p / (1 - p)$. The variance of the bare mask times $a$, $a^2 p (1 - p) = 0.64$, leaves out the division.",
+      "hints": [
+        "The output takes two values. Write down each value and its probability.",
+        "Variance is the mean of the square minus the square of the mean; the mean is the activation itself."
+      ]
+    },
+    {
+      "id": "nn-031-q09",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "ensemble",
+        "counting"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A dropout layer acts on a hidden layer of 10 neurons. How many distinct thinned networks, counting every on-off pattern of the 10 neurons, does the network contain?",
+      "answer": {
+        "value": 1024,
+        "tolerance": 0,
+        "unit": ""
+      },
+      "precision_note": "Closed form of section 2: 2^n with n = 10.",
+      "explanation": "Section 2: each neuron is either on or off, so 10 neurons have $2^{10} = 1{,}024$ patterns, the pattern with every neuron off and the one with every neuron on included. The drop rate does not enter the count.",
+      "hints": [
+        "Each neuron contributes a factor to the count."
+      ]
+    },
+    {
+      "id": "nn-031-q10",
+      "type": "numeric",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 4,
+      "tags": [
+        "rate",
+        "probability"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A dropout layer with drop rate $p = 0.1$ acts on a hidden layer of 64 neurons, and each entry of the mask is drawn independently. What is the probability that a given sample keeps all 64 of its activations on one training pass? Give the probability as a decimal.",
+      "answer": {
+        "value": 0.00118,
+        "tolerance": 5e-05,
+        "unit": ""
+      },
+      "precision_note": "Closed form (1 - p)^64 = 0.9^64 = 0.001179; snippets/layer_dropout.py prints 1.18e-03 in the table of section 3.",
+      "explanation": "Section 3: each entry is kept with probability 0.9, independently, so all 64 are kept with probability $0.9^{64} \\approx 0.00118$, about one sample in 850. Even a small rate leaves almost no sample that passes through the whole layer.",
+      "hints": [
+        "Independent events: the probabilities multiply.",
+        "The probability that one entry is kept is $1 - p$; there are 64 entries."
+      ]
+    },
+    {
+      "id": "nn-031-q11",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 3,
+      "tags": [
+        "inverted-dropout",
+        "expectation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Inverted dropout divides the kept activations by $1 - p$ during training. State, in one sentence, the property of the layer's output that this division secures and that lets evaluation use the layer as the identity.",
+      "answer": {
+        "model": "The expected value of the layer's output equals its input, so the next layer sees inputs of the same average size in training and in evaluation.",
+        "accept": [
+          "^(?![\\s\\S]*\\b(?:not|never|no longer|isn't|doesn't|does not|cannot)\\s+(?:\\w+\\s+)?(?:equal|match|the same|preserve|keep|kept|unchanged|identical))(?![\\s\\S]*\\bunequal\\b)(?![\\s\\S]*\\bdiffer\\w*\\s+from\\b)(?![\\s\\S]*\\bvarian\\w*\\b[^.;,]*\\b(?:same|unchanged|equal\\w*|preserv\\w*|kept|keeps?)\\b)(?![\\s\\S]*\\bnot\\s+(?:only|just|merely)\\s+on\\s+average)(?![\\s\\S]*\\b(?:larger|smaller|bigger|greater|less|lower|higher)\\s+than\\s+(?:the\\s+|its\\s+)?(?:input|activation))(?=[\\s\\S]*(?:\\bexpect\\w*|\\bmean\\b|\\baverage\\b|\\bE\\s*\\[|\\bunbias\\w*))[\\s\\S]*(?:\\bequal\\w*|\\bsame\\b|\\bunchanged\\b|\\bmatch\\w*|\\bpreserv\\w*|\\bkeeps?\\b|\\bkept\\b|\\brestor\\w*|\\bidentical\\b|\\bstays?\\b|\\b(?:not|n't)\\s+change|=|\\bis\\s+(?:just\\s+|again\\s+)?the\\s+(?:input|activation)|\\bunbias\\w*)"
+        ]
+      },
+      "explanation": "Section 4: a mask entry is 1 with probability $1 - p$, so $\\mathbb{E}[a m / (1 - p)] = a$. The expected input of the next layer is therefore the same with the mask on and with every neuron on, and evaluation needs no correction.",
+      "hints": [
+        "Compute the mean of a scaled, masked activation over the mask."
+      ]
+    },
+    {
+      "id": "nn-031-q12",
+      "type": "short",
+      "track": "run",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "5",
+      "est_minutes": 2,
+      "tags": [
+        "evaluation-mode",
+        "predict-output"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "The code uses the `Layer_Dropout` class of this post. What does it print?",
+      "stimulus": {
+        "kind": "code",
+        "language": "python",
+        "content": "import numpy as np\n\nlayer = Layer_Dropout(0.5)\nlayer.forward(np.array([[2.0, 4.0]]), training=False)\nprint(layer.output)"
+      },
+      "answer": {
+        "model": "[[2. 4.]]",
+        "accept": [
+          "^\\s*\\[?\\s*\\[?\\s*2(\\.0*)?\\s*(?:,\\s*|\\s+)4(\\.0*)?\\s*\\]?\\s*\\]?\\s*$"
+        ]
+      },
+      "explanation": "Section 5: with `training=False` the layer draws no mask and sets its output to a copy of its input, so the two values are printed unchanged, whatever the rate. In training mode at this rate each entry would be either 0 or doubled.",
+      "hints": [
+        "Look at which branch of `forward` runs."
+      ]
+    },
+    {
+      "id": "nn-031-q13",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 12,
+      "tags": [
+        "ensemble",
+        "derivation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A network has one hidden layer with activations $a_1, \\dots, a_n$, an inverted-dropout layer with drop rate $p$, and a dense output layer with weights $w_{kj}$ (from hidden neuron $j$ to output $k$) and biases $b_k$ that produces the logits $z_k$. Show that the logits of the full network, with every neuron on, equal the expectation over the masks of the logits of the thinned networks, and say which property of the output layer the argument uses.",
+      "kind": "derive",
+      "solution": "1. With mask entries $m_j \\in \\{0, 1\\}$, each equal to 1 with probability $1 - p$, the logits of a thinned network are $z_k(m) = \\sum_j \\frac{a_j m_j}{1 - p} w_{kj} + b_k$.\n2. The activations $a_j$ and the parameters do not depend on the mask, so taking the expectation over the masks only acts on $m_j$: $\\mathbb{E}[z_k(m)] = \\sum_j \\frac{a_j \\, \\mathbb{E}[m_j]}{1 - p} w_{kj} + b_k$.\n3. $\\mathbb{E}[m_j] = 1 - p$, which cancels the division: $\\mathbb{E}[z_k(m)] = \\sum_j a_j w_{kj} + b_k$.\n4. The right-hand side is the logit of the full network, mask off.\n5. The step that moved the expectation inside the sum uses the linearity of the output layer in its inputs. With a non-linearity between the dropout layer and the logits the expectation could not be moved inside, and the equality would become an approximation.",
+      "rubric": [
+        {
+          "criterion": "Writes the logits of a thinned network with the mask and the factor $1/(1 - p)$",
+          "points": 2
+        },
+        {
+          "criterion": "Takes the expectation over the mask only, using that activations and parameters do not depend on it",
+          "points": 2
+        },
+        {
+          "criterion": "Uses $\\mathbb{E}[m_j] = 1 - p$ to cancel the scale and identifies the result as the full network's logits",
+          "points": 2
+        },
+        {
+          "criterion": "Names linearity of the output layer in its inputs as the property used",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Section 2: the logits are linear in the mask, so with the scale of section 4 their expectation over masks is the logits of the full network. `snippets/ensemble.py` confirms it by listing all 256 masks of an 8-neuron layer, with a largest gap at rounding level.",
+      "hints": [
+        "Write one logit of a thinned network as a sum over the hidden neurons, mask included.",
+        "Only the mask entries are random; take the mean of one of them."
+      ]
+    },
+    {
+      "id": "nn-031-q14",
+      "type": "long",
+      "track": "edge",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "8",
+      "est_minutes": 12,
+      "tags": [
+        "evaluation",
+        "mask-on-mask-off"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A report on a network with a dropout layer reads: \"The training loop's last epoch shows 53 percent accuracy and the test pass shows 59 percent. The test figure is higher, so the network generalises better than it fits and is certainly not overfitting.\" The training figure was computed inside the loop and the test figure with `training=False`. Criticise the conclusion and say what should have been measured.",
+      "kind": "critique",
+      "solution": "The two figures are not measurements of the same network. The loop's accuracy is computed through the mask of that epoch, so it scores a batch of random thinned networks, each with part of its hidden layer missing. The test figure is computed with the mask off and scores the full network. A thinned network is less accurate than the full one on the same points, so the difference between the two figures mixes two effects: the handicap of the mask, and the difference between training data and new data.\n\nTo separate them, the training set is evaluated forward-only with `training=False`, with the same weights that produced the test figure. The difference between that mask-off training accuracy and the test accuracy is the generalisation gap, and it can be compared with the gap of a network without dropout. The difference between the mask-off and the mask-on training accuracy is the cost of the mask and says nothing about new data.\n\nIn the runs of section 8 the mask-off training accuracy was above the test accuracy in every run, also in the runs whose test accuracy was above the mask-on training accuracy. A test figure above a masked training figure is therefore expected and is no evidence about overfitting. The report also rests on one run; a claim about the method needs several seeds. Finally, 59 percent on the test set is a weak model whatever the sign of a gap: a small or negative gap is not the goal, a high test figure is.",
+      "rubric": [
+        {
+          "criterion": "States that the loop's training accuracy is measured through the mask and the test accuracy with the mask off, so they score different networks",
+          "points": 3
+        },
+        {
+          "criterion": "Prescribes a forward-only pass over the training data with `training=False` on the same weights",
+          "points": 3
+        },
+        {
+          "criterion": "Separates the cost of the mask (mask-off minus mask-on training accuracy) from the generalisation gap (mask-off training minus test accuracy)",
+          "points": 2
+        },
+        {
+          "criterion": "Notes that a small or negative gap does not make a model good, or that one run is not enough",
+          "points": 1
+        }
+      ],
+      "answer_length": "two paragraphs",
+      "explanation": "Section 8: training accuracy measured through the mask is lower than the same weights' accuracy with the mask off, which alone can put the test figure above it. The comparison that measures generalisation uses the mask-off training accuracy, and in the measured runs that figure was above the test accuracy in every run.",
+      "hints": [
+        "Ask which network each of the two figures was computed on.",
+        "There is a third figure that would make the comparison fair: the same data as one figure and the same mode as the other."
+      ]
+    },
+    {
+      "id": "nn-031-q15",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 15,
+      "tags": [
+        "layer-dropout",
+        "implement"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Complete `forward` and `backward` of `Layer_Dropout` with the inverted convention of this series. In training mode `forward` draws a fresh mask for every entry of the input, keeps an entry with the stored keep probability, scales the kept entries so that the expected output equals the input, and stores the scaled mask as `self.binary_mask`. With `training=False` the output is a copy of the input and no random number is drawn. `backward` stores `self.dinputs`.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "import numpy as np\n\n\nclass Layer_Dropout:\n\n    def __init__(self, rate):\n        # rate is the drop probability p\n        self.rate = 1 - rate\n\n    def forward(self, inputs, training=True):\n        self.inputs = inputs\n        # TODO: in evaluation mode the output is a copy of the input and nothing is drawn;\n        # in training mode draw a mask with np.random.binomial, scale it, store it in\n        # self.binary_mask and apply it.\n        raise NotImplementedError\n\n    def backward(self, dvalues):\n        # TODO: store self.dinputs\n        raise NotImplementedError\n",
+      "solution": "import numpy as np\n\n\nclass Layer_Dropout:\n\n    def __init__(self, rate):\n        # rate is the drop probability p\n        self.rate = 1 - rate\n\n    def forward(self, inputs, training=True):\n        self.inputs = inputs\n        if not training:\n            self.output = inputs.copy()\n            return\n        self.binary_mask = np.random.binomial(1, self.rate, size=inputs.shape) / self.rate\n        self.output = inputs * self.binary_mask\n\n    def backward(self, dvalues):\n        self.dinputs = dvalues * self.binary_mask\n",
+      "tests": "import numpy as np\n\nlayer = Layer_Dropout(0.2)\nassert abs(layer.rate - 0.8) < 1e-12, \"the layer stores the keep probability\"\n\n# Training mode: entries are 0 or input / (1 - p), about 20 percent are dropped, the mean is kept.\nnp.random.seed(0)\na = np.full((2000, 50), 3.0)\nlayer.forward(a)\nvalues = np.unique(np.round(layer.output, 9))\nassert set(values.tolist()) == {0.0, 3.75}, f\"outputs must be 0 or 3.75, got {values}\"\ndropped = np.mean(layer.output == 0)\nassert 0.19 < dropped < 0.21, f\"fraction dropped {dropped}\"\nassert abs(layer.output.mean() - 3.0) < 0.02, \"the mean activation must be preserved\"\nassert not np.array_equal(layer.output[0], layer.output[1]), \"each sample needs its own mask\"\n\n# A new mask on every call.\nfirst = layer.output.copy()\nlayer.forward(a)\nassert not np.array_equal(first, layer.output), \"the mask must be drawn again on every call\"\n\n# backward uses the mask of the last training forward, scale included.\ndvalues = np.random.randn(*a.shape)\nlayer.backward(dvalues)\nassert layer.dinputs.shape == dvalues.shape\nassert np.allclose(layer.dinputs, dvalues * layer.output / 3.0), \"dinputs must be dvalues times the stored mask\"\n\n# Evaluation mode: identity, a copy, and no random draw.\nnp.random.seed(1)\nbefore = np.random.get_state()[1].copy()\nx = np.random.RandomState(5).randn(4, 6)\nlayer.forward(x, training=False)\nassert np.array_equal(layer.output, x), \"evaluation mode must return the input unchanged\"\nassert layer.output is not x, \"the output must be a copy\"\nassert np.array_equal(before, np.random.get_state()[1]), \"evaluation mode must not draw random numbers\"\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "Section 5: the mask is `np.random.binomial(1, self.rate, size=inputs.shape) / self.rate`, so it holds 0 and $1/(1 - p)$, and the output is the input times the mask. The derivative of the output with respect to the input is the mask, so `backward` multiplies `dvalues` by the stored mask. Evaluation copies the input and draws nothing.",
+      "hints": [
+        "The stored attribute is the keep probability; it is both the probability of a 1 and the divisor.",
+        "The size of the draw is the shape of the input, so that every entry has its own 0 or 1.",
+        "The local derivative of input times mask, with respect to the input, is the mask."
+      ]
+    },
+    {
+      "id": "nn-031-q16",
+      "type": "code",
+      "track": "run",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 12,
+      "tags": [
+        "train-test-switch",
+        "fix"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "The function below is meant to report the loss and the accuracy of a trained network with a dropout layer on held-out data. Called twice on the same data and the same weights, it returns two different results. Find the cause and fix the function without changing the dropout class.",
+      "kind": "fix",
+      "language": "python",
+      "starter": "import numpy as np\n\n\ndef evaluate(X, y, dense1, activation1, dropout1, dense2, loss_activation):\n    \"\"\"Loss and accuracy of the network on (X, y), forward only.\"\"\"\n    dense1.forward(X)\n    activation1.forward(dense1.output)\n    dropout1.forward(activation1.output)\n    dense2.forward(dropout1.output)\n    loss = loss_activation.forward(dense2.output, y)\n\n    predictions = np.argmax(loss_activation.output, axis=1)\n    accuracy = np.mean(predictions == y)\n    return float(loss), float(accuracy)\n",
+      "solution": "import numpy as np\n\n\ndef evaluate(X, y, dense1, activation1, dropout1, dense2, loss_activation):\n    \"\"\"Loss and accuracy of the network on (X, y), forward only.\"\"\"\n    dense1.forward(X)\n    activation1.forward(dense1.output)\n    dropout1.forward(activation1.output, training=False)\n    dense2.forward(dropout1.output)\n    loss = loss_activation.forward(dense2.output, y)\n\n    predictions = np.argmax(loss_activation.output, axis=1)\n    accuracy = np.mean(predictions == y)\n    return float(loss), float(accuracy)\n",
+      "tests": "import numpy as np\n\n\nclass Dense:\n    def __init__(self, weights, biases):\n        self.weights, self.biases = weights, biases\n\n    def forward(self, inputs):\n        self.output = inputs @ self.weights + self.biases\n\n\nclass ReLU:\n    def forward(self, inputs):\n        self.output = np.maximum(0, inputs)\n\n\nclass Dropout:\n    def __init__(self, rate):\n        self.rate = 1 - rate\n\n    def forward(self, inputs, training=True):\n        if not training:\n            self.output = inputs.copy()\n            return\n        self.binary_mask = np.random.binomial(1, self.rate, size=inputs.shape) / self.rate\n        self.output = inputs * self.binary_mask\n\n\nclass SoftmaxLoss:\n    def forward(self, inputs, y):\n        e = np.exp(inputs - inputs.max(axis=1, keepdims=True))\n        self.output = e / e.sum(axis=1, keepdims=True)\n        return float(np.mean(-np.log(self.output[range(len(y)), y])))\n\n\nrng = np.random.RandomState(0)\nX = rng.randn(200, 2)\ny = rng.randint(0, 3, size=200)\ndense1 = Dense(rng.randn(2, 16), rng.randn(1, 16))\ndense2 = Dense(rng.randn(16, 3), rng.randn(1, 3))\nrelu, dropout, head = ReLU(), Dropout(0.5), SoftmaxLoss()\n\n# The reference: the full network, no dropout layer at all.\nhidden = np.maximum(0, X @ dense1.weights + dense1.biases)\nreference_loss = head.forward(hidden @ dense2.weights + dense2.biases, y)\nreference_accuracy = float(np.mean(np.argmax(head.output, axis=1) == y))\n\nnp.random.seed(0)\nbefore = np.random.get_state()[1].copy()\nfirst = evaluate(X, y, dense1, relu, dropout, dense2, head)\nsecond = evaluate(X, y, dense1, relu, dropout, dense2, head)\nassert first == second, f\"two evaluations of the same weights differ: {first} and {second}\"\nassert abs(first[0] - reference_loss) < 1e-12, \"the loss must be that of the full network\"\nassert abs(first[1] - reference_accuracy) < 1e-12, \"the accuracy must be that of the full network\"\nassert np.array_equal(before, np.random.get_state()[1]), \"evaluation must not draw random numbers\"\nprint(\"all tests passed\")\n",
+      "expected_output": "all tests passed\n",
+      "explanation": "Section 7: `Layer_Dropout.forward` defaults to `training=True`, so a call that omits the argument draws a mask and the function scores a random thinned network. Passing `training=False` makes the layer the identity, and two evaluations of fixed weights agree and equal the full network's figures.",
+      "hints": [
+        "One call in the forward pass draws random numbers unless told otherwise.",
+        "Look at the default value of the second argument of the dropout layer's `forward`."
+      ]
+    },
+    {
+      "id": "nn-031-q17",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "6",
+      "est_minutes": 4,
+      "tags": [
+        "training-loop",
+        "wiring"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "One training step of the network dense, ReLU, dropout, dense, softmax with loss contains the eight calls below, between `dense1.forward(X)` and `dense1.backward(...)`. Put them in the order in which they run.",
+      "items": [
+        {
+          "key": "a",
+          "text": "`dense2.backward(loss_activation.dinputs)`"
+        },
+        {
+          "key": "b",
+          "text": "`dropout1.forward(activation1.output, training=True)`"
+        },
+        {
+          "key": "c",
+          "text": "`activation1.backward(dropout1.dinputs)`"
+        },
+        {
+          "key": "d",
+          "text": "`loss_activation.forward(dense2.output, y)`"
+        },
+        {
+          "key": "e",
+          "text": "`activation1.forward(dense1.output)`"
+        },
+        {
+          "key": "f",
+          "text": "`dropout1.backward(dense2.dinputs)`"
+        },
+        {
+          "key": "g",
+          "text": "`dense2.forward(dropout1.output)`"
+        },
+        {
+          "key": "h",
+          "text": "`loss_activation.backward(loss_activation.output, y)`"
+        }
+      ],
+      "answer": [
+        "e",
+        "b",
+        "g",
+        "d",
+        "h",
+        "a",
+        "f",
+        "c"
+      ],
+      "partial_credit": true,
+      "explanation": "Section 6: the forward pass runs ReLU, dropout, the second dense layer and the loss; the backward pass visits the same objects in mirrored order. Each call's argument names the attribute that the call before it wrote, which fixes the order: `dense2.forward` reads `dropout1.output`, and `activation1.backward` reads `dropout1.dinputs`.",
+      "hints": [
+        "Each call's argument is an attribute written by the call just before it.",
+        "The backward calls mirror the forward calls."
+      ]
+    },
+    {
+      "id": "nn-031-q18",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "11",
+      "est_minutes": 4,
+      "tags": [
+        "diagnosis"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Match each observation, made on a network that uses the `Layer_Dropout` class of this post, with the mistake that produces it.",
+      "left": [
+        {
+          "key": "a",
+          "text": "Two test passes over the same weights report different accuracies."
+        },
+        {
+          "key": "b",
+          "text": "The mask is identical in every epoch of the training loop."
+        },
+        {
+          "key": "c",
+          "text": "`AttributeError: 'Layer_Dropout' object has no attribute 'binary_mask'`"
+        },
+        {
+          "key": "d",
+          "text": "The layer's output is `nan` in every entry."
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "`np.random.seed` is called inside the loop, before the forward pass."
+        },
+        {
+          "key": "q",
+          "text": "`backward` is called on a layer that has only run with `training=False`."
+        },
+        {
+          "key": "r",
+          "text": "The layer was created with a drop rate of 1."
+        },
+        {
+          "key": "s",
+          "text": "The test pass calls the layer's `forward` with `training=True`."
+        },
+        {
+          "key": "t",
+          "text": "The layer was created with a drop rate of 0."
+        }
+      ],
+      "answer": {
+        "a": "s",
+        "b": "p",
+        "c": "q",
+        "d": "r"
+      },
+      "explanation": "Section 11 runs each case. A mask in the test pass makes the figure random; a seed set inside the loop restarts the stream, so every epoch draws the same mask; `binary_mask` is written only by a training-mode `forward`; and a drop rate of 1 stores a keep probability of 0, so the mask is 0 divided by 0. A drop rate of 0 gives a mask of ones and none of these symptoms.",
+      "hints": [
+        "For each observation, ask which line of the class it points at.",
+        "Two of the mistakes concern the random stream and two concern the stored attributes."
+      ]
+    },
+    {
+      "id": "nn-031-q19",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o1",
+        "o3"
+      ],
+      "section": "9",
+      "est_minutes": 15,
+      "tags": [
+        "regularisation",
+        "comparison"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Post 28 named weight penalties and dropout as two levers that leave the architecture and the schedule alone, and post 30 built the first. Compare an L2 penalty with dropout on three points: what each one changes in a training step, what each one requires the evaluation pass to do differently from the training pass, and which reported training figure each one makes unfit for comparison with a test figure.",
+      "kind": "connect",
+      "solution": "**What changes in a training step.** An L2 penalty adds a term $\\lambda \\sum w^2$ to the loss and a term $2 \\lambda w$ to each weight gradient; the forward pass through the layers is untouched. Dropout adds nothing to the loss. It changes the forward pass, multiplying the activations of a layer by a random mask of 0 and $1/(1 - p)$, and the backward pass multiplies the gradient by the same mask. The penalty is deterministic and acts on weights; dropout is random and acts on activations.\n\n**What evaluation does differently.** With a penalty, the evaluation pass computes the same forward pass and reports the data loss alone: the penalty belongs to the training objective and is left out of a test loss. With dropout, the forward pass itself differs: the layer is called with `training=False` and is the identity, so the full network runs. The inverted scale is what makes this need no further correction.\n\n**Which training figure is not comparable.** With a penalty it is the training loss of the loop, which is data loss plus penalty and overstates the data loss by the penalty. With dropout it is the loop's loss and accuracy, which are measured through that epoch's mask, on thinned networks, and are worse than the figures of the same weights with the mask off. In both cases the remedy is the one of post 28: a separate forward-only pass over the training data, in evaluation mode and with the data loss alone, after the last update.",
+      "rubric": [
+        {
+          "criterion": "L2 adds a term to the loss and to the weight gradients; dropout masks activations in the forward pass and gradients in the backward pass",
+          "points": 3
+        },
+        {
+          "criterion": "Evaluation under a penalty reports the data loss without the penalty; evaluation under dropout runs the layer as the identity",
+          "points": 3
+        },
+        {
+          "criterion": "Names the loop's loss with the penalty, and the loop's loss and accuracy through the mask, as the figures not comparable with test figures",
+          "points": 2
+        },
+        {
+          "criterion": "Gives the remedy: a forward-only pass over the training data in evaluation mode",
+          "points": 1
+        }
+      ],
+      "answer_length": "half a page",
+      "connects": [
+        "nn-028",
+        "nn-030"
+      ],
+      "explanation": "Section 9 places the two side by side: a penalty acts on the loss and the weight gradients, dropout on the forward and backward passes. Each makes the loop's own training figures differ from what a forward-only pass in evaluation mode reports, the penalty by adding to the loss and dropout by thinning the network.",
+      "hints": [
+        "Take the two methods one training step at a time: the forward pass, the loss, the backward pass.",
+        "For each method, ask what the loop's printed training figure contains that a test figure does not."
+      ]
+    }
+  ]
+}
