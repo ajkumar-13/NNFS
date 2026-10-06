@@ -13,9 +13,9 @@
 > - Predict how many local-derivative factors appear in the gradient for a weight in any given layer.
 > - Check a chain-rule result against a central difference taken through the whole composition.
 
-![Two rows. The forward row runs left to right: x enters the inner function g, giving z = g(x), which enters the outer function f, giving y = f(g(x)). The backward row runs right to left with the slopes dy/dz and dz/dx. A formula reads dy/dx = dy/dz times dz/dx = f'(z) times g'(x).](diagrams/01-chain-rule.svg)
+![Two rows. Forward, left to right: x = 1 enters h(x) = 3x + 1, giving u = 4, which enters g(u) = u squared, giving v = 16, which enters f(v) = 2v cubed, giving y = 8,192. Backward, right to left: starting from 1, the arrows multiply by f prime at v = 16, which is 1,536, then by g prime at u = 4, which is 8, then by h prime at x = 1, which is 3, giving dy/dv = 1,536, dy/du = 12,288 and dy/dx = 36,864, the value a central difference through the whole chain also gives.](diagrams/01-chain-rule.svg)
 
-*Values are computed left to right, slopes right to left. Each box contributes one local derivative, and the slope of the whole chain is their product.*
+*Values are computed left to right, slopes right to left. Each function contributes one local derivative, taken at the value it received, and the slope of the whole chain is their product.*
 
 ---
 
@@ -114,7 +114,7 @@ For three composed functions, $y = f(g(h(x)))$, the rule extends by one more loc
 
 $$\frac{dy}{dx} = f'\bigl(g(h(x))\bigr) \cdot g'\bigl(h(x)\bigr) \cdot h'(x).$$
 
-Every factor is evaluated at the value its own function received on the way in. As an example take $h(x) = 3x + 1$, $g(u) = u^2$, and $f(v) = 2v^3$. At $x = 1$ the values along the chain are $u = 4$ and $v = 16$, and the local derivatives are $h'(1) = 3$, $g'(4) = 8$, and $f'(16) = 6 \cdot 16^2 = 1{,}536$. The slope is their product, $1{,}536 \cdot 8 \cdot 3 = 36{,}864$. Expanding first gives the same number: $y = 2(3x + 1)^6$ and $dy/dx = 36(3x + 1)^5 = 36{,}864$.
+Every factor is evaluated at the value its own function received on the way in. As an example take $h(x) = 3x + 1$, $g(u) = u^2$, and $f(v) = 2v^3$, the chain the figure at the top of the post draws. At $x = 1$ the values along the chain are $u = 4$ and $v = 16$, and the local derivatives are $h'(1) = 3$, $g'(4) = 8$, and $f'(16) = 6 \cdot 16^2 = 1{,}536$. The slope is their product, $1{,}536 \cdot 8 \cdot 3 = 36{,}864$. Expanding first gives the same number: $y = 2(3x + 1)^6$ and $dy/dx = 36(3x + 1)^5 = 36{,}864$.
 
 For $n$ composed functions there are $n$ factors. Each layer, activation, and loss of a network is one such function, so the depth of the network sets the length of the chain.
 
@@ -145,9 +145,11 @@ For $\partial L / \partial \mathbf{W}_1$ the chain rule produces one factor per 
 
 $$\frac{\partial L}{\partial \mathbf{W}_1} = \frac{\partial L}{\partial \mathbf{z}_2} \cdot \frac{\partial \mathbf{z}_2}{\partial \mathbf{a}_1} \cdot \frac{\partial \mathbf{a}_1}{\partial \mathbf{z}_1} \cdot \frac{\partial \mathbf{z}_1}{\partial \mathbf{W}_1}.$$
 
-![Two rows. The forward row runs left to right: x, Dense 1, z1, ReLU, a1, Dense 2, z2, the loss L. The backward row holds one local derivative per function: L in z2 for Softmax + CE, z2 in a1 for Dense 2, a1 in z1 for ReLU, z1 in W1 for Dense 1. A band multiplies the four.](diagrams/02-chain-in-a-network.svg)
+The figure below draws the chain for the sample of section 8.2, with each factor measured and placed under the function it belongs to.
 
-*Read the lower row from right to left: the combined softmax and cross-entropy, the second dense layer, ReLU, the first dense layer. Four functions, four factors.*
+![Forward, left to right: x = (1, minus 2) passes Dense 1 to give z1 = (1.2, minus 1.6, 1.7), ReLU to give a1 = (1.2, 0.0, 1.7), Dense 2 to give z2 = (minus 0.66, 1.39, 0.84), and softmax with cross-entropy to give L = 2.584; the second hidden neuron is outlined as switched off. Under each function, its measured table of local derivatives, with arrows running right to left: dL/dz2 of shape (1, 3) is minus 0.9245, 0.5863, 0.3383; dz2/da1 of shape (3, 3) holds the entries of W2; da1/dz1 of shape (3, 3) has 1, 0, 1 on its diagonal; dz1/dW1 of shape (3, 6) holds only the inputs 1 and minus 2. Their product, reshaped to (2, 3), is minus 0.2255, 0, 1.15 and 0.451, 0, minus 2.3, with a zero middle column, and a central difference through the whole network agrees to 6.0 times 10 to the minus 11.](diagrams/02-chain-in-a-network.svg)
+
+*Read the lower row from right to left: the combined softmax and cross-entropy, the second dense layer, ReLU, the first dense layer. Four functions, four factors, and the zero of the switched-off neuron carries through to its two weights.*
 
 Because the quantities are rows of numbers and not single numbers, each factor is a table of partial derivatives with one row per output of its function and one column per input (such a table is called a Jacobian, a name post 17 returns to), and the dots are matrix products (post 02). For the network of post 09, with 2 inputs, 3 hidden neurons, and 3 classes, the four factors are:
 
@@ -195,11 +197,11 @@ The chain rule therefore does two things for a neural network. It makes the grad
 
 ## 7. The pattern, in three steps
 
-Reading off the chain rule for any composition is mechanical:
+Reading off the chain rule for any composition is mechanical. The figure below repeats the three steps of section 4 on $3(2x^2)^5$ and draws what the third step guards against:
 
-![Three cards work the derivative of 3 times (2x squared) to the fifth. Split it: g(x) = 2x squared, f(z) = 3z to the fifth. Differentiate each: g'(x) = 4x, f'(z) = 15z to the fourth. Multiply: 960x to the ninth. A band lists the same steps for a network: read the architecture, derive each local derivative, multiply.](diagrams/03-three-step-pattern.svg)
+![Three cards work the derivative of 3 times (2x squared) to the fifth. Split it: g(x) = 2x squared, f(z) = 3z to the fifth. Differentiate each: g prime (x) = 4x, f prime (z) = 15z to the fourth. Multiply, with f prime at z = g(x): 960x to the ninth, which at x = 1 is f prime (2) times g prime (1) = 240 times 4 = 960. Beside them, the curve near x = 1 with its tangent of slope 960 at the point (1, 96), and an almost flat line of slope 60, f prime (1) times g prime (1).](diagrams/03-three-step-pattern.svg)
 
-*The three steps that produce $960x^9$ here also produce the four-factor gradient of the network. Only the middle step requires new work for each kind of layer.*
+*Taking the outer derivative at $x$ in place of the inner value $z = 2$ gives a slope of 60, a sixteenth of the true 960. The same three steps produce the four-factor gradient of the network.*
 
 Step 1, identifying the chain of functions, is reading the architecture. Step 3, multiplying, is matrix arithmetic, whose shapes and order posts 13 and 14 work through. The substance of the posts that follow is **step 2**: deriving the local derivatives of `Layer_Dense`, `Activation_ReLU`, and the combined softmax and cross-entropy in posts 12 to 19, before posts 20 and 21 assemble them into one backward pass. Step 2 is also why a backward pass needs the forward pass first: every local derivative is evaluated at a value the forward pass produced, so those values must have been computed, and kept.
 

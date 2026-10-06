@@ -1,140 +1,333 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" role="img" aria-labelledby="t d">
-  <title id="t">The chain rule applied to a two-layer neural network: backprop is just this rule, unrolled</title>
-  <desc id="d">Two horizontal flows representing forward and backward passes through a two-layer classifier. The forward row (top): input x flows through Layer 1 (W1, b1) producing z1, then through ReLU producing a1, then through Layer 2 (W2, b2) producing z2, then through Softmax + CrossEntropy producing the loss L. The backward row (bottom): the gradient dL/dW1 is shown as a product of four local derivatives: dL/dz2 from the loss/softmax box, dz2/da1 from the second dense layer, da1/dz1 from ReLU, and dz1/dW1 from the first dense layer. A footer states that this product is exactly what backpropagation computes, one factor at a time.</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-02-chain-in-a-network-title" aria-describedby="nn-02-chain-in-a-network-desc">
+<title id="nn-02-chain-in-a-network-title">Four functions, four factors, one gradient</title>
+<desc id="nn-02-chain-in-a-network-desc">Top row, forward, left to right: the sample x = (1, minus 2) passes Dense 1 to give z1 = (1.2, minus 1.6, 1.7), ReLU to give a1 = (1.2, 0.0, 1.7), Dense 2 to give z2 = (minus 0.66, 1.39, 0.84), and softmax with cross-entropy to give the loss L = 2.584. Under each function, the table of its local derivatives, measured by central differences at those values, with backward arrows running right to left: dL/dz2 of shape (1, 3) is minus 0.9245, 0.5863, 0.3383, the softmax output with 1 subtracted at class 0; dz2/da1 of shape (3, 3) holds the entries of W2: 0.3, 0.7, minus 0.6; minus 0.2, 0.1, 0.9; 0.5, minus 0.4, 0.2; da1/dz1 of shape (3, 3) has 1, 0, 1 on its diagonal, the middle neuron switched off; dz1/dW1 of shape (3, 6) holds only the inputs 1 and minus 2. Bottom: dL/dW1 = dL/dz2 times dz2/da1 times da1/dz1 times dz1/dW1, reshaped to (2, 3), is minus 0.2255, 0.0000, 1.1500; 0.4510, 0.0000, minus 2.3000, its middle column zero. A central difference through the whole network gives the same numbers, the largest gap 6.0 times 10 to the minus 11.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .row-label{font-weight:700;font-size:12px;fill:var(--nn-ink-muted);text-transform:uppercase;letter-spacing:0.06em;}
-    .var-pill{fill:var(--nn-primary);fill-opacity:0.18;stroke:var(--nn-primary);stroke-width:1.5;}
-    .var-pill-acc{fill:var(--nn-accent);fill-opacity:0.18;stroke:var(--nn-accent);stroke-width:1.5;}
-    .var-pill-ok{fill:var(--nn-success);fill-opacity:0.20;stroke:var(--nn-success);stroke-width:1.5;}
-    .var-name{font-weight:700;font-size:13px;fill:var(--nn-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .op-box{fill:var(--nn-surface);stroke:var(--nn-ink);stroke-width:1.5;stroke-dasharray:5 3;}
-    .op-name{font-weight:700;font-size:12px;fill:var(--nn-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .op-sub{font-size:10px;fill:var(--nn-ink-muted);}
-    .fwd-arrow{stroke:var(--nn-primary);stroke-width:1.8;fill:none;}
-    .fwd-head{fill:var(--nn-primary);}
-    .bwd-arrow{stroke:var(--nn-alert);stroke-width:1.8;fill:none;}
-    .bwd-head{fill:var(--nn-alert);}
-    .local-label{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:700;fill:var(--nn-alert);}
-    .formula-pill{fill:var(--nn-alert);fill-opacity:0.08;stroke:var(--nn-alert);stroke-width:1.5;}
-    .formula-head{font-weight:700;font-size:13px;fill:var(--nn-alert);}
-    .formula-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13px;fill:var(--nn-ink);font-weight:600;}
-    .formula-note{font-size:11px;fill:var(--nn-ink-muted);}
-  ]]></style>
-
-  <defs>
-    <marker id="aFwd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" class="fwd-head"/>
-    </marker>
-    <marker id="aBwd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" class="bwd-head"/>
-    </marker>
-  </defs>
-
-  <rect class="bg" width="960" height="480"/>
-
-  <text class="title"    x="48" y="48">Backpropagation = chain rule, unrolled across layers</text>
-  <text class="subtitle" x="48" y="70">Forward computes values left to right; backward multiplies local derivatives right to left.</text>
-
-  <!-- ============================ FORWARD ROW ============================ -->
-  <text class="row-label" x="48" y="106">forward (values flow left to right)</text>
-
-  <!-- x -->
-  <circle class="var-pill" cx="78" cy="160" r="24"/>
-  <text class="var-name" x="78" y="165" text-anchor="middle">x</text>
-
-  <line class="fwd-arrow" x1="106" y1="160" x2="144" y2="160" marker-end="url(#aFwd)"/>
-
-  <!-- Layer 1 box -->
-  <rect class="op-box" x="148" y="132" width="118" height="56" rx="10"/>
-  <text class="op-name" x="207" y="156" text-anchor="middle">Dense 1</text>
-  <text class="op-sub"  x="207" y="174" text-anchor="middle">W₁·x + b₁</text>
-
-  <line class="fwd-arrow" x1="270" y1="160" x2="302" y2="160" marker-end="url(#aFwd)"/>
-
-  <!-- z1 -->
-  <circle class="var-pill-acc" cx="332" cy="160" r="22"/>
-  <text class="var-name" x="332" y="165" text-anchor="middle">z₁</text>
-
-  <line class="fwd-arrow" x1="358" y1="160" x2="392" y2="160" marker-end="url(#aFwd)"/>
-
-  <!-- ReLU box -->
-  <rect class="op-box" x="396" y="132" width="96" height="56" rx="10"/>
-  <text class="op-name" x="444" y="156" text-anchor="middle">ReLU</text>
-  <text class="op-sub"  x="444" y="174" text-anchor="middle">max(0, ·)</text>
-
-  <line class="fwd-arrow" x1="496" y1="160" x2="528" y2="160" marker-end="url(#aFwd)"/>
-
-  <!-- a1 -->
-  <circle class="var-pill-acc" cx="558" cy="160" r="22"/>
-  <text class="var-name" x="558" y="165" text-anchor="middle">a₁</text>
-
-  <line class="fwd-arrow" x1="584" y1="160" x2="618" y2="160" marker-end="url(#aFwd)"/>
-
-  <!-- Dense 2 box -->
-  <rect class="op-box" x="622" y="132" width="118" height="56" rx="10"/>
-  <text class="op-name" x="681" y="156" text-anchor="middle">Dense 2</text>
-  <text class="op-sub"  x="681" y="174" text-anchor="middle">W₂·a₁ + b₂</text>
-
-  <line class="fwd-arrow" x1="744" y1="160" x2="776" y2="160" marker-end="url(#aFwd)"/>
-
-  <!-- z2 -->
-  <circle class="var-pill-acc" cx="806" cy="160" r="22"/>
-  <text class="var-name" x="806" y="165" text-anchor="middle">z₂</text>
-
-  <line class="fwd-arrow" x1="832" y1="160" x2="858" y2="160" marker-end="url(#aFwd)"/>
-
-  <!-- L (loss) at far right -->
-  <circle class="var-pill-ok" cx="900" cy="160" r="28"/>
-  <text class="var-name" x="900" y="165" text-anchor="middle">L</text>
-
-  <!-- ============================ BACKWARD ROW ============================ -->
-  <text class="row-label" x="48" y="248">backward (local derivatives, right to left)</text>
-
-  <!-- Arrows in reverse, with labels -->
-  <line class="bwd-arrow" x1="858" y1="296" x2="776" y2="296" marker-end="url(#aBwd)"/>
-  <text class="local-label" x="817" y="286" text-anchor="middle">∂L / ∂z₂</text>
-  <text class="op-sub"      x="817" y="312" text-anchor="middle">Softmax + CE</text>
-
-  <line class="bwd-arrow" x1="744" y1="296" x2="618" y2="296" marker-end="url(#aBwd)"/>
-  <text class="local-label" x="681" y="286" text-anchor="middle">∂z₂ / ∂a₁</text>
-  <text class="op-sub"      x="681" y="312" text-anchor="middle">Dense 2</text>
-
-  <line class="bwd-arrow" x1="496" y1="296" x2="396" y2="296" marker-end="url(#aBwd)"/>
-  <text class="local-label" x="446" y="286" text-anchor="middle">∂a₁ / ∂z₁</text>
-  <text class="op-sub"      x="446" y="312" text-anchor="middle">ReLU</text>
-
-  <line class="bwd-arrow" x1="270" y1="296" x2="148" y2="296" marker-end="url(#aBwd)"/>
-  <text class="local-label" x="209" y="286" text-anchor="middle">∂z₁ / ∂W₁</text>
-  <text class="op-sub"      x="209" y="312" text-anchor="middle">Dense 1</text>
-
-  <!-- Connecting forward arrows for the gaps between boxes (z1, a1, z2 are just pass-through) -->
-  <line class="bwd-arrow" x1="618" y1="296" x2="584" y2="296" marker-end="url(#aBwd)" opacity="0.4"/>
-  <line class="bwd-arrow" x1="396" y1="296" x2="358" y2="296" marker-end="url(#aBwd)" opacity="0.4"/>
-  <line class="bwd-arrow" x1="148" y1="296" x2="106" y2="296" marker-end="url(#aBwd)" opacity="0.4"/>
-
-  <!-- ============================ COMBINED FORMULA ============================ -->
-  <rect class="formula-pill" x="48" y="360" width="864" height="96" rx="12"/>
-  <text class="formula-head" x="68" y="386">Combined: the gradient of the loss with respect to the first layer's weights</text>
-  <text class="formula-text" x="480" y="414" text-anchor="middle">∂L/∂W₁  =  ∂L/∂z₂  ·  ∂z₂/∂a₁  ·  ∂a₁/∂z₁  ·  ∂z₁/∂W₁</text>
-  <text class="formula-note" x="480" y="440" text-anchor="middle">four local derivatives, one per function in the forward chain. backprop computes them one box at a time.</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-purple-ink { fill: var(--nn-purple-ink); }
+  .f-purple-soft { fill: var(--nn-purple-soft); }
+  .f-red-soft { fill: var(--nn-red-soft); }
+  .s-red { stroke: var(--nn-red); }
+  .t-cell15 { font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums; }
+</style>
+<defs>
+<marker id="nn-02-chain-in-a-network-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title">Four functions, four factors, one gradient</text>
+<text x="40" y="76" class="t-subtitle">Section 8.2: <tspan class="b">x</tspan> = (1, −2), true class 0, in the 2-3-3 network; every table measured by central differences.</text>
+<text x="40" y="128" class="t-head">Forward: values, left to right</text>
+<rect x="40" y="184" width="48" height="40" class="cell f-blue-soft"/>
+<rect x="88" y="184" width="48" height="40" class="cell f-blue-soft"/>
+<rect x="40" y="184" width="96" height="40" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="64" y="209" text-anchor="middle" class="t-cell15">1</text>
+<text x="112" y="209" text-anchor="middle" class="t-cell15">−2</text>
+</g>
+<text x="88" y="252" text-anchor="middle" class="t-math"><tspan class="b">x</tspan></text>
+<rect x="200" y="184" width="48" height="40" class="cell f-green-soft"/>
+<rect x="248" y="184" width="48" height="40" class="cell f-green-soft"/>
+<rect x="296" y="184" width="48" height="40" class="cell f-green-soft"/>
+<rect x="200" y="184" width="144" height="40" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="224" y="209" text-anchor="middle" class="t-cell15">1.2</text>
+<text x="272" y="209" text-anchor="middle" class="t-cell15">−1.6</text>
+<text x="320" y="209" text-anchor="middle" class="t-cell15">1.7</text>
+</g>
+<text x="272" y="252" text-anchor="middle" class="t-math"><tspan class="b">z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<rect x="424" y="184" width="48" height="40" class="cell f-green-soft"/>
+<rect x="472" y="184" width="48" height="40" class="cell f-green-soft"/>
+<rect x="520" y="184" width="48" height="40" class="cell f-green-soft"/>
+<rect x="424" y="184" width="144" height="40" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="448" y="209" text-anchor="middle" class="t-cell15">1.2</text>
+<text x="496" y="209" text-anchor="middle" class="t-cell15">0.0</text>
+<text x="544" y="209" text-anchor="middle" class="t-cell15">1.7</text>
+</g>
+<text x="496" y="252" text-anchor="middle" class="t-math"><tspan class="b">a</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<rect x="640" y="184" width="48" height="40" class="cell f-green-soft"/>
+<rect x="688" y="184" width="48" height="40" class="cell f-green-soft"/>
+<rect x="736" y="184" width="48" height="40" class="cell f-green-soft"/>
+<rect x="640" y="184" width="144" height="40" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="664" y="209" text-anchor="middle" class="t-cell15">−0.66</text>
+<text x="712" y="209" text-anchor="middle" class="t-cell15">1.39</text>
+<text x="760" y="209" text-anchor="middle" class="t-cell15">0.84</text>
+</g>
+<text x="712" y="252" text-anchor="middle" class="t-math"><tspan class="b">z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<rect x="848" y="184" width="72" height="40" class="cell f-red-soft"/>
+<rect x="848" y="184" width="72" height="40" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="884" y="209" text-anchor="middle" class="t-cell15">2.584</text>
+</g>
+<text x="884" y="252" text-anchor="middle" class="t-math"><tspan class="i">L</tspan></text>
+<path d="M136,204 L197,204" class="flow" marker-end="url(#nn-02-chain-in-a-network-arrow)"/>
+<text x="168" y="168" text-anchor="middle" class="t-label">Dense 1</text>
+<path d="M344,204 L421,204" class="flow" marker-end="url(#nn-02-chain-in-a-network-arrow)"/>
+<text x="384" y="168" text-anchor="middle" class="t-label">ReLU</text>
+<path d="M568,204 L637,204" class="flow" marker-end="url(#nn-02-chain-in-a-network-arrow)"/>
+<text x="604" y="168" text-anchor="middle" class="t-label">Dense 2</text>
+<path d="M784,204 L845,204" class="flow" marker-end="url(#nn-02-chain-in-a-network-arrow)"/>
+<text x="816" y="168" text-anchor="middle" class="t-label">softmax and CE</text>
+<rect x="248" y="184" width="48" height="40" class="w15 nofill s-red" data-fit="skip"/>
+<rect x="472" y="184" width="48" height="40" class="w15 nofill s-red" data-fit="skip"/>
+<rect x="640" y="116" width="16" height="16" class="s-red w15 nofill"/>
+<text x="672" y="128" class="t-label">neuron 2, switched off</text>
+<text x="40" y="296" class="t-head f-purple-ink">Backward: one table of local derivatives per function</text>
+<rect x="72" y="376" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="104" y="376" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="136" y="376" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="168" y="376" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="200" y="376" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="232" y="376" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="72" y="408" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="104" y="408" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="136" y="408" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="168" y="408" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="200" y="408" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="232" y="408" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="72" y="440" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="104" y="440" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="136" y="440" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="168" y="440" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="200" y="440" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="232" y="440" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="72" y="376" width="192" height="96" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="88" y="397" text-anchor="middle" class="t-cell14">1</text>
+<text x="120" y="397" text-anchor="middle" class="t-cell14">0</text>
+<text x="152" y="397" text-anchor="middle" class="t-cell14">0</text>
+<text x="184" y="397" text-anchor="middle" class="t-cell14">−2</text>
+<text x="216" y="397" text-anchor="middle" class="t-cell14">0</text>
+<text x="248" y="397" text-anchor="middle" class="t-cell14">0</text>
+<text x="88" y="429" text-anchor="middle" class="t-cell14">0</text>
+<text x="120" y="429" text-anchor="middle" class="t-cell14">1</text>
+<text x="152" y="429" text-anchor="middle" class="t-cell14">0</text>
+<text x="184" y="429" text-anchor="middle" class="t-cell14">0</text>
+<text x="216" y="429" text-anchor="middle" class="t-cell14">−2</text>
+<text x="248" y="429" text-anchor="middle" class="t-cell14">0</text>
+<text x="88" y="461" text-anchor="middle" class="t-cell14">0</text>
+<text x="120" y="461" text-anchor="middle" class="t-cell14">0</text>
+<text x="152" y="461" text-anchor="middle" class="t-cell14">1</text>
+<text x="184" y="461" text-anchor="middle" class="t-cell14">0</text>
+<text x="216" y="461" text-anchor="middle" class="t-cell14">0</text>
+<text x="248" y="461" text-anchor="middle" class="t-cell14">−2</text>
+</g>
+<text x="168" y="336" text-anchor="middle" class="t-math f-purple-ink">∂<tspan class="b">z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan>/∂<tspan class="b">W</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="168" y="360" text-anchor="middle" class="t-note">(3, 6)</text>
+<text x="168" y="500" text-anchor="middle" class="t-note">the inputs 1 and −2</text>
+<rect x="336" y="376" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="368" y="376" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="400" y="376" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="336" y="408" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="368" y="408" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="400" y="408" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="336" y="440" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="368" y="440" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="400" y="440" width="32" height="32" class="cell f-purple-soft"/>
+<rect x="336" y="376" width="96" height="96" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="352" y="397" text-anchor="middle" class="t-cell14">1</text>
+<text x="384" y="397" text-anchor="middle" class="t-cell14">0</text>
+<text x="416" y="397" text-anchor="middle" class="t-cell14">0</text>
+<text x="352" y="429" text-anchor="middle" class="t-cell14">0</text>
+<text x="384" y="429" text-anchor="middle" class="t-cell14">0</text>
+<text x="416" y="429" text-anchor="middle" class="t-cell14">0</text>
+<text x="352" y="461" text-anchor="middle" class="t-cell14">0</text>
+<text x="384" y="461" text-anchor="middle" class="t-cell14">0</text>
+<text x="416" y="461" text-anchor="middle" class="t-cell14">1</text>
+</g>
+<text x="384" y="336" text-anchor="middle" class="t-math f-purple-ink">∂<tspan class="b">a</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan>/∂<tspan class="b">z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="384" y="360" text-anchor="middle" class="t-note">(3, 3)</text>
+<text x="384" y="500" text-anchor="middle" class="t-note">1 or 0 on the diagonal</text>
+<rect x="544" y="376" width="40" height="32" class="cell f-purple-soft"/>
+<rect x="584" y="376" width="40" height="32" class="cell f-purple-soft"/>
+<rect x="624" y="376" width="40" height="32" class="cell f-purple-soft"/>
+<rect x="544" y="408" width="40" height="32" class="cell f-purple-soft"/>
+<rect x="584" y="408" width="40" height="32" class="cell f-purple-soft"/>
+<rect x="624" y="408" width="40" height="32" class="cell f-purple-soft"/>
+<rect x="544" y="440" width="40" height="32" class="cell f-purple-soft"/>
+<rect x="584" y="440" width="40" height="32" class="cell f-purple-soft"/>
+<rect x="624" y="440" width="40" height="32" class="cell f-purple-soft"/>
+<rect x="544" y="376" width="120" height="96" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="564" y="397" text-anchor="middle" class="t-cell14">0.3</text>
+<text x="604" y="397" text-anchor="middle" class="t-cell14">0.7</text>
+<text x="644" y="397" text-anchor="middle" class="t-cell14">−0.6</text>
+<text x="564" y="429" text-anchor="middle" class="t-cell14">−0.2</text>
+<text x="604" y="429" text-anchor="middle" class="t-cell14">0.1</text>
+<text x="644" y="429" text-anchor="middle" class="t-cell14">0.9</text>
+<text x="564" y="461" text-anchor="middle" class="t-cell14">0.5</text>
+<text x="604" y="461" text-anchor="middle" class="t-cell14">−0.4</text>
+<text x="644" y="461" text-anchor="middle" class="t-cell14">0.2</text>
+</g>
+<text x="604" y="336" text-anchor="middle" class="t-math f-purple-ink">∂<tspan class="b">z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan>/∂<tspan class="b">a</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="604" y="360" text-anchor="middle" class="t-note">(3, 3)</text>
+<text x="604" y="500" text-anchor="middle" class="t-note">the entries of <tspan class="b">W</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<rect x="720" y="408" width="64" height="32" class="cell f-purple-soft"/>
+<rect x="784" y="408" width="64" height="32" class="cell f-purple-soft"/>
+<rect x="848" y="408" width="64" height="32" class="cell f-purple-soft"/>
+<rect x="720" y="408" width="192" height="32" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="752" y="429" text-anchor="middle" class="t-cell14">−0.9245</text>
+<text x="816" y="429" text-anchor="middle" class="t-cell14">0.5863</text>
+<text x="880" y="429" text-anchor="middle" class="t-cell14">0.3383</text>
+</g>
+<text x="816" y="336" text-anchor="middle" class="t-math f-purple-ink">∂<tspan class="i">L</tspan>/∂<tspan class="b">z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<text x="816" y="360" text-anchor="middle" class="t-note">(1, 3)</text>
+<text x="816" y="500" text-anchor="middle" class="t-note">softmax output,</text>
+<text x="816" y="520" text-anchor="middle" class="t-note">1 subtracted at class 0</text>
+<rect x="368" y="408" width="32" height="32" class="w15 nofill s-red" data-fit="skip"/>
+<path d="M712,424 L675,424" class="flow" marker-end="url(#nn-02-chain-in-a-network-arrow)"/>
+<path d="M536,424 L443,424" class="flow" marker-end="url(#nn-02-chain-in-a-network-arrow)"/>
+<path d="M328,424 L275,424" class="flow" marker-end="url(#nn-02-chain-in-a-network-arrow)"/>
+<text x="40" y="616" class="t-math">∂<tspan class="i">L</tspan>/∂<tspan class="b">W</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> = ∂<tspan class="i">L</tspan>/∂<tspan class="b">z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> · ∂<tspan class="b">z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan>/∂<tspan class="b">a</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> · ∂<tspan class="b">a</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan>/∂<tspan class="b">z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> · ∂<tspan class="b">z</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan>/∂<tspan class="b">W</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan> =</text>
+<rect x="424" y="568" width="72" height="40" class="cell f-purple-soft"/>
+<rect x="496" y="568" width="72" height="40" class="cell f-purple-soft"/>
+<rect x="568" y="568" width="72" height="40" class="cell f-purple-soft"/>
+<rect x="424" y="608" width="72" height="40" class="cell f-purple-soft"/>
+<rect x="496" y="608" width="72" height="40" class="cell f-purple-soft"/>
+<rect x="568" y="608" width="72" height="40" class="cell f-purple-soft"/>
+<rect x="424" y="568" width="216" height="80" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="460" y="594" text-anchor="middle" class="t-cell16">−0.2255</text>
+<text x="532" y="594" text-anchor="middle" class="t-cell16">0.0000</text>
+<text x="604" y="594" text-anchor="middle" class="t-cell16">1.1500</text>
+<text x="460" y="634" text-anchor="middle" class="t-cell16">0.4510</text>
+<text x="532" y="634" text-anchor="middle" class="t-cell16">0.0000</text>
+<text x="604" y="634" text-anchor="middle" class="t-cell16">−2.3000</text>
+</g>
+<rect x="496" y="568" width="72" height="80" class="w15 nofill s-red" data-fit="skip"/>
+<text x="532" y="552" text-anchor="middle" class="t-note">reshaped to (2, 3)</text>
+<text x="664" y="584" class="t-note">middle column 0:</text>
+<text x="664" y="604" class="t-note">neuron 2 is off</text>
+<text x="664" y="632" class="t-note">central difference: the same,</text>
+<text x="664" y="656" class="t-note">largest gap 6.0 × 10<tspan class="sub" dy="-6">−11</tspan><tspan dy="6">​</tspan></text>
+<text x="40" y="684" class="t-note">Read the lower row right to left: four functions, four factors, one gradient entry per weight.</text>
 </svg>
