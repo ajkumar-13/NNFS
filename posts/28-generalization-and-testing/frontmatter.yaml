@@ -9,7 +9,7 @@ part: "Part VII - Generalisation and regularisation"
 level: intermediate
 reading_time: 23
 tags: [neural-networks, from-scratch, generalization, overfitting, bias-variance]
-hero: diagrams/01-train-vs-test.svg
+hero: diagrams/01-gap-over-seeds.svg
 prerequisites: [nn-027]
 code: included
 outcomes:

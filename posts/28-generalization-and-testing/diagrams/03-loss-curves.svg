@@ -1,0 +1,316 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-03-loss-curves-title" aria-describedby="nn-03-loss-curves-desc">
+<title id="nn-03-loss-curves-title">The test loss bottoms out at epoch 700 and then climbs</title>
+<desc id="nn-03-loss-curves-desc">Two charts of seed 0's documented run against epochs 0 to 10,000, read forward-only every 100 epochs on the 300 training points and on the 300 test points; circles (training) and hollow diamonds (test) mark the epochs the script prints. Top, the loss: both start at 1.0986, ln 3. The training loss keeps falling, to 0.0806 at epoch 10,000. The test loss falls to its lowest, 0.4900, at epoch 700, stays near 0.5 up to epoch 2,000 (0.5347), climbs to 0.8000 at epoch 5,000 and to 1.1165 at epoch 10,000. Bottom, the accuracy: the training accuracy rises from 36.00 to 96.33 percent; the test accuracy is 81.33 percent at epoch 700, 84.67 at epoch 5,000 and 82.33 at epoch 10,000. A dotted vertical line marks epoch 700 in both charts.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-green { fill: var(--nn-green); }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .f-red { fill: var(--nn-red); }
+  .f-red-ink { fill: var(--nn-red-ink); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-green { stroke: var(--nn-green); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-red { stroke: var(--nn-red); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-03-loss-curves-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<clipPath id="nn-03-loss-curves-clip-1"><rect x="90" y="130" width="684" height="236"/></clipPath>
+<clipPath id="nn-03-loss-curves-clip-2"><rect x="90" y="434" width="684" height="180"/></clipPath>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title" data-w="680">The test loss bottoms out at epoch 700 and then climbs</text>
+<text x="40" y="76" class="t-subtitle" data-w="654">Seed 0, the documented run: both sets read forward-only at the start of every 100th epoch.</text>
+<text x="40" y="120" class="t-head" data-w="40">Loss</text>
+<g data-grid="skip">
+<path d="M96,360H768M96,296H768M96,232H768M96,168H768" class="gridline"/>
+<text x="88" y="364" text-anchor="end" class="t-tick" data-w="19">0.0</text>
+<text x="88" y="300" text-anchor="end" class="t-tick" data-w="19">0.4</text>
+<text x="88" y="236" text-anchor="end" class="t-tick" data-w="19">0.8</text>
+<text x="88" y="172" text-anchor="end" class="t-tick" data-w="19">1.2</text>
+<text x="96" y="380" text-anchor="middle" class="t-tick" data-w="8">0</text>
+<text x="230.4" y="380" text-anchor="middle" class="t-tick" data-w="35">2,000</text>
+<text x="364.8" y="380" text-anchor="middle" class="t-tick" data-w="35">4,000</text>
+<text x="499.2" y="380" text-anchor="middle" class="t-tick" data-w="35">6,000</text>
+<text x="633.6" y="380" text-anchor="middle" class="t-tick" data-w="35">8,000</text>
+<text x="768" y="380" text-anchor="middle" class="t-tick" data-w="42">10,000</text>
+<path d="M96,136V360H768" class="axis"/>
+<path d="M143.04,136V360" class="s-ink-muted w1 nofill d-ref"/>
+<path d="M96,184.22H768" class="s-ink-muted w1 nofill d-ref"/>
+<g clip-path="url(#nn-03-loss-curves-clip-1)">
+<path d="M96,184.22 L102.72,236.94 L109.44,271.74 L116.16,288.75 L122.88,299.17 L129.6,306.3 L136.32,310.65 L143.04,314.04 L149.76,316.93 L156.48,320.03 L163.2,321.89 L169.92,323.19 L176.64,325.03 L183.36,326.44 L190.08,327.62 L196.8,329.28 L203.52,330.15 L210.24,330.48 L216.96,332.43 L223.68,333.35 L230.4,334.07 L237.12,334.7 L243.84,335.32 L250.56,335.84 L257.28,336.06 L264,336.81 L270.72,337.32 L277.44,337.66 L284.16,338.1 L290.88,338.37 L297.6,338.83 L304.32,337.93 L311.04,339.31 L317.76,339.71 L324.48,339.93 L331.2,340.09 L337.92,340.32 L344.64,340.56 L351.36,340.72 L358.08,340.88 L364.8,340.86 L371.52,341.09 L378.24,341.17 L384.96,340.9 L391.68,341.17 L398.4,341.65 L405.12,341.71 L411.84,341.63 L418.56,342.02 L425.28,342.24 L432,342.45 L438.72,342.86 L445.44,343.03 L452.16,343.17 L458.88,343.3 L465.6,343.12 L472.32,343.62 L479.04,342.25 L485.76,343.96 L492.48,344.06 L499.2,344.25 L505.92,344.27 L512.64,344.48 L519.36,344.57 L526.08,344.7 L532.8,344.75 L539.52,344.88 L546.24,344.97 L552.96,345.06 L559.68,345.11 L566.4,345.23 L573.12,345.35 L579.84,345.37 L586.56,345.55 L593.28,345.62 L600,345.71 L606.72,345.78 L613.44,345.42 L620.16,345.95 L626.88,345.73 L633.6,345.91 L640.32,346.12 L647.04,345.99 L653.76,346.29 L660.48,346.36 L667.2,346.4 L673.92,346.44 L680.64,346.49 L687.36,346.55 L694.08,346.59 L700.8,346.66 L707.52,346.71 L714.24,346.63 L720.96,346.59 L727.68,346.39 L734.4,346.78 L741.12,346.72 L747.84,346.99 L754.56,346.68 L761.28,346.92 L768,347.11" class="s-red w15 nofill"/>
+<path d="M96,184.23 L102.72,225.08 L109.44,253.32 L116.16,268.37 L122.88,275.21 L129.6,279.5 L136.32,280.96 L143.04,281.6 L149.76,281.06 L156.48,281.42 L163.2,280.51 L169.92,279.72 L176.64,278.48 L183.36,278.84 L190.08,278.79 L196.8,279.4 L203.52,279.29 L210.24,276 L216.96,277.15 L223.68,275.41 L230.4,274.44 L237.12,272.45 L243.84,270.72 L250.56,269.13 L257.28,267.81 L264,266.36 L270.72,265.25 L277.44,261.4 L284.16,261.75 L290.88,260.67 L297.6,259.59 L304.32,258.16 L311.04,256.2 L317.76,255.93 L324.48,255.14 L331.2,254.1 L337.92,252.44 L344.64,251.08 L351.36,250.63 L358.08,248.86 L364.8,247.14 L371.52,247.35 L378.24,246.67 L384.96,242.07 L391.68,243.75 L398.4,241.28 L405.12,239.61 L411.84,240.06 L418.56,238.81 L425.28,236.01 L432,231.99 L438.72,230.37 L445.44,227.41 L452.16,225.35 L458.88,224.89 L465.6,224.88 L472.32,222.47 L479.04,213.73 L485.76,218.23 L492.48,218.18 L499.2,216.49 L505.92,216.28 L512.64,213.87 L519.36,214.24 L526.08,212.62 L532.8,212.25 L539.52,209.93 L546.24,208.62 L552.96,209.42 L559.68,206.05 L566.4,205.46 L573.12,205.45 L579.84,203.64 L586.56,201.47 L593.28,201.11 L600,199.7 L606.72,200.76 L613.44,201.3 L620.16,197.42 L626.88,193.05 L633.6,196.28 L640.32,191.99 L647.04,193.62 L653.76,190.74 L660.48,190.05 L667.2,189.34 L673.92,187.86 L680.64,187.45 L687.36,187.83 L694.08,185.96 L700.8,186.54 L707.52,185.12 L714.24,182.63 L720.96,186.49 L727.68,185.97 L734.4,184.45 L741.12,179.41 L747.84,182.13 L754.56,177.84 L761.28,179.24 L768,181.36" class="s-blue w15 nofill"/>
+</g>
+<text x="149.04" y="152" class="t-note f-ink-muted" data-w="182">lowest test loss, epoch 700</text>
+<text x="432" y="178.22" text-anchor="middle" class="t-note f-ink-muted" data-w="88">ln 3 = 1.0986</text>
+</g>
+<g data-grid="skip">
+<circle cx="96" cy="184.22" r="4" class="f-red s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M96,176.43 L103.8,184.23 L96,192.03 L88.2,184.23 Z" class="nofill s-blue w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="102.72" cy="236.94" r="4" class="f-red s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M102.72,217.28 L110.52,225.08 L102.72,232.88 L94.92,225.08 Z" class="nofill s-blue w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="116.16" cy="288.75" r="4" class="f-red s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M116.16,260.57 L123.96,268.37 L116.16,276.17 L108.36,268.37 Z" class="nofill s-blue w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="143.04" cy="314.04" r="4" class="f-red s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M143.04,273.8 L150.84,281.6 L143.04,289.4 L135.24,281.6 Z" class="nofill s-blue w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="163.2" cy="321.89" r="4" class="f-red s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M163.2,272.71 L171,280.51 L163.2,288.31 L155.4,280.51 Z" class="nofill s-blue w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="230.4" cy="334.07" r="4" class="f-red s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M230.4,266.64 L238.2,274.44 L230.4,282.24 L222.6,274.44 Z" class="nofill s-blue w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="432" cy="342.45" r="4" class="f-red s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M432,224.19 L439.8,231.99 L432,239.79 L424.2,231.99 Z" class="nofill s-blue w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="768" cy="347.11" r="4" class="f-red s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M768,173.56 L775.8,181.36 L768,189.16 L760.2,181.36 Z" class="nofill s-blue w15"/>
+</g>
+<g data-grid="skip">
+<text x="780" y="186.36" class="t-value f-blue-ink" data-w="83">test, 1.1165</text>
+</g>
+<g data-grid="skip">
+<text x="780" y="352.11" class="t-value f-red-ink" data-w="110">training, 0.0806</text>
+</g>
+<g data-grid="skip">
+<text x="147.07" y="305.8" class="t-value f-blue-ink" data-w="102">lowest, 0.4900</text>
+</g>
+<g data-grid="skip">
+<text x="432" y="219.99" text-anchor="middle" class="t-value f-blue-ink" data-w="47">0.8000</text>
+</g>
+<text x="40" y="424" class="t-head" data-w="76">Accuracy</text>
+<g data-grid="skip">
+<path d="M96,584H768M96,536H768M96,488H768M96,440H768" class="gridline"/>
+<text x="88" y="588" text-anchor="end" class="t-tick" data-w="28">40%</text>
+<text x="88" y="540" text-anchor="end" class="t-tick" data-w="28">60%</text>
+<text x="88" y="492" text-anchor="end" class="t-tick" data-w="28">80%</text>
+<text x="88" y="444" text-anchor="end" class="t-tick" data-w="35">100%</text>
+<text x="96" y="628" text-anchor="middle" class="t-tick" data-w="8">0</text>
+<text x="230.4" y="628" text-anchor="middle" class="t-tick" data-w="35">2,000</text>
+<text x="364.8" y="628" text-anchor="middle" class="t-tick" data-w="35">4,000</text>
+<text x="499.2" y="628" text-anchor="middle" class="t-tick" data-w="35">6,000</text>
+<text x="633.6" y="628" text-anchor="middle" class="t-tick" data-w="35">8,000</text>
+<text x="768" y="628" text-anchor="middle" class="t-tick" data-w="42">10,000</text>
+<path d="M96,440V608H768" class="axis"/>
+<path d="M143.04,440V608" class="s-ink-muted w1 nofill d-ref"/>
+<g clip-path="url(#nn-03-loss-curves-clip-2)">
+<path d="M96,593.6 L102.72,518.4 L109.44,484.8 L116.16,478.4 L122.88,472.8 L129.6,470.4 L136.32,466.4 L143.04,466.4 L149.76,462.4 L156.48,461.6 L163.2,460.8 L169.92,461.6 L176.64,460.8 L183.36,459.2 L190.08,461.6 L196.8,460 L203.52,459.2 L210.24,455.2 L216.96,456.8 L223.68,456 L230.4,456 L237.12,456 L243.84,456 L250.56,453.6 L257.28,451.2 L264,454.4 L270.72,452.8 L277.44,452 L284.16,452.8 L290.88,452 L297.6,452.8 L304.32,454.4 L311.04,451.2 L317.76,452.8 L324.48,452.8 L331.2,452.8 L337.92,452 L344.64,452.8 L351.36,452.8 L358.08,452 L364.8,449.6 L371.52,451.2 L378.24,451.2 L384.96,448.8 L391.68,452 L398.4,451.2 L405.12,448.8 L411.84,452 L418.56,451.2 L425.28,450.4 L432,452.8 L438.72,451.2 L445.44,450.4 L452.16,450.4 L458.88,451.2 L465.6,452 L472.32,450.4 L479.04,449.6 L485.76,448.8 L492.48,450.4 L499.2,449.6 L505.92,449.6 L512.64,448 L519.36,449.6 L526.08,448.8 L532.8,450.4 L539.52,448 L546.24,448 L552.96,448 L559.68,448 L566.4,448 L573.12,448 L579.84,448 L586.56,448.8 L593.28,448 L600,449.6 L606.72,448 L613.44,449.6 L620.16,449.6 L626.88,447.2 L633.6,448 L640.32,448.8 L647.04,448 L653.76,448.8 L660.48,449.6 L667.2,449.6 L673.92,448.8 L680.64,449.6 L687.36,448 L694.08,448.8 L700.8,449.6 L707.52,448.8 L714.24,448 L720.96,448 L727.68,449.6 L734.4,448 L741.12,446.4 L747.84,448.8 L754.56,446.4 L761.28,448 L768,448.8" class="s-green w15 nofill"/>
+<path d="M96,594.4 L102.72,531.2 L109.44,513.6 L116.16,494.4 L122.88,493.6 L129.6,487.2 L136.32,483.2 L143.04,484.8 L149.76,488 L156.48,482.4 L163.2,483.2 L169.92,484 L176.64,483.2 L183.36,482.4 L190.08,480.8 L196.8,479.2 L203.52,479.2 L210.24,484.8 L216.96,476 L223.68,478.4 L230.4,478.4 L237.12,477.6 L243.84,477.6 L250.56,476.8 L257.28,477.6 L264,476 L270.72,474.4 L277.44,476 L284.16,474.4 L290.88,476 L297.6,473.6 L304.32,472.8 L311.04,476.8 L317.76,475.2 L324.48,474.4 L331.2,474.4 L337.92,475.2 L344.64,476 L351.36,475.2 L358.08,475.2 L364.8,476 L371.52,475.2 L378.24,475.2 L384.96,477.6 L391.68,475.2 L398.4,477.6 L405.12,476.8 L411.84,477.6 L418.56,478.4 L425.28,479.2 L432,476.8 L438.72,477.6 L445.44,478.4 L452.16,479.2 L458.88,477.6 L465.6,479.2 L472.32,478.4 L479.04,482.4 L485.76,481.6 L492.48,478.4 L499.2,478.4 L505.92,478.4 L512.64,482.4 L519.36,479.2 L526.08,481.6 L532.8,480 L539.52,480.8 L546.24,483.2 L552.96,480.8 L559.68,482.4 L566.4,482.4 L573.12,482.4 L579.84,481.6 L586.56,482.4 L593.28,482.4 L600,482.4 L606.72,481.6 L613.44,479.2 L620.16,481.6 L626.88,484 L633.6,480 L640.32,483.2 L647.04,480.8 L653.76,482.4 L660.48,483.2 L667.2,482.4 L673.92,483.2 L680.64,482.4 L687.36,481.6 L694.08,482.4 L700.8,480.8 L707.52,481.6 L714.24,483.2 L720.96,478.4 L727.68,480 L734.4,481.6 L741.12,484 L747.84,484 L754.56,484 L761.28,484 L768,482.4" class="s-blue w15 nofill"/>
+</g>
+</g>
+<text x="432" y="652" text-anchor="middle" class="t-note" data-w="42">epoch</text>
+<g data-grid="skip">
+<circle cx="96" cy="593.6" r="4" class="f-green s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M96,586.6 L103.8,594.4 L96,602.2 L88.2,594.4 Z" class="nofill s-blue w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="102.72" cy="518.4" r="4" class="f-green s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M102.72,523.4 L110.52,531.2 L102.72,539 L94.92,531.2 Z" class="nofill s-blue w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="116.16" cy="478.4" r="4" class="f-green s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M116.16,486.6 L123.96,494.4 L116.16,502.2 L108.36,494.4 Z" class="nofill s-blue w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="143.04" cy="466.4" r="4" class="f-green s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M143.04,477 L150.84,484.8 L143.04,492.6 L135.24,484.8 Z" class="nofill s-blue w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="163.2" cy="460.8" r="4" class="f-green s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M163.2,475.4 L171,483.2 L163.2,491 L155.4,483.2 Z" class="nofill s-blue w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="230.4" cy="456" r="4" class="f-green s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M230.4,470.6 L238.2,478.4 L230.4,486.2 L222.6,478.4 Z" class="nofill s-blue w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="432" cy="452.8" r="4" class="f-green s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M432,469 L439.8,476.8 L432,484.6 L424.2,476.8 Z" class="nofill s-blue w15"/>
+</g>
+<g data-grid="skip">
+<circle cx="768" cy="448.8" r="4" class="f-green s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M768,474.6 L775.8,482.4 L768,490.2 L760.2,482.4 Z" class="nofill s-blue w15"/>
+</g>
+<g data-grid="skip">
+<text x="780" y="446.8" class="t-value f-green-ink" data-w="115">training, 96.33%</text>
+</g>
+<g data-grid="skip">
+<text x="780" y="494.4" class="t-value f-blue-ink" data-w="87">test, 82.33%</text>
+</g>
+<g data-grid="skip">
+<text x="151.04" y="508.8" class="t-value f-blue-ink" data-w="51">81.33%</text>
+</g>
+<g data-grid="skip">
+<text x="432" y="500.8" text-anchor="middle" class="t-value f-blue-ink" data-w="51">84.67%</text>
+</g>
+<text x="40" y="684" class="t-note" data-w="682">Circles: the training points. Hollow diamonds: the test points. Marks sit at the epochs the script prints.</text>
+</svg>

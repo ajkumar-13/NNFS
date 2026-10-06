@@ -11,9 +11,9 @@
 > - Distinguish good generalisation from overfitting by the shape of the loss curves and the geometry of the decision boundary.
 > - Map an overfitting symptom to one of four levers: capacity, epoch budget, weight penalties and dropout.
 
-![Two panels show the same two-class training points under two classifiers. The left one draws a smooth boundary, misses a few points, and is labelled train 88 percent, test 85 percent, gap 3 points. The right one carves pockets around every point and is labelled train 93 percent, test 83 percent, gap 10 points. A band underneath names four regimes.](diagrams/01-train-vs-test.svg)
+![A dot plot with one row per seed, 0 to 4, for the network of post 27: a green circle marks its accuracy on its 300 training points and a hollow blue diamond its accuracy on 300 new points, with the same weights. Training and test are 96.33 and 82.33 percent on seed 0, 83.33 and 72.00 on seed 1, 78.00 and 67.33 on seed 2, 88.00 and 77.00 on seed 3, and 96.33 and 82.67 on seed 4, gaps of 14.00, 11.33, 10.67, 11.00 and 13.67 points.](diagrams/01-gap-over-seeds.svg)
 
-*A small gap against a wide one. The figure is a schematic and its percentages are not measurements; the measured figures of this post are in sections 3 to 6, and the measured network does not capture every training point.*
+*The same weights on two sets of 300 points, seeds 0 to 4: the test figure is lower on every seed, by 10.67 to 14.00 points.*
 
 ---
 
@@ -45,7 +45,11 @@ The distinction between fitting a sample and fitting the process that produced i
 
 The network is the documented run of [post 27](../27-adam-optimiser/index.md), unchanged, and `snippets/network.py` prints its setup: `nnfs.init()`, which sets seed 0 and float32 and replaces `np.dot` with a float32 version; `spiral_data(samples=100, classes=3)`; `Layer_Dense(2, 64)`, ReLU, `Layer_Dense(64, 3)`, softmax and cross-entropy; weights of `0.01 * randn`; `Optimizer_Adam(learning_rate=0.02, decay=1e-5)`; 10,001 full-batch epochs.
 
-**When the test data is drawn decides what it is.** `spiral_data` takes no seed; it draws from NumPy's global random stream. With `samples=100, classes=3` it places 100 points per class at the fixed radii `np.linspace(0, 1, 100)` and adds normal noise to each point's angle (standard deviation 0.2 before the generator's factor of 2.5, so 0.5 radians), 300 normal draws in all. After `np.random.seed(0)` the training data takes draws 1 to 300 and the two weight arrays take the next $128 + 192 = 320$. The training loop draws nothing. A call to `spiral_data` after the loop, with no new seed, therefore takes draws 621 to 920: the same radii and labels as the training set, new angles.
+**When the test data is drawn decides what it is.** `spiral_data` takes no seed; it draws from NumPy's global random stream. With `samples=100, classes=3` it places 100 points per class at the fixed radii `np.linspace(0, 1, 100)` and adds normal noise to each point's angle (standard deviation 0.2 before the generator's factor of 2.5, so 0.5 radians), 300 normal draws in all. After `np.random.seed(0)` the training data takes draws 1 to 300 and the two weight arrays take the next $128 + 192 = 320$. The training loop draws nothing. A call to `spiral_data` after the loop, with no new seed, therefore takes draws 621 to 920: the same radii and labels as the training set, new angles. The top row of the figure below draws this order; section 8 measures the other two.
+
+![Three rows of blocks, each block as wide as the normal draws it takes after the seed is set. The documented order: training data draws 1 to 300, the weights of the two layers 301 to 620, the training loop none, the test data 621 to 920, a gap of 14.00 points. The seed set again before the test draw: the test data takes draws 1 to 300 again and is the training set, a gap of 0.00 points. The test data drawn before the layers: test data 301 to 600, weights 601 to 920, a gap of 18.67 points.](diagrams/02-draw-order.svg)
+
+*Which draws of the stream each array takes in three orders of the calls; only the first gives a test set that is new and a network that is the documented one.*
 
 ```python
 # Fresh test data: the same generator, new points. Drawn after training and without a new
@@ -94,7 +98,7 @@ seed  train loss  train acc  test loss  test acc  gap in points
 loop's last accuracy, before its update: 0.9633  0.8233  0.8133  0.8867  0.9633
 ```
 
-The training accuracy runs from 78.00 to 96.33 percent and the test accuracy from 67.33 to 82.67 percent. The gap is the steadier quantity: 10.67 to 14.00 points, and positive in every one of the five runs. These figures are those of seeds 0 to 4; no other seed is run here, and every statement below about "all five runs" is scoped to them. The 96.33 percent of seed 0 is the upper end of what this setup reaches, not its typical result. The last line shows why the same weights matter: on seed 2 the loop's last line reads 81.33 percent and the weights it then produces score 78.00.
+The training accuracy runs from 78.00 to 96.33 percent and the test accuracy from 67.33 to 82.67 percent. The gap is the steadier quantity: 10.67 to 14.00 points, and positive in every one of the five runs; the figure at the top of the post draws the five rows. These figures are those of seeds 0 to 4; no other seed is run here, and every statement below about "all five runs" is scoped to them. The 96.33 percent of seed 0 is the upper end of what this setup reaches, not its typical result. The last line shows why the same weights matter: on seed 2 the loop's last line reads 81.33 percent and the weights it then produces score 78.00.
 
 ### 3.1. Why the test pass is forward-only
 
@@ -153,11 +157,7 @@ The test accuracy of one network moves between 77.67 and 84.67 percent with the 
 | **Overfitting** | high | lower | large | 64 neurons: gap 10.67 to 14.00 in all five runs, with train 78.00 to 96.33 and test 67.33 to 82.67; "train high" holds on two seeds only | the levers of section 6 |
 | **Distribution shift** | high | low | very large | not measured: the test points come from the training generator | a test set from the right distribution |
 
-![Four cards, each with a training and a test accuracy drawn as bars on one scale: underfitting at 55 and 53 percent, good fit at 88 and 85, overfitting at 93 and 83, and distribution shift at 93 and 40. Each card names a diagnosis and a remedy, and a band underneath notes that only the last two differ in where the test set came from.](diagrams/03-four-regimes.svg)
-
-*The same two numbers read four ways. The percentages on the cards are illustrative; the measured rows are in the table above, and the figure's "Parts 29 to 31" are posts 29 to 31.*
-
-The underfitting row comes from `snippets/narrower.py`, the same five seeds with 8 hidden neurons. Its gaps are small, 0.33 to 7.00 points, and its test accuracy is 38.00 to 46.67 percent, little better than the 33.33 percent of a guess. A small gap is therefore no evidence of a good model. The script also counts the hidden neurons whose output is zero on all 300 training points after the last update:
+The underfitting row comes from `snippets/narrower.py`, the same five seeds with 8 hidden neurons (the left panel of the figure in section 6). Its gaps are small, 0.33 to 7.00 points, and its test accuracy is 38.00 to 46.67 percent, little better than the 33.33 percent of a guess. A small gap is therefore no evidence of a good model. The script also counts the hidden neurons whose output is zero on all 300 training points after the last update:
 
 ```text
 hidden neurons whose output is zero on all 300 training points, after the last update, by seed: 3  2  4  1  4
@@ -176,10 +176,6 @@ The 64-neuron runs share one thing: a gap of more than ten points in each of the
 
 Loss curves work for any model, whatever the dimension of its input. Two curves are followed over the epochs: the loss on the training data, and the loss on held-out data.
 
-![A chart of loss against epochs. The training loss falls through the whole run. The validation loss falls with it at first, flattens in the middle, and climbs in the second half. A dashed vertical line marks the epoch of the lowest validation loss, and three background bands are labelled both decreasing, validation plateaus, and validation rises.](diagrams/02-loss-divergence.svg)
-
-*The schematic shape: one curve keeps falling and the other turns. The figure marks the lowest validation loss as the point to stop; the measured runs below show what stopping there does to the loss and to the accuracy.*
-
 `seed_spread.py` draws the test points before the loop and reads both sets forward-only every 100 epochs. Because the loop draws no random numbers, these are the test points that `test_pass.py` draws after it. Seed 0:
 
 ```text
@@ -194,7 +190,11 @@ epoch  train loss  train acc  test loss  test acc
 10000      0.0806     0.9633     1.1165    0.8233
 ```
 
-The three phases of the schematic are all there. Up to epoch 700 both losses fall together. Between epochs 700 and 2,000 the test loss stays near 0.5 while the training loss falls from 0.29 to 0.16. After that the test loss climbs to 1.12, more than twice its lowest value, while the training loss goes on falling. The training loss alone shows none of this, which is why it says that the optimiser works and nothing about generalisation.
+Three phases show in these rows and in the figure below, which draws all 101 checks of the run. Up to epoch 700 both losses fall together. Between epochs 700 and 2,000 the test loss stays near 0.5 while the training loss falls from 0.29 to 0.16. After that the test loss climbs to 1.12, more than twice its lowest value, while the training loss goes on falling. The training loss alone shows none of this, which is why it says that the optimiser works and nothing about generalisation.
+
+![Two charts against epochs 0 to 10,000 for seed 0, both sets read every 100 epochs. Top, the loss: both start at ln 3, 1.0986; the training loss falls to 0.0806; the test loss is lowest, 0.4900, at epoch 700, then climbs to 0.8000 at epoch 5,000 and 1.1165 at epoch 10,000. Bottom, the accuracy: the training accuracy rises to 96.33 percent; the test accuracy is 81.33 percent at epoch 700, 84.67 at epoch 5,000 and 82.33 at epoch 10,000. A dotted line marks epoch 700 in both.](diagrams/03-loss-curves.svg)
+
+*Seed 0 every 100 epochs: the test loss is lowest at epoch 700 and more than twice as high at the end, while the test accuracy ends above its value at epoch 700.*
 
 The accuracy column tells a different story. The test accuracy is 81.33 percent at the lowest test loss, rises to 84.67 percent at epoch 5,000 and ends at 82.33. The other seeds agree:
 
@@ -216,7 +216,7 @@ Two cautions belong to this reading. The check of lowest test loss was found by 
 
 ### 5.2. The geometry of the decision boundary
 
-For a problem with two inputs the classifier can be drawn. The hero figure shows the usual picture: a well-generalising classifier draws smooth curves between the classes and accepts a few misclassified training points, and an overfitted one bends its boundary around single points, noise included.
+For a problem with two inputs the classifier can be drawn. The usual picture is this: a well-generalising classifier draws smooth curves between the classes and accepts a few misclassified training points, and an overfitted one bends its boundary around single points, noise included.
 
 The last two column pairs of the table measure this on the spiral. `boundary_length` in `network.py` classifies a grid of $201 \times 201$ points over the square $[-1, 1]^2$ and counts the pairs of neighbouring grid points that are given different classes, a count that grows with the length of the boundary. The weight norm is the square root of the sum of the squares of all 320 weights.
 
@@ -224,7 +224,11 @@ The last two column pairs of the table measure this on the spiral. `boundary_len
 boundary length, end over check: 1.01 to 1.17; weight norm, end over check: 1.64 to 3.84
 ```
 
-Between the check of lowest test loss and the end, the boundary gets 1 to 17 percent longer and the weights 1.64 to 3.84 times larger. The picture of a boundary that grows pockets is therefore only a small part of what happens here: the boundary moves a little, and the network never captures every training point (11 of 300 are still wrong on seed 0). What grows is the size of the weights, and with it the steepness of the probabilities on either side of the boundary. That is the confident-mistake reading of section 4 seen from the parameters, and it is the quantity the weight penalties of [post 30](../30-l1-and-l2-regularisation/index.md) act on.
+Between the check of lowest test loss and the end, the boundary gets 1 to 17 percent longer and the weights 1.64 to 3.84 times larger. The picture of a boundary that grows pockets is therefore only a small part of what happens here: the boundary moves a little, and the network never captures every training point (11 of 300 are still wrong on seed 0). What grows is the size of the weights, and with it the steepness of the probabilities on either side of the boundary. That is the confident-mistake reading of section 4 seen from the parameters, and it is the quantity the weight penalties of [post 30](../30-l1-and-l2-regularisation/index.md) act on. The figure below draws seed 0 at both checks.
+
+![Two plots of the plane from minus 1 to 1 for seed 0, each tinted by the class the network answers on a 201 by 201 grid, with the 300 training points on top and the misclassified ones ringed. Left, epoch 700, the check of lowest test loss: 33 training points wrong, train 89.00 and test 81.33 percent, boundary length 2,161, weight norm 54.75. Right, epoch 10,000: 11 wrong, 96.33 and 82.33 percent, boundary length 2,346, weight norm 187.46.](diagrams/04-boundary-check-vs-end.svg)
+
+*Seed 0 at the check of lowest test loss and at the end: the regions change in a few places, while the weight norm grows from 54.75 to 187.46.*
 
 A common piece of advice is to prefer the simpler of two models that fit equally well, a preference often called Occam's razor. For a network, "simpler" is not the same as "fewer parameters": two networks with the same parameter count can fit very different sets of functions, depending on the depth, the activation function and the size of the weights. The measurement above gives a working sense for this series: of two networks with the same architecture, the one with the smaller weights is the simpler function.
 
@@ -239,7 +243,7 @@ A common piece of advice is to prefer the simpler of two models that fit equally
 | **Weight penalties (L1, L2)** | the loss: a term that grows with the size of the weights | not measured here | [post 30](../30-l1-and-l2-regularisation/index.md) |
 | **Dropout** | the forward pass in training: random activations set to zero | not measured here | [post 31](../31-dropout/index.md) |
 
-**Capacity.** `narrower.py` and `snippets/wider.py` repeat the five seeds of section 3 with 8 and with 128 hidden neurons; nothing else changes.
+**Capacity.** `narrower.py` and `snippets/wider.py` repeat the five seeds of section 3 with 8 and with 128 hidden neurons; nothing else changes. The figure after the listing sets their runs beside the 64-neuron runs.
 
 ```text
 == 8 neurons, after the last update
@@ -247,6 +251,10 @@ train accuracy 41.33 to 50.67 percent, test accuracy 38.00 to 46.67 percent, gap
 == 128 neurons, after the last update
 train accuracy 94.33 to 98.00 percent, test accuracy 80.67 to 86.67 percent, gap 7.67 to 16.67 points
 ```
+
+![Three dot plots for 8, 64 and 128 hidden neurons, 51, 387 and 771 parameters, one row per seed from 0 to 4, each with the training accuracy as a green circle and the test accuracy as a hollow blue diamond. 8 neurons: test 38.00 to 46.67 percent, gap 0.33 to 7.00 points. 64 neurons: test 67.33 to 82.67 percent, gap 10.67 to 14.00 points. 128 neurons: test 80.67 to 86.67 percent, gap 7.67 to 16.67 points.](diagrams/05-three-widths.svg)
+
+*Five seeds at three widths: the narrow network has the smallest gaps and the lowest test accuracy, the wide one the highest test accuracy on every seed.*
 
 Taking this much capacity away shrinks the gap and destroys the model: seed by seed, the 8-neuron network has a smaller gap than the 64-neuron one in all five runs and a test accuracy that is 28.33 to 41.67 points lower. Adding capacity does the opposite of what the lever predicts: seed by seed, the 128-neuron network has a higher test accuracy than the 64-neuron one in all five runs, by 0.33 to 19.33 points (86.67 against 67.33 percent on seed 2), and its gap is wider in three runs and narrower in two. A width changes how many draws the weights take, so each width is tested on its own 300 points, and the two smallest differences, 0.33 and 1.00 points, are inside the test-set noise of section 4. The wider network also fits its training data better, 94.33 to 98.00 percent against 78.00 to 96.33: on seeds 1, 2 and 3 the 64-neuron network stays below 90 percent on its own training points. On this problem the 64-neuron network is not too large. A smaller gap is not the goal; a higher test figure is, and the two can move in opposite directions.
 
@@ -303,7 +311,7 @@ identical to the training data: True
 
 A gap of exactly zero is the symptom. A test set needs draws the training set did not use: a later position in the same stream, as here, or a different seed.
 
-**Figures compared across two orders of the draws.** Drawing the test set before the layers are created, next to the training set, is a legitimate order, and it is not the documented one. It gives the test set draws 301 to 600, and the weights the draws after them:
+**Figures compared across two orders of the draws.** Drawing the test set before the layers are created, next to the training set, is a legitimate order, and it is not the documented one. It gives the test set draws 301 to 600, and the weights the draws after them (the bottom row of the figure in section 3):
 
 ```text
 same training data: True; same test data: False
