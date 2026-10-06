@@ -1,205 +1,203 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="t d">
-  <title id="t">What to learn after this series: a map organised by what each addition adds to the from-scratch MLP</title>
-  <desc id="d">A four-column map of the modern deep-learning toolkit organised by what each addition contributes to the foundation built across posts 1 to 34. The leftmost column is a tall "You are here" box listing what the series covers: dense layers, ReLU and sigmoid and softmax, cross-entropy and binary cross-entropy and MSE losses, the full optimiser ladder from SGD to Adam, L1 and L2 regularisation, dropout, mini-batching, He initialisation, and four working projects. The next three columns are stacks of cards. Column 2 (green) lists new layer types: convolutional, recurrent (LSTM and GRU), and attention with transformers. Column 3 (blue) lists new training infrastructure: batch normalisation, residual connections, modern learning-rate schedulers, mixed-precision training, and distributed training. Column 4 (tan) lists new problem framings: self-supervised learning, transfer learning and fine-tuning, reinforcement learning, and diffusion-based generative models. Arrows from the central "You are here" box point outward to each column, emphasising that everything past the series is additive on the same foundation.</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
-      --nn-grid:rgba(26,26,26,0.06);
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-01-whats-next-map-title" aria-describedby="nn-01-whats-next-map-desc">
+<title id="nn-01-whats-next-map-title">Everything after this series is an addition</title>
+<desc id="nn-01-whats-next-map-desc">Three columns of cards. New layer types: convolutional layers, one filter's weights reused at every position of a grid, LeCun et al. (1998) and cnn-from-scratch; recurrent layers, one layer's weights reused at every timestep with a carried state, Hochreiter and Schmidhuber (1997) and rnn-from-scratch; attention and transformers, every position reads every other weighted by a softmax of scores, Vaswani et al. (2017) and Karpathy's Let's build GPT. New training infrastructure: normalisation, activations rescaled, Ioffe and Szegedy (2015); residual connections, adds the input of a block to its output, He et al. (2016); learning-rate schedules, another formula in pre_update_params, Loshchilov and Hutter (2017); mixed precision, forward and backward passes in 16 bits, Micikevicius et al. (2018); distributed training, every device holds a copy of the model, DistributedDataParallel. New problem framings: self-supervised learning, takes its labels from the input, BERT, GPT-2 and Masked Autoencoders; transfer learning, a pretrained network, LoRA (Hu et al., 2022); reinforcement learning, no labels and reward-weighted gradients, Sutton and Barto (2018); diffusion models, a denoising objective, Ho, Jain and Abbeel (2020); and a dashed slot: the networks, losses and optimisers stay.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-        --nn-grid:rgba(241,238,232,0.08);
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-
-    .core-box{fill:var(--nn-ink);fill-opacity:0.04;stroke:var(--nn-ink);stroke-width:1.5;}
-    .core-head{font-weight:700;font-size:14px;fill:var(--nn-ink);}
-    .core-sub {font-size:11px;fill:var(--nn-ink-muted);}
-    .core-mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10.5px;font-weight:600;fill:var(--nn-ink);}
-    .core-line-head{font-weight:700;font-size:10px;fill:var(--nn-ink-muted);}
-
-    .col-head-green{font-weight:700;font-size:13px;fill:var(--nn-success);}
-    .col-head-blue {font-weight:700;font-size:13px;fill:var(--nn-primary);}
-    .col-head-tan  {font-weight:700;font-size:13px;fill:var(--nn-warn);}
-
-    .card-green{fill:var(--nn-success);fill-opacity:0.07;stroke:var(--nn-success);stroke-width:1.2;}
-    .card-blue {fill:var(--nn-primary);fill-opacity:0.07;stroke:var(--nn-primary);stroke-width:1.2;}
-    .card-tan  {fill:var(--nn-warn);fill-opacity:0.07;stroke:var(--nn-warn);stroke-width:1.2;}
-
-    .card-head-green{font-weight:700;font-size:11px;fill:var(--nn-success);}
-    .card-head-blue {font-weight:700;font-size:11px;fill:var(--nn-primary);}
-    .card-head-tan  {font-weight:700;font-size:11px;fill:var(--nn-warn);}
-    .card-sub{font-size:10px;fill:var(--nn-ink-muted);}
-
-    .arrow-green{stroke:var(--nn-success);stroke-width:1.5;fill:none;stroke-opacity:0.5;}
-    .arrow-blue {stroke:var(--nn-primary);stroke-width:1.5;fill:none;stroke-opacity:0.5;}
-    .arrow-tan  {stroke:var(--nn-warn);stroke-width:1.5;fill:none;stroke-opacity:0.5;}
-  ]]></style>
-
-  <defs>
-    <marker id="ar-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--nn-success)"/>
-    </marker>
-    <marker id="ar-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--nn-primary)"/>
-    </marker>
-    <marker id="ar-tan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--nn-warn)"/>
-    </marker>
-  </defs>
-
-  <rect class="bg" width="960" height="540"/>
-
-  <text class="title"    x="48" y="40">What to read after this series</text>
-  <text class="subtitle" x="48" y="60">Everything past post 34 is additive: new layer types, new training infrastructure, or new problem framings, all on the same skeleton.</text>
-
-  <!-- ============================ Center: "You are here" core box ============================ -->
-  <rect class="core-box" x="24" y="88" width="204" height="412" rx="12"/>
-  <text class="core-head" x="126" y="110" text-anchor="middle">You are here</text>
-  <text class="core-sub"  x="126" y="126" text-anchor="middle">posts 1 – 34, 4 projects</text>
-
-  <line stroke="var(--nn-border)" stroke-width="1" x1="40" y1="138" x2="212" y2="138"/>
-
-  <text class="core-line-head" x="40" y="156">LAYERS</text>
-  <text class="core-mono"      x="40" y="172">Layer_Dense</text>
-  <text class="core-mono"      x="40" y="186">Activation_ReLU</text>
-  <text class="core-mono"      x="40" y="200">Activation_Sigmoid</text>
-  <text class="core-mono"      x="40" y="214">Activation_Softmax</text>
-  <text class="core-mono"      x="40" y="228">Layer_Dropout</text>
-
-  <text class="core-line-head" x="40" y="252">LOSSES</text>
-  <text class="core-mono"      x="40" y="268">CCE  ·  BCE  ·  MSE</text>
-
-  <text class="core-line-head" x="40" y="290">OPTIMISERS</text>
-  <text class="core-mono"      x="40" y="306">SGD → decay → momentum</text>
-  <text class="core-mono"      x="40" y="320">AdaGrad → RMSProp → Adam</text>
-
-  <text class="core-line-head" x="40" y="344">REGULARISATION</text>
-  <text class="core-mono"      x="40" y="360">L1  ·  L2  ·  Dropout</text>
-
-  <text class="core-line-head" x="40" y="384">TRAINING</text>
-  <text class="core-mono"      x="40" y="400">mini-batching</text>
-  <text class="core-mono"      x="40" y="414">He / Xavier init</text>
-  <text class="core-mono"      x="40" y="428">train / val / test  ·  k-fold</text>
-
-  <text class="core-line-head" x="40" y="452">PROJECTS</text>
-  <text class="core-mono"      x="40" y="468">01 MNIST   02 moons</text>
-  <text class="core-mono"      x="40" y="482">03 Fashion 04 housing</text>
-
-  <!-- ============================ Column 2: new layer types ============================ -->
-  <text class="col-head-green" x="356" y="110" text-anchor="middle">New layer types</text>
-
-  <!-- Arrows from core to column 2 -->
-  <line class="arrow-green" x1="228" y1="200" x2="244" y2="158" marker-end="url(#ar-green)"/>
-
-  <!-- Card 1 -->
-  <rect class="card-green" x="244" y="130" width="224" height="84" rx="8"/>
-  <text class="card-head-green" x="256" y="150">Convolutional layers</text>
-  <text class="card-sub" x="256" y="166">for images, audio, spatial data</text>
-  <text class="card-sub" x="256" y="180">filter weights shared across positions</text>
-  <text class="card-sub" x="256" y="194">→ huge parameter reduction</text>
-  <text class="card-sub" x="256" y="206" style="font-style:italic;">read: LeCun et al. (1998); cs231n</text>
-
-  <!-- Card 2 -->
-  <rect class="card-green" x="244" y="220" width="224" height="84" rx="8"/>
-  <text class="card-head-green" x="256" y="240">Recurrent layers (LSTM, GRU)</text>
-  <text class="card-sub" x="256" y="256">for sequences, time series, text</text>
-  <text class="card-sub" x="256" y="270">hidden state carried timestep-to-timestep</text>
-  <text class="card-sub" x="256" y="284">gates fix vanishing gradient over long seq</text>
-  <text class="card-sub" x="256" y="296" style="font-style:italic;">read: Hochreiter &amp; Schmidhuber (1997); Olah</text>
-
-  <!-- Card 3 -->
-  <rect class="card-green" x="244" y="310" width="224" height="84" rx="8"/>
-  <text class="card-head-green" x="256" y="330">Attention &amp; transformers</text>
-  <text class="card-sub" x="256" y="346">parallel, scales to long sequences</text>
-  <text class="card-sub" x="256" y="360">the foundation of every modern LLM</text>
-  <text class="card-sub" x="256" y="374">Q · Kᵀ → softmax → · V</text>
-  <text class="card-sub" x="256" y="386" style="font-style:italic;">read: Vaswani et al. (2017); Karpathy GPT</text>
-
-  <text class="card-sub" x="356" y="426" text-anchor="middle" style="font-style:italic;">all use the same forward/backward contract</text>
-
-  <!-- ============================ Column 3: new training infrastructure ============================ -->
-  <text class="col-head-blue" x="588" y="110" text-anchor="middle">New training infra</text>
-
-  <!-- Arrow from core -->
-  <line class="arrow-blue" x1="228" y1="306" x2="476" y2="146" marker-end="url(#ar-blue)"/>
-
-  <!-- Card 1 -->
-  <rect class="card-blue" x="476" y="130" width="224" height="66" rx="8"/>
-  <text class="card-head-blue" x="488" y="150">Batch / Layer normalisation</text>
-  <text class="card-sub" x="488" y="166">re-normalise activations per layer</text>
-  <text class="card-sub" x="488" y="180">→ much less sensitive to init / lr</text>
-  <text class="card-sub" x="488" y="192" style="font-style:italic;">read: Ioffe &amp; Szegedy (2015)</text>
-
-  <!-- Card 2 -->
-  <rect class="card-blue" x="476" y="202" width="224" height="66" rx="8"/>
-  <text class="card-head-blue" x="488" y="222">Residual connections</text>
-  <text class="card-sub" x="488" y="238">output = layer(x) + x  (skip path)</text>
-  <text class="card-sub" x="488" y="252">→ trains 50-, 100-layer networks</text>
-  <text class="card-sub" x="488" y="264" style="font-style:italic;">read: He et al. (2016), ResNet</text>
-
-  <!-- Card 3 -->
-  <rect class="card-blue" x="476" y="274" width="224" height="58" rx="8"/>
-  <text class="card-head-blue" x="488" y="294">Modern LR schedulers</text>
-  <text class="card-sub" x="488" y="310">cosine · warmup · one-cycle</text>
-  <text class="card-sub" x="488" y="324" style="font-style:italic;">replaces post 23's 1/(1+dt)</text>
-
-  <!-- Card 4 -->
-  <rect class="card-blue" x="476" y="338" width="224" height="42" rx="8"/>
-  <text class="card-head-blue" x="488" y="358">Mixed precision  ·  AMP</text>
-  <text class="card-sub" x="488" y="374">fp16/bf16 forward, fp32 optimiser state</text>
-
-  <!-- Card 5 -->
-  <rect class="card-blue" x="476" y="386" width="224" height="42" rx="8"/>
-  <text class="card-head-blue" x="488" y="406">Distributed training</text>
-  <text class="card-sub" x="488" y="422">data-parallel, model-parallel, FSDP</text>
-
-  <!-- ============================ Column 4: new problem framings ============================ -->
-  <text class="col-head-tan" x="820" y="110" text-anchor="middle">New problem framings</text>
-
-  <!-- Arrow from core -->
-  <line class="arrow-tan" x1="228" y1="420" x2="708" y2="146" marker-end="url(#ar-tan)"/>
-
-  <!-- Card 1 -->
-  <rect class="card-tan" x="708" y="130" width="224" height="66" rx="8"/>
-  <text class="card-head-tan" x="720" y="150">Self-supervised learning</text>
-  <text class="card-sub" x="720" y="166">construct labels from input itself</text>
-  <text class="card-sub" x="720" y="180">→ unlimited training data</text>
-  <text class="card-sub" x="720" y="192" style="font-style:italic;">read: BERT, GPT-2, MAE</text>
-
-  <!-- Card 2 -->
-  <rect class="card-tan" x="708" y="202" width="224" height="66" rx="8"/>
-  <text class="card-head-tan" x="720" y="222">Transfer learning  ·  fine-tuning</text>
-  <text class="card-sub" x="720" y="238">pretrained model + small labelled set</text>
-  <text class="card-sub" x="720" y="252">LoRA / PEFT for efficient adapters</text>
-  <text class="card-sub" x="720" y="264" style="font-style:italic;">read: Hu et al. (2022), LoRA</text>
-
-  <!-- Card 3 -->
-  <rect class="card-tan" x="708" y="274" width="224" height="66" rx="8"/>
-  <text class="card-head-tan" x="720" y="294">Reinforcement learning</text>
-  <text class="card-sub" x="720" y="310">agent takes actions, gets rewards</text>
-  <text class="card-sub" x="720" y="324">policy-gradient instead of supervised loss</text>
-  <text class="card-sub" x="720" y="336" style="font-style:italic;">read: Sutton &amp; Barto; OpenAI Spinning Up</text>
-
-  <!-- Card 4 -->
-  <rect class="card-tan" x="708" y="346" width="224" height="66" rx="8"/>
-  <text class="card-head-tan" x="720" y="366">Diffusion models</text>
-  <text class="card-sub" x="720" y="382">learn to reverse a noise-corruption</text>
-  <text class="card-sub" x="720" y="396">Stable Diffusion, DALL-E 3, Sora</text>
-  <text class="card-sub" x="720" y="408" style="font-style:italic;">read: Ho et al. (2020), DDPM</text>
-
-  <!-- Footer -->
-  <text class="footer" x="48" y="528">Everything in the three right columns plugs into the forward-pass / backward-pass / optimiser-step skeleton from post 21.</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+</style>
+<defs>
+<marker id="nn-01-whats-next-map-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title" data-w="503">Everything after this series is an addition</text>
+<text x="40" y="76" class="t-subtitle" data-w="706">What sections 2 to 4 add to the forward pass, backward pass and optimiser step of posts 01 to 34.</text>
+<text x="40" y="136" class="t-head" data-w="130">New layer types</text>
+<rect x="40" y="152" width="264" height="148" rx="8" class="card"/>
+<text x="52" y="180" class="t-head" data-w="167">Convolutional layers</text>
+<text x="52" y="204" class="t-label" data-w="176">one filter's weights reused</text>
+<text x="52" y="224" class="t-label" data-w="171">at every position of a grid</text>
+<text x="52" y="256" class="t-note" data-w="128">LeCun et al. (1998)</text>
+<text x="52" y="276" class="t-code" data-w="137">cnn-from-scratch</text>
+<rect x="40" y="312" width="264" height="148" rx="8" class="card"/>
+<text x="52" y="340" class="t-head" data-w="135">Recurrent layers</text>
+<text x="52" y="364" class="t-label" data-w="196">one layer's weights reused at</text>
+<text x="52" y="384" class="t-label" data-w="235">every timestep, with a carried state</text>
+<text x="52" y="416" class="t-note" data-w="239">Hochreiter and Schmidhuber (1997)</text>
+<text x="52" y="436" class="t-code" data-w="137">rnn-from-scratch</text>
+<rect x="40" y="472" width="264" height="148" rx="8" class="card"/>
+<text x="52" y="500" class="t-head" data-w="223">Attention and transformers</text>
+<text x="52" y="524" class="t-label" data-w="220">every position reads every other,</text>
+<text x="52" y="544" class="t-label" data-w="217">weighted by a softmax of scores</text>
+<text x="52" y="576" class="t-note" data-w="140">Vaswani et al. (2017)</text>
+<text x="52" y="596" class="t-note" data-w="172">Karpathy, Let's build GPT</text>
+<text x="328" y="136" class="t-head" data-w="221">New training infrastructure</text>
+<rect x="328" y="152" width="296" height="84" rx="8" class="card"/>
+<text x="340" y="176" class="t-head" data-w="116">Normalisation</text>
+<text x="340" y="200" class="t-label" data-w="134">activations rescaled</text>
+<text x="340" y="224" class="t-note" data-w="169">Ioffe and Szegedy (2015)</text>
+<rect x="328" y="248" width="296" height="84" rx="8" class="card"/>
+<text x="340" y="272" class="t-head" data-w="176">Residual connections</text>
+<text x="340" y="296" class="t-label" data-w="252">adds the input of a block to its output</text>
+<text x="340" y="320" class="t-note" data-w="103">He et al. (2016)</text>
+<rect x="328" y="344" width="296" height="84" rx="8" class="card"/>
+<text x="340" y="368" class="t-head" data-w="198">Learning-rate schedules</text>
+<text x="340" y="392" class="t-label" data-w="127">another formula in </text>
+<g data-grid="skip">
+<text x="460" y="392" class="t-code" data-w="146">pre_update_params</text>
+</g>
+<text x="340" y="416" class="t-note" data-w="194">Loshchilov and Hutter (2017)</text>
+<rect x="328" y="440" width="296" height="84" rx="8" class="card"/>
+<text x="340" y="464" class="t-head" data-w="130">Mixed precision</text>
+<text x="340" y="488" class="t-label" data-w="265">forward and backward passes in 16 bits</text>
+<text x="340" y="512" class="t-note" data-w="165">Micikevicius et al. (2018)</text>
+<rect x="328" y="536" width="296" height="84" rx="8" class="card"/>
+<text x="340" y="560" class="t-head" data-w="160">Distributed training</text>
+<text x="340" y="584" class="t-label" data-w="262">every device holds a copy of the model</text>
+<text x="340" y="608" class="t-code" data-w="197">DistributedDataParallel</text>
+<text x="648" y="136" class="t-head" data-w="186">New problem framings</text>
+<rect x="648" y="152" width="272" height="84" rx="8" class="card"/>
+<text x="660" y="176" class="t-head" data-w="199">Self-supervised learning</text>
+<text x="660" y="200" class="t-label" data-w="199">takes its labels from the input</text>
+<text x="660" y="224" class="t-note" data-w="251">BERT, GPT-2, Masked Autoencoders</text>
+<rect x="648" y="248" width="272" height="84" rx="8" class="card"/>
+<text x="660" y="272" class="t-head" data-w="139">Transfer learning</text>
+<text x="660" y="296" class="t-label" data-w="139">a pretrained network</text>
+<text x="660" y="320" class="t-note" data-w="149">LoRA (Hu et al., 2022)</text>
+<rect x="648" y="344" width="272" height="84" rx="8" class="card"/>
+<text x="660" y="368" class="t-head" data-w="191">Reinforcement learning</text>
+<text x="660" y="392" class="t-label" data-w="249">no labels; reward-weighted gradients</text>
+<text x="660" y="416" class="t-note" data-w="162">Sutton and Barto (2018)</text>
+<rect x="648" y="440" width="272" height="84" rx="8" class="card"/>
+<text x="660" y="464" class="t-head" data-w="140">Diffusion models</text>
+<text x="660" y="488" class="t-label" data-w="142">a denoising objective</text>
+<text x="660" y="512" class="t-note" data-w="182">Ho, Jain and Abbeel (2020)</text>
+<rect x="648" y="536" width="272" height="84" rx="8" class="w1 nofill s-ink-muted d-lead" data-fit="skip"/>
+<text x="660" y="572" class="t-note" data-w="170">The networks, losses and</text>
+<text x="660" y="592" class="t-note" data-w="107">optimisers stay.</text>
+<text x="40" y="684" class="t-note" data-w="611">Under each name: what it adds, then where to read; layer cards add a from-scratch tutorial.</text>
 </svg>

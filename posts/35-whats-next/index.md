@@ -11,9 +11,9 @@
 > - Name the canonical paper and a from-scratch tutorial for each of the three architectures.
 > - Choose what to study next from the kind of problem to be solved.
 
-![A map in four columns. The first lists what the series built: dense, activation and dropout layers, three losses, six optimisers, L1 and L2, mini-batching, initialisation and four projects. The other three list additions: new layer types, new training infrastructure, and new problem framings, each card with a source to read.](diagrams/01-whats-next-map.svg)
+![Three columns of cards. New layer types: convolutional layers, recurrent layers, and attention and transformers, each with what it adds, its paper and a from-scratch tutorial. New training infrastructure: normalisation, residual connections, learning-rate schedules, mixed precision and distributed training. New problem framings: self-supervised learning, transfer learning, reinforcement learning and diffusion models, closed by a note that the networks, losses and optimisers stay. Each card names what the addition adds and a source.](diagrams/01-whats-next-map.svg)
 
-*Three columns of additions beside what posts 01 to 34 built. The figure's footer dates the skeleton to post 21; the forward and backward passes are complete there, and the optimiser step and the training loop are post 22's.*
+*Sections 2 to 4 on one page: each card says what the addition adds to the dense stack and where to start reading.*
 
 ---
 
@@ -32,19 +32,23 @@ The series also left a habit: a comparison is read over several seeds and on hel
 
 The question of this post: **what does each architecture and each training method met after this series add to that stock, and which should be studied first?**
 
-The answer starts from what does not change. Every layer has a `forward` that stores its output and a `backward` that receives `dvalues` and stores `dinputs` (post 16). The loop that calls them in order and then hands every layer with parameters to an optimiser is [post 22](../22-gradient-descent-optimiser/index.md)'s. From post 23 on, every optimiser answers the same three calls: `pre_update_params`, `update_params(layer)` and `post_update_params` (post 23, section 8).
+The answer starts from what does not change. Every layer has a `forward` that stores its output and a `backward` that receives `dvalues` and stores `dinputs` (post 16). The loop that calls them in order and then hands every layer with parameters to an optimiser is [post 22](../22-gradient-descent-optimiser/index.md)'s. From post 23 on, every optimiser answers the same three calls: `pre_update_params`, `update_params(layer)` and `post_update_params` (post 23, section 8). The figure below draws the two contracts and one step of the loop that calls them.
 
-![The training loop in the centre, with a card for any layer on the left, giving forward and backward as its interface, and a card for any optimiser on the right, giving three update calls as its interface. Arrows run from both cards into the loop.](diagrams/02-the-skeleton-is-fixed.svg)
+![A card for any layer on the left with forward, which stores its output, and backward, which receives dvalues and stores dinputs. In the middle, one step of the loop as five boxes: forward of every layer in order, backward of every layer, pre_update_params, update_params for every layer with parameters, and post_update_params, with arrows from each step to the method it calls. On the right, a card for any optimiser with the three calls. Below, three cards for what does change: a layer with shared weights sums gradient contributions, training and evaluation modes, and carried state.](diagrams/02-the-skeleton-is-fixed.svg)
 
-*A new layer brings a forward and a backward; a new optimiser brings three calls. The figure dates the loop to "Part 21" and the contract to "Part 23": the loop is post 22's, its batch loop is post 32's, and the contract is post 23's. Section 8 lists the small changes the loop does need.*
+*A new layer brings a forward and a backward; a new optimiser brings three calls. The bottom row is section 8's list of what the loop does need.*
 
-Sections 2 to 4 sort what is placed inside that skeleton into three kinds: new layers, new training machinery, and new ways of posing the problem.
+Sections 2 to 4 sort what is placed inside that skeleton into three kinds: new layers, new training machinery, and new ways of posing the problem. The first figure of this post maps all three.
 
 ---
 
 ## 2. New layer types
 
-All three layers below answer one weakness of the dense layer: it has a separate weight for every input position, so it cannot use anything learned at one position at another. Each of the three reuses one set of weights across positions, and each does it differently.
+All three layers below answer one weakness of the dense layer: it has a separate weight for every input position, so it cannot use anything learned at one position at another. Each of the three reuses one set of weights across positions, and each does it differently. The figure below sets the three side by side with the counts of sections 2.1 to 2.3.
+
+![Three panels. A 28 by 28 grid of pixels with one 5 by 5 filter shaded at two positions, and a table: a dense layer from 784 to 128 has 100,480 parameters, 8 filters of 5 by 5 have 208. Three recurrent steps, each input feeding its hidden state through W_x and each hidden state feeding the next through W_h, and a table: 4,800 parameters for 5 steps and for 500. A 6 by 6 grid of attention scores with one row shaded as one softmax, and a table: 100 positions give 10,000 scores, 1,000 give 1,000,000.](diagrams/03-weights-shared-across-positions.svg)
+
+*One set of weights at every place, every timestep and every pair of positions; only the attention scores grow with the input.*
 
 ### 2.1. Convolutional layers: the same weights at every place
 
@@ -233,7 +237,7 @@ For a reader with no problem in mind, one order that works:
 
 ## 8. What can go wrong?
 
-**The loop is assumed to need no change at all.** The second figure says nothing in the loop needs editing. Three things do change, and all are small. A layer that behaves differently in training and in evaluation, dropout in post 31 and batch normalisation here, needs a loop that knows which of the two it is running; the dropout layer of `nn-p01` takes a `training` argument for this, and the project's evaluation pass sets it to false. A recurrent layer carries state between calls, which has to be reset between unrelated sequences. And a layer with shared weights sums gradient contributions inside its `backward`, where `Layer_Dense` gets the sum from one matrix product.
+**The loop is assumed to need no change at all.** Three things do change, and all are small; they are the bottom row of the second figure. A layer that behaves differently in training and in evaluation, dropout in post 31 and batch normalisation here, needs a loop that knows which of the two it is running; the dropout layer of `nn-p01` takes a `training` argument for this, and the project's evaluation pass sets it to false. A recurrent layer carries state between calls, which has to be reset between unrelated sequences. And a layer with shared weights sums gradient contributions inside its `backward`, where `Layer_Dense` gets the sum from one matrix product.
 
 **A re-implementation in a framework does not reproduce the series' numbers.** The defaults differ. `torch.nn.Linear` draws its weights and its biases from a uniform distribution whose width depends on the number of inputs, where this series began with `0.01 * randn` and zero biases; the `eps` of `torch.optim.Adam` defaults to $10^{-8}$, where the series' classes use $10^{-7}$; the random streams differ. A matching architecture with a different final accuracy is expected, and the comparison that means something is that of Part VI: several seeds on each side.
 
