@@ -1,0 +1,212 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-04-beta-over-seeds-title" aria-describedby="nn-04-beta-over-seeds-desc">
+<title id="nn-04-beta-over-seeds-title">On the spiral, 0.5 and 0.9 help and 0.99 does not</title>
+<desc id="nn-04-beta-over-seeds-desc">Two dot charts, one row per momentum coefficient, each row a band from the lowest to the highest of five seeds with one tick per seed and a dot for seed 0. Left the final loss on an axis from 0 to 1.1, right the accuracy in percent from 30 to 100, with the mean accuracy printed at the right. beta 0: loss 0.7310 to 0.9107 (seed 0 0.7612), accuracy 58.0 to 69.3 percent (seed 0 64.7), mean 64.5; beta 0.5: loss 0.3661 to 0.7216 (seed 0 0.5531), accuracy 71.3 to 85.7 percent (seed 0 78.0), mean 80.2; beta 0.9: loss 0.0865 to 0.5986 (seed 0 0.1209), accuracy 68.7 to 98.0 percent (seed 0 95.7), mean 83.4; beta 0.99: loss 0.5612 to 1.0237 (seed 0 0.7509), accuracy 39.0 to 67.7 percent (seed 0 58.7), mean 54.5.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-green { fill: var(--nn-green); }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .s-green { stroke: var(--nn-green); }
+  .s-green-line { stroke: var(--nn-green-line); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-04-beta-over-seeds-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="584">On the spiral, 0.5 and 0.9 help and 0.99 does not</text>
+<text x="40" y="76" class="t-subtitle" data-w="677">The spiral, 10,001 epochs, learning rate 1.0 with decay 0.001; seeds 0 to 4 for each coefficient.</text>
+<g data-grid="skip">
+<path d="M128,128V408M204.36,128V408M280.73,128V408M357.09,128V408M433.45,128V408" class="gridline"/>
+<text x="128" y="428" text-anchor="middle" class="t-tick" data-w="27">0.00</text>
+<text x="204.36" y="428" text-anchor="middle" class="t-tick" data-w="27">0.25</text>
+<text x="280.73" y="428" text-anchor="middle" class="t-tick" data-w="27">0.50</text>
+<text x="357.09" y="428" text-anchor="middle" class="t-tick" data-w="27">0.75</text>
+<text x="433.45" y="428" text-anchor="middle" class="t-tick" data-w="27">1.00</text>
+<path d="M128,408H464" class="axis"/>
+<text x="40" y="168" class="t-label" data-w="35">β = 0</text>
+<text x="40" y="238" class="t-label" data-w="48">β = 0.5</text>
+<text x="40" y="308" class="t-label" data-w="48">β = 0.9</text>
+<text x="40" y="378" class="t-label" data-w="56">β = 0.99</text>
+</g>
+<g data-grid="skip">
+<path d="M512,128V408M558.86,128V408M605.71,128V408M652.57,128V408M699.43,128V408M746.29,128V408M793.14,128V408M840,128V408" class="gridline"/>
+<text x="512" y="428" text-anchor="middle" class="t-tick" data-w="16">30</text>
+<text x="558.86" y="428" text-anchor="middle" class="t-tick" data-w="16">40</text>
+<text x="605.71" y="428" text-anchor="middle" class="t-tick" data-w="16">50</text>
+<text x="652.57" y="428" text-anchor="middle" class="t-tick" data-w="16">60</text>
+<text x="699.43" y="428" text-anchor="middle" class="t-tick" data-w="16">70</text>
+<text x="746.29" y="428" text-anchor="middle" class="t-tick" data-w="16">80</text>
+<text x="793.14" y="428" text-anchor="middle" class="t-tick" data-w="16">90</text>
+<text x="840" y="428" text-anchor="middle" class="t-tick" data-w="23">100</text>
+<path d="M512,408H840" class="axis"/>
+<text x="512" y="168" class="t-label" data-w="0"></text>
+<text x="512" y="238" class="t-label" data-w="0"></text>
+<text x="512" y="308" class="t-label" data-w="0"></text>
+<text x="512" y="378" class="t-label" data-w="0"></text>
+</g>
+<text x="128" y="112" class="t-head" data-w="78">Final loss</text>
+<text x="512" y="112" class="t-head" data-w="148">Accuracy, percent</text>
+<text x="920" y="112" text-anchor="end" class="t-note" data-w="38">mean</text>
+<g data-grid="skip">
+<rect x="351.29" y="151" width="54.89" height="24" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M360.51,155V171M352.05,155V171M406.18,155V171M351.29,155V171M364.73,155V171" class="s-green w1 nofill"/>
+<circle cx="360.51" cy="163" r="5" class="f-green s-surface w1"/>
+<rect x="643.2" y="151" width="53.09" height="24" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M674.45,155V171M696.29,155V171M643.2,155V171M685.37,155V171M669.77,155V171" class="s-green w1 nofill"/>
+<circle cx="674.45" cy="163" r="5" class="f-green s-surface w1"/>
+<text x="920" y="168" text-anchor="end" class="t-value f-green-ink" data-w="30">64.5</text>
+<rect x="239.83" y="221" width="108.59" height="24" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M296.95,225V241M267.53,225V241M348.42,225V241M239.83,225V241M259.22,225V241" class="s-green w1 nofill"/>
+<circle cx="296.95" cy="233" r="5" class="f-green s-surface w1"/>
+<rect x="705.66" y="221" width="67.19" height="24" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M736.91,225V241M752.52,225V241M705.66,225V241M772.85,225V241M768.17,225V241" class="s-green w1 nofill"/>
+<circle cx="736.91" cy="233" r="5" class="f-green s-surface w1"/>
+<text x="920" y="238" text-anchor="end" class="t-value f-green-ink" data-w="30">80.2</text>
+<rect x="154.42" y="291" width="156.42" height="24" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M164.93,295V311M310.85,295V311M289.01,295V311M240.62,295V311M154.42,295V311" class="s-green w1 nofill"/>
+<circle cx="164.93" cy="303" r="5" class="f-green s-surface w1"/>
+<rect x="693.2" y="291" width="137.43" height="24" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M819.71,295V311M693.2,295V311M713.49,295V311M754.11,295V311M830.63,295V311" class="s-green w1 nofill"/>
+<circle cx="819.71" cy="303" r="5" class="f-green s-surface w1"/>
+<text x="920" y="308" text-anchor="end" class="t-value f-green-ink" data-w="30">83.4</text>
+<rect x="299.42" y="361" width="141.27" height="24" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M357.37,365V381M299.42,365V381M367.02,365V381M440.69,365V381M385.65,365V381" class="s-green w1 nofill"/>
+<circle cx="357.37" cy="373" r="5" class="f-green s-surface w1"/>
+<rect x="554.17" y="361" width="134.34" height="24" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M646.34,365V381M688.51,365V381M633.83,365V381M554.17,365V381M610.4,365V381" class="s-green w1 nofill"/>
+<circle cx="646.34" cy="373" r="5" class="f-green s-surface w1"/>
+<text x="920" y="378" text-anchor="end" class="t-value f-green-ink" data-w="30">54.5</text>
+</g>
+<rect x="128" y="456" width="24" height="16" class="f-green-soft s-green-line w1" data-fit="skip"/>
+<path d="M140,458.67V469.33" class="s-green w1 nofill"/>
+<text x="160" y="468" class="t-label" data-w="165">five seeds, one tick each</text>
+<circle cx="368" cy="464" r="5" class="f-green s-surface w1"/>
+<text x="392" y="468" class="t-label" data-w="189">seed 0, the documented run</text>
+<text x="40" y="504" class="t-note" data-w="688">Every coefficient is spread over its five seeds; only 0.99 is below no momentum in accuracy every time.</text>
+</svg>

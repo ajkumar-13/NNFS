@@ -11,9 +11,9 @@
 > - Implement momentum inside Optimizer_SGD with a per-layer weight_momentums buffer.
 > - Translate between the two sign conventions of the velocity: learning rate inside and subtracted, or gradient added and the rate applied at the step.
 
-![Two panels with the same elongated elliptical loss contours and the same starting point. On the left, gradient descent zig-zags across the valley in thirteen short steps. On the right, gradient descent with momentum reaches the minimum in five longer, smoother steps. A band below gives the two update rules.](diagrams/01-momentum-trajectory.svg)
+![Two charts of the ravine L = (x squared + 100 y squared)/2 with elliptical contours, each a 100-step path from (10, 1) with learning rate 0.019. Without momentum the path zig-zags from wall to wall while it creeps along the floor and ends at x = 1.4686, loss 1.0784. With momentum 0.9 it holds still across on every second step, runs past the minimum to x = -2.84, comes back and ends at x = 0.0523, loss 0.0027. Travel across is 18.999 against 18.902, travel along 8.531 against 17.834.](diagrams/01-ravine-paths.svg)
 
-*A drawing of the idea, not a plot of a run. Section 2 measures the same contrast on a ravine with two parameters; there the bounce does not vanish, and the gain is along the floor.*
+*The ravine of section 1, 100 steps of `ravine.py` each. With momentum the path crosses the ravine about as much, travels twice as far along the floor, and ends with a loss 400 times lower.*
 
 ---
 
@@ -49,17 +49,17 @@ steps 1 and 2 without momentum, added: (-0.3764, -0.1900)
 
 Added, the across parts nearly cancel and the along parts double. Gradient descent never adds them: it takes each step in full, so the across motion is paid for twice and undone once.
 
-![Two cards. The left card shows two consecutive steps in a valley split into components: across plus 150 and minus 150, down plus 34 each. The right card adds them: across 0, down 68. A strip below lists the momentum coefficients 0, 0.5 and 0.9 with horizons of 1, 2 and 10 gradients and accuracies of 64.7, 78.0 and 95.7 percent.](diagrams/02-vector-cancellation.svg)
-
-*The idealised case, in the units of the drawing. The accuracies in the strip are those of the seed 0 runs of sections 7 and 8; other seeds rank the coefficients differently.*
-
 Momentum is the rule that does the adding. The optimiser keeps a **velocity**, a running sum of its past steps in which older steps count for less, and moves by the velocity instead of by the latest gradient step alone. The right half of the output above is the same start with a momentum coefficient of 0.9. Step 1 is identical, because the velocity starts at zero. Step 2 is 0.9 times step 1 plus the new gradient step:
 
 ```text
 step 2 with momentum = 0.9 * step 1 - alpha * gradient 2 = (-0.1710, -1.7100) + (-0.1864,  1.7100) = (-0.3574,  0.0000)
 ```
 
-The across parts cancel, here exactly, and the along part is nearly twice a single step. Steps 3 and 4 repeat the pattern while the along part keeps growing: $-0.19$, $-0.36$, $-0.50$, $-0.62$.
+The across parts cancel, here exactly, and the along part is nearly twice a single step. Steps 3 and 4 repeat the pattern while the along part keeps growing: $-0.19$, $-0.36$, $-0.50$, $-0.62$. The figure below sets the two additions side by side.
+
+![Two vector diagrams with tables of the parts along and across. Left, without momentum, step 1 (-0.1900, -1.9000) and step 2 (-0.1864, 1.7100) form a V, and their sum (-0.3764, -0.1900) is nearly flat. Right, with momentum 0.9, 0.9 times step 1 (-0.1710, -1.7100) plus the same gradient step gives step 2, (-0.3574, 0.0000).](diagrams/02-steps-added.svg)
+
+*Along the floor is drawn at four times the scale across. The gradient step is the same in both panels; with momentum the addition happens inside step 2.*
 
 After 100 steps:
 
@@ -69,7 +69,7 @@ beta    x      |y|        loss      travel across  travel along  across steps th
 0.90   0.0523  5.15e-03     0.0027         18.902        17.834                         49
 ```
 
-The loss is 400 times lower with momentum (0.0027 against 1.0784), and all of that gain is along the floor: $x$ has gone from 10 to 0.0523 instead of 1.4686. The bounce has not vanished. The across step reverses 49 times instead of 99, but the distance travelled across the ravine is almost the same (18.902 against 18.999), and the remaining $|y|$ is larger with momentum. What the velocity does on this surface is hold the across motion still on every second step and use the agreement along the floor to go twice as far.
+The loss is 400 times lower with momentum (0.0027 against 1.0784), and all of that gain is along the floor: $x$ has gone from 10 to 0.0523 instead of 1.4686. The bounce has not vanished. The across step reverses 49 times instead of 99, but the distance travelled across the ravine is almost the same (18.902 against 18.999), and the remaining $|y|$ is larger with momentum. What the velocity does on this surface is hold the across motion still on every second step and use the agreement along the floor to go twice as far. The figure at the top of the post draws the two paths.
 
 Flat ground works the same way. Where the current gradient is tiny, the velocity inherited from many steps in one direction is not, and the optimiser keeps moving. Section 3 puts a number on it.
 
@@ -99,7 +99,11 @@ momentum 0.0 against theta -= alpha * g: largest gap 0.0e+00
 beta 0.90  t=1: 1.000  t=2: 1.900  t=3: 2.710  t=10: 6.513  t=50: 9.948  t=1000: 10.000   1 / (1 - beta) = 10
 ```
 
-This is the speed that builds up along a consistent direction: with $\beta = 0.9$ the step grows to ten times a plain gradient step, and with 0.99 to a hundred times. Unrolled, $v_t = -\alpha \sum_{k \ge 0} \beta^k g_{t-k}$ at a constant rate: a weighted sum of all past gradients in which a gradient $k$ steps old counts $\beta^k$. The weights add up to $1/(1 - \beta)$, which is why that number is quoted as the horizon of the velocity; with $\beta = 0.9$ the latest ten gradients carry 0.651 of the total weight. It is a sum and not an average: there is no factor $(1 - \beta)$ in front of the gradient, as there will be in Adam (post 27).
+This is the speed that builds up along a consistent direction: with $\beta = 0.9$ the step grows to ten times a plain gradient step, and with 0.99 to a hundred times. Unrolled, $v_t = -\alpha \sum_{k \ge 0} \beta^k g_{t-k}$ at a constant rate: a weighted sum of all past gradients in which a gradient $k$ steps old counts $\beta^k$. The weights add up to $1/(1 - \beta)$, which is why that number is quoted as the horizon of the velocity; with $\beta = 0.9$ the latest ten gradients carry 0.651 of the total weight. It is a sum and not an average: there is no factor $(1 - \beta)$ in front of the gradient, as there will be in Adam (post 27). The figure below draws both the growth and the weights.
+
+![Left, the size of the velocity under a gradient that never changes, against the step on logarithmic axes, for beta 0.5, 0.9 and 0.99: it levels off at 2, 10 and 100 plain steps, and the values printed at t = 1, 2, 3, 10, 50 and 1,000 are marked. Right, stems for the weight 0.9 to the k of a gradient k steps old, k from 0 to 29: the latest ten carry 0.651 of a total weight of 10.](diagrams/03-velocity-horizon.svg)
+
+*Both panels are computed from the formulas above; the marks on the left are the values `ravine.py` prints.*
 
 **With $\beta = 1$** nothing is ever forgotten, and on the ravine the path never settles (section 10).
 
@@ -300,7 +304,11 @@ On the spiral, `snippets/beta_sweep.py` runs 0.5 and 0.99 over the same five see
 | 0.9 | 10 | 0.0865 to 0.5986 | 0.6867 to 0.9800 | 0.8340 | 102 to 1,128 |
 | 0.99 | 100 | 0.5612 to 1.0237 | 0.3900 to 0.6767 | 0.5447 | 17 to 214 |
 
-Three readings.
+The figure below draws every run of the table, one tick per seed. Three readings follow.
+
+![Two dot charts with one row per momentum coefficient, 0, 0.5, 0.9 and 0.99, each row a band over five seeds with one tick per seed and a dot for seed 0. Final loss: 0.7310 to 0.9107, 0.3661 to 0.7216, 0.0865 to 0.5986 and 0.5612 to 1.0237. Accuracy: 58.0 to 69.3, 71.3 to 85.7, 68.7 to 98.0 and 39.0 to 67.7 percent, with means of 64.5, 80.2, 83.4 and 54.5 percent.](diagrams/04-beta-over-seeds.svg)
+
+*The rows for 0 and 0.9 are the runs of `seed_spread.py`, the rows for 0.5 and 0.99 those of `beta_sweep.py`; all use learning rate 1.0 with decay 0.001.*
 
 **A coefficient of 0.5 helps in every seed.** Its loss is lower and its accuracy higher than without momentum in all five, although its steps still point against each other almost every time. Half of the previous step is not enough to stop the zig-zag, and it is enough to lengthen the net step.
 
