@@ -1,142 +1,219 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" role="img" aria-labelledby="t d">
-  <title id="t">The weight-gradient matrix as an outer product of upstream gradient and input</title>
-  <desc id="d">A schematic of the matrix-form weight gradient. On the left, the upstream gradient column ∂L/∂Z transposed has shape (3, 1) with values 43.2, 43.2, 43.2. In the middle, a dot symbol. On the right, the input row X has shape (1, 4) with values 1, 2, 3, 4. The result of the matrix product on the right side of the diagram is a (3, 4) matrix whose entry at row k, column j is 43.2 times X_j. The shape arithmetic at the bottom shows (3, 1) dot (1, 4) equals (3, 4), and a footer note states the result has the exact same shape as the stored weights matrix.</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-01-matrix-weight-gradient-title" aria-describedby="nn-01-matrix-weight-gradient-desc">
+<title id="nn-01-matrix-weight-gradient-title">One outer product holds all twelve weight gradients</title>
+<desc id="nn-01-matrix-weight-gradient-desc">The single sample of post 13 drawn as an outer product. On the left, the upstream gradient dL/dZ transposed, a column of shape (3, 1) holding 43.2 for neurons 1, 2 and 3. Above the result, the input row X, shape (1, 4), holding x1 to x4 = 1, 2, 3, 4. The result dL/dW, shape (3, 4), the shape of the weights, has one row per neuron and one column per input, and every row reads 43.2, 86.4, 129.6, 172.8. Neuron 2's 43.2, the input 3 and the entry 129.6 are outlined, and the right side works it out: dL/dw23 = dL/dz2 times x3 = 43.2 times 3 = 129.6. Under it the shapes, (3, 1) times (1, 4) gives (3, 4), and the code line dL_dW = dL_dZ.T @ X.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .label-head{font-weight:700;font-size:14px;fill:var(--nn-ink);font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .label-sub{font-size:11px;fill:var(--nn-ink-muted);}
-    .upstream-cell{fill:var(--nn-alert);fill-opacity:0.20;stroke:var(--nn-alert);stroke-width:1.2;}
-    .input-cell{fill:var(--nn-primary);fill-opacity:0.18;stroke:var(--nn-primary);stroke-width:1.2;}
-    .out-cell{fill:var(--nn-success);fill-opacity:0.20;stroke:var(--nn-success);stroke-width:1.2;}
-    .cell-num{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:600;fill:var(--nn-ink);}
-    .op{font-weight:700;font-size:22px;fill:var(--nn-ink);}
-    .shape-pill{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
-    .shape-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:11px;font-weight:600;fill:var(--nn-ink);}
-    .formula-band{fill:var(--nn-primary);fill-opacity:0.08;stroke:var(--nn-primary);stroke-width:1.5;}
-    .formula-head{font-weight:700;font-size:13px;fill:var(--nn-primary);}
-    .formula-text{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:14px;fill:var(--nn-ink);font-weight:600;}
-    .insight-text{font-size:11px;fill:var(--nn-ink-muted);}
-    .col-tag{font-size:10px;fill:var(--nn-ink-muted);}
-    .row-tag{font-size:10px;fill:var(--nn-ink-muted);}
-  ]]></style>
-
-  <rect class="bg" width="960" height="480"/>
-
-  <text class="title"    x="48" y="48">∂L/∂W = (∂L/∂Z)ᵀ · X</text>
-  <text class="subtitle" x="48" y="70">One matrix product produces every weight gradient, in the same shape as the stored weights.</text>
-
-  <!-- ============================ Upstream column ============================ -->
-  <text class="label-head" x="120" y="112" text-anchor="middle">(∂L/∂Z)ᵀ</text>
-  <text class="label-sub"  x="120" y="128" text-anchor="middle">upstream column</text>
-
-  <g transform="translate(80, 144)">
-    <rect class="upstream-cell" x="0" y="0"  width="80" height="36"/>
-    <rect class="upstream-cell" x="0" y="36" width="80" height="36"/>
-    <rect class="upstream-cell" x="0" y="72" width="80" height="36"/>
-    <text class="cell-num" x="40" y="22" text-anchor="middle">43.2</text>
-    <text class="cell-num" x="40" y="58" text-anchor="middle">43.2</text>
-    <text class="cell-num" x="40" y="94" text-anchor="middle">43.2</text>
-  </g>
-  <text class="row-tag" x="72" y="167" text-anchor="end">k=1</text>
-  <text class="row-tag" x="72" y="203" text-anchor="end">k=2</text>
-  <text class="row-tag" x="72" y="239" text-anchor="end">k=3</text>
-  <rect class="shape-pill" x="88" y="262" width="64" height="22" rx="6"/>
-  <text class="shape-text" x="120" y="278" text-anchor="middle">(3, 1)</text>
-
-  <!-- ============================ Dot operator ============================ -->
-  <text class="op" x="216" y="198" text-anchor="middle">·</text>
-
-  <!-- ============================ Input row ============================ -->
-  <text class="label-head" x="360" y="112" text-anchor="middle">X</text>
-  <text class="label-sub"  x="360" y="128" text-anchor="middle">input row</text>
-
-  <g transform="translate(248, 162)">
-    <rect class="input-cell" x="0"  y="0" width="56" height="36"/>
-    <rect class="input-cell" x="56" y="0" width="56" height="36"/>
-    <rect class="input-cell" x="112" y="0" width="56" height="36"/>
-    <rect class="input-cell" x="168" y="0" width="56" height="36"/>
-    <text class="cell-num" x="28"  y="22" text-anchor="middle">1</text>
-    <text class="cell-num" x="84"  y="22" text-anchor="middle">2</text>
-    <text class="cell-num" x="140" y="22" text-anchor="middle">3</text>
-    <text class="cell-num" x="196" y="22" text-anchor="middle">4</text>
-  </g>
-  <text class="col-tag" x="276" y="158" text-anchor="middle">j=1</text>
-  <text class="col-tag" x="332" y="158" text-anchor="middle">j=2</text>
-  <text class="col-tag" x="388" y="158" text-anchor="middle">j=3</text>
-  <text class="col-tag" x="444" y="158" text-anchor="middle">j=4</text>
-  <rect class="shape-pill" x="328" y="262" width="64" height="22" rx="6"/>
-  <text class="shape-text" x="360" y="278" text-anchor="middle">(1, 4)</text>
-
-  <!-- ============================ Equals ============================ -->
-  <text class="op" x="500" y="198" text-anchor="middle">=</text>
-
-  <!-- ============================ Result matrix (3 x 4) ============================ -->
-  <text class="label-head" x="700" y="112" text-anchor="middle">∂L/∂W</text>
-  <text class="label-sub"  x="700" y="128" text-anchor="middle">weight gradients</text>
-
-  <g transform="translate(536, 144)">
-    <rect class="out-cell" x="0"   y="0"  width="80" height="36"/>
-    <rect class="out-cell" x="80"  y="0"  width="80" height="36"/>
-    <rect class="out-cell" x="160" y="0"  width="80" height="36"/>
-    <rect class="out-cell" x="240" y="0"  width="80" height="36"/>
-    <rect class="out-cell" x="0"   y="36" width="80" height="36"/>
-    <rect class="out-cell" x="80"  y="36" width="80" height="36"/>
-    <rect class="out-cell" x="160" y="36" width="80" height="36"/>
-    <rect class="out-cell" x="240" y="36" width="80" height="36"/>
-    <rect class="out-cell" x="0"   y="72" width="80" height="36"/>
-    <rect class="out-cell" x="80"  y="72" width="80" height="36"/>
-    <rect class="out-cell" x="160" y="72" width="80" height="36"/>
-    <rect class="out-cell" x="240" y="72" width="80" height="36"/>
-
-    <text class="cell-num" x="40"  y="22" text-anchor="middle">43.2</text>
-    <text class="cell-num" x="120" y="22" text-anchor="middle">86.4</text>
-    <text class="cell-num" x="200" y="22" text-anchor="middle">129.6</text>
-    <text class="cell-num" x="280" y="22" text-anchor="middle">172.8</text>
-    <text class="cell-num" x="40"  y="58" text-anchor="middle">43.2</text>
-    <text class="cell-num" x="120" y="58" text-anchor="middle">86.4</text>
-    <text class="cell-num" x="200" y="58" text-anchor="middle">129.6</text>
-    <text class="cell-num" x="280" y="58" text-anchor="middle">172.8</text>
-    <text class="cell-num" x="40"  y="94" text-anchor="middle">43.2</text>
-    <text class="cell-num" x="120" y="94" text-anchor="middle">86.4</text>
-    <text class="cell-num" x="200" y="94" text-anchor="middle">129.6</text>
-    <text class="cell-num" x="280" y="94" text-anchor="middle">172.8</text>
-  </g>
-  <text class="row-tag" x="528" y="167" text-anchor="end">k=1</text>
-  <text class="row-tag" x="528" y="203" text-anchor="end">k=2</text>
-  <text class="row-tag" x="528" y="239" text-anchor="end">k=3</text>
-  <text class="col-tag" x="576" y="138" text-anchor="middle">j=1</text>
-  <text class="col-tag" x="656" y="138" text-anchor="middle">j=2</text>
-  <text class="col-tag" x="736" y="138" text-anchor="middle">j=3</text>
-  <text class="col-tag" x="816" y="138" text-anchor="middle">j=4</text>
-  <rect class="shape-pill" x="664" y="262" width="64" height="22" rx="6"/>
-  <text class="shape-text" x="696" y="278" text-anchor="middle">(3, 4)</text>
-
-  <!-- ============================ Shape arithmetic + formula band ============================ -->
-  <rect class="formula-band" x="48" y="316" width="864" height="100" rx="12"/>
-  <text class="formula-head" x="68" y="342">Shape arithmetic and code</text>
-  <text class="formula-text" x="68" y="370">  (3, 1) · (1, 4) = (3, 4)                       dL_dW = dL_dZ.T @ X</text>
-  <text class="insight-text" x="68" y="392">The result has the same shape as the stored weights matrix. NumPy applies the update with weights -= lr * dL_dW.</text>
-  <text class="insight-text" x="68" y="408">For batched inputs the shapes become (m, N) · (N, n) = (m, n); the matrix product sums over the batch axis automatically.</text>
-
-  <!-- Footer -->
-  <text class="footer" x="48"  y="456">The bias gradient is dL_dB = np.sum(dL_dZ, axis=0). Two lines replace per-weight loops of any size.</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-purple-ink { fill: var(--nn-purple-ink); }
+  .f-purple-soft { fill: var(--nn-purple-soft); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-purple { stroke: var(--nn-purple); }
+</style>
+<defs>
+<marker id="nn-01-matrix-weight-gradient-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title">One outer product holds all twelve weight gradients</text>
+<text x="40" y="76" class="t-subtitle">The single sample of section 4: entry (<tspan class="i">k</tspan>, <tspan class="i">j</tspan>) is row <tspan class="i">k</tspan> of the column times entry <tspan class="i">j</tspan> of the row.</text>
+<rect x="224" y="136" width="80" height="56" class="cell f-blue-soft"/>
+<rect x="304" y="136" width="80" height="56" class="cell f-blue-soft"/>
+<rect x="384" y="136" width="80" height="56" class="cell f-blue-soft"/>
+<rect x="464" y="136" width="80" height="56" class="cell f-blue-soft"/>
+<rect x="224" y="136" width="320" height="56" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="264" y="170" text-anchor="middle" class="t-cell18">1</text>
+<text x="344" y="170" text-anchor="middle" class="t-cell18">2</text>
+<text x="424" y="170" text-anchor="middle" class="t-cell18">3</text>
+<text x="504" y="170" text-anchor="middle" class="t-cell18">4</text>
+</g>
+<rect x="136" y="208" width="80" height="56" class="cell f-purple-soft"/>
+<rect x="136" y="264" width="80" height="56" class="cell f-purple-soft"/>
+<rect x="136" y="320" width="80" height="56" class="cell f-purple-soft"/>
+<rect x="136" y="208" width="80" height="168" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="176" y="242" text-anchor="middle" class="t-cell18">43.2</text>
+<text x="176" y="298" text-anchor="middle" class="t-cell18">43.2</text>
+<text x="176" y="354" text-anchor="middle" class="t-cell18">43.2</text>
+</g>
+<rect x="224" y="208" width="80" height="56" class="cell f-purple-soft"/>
+<rect x="304" y="208" width="80" height="56" class="cell f-purple-soft"/>
+<rect x="384" y="208" width="80" height="56" class="cell f-purple-soft"/>
+<rect x="464" y="208" width="80" height="56" class="cell f-purple-soft"/>
+<rect x="224" y="264" width="80" height="56" class="cell f-purple-soft"/>
+<rect x="304" y="264" width="80" height="56" class="cell f-purple-soft"/>
+<rect x="384" y="264" width="80" height="56" class="cell f-purple-soft"/>
+<rect x="464" y="264" width="80" height="56" class="cell f-purple-soft"/>
+<rect x="224" y="320" width="80" height="56" class="cell f-purple-soft"/>
+<rect x="304" y="320" width="80" height="56" class="cell f-purple-soft"/>
+<rect x="384" y="320" width="80" height="56" class="cell f-purple-soft"/>
+<rect x="464" y="320" width="80" height="56" class="cell f-purple-soft"/>
+<rect x="224" y="208" width="320" height="168" class="frame" data-fit="skip"/>
+<g data-grid="skip">
+<text x="264" y="242" text-anchor="middle" class="t-cell18">43.2</text>
+<text x="344" y="242" text-anchor="middle" class="t-cell18">86.4</text>
+<text x="424" y="242" text-anchor="middle" class="t-cell18">129.6</text>
+<text x="504" y="242" text-anchor="middle" class="t-cell18">172.8</text>
+<text x="264" y="298" text-anchor="middle" class="t-cell18">43.2</text>
+<text x="344" y="298" text-anchor="middle" class="t-cell18">86.4</text>
+<text x="424" y="298" text-anchor="middle" class="t-cell18 f-purple-ink b">129.6</text>
+<text x="504" y="298" text-anchor="middle" class="t-cell18">172.8</text>
+<text x="264" y="354" text-anchor="middle" class="t-cell18">43.2</text>
+<text x="344" y="354" text-anchor="middle" class="t-cell18">86.4</text>
+<text x="424" y="354" text-anchor="middle" class="t-cell18">129.6</text>
+<text x="504" y="354" text-anchor="middle" class="t-cell18">172.8</text>
+</g>
+<rect x="136" y="264" width="80" height="56" class="emph s-purple" data-fit="skip"/>
+<rect x="384" y="136" width="80" height="56" class="emph s-blue" data-fit="skip"/>
+<rect x="384" y="264" width="80" height="56" class="w15 nofill s-purple" data-fit="skip"/>
+<text x="216" y="164" text-anchor="end" class="t-label f-blue-ink"><tspan class="b">X</tspan>  (1, 4)</text>
+<g data-grid="skip">
+<text x="264" y="128" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">1</tspan><tspan dy="-4">​</tspan></text>
+<text x="344" y="128" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan></text>
+<text x="424" y="128" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+<text x="504" y="128" text-anchor="middle" class="t-label"><tspan class="i">x</tspan><tspan class="sub" dy="4">4</tspan><tspan dy="-4">​</tspan></text>
+</g>
+<g data-grid="skip">
+<text x="128" y="241" text-anchor="end" class="t-note">neuron 1</text>
+<text x="128" y="297" text-anchor="end" class="t-note">neuron 2</text>
+<text x="128" y="353" text-anchor="end" class="t-note">neuron 3</text>
+</g>
+<text x="176" y="408" text-anchor="middle" class="t-head">(∂<tspan class="i">L</tspan>/∂<tspan class="b">Z</tspan>)<tspan class="sub" dy="-6">T</tspan><tspan dy="6">​</tspan></text>
+<text x="176" y="432" text-anchor="middle" class="t-note">(3, 1)</text>
+<text x="224" y="408" class="t-head">∂<tspan class="i">L</tspan>/∂<tspan class="b">W</tspan></text>
+<text x="224" y="432" class="t-note">(3, 4): one row per neuron, one column per input</text>
+<text x="608" y="152" class="t-head">Neuron 2, input 3</text>
+<text x="608" y="188" class="t-math">∂<tspan class="i">L</tspan>/∂<tspan class="i">w</tspan><tspan class="sub" dy="4">23</tspan><tspan dy="-4">​</tspan> = ∂<tspan class="i">L</tspan>/∂<tspan class="i">z</tspan><tspan class="sub" dy="4">2</tspan><tspan dy="-4">​</tspan> · <tspan class="i">x</tspan><tspan class="sub" dy="4">3</tspan><tspan dy="-4">​</tspan></text>
+<text x="608" y="220" class="t-math">= 43.2 · 3 = <tspan class="b">129.6</tspan></text>
+<text x="608" y="280" class="t-head">Shapes</text>
+<text x="608" y="316" class="t-math">(3, 1) · (1, 4) → (3, 4)</text>
+<text x="608" y="340" class="t-note">the shape of the stored weights</text>
+<text x="608" y="408" class="t-head">Code</text>
+<text x="608" y="436" class="t-code">dL_dW = dL_dZ.T @ X</text>
+<text x="40" y="504" class="t-note">Each weight gradient is one upstream value times one input, nothing summed.</text>
 </svg>

@@ -12,7 +12,7 @@
 > - Explain why the matrix form of the weight gradient sums the contributions of a batch automatically.
 > - Convert the two gradient lines between the row-per-neuron and the column-per-neuron weight layouts.
 
-![A matrix product drawn as three grids: the upstream gradient as a (3, 1) column holding 43.2 three times, the input as a (1, 4) row holding 1, 2, 3, 4, and the (3, 4) weight-gradient matrix in which every row reads 43.2, 86.4, 129.6, 172.8. A band below gives the shape arithmetic for one sample and for a batch and the two code lines.](diagrams/01-matrix-weight-gradient.svg)
+![An outer product drawn as three grids: the upstream gradient transposed as a (3, 1) column holding 43.2 for neurons 1, 2 and 3, the input X as a (1, 4) row holding 1, 2, 3, 4 above the result, and the (3, 4) weight gradient in which every row reads 43.2, 86.4, 129.6, 172.8. The entry for neuron 2 and input 3 is outlined and worked out beside the grids as 43.2 times 3 = 129.6, with the shapes (3, 1) times (1, 4) giving (3, 4) and the code line dL_dW = dL_dZ.T @ X.](diagrams/01-matrix-weight-gradient.svg)
 
 *One matrix product, twelve weight gradients. Each row of the result belongs to one neuron and each column to one input, the same layout as the stored weights.*
 
@@ -118,7 +118,11 @@ Z: [[ 3.1  7.2 11.3]]  Y: 21.6  L: 466.56
 dL_dZ: [[43.2 43.2 43.2]] (1, 3)
 ```
 
-So $\partial L / \partial \mathbf{Z} = [43.2,\ 43.2,\ 43.2]$, one value per neuron. The three values are equal only because this example shares one scalar $2\hat{y}$ and opens every gate; in a trained network they differ from neuron to neuron and from sample to sample.
+So $\partial L / \partial \mathbf{Z} = [43.2,\ 43.2,\ 43.2]$, one value per neuron. The three values are equal only because this example shares one scalar $2\hat{y}$ and opens every gate; in a trained network they differ from neuron to neuron and from sample to sample. The figure follows the sample forward from $\mathbf{Z}$ to the loss and the gradient back again, one factor per step.
+
+![Two lanes for the single sample. Forward, left to right: Z = 3.1, 7.2, 11.3, ReLU gives A = 3.1, 7.2, 11.3, the sum gives y-hat = 21.6, and squaring gives L = 466.56. Backward, right to left: times 2 y-hat gives 43.2, times 1 through the sum gives 43.2 for each neuron, and times the open ReLU gate gives the upstream gradient 43.2, 43.2, 43.2, outlined. A line underneath multiplies the three factors, 43.2 times 1 times 1.](diagrams/02-upstream-gradient.svg)
+
+*The three factors of the chain rule, step by step. Whatever follows the layer reaches it as one array of shape (1, 3).*
 
 The matrix product of section 2 never looks inside this array: whatever follows the layer is summarised in the upstream gradient, which is why one backward pass for a dense layer serves at every depth.
 
@@ -139,7 +143,7 @@ print(dL_dW)
  [ 43.2  86.4 129.6 172.8]]
 ```
 
-These are the twelve numbers of post 13's table, arranged as a $(3, 4)$ matrix whose rows are neurons and whose columns are inputs. Column $j$ is $43.2 \cdot x_j$: $43.2$, $86.4$, $129.6$, and $172.8$ for the inputs $1$, $2$, $3$, and $4$. The script then rebuilds the same matrix the slow way, with one chain-rule product per weight, and compares:
+These are the twelve numbers of post 13's table, arranged as a $(3, 4)$ matrix whose rows are neurons and whose columns are inputs. Column $j$ is $43.2 \cdot x_j$: $43.2$, $86.4$, $129.6$, and $172.8$ for the inputs $1$, $2$, $3$, and $4$. The figure at the top of the post draws this product with the upstream column beside the result and the input row above it, so each entry sits where its two factors meet. The script then rebuilds the same matrix the slow way, with one chain-rule product per weight, and compares:
 
 ```python
 # The same twelve numbers, one chain-rule expression per weight, as post 13 wrote them.
@@ -210,10 +214,6 @@ $$\frac{\partial L}{\partial \mathbf{W}} = \left(\frac{\partial L}{\partial \mat
 
 The formula has not changed from the single-sample case. The shapes now multiply as $(m, N) \cdot (N, n) \rightarrow (m, n)$: the transpose has moved the batch axis of the upstream gradient to the inside of the product, where it meets the batch axis of $\mathbf{X}$. A matrix product sums over the inner axis it contracts, so the product **adds up the per-sample contributions without being asked to**. For one sample the contracted axis had length 1 and there was nothing to add; for a batch it has length $N$ and the sum has $N$ terms.
 
-![Two rows of shape arithmetic. For one sample, (m, 1) times (1, n) gives (m, n): the inner axes of length 1 are contracted and there is nothing to sum. For a batch, (m, N) times (N, n) again gives (m, n): the inner axes of length N are the batch axis, and contracting them sums over the batch with no loop.](diagrams/02-batch-axis-contracts.svg)
-
-*Both cases end on the same pair of axes, $m$ and $n$. Only the length of the contracted axis changes, and a contracted axis does not appear in the result.*
-
 For the biases the same argument applies with the constant input 1 in place of $x_{ij}$. The bias $b_k$ appears in $z_{ik}$ for every sample $i$, so its gradient is the sum of column $k$ of the upstream gradient:
 
 $$\frac{\partial L}{\partial b_k} = \sum_{i=1}^{N} \frac{\partial L}{\partial z_{ik}}.$$
@@ -274,7 +274,11 @@ sum of the three, row of neuron 1: [ 0.5 20.1 10.9  4.1]
 largest difference from the matrix product: 0.0
 ```
 
-Each sample contributes its input row scaled by its upstream value. By hand, the gradient of the weight from input 2 to neuron 1 is $1 \cdot 2.0 + 2 \cdot 5.0 + 3 \cdot 2.7 = 2.0 + 10.0 + 8.1 = 20.1$, the second number of the first row.
+Each sample contributes its input row scaled by its upstream value. By hand, the gradient of the weight from input 2 to neuron 1 is $1 \cdot 2.0 + 2 \cdot 5.0 + 3 \cdot 2.7 = 2.0 + 10.0 + 8.1 = 20.1$, the second number of the first row. The figure puts both computations on one page: the product above, with the two batch axes it contracts joined by a bracket, and row 1 of its result rebuilt below from the three scaled input rows.
+
+![Top: the made-up upstream gradient transposed, shape (m, N) = (3, 3), one row per neuron holding 1, 2, 3, times the batch X, shape (N, n) = (3, 4), equals the weight gradient, shape (m, n) = (3, 4), whose rows all read 0.5, 20.1, 10.9, 4.1; a bracket joins the two N axes as the batch axis, contracted and summed. Bottom: 1 times row 1 of X gives 1.0, 2.0, 3.0, 2.5, 2 times row 2 gives 4.0, 10.0, minus 2.0, 4.0, 3 times row 3 gives minus 4.5, 8.1, 9.9, minus 2.4, and their sum is 0.5, 20.1, 10.9, 4.1, row 1 of the product.](diagrams/03-batch-sums-samples.svg)
+
+*The batch axis is the inner, contracted axis of the product, so it is summed away and the gradient keeps the shape of the weights. Only the length of that axis changes with the batch size.*
 
 ### 6.3. Sum or mean?
 
