@@ -11,9 +11,9 @@
 > - Extend the single-loop training pattern into the two-loop epoch-by-batch structure with shuffling.
 > - Choose a batch size for a given dataset.
 
-![Three paths cross the same elliptical loss contours from one start to the minimum: a smooth full-batch path of 4 steps, a mildly noisy mini-batch path of 12 steps and a jagged pure SGD path of 30 steps. A table beside them gives steps per epoch for 60,000 samples: 1 at batch size 60,000, 469 at 128 and 60,000 at 1.](diagrams/01-batch-size-trajectories.svg)
+![A worked schedule on the 300 rows of the spiral, each strip as wide as the rows it holds. In epoch 0 the full batch is one cell of 300 rows and one update, after which the optimiser's counter iterations reads 1; batches of 32 cut the same rows into nine cells of 32 and a last of 12, one forward pass, backward pass and update each, the counter reading 1 to 10. In later epochs the rows are shuffled again and the counter runs on: 11 to 20 in epoch 1, 9,991 to 10,000 in epoch 999.](diagrams/01-two-loops.svg)
 
-*Three regimes on one loss surface. The paths are a schematic, not a run; the counts in the table are closed forms, and the measured noise is in section 2.*
+*One epoch of the spiral with the full batch and with batches of 32: the same 300 rows, one update against ten, and a counter that never restarts.*
 
 ---
 
@@ -41,10 +41,6 @@ One number sets the regime: the **batch size** $B$, the number of rows that cont
 
 SGD is stochastic gradient descent (post 22). The name first meant $B = 1$; today it is used for any batch drawn at random, and the $B = 1$ case is called true, pure or online SGD. A **mini-batch** is a batch with $1 < B < N$.
 
-![Three cards, each with a bar of the same width for one epoch of 60,000 samples. The full-batch card cuts the bar into 1 batch, the mini-batch card into 469 batches of 128, and the pure SGD card into 60,000 batches of 1. Each card states its weight updates per epoch and a relative gradient noise: 0.004, 0.088 and 1.000.](diagrams/02-same-cost-more-steps.svg)
-
-*Every regime passes over the same rows in an epoch; the number of updates differs. The noise figures on the cards are $1/\sqrt{B}$, which overstates the full-batch case: its sampling noise is zero, as the measurement below shows.*
-
 **What a batch gradient is.** The loss is a mean over rows, so the full-batch gradient $\mathbf{g}$ is the mean of the $N$ single-row gradients. A batch gradient $\mathbf{g}_B$ is the mean of $B$ of them. If the batch is drawn at random, its expectation is $\mathbf{g}$: the estimate is unbiased. Its error has a closed form. With $\sigma^2$ the summed variance of the single-row gradients over the training set, and the $B$ rows drawn without replacement,
 
 $$\mathbb{E} \, \lVert \mathbf{g}_B - \mathbf{g} \rVert^2 = \frac{\sigma^2}{B} \cdot \frac{N - B}{N - 1}$$
@@ -66,7 +62,11 @@ spread of the 300 single-row gradients, sigma: 3.0631
  300    0.0000         0.1768                               0.0000        0.00
 ```
 
-The second line is the unbiasedness in its exact form: over one epoch of batches of 32, the batch gradients weighted by their sizes average to the full-batch gradient to rounding. The measured noise follows the closed form within 2 percent at every size, and the plain $\sigma / \sqrt{B}$ overstates it by 23 percent at $B = 100$, a third of this small dataset. On these weights a single-row gradient misses the full gradient by 6.59 times the full gradient's own length, and a batch of 32 by 1.12 times: a batch of 32 is still a rough estimate, and going from 32 to 128 rows costs four times the arithmetic for a noise that is 2.5 times smaller. That is the diminishing return behind small batches.
+The second line is the unbiasedness in its exact form: over one epoch of batches of 32, the batch gradients weighted by their sizes average to the full-batch gradient to rounding. The measured noise follows the closed form within 2 percent at every size, and the plain $\sigma / \sqrt{B}$ overstates it by 23 percent at $B = 100$, a third of this small dataset. On these weights a single-row gradient misses the full gradient by 6.59 times the full gradient's own length, and a batch of 32 by 1.12 times: a batch of 32 is still a rough estimate, and going from 32 to 128 rows costs four times the arithmetic for a noise that is 2.5 times smaller. That is the diminishing return behind small batches. The figure below draws the table on logarithmic axes, where $\sigma / \sqrt{B}$ is a straight line and the finite-set factor bends the measured noise down to zero at $B = N$.
+
+![A chart on logarithmic axes of the root-mean-square distance between a batch gradient and the full-batch gradient against the batch size from 1 to 300, on the spiral network at fixed weights. Purple diamonds mark the measured values, 3.0115 at 1, 1.0647 at 8, 0.5124 at 32, 0.2489 at 100, 0.2069 at 128 and 0 at 300; they lie on the solid closed form with the factor for rows drawn without replacement, which bends down to 0 at 300, while the dashed line sigma over root B stays straight and ends at 0.1768. A dotted line marks the length of the full gradient, 0.4570, and a table beside the chart lists all three columns.](diagrams/02-gradient-noise.svg)
+
+*The measured noise of section 2 against the two closed forms: the plain $\sigma / \sqrt{B}$ overstates it once the batch is a large part of the training set.*
 
 **The cost of an epoch is not the same in practice.** Every regime touches each row once per epoch, so the arithmetic on the rows is the same. The work per update is not: the optimiser touches every parameter once per update, and each update pays Python's overhead. `snippets/timing.py` times one epoch of a $784 \to 128 \to 10$ network on 6,400 random rows. The times vary by machine and by run. In the runs behind this post an epoch at $B = 1$ took on the order of a hundred times as long as a full-batch epoch, and an epoch at $B = 128$ stayed within the order of magnitude of a full-batch one. True SGD is rare in NumPy code for this reason alone.
 
@@ -127,7 +127,7 @@ Steps 3, 4 and 5 are the loop body of post 22 with `X_batch` and `y_batch` in pl
 
 **One shuffle per epoch, of rows and labels together.** `idx` is a random order of the row numbers, and the same `idx` indexes `X` and `y`, so each row keeps its label. Cutting that order into consecutive slices gives batches that are disjoint and cover every row exactly once per epoch. Section 10 runs the loop without the shuffle, and with the labels left behind.
 
-**The inner loop runs $\lceil N / B \rceil$ times.** For $N = 60{,}000$ and $B = 128$ that is 469 updates per epoch, and 20 epochs are 9,380 updates. For the 300 spiral points and $B = 32$ it is 10.
+**The inner loop runs $\lceil N / B \rceil$ times.** For $N = 60{,}000$ and $B = 128$ that is 469 updates per epoch, and 20 epochs are 9,380 updates. For the 300 spiral points and $B = 32$ it is 10, the schedule the figure at the top of the post draws.
 
 **The last batch is usually shorter.** $60{,}000 / 128 = 468.75$, so the 469th batch holds 96 rows; with 300 rows and $B = 32$ the tenth batch holds 12. The slice `X_shuf[start:start + batch_size]` stops at the end of the array without an error, and every class of the series takes its row count from the array it is given, so the short batch needs no special case. Its gradient is noisier than the others, by the formula of section 2, and its update counts as one update like any other.
 
@@ -203,7 +203,11 @@ A decay that is to end a run at the same rate is divided by the number of update
 
 **The unchanged decay made mini-batching worse than the full batch.** With ten times as many updates, the runs with batches of 32 ended at a higher training loss than the full-batch runs on all five seeds, and on 9 of 10 when the script is given the seeds `0 1 2 3 4 5 6 7 8 9`, for which it prints the counts of this paragraph and the next. The rate had fallen to about a tenth after 100 epochs and to about a hundredth by the end.
 
-**The decay chosen again restored the advantage.** With $10^{-3}$ the training loss is lower than with $10^{-2}$ on all ten seeds, and lower than the full-batch run on 9 of 10. The table does not say that $10^{-3}$ is a good decay for this problem: the runs of section 6 use $10^{-5}$ and end lower still, on all five seeds. It says that a decay value is a statement about a number of updates.
+**The decay chosen again restored the advantage.** With $10^{-3}$ the training loss is lower than with $10^{-2}$ on all ten seeds, and lower than the full-batch run on 9 of 10. The table does not say that $10^{-3}$ is a good decay for this problem: the runs of section 6 use $10^{-5}$ and end lower still, on all five seeds. It says that a decay value is a statement about a number of updates. The figure below draws the three schedules against the epoch and the five seeds of each run.
+
+![Top, the learning rate 0.02 over 1 plus decay times t against the epoch from 0 to 1,000 on a logarithmic rate axis, t counting updates: the full batch with decay 10 to the minus 2 and batches of 32 with decay 10 to the minus 3 fall along one curve to 0.00182, while batches of 32 with the decay kept at 10 to the minus 2 count ten updates an epoch and end at 0.000198. Bottom, the training loss after 1,000 epochs on seeds 0 to 4 as one band per run with a tick per seed: 0.3778 to 0.7427, mean 0.5591, for the full batch; 0.8844 to 0.9541, mean 0.9146, with the decay kept; 0.3950 to 0.5213, mean 0.4790, with the decay divided by 10, in blue.](diagrams/03-decay-counts-updates.svg)
+
+*The decay of the table, kept and divided by the 10 updates of an epoch: divided, it gives batches of 32 the full batch's schedule per epoch.*
 
 ---
 
@@ -221,7 +225,11 @@ All runs use the setup of section 4; only the batch size and the number of epoch
 | 8 | 264 | 10,032 | `batch_8.py` | 0.6766 | 61.67 to 65.67 (63.87) | 54.00 to 63.33 (59.07) |
 | 32 | 100 | 1,000 | `head_to_head.py` | 0.7399 | 56.33 to 69.00 (65.60) | 52.33 to 67.33 (60.87) |
 
-Equal epochs is not equal updates, so the table is read three ways.
+Equal epochs is not equal updates, so the table is read three ways. The figure below draws every seed of the table, grouped in those three ways; the full batch after 1,000 epochs and batches of 32 after 1,000 epochs each appear in two groups.
+
+![Two dot charts with one row per run of the table, each a band over seeds 0 to 4 with a tick per seed and a dot for seed 0, batches of 32 in blue; left the training loss from 0 to 1, right the test accuracy from 50 to 90 percent. At 1,000 epochs each, batches of 32, with 10,000 updates, have a loss band of 0.24 to 0.32 against 0.23 to 0.60 for the full batch, and the highest accuracy band, 77 to 82 percent. At about 10,000 updates each, the full batch, 100 and 32 overlap in both charts and batches of 8 sit far behind, at a loss of 0.59 to 0.78 and 54 to 63 percent. At 1,000 updates each, the full batch is ahead of batches of 32 in both charts.](diagrams/04-epochs-against-updates.svg)
+
+*The runs of section 6 seed by seed. The order between batches of 32 and the full batch depends on what is held equal.*
 
 **The same number of epochs: the smaller batch won.** The first three rows pass over the data 1,000 times each. Batches of 32 make ten times as many updates as the full batch and end at a lower training loss on four of the five seeds and a higher test accuracy on four of the five. `head_to_head.py` trains both for each seed and prints the counts: 9 of 10 for both on the seeds `0` to `9`, and 8 of 10 for both on the seeds `10` to `19`. The same arithmetic on the rows bought a better network.
 

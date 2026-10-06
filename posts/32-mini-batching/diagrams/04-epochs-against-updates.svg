@@ -1,0 +1,330 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-04-epochs-against-updates-title" aria-describedby="nn-04-epochs-against-updates-desc">
+<title id="nn-04-epochs-against-updates-title">Equal epochs favour batches of 32; equal updates do not</title>
+<desc id="nn-04-epochs-against-updates-desc">Two dot charts with one row per run of section 6, grouped as 1,000 epochs each, about 10,000 updates each and 1,000 updates each; each row a band over seeds 0 to 4 with a tick per seed and a dot for seed 0, batches of 32 in blue. Left the training loss on an axis from 0 to 1, right the test accuracy in percent from 50 to 90. 1,000 epochs each: B = 300 (1,000 epochs, 1,000 updates): training loss 0.2323, 0.5276, 0.5967, 0.4640, 0.3264; test accuracy 79.67, 70.00, 66.67, 74.00, 76.33; B = 100 (1,000 epochs, 3,000 updates): training loss 0.3242, 0.4893, 0.4787, 0.3710, 0.4333; test accuracy 79.67, 75.67, 75.67, 77.33, 76.00; B = 32 (1,000 epochs, 10,000 updates): training loss 0.3025, 0.2417, 0.2901, 0.2523, 0.3181; test accuracy 77.00, 82.00, 80.00, 79.00, 80.00. About 10,000 updates each: B = 300 (10,000 epochs, 10,000 updates): training loss 0.0874, 0.2814, 0.2916, 0.2095, 0.1260; test accuracy 82.33, 79.00, 76.00, 82.00, 84.00; B = 100 (3,334 epochs, 10,002 updates): training loss 0.1559, 0.2643, 0.3252, 0.2164, 0.2171; test accuracy 83.00, 81.67, 78.33, 79.33, 83.33; B = 32 (1,000 epochs, 10,000 updates): training loss 0.3025, 0.2417, 0.2901, 0.2523, 0.3181; test accuracy 77.00, 82.00, 80.00, 79.00, 80.00; B = 8 (264 epochs, 10,032 updates): training loss 0.5947, 0.6454, 0.6445, 0.7807, 0.7179; test accuracy 60.00, 63.33, 62.00, 54.00, 56.00. 1,000 updates each: B = 300 (1,000 epochs, 1,000 updates): training loss 0.2323, 0.5276, 0.5967, 0.4640, 0.3264; test accuracy 79.67, 70.00, 66.67, 74.00, 76.33; B = 32 (100 epochs, 1,000 updates): training loss 0.7090, 0.6733, 0.6750, 0.9024, 0.7395; test accuracy 59.33, 65.00, 67.33, 52.33, 60.33.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--nn-blue); }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .f-neutral-soft { fill: var(--nn-neutral-soft); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-blue-line { stroke: var(--nn-blue-line); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-rule { stroke: var(--nn-rule); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-04-epochs-against-updates-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title" data-w="695">Equal epochs favour batches of 32; equal updates do not</text>
+<text x="40" y="76" class="t-subtitle" data-w="721">The spiral, Adam at 0.02 with decay 10<tspan class="sub" dy="-6">−5</tspan><tspan dy="6">​</tspan>, seeds 0 to 4, measured forward-only after the last update.</text>
+<g data-grid="skip">
+<path d="M256,128V592M308.8,128V592M361.6,128V592M414.4,128V592M467.2,128V592M520,128V592" class="gridline"/>
+<text x="256" y="612" text-anchor="middle" class="t-tick" data-w="19">0.0</text>
+<text x="308.8" y="612" text-anchor="middle" class="t-tick" data-w="19">0.2</text>
+<text x="361.6" y="612" text-anchor="middle" class="t-tick" data-w="19">0.4</text>
+<text x="414.4" y="612" text-anchor="middle" class="t-tick" data-w="19">0.6</text>
+<text x="467.2" y="612" text-anchor="middle" class="t-tick" data-w="19">0.8</text>
+<text x="520" y="612" text-anchor="middle" class="t-tick" data-w="19">1.0</text>
+<path d="M256,592H520" class="axis"/>
+<text x="40" y="152.33" class="t-label" data-w="0"></text>
+<text x="40" y="191" class="t-label" data-w="0"></text>
+<text x="40" y="229.67" class="t-label" data-w="0"></text>
+<text x="40" y="268.33" class="t-label" data-w="0"></text>
+<text x="40" y="307" class="t-label" data-w="0"></text>
+<text x="40" y="345.67" class="t-label" data-w="0"></text>
+<text x="40" y="384.33" class="t-label" data-w="0"></text>
+<text x="40" y="423" class="t-label" data-w="0"></text>
+<text x="40" y="461.67" class="t-label" data-w="0"></text>
+<text x="40" y="500.33" class="t-label" data-w="0"></text>
+<text x="40" y="539" class="t-label" data-w="0"></text>
+<text x="40" y="577.67" class="t-label" data-w="0"></text>
+</g>
+<g data-grid="skip">
+<path d="M568,128V592M652,128V592M736,128V592M820,128V592M904,128V592" class="gridline"/>
+<text x="568" y="612" text-anchor="middle" class="t-tick" data-w="16">50</text>
+<text x="652" y="612" text-anchor="middle" class="t-tick" data-w="16">60</text>
+<text x="736" y="612" text-anchor="middle" class="t-tick" data-w="16">70</text>
+<text x="820" y="612" text-anchor="middle" class="t-tick" data-w="16">80</text>
+<text x="904" y="612" text-anchor="middle" class="t-tick" data-w="16">90</text>
+<path d="M568,592H904" class="axis"/>
+<text x="568" y="152.33" class="t-label" data-w="0"></text>
+<text x="568" y="191" class="t-label" data-w="0"></text>
+<text x="568" y="229.67" class="t-label" data-w="0"></text>
+<text x="568" y="268.33" class="t-label" data-w="0"></text>
+<text x="568" y="307" class="t-label" data-w="0"></text>
+<text x="568" y="345.67" class="t-label" data-w="0"></text>
+<text x="568" y="384.33" class="t-label" data-w="0"></text>
+<text x="568" y="423" class="t-label" data-w="0"></text>
+<text x="568" y="461.67" class="t-label" data-w="0"></text>
+<text x="568" y="500.33" class="t-label" data-w="0"></text>
+<text x="568" y="539" class="t-label" data-w="0"></text>
+<text x="568" y="577.67" class="t-label" data-w="0"></text>
+</g>
+<text x="256" y="112" class="t-head" data-w="106">Training loss</text>
+<text x="568" y="112" class="t-head" data-w="185">Test accuracy, percent</text>
+<g data-grid="skip">
+<text x="40" y="152.33" class="t-label b" data-w="132">1,000 epochs each</text>
+<text x="56" y="191" class="t-label" data-w="156"><tspan class="i">B</tspan> = 300, 1,000 updates</text>
+<rect x="317.33" y="176" width="96.2" height="20" class="f-neutral-soft" data-fit="skip"/>
+<rect x="317.33" y="176" width="96.2" height="20" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M317.33,179.33 L317.33,192.67" class="s-ink-muted w1 nofill"/>
+<path d="M395.29,179.33 L395.29,192.67" class="s-ink-muted w1 nofill"/>
+<path d="M413.53,179.33 L413.53,192.67" class="s-ink-muted w1 nofill"/>
+<path d="M378.5,179.33 L378.5,192.67" class="s-ink-muted w1 nofill"/>
+<path d="M342.17,179.33 L342.17,192.67" class="s-ink-muted w1 nofill"/>
+<circle cx="317.33" cy="186" r="5" class="f-ink-muted s-surface w1"/>
+<rect x="708.03" y="176" width="109.2" height="20" class="f-neutral-soft" data-fit="skip"/>
+<rect x="708.03" y="176" width="109.2" height="20" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M817.23,179.33 L817.23,192.67" class="s-ink-muted w1 nofill"/>
+<path d="M736,179.33 L736,192.67" class="s-ink-muted w1 nofill"/>
+<path d="M708.03,179.33 L708.03,192.67" class="s-ink-muted w1 nofill"/>
+<path d="M769.6,179.33 L769.6,192.67" class="s-ink-muted w1 nofill"/>
+<path d="M789.17,179.33 L789.17,192.67" class="s-ink-muted w1 nofill"/>
+<circle cx="817.23" cy="186" r="5" class="f-ink-muted s-surface w1"/>
+<text x="56" y="229.67" class="t-label" data-w="156"><tspan class="i">B</tspan> = 100, 3,000 updates</text>
+<rect x="341.59" y="214.67" width="43.59" height="20" class="f-neutral-soft" data-fit="skip"/>
+<rect x="341.59" y="214.67" width="43.59" height="20" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M341.59,218 L341.59,231.33" class="s-ink-muted w1 nofill"/>
+<path d="M385.18,218 L385.18,231.33" class="s-ink-muted w1 nofill"/>
+<path d="M382.38,218 L382.38,231.33" class="s-ink-muted w1 nofill"/>
+<path d="M353.94,218 L353.94,231.33" class="s-ink-muted w1 nofill"/>
+<path d="M370.39,218 L370.39,231.33" class="s-ink-muted w1 nofill"/>
+<circle cx="341.59" cy="224.67" r="5" class="f-ink-muted s-surface w1"/>
+<rect x="783.63" y="214.67" width="33.6" height="20" class="f-neutral-soft" data-fit="skip"/>
+<rect x="783.63" y="214.67" width="33.6" height="20" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M817.23,218 L817.23,231.33" class="s-ink-muted w1 nofill"/>
+<path d="M783.63,218 L783.63,231.33" class="s-ink-muted w1 nofill"/>
+<path d="M783.63,218 L783.63,231.33" class="s-ink-muted w1 nofill"/>
+<path d="M797.57,218 L797.57,231.33" class="s-ink-muted w1 nofill"/>
+<path d="M786.4,218 L786.4,231.33" class="s-ink-muted w1 nofill"/>
+<circle cx="817.23" cy="224.67" r="5" class="f-ink-muted s-surface w1"/>
+<text x="56" y="268.33" class="t-label" data-w="156"><tspan class="i">B</tspan> = 32, 10,000 updates</text>
+<rect x="319.81" y="253.33" width="20.17" height="20" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M335.86,256.67V270M319.81,256.67V270M332.59,256.67V270M322.61,256.67V270M339.98,256.67V270" class="s-blue w1 nofill"/>
+<circle cx="335.86" cy="263.33" r="5" class="f-blue s-surface w1"/>
+<rect x="794.8" y="253.33" width="42" height="20" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M794.8,256.67V270M836.8,256.67V270M820,256.67V270M811.6,256.67V270M820,256.67V270" class="s-blue w1 nofill"/>
+<circle cx="794.8" cy="263.33" r="5" class="f-blue s-surface w1"/>
+<text x="40" y="307" class="t-label b" data-w="193">About 10,000 updates each</text>
+<text x="56" y="345.67" class="t-label" data-w="159"><tspan class="i">B</tspan> = 300, 10,000 epochs</text>
+<rect x="279.07" y="330.67" width="53.91" height="20" class="f-neutral-soft" data-fit="skip"/>
+<rect x="279.07" y="330.67" width="53.91" height="20" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M279.07,334 L279.07,347.33" class="s-ink-muted w1 nofill"/>
+<path d="M330.29,334 L330.29,347.33" class="s-ink-muted w1 nofill"/>
+<path d="M332.98,334 L332.98,347.33" class="s-ink-muted w1 nofill"/>
+<path d="M311.31,334 L311.31,347.33" class="s-ink-muted w1 nofill"/>
+<path d="M289.26,334 L289.26,347.33" class="s-ink-muted w1 nofill"/>
+<circle cx="279.07" cy="340.67" r="5" class="f-ink-muted s-surface w1"/>
+<rect x="786.4" y="330.67" width="67.2" height="20" class="f-neutral-soft" data-fit="skip"/>
+<rect x="786.4" y="330.67" width="67.2" height="20" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M839.57,334 L839.57,347.33" class="s-ink-muted w1 nofill"/>
+<path d="M811.6,334 L811.6,347.33" class="s-ink-muted w1 nofill"/>
+<path d="M786.4,334 L786.4,347.33" class="s-ink-muted w1 nofill"/>
+<path d="M836.8,334 L836.8,347.33" class="s-ink-muted w1 nofill"/>
+<path d="M853.6,334 L853.6,347.33" class="s-ink-muted w1 nofill"/>
+<circle cx="839.57" cy="340.67" r="5" class="f-ink-muted s-surface w1"/>
+<text x="56" y="384.33" class="t-label" data-w="151"><tspan class="i">B</tspan> = 100, 3,334 epochs</text>
+<rect x="297.16" y="369.33" width="44.7" height="20" class="f-neutral-soft" data-fit="skip"/>
+<rect x="297.16" y="369.33" width="44.7" height="20" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M297.16,372.67 L297.16,386" class="s-ink-muted w1 nofill"/>
+<path d="M325.78,372.67 L325.78,386" class="s-ink-muted w1 nofill"/>
+<path d="M341.85,372.67 L341.85,386" class="s-ink-muted w1 nofill"/>
+<path d="M313.13,372.67 L313.13,386" class="s-ink-muted w1 nofill"/>
+<path d="M313.31,372.67 L313.31,386" class="s-ink-muted w1 nofill"/>
+<circle cx="297.16" cy="379.33" r="5" class="f-ink-muted s-surface w1"/>
+<rect x="805.97" y="369.33" width="42" height="20" class="f-neutral-soft" data-fit="skip"/>
+<rect x="805.97" y="369.33" width="42" height="20" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M845.2,372.67 L845.2,386" class="s-ink-muted w1 nofill"/>
+<path d="M834.03,372.67 L834.03,386" class="s-ink-muted w1 nofill"/>
+<path d="M805.97,372.67 L805.97,386" class="s-ink-muted w1 nofill"/>
+<path d="M814.37,372.67 L814.37,386" class="s-ink-muted w1 nofill"/>
+<path d="M847.97,372.67 L847.97,386" class="s-ink-muted w1 nofill"/>
+<circle cx="845.2" cy="379.33" r="5" class="f-ink-muted s-surface w1"/>
+<text x="56" y="423" class="t-label" data-w="142"><tspan class="i">B</tspan> = 32, 1,000 epochs</text>
+<rect x="319.81" y="408" width="20.17" height="20" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M335.86,411.33V424.67M319.81,411.33V424.67M332.59,411.33V424.67M322.61,411.33V424.67M339.98,411.33V424.67" class="s-blue w1 nofill"/>
+<circle cx="335.86" cy="418" r="5" class="f-blue s-surface w1"/>
+<rect x="794.8" y="408" width="42" height="20" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M794.8,411.33V424.67M836.8,411.33V424.67M820,411.33V424.67M811.6,411.33V424.67M820,411.33V424.67" class="s-blue w1 nofill"/>
+<circle cx="794.8" cy="418" r="5" class="f-blue s-surface w1"/>
+<text x="56" y="461.67" class="t-label" data-w="122"><tspan class="i">B</tspan> = 8, 264 epochs</text>
+<rect x="413" y="446.67" width="49.1" height="20" class="f-neutral-soft" data-fit="skip"/>
+<rect x="413" y="446.67" width="49.1" height="20" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M413,450 L413,463.33" class="s-ink-muted w1 nofill"/>
+<path d="M426.39,450 L426.39,463.33" class="s-ink-muted w1 nofill"/>
+<path d="M426.15,450 L426.15,463.33" class="s-ink-muted w1 nofill"/>
+<path d="M462.1,450 L462.1,463.33" class="s-ink-muted w1 nofill"/>
+<path d="M445.53,450 L445.53,463.33" class="s-ink-muted w1 nofill"/>
+<circle cx="413" cy="456.67" r="5" class="f-ink-muted s-surface w1"/>
+<rect x="601.6" y="446.67" width="78.37" height="20" class="f-neutral-soft" data-fit="skip"/>
+<rect x="601.6" y="446.67" width="78.37" height="20" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M652,450 L652,463.33" class="s-ink-muted w1 nofill"/>
+<path d="M679.97,450 L679.97,463.33" class="s-ink-muted w1 nofill"/>
+<path d="M668.8,450 L668.8,463.33" class="s-ink-muted w1 nofill"/>
+<path d="M601.6,450 L601.6,463.33" class="s-ink-muted w1 nofill"/>
+<path d="M618.4,450 L618.4,463.33" class="s-ink-muted w1 nofill"/>
+<circle cx="652" cy="456.67" r="5" class="f-ink-muted s-surface w1"/>
+<text x="40" y="500.33" class="t-label b" data-w="138">1,000 updates each</text>
+<text x="56" y="539" class="t-label" data-w="151"><tspan class="i">B</tspan> = 300, 1,000 epochs</text>
+<rect x="317.33" y="524" width="96.2" height="20" class="f-neutral-soft" data-fit="skip"/>
+<rect x="317.33" y="524" width="96.2" height="20" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M317.33,527.33 L317.33,540.67" class="s-ink-muted w1 nofill"/>
+<path d="M395.29,527.33 L395.29,540.67" class="s-ink-muted w1 nofill"/>
+<path d="M413.53,527.33 L413.53,540.67" class="s-ink-muted w1 nofill"/>
+<path d="M378.5,527.33 L378.5,540.67" class="s-ink-muted w1 nofill"/>
+<path d="M342.17,527.33 L342.17,540.67" class="s-ink-muted w1 nofill"/>
+<circle cx="317.33" cy="534" r="5" class="f-ink-muted s-surface w1"/>
+<rect x="708.03" y="524" width="109.2" height="20" class="f-neutral-soft" data-fit="skip"/>
+<rect x="708.03" y="524" width="109.2" height="20" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M817.23,527.33 L817.23,540.67" class="s-ink-muted w1 nofill"/>
+<path d="M736,527.33 L736,540.67" class="s-ink-muted w1 nofill"/>
+<path d="M708.03,527.33 L708.03,540.67" class="s-ink-muted w1 nofill"/>
+<path d="M769.6,527.33 L769.6,540.67" class="s-ink-muted w1 nofill"/>
+<path d="M789.17,527.33 L789.17,540.67" class="s-ink-muted w1 nofill"/>
+<circle cx="817.23" cy="534" r="5" class="f-ink-muted s-surface w1"/>
+<text x="56" y="577.67" class="t-label" data-w="130"><tspan class="i">B</tspan> = 32, 100 epochs</text>
+<rect x="433.75" y="562.67" width="60.48" height="20" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M443.18,566V579.33M433.75,566V579.33M434.2,566V579.33M494.23,566V579.33M451.23,566V579.33" class="s-blue w1 nofill"/>
+<circle cx="443.18" cy="572.67" r="5" class="f-blue s-surface w1"/>
+<rect x="587.57" y="562.67" width="126" height="20" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M646.37,566V579.33M694,566V579.33M713.57,566V579.33M587.57,566V579.33M654.77,566V579.33" class="s-blue w1 nofill"/>
+<circle cx="646.37" cy="572.67" r="5" class="f-blue s-surface w1"/>
+<rect x="256" y="640" width="24" height="16" class="f-neutral-soft" data-fit="skip"/>
+<rect x="256" y="640" width="24" height="16" class="w1 nofill s-rule" data-fit="skip"/>
+<path d="M268,643 L268,653" class="s-ink-muted w1 nofill"/>
+<text x="292" y="652" class="t-label" data-w="165">five seeds, one tick each</text>
+<circle cx="520" cy="648" r="5" class="f-ink-muted s-surface w1"/>
+<text x="536" y="652" class="t-label" data-w="45">seed 0</text>
+<rect x="648" y="640" width="24" height="16" class="f-blue-soft s-blue-line w1" data-fit="skip"/>
+<path d="M660,642.67V653.33" class="s-blue w1 nofill"/>
+<text x="684" y="652" class="t-label" data-w="91">batches of 32</text>
+</g>
+<text x="40" y="684" class="t-note" data-w="687">Equal epochs: batches of 32 lead. About 10,000 updates: no order. 1,000 updates: the full batch leads.</text>
+</svg>

@@ -1,0 +1,249 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-02-gradient-noise-title" aria-describedby="nn-02-gradient-noise-desc">
+<title id="nn-02-gradient-noise-title">Batch noise falls with the batch size and is zero at 300</title>
+<desc id="nn-02-gradient-noise-desc">A chart on logarithmic axes of the root-mean-square distance between a batch gradient and the full-batch gradient against the batch size B from 1 to 300, on the spiral network at fixed weights in float64. Diamonds: measured over 2,000 random batches per size, 3.0115 at 1, 1.0647 at 8, 0.5124 at 32, 0.2489 at 100, 0.2069 at 128, 0.0000 at 300; the value 0 at 300 is marked on the bottom edge. A solid line: the closed form sigma over root B times the root of (N minus B) over (N minus 1), with sigma 3.0631 and N = 300, which bends down to 0 at B = 300. A dashed line: sigma over root B alone, a straight line on these axes, 0.1768 at 300. A dotted line marks the length of the full gradient, 0.4570. A table at the right lists the measured value and both closed forms for each size.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .f-purple { fill: var(--nn-purple); }
+  .f-purple-ink { fill: var(--nn-purple-ink); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-purple { stroke: var(--nn-purple); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-02-gradient-noise-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<clipPath id="nn-02-gradient-noise-clip-1"><rect x="90" y="138" width="412" height="260"/></clipPath>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title" data-w="661">Batch noise falls with the batch size and is zero at 300</text>
+<text x="40" y="76" class="t-subtitle" data-w="703">The spiral network at fixed weights, float64, <tspan class="i">N</tspan> = 300: a batch gradient's distance from the full one.</text>
+<g data-grid="skip">
+<path d="M96,392H496M96,345.4H496M96,283.8H496M96,237.2H496M96,190.6H496" class="gridline"/>
+<text x="88" y="396" text-anchor="end" class="t-tick" data-w="19">0.1</text>
+<text x="88" y="349.4" text-anchor="end" class="t-tick" data-w="19">0.2</text>
+<text x="88" y="287.8" text-anchor="end" class="t-tick" data-w="19">0.5</text>
+<text x="88" y="241.2" text-anchor="end" class="t-tick" data-w="8">1</text>
+<text x="88" y="194.6" text-anchor="end" class="t-tick" data-w="8">2</text>
+<text x="96" y="416" class="t-tick" data-w="8">1</text>
+<text x="257.48" y="416" text-anchor="middle" class="t-tick" data-w="16">10</text>
+<text x="418.96" y="416" text-anchor="middle" class="t-tick" data-w="23">100</text>
+<path d="M96,144V392H496" class="axis"/>
+<path d="M96,289.84H496" class="s-ink-muted w1 nofill d-ref"/>
+<g clip-path="url(#nn-02-gradient-noise-clip-1)">
+<path d="M96,161.94 L97.94,162.87 L99.87,163.8 L101.81,164.73 L103.74,165.65 L105.68,166.58 L107.62,167.51 L109.55,168.44 L111.49,169.37 L113.42,170.29 L115.36,171.22 L117.3,172.15 L119.23,173.08 L121.17,174.01 L123.1,174.93 L125.04,175.86 L126.98,176.79 L128.91,177.72 L130.85,178.65 L132.79,179.57 L134.72,180.5 L136.66,181.43 L138.59,182.36 L140.53,183.29 L142.47,184.21 L144.4,185.14 L146.34,186.07 L148.27,187 L150.21,187.93 L152.15,188.85 L154.08,189.78 L156.02,190.71 L157.95,191.64 L159.89,192.57 L161.83,193.49 L163.76,194.42 L165.7,195.35 L167.63,196.28 L169.57,197.21 L171.51,198.13 L173.44,199.06 L175.38,199.99 L177.31,200.92 L179.25,201.85 L181.19,202.77 L183.12,203.7 L185.06,204.63 L187,205.56 L188.93,206.49 L190.87,207.41 L192.8,208.34 L194.74,209.27 L196.68,210.2 L198.61,211.13 L200.55,212.05 L202.48,212.98 L204.42,213.91 L206.36,214.84 L208.29,215.77 L210.23,216.69 L212.16,217.62 L214.1,218.55 L216.04,219.48 L217.97,220.41 L219.91,221.33 L221.84,222.26 L223.78,223.19 L225.72,224.12 L227.65,225.05 L229.59,225.97 L231.52,226.9 L233.46,227.83 L235.4,228.76 L237.33,229.69 L239.27,230.61 L241.21,231.54 L243.14,232.47 L245.08,233.4 L247.01,234.33 L248.95,235.25 L250.89,236.18 L252.82,237.11 L254.76,238.04 L256.69,238.97 L258.63,239.89 L260.57,240.82 L262.5,241.75 L264.44,242.68 L266.37,243.61 L268.31,244.53 L270.25,245.46 L272.18,246.39 L274.12,247.32 L276.05,248.25 L277.99,249.17 L279.93,250.1 L281.86,251.03 L283.8,251.96 L285.73,252.89 L287.67,253.81 L289.61,254.74 L291.54,255.67 L293.48,256.6 L295.42,257.53 L297.35,258.45 L299.29,259.38 L301.22,260.31 L303.16,261.24 L305.1,262.17 L307.03,263.09 L308.97,264.02 L310.9,264.95 L312.84,265.88 L314.78,266.81 L316.71,267.73 L318.65,268.66 L320.58,269.59 L322.52,270.52 L324.46,271.45 L326.39,272.37 L328.33,273.3 L330.26,274.23 L332.2,275.16 L334.14,276.09 L336.07,277.01 L338.01,277.94 L339.94,278.87 L341.88,279.8 L343.82,280.73 L345.75,281.65 L347.69,282.58 L349.63,283.51 L351.56,284.44 L353.5,285.37 L355.43,286.29 L357.37,287.22 L359.31,288.15 L361.24,289.08 L363.18,290.01 L365.11,290.93 L367.05,291.86 L368.99,292.79 L370.92,293.72 L372.86,294.65 L374.79,295.57 L376.73,296.5 L378.67,297.43 L380.6,298.36 L382.54,299.29 L384.47,300.21 L386.41,301.14 L388.35,302.07 L390.28,303 L392.22,303.93 L394.15,304.85 L396.09,305.78 L398.03,306.71 L399.96,307.64 L401.9,308.57 L403.84,309.49 L405.77,310.42 L407.71,311.35 L409.64,312.28 L411.58,313.21 L413.52,314.13 L415.45,315.06 L417.39,315.99 L419.32,316.92 L421.26,317.85 L423.2,318.77 L425.13,319.7 L427.07,320.63 L429,321.56 L430.94,322.49 L432.88,323.41 L434.81,324.34 L436.75,325.27 L438.68,326.2 L440.62,327.13 L442.56,328.05 L444.49,328.98 L446.43,329.91 L448.36,330.84 L450.3,331.77 L452.24,332.69 L454.17,333.62 L456.11,334.55 L458.05,335.48 L459.98,336.41 L461.92,337.33 L463.85,338.26 L465.79,339.19 L467.73,340.12 L469.66,341.05 L471.6,341.97 L473.53,342.9 L475.47,343.83 L477.41,344.76 L479.34,345.69 L481.28,346.61 L483.21,347.54 L496,353.67" class="s-ink-muted w15 nofill d-proj"/>
+<path d="M96,161.94 L97.94,162.87 L99.87,163.8 L101.81,164.73 L103.74,165.67 L105.68,166.6 L107.62,167.53 L109.55,168.46 L111.49,169.39 L113.42,170.33 L115.36,171.26 L117.3,172.19 L119.23,173.12 L121.17,174.05 L123.1,174.99 L125.04,175.92 L126.98,176.85 L128.91,177.78 L130.85,178.72 L132.79,179.65 L134.72,180.58 L136.66,181.52 L138.59,182.45 L140.53,183.39 L142.47,184.32 L144.4,185.25 L146.34,186.19 L148.27,187.12 L150.21,188.06 L152.15,188.99 L154.08,189.93 L156.02,190.86 L157.95,191.8 L159.89,192.73 L161.83,193.67 L163.76,194.61 L165.7,195.54 L167.63,196.48 L169.57,197.41 L171.51,198.35 L173.44,199.29 L175.38,200.23 L177.31,201.16 L179.25,202.1 L181.19,203.04 L183.12,203.98 L185.06,204.92 L187,205.86 L188.93,206.8 L190.87,207.74 L192.8,208.68 L194.74,209.62 L196.68,210.56 L198.61,211.5 L200.55,212.44 L202.48,213.38 L204.42,214.33 L206.36,215.27 L208.29,216.21 L210.23,217.16 L212.16,218.1 L214.1,219.05 L216.04,219.99 L217.97,220.94 L219.91,221.88 L221.84,222.83 L223.78,223.78 L225.72,224.73 L227.65,225.67 L229.59,226.62 L231.52,227.57 L233.46,228.52 L235.4,229.47 L237.33,230.42 L239.27,231.38 L241.21,232.33 L243.14,233.28 L245.08,234.24 L247.01,235.19 L248.95,236.15 L250.89,237.11 L252.82,238.06 L254.76,239.02 L256.69,239.98 L258.63,240.94 L260.57,241.9 L262.5,242.86 L264.44,243.83 L266.37,244.79 L268.31,245.76 L270.25,246.72 L272.18,247.69 L274.12,248.66 L276.05,249.63 L277.99,250.6 L279.93,251.57 L281.86,252.54 L283.8,253.52 L285.73,254.49 L287.67,255.47 L289.61,256.45 L291.54,257.43 L293.48,258.41 L295.42,259.4 L297.35,260.38 L299.29,261.37 L301.22,262.36 L303.16,263.35 L305.1,264.34 L307.03,265.33 L308.97,266.33 L310.9,267.33 L312.84,268.33 L314.78,269.33 L316.71,270.34 L318.65,271.34 L320.58,272.35 L322.52,273.37 L324.46,274.38 L326.39,275.4 L328.33,276.42 L330.26,277.44 L332.2,278.47 L334.14,279.5 L336.07,280.53 L338.01,281.56 L339.94,282.6 L341.88,283.64 L343.82,284.69 L345.75,285.74 L347.69,286.79 L349.63,287.85 L351.56,288.91 L353.5,289.98 L355.43,291.05 L357.37,292.12 L359.31,293.2 L361.24,294.29 L363.18,295.38 L365.11,296.47 L367.05,297.57 L368.99,298.68 L370.92,299.79 L372.86,300.91 L374.79,302.03 L376.73,303.17 L378.67,304.3 L380.6,305.45 L382.54,306.6 L384.47,307.77 L386.41,308.94 L388.35,310.11 L390.28,311.3 L392.22,312.5 L394.15,313.7 L396.09,314.92 L398.03,316.15 L399.96,317.39 L401.9,318.64 L403.84,319.9 L405.77,321.18 L407.71,322.46 L409.64,323.77 L411.58,325.09 L413.52,326.42 L415.45,327.77 L417.39,329.14 L419.32,330.52 L421.26,331.93 L423.2,333.36 L425.13,334.8 L427.07,336.27 L429,337.77 L430.94,339.29 L432.88,340.84 L434.81,342.42 L436.75,344.03 L438.68,345.67 L440.62,347.35 L442.56,349.07 L444.49,350.84 L446.43,352.64 L448.36,354.5 L450.3,356.41 L452.24,358.38 L454.17,360.41 L456.11,362.51 L458.05,364.69 L459.98,366.96 L461.92,369.31 L463.85,371.78 L465.79,374.37 L467.73,377.09 L469.66,379.97 L471.6,383.03 L473.53,386.3 L475.47,389.81 L477.41,393.63 L479.34,397.81 L481.28,402.44 L483.21,407.66" class="s-purple w15 nofill"/>
+</g>
+<text x="104" y="283.84" class="t-note f-ink-muted" data-w="222">length of the full gradient, 0.4570</text>
+</g>
+<text x="96" y="132" class="t-note" data-w="202">distance from the full gradient</text>
+<text x="296" y="436" text-anchor="middle" class="t-note" data-w="122">batch size <tspan class="i">B</tspan>, rows</text>
+<g data-grid="skip">
+<path d="M96,157.08 L102,163.08 L96,169.08 L90,163.08 Z" class="f-purple s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M241.83,226.98 L247.83,232.98 L241.83,238.98 L235.83,232.98 Z" class="f-purple s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M339.05,276.15 L345.05,282.15 L339.05,288.15 L333.05,282.15 Z" class="f-purple s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M418.96,324.7 L424.96,330.7 L418.96,336.7 L412.96,330.7 Z" class="f-purple s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M436.27,337.12 L442.27,343.12 L436.27,349.12 L430.27,343.12 Z" class="f-purple s-surface w1"/>
+</g>
+<g data-grid="skip">
+<path d="M496,386 L502,392 L496,398 L490,392 Z" class="f-purple s-surface w1"/>
+<text x="508" y="397" class="t-note f-purple-ink" data-w="69">0 at <tspan class="i">B</tspan> = <tspan class="i">N</tspan></text>
+</g>
+<rect x="600" y="136" width="48" height="40" class="nofill"/>
+<rect x="648" y="136" width="96" height="40" class="nofill"/>
+<rect x="744" y="136" width="104" height="40" class="nofill"/>
+<rect x="848" y="136" width="72" height="40" class="nofill"/>
+<rect x="600" y="176" width="48" height="40" class="nofill"/>
+<rect x="648" y="176" width="96" height="40" class="nofill"/>
+<rect x="744" y="176" width="104" height="40" class="nofill"/>
+<rect x="848" y="176" width="72" height="40" class="nofill"/>
+<rect x="600" y="216" width="48" height="40" class="nofill"/>
+<rect x="648" y="216" width="96" height="40" class="nofill"/>
+<rect x="744" y="216" width="104" height="40" class="nofill"/>
+<rect x="848" y="216" width="72" height="40" class="nofill"/>
+<rect x="600" y="256" width="48" height="40" class="nofill"/>
+<rect x="648" y="256" width="96" height="40" class="nofill"/>
+<rect x="744" y="256" width="104" height="40" class="nofill"/>
+<rect x="848" y="256" width="72" height="40" class="nofill"/>
+<rect x="600" y="296" width="48" height="40" class="nofill"/>
+<rect x="648" y="296" width="96" height="40" class="nofill"/>
+<rect x="744" y="296" width="104" height="40" class="nofill"/>
+<rect x="848" y="296" width="72" height="40" class="nofill"/>
+<rect x="600" y="336" width="48" height="40" class="nofill"/>
+<rect x="648" y="336" width="96" height="40" class="nofill"/>
+<rect x="744" y="336" width="104" height="40" class="nofill"/>
+<rect x="848" y="336" width="72" height="40" class="nofill"/>
+<rect x="600" y="376" width="48" height="40" class="nofill"/>
+<rect x="648" y="376" width="96" height="40" class="nofill"/>
+<rect x="744" y="376" width="104" height="40" class="nofill"/>
+<rect x="848" y="376" width="72" height="40" class="nofill"/>
+<path d="M600,136H920M600,416H920" class="axis"/>
+<path d="M600,176H920" class="rule1"/>
+<text x="640" y="160" text-anchor="end" class="t-head" data-w="13"><tspan class="i">B</tspan></text>
+<text x="736" y="160" text-anchor="end" class="t-head" data-w="81">measured</text>
+<text x="840" y="160" text-anchor="end" class="t-head" data-w="97">closed form</text>
+<text x="912" y="160" text-anchor="end" class="t-head" data-w="52">σ / √<tspan class="i">B</tspan></text>
+<text x="640" y="200" text-anchor="end" class="t-label" data-w="9">1</text>
+<text x="736" y="200" text-anchor="end" class="t-label" data-w="45">3.0115</text>
+<text x="840" y="200" text-anchor="end" class="t-label" data-w="45">3.0631</text>
+<text x="912" y="200" text-anchor="end" class="t-label" data-w="45">3.0631</text>
+<text x="640" y="240" text-anchor="end" class="t-label" data-w="9">8</text>
+<text x="736" y="240" text-anchor="end" class="t-label" data-w="45">1.0647</text>
+<text x="840" y="240" text-anchor="end" class="t-label" data-w="45">1.0702</text>
+<text x="912" y="240" text-anchor="end" class="t-label" data-w="45">1.0830</text>
+<text x="640" y="280" text-anchor="end" class="t-label" data-w="17">32</text>
+<text x="736" y="280" text-anchor="end" class="t-label" data-w="45">0.5124</text>
+<text x="840" y="280" text-anchor="end" class="t-label" data-w="45">0.5126</text>
+<text x="912" y="280" text-anchor="end" class="t-label" data-w="45">0.5415</text>
+<text x="640" y="320" text-anchor="end" class="t-label" data-w="25">100</text>
+<text x="736" y="320" text-anchor="end" class="t-label" data-w="45">0.2489</text>
+<text x="840" y="320" text-anchor="end" class="t-label" data-w="45">0.2505</text>
+<text x="912" y="320" text-anchor="end" class="t-label" data-w="45">0.3063</text>
+<text x="640" y="360" text-anchor="end" class="t-label" data-w="25">128</text>
+<text x="736" y="360" text-anchor="end" class="t-label" data-w="45">0.2069</text>
+<text x="840" y="360" text-anchor="end" class="t-label" data-w="45">0.2053</text>
+<text x="912" y="360" text-anchor="end" class="t-label" data-w="45">0.2707</text>
+<text x="640" y="400" text-anchor="end" class="t-label" data-w="25">300</text>
+<text x="736" y="400" text-anchor="end" class="t-label" data-w="45">0.0000</text>
+<text x="840" y="400" text-anchor="end" class="t-label" data-w="45">0.0000</text>
+<text x="912" y="400" text-anchor="end" class="t-label" data-w="45">0.1768</text>
+<path d="M104,466 L110,472 L104,478 L98,472 Z" class="f-purple s-surface w1"/>
+<text x="128" y="476" class="t-label" data-w="67">measured</text>
+<path d="M224,472 H248" class="s-purple w15 nofill"/>
+<text x="256" y="476" class="t-label" data-w="305">closed form, rows drawn without replacement</text>
+<path d="M592,472 H616" class="s-ink-muted w15 nofill d-proj"/>
+<text x="624" y="476" class="t-label" data-w="43">σ / √<tspan class="i">B</tspan></text>
+<text x="40" y="504" class="t-note" data-w="505">At <tspan class="i">B</tspan> = 32 the noise is still 1.12 times the length of the gradient it estimates.</text>
+</svg>
