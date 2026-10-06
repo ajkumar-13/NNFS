@@ -18,7 +18,7 @@ import numpy as np
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, r"C:\Users\admin\Desktop\series-standard\tools")
-from figkit import Figure, MINUS, rich, var, num  # noqa: E402
+from figkit import Figure, MINUS, rich, span, var, num  # noqa: E402
 
 SNIPPETS = Path(__file__).resolve().parents[2] / "snippets"
 
@@ -49,6 +49,9 @@ assert np.array_equal(a - stretch_row, wrong) and np.array_equal(a - stretch_col
 assert not right[:, -1].any() and wrong[:, -1].tolist() == [-6, -3, 0]
 
 
+A, MV = span("a", mono=True), span("max_vals", mono=True)   # code names, in the code face as in the post
+
+
 def say(m):
     return "; ".join(", ".join(num(int(v)).replace(MINUS, "minus ") for v in r) for r in m)
 
@@ -60,23 +63,23 @@ fig = Figure(
     f"operand and copied down, so every row has {', '.join(str(v) for v in flat)} subtracted; the result rows "
     f"are {say(wrong)}, no error is raised, and the rows do not end in 0, because column j loses the maximum of row j. Bottom, with keepdims=True: max_vals "
     f"is a column of shape (3, 1) copied across, so row i loses its own maximum, and every row of the result "
-    f"is {say(right[:1])}.",
-    subtitle=rich(var("a"), " ", MINUS, " np.max(", var("a"), ", axis=1), with and without keepdims=True. "
-                  "Filled cells: what max_vals holds."))
+    f"is {say(right[:1])}. A key marks the filled cells as the values max_vals holds; the plain cells are the "
+    f"copies broadcasting adds.",
+    subtitle=rich(span("a - np.max(a, axis=1)", mono=True), ", with and without keepdims=True."))
 
 C = 40
 GA, GS, GR = 232, 392, 552                       # a, max_vals as broadcast, the result
-ROWS = (160, 336)
+ROWS = (152, 320)
 # column headings centred over their grids: "max_vals, broadcast" is wider than its grid
-fig.text(GA + 3 * C / 2, 136, rich(var("a")), "head", anchor="middle")
-fig.text(GS + 3 * C / 2, 136, "max_vals, broadcast", "head", anchor="middle")
-fig.text(GR + 3 * C / 2, 136, rich(var("a"), " ", MINUS, " max_vals"), "head", anchor="middle")
+fig.text(GA + 3 * C / 2, 128, rich(A), "head", anchor="middle")
+fig.text(GS + 3 * C / 2, 128, rich(MV, ", broadcast"), "head", anchor="middle")
+fig.text(GR + 3 * C / 2, 128, rich(span("a - max_vals", mono=True)), "head", anchor="middle")
 
 cases = [
-    dict(head="Without keepdims", lines=["max_vals: (3,)", "copied down the rows"], stretched=stretch_row,
+    dict(head="Without keepdims", lines=[rich(MV, ": (3,)"), "copied down the rows"], stretched=stretch_row,
          own=lambda i, j: i == 0, win=(0, 0, 1, 3), result=wrong, fill="error-soft",
          verdict=("No error raised", "error"), why=["Rows do not end in 0:", rich("column ", var("j"), " loses the max of row ", var("j"), ".")]),
-    dict(head="With keepdims=True", lines=["max_vals: (3, 1)", "copied across the columns"], stretched=stretch_col,
+    dict(head="With keepdims=True", lines=[rich(MV, ": (3, 1)"), "copied across the columns"], stretched=stretch_col,
          own=lambda i, j: j == 0, win=(0, 0, 3, 1), result=right, fill="output-soft",
          verdict=("Correct", "output"), why=["Every row ends in 0:", rich("row ", var("i"), " loses its own max.")]),
 ]
@@ -89,11 +92,14 @@ for y, cs in zip(ROWS, cases):
                   fill=lambda i, j, own=cs["own"]: "blue-soft" if own(i, j) else None)
     gs.window(*cs["win"], color="blue")
     gr = fig.grid(GR, y, 3, 3, C, values=cs["result"].tolist(), fill=lambda i, j, f=cs["fill"]: f)
-    fig.text((GA + 3 * C + GS) / 2, y + 68, MINUS, "op", anchor="middle")
-    fig.text((GS + 3 * C + GR) / 2, y + 68, "=", "op", anchor="middle")
+    fig.op((GA + 3 * C + GS) // 2, y + 3 * C // 2, MINUS)          # centred in the gutters, on the grids' middle row
+    fig.op((GS + 3 * C + GR) // 2, y + 3 * C // 2, "=")
     vx = gr.box.right + 24
     fig.text(vx, y + 20, cs["verdict"][0], "label", color=cs["verdict"][1])
     for k, s in enumerate(cs["why"]):
         fig.text(vx, y + 48 + 20 * k, s, "note")
+# the key for the filled cells, under the max_vals column it explains, centred on it
+KEY = rich("what ", MV, " holds")
+fig.legend(GS + 3 * C // 2 - 92, ROWS[1] + 3 * C + 32, [dict(color="blue-soft", label=KEY, mark="swatch")])
 fig.caption("The same call, one keyword apart: only the (3, 1) column subtracts each row's own maximum.")
 fig.write()

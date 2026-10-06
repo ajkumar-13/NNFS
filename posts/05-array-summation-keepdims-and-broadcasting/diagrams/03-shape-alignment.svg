@@ -131,6 +131,9 @@
   .f-blue-soft { fill: var(--nn-blue-soft); }
   .f-green-soft { fill: var(--nn-green-soft); }
   .f-red-soft { fill: var(--nn-red-soft); }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-green { stroke: var(--nn-green); }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
   .s-red { stroke: var(--nn-red); }
 </style>
 <defs>
@@ -164,8 +167,6 @@
 <text x="96" y="257" text-anchor="end" class="t-tick">right</text>
 <text x="96" y="313" text-anchor="end" class="t-tick">result</text>
 </g>
-<g data-grid="skip">
-</g>
 <text x="104" y="364" class="t-note">The 1 stretches to 300:</text>
 <text x="104" y="384" class="t-note">one bias row per sample.</text>
 <text x="312" y="136" class="t-head">(3, 3) + (3,)</text>
@@ -188,9 +189,7 @@
 <text x="340" y="160" text-anchor="middle" class="t-tick">axis 0</text>
 <text x="396" y="160" text-anchor="middle" class="t-tick">axis 1</text>
 </g>
-<g data-grid="skip">
-<rect x="318" y="230" width="44" height="44" class="lead" data-fit="skip"/>
-</g>
+<rect x="320" y="232" width="40" height="40" class="w15 nofill s-ink-muted d-lead" data-fit="skip"/>
 <text x="312" y="364" class="t-note">(3,) is padded to (1, 3)</text>
 <text x="312" y="384" class="t-note">and acts as a row.</text>
 <text x="520" y="136" class="t-head">(3, 1) + (3,)</text>
@@ -213,9 +212,7 @@
 <text x="548" y="160" text-anchor="middle" class="t-tick">axis 0</text>
 <text x="604" y="160" text-anchor="middle" class="t-tick">axis 1</text>
 </g>
-<g data-grid="skip">
-<rect x="526" y="230" width="44" height="44" class="lead" data-fit="skip"/>
-</g>
+<rect x="528" y="232" width="40" height="40" class="w15 nofill s-ink-muted d-lead" data-fit="skip"/>
 <text x="520" y="364" class="t-note">Both operands stretch;</text>
 <text x="520" y="384" class="t-note">neither had shape (3, 3).</text>
 <text x="728" y="136" class="t-head">(5, 3) + (5,)</text>
@@ -234,9 +231,7 @@
 <text x="756" y="160" text-anchor="middle" class="t-tick">axis 0</text>
 <text x="812" y="160" text-anchor="middle" class="t-tick">axis 1</text>
 </g>
-<g data-grid="skip">
-<rect x="734" y="230" width="44" height="44" class="lead" data-fit="skip"/>
-</g>
+<rect x="736" y="232" width="40" height="40" class="w15 nofill s-ink-muted d-lead" data-fit="skip"/>
 <rect x="784" y="168" width="56" height="112" class="emph s-red" data-fit="skip"/>
 <rect x="728" y="280" width="112" height="56" class="cell f-red-soft"/>
 <rect x="728" y="280" width="112" height="56" class="frame" data-fit="skip"/>
@@ -245,15 +240,13 @@
 </g>
 <text x="728" y="364" class="t-note">Axis 1: 3 against 5,</text>
 <text x="728" y="384" class="t-note">and neither is 1.</text>
-<g data-grid="skip">
-<rect x="104" y="435" width="16" height="16" class="cell f-blue-soft" data-fit="skip"/>
-<text x="128" y="448" class="t-note">a 1 that stretches</text>
-<rect x="280" y="435" width="16" height="16" class="lead" data-fit="skip"/>
-<text x="304" y="448" class="t-note">a 1 added by padding</text>
-<rect x="488" y="435" width="16" height="16" class="w15 nofill s-red" data-fit="skip"/>
-<text x="512" y="448" class="t-note">sizes that clash</text>
-<rect x="656" y="435" width="16" height="16" class="cell f-green-soft" data-fit="skip"/>
-<text x="680" y="448" class="t-note">result shape</text>
-</g>
+<rect x="104" y="436" width="16" height="16" class="f-blue-soft s-blue w1"/>
+<text x="136" y="448" class="t-label">a 1 that stretches</text>
+<rect x="280" y="436" width="16" height="16" class="s-ink-muted w15 nofill d-lead"/>
+<text x="312" y="448" class="t-label">a 1 added by padding</text>
+<rect x="488" y="436" width="16" height="16" class="s-red w15 nofill"/>
+<text x="520" y="448" class="t-label">sizes that clash</text>
+<rect x="648" y="436" width="16" height="16" class="f-green-soft s-green w1"/>
+<text x="680" y="448" class="t-label">result shape</text>
 <text x="40" y="504" class="t-note">Pad with 1s on the left, check each aligned pair, stretch every 1; a clash raises ValueError.</text>
 </svg>

@@ -89,7 +89,7 @@ Axes can also be counted from the end, as list indices can: `axis=-1` is the las
 
 ### 2.5. What is *not* obvious about the result
 
-Both `np.sum(a, axis=0)` and `np.sum(a, axis=1)` return a 1-D array of shape `(3,)`. Nothing in that shape records which axis was reduced, and that 1-D shape is the source of the silent bug that section 3 works through. The right half of the figure at the top of the post draws the two results flat, side by side, with the same shape; its left half shows the row and the column that `keepdims=True` (section 3) returns instead.
+Both `np.sum(a, axis=0)` and `np.sum(a, axis=1)` return a 1-D array of shape `(3,)`. Nothing in that shape records which axis was reduced, and that 1-D shape is the source of the silent bug that section 3 works through. The right half of the figure at the top of the post draws the two results as flat strips, one above the other, with the same shape; its left half shows the row and the column that `keepdims=True` (section 3) returns instead.
 
 A 1-D `(n,)` array is not the same thing as a row vector of shape `(1, n)` or a column vector of shape `(n, 1)`: the first has one axis and the other two have two. Section 4 shows that broadcasting against a 2-D array treats the first exactly like the second and never like the third. At the `print` site the only trace of the difference is the bracketing: `[12 15 18]` for the 1-D array, `[[12 15 18]]` for the row vector.
 
@@ -134,7 +134,7 @@ A pattern from softmax: subtract the largest value in each row from every entry 
 
 The figure below runs the subtraction both ways and draws `max_vals` as broadcasting stretches it, which is where the two versions part.
 
-![Two rows, each the 3 by 3 array a minus max_vals as broadcast equals the result. Without keepdims, max_vals is 3, 6, 9 with shape (3,), copied down the rows, so column j loses the maximum of row j; the result rows are -2 -4 -6, then 1 -1 -3, then 4 2 0, and no error is raised. With keepdims=True, max_vals is a column of shape (3, 1), copied across the columns, and every row of the result is -2, -1, 0.](diagrams/02-max-subtraction.svg)
+![Two rows, each the 3 by 3 array a minus max_vals as broadcast equals the result. Without keepdims, max_vals is 3, 6, 9 with shape (3,), copied down the rows, so column j loses the maximum of row j; the result rows are -2 -4 -6, then 1 -1 -3, then 4 2 0, and no error is raised. With keepdims=True, max_vals is a column of shape (3, 1), copied across the columns, and every row of the result is -2, -1, 0. A key under the middle column marks the filled cells as the values max_vals holds.](diagrams/02-max-subtraction.svg)
 
 *Same call style on both sides; the only difference is `keepdims=True`. One result is correct and the other is silently wrong.*
 

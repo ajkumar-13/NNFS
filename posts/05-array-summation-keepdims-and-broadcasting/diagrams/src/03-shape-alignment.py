@@ -114,10 +114,8 @@ for i, (px, (lft, rgt)) in enumerate(zip(PX, PAIRS)):
     g.col_labels(["axis 0", "axis 1"])
     if i == 0:
         g.row_labels(["left", "right", "result"])
-    with fig.data():
-        for side, c in sorted(padded):
-            b = g.cell(0 if side == "L" else 1, c)
-            fig._rect(b.x + 6, b.y + 6, b.w - 12, b.h - 12, "lead", extra='data-fit="skip"')
+    for side, c in sorted(padded):         # a 1 added by padding: a dashed inner box
+        fig.outline(g.cell(0 if side == "L" else 1, c).inset(8), "ink-muted", width=1.5, dash="lead")
     for c in clash:
         g.window(0, c, 2, 1, "error")
     if result == "error":                  # the result row holds the error, in the same slot as a shape
@@ -125,21 +123,15 @@ for i, (px, (lft, rgt)) in enumerate(zip(PX, PAIRS)):
                  fill=lambda r, c: "error-soft", font=16)
     fig.note(Box(px, GY + 3 * C, 0, 0), NOTES[i])
 
-# the legend, one line under the panels, items packed from the first panel's left edge (not one per panel,
-# which would read as belonging to that panel): the kit has no dashed legend mark, so it is drawn here
-LY = 448
-items = [("blue-soft", None, "a 1 that stretches"), (None, "lead", "a 1 added by padding"),
-         (None, "error", "sizes that clash"), ("output-soft", None, "result shape")]
+# the legend, one line under the panels, from the first panel's left edge (not one item per panel, which
+# would read as belonging to that panel); each mark repeats its cell form. One kit legend per item, placed
+# with the calibrated width estimate, so the gaps between items are even (the row legend's estimate is wide).
 x = PX[0]
-with fig.data():
-    for fill_c, stroke, label in items:
-        if stroke == "lead":
-            fig._rect(x, LY - 13, 16, 16, "lead", extra='data-fit="skip"')
-        elif stroke:
-            fig._rect(x, LY - 13, 16, 16, f"w15 nofill {fig._cls('s', 'red')}", extra='data-fit="skip"')
-        else:
-            fig._rect(x, LY - 13, 16, 16, f"cell {fig._cls('f', fill_c)}", extra='data-fit="skip"')
-        fig.text(x + 24, LY, label, "note")
-        x += 24 + math.ceil((text_width(label, 14) + 32) / 8) * 8
+for item in [dict(color="blue-soft", label="a 1 that stretches", mark="swatch"),
+             dict(color="ink-muted", label="a 1 added by padding", mark="dashed-outline"),
+             dict(color="error", label="sizes that clash", mark="outline"),
+             dict(color="output-soft", label="result shape", mark="swatch")]:
+    fig.legend(x, 448, [item])
+    x += 32 + math.ceil((text_width(item["label"], 14, weight=400) + 24) / 8) * 8
 fig.caption("Pad with 1s on the left, check each aligned pair, stretch every 1; a clash raises ValueError.")
 fig.write()
