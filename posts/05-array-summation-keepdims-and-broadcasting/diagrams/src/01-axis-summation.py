@@ -5,8 +5,9 @@ Writes posts/05-array-summation-keepdims-and-broadcasting/diagrams/01-axis-summa
 Every sum and shape is computed here with NumPy and checked against what snippets/axis_keepdims.py prints.
 
 Layout: on the left, a with its two axes; the keepdims=True results sit where their axis collapsed, the
-(1, 3) column sums under a's columns and the (3, 1) row sums beside a's rows. On the right, the default
-results: both 1-D sums lie flat with the same shape (3,), and the full sum is the scalar 45, shape ().
+(1, 3) column sums under a's columns and the (3, 1) row sums beside a's rows, in square cells like a's. On
+the right, the default results: both 1-D sums are flat strips, lower than the square cells, with the same
+shape (3,), and the full sum is the bare number 45, shape ().
 """
 import contextlib
 import importlib.util
@@ -62,43 +63,43 @@ fig = Figure(
     f"across its columns. With keepdims=True the reduced axis stays at size 1: the column sums {ints(k0)} sit "
     f"under a's columns as a row of shape {shape(k0.shape)} (axis=0), and the row sums {ints(k1)} sit beside a's "
     f"rows as a column of shape {shape(k1.shape)} (axis=1). Without keepdims, np.sum(a, axis=0) gives {ints(s0)} "
-    f"and np.sum(a, axis=1) gives {ints(s1)}, both drawn flat with the same shape {shape(s0.shape)}, and np.sum(a) "
-    f"gives the scalar {int(total)}, shape (). A note says that the 1-D shape does not record which axis was "
-    f"summed.",
+    f"and np.sum(a, axis=1) gives {ints(s1)}, both drawn as flat strips, lower than the square cells, with the same shape "
+    f"{shape(s0.shape)}, and np.sum(a) gives the scalar {int(total)}, shape (), drawn as a bare number. A note says "
+    f"that flat strips are 1-D arrays and that the 1-D shape does not record which axis was summed.",
     subtitle=rich("np.sum on the post's array ", var("a"), ", with keepdims=True on the left and without it on the right."))
 
-C = 48
-AX, AY = 184, 176                       # the array a
+C = 56                                  # cell side; values at 18, the size a 48 cell prints at
+AX, AY = 136, 176                       # the array a
 fig.text(40, 128, "keepdims=True: the axis stays, size 1", "head")
-ga = fig.grid(AX, AY, 3, 3, C, values=a.tolist())
+ga = fig.grid(AX, AY, 3, 3, C, values=a.tolist(), font=18)
 # the two axes of a, as arrows along its top and its left edge
 fig.arrow((AX, AY - 16), (ga.box.right, AY - 16))
 fig.text(ga.box.cx, AY - 28, "axis 1", "label", anchor="middle")
 fig.arrow((AX - 16, AY), (AX - 16, ga.box.bottom))
-fig.text(AX - 28, ga.box.cy + 4, "axis 0", "label", anchor="end")
-fig.text(AX - 28, AY + 29, rich(var("a"), ", (3, 3)"), "note", anchor="end")
+fig.text(AX - 28, ga.cell(1, 0).cy + 5, "axis 0", "label", anchor="end")
+fig.text(AX - 28, ga.cell(0, 0).cy + 5, rich(var("a"), ", (3, 3)"), "note", anchor="end")
 
-# keepdims=True: the column sums under the columns, the row sums beside the rows
-gk1 = fig.grid(ga.box.right + 32, AY, 3, 1, C, values=k1.tolist(), fill=lambda i, j: "output-soft")
-gk0 = fig.grid(AX, ga.box.bottom + 32, 1, 3, C, values=k0.tolist(), fill=lambda i, j: "output-soft")
-fig.text(gk1.box.right + 16, AY + 20, "axis=1", "code")
-fig.text(gk1.box.right + 16, AY + 44, "row sums", "note")
-fig.text(gk1.box.right + 16, gk1.box.bottom - 8, "(3, 1)", "code", color="output")
-fig.text(AX, gk0.box.bottom + 28, "axis=0", "code")
-fig.text(AX + 60, gk0.box.bottom + 28, "column sums", "note")
+# keepdims=True: square cells, as a's are; the column sums under the columns, the row sums beside the rows
+gk1 = fig.grid(ga.box.right + 32, AY, 3, 1, C, values=k1.tolist(), fill=lambda i, j: "output-soft", font=18)
+gk0 = fig.grid(AX, ga.box.bottom + 32, 1, 3, C, values=k0.tolist(), fill=lambda i, j: "output-soft", font=18)
+fig.text(gk1.box.right + 16, gk1.cell(0, 0).cy + 5, "axis=1", "code")
+fig.text(gk1.box.right + 16, gk1.cell(1, 0).cy + 5, "row sums", "note")
+fig.text(gk1.box.right + 16, gk1.cell(2, 0).cy + 5, "(3, 1)", "code", color="output")
 fig.text(gk0.box.right + 16, gk0.box.cy + 5, "(1, 3)", "code", color="output")
+fig.text(AX, gk0.box.bottom + 28, "axis=0", "code")
+fig.text(AX + 64, gk0.box.bottom + 28, "column sums", "note")
 
-# the default: both 1-D results lie flat; the full sum is a scalar
-RX = 600
+# the default: each 1-D result is a flat strip, the full sum a bare number
+RX, SH = 560, 32                        # strip height: low, flat cells mark a 1-D array
 fig.text(RX, 128, "Default: the axis is gone", "head")
-rows = [("np.sum(a, axis=0)", s0, 184), ("np.sum(a, axis=1)", s1, 280), ("np.sum(a)", [int(total)], 376)]
+rows = [("np.sum(a, axis=0)", s0, 184), ("np.sum(a, axis=1)", s1, 272)]
 for call, vals, y in rows:
     fig.text(RX, y - 16, call, "code")
-    n = len(np.ravel(vals))
-    g = fig.strip(RX, y, len(np.ravel(vals)), C, values=[int(v) for v in np.ravel(vals)],
-                  fill=lambda k: "output-soft")
-    fig.text(RX + n * C + 16, y + 29, shape(np.shape(vals if call != "np.sum(a)" else total)), "code",
-             color="output")
-fig.note(Box(RX, 376, 0, C), ["Both 1-D results have shape (3,):", "nothing records which axis was summed."])
+    g = fig.strip(RX, y, 3, C, height=SH, values=[int(v) for v in vals], fill=lambda k: "output-soft", font=16)
+    fig.text(g.box.right + 16, y + 21, shape(vals.shape), "code", color="output")
+fig.text(RX, 344, "np.sum(a)", "code")
+fig.text(RX, 380, str(int(total)), "cell18")
+fig.text(RX + 40, 380, shape(np.shape(total)), "code", color="output")
+fig.note(Box(RX, 384, 0, 0), ["Flat strips: 1-D arrays, both of shape (3,);", "nothing records which axis was summed."])
 fig.caption("Kept at size 1, each sum stays lined up with the rows or columns it came from.")
 fig.write()

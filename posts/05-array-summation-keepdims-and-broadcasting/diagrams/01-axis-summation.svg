@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-01-axis-summation-title" aria-describedby="nn-01-axis-summation-desc">
 <title id="nn-01-axis-summation-title">The axis named in a reduction is the axis that disappears</title>
-<desc id="nn-01-axis-summation-desc">The post's array a, shape (3, 3), holding 1 to 9, with axis 0 running down its rows and axis 1 across its columns. With keepdims=True the reduced axis stays at size 1: the column sums 12, 15, 18 sit under a's columns as a row of shape (1, 3) (axis=0), and the row sums 6, 15, 24 sit beside a's rows as a column of shape (3, 1) (axis=1). Without keepdims, np.sum(a, axis=0) gives 12, 15, 18 and np.sum(a, axis=1) gives 6, 15, 24, both drawn flat with the same shape (3,), and np.sum(a) gives the scalar 45, shape (). A note says that the 1-D shape does not record which axis was summed.</desc>
+<desc id="nn-01-axis-summation-desc">The post's array a, shape (3, 3), holding 1 to 9, with axis 0 running down its rows and axis 1 across its columns. With keepdims=True the reduced axis stays at size 1: the column sums 12, 15, 18 sit under a's columns as a row of shape (1, 3) (axis=0), and the row sums 6, 15, 24 sit beside a's rows as a column of shape (3, 1) (axis=1). Without keepdims, np.sum(a, axis=0) gives 12, 15, 18 and np.sum(a, axis=1) gives 6, 15, 24, both drawn as flat strips, lower than the square cells, with the same shape (3,), and np.sum(a) gives the scalar 45, shape (), drawn as a bare number. A note says that flat strips are 1-D arrays and that the 1-D shape does not record which axis was summed.</desc>
 <style>
   :root {
     --nn-bg: #FAFAF7;
@@ -138,87 +138,83 @@
 <text x="40" y="48" class="t-title">The axis named in a reduction is the axis that disappears</text>
 <text x="40" y="76" class="t-subtitle">np.sum on the post's array <tspan class="i">a</tspan>, with keepdims=True on the left and without it on the right.</text>
 <text x="40" y="128" class="t-head">keepdims=True: the axis stays, size 1</text>
-<rect x="184" y="176" width="48" height="48" class="cell"/>
-<rect x="232" y="176" width="48" height="48" class="cell"/>
-<rect x="280" y="176" width="48" height="48" class="cell"/>
-<rect x="184" y="224" width="48" height="48" class="cell"/>
-<rect x="232" y="224" width="48" height="48" class="cell"/>
-<rect x="280" y="224" width="48" height="48" class="cell"/>
-<rect x="184" y="272" width="48" height="48" class="cell"/>
-<rect x="232" y="272" width="48" height="48" class="cell"/>
-<rect x="280" y="272" width="48" height="48" class="cell"/>
-<rect x="184" y="176" width="144" height="144" class="frame" data-fit="skip"/>
+<rect x="136" y="176" width="56" height="56" class="cell"/>
+<rect x="192" y="176" width="56" height="56" class="cell"/>
+<rect x="248" y="176" width="56" height="56" class="cell"/>
+<rect x="136" y="232" width="56" height="56" class="cell"/>
+<rect x="192" y="232" width="56" height="56" class="cell"/>
+<rect x="248" y="232" width="56" height="56" class="cell"/>
+<rect x="136" y="288" width="56" height="56" class="cell"/>
+<rect x="192" y="288" width="56" height="56" class="cell"/>
+<rect x="248" y="288" width="56" height="56" class="cell"/>
+<rect x="136" y="176" width="168" height="168" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="208" y="206" text-anchor="middle" class="t-cell18">1</text>
-<text x="256" y="206" text-anchor="middle" class="t-cell18">2</text>
-<text x="304" y="206" text-anchor="middle" class="t-cell18">3</text>
-<text x="208" y="254" text-anchor="middle" class="t-cell18">4</text>
-<text x="256" y="254" text-anchor="middle" class="t-cell18">5</text>
-<text x="304" y="254" text-anchor="middle" class="t-cell18">6</text>
-<text x="208" y="302" text-anchor="middle" class="t-cell18">7</text>
-<text x="256" y="302" text-anchor="middle" class="t-cell18">8</text>
-<text x="304" y="302" text-anchor="middle" class="t-cell18">9</text>
+<text x="164" y="210" text-anchor="middle" class="t-cell18">1</text>
+<text x="220" y="210" text-anchor="middle" class="t-cell18">2</text>
+<text x="276" y="210" text-anchor="middle" class="t-cell18">3</text>
+<text x="164" y="266" text-anchor="middle" class="t-cell18">4</text>
+<text x="220" y="266" text-anchor="middle" class="t-cell18">5</text>
+<text x="276" y="266" text-anchor="middle" class="t-cell18">6</text>
+<text x="164" y="322" text-anchor="middle" class="t-cell18">7</text>
+<text x="220" y="322" text-anchor="middle" class="t-cell18">8</text>
+<text x="276" y="322" text-anchor="middle" class="t-cell18">9</text>
 </g>
-<path d="M184,160 L325,160" class="flow" marker-end="url(#nn-01-axis-summation-arrow)"/>
-<text x="256" y="148" text-anchor="middle" class="t-label">axis 1</text>
-<path d="M168,176 L168,317" class="flow" marker-end="url(#nn-01-axis-summation-arrow)"/>
-<text x="156" y="252" text-anchor="end" class="t-label">axis 0</text>
-<text x="156" y="204" text-anchor="end" class="t-note"><tspan class="i">a</tspan>, (3, 3)</text>
-<rect x="360" y="176" width="48" height="48" class="cell f-green-soft"/>
-<rect x="360" y="224" width="48" height="48" class="cell f-green-soft"/>
-<rect x="360" y="272" width="48" height="48" class="cell f-green-soft"/>
-<rect x="360" y="176" width="48" height="144" class="frame" data-fit="skip"/>
+<path d="M136,160 L301,160" class="flow" marker-end="url(#nn-01-axis-summation-arrow)"/>
+<text x="220" y="148" text-anchor="middle" class="t-label">axis 1</text>
+<path d="M120,176 L120,341" class="flow" marker-end="url(#nn-01-axis-summation-arrow)"/>
+<text x="108" y="264" text-anchor="end" class="t-label">axis 0</text>
+<text x="108" y="208" text-anchor="end" class="t-note"><tspan class="i">a</tspan>, (3, 3)</text>
+<rect x="336" y="176" width="56" height="56" class="cell f-green-soft"/>
+<rect x="336" y="232" width="56" height="56" class="cell f-green-soft"/>
+<rect x="336" y="288" width="56" height="56" class="cell f-green-soft"/>
+<rect x="336" y="176" width="56" height="168" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="384" y="206" text-anchor="middle" class="t-cell18">6</text>
-<text x="384" y="254" text-anchor="middle" class="t-cell18">15</text>
-<text x="384" y="302" text-anchor="middle" class="t-cell18">24</text>
+<text x="364" y="210" text-anchor="middle" class="t-cell18">6</text>
+<text x="364" y="266" text-anchor="middle" class="t-cell18">15</text>
+<text x="364" y="322" text-anchor="middle" class="t-cell18">24</text>
 </g>
-<rect x="184" y="352" width="48" height="48" class="cell f-green-soft"/>
-<rect x="232" y="352" width="48" height="48" class="cell f-green-soft"/>
-<rect x="280" y="352" width="48" height="48" class="cell f-green-soft"/>
-<rect x="184" y="352" width="144" height="48" class="frame" data-fit="skip"/>
+<rect x="136" y="376" width="56" height="56" class="cell f-green-soft"/>
+<rect x="192" y="376" width="56" height="56" class="cell f-green-soft"/>
+<rect x="248" y="376" width="56" height="56" class="cell f-green-soft"/>
+<rect x="136" y="376" width="168" height="56" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="208" y="382" text-anchor="middle" class="t-cell18">12</text>
-<text x="256" y="382" text-anchor="middle" class="t-cell18">15</text>
-<text x="304" y="382" text-anchor="middle" class="t-cell18">18</text>
+<text x="164" y="410" text-anchor="middle" class="t-cell18">12</text>
+<text x="220" y="410" text-anchor="middle" class="t-cell18">15</text>
+<text x="276" y="410" text-anchor="middle" class="t-cell18">18</text>
 </g>
-<text x="424" y="196" class="t-code">axis=1</text>
-<text x="424" y="220" class="t-note">row sums</text>
-<text x="424" y="312" class="t-code f-green-ink">(3, 1)</text>
-<text x="184" y="428" class="t-code">axis=0</text>
-<text x="244" y="428" class="t-note">column sums</text>
-<text x="344" y="380" class="t-code f-green-ink">(1, 3)</text>
-<text x="600" y="128" class="t-head">Default: the axis is gone</text>
-<text x="600" y="168" class="t-code">np.sum(a, axis=0)</text>
-<rect x="600" y="184" width="48" height="48" class="cell f-green-soft"/>
-<rect x="648" y="184" width="48" height="48" class="cell f-green-soft"/>
-<rect x="696" y="184" width="48" height="48" class="cell f-green-soft"/>
-<rect x="600" y="184" width="144" height="48" class="frame" data-fit="skip"/>
+<text x="408" y="208" class="t-code">axis=1</text>
+<text x="408" y="264" class="t-note">row sums</text>
+<text x="408" y="320" class="t-code f-green-ink">(3, 1)</text>
+<text x="320" y="408" class="t-code f-green-ink">(1, 3)</text>
+<text x="136" y="460" class="t-code">axis=0</text>
+<text x="200" y="460" class="t-note">column sums</text>
+<text x="560" y="128" class="t-head">Default: the axis is gone</text>
+<text x="560" y="168" class="t-code">np.sum(a, axis=0)</text>
+<rect x="560" y="184" width="56" height="32" class="cell f-green-soft"/>
+<rect x="616" y="184" width="56" height="32" class="cell f-green-soft"/>
+<rect x="672" y="184" width="56" height="32" class="cell f-green-soft"/>
+<rect x="560" y="184" width="168" height="32" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="624" y="214" text-anchor="middle" class="t-cell18">12</text>
-<text x="672" y="214" text-anchor="middle" class="t-cell18">15</text>
-<text x="720" y="214" text-anchor="middle" class="t-cell18">18</text>
+<text x="588" y="206" text-anchor="middle" class="t-cell16">12</text>
+<text x="644" y="206" text-anchor="middle" class="t-cell16">15</text>
+<text x="700" y="206" text-anchor="middle" class="t-cell16">18</text>
 </g>
-<text x="760" y="212" class="t-code f-green-ink">(3,)</text>
-<text x="600" y="264" class="t-code">np.sum(a, axis=1)</text>
-<rect x="600" y="280" width="48" height="48" class="cell f-green-soft"/>
-<rect x="648" y="280" width="48" height="48" class="cell f-green-soft"/>
-<rect x="696" y="280" width="48" height="48" class="cell f-green-soft"/>
-<rect x="600" y="280" width="144" height="48" class="frame" data-fit="skip"/>
+<text x="744" y="204" class="t-code f-green-ink">(3,)</text>
+<text x="560" y="256" class="t-code">np.sum(a, axis=1)</text>
+<rect x="560" y="272" width="56" height="32" class="cell f-green-soft"/>
+<rect x="616" y="272" width="56" height="32" class="cell f-green-soft"/>
+<rect x="672" y="272" width="56" height="32" class="cell f-green-soft"/>
+<rect x="560" y="272" width="168" height="32" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="624" y="310" text-anchor="middle" class="t-cell18">6</text>
-<text x="672" y="310" text-anchor="middle" class="t-cell18">15</text>
-<text x="720" y="310" text-anchor="middle" class="t-cell18">24</text>
+<text x="588" y="294" text-anchor="middle" class="t-cell16">6</text>
+<text x="644" y="294" text-anchor="middle" class="t-cell16">15</text>
+<text x="700" y="294" text-anchor="middle" class="t-cell16">24</text>
 </g>
-<text x="760" y="308" class="t-code f-green-ink">(3,)</text>
-<text x="600" y="360" class="t-code">np.sum(a)</text>
-<rect x="600" y="376" width="48" height="48" class="cell f-green-soft"/>
-<rect x="600" y="376" width="48" height="48" class="frame" data-fit="skip"/>
-<g data-grid="skip">
-<text x="624" y="406" text-anchor="middle" class="t-cell18">45</text>
-</g>
-<text x="664" y="404" class="t-code f-green-ink">()</text>
-<text x="600" y="452" class="t-note">Both 1-D results have shape (3,):</text>
-<text x="600" y="472" class="t-note">nothing records which axis was summed.</text>
+<text x="744" y="292" class="t-code f-green-ink">(3,)</text>
+<text x="560" y="344" class="t-code">np.sum(a)</text>
+<text x="560" y="380" class="t-cell18">45</text>
+<text x="600" y="380" class="t-code f-green-ink">()</text>
+<text x="560" y="412" class="t-note">Flat strips: 1-D arrays, both of shape (3,);</text>
+<text x="560" y="432" class="t-note">nothing records which axis was summed.</text>
 <text x="40" y="504" class="t-note">Kept at size 1, each sum stays lined up with the rows or columns it came from.</text>
 </svg>

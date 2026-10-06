@@ -141,152 +141,152 @@
 <rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
 <text x="40" y="48" class="t-title">Without keepdims the row maxima line up with the columns</text>
 <text x="40" y="76" class="t-subtitle"><tspan class="i">a</tspan> − np.max(<tspan class="i">a</tspan>, axis=1), with and without keepdims=True. Filled cells: what max_vals holds.</text>
-<text x="256" y="136" class="t-head"><tspan class="i">a</tspan></text>
-<text x="424" y="136" class="t-head">max_vals, broadcast</text>
-<text x="592" y="136" class="t-head"><tspan class="i">a</tspan> − max_vals</text>
+<text x="292" y="136" text-anchor="middle" class="t-head"><tspan class="i">a</tspan></text>
+<text x="452" y="136" text-anchor="middle" class="t-head">max_vals, broadcast</text>
+<text x="612" y="136" text-anchor="middle" class="t-head"><tspan class="i">a</tspan> − max_vals</text>
 <text x="40" y="180" class="t-head">Without keepdims</text>
 <text x="40" y="208" class="t-note">max_vals: (3,)</text>
 <text x="40" y="228" class="t-note">copied down the rows</text>
-<rect x="256" y="160" width="40" height="40" class="cell"/>
-<rect x="296" y="160" width="40" height="40" class="cell"/>
-<rect x="336" y="160" width="40" height="40" class="cell"/>
-<rect x="256" y="200" width="40" height="40" class="cell"/>
-<rect x="296" y="200" width="40" height="40" class="cell"/>
-<rect x="336" y="200" width="40" height="40" class="cell"/>
-<rect x="256" y="240" width="40" height="40" class="cell"/>
-<rect x="296" y="240" width="40" height="40" class="cell"/>
-<rect x="336" y="240" width="40" height="40" class="cell"/>
-<rect x="256" y="160" width="120" height="120" class="frame" data-fit="skip"/>
+<rect x="232" y="160" width="40" height="40" class="cell"/>
+<rect x="272" y="160" width="40" height="40" class="cell"/>
+<rect x="312" y="160" width="40" height="40" class="cell"/>
+<rect x="232" y="200" width="40" height="40" class="cell"/>
+<rect x="272" y="200" width="40" height="40" class="cell"/>
+<rect x="312" y="200" width="40" height="40" class="cell"/>
+<rect x="232" y="240" width="40" height="40" class="cell"/>
+<rect x="272" y="240" width="40" height="40" class="cell"/>
+<rect x="312" y="240" width="40" height="40" class="cell"/>
+<rect x="232" y="160" width="120" height="120" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="276" y="186" text-anchor="middle" class="t-cell16">1</text>
-<text x="316" y="186" text-anchor="middle" class="t-cell16">2</text>
-<text x="356" y="186" text-anchor="middle" class="t-cell16">3</text>
-<text x="276" y="226" text-anchor="middle" class="t-cell16">4</text>
-<text x="316" y="226" text-anchor="middle" class="t-cell16">5</text>
-<text x="356" y="226" text-anchor="middle" class="t-cell16">6</text>
-<text x="276" y="266" text-anchor="middle" class="t-cell16">7</text>
-<text x="316" y="266" text-anchor="middle" class="t-cell16">8</text>
-<text x="356" y="266" text-anchor="middle" class="t-cell16">9</text>
+<text x="252" y="186" text-anchor="middle" class="t-cell16">1</text>
+<text x="292" y="186" text-anchor="middle" class="t-cell16">2</text>
+<text x="332" y="186" text-anchor="middle" class="t-cell16">3</text>
+<text x="252" y="226" text-anchor="middle" class="t-cell16">4</text>
+<text x="292" y="226" text-anchor="middle" class="t-cell16">5</text>
+<text x="332" y="226" text-anchor="middle" class="t-cell16">6</text>
+<text x="252" y="266" text-anchor="middle" class="t-cell16">7</text>
+<text x="292" y="266" text-anchor="middle" class="t-cell16">8</text>
+<text x="332" y="266" text-anchor="middle" class="t-cell16">9</text>
 </g>
-<rect x="424" y="160" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="464" y="160" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="504" y="160" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="424" y="200" width="40" height="40" class="cell"/>
-<rect x="464" y="200" width="40" height="40" class="cell"/>
-<rect x="504" y="200" width="40" height="40" class="cell"/>
-<rect x="424" y="240" width="40" height="40" class="cell"/>
-<rect x="464" y="240" width="40" height="40" class="cell"/>
-<rect x="504" y="240" width="40" height="40" class="cell"/>
-<rect x="424" y="160" width="120" height="120" class="frame" data-fit="skip"/>
+<rect x="392" y="160" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="432" y="160" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="472" y="160" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="392" y="200" width="40" height="40" class="cell"/>
+<rect x="432" y="200" width="40" height="40" class="cell"/>
+<rect x="472" y="200" width="40" height="40" class="cell"/>
+<rect x="392" y="240" width="40" height="40" class="cell"/>
+<rect x="432" y="240" width="40" height="40" class="cell"/>
+<rect x="472" y="240" width="40" height="40" class="cell"/>
+<rect x="392" y="160" width="120" height="120" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="444" y="186" text-anchor="middle" class="t-cell16">3</text>
-<text x="484" y="186" text-anchor="middle" class="t-cell16">6</text>
-<text x="524" y="186" text-anchor="middle" class="t-cell16">9</text>
-<text x="444" y="226" text-anchor="middle" class="t-cell16">3</text>
-<text x="484" y="226" text-anchor="middle" class="t-cell16">6</text>
-<text x="524" y="226" text-anchor="middle" class="t-cell16">9</text>
-<text x="444" y="266" text-anchor="middle" class="t-cell16">3</text>
-<text x="484" y="266" text-anchor="middle" class="t-cell16">6</text>
-<text x="524" y="266" text-anchor="middle" class="t-cell16">9</text>
+<text x="412" y="186" text-anchor="middle" class="t-cell16">3</text>
+<text x="452" y="186" text-anchor="middle" class="t-cell16">6</text>
+<text x="492" y="186" text-anchor="middle" class="t-cell16">9</text>
+<text x="412" y="226" text-anchor="middle" class="t-cell16">3</text>
+<text x="452" y="226" text-anchor="middle" class="t-cell16">6</text>
+<text x="492" y="226" text-anchor="middle" class="t-cell16">9</text>
+<text x="412" y="266" text-anchor="middle" class="t-cell16">3</text>
+<text x="452" y="266" text-anchor="middle" class="t-cell16">6</text>
+<text x="492" y="266" text-anchor="middle" class="t-cell16">9</text>
 </g>
-<rect x="424" y="160" width="120" height="40" class="emph s-blue" data-fit="skip"/>
+<rect x="392" y="160" width="120" height="40" class="emph s-blue" data-fit="skip"/>
+<rect x="552" y="160" width="40" height="40" class="cell f-red-soft"/>
 <rect x="592" y="160" width="40" height="40" class="cell f-red-soft"/>
 <rect x="632" y="160" width="40" height="40" class="cell f-red-soft"/>
-<rect x="672" y="160" width="40" height="40" class="cell f-red-soft"/>
+<rect x="552" y="200" width="40" height="40" class="cell f-red-soft"/>
 <rect x="592" y="200" width="40" height="40" class="cell f-red-soft"/>
 <rect x="632" y="200" width="40" height="40" class="cell f-red-soft"/>
-<rect x="672" y="200" width="40" height="40" class="cell f-red-soft"/>
+<rect x="552" y="240" width="40" height="40" class="cell f-red-soft"/>
 <rect x="592" y="240" width="40" height="40" class="cell f-red-soft"/>
 <rect x="632" y="240" width="40" height="40" class="cell f-red-soft"/>
-<rect x="672" y="240" width="40" height="40" class="cell f-red-soft"/>
-<rect x="592" y="160" width="120" height="120" class="frame" data-fit="skip"/>
+<rect x="552" y="160" width="120" height="120" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="612" y="186" text-anchor="middle" class="t-cell16">−2</text>
-<text x="652" y="186" text-anchor="middle" class="t-cell16">−4</text>
-<text x="692" y="186" text-anchor="middle" class="t-cell16">−6</text>
-<text x="612" y="226" text-anchor="middle" class="t-cell16">1</text>
-<text x="652" y="226" text-anchor="middle" class="t-cell16">−1</text>
-<text x="692" y="226" text-anchor="middle" class="t-cell16">−3</text>
-<text x="612" y="266" text-anchor="middle" class="t-cell16">4</text>
-<text x="652" y="266" text-anchor="middle" class="t-cell16">2</text>
-<text x="692" y="266" text-anchor="middle" class="t-cell16">0</text>
+<text x="572" y="186" text-anchor="middle" class="t-cell16">−2</text>
+<text x="612" y="186" text-anchor="middle" class="t-cell16">−4</text>
+<text x="652" y="186" text-anchor="middle" class="t-cell16">−6</text>
+<text x="572" y="226" text-anchor="middle" class="t-cell16">1</text>
+<text x="612" y="226" text-anchor="middle" class="t-cell16">−1</text>
+<text x="652" y="226" text-anchor="middle" class="t-cell16">−3</text>
+<text x="572" y="266" text-anchor="middle" class="t-cell16">4</text>
+<text x="612" y="266" text-anchor="middle" class="t-cell16">2</text>
+<text x="652" y="266" text-anchor="middle" class="t-cell16">0</text>
 </g>
-<text x="400" y="228" text-anchor="middle" class="t-op">−</text>
-<text x="568" y="228" text-anchor="middle" class="t-op">=</text>
-<text x="736" y="180" class="t-label f-red-ink">No error raised</text>
-<text x="736" y="208" class="t-note">Rows do not end in 0:</text>
-<text x="736" y="228" class="t-note">column <tspan class="i">j</tspan> loses row <tspan class="i">j</tspan>'s max.</text>
+<text x="372" y="228" text-anchor="middle" class="t-op">−</text>
+<text x="532" y="228" text-anchor="middle" class="t-op">=</text>
+<text x="696" y="180" class="t-label f-red-ink">No error raised</text>
+<text x="696" y="208" class="t-note">Rows do not end in 0:</text>
+<text x="696" y="228" class="t-note">column <tspan class="i">j</tspan> loses the max of row <tspan class="i">j</tspan>.</text>
 <text x="40" y="356" class="t-head">With keepdims=True</text>
 <text x="40" y="384" class="t-note">max_vals: (3, 1)</text>
 <text x="40" y="404" class="t-note">copied across the columns</text>
-<rect x="256" y="336" width="40" height="40" class="cell"/>
-<rect x="296" y="336" width="40" height="40" class="cell"/>
-<rect x="336" y="336" width="40" height="40" class="cell"/>
-<rect x="256" y="376" width="40" height="40" class="cell"/>
-<rect x="296" y="376" width="40" height="40" class="cell"/>
-<rect x="336" y="376" width="40" height="40" class="cell"/>
-<rect x="256" y="416" width="40" height="40" class="cell"/>
-<rect x="296" y="416" width="40" height="40" class="cell"/>
-<rect x="336" y="416" width="40" height="40" class="cell"/>
-<rect x="256" y="336" width="120" height="120" class="frame" data-fit="skip"/>
+<rect x="232" y="336" width="40" height="40" class="cell"/>
+<rect x="272" y="336" width="40" height="40" class="cell"/>
+<rect x="312" y="336" width="40" height="40" class="cell"/>
+<rect x="232" y="376" width="40" height="40" class="cell"/>
+<rect x="272" y="376" width="40" height="40" class="cell"/>
+<rect x="312" y="376" width="40" height="40" class="cell"/>
+<rect x="232" y="416" width="40" height="40" class="cell"/>
+<rect x="272" y="416" width="40" height="40" class="cell"/>
+<rect x="312" y="416" width="40" height="40" class="cell"/>
+<rect x="232" y="336" width="120" height="120" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="276" y="362" text-anchor="middle" class="t-cell16">1</text>
-<text x="316" y="362" text-anchor="middle" class="t-cell16">2</text>
-<text x="356" y="362" text-anchor="middle" class="t-cell16">3</text>
-<text x="276" y="402" text-anchor="middle" class="t-cell16">4</text>
-<text x="316" y="402" text-anchor="middle" class="t-cell16">5</text>
-<text x="356" y="402" text-anchor="middle" class="t-cell16">6</text>
-<text x="276" y="442" text-anchor="middle" class="t-cell16">7</text>
-<text x="316" y="442" text-anchor="middle" class="t-cell16">8</text>
-<text x="356" y="442" text-anchor="middle" class="t-cell16">9</text>
+<text x="252" y="362" text-anchor="middle" class="t-cell16">1</text>
+<text x="292" y="362" text-anchor="middle" class="t-cell16">2</text>
+<text x="332" y="362" text-anchor="middle" class="t-cell16">3</text>
+<text x="252" y="402" text-anchor="middle" class="t-cell16">4</text>
+<text x="292" y="402" text-anchor="middle" class="t-cell16">5</text>
+<text x="332" y="402" text-anchor="middle" class="t-cell16">6</text>
+<text x="252" y="442" text-anchor="middle" class="t-cell16">7</text>
+<text x="292" y="442" text-anchor="middle" class="t-cell16">8</text>
+<text x="332" y="442" text-anchor="middle" class="t-cell16">9</text>
 </g>
-<rect x="424" y="336" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="464" y="336" width="40" height="40" class="cell"/>
-<rect x="504" y="336" width="40" height="40" class="cell"/>
-<rect x="424" y="376" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="464" y="376" width="40" height="40" class="cell"/>
-<rect x="504" y="376" width="40" height="40" class="cell"/>
-<rect x="424" y="416" width="40" height="40" class="cell f-blue-soft"/>
-<rect x="464" y="416" width="40" height="40" class="cell"/>
-<rect x="504" y="416" width="40" height="40" class="cell"/>
-<rect x="424" y="336" width="120" height="120" class="frame" data-fit="skip"/>
+<rect x="392" y="336" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="432" y="336" width="40" height="40" class="cell"/>
+<rect x="472" y="336" width="40" height="40" class="cell"/>
+<rect x="392" y="376" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="432" y="376" width="40" height="40" class="cell"/>
+<rect x="472" y="376" width="40" height="40" class="cell"/>
+<rect x="392" y="416" width="40" height="40" class="cell f-blue-soft"/>
+<rect x="432" y="416" width="40" height="40" class="cell"/>
+<rect x="472" y="416" width="40" height="40" class="cell"/>
+<rect x="392" y="336" width="120" height="120" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="444" y="362" text-anchor="middle" class="t-cell16">3</text>
-<text x="484" y="362" text-anchor="middle" class="t-cell16">3</text>
-<text x="524" y="362" text-anchor="middle" class="t-cell16">3</text>
-<text x="444" y="402" text-anchor="middle" class="t-cell16">6</text>
-<text x="484" y="402" text-anchor="middle" class="t-cell16">6</text>
-<text x="524" y="402" text-anchor="middle" class="t-cell16">6</text>
-<text x="444" y="442" text-anchor="middle" class="t-cell16">9</text>
-<text x="484" y="442" text-anchor="middle" class="t-cell16">9</text>
-<text x="524" y="442" text-anchor="middle" class="t-cell16">9</text>
+<text x="412" y="362" text-anchor="middle" class="t-cell16">3</text>
+<text x="452" y="362" text-anchor="middle" class="t-cell16">3</text>
+<text x="492" y="362" text-anchor="middle" class="t-cell16">3</text>
+<text x="412" y="402" text-anchor="middle" class="t-cell16">6</text>
+<text x="452" y="402" text-anchor="middle" class="t-cell16">6</text>
+<text x="492" y="402" text-anchor="middle" class="t-cell16">6</text>
+<text x="412" y="442" text-anchor="middle" class="t-cell16">9</text>
+<text x="452" y="442" text-anchor="middle" class="t-cell16">9</text>
+<text x="492" y="442" text-anchor="middle" class="t-cell16">9</text>
 </g>
-<rect x="424" y="336" width="40" height="120" class="emph s-blue" data-fit="skip"/>
+<rect x="392" y="336" width="40" height="120" class="emph s-blue" data-fit="skip"/>
+<rect x="552" y="336" width="40" height="40" class="cell f-green-soft"/>
 <rect x="592" y="336" width="40" height="40" class="cell f-green-soft"/>
 <rect x="632" y="336" width="40" height="40" class="cell f-green-soft"/>
-<rect x="672" y="336" width="40" height="40" class="cell f-green-soft"/>
+<rect x="552" y="376" width="40" height="40" class="cell f-green-soft"/>
 <rect x="592" y="376" width="40" height="40" class="cell f-green-soft"/>
 <rect x="632" y="376" width="40" height="40" class="cell f-green-soft"/>
-<rect x="672" y="376" width="40" height="40" class="cell f-green-soft"/>
+<rect x="552" y="416" width="40" height="40" class="cell f-green-soft"/>
 <rect x="592" y="416" width="40" height="40" class="cell f-green-soft"/>
 <rect x="632" y="416" width="40" height="40" class="cell f-green-soft"/>
-<rect x="672" y="416" width="40" height="40" class="cell f-green-soft"/>
-<rect x="592" y="336" width="120" height="120" class="frame" data-fit="skip"/>
+<rect x="552" y="336" width="120" height="120" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="612" y="362" text-anchor="middle" class="t-cell16">−2</text>
-<text x="652" y="362" text-anchor="middle" class="t-cell16">−1</text>
-<text x="692" y="362" text-anchor="middle" class="t-cell16">0</text>
-<text x="612" y="402" text-anchor="middle" class="t-cell16">−2</text>
-<text x="652" y="402" text-anchor="middle" class="t-cell16">−1</text>
-<text x="692" y="402" text-anchor="middle" class="t-cell16">0</text>
-<text x="612" y="442" text-anchor="middle" class="t-cell16">−2</text>
-<text x="652" y="442" text-anchor="middle" class="t-cell16">−1</text>
-<text x="692" y="442" text-anchor="middle" class="t-cell16">0</text>
+<text x="572" y="362" text-anchor="middle" class="t-cell16">−2</text>
+<text x="612" y="362" text-anchor="middle" class="t-cell16">−1</text>
+<text x="652" y="362" text-anchor="middle" class="t-cell16">0</text>
+<text x="572" y="402" text-anchor="middle" class="t-cell16">−2</text>
+<text x="612" y="402" text-anchor="middle" class="t-cell16">−1</text>
+<text x="652" y="402" text-anchor="middle" class="t-cell16">0</text>
+<text x="572" y="442" text-anchor="middle" class="t-cell16">−2</text>
+<text x="612" y="442" text-anchor="middle" class="t-cell16">−1</text>
+<text x="652" y="442" text-anchor="middle" class="t-cell16">0</text>
 </g>
-<text x="400" y="404" text-anchor="middle" class="t-op">−</text>
-<text x="568" y="404" text-anchor="middle" class="t-op">=</text>
-<text x="736" y="356" class="t-label f-green-ink">Correct</text>
-<text x="736" y="384" class="t-note">Every row ends in 0:</text>
-<text x="736" y="404" class="t-note">row <tspan class="i">i</tspan> loses its own max.</text>
+<text x="372" y="404" text-anchor="middle" class="t-op">−</text>
+<text x="532" y="404" text-anchor="middle" class="t-op">=</text>
+<text x="696" y="356" class="t-label f-green-ink">Correct</text>
+<text x="696" y="384" class="t-note">Every row ends in 0:</text>
+<text x="696" y="404" class="t-note">row <tspan class="i">i</tspan> loses its own max.</text>
 <text x="40" y="504" class="t-note">The same call, one keyword apart: only the (3, 1) column subtracts each row's own maximum.</text>
 </svg>

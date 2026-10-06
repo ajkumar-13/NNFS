@@ -6,11 +6,13 @@ Every padded shape, stretch, clash and result is computed here with broadcast_sh
 and with NumPy, and checked against the lines that snippet prints (section 4's table and section 5's bias line).
 
 Layout: four panels, one pair each. A panel is a small table: one column per aligned axis, rows left, right and
-result. A 1 added by padding has a dashed inner box; a size 1 that stretches is filled; a clash is outlined in red.
+result. A 1 added by padding has a dashed inner box; a size 1 that stretches is filled; a clash is outlined in red
+and its result cell reads ValueError. The row labels are drawn once, left of the first panel.
 """
 import contextlib
 import importlib.util
 import io
+import math
 import sys
 from pathlib import Path
 
@@ -18,7 +20,7 @@ import numpy as np
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, r"C:\Users\admin\Desktop\series-standard\tools")
-from figkit import Box, Figure  # noqa: E402
+from figkit import Box, Figure, text_width  # noqa: E402
 
 SNIPPETS = Path(__file__).resolve().parents[2] / "snippets"
 
@@ -88,16 +90,18 @@ fig = Figure(
     "03-shape-alignment", "Broadcasting compares two shapes axis by axis from the right",
     "Four panels, each a small table with one column per aligned axis, axis 0 and axis 1, and rows for the "
     "left shape, the right shape and the result. " + "; ".join(words(i) for i in range(4)) + ". A 1 added by "
-    "padding has a dashed box, a size 1 that stretches is filled blue, the clash is outlined in red, and results "
-    "are filled green.",
+    "padding has a dashed box, a size 1 that stretches is filled blue, the clash is outlined in red, the last "
+    "panel's result cell reads ValueError on a red fill, and result shapes are filled green.",
     subtitle="Each column is one aligned axis. The shorter shape is padded with 1s on the left.")
 
-panels = fig.row(4, y=120, h=280)
-C = 48
-for i, (pb, (lft, rgt)) in enumerate(zip(panels, PAIRS)):
+# four panels share one row-label column on the left, so every grid sits flush under its heading
+C, PW, PG = 56, 192, 16                    # cell side (values at 18), panel width, gutter
+GY = 168                                   # grid top: 24 under the axis labels' row
+PX = [104 + k * (PW + PG) for k in range(4)]
+assert PX[-1] + PW == 920
+for i, (px, (lft, rgt)) in enumerate(zip(PX, PAIRS)):
     pl, pr, padded, stretched, clash, result = INFO[i]
-    body = fig.panel(pb, f"{shape(lft)} + {shape(rgt)}")
-    gx, gy = pb.x + 72, body.y + 24
+    fig.text(px, 136, f"{shape(lft)} + {shape(rgt)}", "head")
     nrows = 3 if result != "error" else 2
     vals = [list(pl), list(pr)] + ([list(result)] if result != "error" else [])
 
@@ -106,25 +110,27 @@ for i, (pb, (lft, rgt)) in enumerate(zip(panels, PAIRS)):
             return "output-soft"
         side = "L" if r == 0 else "R"
         return "blue-soft" if (side, c) in stretched else None
-    g = fig.grid(gx, gy, nrows, 2, C, values=vals, fill=fill)
+    g = fig.grid(px, GY, nrows, 2, C, values=vals, fill=fill, font=18)
     g.col_labels(["axis 0", "axis 1"])
-    g.row_labels(["left", "right", "result"][:nrows])
+    if i == 0:
+        g.row_labels(["left", "right", "result"])
     with fig.data():
         for side, c in sorted(padded):
             b = g.cell(0 if side == "L" else 1, c)
             fig._rect(b.x + 6, b.y + 6, b.w - 12, b.h - 12, "lead", extra='data-fit="skip"')
     for c in clash:
         g.window(0, c, 2, 1, "error")
-    if result == "error":
-        fig.text(gx - 8, gy + 2 * C + 29, "result", "tick", anchor="end")
-        fig.text(gx, gy + 2 * C + 29, "ValueError", "label", color="error")
-    fig.note(Box(pb.x, gy + 3 * C, 0, 0), NOTES[i])
+    if result == "error":                  # the result row holds the error, in the same slot as a shape
+        fig.grid(px, GY + 2 * C, 1, 1, width=2 * C, height=C, values=[["ValueError"]],
+                 fill=lambda r, c: "error-soft", font=16)
+    fig.note(Box(px, GY + 3 * C, 0, 0), NOTES[i])
 
-# the legend, one row under the panels: the kit has no dashed legend mark, so it is drawn here
-LY = 424
+# the legend, one line under the panels, items packed from the first panel's left edge (not one per panel,
+# which would read as belonging to that panel): the kit has no dashed legend mark, so it is drawn here
+LY = 448
 items = [("blue-soft", None, "a 1 that stretches"), (None, "lead", "a 1 added by padding"),
          (None, "error", "sizes that clash"), ("output-soft", None, "result shape")]
-x = 40
+x = PX[0]
 with fig.data():
     for fill_c, stroke, label in items:
         if stroke == "lead":
@@ -134,6 +140,6 @@ with fig.data():
         else:
             fig._rect(x, LY - 13, 16, 16, f"cell {fig._cls('f', fill_c)}", extra='data-fit="skip"')
         fig.text(x + 24, LY, label, "note")
-        x += 224
+        x += 24 + math.ceil((text_width(label, 14) + 32) / 8) * 8
 fig.caption("Pad with 1s on the left, check each aligned pair, stretch every 1; a clash raises ValueError.")
 fig.write()

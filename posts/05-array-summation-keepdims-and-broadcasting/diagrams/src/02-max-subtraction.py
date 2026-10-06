@@ -65,16 +65,17 @@ fig = Figure(
                   "Filled cells: what max_vals holds."))
 
 C = 40
-GA, GS, GR = 256, 424, 592                       # a, max_vals as broadcast, the result
+GA, GS, GR = 232, 392, 552                       # a, max_vals as broadcast, the result
 ROWS = (160, 336)
-fig.text(GA, 136, rich(var("a")), "head")
-fig.text(GS, 136, "max_vals, broadcast", "head")
-fig.text(GR, 136, rich(var("a"), " ", MINUS, " max_vals"), "head")
+# column headings centred over their grids: "max_vals, broadcast" is wider than its grid
+fig.text(GA + 3 * C / 2, 136, rich(var("a")), "head", anchor="middle")
+fig.text(GS + 3 * C / 2, 136, "max_vals, broadcast", "head", anchor="middle")
+fig.text(GR + 3 * C / 2, 136, rich(var("a"), " ", MINUS, " max_vals"), "head", anchor="middle")
 
 cases = [
     dict(head="Without keepdims", lines=["max_vals: (3,)", "copied down the rows"], stretched=stretch_row,
          own=lambda i, j: i == 0, win=(0, 0, 1, 3), result=wrong, fill="error-soft",
-         verdict=("No error raised", "error"), why=["Rows do not end in 0:", rich("column ", var("j"), " loses row ", var("j"), "'s max.")]),
+         verdict=("No error raised", "error"), why=["Rows do not end in 0:", rich("column ", var("j"), " loses the max of row ", var("j"), ".")]),
     dict(head="With keepdims=True", lines=["max_vals: (3, 1)", "copied across the columns"], stretched=stretch_col,
          own=lambda i, j: j == 0, win=(0, 0, 3, 1), result=right, fill="output-soft",
          verdict=("Correct", "output"), why=["Every row ends in 0:", rich("row ", var("i"), " loses its own max.")]),

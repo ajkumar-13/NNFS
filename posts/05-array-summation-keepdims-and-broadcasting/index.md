@@ -12,7 +12,7 @@
 > - Spot the silent bug where a 1-D (n,) array broadcasts as a row when a column was intended.
 > - Trace how a (1, n) bias row is broadcast across the N rows of a layer's output in a forward pass.
 
-![The 3 by 3 array a holding 1 to 9, with axis 0 running down its rows and axis 1 across its columns. With keepdims=True the column sums 12, 15, 18 sit under the columns as a row of shape (1, 3), and the row sums 6, 15, 24 sit beside the rows as a column of shape (3, 1). Without keepdims, np.sum(a, axis=0) gives 12, 15, 18 and np.sum(a, axis=1) gives 6, 15, 24, both drawn flat with the same shape (3,), and np.sum(a) gives the scalar 45 with shape ().](diagrams/01-axis-summation.svg)
+![The 3 by 3 array a holding 1 to 9, with axis 0 running down its rows and axis 1 across its columns. With keepdims=True the column sums 12, 15, 18 sit under the columns as a row of shape (1, 3), and the row sums 6, 15, 24 sit beside the rows as a column of shape (3, 1). Without keepdims, np.sum(a, axis=0) gives 12, 15, 18 and np.sum(a, axis=1) gives 6, 15, 24, both drawn as flat, low strips with the same shape (3,), and np.sum(a) gives the scalar 45 with shape (), drawn as a bare number.](diagrams/01-axis-summation.svg)
 
 *The axis named in the call is the one that disappears. With `keepdims=True` it stays at size 1, so the row sums remain a column beside the rows and the column sums a row under the columns.*
 
@@ -235,7 +235,7 @@ The rules NumPy applies are, in order:
 
 The figure below applies rules 1 to 3 to four pairs of shapes, writing each pair as a small table with one column per aligned axis.
 
-![Four small tables, each with one column per aligned axis and rows for the left shape, the right shape and the result. (300, 3) plus (1, 3): the 1 stretches to 300 and the result is (300, 3). (3, 3) plus (3,): the 1-D shape is padded to (1, 3), its 1 stretches, and the result is (3, 3). (3, 1) plus (3,): the 1-D shape is padded to (1, 3), both operands stretch, and the result is (3, 3). (5, 3) plus (5,): the 1-D shape is padded to (1, 5), 3 meets 5 on axis 1 with neither equal to 1, and the result is ValueError. A legend marks a stretched 1, a padded 1, the clash and the result.](diagrams/03-shape-alignment.svg)
+![Four small tables, each with one column per aligned axis and rows for the left shape, the right shape and the result. (300, 3) plus (1, 3): the 1 stretches to 300 and the result is (300, 3). (3, 3) plus (3,): the 1-D shape is padded to (1, 3), its 1 stretches, and the result is (3, 3). (3, 1) plus (3,): the 1-D shape is padded to (1, 3), both operands stretch, and the result is (3, 3). (5, 3) plus (5,): the 1-D shape is padded to (1, 5), 3 meets 5 on axis 1 with neither equal to 1, and the result cell reads ValueError. A legend marks a stretched 1, a padded 1, the clash and the result.](diagrams/03-shape-alignment.svg)
 
 *Against a 2-D array, a 1-D shape `(n,)` is always padded to `(1, n)`. It can never be interpreted as a column on its own.*
 
