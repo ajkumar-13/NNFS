@@ -1,265 +1,371 @@
-# Part 33 · Weight initialisation
+# 33 - Weight initialisation
 
-> **TL;DR.** The lectures' `0.01 * np.random.randn(...)` weight init works for two-hidden-layer networks but **fails silently** in deeper ones, where activations either shrink to zero (vanishing) or blow up (exploding) and training stalls before the first useful gradient appears. This post derives the variance-preservation argument behind **Glorot/Xavier** and **He** initialisation and shows that for a ReLU-based from-scratch series, He init is the right default via a one-line change to `Layer_Dense.__init__`.
+> **TL;DR.** A dense layer multiplies the mean square of its input by $n_\text{in} \cdot \text{Var}(W)$, and a ReLU after it keeps half of that. With the fixed scale 0.01 of posts 04 to 32 and 64 neurons per layer, the factor is 0.0032 per layer, forward and backward: ten such layers start at a loss of exactly $\ln 3$, and neither plain gradient descent nor Adam moved them in 200 epochs. Glorot initialisation sets the factor to 1 for an activation that is linear near zero, He initialisation sets it to 1 for ReLU, and `Layer_Dense` gains an `init` argument that chooses between them. On the series' own one-hidden-layer spiral network both raised training accuracy over the 0.01 scale, on 19 and on 20 of 20 seeds, and He was not ahead of Glorot there.
 >
-> **After reading this you will be able to:**
-> - Derive the variance-preservation argument that motivates Glorot and He initialisation.
-> - Implement Xavier and He init in `Layer_Dense` and explain which one to use for which activation.
-> - Recognise the symptoms of bad initialisation (zero gradients, NaN losses on step 1, plateaued training) and the fixes.
+> **Prerequisites:** [Post 04](../04-dense-layer-class-and-spiral-data/index.md), [Post 06](../06-activation-functions-relu-and-softmax/index.md).
+> **Safe to skip?** Skip it if the reader can already derive the weight variances $2/(n_\text{in} + n_\text{out})$ and $2/n_\text{in}$ from the factor by which one layer scales its signal, and can tell a vanished forward pass from an exploded one by the first two losses of a run.
+>
+> **After reading, you will be able to:**
+>
+> - Derive the variance-preservation argument behind Glorot and He initialisation.
+> - Implement both in Layer_Dense through an init argument and say which one fits which activation.
+> - Recognise the symptoms of bad initialisation: gradients near zero, a NaN loss in the first steps, a plateau from the start.
 
-![Activation variance by layer depth under three initialisation schemes: the lectures' `0.01 * randn` shrinks to zero by layer 5, Xavier preserves variance through a 10-layer tanh stack, He preserves variance through a 10-layer ReLU stack.](diagrams/01-activation-variance-by-depth.svg)
-*Same network, same input, three weight-scale choices. The wrong scale silently kills training before the first gradient is ever computed.*
+![A log-scale chart of activation variance against layer depth for ten 64-unit ReLU layers. The curve for 0.01 times randn falls off the bottom of the chart by layer 4, the Xavier curve falls by half per layer to about one thousandth at layer 10, and the He curve stays flat at 1. A side panel lists the three weight scales.](diagrams/01-activation-variance-by-depth.svg)
+
+*Three weight scales through the same ten layers. The figure is a schematic that starts every curve at 1; the measured values are in section 5, where the quantity that each layer scales turns out to be the mean square of the activations and the factor for the 0.01 scale is 0.0032 per layer.*
 
 ---
 
-## 1. The line the lectures glossed over
+## 1. The question: why does a fixed scale work in a shallow network and fail in a deep one?
 
-Every dense layer in the series was constructed with:
+Every dense layer of posts 04 to 32 drew its weights as `0.01 * np.random.randn(n_inputs, n_neurons)`, mean 0 and standard deviation 0.01, and set its biases to zero. [Post 04](../04-dense-layer-class-and-spiral-data/index.md), section 5.1, measured six stacked 64-neuron layers with nothing between them: at 0.01 the outputs shrink about 12 times per layer, to a standard deviation of $2.2 \times 10^{-8}$; at 1.0 they grow 8 times per layer; at $1/\sqrt{64} = 0.125$ they keep their size.
 
-```python
-self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)
-self.biases  = np.zeros((1, n_neurons))
+The question here is: **which weight scale lets a signal, and the gradient that returns through the same weights, keep its size through any number of layers, and what does a network look like when the scale is wrong?** The answer is a derivation with four assumptions and a factor of one half for ReLU, each factor measured on ten stacked layers, and one new argument of `Layer_Dense`.
+
+---
+
+## 2. One linear layer: the factor $n_\text{in} \cdot \text{Var}(W)$
+
+Take one neuron of a layer with $n_\text{in}$ inputs and zero bias, as at initialisation. Its pre-activation is a sum over the inputs:
+
+$$z_k = \sum_{j=1}^{n_\text{in}} w_{kj} \, x_j$$
+
+Two assumptions are needed, and both hold exactly for a freshly constructed layer:
+
+1. the weights $w_{kj}$ are drawn independently of each other from one distribution that is symmetric about 0, hence of mean 0, with variance $\text{Var}(W)$;
+2. the weights are independent of the layer's inputs $x_j$.
+
+Hold the inputs fixed and average over the draw of the weights. The mean of $z_k$ is 0, because every weight has mean 0. Its mean square is
+
+$$\mathbb{E}\left[ z_k^2 \right] = \sum_{j} \sum_{j'} \mathbb{E}\left[ w_{kj} \, w_{kj'} \right] x_j \, x_{j'} = \text{Var}(W) \sum_{j=1}^{n_\text{in}} x_j^2$$
+
+The cross terms with $j \ne j'$ vanish: two independent weights of mean 0 have $\mathbb{E}[w_{kj} w_{kj'}] = 0$. The terms with $j = j'$ contribute $\text{Var}(W) \, x_j^2$ each. Since $z_k$ has mean 0, its mean square is its variance, and writing the sum as $n_\text{in}$ times the mean of the $x_j^2$ gives
+
+$$\text{Var}(z_k) = n_\text{in} \cdot \text{Var}(W) \cdot \overline{x^2}, \qquad \overline{x^2} = \frac{1}{n_\text{in}} \sum_{j=1}^{n_\text{in}} x_j^2$$
+
+**One linear layer multiplies the mean square of its input by $n_\text{in} \cdot \text{Var}(W)$.** The quantity on the right is the mean square of the inputs, not their variance. The two agree only when the inputs have mean 0, a third assumption that textbook versions of the argument add and that the outputs of a ReLU do not satisfy. `snippets/variance_factors.py` feeds one input row of 64 values with mean 1 to 100,000 neurons:
+
+```text
+input: mean 1.0008, mean square 1.0790, variance 0.0775
+init     n_in * Var(W)   mean square of z / mean square of x   variance of z / variance of x
+small    0.0064          0.0064                                0.0890
+xavier   1.0000          0.9982                                13.9031
+he       2.0000          1.9963                                27.8063
 ```
 
-`np.random.randn` draws from a standard normal (mean 0, variance 1). Multiplying by `0.01` makes the weights small, values in the rough range `[-0.03, +0.03]`. Biases start at zero.
+The mean-square column reproduces the factor to the third decimal. The variance column is off by a factor of 14, the ratio of the input's mean square to its variance.
 
-For two-hidden-layer networks on small datasets (spiral, moons), this worked. For anything deeper, it fails in a specific predictable way that this lecture is about. The fix is one line; understanding *why* the fix is needed takes ten minutes.
+After $L$ linear layers of the same width the factor is applied $L$ times, $(n_\text{in} \cdot \text{Var}(W))^L$. Above 1 the signal grows exponentially with depth, **exploding activations**; below 1 it shrinks exponentially, **vanishing activations**. With the scale 0.01 and 64 inputs the factor is $64 \cdot 0.01^2 = 0.0064$, whose square root 0.08 is the shrinkage per layer of post 04. The factor is 1 when
 
-The structural problem is that initialisation is the only thing standing between the optimiser and a wall of dead neurons. If the activations vanish in the first forward pass, the gradients vanish in the first backward pass, and the optimiser gets a zero update: every parameter stays at its initial value, training does nothing, and the loss curve is flat.
+$$\text{Var}(W) = \frac{1}{n_\text{in}}$$
 
----
-
-## 2. Variance through one linear layer
-
-Consider one layer's pre-activation $\mathbf{z} = \mathbf{W} \mathbf{x}$ (ignoring the bias for the moment). Each component of $\mathbf{z}$ is a sum:
-
-$$z_j = \sum_{i=1}^{n_\text{in}} W_{ij} \, x_i$$
-
-If $W_{ij}$ and $x_i$ are independent, both have zero mean, and they are mutually independent across $i$, the variance of the sum is:
-
-$$\text{Var}(z_j) = \sum_{i=1}^{n_\text{in}} \text{Var}(W_{ij}) \cdot \text{Var}(x_i) = n_\text{in} \cdot \text{Var}(W) \cdot \text{Var}(x)$$
-
-assuming all weights and inputs share the same per-element variance. So one forward pass through a linear layer **multiplies the variance by $n_\text{in} \cdot \text{Var}(W)$**.
-
-The same argument applies layer by layer. After $L$ identical layers:
-
-$$\text{Var}(\mathbf{z}^{(L)}) = \big(n_\text{in} \cdot \text{Var}(W)\big)^L \cdot \text{Var}(\mathbf{x}^{(0)})$$
-
-This recursion is for a linear stack, where the post-activation variance equals the pre-activation variance; a nonlinearity like ReLU changes the constant, as section 4 shows.
-
-If $n_\text{in} \cdot \text{Var}(W) > 1$, the variance grows exponentially with depth (**exploding activations**). If $n_\text{in} \cdot \text{Var}(W) < 1$, it shrinks exponentially (**vanishing activations**). Only at *exactly* $n_\text{in} \cdot \text{Var}(W) = 1$ does it stay roughly stable.
-
-That last equation is the entire initialisation story:
-
-$$\boxed{\;\text{Var}(W) = \frac{1}{n_\text{in}}\;}$$
-
-Pick the weight variance so that the product $n_\text{in} \cdot \text{Var}(W) = 1$, and activation variance is preserved across layers.
+that is, a standard deviation of $1/\sqrt{n_\text{in}}$, the scale LeCun, Bottou, Orr and Müller (1998) recommend and the 0.125 of post 04's third column.
 
 ---
 
-## 3. Glorot (Xavier) initialisation
+## 3. Glorot initialisation: the backward pass has a factor too
 
-The lectures' `0.01 * randn` sets $\text{Var}(W) = 0.01^2 = 10^{-4}$. For a layer with $n_\text{in} = 64$, that gives $n_\text{in} \cdot \text{Var}(W) = 0.0064$, so variance shrinks by 150× per layer. After 5 layers the activations are around $10^{-12}$ of their input scale and the gradients are effectively zero.
+The gradient travels through the same weights in the other direction. `Layer_Dense.backward` computes `dinputs = np.dot(dvalues, self.weights.T)` (post 16), which for one input is a sum over the layer's $n_\text{out}$ neurons:
 
-The fix from §2 is to set $\text{Var}(W) = 1 / n_\text{in}$, which means drawing from a normal of standard deviation $\sigma = 1 / \sqrt{n_\text{in}}$:
+$$\frac{\partial L}{\partial x_j} = \sum_{k=1}^{n_\text{out}} w_{kj} \, \frac{\partial L}{\partial z_k}$$
 
-```python
-self.weights = np.random.randn(n_inputs, n_neurons) / np.sqrt(n_inputs)
-```
+This is the sum of section 2 with $n_\text{out}$ terms in place of $n_\text{in}$. Under a further assumption,
 
-Glorot and Bengio (2010) refined this slightly. The same argument from §2 applies to the *backward* pass too: the gradient variance is preserved if $\text{Var}(W) = 1/n_\text{out}$. To keep both forward and backward variances stable simultaneously, they took the **average** of the two:
+3. the weights are independent of the gradient $\partial L / \partial z_k$ that arrives from above,
+
+the same steps give a factor of $n_\text{out} \cdot \text{Var}(W)$ on the mean square of the gradient. Assumption 3 is only approximately true: the arriving gradient was computed from a forward pass through these very weights. The script checks the arithmetic on a fixed gradient row, where the assumption holds, and prints 0.0064, 1.0035 and 2.0070 against factors of 0.0064, 1 and 2; section 5 checks the assumption itself on a real backward pass.
+
+So there are two conditions, $n_\text{in} \cdot \text{Var}(W) = 1$ for the signal and $n_\text{out} \cdot \text{Var}(W) = 1$ for the gradient, and a layer whose two sizes differ cannot meet both. Glorot and Bengio (2010) proposed the compromise that uses the average of the two sizes:
 
 $$\text{Var}(W) = \frac{2}{n_\text{in} + n_\text{out}}$$
 
-This is **Glorot initialisation** (also called **Xavier**, after the author's first name). In code:
+This is **Glorot initialisation**, also called **Xavier initialisation** after its first author's given name. The paper proposes it as a uniform distribution on $(-a, a)$ with $a = \sqrt{6/(n_\text{in} + n_\text{out})}$. A uniform distribution on $(-a, a)$ has variance $a^2/3$, which is the value above. This series draws from a normal distribution with that variance instead, as its released projects do; only the variance enters the derivation, and `snippets/network.py` prints 0.015625 for both forms at $n_\text{in} = n_\text{out} = 64$.
 
-```python
-self.weights = np.random.randn(n_inputs, n_neurons) * \
-    np.sqrt(2.0 / (n_inputs + n_neurons))
-```
-
-The Glorot-uniform variant draws from $\mathcal{U}(-a, a)$ with $a = \sqrt{6 / (n_\text{in} + n_\text{out})}$, which has the same variance as the normal version. The two are interchangeable in practice.
-
-**When to use Glorot.** When the activation function is roughly symmetric around zero with bounded slope: tanh, sigmoid, softsign. These activations preserve approximately the same variance as their input.
-
-**When NOT to use Glorot.** When the activation function is **ReLU** (the Rectified Linear Unit, $\max(0, z)$). That is the subject of the next section.
+The derivation treats the activation as the identity, a fair description of one with slope 1 at zero and outputs centred on zero. Tanh is the standard example: it keeps 0.9806 of the mean square of inputs with standard deviation 0.1, and 0.3942 at standard deviation 1. A sigmoid, with slope $1/4$ at zero and outputs centred on $1/2$, meets neither condition. ReLU fails the description in a way that can be computed.
 
 ---
 
-## 4. He initialisation: the ReLU fix
+## 4. He initialisation: ReLU keeps half of the mean square
 
-Glorot's variance-preservation argument assumes the activation function is approximately linear around zero. Tanh and sigmoid satisfy this (their derivative at zero is 1 and 1/4 respectively).
+![A zero-centred bell curve with its negative half shaded and swept by an arrow onto a single spike at zero, beside two cards that give the Glorot and He weight variances and the NumPy line for each.](diagrams/02-the-factor-of-two.svg)
 
-![A zero-centred bell with its negative half shaded and swept onto a single spike at zero, beside the Glorot and He formulas.](diagrams/02-the-factor-of-two.svg)
-*Half the distribution lands on one point, so half the variance is gone. He's 2 is that halving undone, not a tuned constant.*
+*The half that ReLU moves to zero. The figure writes the result as a halving of the variance; what is halved is the mean square, and the variance falls to 0.34 of its value, as the text below shows.*
 
-ReLU does not. It zeros out the entire negative half of its input:
+ReLU replaces every negative pre-activation by zero, $a_k = \max(0, z_k)$. Under assumptions 1 and 2 the pre-activation $z_k$ is symmetric about zero, because the weights are: $z_k$ and $-z_k$ are equally likely. Half of the values are therefore set to zero, and the positive half carries half of the total of $z_k^2$:
 
-$$\text{ReLU}(z) = \max(0, z)$$
+$$\mathbb{E}\left[ a_k^2 \right] = \frac{1}{2} \, \mathbb{E}\left[ z_k^2 \right]$$
 
-If $z$ is drawn from a zero-mean distribution, half its values are negative and become zero after ReLU. The post-activation variance is **half** the pre-activation variance, not equal to it.
+The one half is a factor of the mean square. It is not a factor of the variance: the outputs of a ReLU have a positive mean, and for a normal $z$ with standard deviation $s$ the mean of $a$ is $s/\sqrt{2\pi}$ and its variance is $(1/2 - 1/(2\pi)) \, s^2$. The script prints all three for a million draws:
 
-He et al. (2015) re-derived the variance-preservation argument with this in mind. To compensate for the lost half, they doubled the weight variance:
+```text
+ReLU: fraction of zeros 0.4995
+ReLU: mean square of a / mean square of z = 0.5003   (closed form 1/2)
+ReLU: variance of a / variance of z       = 0.3408   (closed form 1/2 - 1/(2 pi) = 0.3408)
+```
+
+The mean square is the quantity that matters, because section 2 showed that the next layer scales the mean square of what it receives. A dense layer followed by a ReLU therefore multiplies the mean square by
+
+$$\frac{n_\text{in} \cdot \text{Var}(W)}{2}$$
+
+He, Zhang, Ren and Sun (2015) set this factor to 1:
 
 $$\text{Var}(W) = \frac{2}{n_\text{in}}$$
 
-The code:
+This is **He initialisation**, also called **Kaiming initialisation** after its first author's given name. The 2 undoes the halving and is not a tuned constant.
 
-```python
-self.weights = np.random.randn(n_inputs, n_neurons) * \
-    np.sqrt(2.0 / n_inputs)
-```
+The backward pass has its own half. `Activation_ReLU.backward` zeroes the gradient where the pre-activation was not positive, which is half of the entries. Under a fourth assumption,
 
-This is **He initialisation** (also called **Kaiming initialisation**, after the author's first name). It uses only $n_\text{in}$, not the harmonic mean, because the backward-pass argument was less critical in the original paper; in practice, the simpler form has stuck.
+4. whether a gate is open is independent of the gradient that arrives at it,
 
-**When to use He.** Default for any ReLU-based network. That covers everything in this series past post 6.
+the gate keeps half of the mean square of the gradient, and the backward factor of a dense layer with its ReLU is $n_\text{out} \cdot \text{Var}(W) / 2$. With $\text{Var}(W) = 2/n_\text{in}$ that is $n_\text{out}/n_\text{in}$ per layer. Over a whole network these ratios multiply to the number of outputs of the last layer over the number of inputs of the first, a fixed number that does not shrink or grow with depth, so the input size alone is enough and no average is needed; He et al. derive both versions and note that either one suffices.
 
-A small table summarising the choice:
-
-| Activation | Recommended init | Multiplier |
-|---|---|---|
-| tanh | Glorot / Xavier | $\sqrt{2 / (n_\text{in} + n_\text{out})}$ |
-| sigmoid | Glorot / Xavier | $\sqrt{2 / (n_\text{in} + n_\text{out})}$ |
-| **ReLU** | **He / Kaiming** | $\sqrt{2 / n_\text{in}}$ |
-| Leaky ReLU | He (with leak factor in the formula) | $\sqrt{2 / ((1 + a^2) \cdot n_\text{in})}$ |
-| Linear | Glorot | $\sqrt{2 / (n_\text{in} + n_\text{out})}$ |
-
-For this series, since every hidden activation is ReLU, **the default should be He init**.
+| Hidden activation | Scheme | Standard deviation of the weights | Factor per layer at equal widths |
+|---|---|---|---|
+| tanh | Glorot | $\sqrt{2/(n_\text{in} + n_\text{out})}$ | 1 while the inputs stay small |
+| ReLU | He | $\sqrt{2/n_\text{in}}$ | 1 |
+| ReLU | Glorot | $\sqrt{2/(n_\text{in} + n_\text{out})}$ | $1/2$ |
+| ReLU | fixed 0.01, 64 inputs | 0.01 | $64 \cdot 0.01^2 / 2 = 0.0032$ |
 
 ---
 
-## 5. Updating `Layer_Dense`
+## 5. Ten layers, measured forward and backward
 
-A one-argument addition to the constructor lets the user choose:
+`snippets/ten_layers.py` builds the stack of the hero figure on the spiral data: ten `Layer_Dense` layers of 64 neurons, each followed by `Activation_ReLU`, then `Layer_Dense(64, 3)` and the combined softmax and loss. Unlike post 04's `init_scale.py` it has an activation after every layer, ten layers, and float64 without `nnfs.init()`; it first repeats post 04's six linear layers and prints the same $2.2 \times 10^{-8}$. The three schemes get the same standard normal draws, so only the scale differs. On seed 0:
+
+```text
+layer   small       xavier      he          fraction of zeros (the same for all three)
+1       3.565e-03   6.205e-02   3.565e-01   0.508
+2       1.705e-04   3.710e-02   3.014e-01   0.543
+3       9.798e-06   2.665e-02   3.062e-01   0.522
+4       4.836e-07   1.644e-02   2.672e-01   0.538
+5       3.096e-08   1.316e-02   3.024e-01   0.414
+6       1.674e-09   8.890e-03   2.889e-01   0.539
+7       1.049e-10   6.963e-03   3.200e-01   0.419
+8       5.888e-12   4.887e-03   3.176e-01   0.604
+9       2.875e-13   2.983e-03   2.742e-01   0.490
+10      1.337e-14   1.734e-03   2.254e-01   0.550
+loss at initialisation: small 1.0986123, xavier 1.0986607, he 1.1187940   (ln 3 = 1.0986123)
+```
+
+The columns are the standard deviation of each layer's activations. With 0.01 it falls by eleven orders of magnitude between layers 1 and 10, with Glorot by a factor of 36, and with He it stays between 0.22 and 0.36. The fraction of zeros is the same in all three columns: a positive factor on the weights changes the size of a pre-activation and not its sign. With 0.01 the ten-layer network outputs three equal probabilities and its loss equals $\ln 3$ to seven decimals.
+
+A single draw scatters around the derived factor, from 0.66 to 1.39 for He on seed 0 in layers 2 to 10. The derivation is about the average over draws, so the script averages each factor over seeds 0 to 99:
+
+```text
+init     forward, layer 1      forward, layers 2 to 10        backward, dense layers 2 to 10
+         predicted  measured   predicted  measured            predicted  measured
+small    0.0001     0.0001006  0.0032     0.0031 to 0.0032    0.0032     0.0032 to 0.0032
+xavier   0.0303     0.0305     0.5        0.4846 to 0.5077    0.5        0.4922 to 0.5024
+he       1          1.006      1          0.9692 to 1.0153    1          0.9896 to 1.0091
+```
+
+**Forward, every mean is within 4 percent of the predicted factor.** Layer 1 has two inputs, so its factor is $2 \cdot \text{Var}(W)/2$: 1 for He, $2/66 = 0.0303$ for Glorot, whose scale also looks at the 64 outputs, and $10^{-4}$ for 0.01. Layers 2 to 10 give 0.0032, 0.5 and 1.
+
+**Backward, the factors are the same three numbers,** measured on the mean square of `dinputs` from one dense layer to the one before it. Assumptions 3 and 4 are not exact, and on this stack the means are still within 2 percent of the prediction.
+
+**The weight gradients are small in every layer at once.** `dweights` of a layer is the product of what arrives from below and what arrives from above (post 16), so a layer near the input has a full-size signal and a shrunken gradient, and a layer near the output the reverse. On seed 0 the root mean square of `dweights` under 0.01 is between $1.0 \times 10^{-16}$ and $7.8 \times 10^{-16}$ in all eleven layers; under Glorot it is $1.8 \times 10^{-5}$ to $2.5 \times 10^{-5}$ in layers 2 to 10; under He it is between 0.0023 and 0.016 in all eleven. A vanished network has no layer that still learns.
+
+**Tanh is the mirror case, and a milder one.** The same stack with `Activation_Tanh` of post 17 gives a forward factor of 0.94 to 0.99 with Glorot. He's variance is twice too large for tanh: saturation holds the forward factor to 1.02 to 1.10, and the backward factor is 1.16 to 1.83 per layer.
+
+---
+
+## 6. The `init` argument of `Layer_Dense`
+
+The class is that of [post 30](../30-l1-and-l2-regularisation/index.md) with one new argument and the lines that turn it into a scale. `forward`, `backward` and the four regulariser attributes are unchanged. The constructor now begins:
 
 ```python
-class Layer_Dense:
-
     def __init__(self, n_inputs, n_neurons, init="he",
                  weight_regularizer_l1=0.0, weight_regularizer_l2=0.0,
-                 bias_regularizer_l1=0.0,   bias_regularizer_l2=0.0):
+                 bias_regularizer_l1=0.0, bias_regularizer_l2=0.0):
+        # Added in post 33: the standard deviation of the initial weights.
         if init == "he":
             scale = np.sqrt(2.0 / n_inputs)
         elif init == "xavier" or init == "glorot":
             scale = np.sqrt(2.0 / (n_inputs + n_neurons))
-        elif init == "small":  # the lectures' default, for backward compatibility
-            scale = 0.01
+        elif init == "small":
+            scale = 0.01                        # the fixed scale of posts 04 to 32
         else:
             raise ValueError(f"unknown init: {init!r}")
 
         self.weights = scale * np.random.randn(n_inputs, n_neurons)
-        self.biases  = np.zeros((1, n_neurons))
-
-        # (regularisation attributes unchanged from post 30)
-        ...
+        self.biases = np.zeros((1, n_neurons))
 ```
 
-Three notes.
+This is the spelling of the released project `nn-p02`, which needs the argument: the same four names, the same default, the same error. The projects `nn-p01`, `nn-p03` and `nn-p04` keep the fixed 0.01 and have no such argument.
 
-**Biases stay at zero.** Initialising biases at zero is universally fine. There is no variance argument for biases the way there is for weights; small uniform asymmetry comes from the weights alone.
+**The default is `"he"`, and that changes what an unchanged script computes.** A script of posts 04 to 32 that calls `Layer_Dense(2, 64)` with this class draws weights 100 times larger in its first layer and gets other results. Every number of those posts was produced with 0.01, and reproducing one requires `init="small"`. `snippets/network.py` shows the three scales on the same draws, and the first line is a row that post 04 prints:
 
-**Backward compatibility.** Keeping `init="small"` as an opt-in option preserves the lectures' behaviour for the spiral / moons examples that worked fine without principled init. New code should pass `init="he"` explicitly.
-
-**No optimiser changes.** All five optimisers from posts 22–27 work unchanged with any initialisation. He init makes them faster and more reliable; it does not change their interfaces.
-
----
-
-## 6. Symptoms of bad initialisation
-
-Three failure modes worth recognising at sight.
-
-**Loss is exactly $\ln(C)$ on step 1 and never moves.** For a $C$-class classifier with cross-entropy loss, a uniform-prediction model has loss $\ln(C)$: about 2.30 for 10 classes, 1.10 for 3 classes, 0.69 for 2 classes. If the loss starts at exactly this value and stays flat for many epochs, the activations have vanished and the softmax output is uniform; no gradient flows.
-
-**Loss is `inf` or `NaN` immediately.** Activations have exploded: the variance grew large enough that `np.exp(z)` in the softmax overflowed (NaN, "not a number", is the floating-point result of such an invalid operation). Symptom: print the first few activations; if any are `> 1e30`, the init is exploding.
-
-**Loss decreases on the first few epochs and then stalls.** Often a sign that *some* layers are healthy and others are dead. Possible if init strategies were mixed, or if the input data isn't standardised (a feature with range $\pm 1000$ behaves like an exploding init even if the weights are sane).
-
-**Diagnostic recipe.**
-
-```python
-dense1.forward(X)
-print("dense1 output stats:")
-print(f"  mean={dense1.output.mean():.4f}  std={dense1.output.std():.4f}")
-print(f"  fraction zero (post-ReLU expect ~50%): not measured here")
-activation1.forward(dense1.output)
-print("activation1 output stats:")
-print(f"  mean={activation1.output.mean():.4f}  std={activation1.output.std():.4f}")
-print(f"  fraction zero: {(activation1.output == 0).mean():.4f}")
-# Repeat for each layer; healthy stats: std around 1 (or close to input std),
-# zero-fraction roughly 0.5 after ReLU.
+```text
+init='small'   [0.01764052 0.00400157 0.00978738]
+init='xavier'  [1.11568467 0.25308164 0.61900825]
+init='he'      [1.76405235 0.40015721 0.97873798]
 ```
 
-If the std collapses to $10^{-5}$ or grows to $10^5$ by layer 3, the init is wrong.
+---
+
+## 7. Symptoms of a wrong scale
+
+The training runs of this section and the next share one setup, printed by the scripts: `nnfs.init()` once (seed 0, float32, and its own `np.dot`); per run `np.random.seed(s)`, `spiral_data(samples=100, classes=3)`, a number of hidden `Layer_Dense` layers of 64 neurons with ReLU, `Layer_Dense(64, 3)`, the combined softmax and loss, and full-batch epochs.
+
+**Too small: gradients near zero and a plateau from the first epoch.** `snippets/symptoms.py` gives ten hidden layers the scale 0.01:
+
+```text
+seed 0, first pass: loss 1.0986123 (ln 3 = 1.0986123), largest |dweights| over the 11 layers 2.3e-15
+one step of Optimizer_SGD(learning_rate=1.0): 0 of 37,184 weights changed; spacing of float32 at 0.01: 9.3e-10
+```
+
+The first loss is $\ln C$ for $C$ classes, the loss of answering $1/C$ for every sample: 1.0986 for three classes, 0.6931 for two, 2.3026 for ten. The largest gradient is $2.3 \times 10^{-15}$, and a step of that size is below the distance between neighbouring float32 numbers near 0.01, so the subtraction returns the old weight: not one of the 37,184 weights changes. After 200 updates the loss is still 1.0986 and the accuracy 0.3333 on each of seeds 0 to 4, under `Optimizer_SGD(learning_rate=1.0)` and under `Optimizer_Adam(learning_rate=0.02, decay=1e-5)` alike. No error is raised at any point.
+
+**How deep is too deep depends on the optimiser.** Each extra hidden layer divides the first gradient by about 18, the square root of $1/0.0032$. Plain gradient descent takes steps proportional to the gradient and feels every one of those divisions; `snippets/depth_sgd.py` runs it for 501 epochs on seeds 0 to 4:
+
+| Hidden layers | Loss at epoch 500, 0.01 | Loss at epoch 500, He |
+|:---:|:---:|:---:|
+| 1 | 1.0431 to 1.0713 | 1.0237 to 1.0604 |
+| 2 | 1.0745 to 1.0946 | 0.4205 to 0.5755 |
+| 3 | 1.0986 on all five seeds | 0.3769 to 0.5887 |
+
+With one hidden layer the two scales are close after 501 epochs. With two, He is below a loss of 1.0 after 77 to 133 epochs on every seed and 0.01 has barely left $\ln 3$; with three, 0.01 has not moved in the fourth decimal.
+
+Adam divides each gradient by a running size of that gradient (post 27), so the scale of the gradient cancels until it falls to the size of Adam's $\epsilon = 10^{-7}$. `snippets/depth_small.py` and `snippets/depth_he.py`, 501 epochs, seeds 0 to 4:
+
+| Hidden layers | Largest first gradient, 0.01 | Runs with 0.01 that never go below 1.0 | Loss at epoch 500, 0.01 | Loss at epoch 500, He |
+|:---:|:---:|:---:|:---:|:---:|
+| 2 | $2.5 \times 10^{-5}$ to $3.8 \times 10^{-5}$ | 0 of 5 | 0.1189 to 0.2032 | 0.0251 to 0.0704 |
+| 4 | $8.0 \times 10^{-8}$ to $1.1 \times 10^{-7}$ | 0 of 5 | 0.0513 to 0.3098 | 0.0144 to 0.0525 |
+| 5 | $4.3 \times 10^{-9}$ to $6.8 \times 10^{-9}$ | 1 of 5 | 0.0956 to 1.0986 | 0.0121 to 0.0470 |
+| 6 | $2.3 \times 10^{-10}$ to $4.6 \times 10^{-10}$ | 3 of 5 | 0.1120 to 1.0986 | 0.0111 to 0.0978 |
+
+With Adam the 0.01 scale trains through four hidden layers on all five seeds, loses one seed at five and three at six. The two seeds that escape at six hidden layers need 186 and 191 epochs to pass a loss of 1.0, against 15 to 27 for He. The failure line sits where the first gradient drops well below $\epsilon$, for this width and this number of epochs. With He every run at every depth is below 1.0 within 37 epochs.
+
+The released project `nn-p02` documents the failure on two 16-neuron hidden layers under Adam. Its published evaluation reports, for two moons at noise 0.1, 200 of 200 held-out points with He against 174 of 200, 87.0 percent, with the 0.01 scale on seed 0, and 197 to 200 against at most 181 over seeds 0 to 9.
+
+**Too large: a finite first loss, then NaN.** With every weight drawn at scale 1.0, a plain `randn`, the factor per ReLU layer is $64/2 = 32$. The same script, ten hidden layers:
+
+```text
+seed  loss, first pass  largest |output|  largest |dweights|  first NaN loss, SGD at 1.0  loss at epoch 3 and at epoch 200, Adam at 0.02
+   0           10.7564           4.5e+07             2.9e+06  epoch 1                      10.6379  2.2565
+   1           10.7027           6.7e+07             3.4e+06  epoch 1                      10.6917  0.5373
+```
+
+The first loss is not NaN, on any of the ten seeds the script runs. The softmax of post 06 subtracts the row maximum before exponentiating, so logits of $10^7$ produce a one-hot row without overflow, and the loss of post 08 clips at $10^{-7}$, so a confidently wrong sample costs $-\ln 10^{-7} = 16.118$. About two thirds of the samples are wrong, and the loss is near $16.118 \cdot 2/3 = 10.745$: between 10.38 and 11.19 on the ten seeds. The NaN arrives one update later. Gradients of $10^6$ under a learning rate of 1.0 move the weights to $10^6$, the next forward pass overflows float32, and the loss of epoch 1, the second epoch, is NaN on all ten seeds, with the warnings `overflow encountered in cast` and `invalid value encountered in dot`. Adam, whose steps are bounded by the learning rate, produces no NaN. Its loss after three updates is still between 9.51 and 11.23, and after 200 it is between 0.16 and 2.26.
+
+| First two losses | Largest gradient | Reading |
+|---|---|---|
+| $\ln C$, then $\ln C$ | many orders below the weights | vanished: scale too small for the depth |
+| about $16 \cdot (1 - 1/C)$, then NaN, or a slow fall under Adam | many orders above the weights | exploded: scale too large |
+| a little above $\ln C$, then falling | within a few orders of the weights | healthy |
+
+One forward pass and the table of section 5 separate the cases before any training.
 
 ---
 
-## 7. Initialisation interacts with normalisation and depth
+## 8. What changes for the series' own network
 
-A few practical points where init effects compose with other design choices.
+The network of Part VI has one hidden layer, so the factor of section 4 is applied once and no signal vanishes. The scale still matters. `snippets/spiral_wins.py` repeats the documented run of [post 28](../28-generalization-and-testing/index.md), `Layer_Dense(2, 64)`, ReLU, `Layer_Dense(64, 3)`, `Optimizer_Adam(learning_rate=0.02, decay=1e-5)`, 10,001 epochs, with nothing changed but `init` on both layers. Accuracies are measured forward-only after the last update, and the test set is 100 points per class drawn after training. Run without arguments it trains seed 0, and its `small` columns are the figures of post 28:
 
-**Batch normalisation absorbs init.** Networks with batch normalisation (or layer norm) are far less sensitive to init choice: the normalisation step rescales activations to roughly unit variance regardless of what the weights produced. This is part of why batchnorm became so popular: it made deep networks trainable even with sloppy init.
+```text
+seed  train acc: small     he  xavier   test acc: small     he  xavier
+   0             96.33  91.33  97.67             82.33  72.00  79.33
+```
 
-**Residual connections need a smaller init for very deep nets.** The standard ResNet initialisation scales the last layer in each residual block by $1/\sqrt{2L}$ (where $L$ is the number of blocks) to keep the variance constant despite the residual addition. For non-residual networks, He init alone is enough.
+Given the seeds 0 to 19 as arguments, the script ends with the ranges and with the number of seeds on which the first of a pair has the higher accuracy, ties in brackets:
 
-**Transformers use slightly different defaults.** GPT-style transformer blocks initialise output projections to a smaller scale than He, on the grounds that residual additions accumulate variance and the output projections shouldn't amplify them. Specific value: `std = 0.02 / sqrt(2 * n_layers)`.
+```text
+range and mean over the 20 seeds, in percent
+init     training accuracy         test accuracy
+small    78.00 to 96.67 (88.97)    61.33 to 83.00 (76.65)
+he       91.33 to 99.33 (97.13)    72.00 to 84.33 (78.72)
+xavier   95.67 to 99.33 (97.45)    76.67 to 86.00 (81.48)
+seeds on which the first has the higher accuracy than the second, of 20; in brackets, seeds on which the two are equal
+pair               training   test
+he over small      19 (0)     12 (1)
+xavier over small  20 (0)     15 (0)
+xavier over he     11 (1)     17 (0)
+```
 
-For the from-scratch series (no residuals, no batchnorm, at most three hidden layers) **He init is the right and sufficient default**. The exotic variants matter when building specific deep architectures, not when learning the basics.
+**Both derived scales fit the training set better than 0.01.** He has the higher training accuracy on 19 of the 20 seeds and Glorot on all 20. The exception is seed 0, the documented seed of Part VI, where 0.01 reaches 96.33 percent and He 91.33.
+
+**Test accuracy follows for Glorot and not for He.** Glorot is ahead of 0.01 on 15 of the 20 seeds. He is ahead on 12 and level on one: on 8 of the first ten seeds and on 4 of the next ten.
+
+**He is not ahead of Glorot on this ReLU network.** Glorot has the higher test accuracy on 17 of the 20 seeds, and in training accuracy the two are level, 11 seeds to 8. This does not contradict section 5. With one hidden layer there is no depth over which Glorot's half per layer could compound, and the two schemes differ mainly in the first layer, where two inputs give He a standard deviation of 1 and Glorot one of $\sqrt{2/66} = 0.17$. The evaluation of `nn-p02` reports the same for its two hidden layers: Glorot at 197 to 200 of 200, as He. The case for He over Glorot on ReLU is the factor of one half per layer, and it is a case about depth.
 
 ---
 
-## 8. Anticipated questions
+## 9. Normalisation and depth
 
-- **Why did the lectures' `0.01 * randn` work for the spiral classifier?** Because the network was shallow. Two hidden layers means the activation variance only shrinks twice; the first layer's output is still well within float32 precision and the gradients still propagate. With five layers it would have failed.
-- **Should weights be re-initialised between runs?** Always. The whole point of random init is the symmetry-breaking it provides; reusing the same weights gives the same optimisation path.
-- **Does He init help when the dataset is already standardised?** Yes; they solve different problems. Standardising the *input* makes the first layer behave well; He init makes every layer behave well. Use both.
-- **What about a custom activation, say Swish or GELU?** Use He init as a reasonable default. The exact correction factor for these activations exists in the literature (e.g. SELU has its own bespoke init in Klambauer et al., 2017) but the gain from getting it exactly right is small compared to getting it approximately right with He.
-- **Is there a "best" init in absolute terms?** No; best init depends on architecture, activation, depth, and presence of normalisation. He for ReLU + dense, Glorot for tanh + dense, normal-with-truncation for transformers, and so on.
-- **Why is the bias initialised to zero and not something nonzero?** Biases break symmetry only weakly (every neuron in a layer with zero biases has different weights, which is enough). Some recipes add tiny positive bias for ReLU (e.g., 0.01) to push more neurons into the active region from the start; the benefit is marginal.
+An initialisation sets the scale once, before the first update, and nothing keeps the factors near 1 afterwards. Much deeper architectures therefore add parts that act at every step: normalisation layers, which rescale activations during training, and skip connections, which carry the signal around a block of layers. Both are topics of the series `cnn-from-scratch`, which starts from the He scale of this post.
 
 ---
 
-## 9. Summary
+## 10. Make it run: the scripts
+
+Every code block and every number of this post comes from a script in `snippets/`, run from the series root, for example:
+
+```text
+python posts/33-weight-initialisation/snippets/ten_layers.py
+```
+
+| Script | Contents | Time |
+|---|---|---|
+| `network.py` | `Layer_Dense` with `init`, the other classes unchanged, the shared training loop; prints section 6 | 1 s |
+| `variance_factors.py` | the factors of sections 2 to 4 on random numbers | 1 s |
+| `ten_layers.py` | ten layers under three schemes, forward and backward, ReLU and tanh (section 5) | 10 s |
+| `symptoms.py` | ten hidden layers at scale 0.01 and at scale 1.0 (section 7) | 30 to 40 s |
+| `depth_sgd.py`, `depth_small.py`, `depth_he.py` | depth sweeps over five seeds (section 7) | 25 to 40 s each |
+| `spiral_wins.py` | the run of post 28 under each scheme, seed by seed, with ranges and counts (section 8) | 25 s for seed 0; 7 min for seeds 0 to 19 |
+
+The first three run in float64 without `nnfs.init()`. The training scripts call it once and reseed for each run; the depth scripts and `spiral_wins.py` take seeds as arguments. All need NumPy and the `nnfs` package.
+
+---
+
+## 11. What can go wrong?
+
+**A misspelt scheme.** The names are lower case and the constructor checks them. `Layer_Dense(2, 3, init="He")` prints:
+
+```text
+ValueError: unknown init: 'He'
+```
+
+**An earlier script rerun with the new default.** Nothing is raised: the first layer's weights are 100 times larger and every figure of the run differs from the post it came from. `init="small"` is the argument that restores a result of posts 04 to 32.
+
+---
+
+## 12. Summary
 
 | Concept | Takeaway |
 |---|---|
-| Variance preservation | $\text{Var}(W) = 1 / n_\text{in}$ keeps activations from vanishing or exploding |
-| Glorot / Xavier | $\sigma = \sqrt{2 / (n_\text{in} + n_\text{out})}$; for tanh, sigmoid, linear |
-| **He / Kaiming** | $\sigma = \sqrt{2 / n_\text{in}}$; **the right default for ReLU** |
-| Bias init | always zero; symmetry breaks via the weights |
-| The lectures' `0.01 * randn` | OK for shallow networks; fails silently at depth |
-| Symptoms of bad init | loss stuck at $\ln(C)$, or `NaN` on step 1, or activations $\to 0$ after 3 layers |
-| One-line fix in `Layer_Dense` | replace `0.01` with `np.sqrt(2.0 / n_inputs)` |
+| One linear layer | mean square of the signal times $n_\text{in} \cdot \text{Var}(W)$, of the gradient times $n_\text{out} \cdot \text{Var}(W)$ |
+| ReLU | keeps half of the mean square and 0.34 of the variance |
+| Glorot | $\text{Var}(W) = 2/(n_\text{in} + n_\text{out})$; factor 1 for tanh on small inputs, $1/2$ for ReLU |
+| He | $\text{Var}(W) = 2/n_\text{in}$; factor 1 for ReLU, where the fixed 0.01 gives 0.0032 at 64 neurons |
+| Symptoms | $\ln C$ and no movement; or a loss near $16 \cdot (1 - 1/C)$ and NaN after the first plain gradient step |
+| On the spiral | 0.01 fails from three hidden layers under plain gradient descent and from five or six under Adam; with one, Glorot is not behind He |
 
 ---
 
 ## Common pitfalls
 
-- **Using `0.01 * randn` for a 6-layer ReLU network.** Activation variance shrinks by ~150× per layer (the factor from section 3), so by layer 6 the activations are vanishingly small relative to the input scale. Training appears to do nothing.
-- **Using He init for a tanh network.** Activations grow because tanh doesn't kill half the values. Use Glorot for tanh.
-- **Initialising biases to nonzero random values.** Adds noise without breaking any symmetry (the weights already broke it). Stay at zero.
-- **Forgetting to re-seed the RNG (random number generator) between experiments.** Reproducibility breaks; comparing two init schemes becomes confounded by the random draw.
-- **Using a single init scheme for every layer when activations differ.** A network with a tanh hidden layer followed by a ReLU should use Glorot for the tanh's *input* layer and He for the ReLU's. In practice, just use He everywhere for ReLU-only networks.
-- **Forgetting to standardise the input.** Even perfect init does not help if the input has a feature with variance $10^6$. Standardise inputs first.
+1. **Carrying the fixed 0.01 into a deeper network.** Each 64-neuron ReLU layer keeps 0.0032 of the signal and of the gradient. The run starts at $\ln C$ and stays there without an error.
+2. **Using the Glorot scale for a deep ReLU stack.** It was derived for an activation that is linear near zero, and ReLU halves the mean square it lets through.
+3. **Expecting NaN on the first loss of an exploded network.** The stable softmax and the clipped loss keep the first loss finite, near 10.7 for three classes. The NaN comes with the first large update.
+4. **Rerunning an earlier post's script with the new default.** The default is `"he"`; the results of posts 04 to 32 belong to `init="small"`.
+5. **Comparing two schemes on one seed.** On seed 0 the 0.01 scale had the higher training accuracy than He on the spiral, and on 19 other seeds it did not.
 
 ---
 
 ## Further reading
 
-- Glorot, X. and Bengio, Y., *"Understanding the difficulty of training deep feedforward neural networks"* (AISTATS, 2010). The original Xavier paper.
-- He, K. et al., *"Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification"* (ICCV, 2015). The He / Kaiming init paper.
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 8.4 (Parameter Initialisation Strategies) (MIT Press, 2016).
-- Klambauer, G. et al., *"Self-Normalizing Neural Networks"* (NeurIPS, 2017). SELU and its bespoke init.
-- Saxe, A. M., McClelland, J. L., and Ganguli, S., *"Exact solutions to the nonlinear dynamics of learning in deep linear neural networks"* (ICLR, 2014). Orthogonal initialisation, a related family worth knowing.
+- Glorot, X. and Bengio, Y., *"Understanding the Difficulty of Training Deep Feedforward Neural Networks"* (AISTATS, 2010). The forward and backward conditions and the compromise between them.
+- He, K., Zhang, X., Ren, S., and Sun, J., *"Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification"* (ICCV, 2015). The derivation for rectifiers.
+- LeCun, Y., Bottou, L., Orr, G. B., and Müller, K.-R., *"Efficient BackProp"* (Neural Networks: Tricks of the Trade, 1998).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, section 8.4 (MIT Press, 2016).
 
-Full citations in [REFERENCES.md](../../REFERENCES.md).
+Full citations are in [REFERENCES.md](../../REFERENCES.md).
 
 ---
 
 ## What to read next
 
-- **[Part 34 — Sigmoid and binary cross-entropy](../34-sigmoid-and-binary-cross-entropy/index.md)**: the binary counterpart to softmax + categorical cross-entropy, with the same combined-derivative trick.
-- **[Part 35 — What to read after this series](../35-whats-next/index.md)**: pointers to convolution, recurrence, attention, batchnorm, and the rest of the modern deep-learning toolkit.
-
----
-
-> **Try it yourself:** Re-train [Project 03 — Fashion-MNIST](../../projects/fashion-mnist/README.md) with `init="he"` and compare to the default. The accuracy gap is small (the network is only 2 hidden layers), but the loss in the first 5 epochs drops noticeably faster.
+- **[Post 34 - Sigmoid and binary cross-entropy](../34-sigmoid-and-binary-cross-entropy/index.md):** the output layer and the loss for two classes, used by the project whose initialisation failure section 7 quotes.
+- **[Post 27 - Adam optimiser](../27-adam-optimiser/index.md):** the normalisation by gradient size that lets a small initial scale survive a few more layers.

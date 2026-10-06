@@ -1,0 +1,791 @@
+{
+  "standard": "2.1.0",
+  "post": "nn-033",
+  "next_ordinal": 19,
+  "questions": [
+    {
+      "id": "nn-033-q01",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 1,
+      "tags": [
+        "variance",
+        "forward"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A dense layer with zero biases has $n_\\text{in}$ inputs and $n_\\text{out}$ neurons, and its weights are drawn independently with mean 0 and variance $\\text{Var}(W)$. By which factor does the layer multiply the mean square of its input on the forward pass?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "$\\text{Var}(W)$",
+          "correct": false,
+          "feedback": "This is the contribution of one input. A pre-activation sums $n_\\text{in}$ such terms, and their mean squares add."
+        },
+        {
+          "key": "b",
+          "text": "$n_\\text{in} \\cdot \\text{Var}(W)$",
+          "correct": true,
+          "feedback": "Right: one term per input, each contributing $\\text{Var}(W)$ times that input's square."
+        },
+        {
+          "key": "c",
+          "text": "$n_\\text{out} \\cdot \\text{Var}(W)$",
+          "correct": false,
+          "feedback": "This is the factor of the backward pass, where the gradient of one input is a sum over the layer's neurons."
+        },
+        {
+          "key": "d",
+          "text": "$n_\\text{in} \\cdot \\sqrt{\\text{Var}(W)}$",
+          "correct": false,
+          "feedback": "Mean squares scale with the variance of the weights, not with their standard deviation; the standard deviation scales the root mean square, together with $\\sqrt{n_\\text{in}}$."
+        }
+      ],
+      "explanation": "Section 2: with the inputs held fixed, $\\mathbb{E}[z_k^2] = \\text{Var}(W) \\sum_j x_j^2$, which is $n_\\text{in} \\cdot \\text{Var}(W)$ times the mean of the $x_j^2$. The number of neurons enters only on the backward pass.",
+      "hints": [
+        "Count the terms of the sum that forms one pre-activation."
+      ]
+    },
+    {
+      "id": "nn-033-q02",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "relu",
+        "mean-square"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "The pre-activations of a layer are symmetric about zero. ReLU is applied to them. Which quantity of the pre-activations is exactly halved?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The variance",
+          "correct": false,
+          "feedback": "The outputs have a positive mean, and the variance subtracts its square: for a normal input the variance falls to about 0.34 of its value, not to one half."
+        },
+        {
+          "key": "b",
+          "text": "The standard deviation",
+          "correct": false,
+          "feedback": "The standard deviation is the square root of the variance, which falls to about 0.34 for a normal input, so it falls to about 0.58."
+        },
+        {
+          "key": "c",
+          "text": "The mean square",
+          "correct": true,
+          "feedback": "Right: the negative half contributes nothing and the positive half carries half of the total of $z^2$."
+        },
+        {
+          "key": "d",
+          "text": "The largest value",
+          "correct": false,
+          "feedback": "ReLU passes positive values through unchanged, so the largest value stays where it was."
+        }
+      ],
+      "explanation": "Section 4: half of a symmetric distribution is set to zero and the positive half carries half of the total of $z^2$, so the mean square is halved. The outputs have a positive mean, which is why the variance falls further, to about 0.34 for a normal input.",
+      "hints": [
+        "The outputs of a ReLU do not have mean 0, so their variance and their mean square differ."
+      ]
+    },
+    {
+      "id": "nn-033-q03",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 2,
+      "tags": [
+        "he",
+        "arithmetic"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A dense layer with 256 inputs and 128 neurons is followed by a ReLU. What standard deviation does He initialisation give its weights?",
+      "answer": {
+        "value": 0.0884,
+        "tolerance": 0.0005,
+        "unit": ""
+      },
+      "precision_note": "Closed form of section 4, sqrt(2 / 256) = 0.088388; the line scale = np.sqrt(2.0 / n_inputs) of snippets/network.py.",
+      "explanation": "Section 4: He initialisation sets $\\text{Var}(W) = 2/n_\\text{in} = 2/256$, so the standard deviation is $\\sqrt{2/256} = 0.0884$. The number of neurons does not enter; with it the Glorot scale would be $\\sqrt{2/384} = 0.0722$.",
+      "hints": [
+        "He's scale uses one of the layer's two sizes only.",
+        "The question asks for a standard deviation, the square root of the variance."
+      ]
+    },
+    {
+      "id": "nn-033-q04",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 5,
+      "tags": [
+        "factor",
+        "depth"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A stack of dense layers has 128 neurons per layer, a ReLU after each, zero biases, and weights drawn with standard deviation 0.05. Give the factor by which one such layer with its ReLU multiplies the mean square of the activations, and the factor after five such layers.",
+      "answer": {
+        "parts": [
+          {
+            "label": "factor per layer",
+            "value": 0.16,
+            "tolerance": 0.002,
+            "unit": ""
+          },
+          {
+            "label": "factor after five layers",
+            "value": 0.000105,
+            "tolerance": 3e-06,
+            "unit": ""
+          }
+        ]
+      },
+      "precision_note": "Closed form of section 4: 128 * 0.05**2 / 2 = 0.16 and 0.16**5 = 1.048576e-4.",
+      "explanation": "Section 4: a dense layer with its ReLU multiplies the mean square by $n_\\text{in} \\cdot \\text{Var}(W) / 2 = 128 \\cdot 0.05^2 / 2 = 0.16$. Five layers apply it five times, $0.16^5 = 1.05 \\times 10^{-4}$. Without the half of the ReLU the answers would be 0.32 and 0.0034.",
+      "hints": [
+        "The variance of the weights is the square of their standard deviation.",
+        "A linear layer gives $n_\\text{in} \\cdot \\text{Var}(W)$, and the ReLU keeps a fixed fraction of that.",
+        "Depth applies the same factor once per layer."
+      ]
+    },
+    {
+      "id": "nn-033-q05",
+      "type": "short",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "2",
+      "est_minutes": 2,
+      "tags": [
+        "assumptions"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "The factor of one linear layer acts on the mean square of the layer's inputs. Textbook versions state it for the variance of the inputs. What must be true of the inputs for the two statements to agree?",
+      "answer": {
+        "model": "The inputs must have mean 0, since the variance is the mean square minus the squared mean.",
+        "accept": [
+          "^(?![\\s\\S]*(?:non[- ]?zero|not\\s+(?:be\\s+|equal\\s+(?:to\\s+)?)?(?:zero|0)\\b|mean\\s+(?:of\\s+|is\\s+|equal\\s+to\\s+|equals\\s+)?(?:one|1)\\b|positive\\s+mean|needs?\\s+not|(?:do|does|did)\\s+not\\s+(?:need|have\\s+to|require)|n't\\s+(?:need|have\\s+to|require|(?:be\\s+)?(?:zero|0)\\b)|not\\s+(?:required|needed|necessary|have\\s+to)|can(?:not|'t|\\s+not)\\s+(?:have|be)\\b|no\\s+need|(?:zero|0)\\s+or\\b|\\bor\\s+(?:zero|0|one|1)\\b))(?!(?![\\s\\S]*\\binputs?\\b)[\\s\\S]*\\bweights?\\b)[\\s\\S]*(?:(?:zero|0)[- ]mean(?!\\s+square)|mean\\s*(?:of|is|=|equals?|equal\\s+to|must\\s+be|has\\s+to\\s+be|should\\s+be)?\\s*(?:exactly\\s+)?(?:zero|0)\\b|mean[- ]zero|cent(?:red|ered)\\s+(?:on|at|around)\\s+(?:zero|0)|zero[- ]cent(?:red|ered)|averages?\\s+(?:of\\s+|is\\s+|out\\s+to\\s+|to\\s+)?(?:zero|0)\\b|mean\\s+of\\s+[\\w' ]{1,30}?\\s(?:is|are|equals?|=|must\\s+be|has\\s+to\\s+be|should\\s+be)\\s*(?:exactly\\s+)?(?:zero|0)\\b|mean\\s+(?:of\\s+[\\w ]{1,30}?\\s)?(?:must\\s+|has\\s+to\\s+|should\\s+)?vanish(?:es)?|not\\s+differ\\s+from\\s+(?:zero|0)\\b|E\\s*[\\[(]\\s*x\\w*\\s*[\\])]\\s*=\\s*0\\b)"
+        ]
+      },
+      "explanation": "Section 2: the variance is the mean square minus the square of the mean, so the two agree exactly when the inputs have mean 0. The outputs of a ReLU have a positive mean, which is why the post works with the mean square.",
+      "hints": [
+        "Write the variance in terms of the mean square and one other quantity."
+      ]
+    },
+    {
+      "id": "nn-033-q06",
+      "type": "short",
+      "track": "run",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "6",
+      "est_minutes": 1,
+      "tags": [
+        "init-argument"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "With the class of this post, `Layer_Dense(2, 64)` no longer draws the weights that the scripts of posts 04 to 32 drew. Which value of the `init` argument restores their scale?",
+      "answer": {
+        "model": "init=\"small\"",
+        "accept": [
+          "^\\W*(?:init\\s*=\\s*)?[\"'`]?small[\"'`]?\\W*$",
+          "^(?![\\s\\S]*\\b(?:not|isn't|never|instead\\s+of|rather\\s+than)\\s+(?:init\\s*=\\s*)?[\"'`]?small)(?![\\s\\S]*\\bor\\s+(?:init\\s*=\\s*)?[\"'`]?(?:he|xavier|glorot)\\b)(?![\\s\\S]*\\b(?:he|xavier|glorot)[\"'`]?\\s+or\\b)(?![\\s\\S]*small[\"'`]?\\s+(?:is|was|remains|stays)\\s+the\\s+default)(?:\\W*(?:init\\s*=\\s*)?[\"'`]?small\\b|[\\s\\S]*(?:init\\s*=\\s*[\"'`]?small\\b|[\"'`]small[\"'`]))"
+        ]
+      },
+      "explanation": "Section 6: the default is `\"he\"`, and `init=\"small\"` selects the fixed scale 0.01 of posts 04 to 32. With it, seed 0 of the run of post 28 gives 96.33 and 82.33 percent again.",
+      "hints": [
+        "The constructor accepts four names; one of them stands for a fixed number instead of a formula."
+      ]
+    },
+    {
+      "id": "nn-033-q07",
+      "type": "mcq",
+      "track": "intuition",
+      "difficulty": 1,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 1,
+      "tags": [
+        "he",
+        "relu"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A network of twelve dense layers of equal width uses ReLU after each. Which weight variance keeps the mean square of the activations constant from layer to layer?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "$1/n_\\text{in}$",
+          "correct": false,
+          "feedback": "This keeps the factor of a linear layer at 1. The ReLU then halves the mean square, so the signal loses half per layer."
+        },
+        {
+          "key": "b",
+          "text": "$2/(n_\\text{in} + n_\\text{out})$",
+          "correct": false,
+          "feedback": "This is Glorot's variance. At equal widths it equals $1/n_\\text{in}$, and the ReLU leaves a factor of one half per layer."
+        },
+        {
+          "key": "c",
+          "text": "$2/n_\\text{in}$",
+          "correct": true,
+          "feedback": "Right: the 2 undoes the half that ReLU removes."
+        },
+        {
+          "key": "d",
+          "text": "$0.01^2$",
+          "correct": false,
+          "feedback": "A fixed variance ignores the width. With 64 inputs it gives a factor of 0.0032 per layer."
+        }
+      ],
+      "explanation": "Section 4: a dense layer with its ReLU multiplies the mean square by $n_\\text{in} \\cdot \\text{Var}(W)/2$, which is 1 for $\\text{Var}(W) = 2/n_\\text{in}$, He initialisation. At equal widths Glorot gives $1/2$ per layer and $1/n_\\text{in}$ gives $1/2$ as well.",
+      "hints": [
+        "ReLU removes a fixed fraction of the mean square, and the weights have to make up for it."
+      ]
+    },
+    {
+      "id": "nn-033-q08",
+      "type": "match",
+      "track": "intuition",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "4",
+      "est_minutes": 4,
+      "tags": [
+        "factors"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Each row describes a dense layer with 64 inputs, 64 neurons and zero biases, followed by a ReLU. Match each weight scale to the factor by which the layer and its ReLU multiply the mean square of the activations.",
+      "left": [
+        {
+          "key": "a",
+          "text": "He initialisation"
+        },
+        {
+          "key": "b",
+          "text": "Glorot initialisation"
+        },
+        {
+          "key": "c",
+          "text": "The fixed standard deviation 0.01"
+        },
+        {
+          "key": "d",
+          "text": "A standard deviation of 1, a plain `randn`"
+        }
+      ],
+      "right": [
+        {
+          "key": "p",
+          "text": "32"
+        },
+        {
+          "key": "q",
+          "text": "0.0032"
+        },
+        {
+          "key": "r",
+          "text": "1"
+        },
+        {
+          "key": "s",
+          "text": "$1/2$"
+        },
+        {
+          "key": "t",
+          "text": "0.0064"
+        },
+        {
+          "key": "u",
+          "text": "2"
+        }
+      ],
+      "answer": {
+        "a": "r",
+        "b": "s",
+        "c": "q",
+        "d": "p"
+      },
+      "explanation": "Section 4: the factor is $n_\\text{in} \\cdot \\text{Var}(W)/2$. He gives $64 \\cdot (2/64)/2 = 1$, Glorot $64 \\cdot (2/128)/2 = 1/2$, the fixed 0.01 gives $64 \\cdot 10^{-4}/2 = 0.0032$, and a plain `randn` gives $64/2 = 32$. The unused 0.0064 and 2 are the factors of the 0.01 scale and of He without the ReLU.",
+      "hints": [
+        "Compute the variance of the weights for each row first, then apply one formula to all four."
+      ]
+    },
+    {
+      "id": "nn-033-q09",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "symptoms",
+        "exploding"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A ten-layer ReLU classifier for three balanced classes is built from this series' classes and trained with plain gradient descent at a learning rate of 1.0. The loss of the first epoch is 10.7 and the loss of the second is NaN. What is the most likely cause?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The weights were drawn too small, and the signal vanished",
+          "correct": false,
+          "feedback": "A vanished network outputs equal probabilities, so its first loss is $\\ln 3 = 1.0986$, and its gradients are too small to change anything, let alone produce NaN."
+        },
+        {
+          "key": "b",
+          "text": "The weights were drawn too large, and the first update overflowed",
+          "correct": true,
+          "feedback": "Right: saturated, mostly wrong outputs cost about 16.1 each through the clip, and gradients of the same oversized scale push the weights out of float32's range."
+        },
+        {
+          "key": "c",
+          "text": "The softmax overflowed inside `np.exp` during the very first forward pass of the run",
+          "correct": false,
+          "feedback": "The softmax of this series subtracts the row maximum first, and an overflow on the first pass would have made the first loss NaN, not 10.7."
+        },
+        {
+          "key": "d",
+          "text": "The labels are wrong for one of the classes",
+          "correct": false,
+          "feedback": "Wrong labels raise the loss a model can reach, but they do not produce a first loss ten times $\\ln 3$ or a NaN on the next epoch."
+        }
+      ],
+      "explanation": "Section 7: a first loss near $16.118 \\cdot 2/3$ means the outputs are confident and mostly wrong, the mark of logits that are far too large, and the loss is finite only because the softmax is stable and the loss is clipped. The gradients are as oversized as the signal, and the first plain update overflows float32.",
+      "hints": [
+        "Compare 10.7 with the loss of a network that answers one third for every class.",
+        "Ask what size the logits must have for the clipped loss to be reached on most samples."
+      ]
+    },
+    {
+      "id": "nn-033-q10",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 3,
+      "tags": [
+        "symptoms",
+        "vanishing"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "An eight-layer ReLU network of 64 neurons per layer classifies ten balanced classes. Its loss is 2.3026 at the first epoch and 2.3026 after 300 epochs, and no warning is printed. Which reading fits?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The network has already converged to the best solution it can reach",
+          "correct": false,
+          "feedback": "A loss equal to that of a uniform guess means nothing has been learned; convergence would show a loss that fell first."
+        },
+        {
+          "key": "b",
+          "text": "The initial weights are too large",
+          "correct": false,
+          "feedback": "Too large a scale gives confident, mostly wrong outputs and a first loss near 14.5 for ten classes, not $\\ln 10$."
+        },
+        {
+          "key": "c",
+          "text": "The initial weights are too small for this depth",
+          "correct": true,
+          "feedback": "Right: the outputs are ten equal probabilities, the loss is $\\ln 10$, and the gradients are too small to move the weights."
+        },
+        {
+          "key": "d",
+          "text": "The learning rate is too large",
+          "correct": false,
+          "feedback": "Too large a learning rate makes the loss jump or grow from one epoch to the next; here it does not change at all."
+        }
+      ],
+      "explanation": "Section 7: $\\ln 10 = 2.3026$ is the loss of equal probabilities for ten classes. A loss that starts exactly there and does not move, without any error, is the signature of a signal and a gradient that vanished on the way through the layers.",
+      "hints": [
+        "Compute the loss of a classifier that answers one tenth for every class.",
+        "Then ask what the gradient of such a network looks like in each layer."
+      ]
+    },
+    {
+      "id": "nn-033-q11",
+      "type": "numeric",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 2,
+      "tags": [
+        "symptoms",
+        "arithmetic"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A deep classifier for five balanced classes was initialised with far too small a scale, so that it answers the same probability for every class on every sample. At which value does its cross-entropy loss start, and stay?",
+      "answer": {
+        "value": 1.6094,
+        "tolerance": 0.001,
+        "unit": ""
+      },
+      "precision_note": "Closed form of section 7, ln C with C = 5: math.log(5) = 1.609438.",
+      "explanation": "Section 7: equal probabilities for $C$ classes cost $-\\ln(1/C) = \\ln C$ per sample, here $\\ln 5 = 1.6094$. It is a natural logarithm; the base-10 logarithm would give 0.699.",
+      "hints": [
+        "Every sample is given the same probability for its true class."
+      ]
+    },
+    {
+      "id": "nn-033-q12",
+      "type": "numeric",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 4,
+      "tags": [
+        "symptoms",
+        "clipping"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A deep ReLU classifier for four balanced classes was built from this series' classes with far too large a weight scale. On the first pass every output row is one-hot, and the prediction is right for one quarter of the samples. The loss clips predictions at $10^{-7}$. What is the first loss, to two decimals?",
+      "answer": {
+        "value": 12.09,
+        "tolerance": 0.02,
+        "unit": ""
+      },
+      "precision_note": "Closed form of section 7: 0.75 * -ln(1e-7) + 0.25 * -ln(1 - 1e-7) = 12.0886; the line -ln(1e-7) = 16.118 of snippets/symptoms.py.",
+      "explanation": "Section 7: a right one-hot prediction costs $-\\ln(1 - 10^{-7})$, which is 0 to six decimals, and a wrong one costs $-\\ln 10^{-7} = 16.118$. Three quarters of the samples are wrong, so the mean is $0.75 \\cdot 16.118 = 12.09$. The post's three-class runs sit near $16.118 \\cdot 2/3 = 10.745$ for the same reason.",
+      "hints": [
+        "A one-hot row gives the true class a probability of either 1 or 0 before clipping.",
+        "Find the loss of one wrong sample after clipping, then average over right and wrong samples."
+      ]
+    },
+    {
+      "id": "nn-033-q13",
+      "type": "code",
+      "track": "run",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "6",
+      "est_minutes": 12,
+      "tags": [
+        "implement",
+        "init-argument"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Complete `weight_scale` so that it returns the standard deviation that the `Layer_Dense` of this post gives its initial weights: the He scale for `\"he\"`, the Glorot scale for `\"xavier\"` and for `\"glorot\"`, the fixed 0.01 for `\"small\"`. Any other name must raise `ValueError`. The default stays `\"he\"`.",
+      "kind": "complete",
+      "language": "python",
+      "starter": "import numpy as np\n\n\ndef weight_scale(n_inputs, n_neurons, init=\"he\"):\n    \"\"\"Standard deviation of the initial weights of a dense layer.\"\"\"\n    # TODO: return the scale for \"he\", for \"xavier\" or \"glorot\", and for \"small\";\n    # raise ValueError for any other name.\n    return 0.01\n",
+      "solution": "import numpy as np\n\n\ndef weight_scale(n_inputs, n_neurons, init=\"he\"):\n    \"\"\"Standard deviation of the initial weights of a dense layer.\"\"\"\n    if init == \"he\":\n        return np.sqrt(2.0 / n_inputs)\n    elif init == \"xavier\" or init == \"glorot\":\n        return np.sqrt(2.0 / (n_inputs + n_neurons))\n    elif init == \"small\":\n        return 0.01\n    raise ValueError(f\"unknown init: {init!r}\")\n",
+      "tests": "import math\n\nassert math.isclose(weight_scale(64, 32, \"he\"), math.sqrt(2 / 64), rel_tol=1e-12), \"he uses 2 / n_inputs\"\nassert math.isclose(weight_scale(64, 32), math.sqrt(2 / 64), rel_tol=1e-12), \"the default is he\"\nassert math.isclose(weight_scale(2, 64, \"he\"), 1.0, rel_tol=1e-12), \"he with two inputs has scale 1\"\nassert math.isclose(weight_scale(64, 32, \"xavier\"), math.sqrt(2 / 96), rel_tol=1e-12), \"xavier uses both sizes\"\nassert math.isclose(weight_scale(64, 32, \"glorot\"), math.sqrt(2 / 96), rel_tol=1e-12), \"glorot is xavier\"\nassert math.isclose(weight_scale(2, 64, \"xavier\"), math.sqrt(2 / 66), rel_tol=1e-12), \"xavier with unequal sizes\"\nassert math.isclose(weight_scale(64, 32, \"small\"), 0.01, rel_tol=1e-12), \"small is the fixed 0.01\"\nassert math.isclose(weight_scale(500, 7, \"small\"), 0.01, rel_tol=1e-12), \"small ignores the sizes\"\nfor wrong in (\"He\", \"kaiming\", \"\", \"normal\"):\n    try:\n        weight_scale(64, 32, wrong)\n    except ValueError:\n        pass\n    else:\n        raise AssertionError(f\"init={wrong!r} must raise ValueError\")\nprint(\"all tests passed\")\n",
+      "explanation": "Section 6: the constructor turns the name into a scale, $\\sqrt{2/n_\\text{in}}$ for He, $\\sqrt{2/(n_\\text{in} + n_\\text{out})}$ for Glorot under either name, and 0.01 for the fixed scale, and it raises `ValueError` for an unknown name so that a misspelling cannot train silently with another scale.",
+      "hints": [
+        "Each name maps to one expression in the two layer sizes, or to a constant.",
+        "The scale is a standard deviation, so the two formulas need a square root; the last branch raises instead of returning."
+      ]
+    },
+    {
+      "id": "nn-033-q14",
+      "type": "order",
+      "track": "workout",
+      "difficulty": 2,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 4,
+      "tags": [
+        "derivation"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Put the steps of the argument that leads to He initialisation in their logical order.",
+      "items": [
+        {
+          "key": "a",
+          "text": "Drop the cross terms: two independent weights of mean 0 have $\\mathbb{E}[w_{kj} w_{kj'}] = 0$."
+        },
+        {
+          "key": "b",
+          "text": "Set $n_\\text{in} \\cdot \\text{Var}(W)/2 = 1$ and solve: $\\text{Var}(W) = 2/n_\\text{in}$."
+        },
+        {
+          "key": "c",
+          "text": "Write one pre-activation as a sum over the inputs, $z_k = \\sum_j w_{kj} x_j$."
+        },
+        {
+          "key": "d",
+          "text": "Apply the ReLU to that factor: by the symmetry of $z_k$ the mean square of $a_k$ is $n_\\text{in} \\cdot \\text{Var}(W)/2$ times the mean square of the inputs."
+        },
+        {
+          "key": "e",
+          "text": "Square the sum and average over the weights with the inputs held fixed, which gives a double sum over $j$ and $j'$."
+        },
+        {
+          "key": "f",
+          "text": "Read off the linear factor: $\\mathbb{E}[z_k^2] = n_\\text{in} \\cdot \\text{Var}(W)$ times the mean square of the inputs."
+        }
+      ],
+      "answer": [
+        "c",
+        "e",
+        "a",
+        "f",
+        "d",
+        "b"
+      ],
+      "partial_credit": true,
+      "explanation": "Sections 2 and 4: the pre-activation is written as a sum, its mean square is expanded over the draw of the weights, the cross terms drop out, the factor of the linear layer is read off, the ReLU contributes its half, and only then can the product be set to 1. Each step uses the result of the one before it.",
+      "hints": [
+        "The first step defines the quantity whose size is followed, and the last one solves for the weight variance.",
+        "The half of the ReLU can only be applied to a mean square that has already been computed."
+      ]
+    },
+    {
+      "id": "nn-033-q15",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 3,
+      "outcomes": [
+        "o2"
+      ],
+      "section": "5",
+      "est_minutes": 3,
+      "tags": [
+        "tanh",
+        "mismatch"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "In a stack of ten 64-neuron layers, ReLU is replaced by tanh and the weights keep the He scale. What does the variance argument predict, and what did the post measure?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "The signal loses half of its mean square per layer",
+          "correct": false,
+          "feedback": "That is Glorot's scale under ReLU. With tanh and He the weights are too large, not too small."
+        },
+        {
+          "key": "b",
+          "text": "Nothing changes, because He's scale depends only on the sizes of the layer and not on its activation",
+          "correct": false,
+          "feedback": "The scale is the same, but the factor it produces depends on the activation: tanh does not remove the half that He compensates for."
+        },
+        {
+          "key": "c",
+          "text": "The first loss is NaN, because the activations overflow",
+          "correct": false,
+          "feedback": "The outputs of tanh lie between $-1$ and 1, so nothing can overflow in the forward pass."
+        },
+        {
+          "key": "d",
+          "text": "The scale is too large; saturation caps the signal and the gradients grow on the way back",
+          "correct": true,
+          "feedback": "Right: a linear-regime factor of 2, measured as 1.02 to 1.10 forward and 1.16 to 1.83 backward."
+        }
+      ],
+      "explanation": "Sections 3 to 5: tanh passes small inputs through unchanged, so its factor is the full $n_\\text{in} \\cdot \\text{Var}(W)$, which He's variance sets to 2. Saturation holds the forward growth down, to 1.02 to 1.10 per layer in the measurement, while the backward factor was 1.16 to 1.83.",
+      "hints": [
+        "He's 2 was put there to undo something that ReLU does and tanh does not.",
+        "Then ask what bounds the outputs of a tanh."
+      ]
+    },
+    {
+      "id": "nn-033-q16",
+      "type": "mcq",
+      "track": "edge",
+      "difficulty": 2,
+      "outcomes": [
+        "o1",
+        "o2"
+      ],
+      "section": "3",
+      "est_minutes": 3,
+      "tags": [
+        "glorot",
+        "backward"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "A dense layer has 100 inputs and 400 neurons, zero biases and no activation. Its weights have variance $1/100$. What happens to the mean square of the signal on the forward pass and to that of the gradient on the backward pass?",
+      "select": "single",
+      "options": [
+        {
+          "key": "a",
+          "text": "Both the signal and the gradient are preserved by this variance",
+          "correct": false,
+          "feedback": "Only the forward factor, $100 \\cdot 1/100$, is 1. The backward sum runs over 400 neurons."
+        },
+        {
+          "key": "b",
+          "text": "The signal is preserved and the gradient is multiplied by 4",
+          "correct": true,
+          "feedback": "Right: $n_\\text{in} \\cdot \\text{Var}(W) = 1$ forward and $n_\\text{out} \\cdot \\text{Var}(W) = 4$ backward."
+        },
+        {
+          "key": "c",
+          "text": "The signal is multiplied by 4 and the gradient is preserved",
+          "correct": false,
+          "feedback": "This swaps the two directions: the forward pass sums over the 100 inputs, the backward pass over the 400 neurons."
+        },
+        {
+          "key": "d",
+          "text": "The signal is preserved and the gradient is divided by 4",
+          "correct": false,
+          "feedback": "More neurons add more terms to the backward sum, so the gradient's mean square grows; it is multiplied by 4."
+        }
+      ],
+      "explanation": "Section 3: the forward factor is $n_\\text{in} \\cdot \\text{Var}(W) = 100/100 = 1$ and the backward factor is $n_\\text{out} \\cdot \\text{Var}(W) = 400/100 = 4$. A layer whose two sizes differ cannot have both at 1, which is why Glorot's variance uses the average of the two sizes.",
+      "hints": [
+        "The forward sum has one term per input and the backward sum one term per neuron."
+      ]
+    },
+    {
+      "id": "nn-033-q17",
+      "type": "long",
+      "track": "workout",
+      "difficulty": 3,
+      "outcomes": [
+        "o1"
+      ],
+      "section": "4",
+      "est_minutes": 15,
+      "tags": [
+        "derivation",
+        "he"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "Derive the factor by which a dense layer with zero biases, followed by a ReLU, multiplies the mean square of its input on the forward pass, and from it the weight variance of He initialisation. State every assumption where it is used, and say why the result is a statement about the mean square and not about the variance.",
+      "kind": "derive",
+      "solution": "1. One pre-activation of a layer with zero bias is $z_k = \\sum_{j=1}^{n_\\text{in}} w_{kj} x_j$.\n\n2. Assume the weights are drawn independently of each other with mean 0 and common variance $\\text{Var}(W)$, and independently of the inputs. Hold the inputs fixed and average over the weights: $\\mathbb{E}[z_k^2] = \\sum_j \\sum_{j'} \\mathbb{E}[w_{kj} w_{kj'}] x_j x_{j'}$.\n\n3. For $j \\ne j'$ the two weights are independent with mean 0, so $\\mathbb{E}[w_{kj} w_{kj'}] = 0$. For $j = j'$ the expectation is $\\text{Var}(W)$. Hence $\\mathbb{E}[z_k^2] = \\text{Var}(W) \\sum_j x_j^2 = n_\\text{in} \\cdot \\text{Var}(W) \\cdot \\overline{x^2}$, where $\\overline{x^2}$ is the mean of the $x_j^2$.\n\n4. The linear layer therefore multiplies the mean square of its input by $n_\\text{in} \\cdot \\text{Var}(W)$. No assumption about the mean of the inputs was needed. Stated for the variance of the inputs, the result would need inputs of mean 0 in addition.\n\n5. The weights are symmetric about zero, so $z_k$ and $-z_k$ are equally likely. ReLU sets the negative half to zero and passes the positive half, which carries half of the total of $z_k^2$: $\\mathbb{E}[a_k^2] = \\frac{1}{2} \\mathbb{E}[z_k^2]$.\n\n6. The layer with its ReLU multiplies the mean square by $n_\\text{in} \\cdot \\text{Var}(W)/2$. Setting this to 1 gives $\\text{Var}(W) = 2/n_\\text{in}$, a standard deviation of $\\sqrt{2/n_\\text{in}}$.\n\n7. The half is a factor of the mean square only. The outputs of a ReLU have a positive mean, so their variance is smaller than their mean square: for a normal $z_k$ it is $1/2 - 1/(2\\pi) = 0.34$ of the variance of $z_k$. The next layer scales the mean square of what it receives (step 3), so the mean square is the quantity to follow from layer to layer.",
+      "rubric": [
+        {
+          "criterion": "Writes the pre-activation as a sum and expands the mean of its square over the weights with the inputs fixed",
+          "points": 2
+        },
+        {
+          "criterion": "States the assumptions: weights independent of each other, mean 0, common variance, independent of the inputs, biases zero",
+          "points": 2
+        },
+        {
+          "criterion": "Removes the cross terms with a reason and obtains the factor $n_\\text{in} \\cdot \\text{Var}(W)$ on the mean square",
+          "points": 2
+        },
+        {
+          "criterion": "Justifies the half of the ReLU by the symmetry of the pre-activation and concludes $\\text{Var}(W) = 2/n_\\text{in}$",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that the outputs of a ReLU have a positive mean, so the half applies to the mean square and not to the variance",
+          "points": 2
+        }
+      ],
+      "answer_length": "half a page",
+      "explanation": "Sections 2 and 4: with independent zero-mean weights that are independent of the inputs, $\\mathbb{E}[z_k^2] = \\text{Var}(W) \\sum_j x_j^2$, a factor of $n_\\text{in} \\cdot \\text{Var}(W)$ on the mean square. The symmetry of $z_k$ makes ReLU keep exactly half of the mean square, so the factor is $n_\\text{in} \\cdot \\text{Var}(W)/2$ and it equals 1 for $\\text{Var}(W) = 2/n_\\text{in}$.",
+      "hints": [
+        "Start from one pre-activation written as a sum, and average its square over the weights with the inputs fixed.",
+        "For the ReLU, use that $z_k$ and $-z_k$ are equally likely."
+      ]
+    },
+    {
+      "id": "nn-033-q18",
+      "type": "long",
+      "track": "connect",
+      "difficulty": 4,
+      "outcomes": [
+        "o3"
+      ],
+      "section": "7",
+      "est_minutes": 15,
+      "tags": [
+        "adam",
+        "depth",
+        "diagnosis"
+      ],
+      "status": "reviewed",
+      "updated": "2026-10-06",
+      "prompt": "On the spiral, a ReLU network with the fixed weight scale 0.01 and four hidden layers of 64 neurons trained on every seed under Adam, while under plain gradient descent at a learning rate of 1.0 the same scale did not move the loss in the fourth decimal with three hidden layers. With ten hidden layers neither optimiser moved it. Explain all three observations from the size of the first gradient and from the update rule of each optimiser.",
+      "kind": "connect",
+      "solution": "With the scale 0.01 and 64 neurons, each dense layer with its ReLU multiplies the mean square of the signal by 0.0032 on the way forward and that of the gradient by 0.0032 on the way back. The weight gradient of every layer is a product of the two, so each extra hidden layer divides it by about $\\sqrt{1/0.0032} \\approx 18$. The post measured first gradients of about $10^{-6}$ with three hidden layers, $10^{-7}$ with four, $10^{-10}$ with six and $10^{-15}$ with ten.\n\nPlain gradient descent (post 22) subtracts the learning rate times the gradient. With a learning rate of 1.0 and gradients of $10^{-6}$ a weight of size 0.01 changes by a ten-thousandth of itself per step, so 501 steps change little and the loss stays at $\\ln 3$ in the fourth decimal.\n\nAdam (post 27) divides the bias-corrected first moment by the root of the bias-corrected second moment plus $\\epsilon$. On the first step that quotient is $g/(|g| + \\epsilon)$. While $|g|$ is well above $\\epsilon = 10^{-7}$ the quotient is close to $\\pm 1$ and the step is about the learning rate, whatever the size of the gradient: the scale of the gradient cancels. That is why four hidden layers, whose first gradients are about $\\epsilon$, still train on every seed, and why the runs start to fail at five and six hidden layers, where the gradient is roughly 15 to 430 times below $\\epsilon$ and the step shrinks to the learning rate times $g/\\epsilon$.\n\nWith ten hidden layers the gradient is about $10^{-15}$. A plain step of that size is below the spacing of float32 numbers near 0.01, about $10^{-9}$, so no weight changes at all. Adam's step is at most $0.02 \\cdot 2.3 \\times 10^{-15}/10^{-7}$, about $5 \\times 10^{-10}$, which is no more than half that spacing even for the largest gradient. Both runs stay at $\\ln 3$ with an accuracy of one third, and nothing reports an error.",
+      "rubric": [
+        {
+          "criterion": "States that each extra layer at this scale shrinks the first gradient by a constant factor, about 18, so that it falls geometrically with depth",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that a plain gradient step is proportional to the gradient and therefore becomes negligible first",
+          "points": 2
+        },
+        {
+          "criterion": "Explains that Adam's division by the gradient's own size cancels its scale, so the step stays near the learning rate while the gradient is above $\\epsilon$",
+          "points": 3
+        },
+        {
+          "criterion": "Explains the failure at ten layers under both: the gradient is far below $\\epsilon$ and the resulting steps are below the resolution of float32 at the size of the weights",
+          "points": 2
+        }
+      ],
+      "answer_length": "three or four short paragraphs",
+      "explanation": "Section 7: every extra hidden layer divides the first gradient by about 18. A plain gradient step is proportional to the gradient and shrinks with it, while Adam divides the gradient by its own running size, so its step stays near the learning rate until the gradient falls to the size of $\\epsilon = 10^{-7}$; far below that, and below the spacing of float32, nothing moves under either rule.",
+      "hints": [
+        "Write the size of one step under each optimiser as a function of the size of the gradient.",
+        "Adam's denominator is the root of the second moment plus a small constant; ask which of the two dominates for a tiny gradient."
+      ],
+      "connects": [
+        "nn-027",
+        "nn-022"
+      ]
+    }
+  ]
+}

@@ -1,8 +1,23 @@
 id: nn-033
 slug: 33-weight-initialisation
-title: "Part 33 · Weight initialisation"
+title: "33 - Weight initialisation"
+summary: "Each dense layer scales its signal by a factor set by the weight variance. The post derives the Glorot and He scales from that factor, measures it on ten layers forward and backward, and adds an init argument to the dense layer."
 date: 2026-05-30
+updated: 2026-10-06
+status: complete
+part: "Part VIII - Practical training and extensions"
+level: intermediate
+reading_time: 22
 tags: [neural-networks, from-scratch, training, initialisation, he-init, xavier-init, glorot]
 hero: diagrams/01-activation-variance-by-depth.svg
-reading_time: 11
-part: "Part VIII — Practical training and extensions"
+prerequisites: [nn-004, nn-006]
+code: included
+outcomes:
+  - id: o1
+    text: "Derive the variance-preservation argument behind Glorot and He initialisation."
+  - id: o2
+    text: "Implement both in Layer_Dense through an init argument and say which one fits which activation."
+  - id: o3
+    text: "Recognise the symptoms of bad initialisation: gradients near zero, a NaN loss in the first steps, a plateau from the start."
+recommended: [nn-005]
+compute: cpu
