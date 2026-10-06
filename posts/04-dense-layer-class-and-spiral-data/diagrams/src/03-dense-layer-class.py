@@ -84,11 +84,15 @@ def band(x, cols, color, name, arr):
 
 
 def instance(x, name, layer, call, fwd):
-    c = Box(x, CT, 280, CH)
+    # the card ends 52 under its weights grid (the note 28 under the grid, 24 of padding), so a 2-row grid gets
+    # a shorter card; both cards share the top, and the arrows still meet them on the bands' centre line
+    n_in = layer.weights.shape[0]
+    h = 96 + 24 * n_in + 52
+    assert h <= CH and CT + h > CY + 16
+    c = Box(x, CT, 280, h)
     fig.panel(c, None, card=True)
     fig.text(x + 16, CT + 28, f"{name} = {call}", "code")
     fig.text(x + 16, CT + 52, fwd, "code")
-    n_in = layer.weights.shape[0]
     w = fig.grid(x + 16, CT + 96, n_in, 3, cell=24, fill=lambda i, j: "weight-soft")
     b = fig.grid(x + 152, CT + 96, 1, 3, cell=24, fill=lambda i, j: "weight-soft")
     for g, attr, arr in [(w, ".weights", layer.weights), (b, ".biases", layer.biases)]:
@@ -96,7 +100,7 @@ def instance(x, name, layer, call, fwd):
         fig.text(g.box.x + 80 if attr == ".weights" else g.box.x + 72, CT + 84, shape(arr), "tick")
     # one cell per number; the cells carry no values because the weights are random draws
     nw, nb = layer.weights.size, layer.biases.size
-    fig.text(x + 16, CT + CH - 24, f"{nw + nb} parameters: {nw} weights + {nb} biases", "note")
+    fig.text(x + 16, w.box.bottom + 28, f"{nw + nb} parameters: {nw} weights + {nb} biases", "note")
     return c
 
 

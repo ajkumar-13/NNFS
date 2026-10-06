@@ -4,8 +4,8 @@ Run from anywhere:  python posts/04-dense-layer-class-and-spiral-data/diagrams/s
 Writes posts/04-dense-layer-class-and-spiral-data/diagrams/01-spiral-data.svg.
 The points are the X, y of snippets/spiral_dataset.py (nnfs.init(), then spiral_data(samples=100, classes=3)).
 The shaded regions are those of the trained Layer_Dense(2, 3) of snippets/linear_baseline.py, and the counts
-118 and 100 are asserted against what that script prints. The kit has no scatter plot, so the marks are drawn
-inside fig.data().
+118 and 100 are asserted against what that script prints. The plot is the kit's scatter (regions, grid, axes);
+the decision edges (Axes.segment) and the points (Axes.point) are drawn on it, so the edges run under the points.
 """
 import contextlib
 import io
@@ -17,7 +17,7 @@ import numpy as np
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, r"C:\Users\admin\Desktop\series-standard\tools")
-from figkit import Figure, num  # noqa: E402
+from figkit import Figure, Box, num  # noqa: E402
 
 SNIPPETS = Path(__file__).resolve().parents[2] / "snippets"
 
@@ -51,8 +51,6 @@ assert (PCT, PCT_FIXED) == ("39.3 percent", "33.3 percent")
 # -- geometry: a square plot of the plane from -1.1 to 1.1 on both axes
 LO, HI = -1.1, 1.1
 PX, PY, PS = 104, 128, 464                       # plot box x, y, side
-sx = lambda v: PX + PS * (v - LO) / (HI - LO)    # noqa: E731
-sy = lambda v: PY + PS - PS * (v - LO) / (HI - LO)  # noqa: E731
 TICKS = [-1, -0.5, 0, 0.5, 1]
 COLORS = ["blue", "orange", "green"]
 SHAPES = ["circle", "square", "triangle"]
@@ -80,14 +78,20 @@ def region(k):
     return poly
 
 
-def marker(fig, shape, cx, cy, cls):
-    if shape == "circle":
-        fig.add(f'<circle cx="{cx:.2f}" cy="{cy:.2f}" r="4" class="{cls}"/>')
-    elif shape == "square":
-        fig.add(f'<rect x="{cx - 3.5:.2f}" y="{cy - 3.5:.2f}" width="7" height="7" class="{cls}"/>')
-    else:
-        fig.add(f'<path d="M{cx:.2f},{cy - 5:.2f} L{cx + 4.5:.2f},{cy + 3.5:.2f} L{cx - 4.5:.2f},{cy + 3.5:.2f} Z" '
-                f'class="{cls}"/>')
+def on_side(p, q):
+    """True when the polygon edge p-q lies on a side of the plot square (not a decision edge)."""
+    return any(abs(p[i] - v) < 1e-9 and abs(q[i] - v) < 1e-9 for i in (0, 1) for v in (LO, HI))
+
+
+REGIONS = [region(k) for k in range(3)]
+EDGES = {}                                       # the decision edges, each once, keyed by its rounded end points
+for poly in REGIONS:
+    for i, p in enumerate(poly):
+        q = poly[(i + 1) % len(poly)]
+        if not on_side(p, q):
+            key = tuple(sorted([(round(p[0], 6), round(p[1], 6)), (round(q[0], 6), round(q[1], 6))]))
+            EDGES.setdefault(key, (p, q))
+assert len(EDGES) == 3                           # three straight edges meet at one point
 
 
 fig = Figure(
@@ -103,46 +107,42 @@ fig = Figure(
     subtitle="spiral_data(samples=100, classes=3) after nnfs.init(): all 300 points.",
     height=720)
 
-with fig.data():
-    # tinted regions of the trained linear layer, then grid lines, then the points
-    for k in range(3):
-        pts = region(k)
-        d = "M" + " L".join(f"{sx(px):.2f},{sy(py):.2f}" for px, py in pts) + " Z"
-        fig.add(f'<path d="{d}" class="{fig._cls("f", COLORS[k] + "-soft")} {fig._cls("s", "ink-muted")} w1"/>')
-    d = "".join(f"M{sx(t):.2f},{PY}V{PY + PS}" for t in TICKS if t != 0)
-    d += "".join(f"M{PX},{sy(t):.2f}H{PX + PS}" for t in TICKS if t != 0)
-    fig.add(f'<path d="{d}" class="gridline"/>')
-    for k in range(3):
-        cls = f'{fig._cls("f", COLORS[k])} {fig._cls("s", "surface")} w1'
-        for (px, py) in X[y == k]:
-            marker(fig, SHAPES[k], sx(float(px)), sy(float(py)), cls)
-    for t in TICKS:
-        lab = num(t) if t != int(t) else num(int(t))
-        fig.text(sx(t), PY + PS + 20, lab, "tick", anchor="middle", snap=False)
-        fig.text(PX - 8, sy(t) + 4, lab, "tick", anchor="end", snap=False)
-fig.add(f'<rect x="{PX}" y="{PY}" width="{PS}" height="{PS}" class="frame" data-fit="skip"/>')
-fig.text(PX, PY - 12, "X[:, 1], second feature", "note")
-fig.text(PX + PS // 2, PY + PS + 44, "X[:, 0], first feature", "note", anchor="middle")
-
-# -- side panel
-RX = 624
-fig.text(RX, 152, "Key: 100 points per class", "head")
+# The scatter's frame: the plot square at x 104, y 128, side 464, with the y label above it and the x label
+# under the ticks. The kit fills the regions, then draws the grid and the axes; the decision edges and the
+# points follow, so the edges run under the points.
+ax = fig.scatter(Box(PX - 56, PY - 24, PS + 56 + 24, PS + 24 + 48), [], x=(LO, HI, TICKS), y=(LO, HI, TICKS),
+                 x_label="X[:, 0], first feature", y_label="X[:, 1], second feature",
+                 fmt_x=lambda t: num(t) if t != int(t) else num(int(t)),
+                 fmt_y=lambda t: num(t) if t != int(t) else num(int(t)),
+                 regions=[(REGIONS[k], COLORS[k]) for k in range(3)])
+assert (ax.x, ax.y, ax.w, ax.h) == (PX, PY, PS, PS)
+for (p, q) in EDGES.values():
+    ax.segment(p[0], p[1], q[0], q[1], "ink-muted", width=1)
 for k in range(3):
-    by = 192 + 32 * k
-    # the key: each class's mark on its class's tint, so the tint of a region names its class
-    fig.add(f'<rect x="{RX}" y="{by - 16}" width="24" height="24" '
-            f'class="{fig._cls("f", COLORS[k] + "-soft")} {fig._cls("s", COLORS[k] + "-line")} w1"/>')
-    with fig.data():
-        marker(fig, SHAPES[k], RX + 12, by - 4, f'{fig._cls("f", COLORS[k])} {fig._cls("s", "surface")} w1')
-    fig.text(RX + 36, by, f"class {k}, rows {100 * k} to {100 * k + 99}", "label")
-fig.text(RX, 320, "X: (300, 2) float32", "code")
-fig.text(RX, 344, "y: (300,) uint8", "code")
+    for (px, py) in X[y == k]:
+        assert ax.point(float(px), float(py), SHAPES[k], COLORS[k], size=8) is not None
 
-fig.text(RX, 424, "Tints: a trained Layer_Dense(2, 3)", "head")
-fig.text(RX, 456, "Each tint, as in the key, is where", "note")
-fig.text(RX, 476, "the layer answers that class.", "note")
-fig.text(RX, 528, f"{CORRECT} of 300 correct, {PCT}", "value", color="ink", bold=True)
-fig.text(RX, 556, f"one fixed answer: {FIXED} of 300, {PCT_FIXED}", "note")
+# -- side panel: three groups, the first level with the plot's top, the last with its bottom
+RX = 624
+fig.text(RX, 144, "Key: 100 points per class", "head")
+for k in range(3):
+    by = 184 + 32 * k
+    # each class's mark on its class's tint, so the tint of a region names its class
+    sw = Box(RX, by - 16, 24, 24)
+    fig.fill(sw, COLORS[k] + "-soft", fit=False)
+    fig.outline(sw, COLORS[k] + "-line", width=1)
+    fig.marker(sw.cx, sw.cy, SHAPES[k], COLORS[k], size=8)
+    fig.text(RX + 36, by, f"class {k}, rows {100 * k} to {100 * k + 99}", "label")
+
+fig.text(RX, 328, "The arrays", "head")
+fig.text(RX, 360, "X: (300, 2) float32", "code")
+fig.text(RX, 384, "y: (300,) uint8", "code")
+
+fig.text(RX, 460, "Tints: a trained Layer_Dense(2, 3)", "head")
+fig.text(RX, 492, "Each tint, as in the key, is where", "note")
+fig.text(RX, 512, "the layer answers that class.", "note")
+fig.text(RX, 560, f"{CORRECT} of 300 correct, {PCT}", "value", color="ink", bold=True)
+fig.text(RX, 588, f"one fixed answer: {FIXED} of 300, {PCT_FIXED}", "note")
 
 fig.caption("Straight edges cut every arm into pieces; the layer does only a little better than chance.")
 fig.write()
