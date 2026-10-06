@@ -1,0 +1,222 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-03-loss-decay-title" aria-describedby="nn-03-loss-decay-desc">
+<title id="nn-03-loss-decay-title">Every step multiplies the loss by 0.49, until rounding</title>
+<desc id="nn-03-loss-decay-desc">A chart of the loss of the 200-iteration loop against the iteration, 0 to 120, on a log axis from 10 to the minus 35 up to 100. The run falls on the dashed straight line 36 times 0.49 to the power t, from 36 at iteration 0. A dotted horizontal line at 5 times 10 to the minus 5 marks where the loss rounds to 0.0000 in four decimals; the run crosses it at iteration 19. From about iteration 100 the run leaves the straight line in steps near 10 to the minus 30, and a dotted vertical line marks iteration 113, from which the loss is exactly 0.0, which a log axis cannot show. A table lists what the loop prints at iterations 0, 16, 20, 100 and 120: 36.0000, 0.0004, 0.0000, 0.0000 and 0.0000, against the values 36, 3.976 times 10 to the minus 4, 2.292 times 10 to the minus 5, 3.155 times 10 to the minus 30, and 0.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-ink-muted { fill: var(--nn-ink-muted); }
+  .f-red { fill: var(--nn-red); }
+  .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .s-ink-muted { stroke: var(--nn-ink-muted); }
+  .s-red { stroke: var(--nn-red); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-03-loss-decay-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<clipPath id="nn-03-loss-decay-clip-1"><rect x="90" y="122" width="524" height="312"/></clipPath>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title">Every step multiplies the loss by 0.49, until rounding</text>
+<text x="40" y="76" class="t-subtitle">The loop of section 9.2, <tspan class="i">y</tspan> = 0, learning rate 0.01; the loss on a log axis.</text>
+<g data-grid="skip">
+<path d="M96,387.46H608M96,306.38H608M96,225.3H608M96,144.22H608" class="gridline"/>
+<text x="88" y="391.46" text-anchor="end" class="t-tick">10<tspan class="sub" dy="-6">−30</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="310.38" text-anchor="end" class="t-tick">10<tspan class="sub" dy="-6">−20</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="229.3" text-anchor="end" class="t-tick">10<tspan class="sub" dy="-6">−10</tspan><tspan dy="6">​</tspan></text>
+<text x="88" y="148.22" text-anchor="end" class="t-tick">10<tspan class="sub" dy="-6">0</tspan><tspan dy="6">​</tspan></text>
+<text x="96" y="448" text-anchor="middle" class="t-tick">0</text>
+<text x="181.33" y="448" text-anchor="middle" class="t-tick">20</text>
+<text x="266.67" y="448" text-anchor="middle" class="t-tick">40</text>
+<text x="352" y="448" text-anchor="middle" class="t-tick">60</text>
+<text x="437.33" y="448" text-anchor="middle" class="t-tick">80</text>
+<text x="522.67" y="448" text-anchor="middle" class="t-tick">100</text>
+<text x="608" y="448" text-anchor="middle" class="t-tick">120</text>
+<path d="M96,128V428H608" class="axis"/>
+<path d="M96,179.09H608" class="s-ink-muted w1 nofill d-ref"/>
+<path d="M578.13,128V428" class="s-ink-muted w1 nofill d-ref"/>
+<g clip-path="url(#nn-03-loss-decay-clip-1)">
+<path d="M96,131.6 L100.27,134.11 L104.53,136.62 L108.8,139.13 L113.07,141.65 L117.33,144.16 L121.6,146.67 L125.87,149.18 L130.13,151.69 L134.4,154.2 L138.67,156.72 L142.93,159.23 L147.2,161.74 L151.47,164.25 L155.73,166.76 L160,169.28 L164.27,171.79 L168.53,174.3 L172.8,176.81 L177.07,179.32 L181.33,181.84 L185.6,184.35 L189.87,186.86 L194.13,189.37 L198.4,191.88 L202.67,194.4 L206.93,196.91 L211.2,199.42 L215.47,201.93 L219.73,204.44 L224,206.96 L228.27,209.47 L232.53,211.98 L236.8,214.49 L241.07,217 L245.33,219.51 L249.6,222.03 L253.87,224.54 L258.13,227.05 L262.4,229.56 L266.67,232.07 L270.93,234.59 L275.2,237.1 L279.47,239.61 L283.73,242.12 L288,244.63 L292.27,247.15 L296.53,249.66 L300.8,252.17 L305.07,254.68 L309.33,257.19 L313.6,259.71 L317.87,262.22 L322.13,264.73 L326.4,267.24 L330.67,269.75 L334.93,272.27 L339.2,274.78 L343.47,277.29 L347.73,279.8 L352,282.31 L356.27,284.82 L360.53,287.34 L364.8,289.85 L369.07,292.36 L373.33,294.87 L377.6,297.38 L381.87,299.9 L386.13,302.41 L390.4,304.92 L394.67,307.43 L398.93,309.94 L403.2,312.46 L407.47,314.97 L411.73,317.48 L416,319.99 L420.27,322.5 L424.53,325.02 L428.8,327.53 L433.07,330.04 L437.33,332.55 L441.6,335.06 L445.87,337.58 L450.13,340.09 L454.4,342.6 L458.67,345.11 L462.93,347.62 L467.2,350.13 L471.47,352.65 L475.73,355.16 L480,357.67 L484.27,360.18 L488.53,362.69 L492.8,365.21 L497.07,367.72 L501.33,370.23 L505.6,372.74 L509.87,375.25 L514.13,377.77 L518.4,380.28 L522.67,382.79 L526.93,385.3 L531.2,387.81 L535.47,390.33 L539.73,392.84 L544,395.35 L548.27,397.86 L552.53,400.37 L556.8,402.89 L561.07,405.4 L565.33,407.91 L569.6,410.42 L573.87,412.93 L578.13,415.44 L582.4,417.96 L586.67,420.47 L590.93,422.98 L595.2,425.49 L599.47,428 L603.73,430.52 L608,433.03" class="s-ink-muted w15 nofill d-proj"/>
+<path d="M96,131.6 L100.27,134.11 L104.53,136.62 L108.8,139.13 L113.07,141.65 L117.33,144.16 L121.6,146.67 L125.87,149.18 L130.13,151.69 L134.4,154.2 L138.67,156.72 L142.93,159.23 L147.2,161.74 L151.47,164.25 L155.73,166.76 L160,169.28 L164.27,171.79 L168.53,174.3 L172.8,176.81 L177.07,179.32 L181.33,181.84 L185.6,184.35 L189.87,186.86 L194.13,189.37 L198.4,191.88 L202.67,194.4 L206.93,196.91 L211.2,199.42 L215.47,201.93 L219.73,204.44 L224,206.96 L228.27,209.47 L232.53,211.98 L236.8,214.49 L241.07,217 L245.33,219.51 L249.6,222.03 L253.87,224.54 L258.13,227.05 L262.4,229.56 L266.67,232.07 L270.93,234.59 L275.2,237.1 L279.47,239.61 L283.73,242.12 L288,244.63 L292.27,247.15 L296.53,249.66 L300.8,252.17 L305.07,254.68 L309.33,257.19 L313.6,259.71 L317.87,262.22 L322.13,264.73 L326.4,267.24 L330.67,269.75 L334.93,272.27 L339.2,274.78 L343.47,277.29 L347.73,279.8 L352,282.31 L356.27,284.82 L360.53,287.34 L364.8,289.85 L369.07,292.36 L373.33,294.87 L377.6,297.38 L381.87,299.9 L386.13,302.41 L390.4,304.92 L394.67,307.43 L398.93,309.94 L403.2,312.46 L407.47,314.97 L411.73,317.48 L416,319.99 L420.27,322.5 L424.53,325.02 L428.8,327.53 L433.07,330.04 L437.33,332.55 L441.6,335.06 L445.87,337.58 L450.13,340.09 L454.4,342.6 L458.67,345.11 L462.93,347.61 L467.2,350.14 L471.47,352.62 L475.73,355.14 L480,357.61 L484.27,360.14 L488.53,362.52 L492.8,365.32 L497.07,367.7 L501.33,370.37 L505.6,373.22 L509.87,375.25 L514.13,377.32 L518.4,379.22 L522.67,383.41 L526.93,385.44 L531.2,388.29 L535.47,388.29 L539.73,388.29 L544,388.29 L548.27,393.18 L552.53,393.18 L556.8,393.18 L561.07,393.18 L565.33,393.18 L569.6,393.18 L573.87,393.18" class="s-red w15 nofill"/>
+</g>
+<text x="572.13" y="144" text-anchor="end" class="t-note f-ink-muted">exactly 0.0 from 113</text>
+</g>
+<text x="96" y="116" class="t-note">loss <tspan class="i">L</tspan></text>
+<text x="352" y="472" text-anchor="middle" class="t-note">iteration</text>
+<g data-grid="skip">
+<circle cx="177.07" cy="179.32" r="4" class="f-red s-surface w1"/>
+</g>
+<g data-grid="skip">
+<text x="189.07" y="167.32" class="t-note">iteration 19</text>
+</g>
+<g data-grid="skip">
+<text x="283.73" y="203.09" class="t-note">rounds to 0.0000 below this line</text>
+</g>
+<text x="648" y="128" class="t-head">What the loop prints</text>
+<rect x="648" y="144" width="80" height="32" class="nofill"/>
+<rect x="728" y="144" width="88" height="32" class="nofill"/>
+<rect x="816" y="144" width="104" height="32" class="nofill"/>
+<rect x="648" y="176" width="80" height="32" class="nofill"/>
+<rect x="728" y="176" width="88" height="32" class="nofill"/>
+<rect x="816" y="176" width="104" height="32" class="nofill"/>
+<rect x="648" y="208" width="80" height="32" class="nofill"/>
+<rect x="728" y="208" width="88" height="32" class="nofill"/>
+<rect x="816" y="208" width="104" height="32" class="nofill"/>
+<rect x="648" y="240" width="80" height="32" class="nofill"/>
+<rect x="728" y="240" width="88" height="32" class="nofill"/>
+<rect x="816" y="240" width="104" height="32" class="nofill"/>
+<rect x="648" y="272" width="80" height="32" class="nofill"/>
+<rect x="728" y="272" width="88" height="32" class="nofill"/>
+<rect x="816" y="272" width="104" height="32" class="nofill"/>
+<rect x="648" y="304" width="80" height="32" class="nofill"/>
+<rect x="728" y="304" width="88" height="32" class="nofill"/>
+<rect x="816" y="304" width="104" height="32" class="nofill"/>
+<path d="M648,144H920M648,336H920" class="axis"/>
+<path d="M648,176H920" class="rule1"/>
+<text x="720" y="164" text-anchor="end" class="t-head">iteration</text>
+<text x="808" y="164" text-anchor="end" class="t-head">printed</text>
+<text x="912" y="164" text-anchor="end" class="t-head">value</text>
+<text x="720" y="196" text-anchor="end" class="t-label">0</text>
+<text x="808" y="196" text-anchor="end" class="t-label"><tspan class="mono">36.0000</tspan></text>
+<text x="912" y="196" text-anchor="end" class="t-label">36</text>
+<text x="720" y="228" text-anchor="end" class="t-label">16</text>
+<text x="808" y="228" text-anchor="end" class="t-label"><tspan class="mono">0.0004</tspan></text>
+<text x="912" y="228" text-anchor="end" class="t-label">3.976 × 10<tspan class="sub" dy="-6">−4</tspan><tspan dy="6">​</tspan></text>
+<text x="720" y="260" text-anchor="end" class="t-label">20</text>
+<text x="808" y="260" text-anchor="end" class="t-label"><tspan class="mono">0.0000</tspan></text>
+<text x="912" y="260" text-anchor="end" class="t-label">2.292 × 10<tspan class="sub" dy="-6">−5</tspan><tspan dy="6">​</tspan></text>
+<text x="720" y="292" text-anchor="end" class="t-label">100</text>
+<text x="808" y="292" text-anchor="end" class="t-label"><tspan class="mono">0.0000</tspan></text>
+<text x="912" y="292" text-anchor="end" class="t-label">3.155 × 10<tspan class="sub" dy="-6">−30</tspan><tspan dy="6">​</tspan></text>
+<text x="720" y="324" text-anchor="end" class="t-label">120</text>
+<text x="808" y="324" text-anchor="end" class="t-label"><tspan class="mono">0.0000</tspan></text>
+<text x="912" y="324" text-anchor="end" class="t-label">0</text>
+<path d="M648,372 H672" class="s-red w15 nofill"/>
+<text x="680" y="376" class="t-label">the float64 run</text>
+<path d="M648,396 H672" class="s-ink-muted w15 nofill d-proj"/>
+<text x="680" y="400" class="t-label">36 · 0.49<tspan class="sub" dy="-6">t</tspan><tspan dy="6">​</tspan></text>
+<text x="40" y="504" class="t-note">A straight line on a log axis is a constant factor per step; 0.0000 is rounding, not zero.</text>
+</svg>

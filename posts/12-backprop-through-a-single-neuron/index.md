@@ -11,9 +11,9 @@
 > - Compute by hand the gradient of a squared-error loss with respect to each weight and the bias of a three-input ReLU neuron.
 > - Run a 200-iteration gradient-descent loop on one neuron and predict how fast its loss falls towards zero.
 
-![A two-row diagram of one neuron. The top row runs left to right: inputs 1, -2 and 3 meet weights -3, -1 and 2, are summed with the bias 1 to give z = 6, pass through ReLU to give an output of 6, and are squared to give a loss of 36. The bottom row runs right to left: the derivative of the loss with respect to the output is 12, it stays 12 after the ReLU derivative of 1 and after the sum, and this upstream gradient of 12 is multiplied by each input to give the weight gradients 12, -24 and 36 and the bias gradient 12.](diagrams/01-single-neuron-backprop.svg)
+![A two-row diagram of one neuron. The forward row runs left to right: the inputs 1, -2, 3 and the bias input 1 times the weights -3, -1, 2 and the bias 1 give the products -3, 2, 6 and 1, their sum is z = 6, ReLU gives y hat = 6, and the squared error against the target 0 gives L = 36. The backward row runs right to left: factor 1, 2 times (y hat minus y), is 12, factor 2, the ReLU derivative at z > 0, is 1, and factor 3, the sum, is 1, so an upstream gradient of 12 reaches the parameters, where factor 4, the input, gives the gradients 12 times 1 = 12, 12 times -2 = -24, 12 times 3 = 36 and 12 times 1 = 12 for the bias.](diagrams/01-single-neuron-backprop.svg)
 
-*One neuron, one chain. Every parameter receives the same upstream gradient; only the last factor differs. The figure numbers the inputs and weights from 0, so its first input is the $x_1$ of the text.*
+*One neuron, one chain. Every parameter receives the same upstream gradient; only the last factor differs.*
 
 ---
 
@@ -155,10 +155,6 @@ With a learning rate $\alpha = 0.01$ and the update rule of post 09, $w_{\text{n
 | $w_3$ | $2$ | $36$ | $-0.36$ | $1.64$ |
 | $b$ | $1$ | $12$ | $-0.12$ | $0.88$ |
 
-![A figure in two cards. The left card lists one update with a learning rate of 0.01: w0 from -3 to -3.12, w1 from -1 to -0.76, w2 from 2 to 1.64 and the bias from 1 to 0.88, so that z falls from 6 to 4.20 and the loss from 36 to 17.64. The right card plots the loss over twenty iterations, marked 36, 17.6, 8.6 and 1.0 on a curve decaying towards zero, with a note that by iteration 20 it shows as 0.0000. A band states that each step scales z by 0.7 and the loss by 0.49.](diagrams/02-one-step-and-after.svg)
-
-*Spending the four gradients lowers the loss, and repeating the step shrinks it by the same factor every time. The figure's 0.0000 is a rounded display, not a zero (section 6.1).*
-
 Running the new parameters through the forward pass:
 
 $$z_{\text{new}} = (1)(-3.12) + (-2)(-0.76) + (3)(1.64) + 0.88 = -3.12 + 1.52 + 4.92 + 0.88 = 4.20.$$
@@ -166,6 +162,12 @@ $$z_{\text{new}} = (1)(-3.12) + (-2)(-0.76) + (3)(1.64) + 0.88 = -3.12 + 1.52 + 
 $$\hat{y}_{\text{new}} = \text{ReLU}(4.20) = 4.20.$$
 
 $$L_{\text{new}} = 4.20^2 = 17.64.$$
+
+The figure below takes the step row by row and follows each of the four terms of $z$ through it.
+
+![On the left, the update new = old minus 0.01 times the gradient, row by row: w1 from -3 with gradient 12 to -3.12, w2 from -1 with gradient -24 to -0.76, w3 from 2 with gradient 36 to 1.64, and the bias from 1 with gradient 12 to 0.88, with a note that the negative gradient of w2 raises it. On the right, a table of the terms of z before and after the step: -3 to -3.12, 2 to 1.52, 6 to 4.92 and 1 to 0.88, changes -0.12, -0.48, -1.08 and -0.12. Their sum z goes from 6 to 4.20, 0.7 times 6, and the loss L = z squared from 36 to 17.64, 0.49 times 36.](diagrams/02-one-step.svg)
+
+*Each term of $z$ falls by $0.01 \cdot 12 \cdot x_i^2 = 0.12\,x_i^2$, and the bias term by $0.12$: 1.80 in all, so $z$ keeps 0.7 of its value.*
 
 The loss dropped from $36$ to $17.64$ in a single step, to 49 percent of its value. That ratio is not a coincidence. Write $g$ for the upstream gradient. The update subtracts $\alpha g x_i$ from each weight and $\alpha g$ from the bias, so the next pre-activation is
 
@@ -188,6 +190,12 @@ The formula $L_t = 36 \cdot 0.49^{\,t}$ is positive for every $t$. In exact arit
 The first is display rounding. Printed to four decimal places, the loss reads `0.0000` from iteration 19 onward, but at iteration 20 its value is $36 \cdot 0.49^{20} \approx 2.3 \times 10^{-5}$: a small positive number, with a non-zero gradient.
 
 The second is real. In the float64 run of section 9.2 the loss does become exactly `0.0`, at iteration 113. The pre-activation is a sum of four terms of ordinary size, and such a sum cannot resolve a result much smaller than $10^{-16}$ (the rounding error of post 10, section 6.1). At iteration 100 the computed $z$ is $1.8 \times 10^{-15}$, and at iteration 113 the four terms cancel exactly; from then on every gradient is zero. Whether the loss lands on exactly `0.0`, and at which iteration, is a property of the rounding: it can differ between machines and NumPy builds, and regrouping the update as `(lr * upstream) * inputs` leaves this run stalled at $z = 2.2 \times 10^{-16}$ with no exact zero at all. The geometric decay before that point does not change.
+
+The figure below draws both on a log axis, where a constant factor per step is a straight line.
+
+![A chart of the loss of the 200-iteration loop against the iteration, 0 to 120, on a log axis. The run lies on the dashed straight line 36 times 0.49 to the t from 36 at iteration 0, crosses the dotted line at 5 times 10 to the -5 below which the loss prints as 0.0000 at iteration 19, leaves the straight line in steps near 10 to the -30 from about iteration 100, and is exactly 0.0 from iteration 113, marked by a dotted vertical line. A table lists what the loop prints at iterations 0, 16, 20, 100 and 120: 36.0000, 0.0004, 0.0000, 0.0000 and 0.0000, against the values 36, 3.976 times 10 to the -4, 2.292 times 10 to the -5, 3.155 times 10 to the -30 and 0.](diagrams/03-loss-decay.svg)
+
+*The printed 0.0000 is rounding; the exact zero from iteration 113 comes from the rounding of the float64 sum.*
 
 Where the parameters stop is predictable. Every gradient is a multiple of $(x_1, x_2, x_3, 1) = (1, -2, 3, 1)$, so the parameters move along that one direction. Bringing $z$ from 6 to 0 takes a displacement $c$ with $15c = 6$, so $c = 0.4$, and they end at $(-3, -1, 2, 1) - 0.4 \cdot (1, -2, 3, 1) = (-3.4, -0.2, 0.8, 0.6)$, as section 9.2 prints.
 
