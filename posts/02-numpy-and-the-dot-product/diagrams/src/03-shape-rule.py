@@ -7,9 +7,10 @@ No layer here, so no layout question: two general matrices, A of shape (3, 4) an
 orders. The grids of each equation share their bottom edge, so every shape label sits 28 under its own grid
 and all three share one baseline; rows of the first argument line up with rows of the result. Inner sizes are
 purple, outer sizes green, and colour is never the only cue: a purple bracket joins the two inner sizes of
-each equation, and the general rule at the right labels its inner pair and its outer pair in words. The
-product B A is drawn colour-only, because the post prints only its shape. Whole arrays are bold; the calls
-in the headings are code and stay upright. Values come from snippets/shape_rule.py.
+each equation, and the general rule at the right labels its inner pair and its outer pair in words. The rule
+sits on the top row's shape-label baseline, its inner label on the top row's inner label, so it reads as
+those labels in general. The product B A is drawn colour-only, because the post prints only its shape, and
+a note beside it says so. Whole arrays are bold; the calls in the headings are set in the code face. Values come from snippets/shape_rule.py.
 """
 import contextlib
 import io
@@ -21,12 +22,8 @@ import numpy as np
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, r"C:\Users\admin\Desktop\series-standard\tools")
-from figkit import Figure, Raw, rich, var, CDOT  # noqa: E402
+from figkit import Figure, arr, rich, span, var, CDOT  # noqa: E402
 
-
-def bold(s):
-    """A whole array, bold upright as the notation guide writes it."""
-    return Raw(f'<tspan class="b">{s}</tspan>')
 
 SNIPPET = Path(__file__).resolve().parents[2] / "snippets" / "shape_rule.py"
 with contextlib.redirect_stdout(io.StringIO()):
@@ -44,22 +41,21 @@ fig = Figure(
     "holding 1 to 12 row by row, equals the 3 by 3 result 70, 80, 90; 158, 184, 210; 246, 288, 330. Row 1 of A "
     "and column 1 of B are outlined, 70 is bold, and the worked line reads 1 times 1 plus 2 times 4 plus 3 times 7 "
     "plus 4 times 10 equals 70. Bottom, np.dot(B, A): the same two matrices swapped give a 4 by 4 result, drawn "
-    "without values. Under every grid its shape, with the inner sizes, the 4s in the top row and the 3s in the "
+    "without values, and a note beside it says the post prints only its shape. Under every grid its shape, with the inner sizes, the 4s in the top row and the 3s in the "
     "bottom row, in purple and joined by a purple bracket labelled inner, and the outer sizes in green. At the right "
     "the rule in general, (m, n) times (n, p) gives (m, p), with a bracket over m and p labelled outer: form the "
     "result, and a bracket under the two n labelled inner: must be equal, summed away.",
-    subtitle=rich("Section 6's ", bold("A"), " and ", bold("B"), ". Both orders run here, and give results of "
+    subtitle=rich("Section 6's ", arr("A"), " and ", arr("B"), ". Both orders run here, and give results of "
                   "different shapes."),
     height=720)
 
 CELL, GAP = 40, 32
-DOT_R = 2.5                                        # the product dot, as in every figure of the post
 XG, XN = 40, 592                                   # the equations, the notes column
 DIGIT = 9          # in a 17 px shape label "(3, 4)" each size sits about 9 off the label's centre (measured)
 
 
 def tint(s, color):
-    return Raw(f'<tspan class="{fig._cls("f", fig._ink(color))}">{s}</tspan>')
+    return span(s, color=color)
 
 
 def shape(r, c, kind):
@@ -69,12 +65,6 @@ def shape(r, c, kind):
     if kind == "second":                  # the first size of a second argument is inner
         return rich("(", tint(r, "purple"), ", ", tint(c, "output"), ")")
     return rich("(", tint(r, "output"), ", ", tint(c, "output"), ")")
-
-
-def dot_mark(x, y):
-    """The product dot, on the axis of the "=" beside it (the "=" baseline is 8 lower)."""
-    with fig.data():
-        fig.add(f'<circle cx="{x}" cy="{y}" r="{DOT_R}" class="{fig._cls("f", "ink-muted")}"/>')
 
 
 def bracket(x0, x1, y, color, up=False):
@@ -100,8 +90,8 @@ def equation(top, first, second, out, first_fill, second_fill, values):
                   fill=lambda i, j: "output-soft", strong={(0, 0): "output"} if values else None)
     assert g1.box.bottom == g2.box.bottom == g3.box.bottom == bottom
     ym = g1.box.cy
-    dot_mark(x1 - GAP // 2, ym)
-    fig.text(x2 - GAP // 2, ym + 8, "=", "op", anchor="middle")
+    fig.op(x1 - GAP // 2, ym, CDOT)
+    fig.op(x2 - GAP // 2, ym, "=")
     base = bottom + 28
     for g, sh, kind in ((g1, first.shape, "first"), (g2, second.shape, "second"), (g3, out.shape, "out")):
         fig.text(g.box.cx, base, shape(*sh, kind), "math", anchor="middle")
@@ -116,20 +106,21 @@ T1, T2 = 152, 432
 ga, gb, gab = equation(T1, A, B, AB, "input-soft", "weight-soft", True)
 ga.window(0, 0, 1, 4, "input")
 gb.window(0, 0, 4, 1, "weight")
-fig.text(XG, T1 - 16, "np.dot(A, B): the 4s meet", "head")
-fig.text(XN, T1 + 72, rich("row 1 of ", bold("A"), " with column 1 of ", bold("B"), ":"), "label")
+fig.text(XG, T1 - 16, rich(span("np.dot(A, B)", mono=True), ": the 4s meet"), "head")
+fig.text(XN, T1 + 72, rich("row 1 of ", arr("A"), " with column 1 of ", arr("B"), ":"), "label")
 fig.text(XN, T1 + 104, WORKED, "math")
 assert ga.box.y == gab.box.y == T1 + CELL                # row 1 of A and row 1 of the result on one line
 
 gb2, ga2, gba = equation(T2, B, A, BA, "weight-soft", "input-soft", False)
 assert gab.box.x == gba.box.x == 384 and gba.box.right == 544
-fig.text(XG, T2 - 16, "np.dot(B, A): the 3s meet", "head")
-fig.text(XN, T2 + 16, "the same two matrices, swapped:", "label")
-fig.text(XN, T2 + 40, "a different product, of shape (4, 4)", "label")
+fig.text(XG, T2 - 16, rich(span("np.dot(B, A)", mono=True), ": the 3s meet"), "head")
+fig.text(XN, T2 + 56, "the same two matrices, swapped:", "label")    # centred on the equation's middle
+fig.text(XN, T2 + 80, "a different product, of shape (4, 4)", "label")
+fig.text(XN, T2 + 104, "drawn empty: the post prints only its shape", "note")
 
 # the rule in general, set in pieces so each letter's place is known; brackets name the two pairs
 m, n, p = (var(s) for s in "mnp")
-R = T2 + 136                                        # the rule's baseline
+R = T1 + 4 * CELL + 28                              # the rule's baseline: the top row's shape labels
 X1 = XN + 20                                        # centres: (m, n), the dot, (n, p), the arrow, (m, p);
 XD, X2, XA, X3 = X1 + 32, X1 + 64, X1 + 100, X1 + 136   # "(m, n)" is about 42 wide, so it starts at XN
 fig.text(X1, R, rich("(", tint(m, "output"), ", ", tint(n, "purple"), ")"), "math", anchor="middle")

@@ -75,7 +75,6 @@ fig = Figure(
     subtitle="Section 8's batch, samples-first: every sample is a row. The weights are stored one row per neuron.",
     height=720)
 
-DOT_R = 2.5                                      # the product dot, as in every figure of the post
 CI, CW, CH, FONT = 48, 64, 48, 14                # one-decimal cells 48 wide, the rest 64 (room for "neuron 1"); all 48 high
 CS_W = 56                                        # the stored weights: two decimals, no column labels
 GAP = 32                                         # between operands; each operator sits in the middle
@@ -88,7 +87,7 @@ T_T = 320                                        # top of weights.T, the tallest
 AXIS = T_T + 4 * CH // 2                         # 416: every operand is centred on this line
 T_X = AXIS - 3 * CH // 2                         # 344: inputs and outputs, 3 rows each
 T_B = AXIS - CH // 2                             # 392: the bias row
-T_S, CS = 152, 32                                # the stored weights: top and cell height
+T_S, CS = 152, CH                                # the stored weights: top, and the line's cell height
 
 # -- the line: inputs . weights.T + biases = outputs
 gx = fig.grid(XI, T_X, 3, 4, cell_w=CI, cell_h=CH, values=X.tolist(), decimals=D_X, font=FONT,
@@ -110,10 +109,9 @@ go.col_labels([f"neuron {k + 1}" for k in range(3)], side="below")
 assert gx.box.cy == gt.box.cy == gb.box.cy == go.box.cy == AXIS
 assert gx.cell(0, 0).y == go.cell(0, 0).y         # sample 1's row of inputs and its row of outputs on one line
 
-with fig.data():                                 # the product dot, on the axis of the "=" (baseline 8 lower)
-    fig.add(f'<circle cx="{XT - GAP // 2}" cy="{AXIS}" r="{DOT_R}" class="{fig._cls("f", "ink-muted")}"/>')
-fig.text(XB - GAP // 2, AXIS + 8, "+", "op", anchor="middle")
-fig.text(XO - GAP // 2, AXIS + 8, "=", "op", anchor="middle")
+fig.op(XT - GAP // 2, AXIS, CDOT)                # the operators sit on the line's axis
+fig.op(XB - GAP // 2, AXIS, "+")
+fig.op(XO - GAP // 2, AXIS, "=")
 
 # names and shapes under the operands: under the grid, or under its column labels
 NAME_X = gx.box.bottom + 48                      # 536: inputs and outputs share it (outputs carry column labels)
@@ -128,11 +126,12 @@ gw = fig.grid(XI, T_S, 3, 4, cell_w=CS_W, cell_h=CS, values=W.tolist(), decimals
               fill=lambda i, j: "weight-soft")
 gw.row_labels([f"neuron {k + 1}" for k in range(3)])
 fig.text(XI, T_S - 16, "weights, (3, 4), as stored", "head")
-assert gw.box.right <= XT and gw.box.bottom + 64 < T_T   # the arrow turns down over weights.T
+assert gw.box.right <= XT and gw.box.bottom + 24 == T_T   # the arrow turns down over weights.T
+assert gx.box.y - gw.box.bottom == 48                     # one gap between the stored weights and the inputs
 fig.arrow((gw.box.right + 8, gw.box.cy), (gt.box.cx, T_T), label="transpose", via=((gt.box.cx, gw.box.cy),))
-XE = 560                                         # the loud failure, beside the stored weights
-fig.text(XE, gw.box.cy - 4, "Without .T, np.dot(inputs, weights) pairs (3, 4)", "note")
-fig.text(XE, gw.box.cy + 16, "with (3, 4): the 4 meets a 3, and NumPy raises ValueError.", "note")
+XE = 560                                         # the loud failure, level with the stored weights' last row
+fig.text(XE, gw.box.bottom - 28, "Without .T, np.dot(inputs, weights) pairs (3, 4)", "note")
+fig.text(XE, gw.box.bottom - 8, "with (3, 4): the 4 meets a 3, and NumPy raises ValueError.", "note")
 
 # -- below: one output cell worked out
 YS = 600

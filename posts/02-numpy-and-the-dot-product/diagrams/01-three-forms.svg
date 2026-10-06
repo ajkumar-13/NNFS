@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-01-three-forms-title" aria-describedby="nn-01-three-forms-desc">
 <title id="nn-01-three-forms-title">One function, three forms: the shapes decide</title>
-<desc id="nn-01-three-forms-desc">Three rows, one per form of np.dot, drawn neurons-first with the weights and inputs of section 8 and no bias. Vector by vector, np.dot(w, x): the weights of neuron 1, 0.20, 0.80, minus 0.50, 1.00, as a row, meet sample 1, 1.0, 2.0, 3.0, 2.5, as a column, and give the scalar 2.800; shapes (4,) and (4,), one neuron and one sample. Matrix by vector, np.dot(W, x): the 3 by 4 weight matrix, rows 0.20, 0.80, minus 0.50, 1.00; 0.50, minus 0.91, 0.26, minus 0.50; minus 0.26, minus 0.27, 0.17, 0.87, meets the same column and gives the column 2.800, minus 1.790, 1.885; shapes (3, 4) and (4,) give (3,), a layer of 3 neurons on one sample. Matrix by matrix, np.dot(W, X.T): the same weights meet a 4 by 3 matrix whose columns are labelled samples 1 to 3 and give a 3 by 3 result with one column per sample, rows 2.800, 6.900, minus 0.590; minus 1.790, minus 4.810, minus 1.949; 1.885, minus 0.300, minus 0.474; shapes (3, 4) and (4, 3) give (3, 3). Row 1 of the weights and column 1 of the samples are outlined, and 2.800 is bold in every result. A caption line says every form sums over the 4 inputs.</desc>
+<desc id="nn-01-three-forms-desc">Three equations, one per form of np.dot, drawn neurons-first with the weights and inputs of section 8 and no bias: the two vector forms side by side at the top, each with its call, shapes and meaning under it, and the matrix form across the bottom with its text beside the result. Vector by vector, np.dot(w, x): the weights of neuron 1, 0.20, 0.80, minus 0.50, 1.00, as a row, meet sample 1, 1.0, 2.0, 3.0, 2.5, as a column, and give the scalar 2.800; shapes (4,) and (4,), one neuron and one sample. Matrix by vector, np.dot(W, x): the 3 by 4 weight matrix, rows 0.20, 0.80, minus 0.50, 1.00; 0.50, minus 0.91, 0.26, minus 0.50; minus 0.26, minus 0.27, 0.17, 0.87, meets the same column and gives the column 2.800, minus 1.790, 1.885; shapes (3, 4) and (4,) give (3,), a layer of 3 neurons on one sample. Matrix by matrix, np.dot(W, X.T): the same weights meet a 4 by 3 matrix whose columns are labelled samples 1 to 3 and give a 3 by 3 result with one column per sample, rows 2.800, 6.900, minus 0.590; minus 1.790, minus 4.810, minus 1.949; 1.885, minus 0.300, minus 0.474; shapes (3, 4) and (4, 3) give (3, 3). Row 1 of the weights and column 1 of the samples are outlined, and 2.800 is bold in every result. A caption line says every form sums over the 4 inputs.</desc>
 <style>
   :root {
     --nn-bg: #FAFAF7;
@@ -142,193 +142,186 @@
 <rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
 <text x="40" y="48" class="t-title">One function, three forms: the shapes decide</text>
 <text x="40" y="76" class="t-subtitle">Section 8's layer before the bias, neurons-first: one neuron per row of <tspan class="b">W</tspan>, one sample per column.</text>
-<text x="40" y="128" class="t-head">Vector by vector</text>
-<rect x="40" y="144" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="96" y="144" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="152" y="144" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="208" y="144" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="40" y="144" width="224" height="32" class="frame" data-fit="skip"/>
+<text x="40" y="144" class="t-head">Vector by vector</text>
+<rect x="40" y="160" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="96" y="160" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="152" y="160" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="208" y="160" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="40" y="160" width="224" height="32" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="68" y="165" text-anchor="middle" class="t-cell14">0.20</text>
-<text x="124" y="165" text-anchor="middle" class="t-cell14">0.80</text>
-<text x="180" y="165" text-anchor="middle" class="t-cell14">−0.50</text>
-<text x="236" y="165" text-anchor="middle" class="t-cell14">1.00</text>
+<text x="68" y="181" text-anchor="middle" class="t-cell14">0.20</text>
+<text x="124" y="181" text-anchor="middle" class="t-cell14">0.80</text>
+<text x="180" y="181" text-anchor="middle" class="t-cell14">−0.50</text>
+<text x="236" y="181" text-anchor="middle" class="t-cell14">1.00</text>
 </g>
-<rect x="312" y="144" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="312" y="176" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="312" y="208" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="312" y="240" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="312" y="144" width="64" height="128" class="frame" data-fit="skip"/>
+<rect x="296" y="160" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="296" y="192" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="296" y="224" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="296" y="256" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="296" y="160" width="64" height="128" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="344" y="165" text-anchor="middle" class="t-cell14">1.0</text>
-<text x="344" y="197" text-anchor="middle" class="t-cell14">2.0</text>
-<text x="344" y="229" text-anchor="middle" class="t-cell14">3.0</text>
-<text x="344" y="261" text-anchor="middle" class="t-cell14">2.5</text>
+<text x="328" y="181" text-anchor="middle" class="t-cell14">1.0</text>
+<text x="328" y="213" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="328" y="245" text-anchor="middle" class="t-cell14">3.0</text>
+<text x="328" y="277" text-anchor="middle" class="t-cell14">2.5</text>
 </g>
-<rect x="424" y="144" width="56" height="32" class="cell f-green-soft"/>
-<rect x="424" y="144" width="56" height="32" class="frame" data-fit="skip"/>
+<rect x="392" y="160" width="56" height="32" class="cell f-green-soft"/>
+<rect x="392" y="160" width="56" height="32" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="452" y="165" text-anchor="middle" class="t-cell14 f-green-ink b">2.800</text>
+<text x="420" y="181" text-anchor="middle" class="t-cell14 f-green-ink b">2.800</text>
 </g>
+<circle cx="280" cy="176" r="2.5" class="f-ink-muted"/>
+<text x="376" y="184" text-anchor="middle" class="t-op">=</text>
+<text x="40" y="316" class="t-code">np.dot(w, x)</text>
+<text x="40" y="340" class="t-label">(4,) · (4,) → scalar</text>
+<text x="40" y="364" class="t-note">one neuron, one sample</text>
 <g data-grid="skip">
-<circle cx="288" cy="160" r="2.5" class="f-ink-muted"/>
+<text x="328" y="152" text-anchor="middle" class="t-tick">sample 1</text>
 </g>
-<text x="400" y="168" text-anchor="middle" class="t-op">=</text>
-<text x="528" y="164" class="t-code">np.dot(w, x)</text>
-<text x="528" y="188" class="t-label">(4,) · (4,) → scalar</text>
-<text x="528" y="212" class="t-note">one neuron, one sample</text>
+<text x="512" y="144" class="t-head">Matrix by vector</text>
+<rect x="512" y="160" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="568" y="160" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="624" y="160" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="680" y="160" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="512" y="192" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="568" y="192" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="624" y="192" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="680" y="192" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="512" y="224" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="568" y="224" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="624" y="224" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="680" y="224" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="512" y="160" width="224" height="96" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="344" y="136" text-anchor="middle" class="t-tick">sample 1</text>
+<text x="540" y="181" text-anchor="middle" class="t-cell14">0.20</text>
+<text x="596" y="181" text-anchor="middle" class="t-cell14">0.80</text>
+<text x="652" y="181" text-anchor="middle" class="t-cell14">−0.50</text>
+<text x="708" y="181" text-anchor="middle" class="t-cell14">1.00</text>
+<text x="540" y="213" text-anchor="middle" class="t-cell14">0.50</text>
+<text x="596" y="213" text-anchor="middle" class="t-cell14">−0.91</text>
+<text x="652" y="213" text-anchor="middle" class="t-cell14">0.26</text>
+<text x="708" y="213" text-anchor="middle" class="t-cell14">−0.50</text>
+<text x="540" y="245" text-anchor="middle" class="t-cell14">−0.26</text>
+<text x="596" y="245" text-anchor="middle" class="t-cell14">−0.27</text>
+<text x="652" y="245" text-anchor="middle" class="t-cell14">0.17</text>
+<text x="708" y="245" text-anchor="middle" class="t-cell14">0.87</text>
 </g>
-<text x="40" y="320" class="t-head">Matrix by vector</text>
-<rect x="40" y="336" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="96" y="336" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="152" y="336" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="208" y="336" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="40" y="368" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="96" y="368" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="152" y="368" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="208" y="368" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="40" y="400" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="96" y="400" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="152" y="400" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="208" y="400" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="40" y="336" width="224" height="96" class="frame" data-fit="skip"/>
+<rect x="768" y="160" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="768" y="192" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="768" y="224" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="768" y="256" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="768" y="160" width="64" height="128" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="68" y="357" text-anchor="middle" class="t-cell14">0.20</text>
-<text x="124" y="357" text-anchor="middle" class="t-cell14">0.80</text>
-<text x="180" y="357" text-anchor="middle" class="t-cell14">−0.50</text>
-<text x="236" y="357" text-anchor="middle" class="t-cell14">1.00</text>
-<text x="68" y="389" text-anchor="middle" class="t-cell14">0.50</text>
-<text x="124" y="389" text-anchor="middle" class="t-cell14">−0.91</text>
-<text x="180" y="389" text-anchor="middle" class="t-cell14">0.26</text>
-<text x="236" y="389" text-anchor="middle" class="t-cell14">−0.50</text>
-<text x="68" y="421" text-anchor="middle" class="t-cell14">−0.26</text>
-<text x="124" y="421" text-anchor="middle" class="t-cell14">−0.27</text>
-<text x="180" y="421" text-anchor="middle" class="t-cell14">0.17</text>
-<text x="236" y="421" text-anchor="middle" class="t-cell14">0.87</text>
+<text x="800" y="181" text-anchor="middle" class="t-cell14">1.0</text>
+<text x="800" y="213" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="800" y="245" text-anchor="middle" class="t-cell14">3.0</text>
+<text x="800" y="277" text-anchor="middle" class="t-cell14">2.5</text>
 </g>
-<rect x="312" y="336" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="312" y="368" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="312" y="400" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="312" y="432" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="312" y="336" width="64" height="128" class="frame" data-fit="skip"/>
+<rect x="864" y="160" width="56" height="32" class="cell f-green-soft"/>
+<rect x="864" y="192" width="56" height="32" class="cell f-green-soft"/>
+<rect x="864" y="224" width="56" height="32" class="cell f-green-soft"/>
+<rect x="864" y="160" width="56" height="96" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="344" y="357" text-anchor="middle" class="t-cell14">1.0</text>
-<text x="344" y="389" text-anchor="middle" class="t-cell14">2.0</text>
-<text x="344" y="421" text-anchor="middle" class="t-cell14">3.0</text>
-<text x="344" y="453" text-anchor="middle" class="t-cell14">2.5</text>
+<text x="892" y="181" text-anchor="middle" class="t-cell14 f-green-ink b">2.800</text>
+<text x="892" y="213" text-anchor="middle" class="t-cell14">−1.790</text>
+<text x="892" y="245" text-anchor="middle" class="t-cell14">1.885</text>
 </g>
-<rect x="424" y="336" width="56" height="32" class="cell f-green-soft"/>
-<rect x="424" y="368" width="56" height="32" class="cell f-green-soft"/>
-<rect x="424" y="400" width="56" height="32" class="cell f-green-soft"/>
-<rect x="424" y="336" width="56" height="96" class="frame" data-fit="skip"/>
+<circle cx="752" cy="208" r="2.5" class="f-ink-muted"/>
+<text x="848" y="216" text-anchor="middle" class="t-op">=</text>
+<text x="512" y="316" class="t-code">np.dot(W, x)</text>
+<text x="512" y="340" class="t-label">(3, 4) · (4,) → (3,)</text>
+<text x="512" y="364" class="t-note">a layer of 3 neurons, one sample</text>
 <g data-grid="skip">
-<text x="452" y="357" text-anchor="middle" class="t-cell14 f-green-ink b">2.800</text>
-<text x="452" y="389" text-anchor="middle" class="t-cell14">−1.790</text>
-<text x="452" y="421" text-anchor="middle" class="t-cell14">1.885</text>
+<text x="800" y="152" text-anchor="middle" class="t-tick">sample 1</text>
 </g>
-<g data-grid="skip">
-<circle cx="288" cy="384" r="2.5" class="f-ink-muted"/>
-</g>
-<text x="400" y="392" text-anchor="middle" class="t-op">=</text>
-<text x="528" y="356" class="t-code">np.dot(W, x)</text>
-<text x="528" y="380" class="t-label">(3, 4) · (4,) → (3,)</text>
-<text x="528" y="404" class="t-note">a layer of 3 neurons,</text>
-<text x="528" y="424" class="t-note">one sample</text>
-<g data-grid="skip">
-<text x="344" y="328" text-anchor="middle" class="t-tick">sample 1</text>
-</g>
-<text x="40" y="512" class="t-head">Matrix by matrix</text>
+<text x="40" y="448" class="t-head">Matrix by matrix</text>
+<rect x="40" y="464" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="96" y="464" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="152" y="464" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="208" y="464" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="40" y="496" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="96" y="496" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="152" y="496" width="56" height="32" class="cell f-orange-soft"/>
+<rect x="208" y="496" width="56" height="32" class="cell f-orange-soft"/>
 <rect x="40" y="528" width="56" height="32" class="cell f-orange-soft"/>
 <rect x="96" y="528" width="56" height="32" class="cell f-orange-soft"/>
 <rect x="152" y="528" width="56" height="32" class="cell f-orange-soft"/>
 <rect x="208" y="528" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="40" y="560" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="96" y="560" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="152" y="560" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="208" y="560" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="40" y="592" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="96" y="592" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="152" y="592" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="208" y="592" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="40" y="528" width="224" height="96" class="frame" data-fit="skip"/>
+<rect x="40" y="464" width="224" height="96" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="68" y="549" text-anchor="middle" class="t-cell14">0.20</text>
-<text x="124" y="549" text-anchor="middle" class="t-cell14">0.80</text>
-<text x="180" y="549" text-anchor="middle" class="t-cell14">−0.50</text>
-<text x="236" y="549" text-anchor="middle" class="t-cell14">1.00</text>
-<text x="68" y="581" text-anchor="middle" class="t-cell14">0.50</text>
-<text x="124" y="581" text-anchor="middle" class="t-cell14">−0.91</text>
-<text x="180" y="581" text-anchor="middle" class="t-cell14">0.26</text>
-<text x="236" y="581" text-anchor="middle" class="t-cell14">−0.50</text>
-<text x="68" y="613" text-anchor="middle" class="t-cell14">−0.26</text>
-<text x="124" y="613" text-anchor="middle" class="t-cell14">−0.27</text>
-<text x="180" y="613" text-anchor="middle" class="t-cell14">0.17</text>
-<text x="236" y="613" text-anchor="middle" class="t-cell14">0.87</text>
+<text x="68" y="485" text-anchor="middle" class="t-cell14">0.20</text>
+<text x="124" y="485" text-anchor="middle" class="t-cell14">0.80</text>
+<text x="180" y="485" text-anchor="middle" class="t-cell14">−0.50</text>
+<text x="236" y="485" text-anchor="middle" class="t-cell14">1.00</text>
+<text x="68" y="517" text-anchor="middle" class="t-cell14">0.50</text>
+<text x="124" y="517" text-anchor="middle" class="t-cell14">−0.91</text>
+<text x="180" y="517" text-anchor="middle" class="t-cell14">0.26</text>
+<text x="236" y="517" text-anchor="middle" class="t-cell14">−0.50</text>
+<text x="68" y="549" text-anchor="middle" class="t-cell14">−0.26</text>
+<text x="124" y="549" text-anchor="middle" class="t-cell14">−0.27</text>
+<text x="180" y="549" text-anchor="middle" class="t-cell14">0.17</text>
+<text x="236" y="549" text-anchor="middle" class="t-cell14">0.87</text>
 </g>
-<rect x="312" y="528" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="376" y="528" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="440" y="528" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="312" y="560" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="376" y="560" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="440" y="560" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="312" y="592" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="376" y="592" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="440" y="592" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="312" y="624" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="376" y="624" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="440" y="624" width="64" height="32" class="cell f-blue-soft"/>
-<rect x="312" y="528" width="192" height="128" class="frame" data-fit="skip"/>
+<rect x="296" y="464" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="360" y="464" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="424" y="464" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="296" y="496" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="360" y="496" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="424" y="496" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="296" y="528" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="360" y="528" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="424" y="528" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="296" y="560" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="360" y="560" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="424" y="560" width="64" height="32" class="cell f-blue-soft"/>
+<rect x="296" y="464" width="192" height="128" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="344" y="549" text-anchor="middle" class="t-cell14">1.0</text>
-<text x="408" y="549" text-anchor="middle" class="t-cell14">2.0</text>
-<text x="472" y="549" text-anchor="middle" class="t-cell14">−1.5</text>
-<text x="344" y="581" text-anchor="middle" class="t-cell14">2.0</text>
-<text x="408" y="581" text-anchor="middle" class="t-cell14">5.0</text>
-<text x="472" y="581" text-anchor="middle" class="t-cell14">2.7</text>
-<text x="344" y="613" text-anchor="middle" class="t-cell14">3.0</text>
-<text x="408" y="613" text-anchor="middle" class="t-cell14">−1.0</text>
-<text x="472" y="613" text-anchor="middle" class="t-cell14">3.3</text>
-<text x="344" y="645" text-anchor="middle" class="t-cell14">2.5</text>
-<text x="408" y="645" text-anchor="middle" class="t-cell14">2.0</text>
-<text x="472" y="645" text-anchor="middle" class="t-cell14">−0.8</text>
+<text x="328" y="485" text-anchor="middle" class="t-cell14">1.0</text>
+<text x="392" y="485" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="456" y="485" text-anchor="middle" class="t-cell14">−1.5</text>
+<text x="328" y="517" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="392" y="517" text-anchor="middle" class="t-cell14">5.0</text>
+<text x="456" y="517" text-anchor="middle" class="t-cell14">2.7</text>
+<text x="328" y="549" text-anchor="middle" class="t-cell14">3.0</text>
+<text x="392" y="549" text-anchor="middle" class="t-cell14">−1.0</text>
+<text x="456" y="549" text-anchor="middle" class="t-cell14">3.3</text>
+<text x="328" y="581" text-anchor="middle" class="t-cell14">2.5</text>
+<text x="392" y="581" text-anchor="middle" class="t-cell14">2.0</text>
+<text x="456" y="581" text-anchor="middle" class="t-cell14">−0.8</text>
 </g>
-<rect x="552" y="528" width="56" height="32" class="cell f-green-soft"/>
-<rect x="608" y="528" width="56" height="32" class="cell f-green-soft"/>
-<rect x="664" y="528" width="56" height="32" class="cell f-green-soft"/>
-<rect x="552" y="560" width="56" height="32" class="cell f-green-soft"/>
-<rect x="608" y="560" width="56" height="32" class="cell f-green-soft"/>
-<rect x="664" y="560" width="56" height="32" class="cell f-green-soft"/>
-<rect x="552" y="592" width="56" height="32" class="cell f-green-soft"/>
-<rect x="608" y="592" width="56" height="32" class="cell f-green-soft"/>
-<rect x="664" y="592" width="56" height="32" class="cell f-green-soft"/>
-<rect x="552" y="528" width="168" height="96" class="frame" data-fit="skip"/>
+<rect x="520" y="464" width="56" height="32" class="cell f-green-soft"/>
+<rect x="576" y="464" width="56" height="32" class="cell f-green-soft"/>
+<rect x="632" y="464" width="56" height="32" class="cell f-green-soft"/>
+<rect x="520" y="496" width="56" height="32" class="cell f-green-soft"/>
+<rect x="576" y="496" width="56" height="32" class="cell f-green-soft"/>
+<rect x="632" y="496" width="56" height="32" class="cell f-green-soft"/>
+<rect x="520" y="528" width="56" height="32" class="cell f-green-soft"/>
+<rect x="576" y="528" width="56" height="32" class="cell f-green-soft"/>
+<rect x="632" y="528" width="56" height="32" class="cell f-green-soft"/>
+<rect x="520" y="464" width="168" height="96" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="580" y="549" text-anchor="middle" class="t-cell14 f-green-ink b">2.800</text>
-<text x="636" y="549" text-anchor="middle" class="t-cell14">6.900</text>
-<text x="692" y="549" text-anchor="middle" class="t-cell14">−0.590</text>
-<text x="580" y="581" text-anchor="middle" class="t-cell14">−1.790</text>
-<text x="636" y="581" text-anchor="middle" class="t-cell14">−4.810</text>
-<text x="692" y="581" text-anchor="middle" class="t-cell14">−1.949</text>
-<text x="580" y="613" text-anchor="middle" class="t-cell14">1.885</text>
-<text x="636" y="613" text-anchor="middle" class="t-cell14">−0.300</text>
-<text x="692" y="613" text-anchor="middle" class="t-cell14">−0.474</text>
+<text x="548" y="485" text-anchor="middle" class="t-cell14 f-green-ink b">2.800</text>
+<text x="604" y="485" text-anchor="middle" class="t-cell14">6.900</text>
+<text x="660" y="485" text-anchor="middle" class="t-cell14">−0.590</text>
+<text x="548" y="517" text-anchor="middle" class="t-cell14">−1.790</text>
+<text x="604" y="517" text-anchor="middle" class="t-cell14">−4.810</text>
+<text x="660" y="517" text-anchor="middle" class="t-cell14">−1.949</text>
+<text x="548" y="549" text-anchor="middle" class="t-cell14">1.885</text>
+<text x="604" y="549" text-anchor="middle" class="t-cell14">−0.300</text>
+<text x="660" y="549" text-anchor="middle" class="t-cell14">−0.474</text>
 </g>
+<circle cx="280" cy="512" r="2.5" class="f-ink-muted"/>
+<text x="504" y="520" text-anchor="middle" class="t-op">=</text>
+<text x="720" y="484" class="t-code">np.dot(W, X.T)</text>
+<text x="720" y="508" class="t-label">(3, 4) · (4, 3) → (3, 3)</text>
+<text x="720" y="532" class="t-note">a layer of 3 neurons,</text>
+<text x="720" y="552" class="t-note">3 samples as columns</text>
 <g data-grid="skip">
-<circle cx="288" cy="576" r="2.5" class="f-ink-muted"/>
+<text x="328" y="456" text-anchor="middle" class="t-tick">sample 1</text>
+<text x="392" y="456" text-anchor="middle" class="t-tick">sample 2</text>
+<text x="456" y="456" text-anchor="middle" class="t-tick">sample 3</text>
 </g>
-<text x="528" y="584" text-anchor="middle" class="t-op">=</text>
-<text x="768" y="548" class="t-code">np.dot(W, X.T)</text>
-<text x="768" y="572" class="t-label">(3, 4) · (4, 3) → (3, 3)</text>
-<text x="768" y="596" class="t-note">a layer of 3 neurons,</text>
-<text x="768" y="616" class="t-note">3 samples as columns</text>
-<g data-grid="skip">
-<text x="344" y="520" text-anchor="middle" class="t-tick">sample 1</text>
-<text x="408" y="520" text-anchor="middle" class="t-tick">sample 2</text>
-<text x="472" y="520" text-anchor="middle" class="t-tick">sample 3</text>
-</g>
-<rect x="40" y="528" width="224" height="32" class="emph s-orange" data-fit="skip"/>
-<rect x="312" y="528" width="64" height="128" class="emph s-blue" data-fit="skip"/>
+<rect x="40" y="464" width="224" height="32" class="emph s-orange" data-fit="skip"/>
+<rect x="296" y="464" width="64" height="128" class="emph s-blue" data-fit="skip"/>
 <text x="40" y="684" class="t-note">Every form sums over the 4 inputs, where the first argument's last axis meets the second's first.</text>
 </svg>

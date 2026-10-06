@@ -133,6 +133,7 @@
   .f-green-soft { fill: var(--nn-green-soft); }
   .f-ink-muted { fill: var(--nn-ink-muted); }
   .f-orange-soft { fill: var(--nn-orange-soft); }
+  .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
   .s-orange { stroke: var(--nn-orange); }
 </style>
 <defs>
@@ -181,14 +182,12 @@
 <text x="512" y="262" text-anchor="middle" class="t-cell18">60</text>
 </g>
 <rect x="216" y="184" width="48" height="144" class="emph s-orange" data-fit="skip"/>
-<g data-grid="skip">
 <circle cx="200" cy="256" r="2.5" class="f-ink-muted"/>
-</g>
 <text x="376" y="264" text-anchor="middle" class="t-op">=</text>
 <text x="112" y="308" text-anchor="middle" class="t-label"><tspan class="b">a</tspan>, (3,)</text>
 <text x="288" y="356" text-anchor="middle" class="t-label"><tspan class="b">B</tspan>, (3, 3)</text>
 <text x="464" y="308" text-anchor="middle" class="t-label">(3,)</text>
-<text x="40" y="152" class="t-head">np.dot(a, B): vector first</text>
+<text x="40" y="152" class="t-head"><tspan class="mono">np.dot(a, B)</tspan>: vector first</text>
 <text x="40" y="396" class="t-label"><tspan class="b">a</tspan> acts as a row and meets each column of <tspan class="b">B</tspan></text>
 <text x="40" y="428" class="t-math">1 · 4 + 2 · 7 + 3 · 10 = 48</text>
 <rect x="600" y="184" width="48" height="48" class="cell f-orange-soft"/>
@@ -231,15 +230,13 @@
 <text x="880" y="310" text-anchor="middle" class="t-cell18">68</text>
 </g>
 <rect x="600" y="184" width="144" height="48" class="emph s-orange" data-fit="skip"/>
-<g data-grid="skip">
 <circle cx="760" cy="256" r="2.5" class="f-ink-muted"/>
-</g>
 <text x="840" y="264" text-anchor="middle" class="t-op">=</text>
 <text x="672" y="356" text-anchor="middle" class="t-label"><tspan class="b">B</tspan>, (3, 3)</text>
 <text x="800" y="356" text-anchor="middle" class="t-label"><tspan class="b">a</tspan>, (3,)</text>
 <text x="880" y="356" text-anchor="middle" class="t-label">(3,)</text>
-<text x="600" y="152" class="t-head">np.dot(B, a): matrix first</text>
+<text x="600" y="152" class="t-head"><tspan class="mono">np.dot(B, a)</tspan>: matrix first</text>
 <text x="600" y="396" class="t-label"><tspan class="b">a</tspan> acts as a column and meets each row of <tspan class="b">B</tspan></text>
 <text x="600" y="428" class="t-math">4 · 1 + 5 · 2 + 6 · 3 = 32</text>
-<text x="40" y="504" class="t-note">Both orders run only because <tspan class="b">B</tspan> is square; with <tspan class="b">C</tspan> of shape (2, 3), np.dot(a, C) raises.</text>
+<text x="40" y="504" class="t-note">Both orders run only because <tspan class="b">B</tspan> is square; with <tspan class="b">C</tspan> of shape (2, 3), <tspan class="mono">np.dot(a, C)</tspan> raises.</text>
 </svg>

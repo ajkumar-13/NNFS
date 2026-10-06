@@ -19,7 +19,7 @@ import numpy as np
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, r"C:\Users\admin\Desktop\series-standard\tools")
-from figkit import Figure, Raw, rich, CDOT  # noqa: E402
+from figkit import Figure, arr, rich, span, CDOT  # noqa: E402
 
 SNIPPET = Path(__file__).resolve().parents[2] / "snippets" / "order_matters.py"
 with contextlib.redirect_stdout(io.StringIO()):
@@ -35,11 +35,6 @@ def worked(xs, ys, total):
     return " + ".join(f"{x} {CDOT} {y}" for x, y in zip(xs, ys)) + f" = {total}"
 
 
-def bold(s):
-    """A whole array, bold upright as the notation guide writes it."""
-    return Raw(f'<tspan class="b">{s}</tspan>')
-
-
 LEFT = worked(a, B[:, 0], AB[0])                 # a with column 1 of B
 RIGHT = worked(B[0], a, BA[0])                   # row 1 of B with a
 assert LEFT.endswith("= 48") and RIGHT.endswith("= 32")
@@ -53,19 +48,12 @@ fig = Figure(
     "outlined and the worked line reads 4 times 1 plus 5 times 2 plus 6 times 3 equals 32. Under every operand "
     "sits its shape: a, (3,); B, (3, 3); and (3,) under each result. A caption line says "
     "both orders run only because B is square, and that with C of shape (2, 3) np.dot(a, C) raises.",
-    subtitle=rich("Section 5's ", bold("a"), " and ", bold("B"), ". A 1-D first argument acts as a row; a 1-D "
+    subtitle=rich("Section 5's ", arr("a"), " and ", arr("B"), ". A 1-D first argument acts as a row; a 1-D "
                   "second argument as a column."))
 
 CELL = 48
-DOT_R = 2.5                                      # the product dot, as in every figure of the post
 TOP, HEAD = 184, 152                             # the block (heading to worked line) centred in the content
 XL, XR = 40, 600                                 # the left equation is 496 wide, the right one 304
-
-
-def dot_mark(x, y):
-    """The product dot, on the axis of the "=" beside it (the "=" baseline is 8 lower)."""
-    with fig.data():
-        fig.add(f'<circle cx="{x}" cy="{y}" r="{DOT_R}" class="{fig._cls("f", "ink-muted")}"/>')
 
 
 def name(g, s):
@@ -82,13 +70,13 @@ xr = xb + 3 * CELL + 32
 gr = fig.strip(xr, TOP + CELL, 3, CELL, values=AB.tolist(), fill=lambda k: "output-soft", strong={0: "output"})
 assert xr + 3 * CELL == 536
 gb.window(0, 0, 3, 1, "weight")
-dot_mark(xb - 16, TOP + 72)
-fig.text(xr - 16, TOP + 80, "=", "op", anchor="middle")
-name(ga, rich(bold("a"), ", (3,)"))
-name(gb, rich(bold("B"), ", (3, 3)"))
+fig.op(xb - 16, TOP + 72, "·")                # the operators sit on the axis of B's middle row
+fig.op(xr - 16, TOP + 72, "=")
+name(ga, rich(arr("a"), ", (3,)"))
+name(gb, rich(arr("B"), ", (3, 3)"))
 name(gr, "(3,)")
-fig.text(XL, HEAD, "np.dot(a, B): vector first", "head")
-fig.text(XL, TOP + 3 * CELL + 68, rich(bold("a"), " acts as a row and meets each column of ", bold("B")), "label")
+fig.text(XL, HEAD, rich(span("np.dot(a, B)", mono=True), ": vector first"), "head")
+fig.text(XL, TOP + 3 * CELL + 68, rich(arr("a"), " acts as a row and meets each column of ", arr("B")), "label")
 fig.text(XL, TOP + 3 * CELL + 100, LEFT, "math")
 
 # -- right: B . a (column) = column
@@ -100,15 +88,15 @@ ga2 = fig.strip(xa2, TOP, 3, CELL, vertical=True, values=a.tolist(), fill=lambda
 xr2 = xa2 + CELL + 32
 gr2 = fig.strip(xr2, TOP, 3, CELL, vertical=True, values=BA.tolist(), fill=lambda k: "output-soft", strong={0: "output"})
 gb2.window(0, 0, 1, 3, "weight")
-dot_mark(xa2 - 16, TOP + 72)
-fig.text(xr2 - 16, TOP + 80, "=", "op", anchor="middle")
-name(gb2, rich(bold("B"), ", (3, 3)"))
-name(ga2, rich(bold("a"), ", (3,)"))
+fig.op(xa2 - 16, TOP + 72, "·")
+fig.op(xr2 - 16, TOP + 72, "=")
+name(gb2, rich(arr("B"), ", (3, 3)"))
+name(ga2, rich(arr("a"), ", (3,)"))
 name(gr2, "(3,)")
-fig.text(x0, HEAD, "np.dot(B, a): matrix first", "head")
-fig.text(x0, TOP + 3 * CELL + 68, rich(bold("a"), " acts as a column and meets each row of ", bold("B")), "label")
+fig.text(x0, HEAD, rich(span("np.dot(B, a)", mono=True), ": matrix first"), "head")
+fig.text(x0, TOP + 3 * CELL + 68, rich(arr("a"), " acts as a column and meets each row of ", arr("B")), "label")
 fig.text(x0, TOP + 3 * CELL + 100, RIGHT, "math")
 
-fig.caption(rich("Both orders run only because ", bold("B"), " is square; with ", bold("C"),
-                 " of shape (2, 3), np.dot(a, C) raises."))
+fig.caption(rich("Both orders run only because ", arr("B"), " is square; with ", arr("C"),
+                 " of shape (2, 3), ", span("np.dot(a, C)", mono=True), " raises."))
 fig.write()

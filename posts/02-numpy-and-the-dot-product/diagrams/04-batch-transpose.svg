@@ -243,9 +243,7 @@
 <text x="824" y="508" text-anchor="middle" class="t-tick">neuron 2</text>
 <text x="888" y="508" text-anchor="middle" class="t-tick">neuron 3</text>
 </g>
-<g data-grid="skip">
 <circle cx="312" cy="416" r="2.5" class="f-ink-muted"/>
-</g>
 <text x="536" y="424" text-anchor="middle" class="t-op">+</text>
 <text x="712" y="424" text-anchor="middle" class="t-op">=</text>
 <text x="200" y="536" text-anchor="middle" class="t-label">inputs, (3, 4)</text>
@@ -253,43 +251,43 @@
 <text x="424" y="560" text-anchor="middle" class="t-label">weights.T, (4, 3)</text>
 <text x="624" y="468" text-anchor="middle" class="t-label">biases, (3,)</text>
 <text x="624" y="488" text-anchor="middle" class="t-note">added to every row</text>
-<rect x="104" y="152" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="160" y="152" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="216" y="152" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="272" y="152" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="104" y="184" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="160" y="184" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="216" y="184" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="272" y="184" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="104" y="216" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="160" y="216" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="216" y="216" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="272" y="216" width="56" height="32" class="cell f-orange-soft"/>
-<rect x="104" y="152" width="224" height="96" class="frame" data-fit="skip"/>
+<rect x="104" y="152" width="56" height="48" class="cell f-orange-soft"/>
+<rect x="160" y="152" width="56" height="48" class="cell f-orange-soft"/>
+<rect x="216" y="152" width="56" height="48" class="cell f-orange-soft"/>
+<rect x="272" y="152" width="56" height="48" class="cell f-orange-soft"/>
+<rect x="104" y="200" width="56" height="48" class="cell f-orange-soft"/>
+<rect x="160" y="200" width="56" height="48" class="cell f-orange-soft"/>
+<rect x="216" y="200" width="56" height="48" class="cell f-orange-soft"/>
+<rect x="272" y="200" width="56" height="48" class="cell f-orange-soft"/>
+<rect x="104" y="248" width="56" height="48" class="cell f-orange-soft"/>
+<rect x="160" y="248" width="56" height="48" class="cell f-orange-soft"/>
+<rect x="216" y="248" width="56" height="48" class="cell f-orange-soft"/>
+<rect x="272" y="248" width="56" height="48" class="cell f-orange-soft"/>
+<rect x="104" y="152" width="224" height="144" class="frame" data-fit="skip"/>
 <g data-grid="skip">
-<text x="132" y="173" text-anchor="middle" class="t-cell14">0.20</text>
-<text x="188" y="173" text-anchor="middle" class="t-cell14">0.80</text>
-<text x="244" y="173" text-anchor="middle" class="t-cell14">−0.50</text>
-<text x="300" y="173" text-anchor="middle" class="t-cell14">1.00</text>
-<text x="132" y="205" text-anchor="middle" class="t-cell14">0.50</text>
-<text x="188" y="205" text-anchor="middle" class="t-cell14">−0.91</text>
-<text x="244" y="205" text-anchor="middle" class="t-cell14">0.26</text>
-<text x="300" y="205" text-anchor="middle" class="t-cell14">−0.50</text>
-<text x="132" y="237" text-anchor="middle" class="t-cell14">−0.26</text>
-<text x="188" y="237" text-anchor="middle" class="t-cell14">−0.27</text>
-<text x="244" y="237" text-anchor="middle" class="t-cell14">0.17</text>
-<text x="300" y="237" text-anchor="middle" class="t-cell14">0.87</text>
+<text x="132" y="181" text-anchor="middle" class="t-cell14">0.20</text>
+<text x="188" y="181" text-anchor="middle" class="t-cell14">0.80</text>
+<text x="244" y="181" text-anchor="middle" class="t-cell14">−0.50</text>
+<text x="300" y="181" text-anchor="middle" class="t-cell14">1.00</text>
+<text x="132" y="229" text-anchor="middle" class="t-cell14">0.50</text>
+<text x="188" y="229" text-anchor="middle" class="t-cell14">−0.91</text>
+<text x="244" y="229" text-anchor="middle" class="t-cell14">0.26</text>
+<text x="300" y="229" text-anchor="middle" class="t-cell14">−0.50</text>
+<text x="132" y="277" text-anchor="middle" class="t-cell14">−0.26</text>
+<text x="188" y="277" text-anchor="middle" class="t-cell14">−0.27</text>
+<text x="244" y="277" text-anchor="middle" class="t-cell14">0.17</text>
+<text x="300" y="277" text-anchor="middle" class="t-cell14">0.87</text>
 </g>
 <g data-grid="skip">
-<text x="96" y="173" text-anchor="end" class="t-tick">neuron 1</text>
-<text x="96" y="205" text-anchor="end" class="t-tick">neuron 2</text>
-<text x="96" y="237" text-anchor="end" class="t-tick">neuron 3</text>
+<text x="96" y="181" text-anchor="end" class="t-tick">neuron 1</text>
+<text x="96" y="229" text-anchor="end" class="t-tick">neuron 2</text>
+<text x="96" y="277" text-anchor="end" class="t-tick">neuron 3</text>
 </g>
 <text x="104" y="136" class="t-head">weights, (3, 4), as stored</text>
-<path d="M336,200 L424,200 L424,317" class="flow" marker-end="url(#nn-04-batch-transpose-arrow)"/>
-<text x="432" y="192" class="t-note">transpose</text>
-<text x="560" y="196" class="t-note">Without .T, np.dot(inputs, weights) pairs (3, 4)</text>
-<text x="560" y="216" class="t-note">with (3, 4): the 4 meets a 3, and NumPy raises ValueError.</text>
+<path d="M336,224 L424,224 L424,317" class="flow" marker-end="url(#nn-04-batch-transpose-arrow)"/>
+<text x="432" y="216" class="t-note">transpose</text>
+<text x="560" y="268" class="t-note">Without .T, np.dot(inputs, weights) pairs (3, 4)</text>
+<text x="560" y="288" class="t-note">with (3, 4): the 4 meets a 3, and NumPy raises ValueError.</text>
 <text x="104" y="600" class="t-label">sample 1 with neuron 1, plus its bias:</text>
 <text x="104" y="632" class="t-math">1.0 · 0.20 + 2.0 · 0.80 + 3.0 · (−0.50) + 2.5 · 1.00 + 2.0 = 4.800</text>
 <text x="40" y="684" class="t-note">np.dot(inputs, weights.T) + biases: (3, 4) · (4, 3) + (3,) → (3, 3).</text>

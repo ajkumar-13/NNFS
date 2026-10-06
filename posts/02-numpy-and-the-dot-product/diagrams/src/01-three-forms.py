@@ -4,11 +4,11 @@ Run from anywhere:  python posts/02-numpy-and-the-dot-product/diagrams/src/01-th
 Writes posts/02-numpy-and-the-dot-product/diagrams/01-three-forms.svg.
 
 Layout (960 x 720), neurons-first as section 3 frames the third form: W holds one neuron per row and the
-second argument one sample per column. Three rows, one per form, each first argument at the left edge and
-the second argument in a fixed column, so the column x of rows 1 and 2 is column 1 of X.T in row 3. Each
-"=", the result and the row's code, shapes and notes follow at the same spacing as the product dot, so no
-row has a gap inside its equation and every note sits beside its own result. No bias: the figure shows
-np.dot alone.
+second argument one sample per column. The two vector forms side by side across the top, each 408 wide and
+flush with the two margins, 64 apart (twice the gap inside an equation), with its code, shapes and note
+under it; the batch form across the bottom, its text beside the result. Within each equation the operands follow at one spacing with the
+operators centred between, so no equation has a gap inside it, and column x of the first form sits right
+above column 1 of X.T. No bias: the figure shows np.dot alone.
 Every value is computed here from the arrays of snippets/batch_layer.py and checked against the post.
 """
 import contextlib
@@ -21,7 +21,7 @@ import numpy as np
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, r"C:\Users\admin\Desktop\series-standard\tools")
-from figkit import Figure, Raw, rich, num  # noqa: E402
+from figkit import Figure, arr, rich, num  # noqa: E402
 
 SNIPPET = Path(__file__).resolve().parents[2] / "snippets" / "batch_layer.py"
 with contextlib.redirect_stdout(io.StringIO()):
@@ -52,8 +52,9 @@ def says(vals, d):
 
 fig = Figure(
     "01-three-forms", "One function, three forms: the shapes decide",
-    "Three rows, one per form of np.dot, drawn neurons-first with the weights and inputs of section 8 and no "
-    "bias. Vector by vector, np.dot(w, x): the weights of neuron 1, "
+    "Three equations, one per form of np.dot, drawn neurons-first with the weights and inputs of section 8 and no "
+    "bias: the two vector forms side by side at the top, each with its call, shapes and meaning under it, and the "
+    "matrix form across the bottom with its text beside the result. Vector by vector, np.dot(w, x): the weights of neuron 1, "
     f"{says(W[0], D_W)}, as a row, meet sample 1, {says(X[0], D_X)}, as a column, and give the scalar "
     f"{say(ONE, D_Z)}; shapes (4,) and (4,), one neuron and one sample. Matrix by vector, np.dot(W, x): the 3 by "
     f"4 weight matrix, rows {'; '.join(says(r, D_W) for r in W)}, meets the same column and gives the column "
@@ -62,49 +63,58 @@ fig = Figure(
     f"result with one column per sample, rows {'; '.join(says(r, D_Z) for r in BATCH)}; shapes (3, 4) and (4, 3) "
     f"give (3, 3). Row 1 of the weights and column 1 of the samples are outlined, and {say(ONE, D_Z)} is bold in "
     "every result. A caption line says every form sums over the 4 inputs.",
-    subtitle=rich("Section 8's layer before the bias, neurons-first: one neuron per row of ", Raw('<tspan class="b">W</tspan>'),
+    subtitle=rich("Section 8's layer before the bias, neurons-first: one neuron per row of ", arr("W"),
                   ", one sample per column."),
     height=720)
 
-DOT_R = 2.5                                     # the product dot: the 24 px glyph is too faint
 CW, CS, CH, FONT = 56, 64, 32, 14              # weight and result cells 56 wide, sample cells 64 (room for labels)
-XW, XS = 40, 312                                # first argument, second argument
-GAP = XS - (XW + 4 * CW)                        # 48: every operator sits in the middle of a gap this wide
-OP1 = XW + 4 * CW + GAP // 2                    # 288: the product dot
-TOPS = [144, 336, 528]
-assert GAP == 48 and OP1 == 288 and TOPS[2] + 4 * CH == fig.content.bottom
+GAP = 32                                        # every operator sits in the middle of a gap this wide
+PANEL = 4 * CW + GAP + CS + GAP + CW            # 408: one vector-form equation
+X0, X1 = 40, 512                                # the two upper panels, flush with the two margins
+GUTTER = X1 - (X0 + PANEL)                      # 64: twice the gap inside an equation, so the pair reads as two
+TOP_UP, TOP_LOW = 160, 464                      # the upper pair; the batch row
+assert PANEL == 408 and X1 + PANEL == 920 and GUTTER == 2 * GAP
 
 ROWS = [
-    dict(head="Vector by vector", code="np.dot(w, x)", shapes="(4,) \u00b7 (4,) \u2192 scalar",
-         notes=["one neuron, one sample"], first=W[:1], second=X[:1].T, out=np.array([[ONE]])),
-    dict(head="Matrix by vector", code="np.dot(W, x)", shapes="(3, 4) \u00b7 (4,) \u2192 (3,)",
-         notes=["a layer of 3 neurons,", "one sample"], first=W, second=X[:1].T, out=LAYER[:, None]),
-    dict(head="Matrix by matrix", code="np.dot(W, X.T)", shapes="(3, 4) \u00b7 (4, 3) \u2192 (3, 3)",
-         notes=["a layer of 3 neurons,", "3 samples as columns"], first=W, second=X.T, out=BATCH),
+    dict(head="Vector by vector", code="np.dot(w, x)", shapes="(4,) · (4,) → scalar",
+         notes=["one neuron, one sample"], first=W[:1], second=X[:1].T, out=np.array([[ONE]]),
+         x=X0, top=TOP_UP, text="below"),
+    dict(head="Matrix by vector", code="np.dot(W, x)", shapes="(3, 4) · (4,) → (3,)",
+         notes=["a layer of 3 neurons, one sample"], first=W, second=X[:1].T, out=LAYER[:, None],
+         x=X1, top=TOP_UP, text="below"),
+    dict(head="Matrix by matrix", code="np.dot(W, X.T)", shapes="(3, 4) · (4, 3) → (3, 3)",
+         notes=["a layer of 3 neurons,", "3 samples as columns"], first=W, second=X.T, out=BATCH,
+         x=X0, top=TOP_LOW, text="beside"),
 ]
 
-for k, (top, r) in enumerate(zip(TOPS, ROWS)):
-    fig.text(XW, top - 16, r["head"], "head")
+for k, r in enumerate(ROWS):
+    x, top = r["x"], r["top"]
+    fig.text(x, top - 16, r["head"], "head")
     a, s, z = r["first"], r["second"], r["out"]
-    ga = fig.grid(XW, top, *a.shape, cell_w=CW, cell_h=CH, values=a.tolist(), decimals=D_W, font=FONT,
+    ga = fig.grid(x, top, *a.shape, cell_w=CW, cell_h=CH, values=a.tolist(), decimals=D_W, font=FONT,
                   fill=lambda i, j: "weight-soft")
-    gs = fig.grid(XS, top, *s.shape, cell_w=CS, cell_h=CH, values=s.tolist(), decimals=D_X, font=FONT,
+    xs = ga.box.right + GAP                                   # the second argument follows the first
+    gs = fig.grid(xs, top, *s.shape, cell_w=CS, cell_h=CH, values=s.tolist(), decimals=D_X, font=FONT,
                   fill=lambda i, j: "input-soft")
-    XZ = gs.box.right + GAP                                   # the result follows its second argument
-    OP2 = gs.box.right + GAP // 2
-    fig.grid(XZ, top, *z.shape, cell_w=CW, cell_h=CH, values=z.tolist(), decimals=D_Z, font=FONT,
-             fill=lambda i, j: "output-soft", strong={(0, 0): "output"})
-    ymid = top + a.shape[0] * CH // 2 + 8                     # the operators sit on the first argument's middle
-    with fig.data():                                          # the product dot, drawn on the "=" sign's axis
-        fig.add(f'<circle cx="{OP1}" cy="{ymid - 8}" r="{DOT_R}" class="{fig._cls("f", "ink-muted")}"/>')
-    fig.text(OP2, ymid, "=", "op", anchor="middle")
-    XT = XZ + z.shape[1] * CW + GAP                           # the row's text follows its result
-    fig.text(XT, top + 20, r["code"], "code")
-    fig.text(XT, top + 44, r["shapes"], "label")
+    xz = gs.box.right + GAP                                   # the result follows its second argument
+    gz = fig.grid(xz, top, *z.shape, cell_w=CW, cell_h=CH, values=z.tolist(), decimals=D_Z, font=FONT,
+                  fill=lambda i, j: "output-soft", strong={(0, 0): "output"})
+    ymid = top + a.shape[0] * CH // 2                         # the operators sit on the first argument's middle
+    fig.op(ga.box.right + GAP // 2, ymid, "·")
+    fig.op(gs.box.right + GAP // 2, ymid, "=")
+    if r["text"] == "below":                                  # under the tallest operand, the 4-row column
+        xt, y0 = x, gs.box.bottom + 28
+    else:                                                     # beside the result, from its first row
+        xt, y0 = gz.box.right + GAP, top + 20
+    fig.text(xt, y0, r["code"], "code")
+    fig.text(xt, y0 + 24, r["shapes"], "label")
     for i, line in enumerate(r["notes"]):
-        fig.text(XT, top + 68 + 20 * i, line, "note")
+        fig.text(xt, y0 + 48 + 20 * i, line, "note")
     gs.col_labels([f"sample {j + 1}" for j in range(s.shape[1])])
+    if k == 0:
+        assert gz.box.right == X0 + PANEL
     if k == 2:                                                # one dot product, picked out in the batch
+        assert xs == ROWS[0]["x"] + 4 * CW + GAP              # column 1 of X.T sits under the first form's x
         ga.window(0, 0, 1, 4, "weight")
         gs.window(0, 0, 4, 1, "input")
 
