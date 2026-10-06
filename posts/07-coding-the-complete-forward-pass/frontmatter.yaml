@@ -9,7 +9,7 @@ part: "Part II - Activations and forward pass"
 level: beginner
 reading_time: 20
 tags: [neural-networks, from-scratch, forward-pass, integration]
-hero: diagrams/01-pipeline-anatomy.svg
+hero: diagrams/01-pipeline.svg
 prerequisites: [nn-004, nn-006]
 code: included
 outcomes:

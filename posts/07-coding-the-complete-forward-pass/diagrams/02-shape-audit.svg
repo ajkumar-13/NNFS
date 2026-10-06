@@ -1,119 +1,312 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" role="img" aria-labelledby="t d">
-  <title id="t">Shape audit through the complete forward pass</title>
-  <desc id="d">A horizontal shape-tracking diagram for a batch of 300 spiral samples through the four-stage network. The batch dimension 300 is preserved at every step. The input X has shape 300 by 2; dense1 changes the feature dim to 3 producing 300 by 3; activation1 leaves the shape at 300 by 3; dense2 leaves it at 300 by 3; activation2 also leaves it at 300 by 3. Two key annotations: the batch dimension never changes (vertical separator), and activations never change the shape (only dense layers do).</desc>
-
-  <style><![CDATA[
-    :root{
-      --nn-bg:#FAFAF7;--nn-surface:#FFFFFF;--nn-ink:#1A1A1A;--nn-ink-muted:#5C5C5C;--nn-ink-subtle:#9A9A9A;
-      --nn-border:#D9D9D4;--nn-primary:#5B7FBF;--nn-accent:#D98E5F;
-      --nn-success:#5C9E78;--nn-warn:#B8895A;--nn-alert:#C66B5E;--nn-neutral-1:#EAEAE4;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" role="img" aria-labelledby="nn-02-shape-audit-title" aria-describedby="nn-02-shape-audit-desc">
+<title id="nn-02-shape-audit-title">Rows come from the batch, columns from the last dense layer</title>
+<desc id="nn-02-shape-audit-desc">The five arrays of the forward pass drawn twice, as bands one column per feature. Top, the batch of 300 spiral points: X is (300, 2), dense1.output (300, 3), activation1.output (300, 3), dense2.output (300, 3), activation2.output (300, 3). Between the arrays, the four objects: dense1 with weights (2, 3), activation1 with no weights, dense2 with weights (3, 3), activation2 with no weights. A bracket under the last four arrays says that they share the shape (300, 3). Bottom, the same pass on the first 7 rows, drawn row by row: (7, 2), then (7, 3) four times. In every shape the row count is printed in blue and the column count in orange, and the orange column count of each dense layer's weights is the column count of its output.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
     }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --nn-bg:#0E0F12;--nn-surface:#16181C;--nn-ink:#F2F2EE;--nn-ink-muted:#B4B4AE;--nn-ink-subtle:#6E6E68;
-        --nn-border:#2A2D33;--nn-primary:#8BA8E0;--nn-accent:#E8B088;
-        --nn-success:#7FBF9B;--nn-warn:#D4B58A;--nn-alert:#D88880;--nn-neutral-1:#1F2229;
-      }
-    }
-    text{font-family:Inter,system-ui,sans-serif;}
-    .mono{font-family:"JetBrains Mono",ui-monospace,monospace;}
-    .bg{fill:var(--nn-bg);}
-    .title{font-weight:600;font-size:22px;fill:var(--nn-ink);}
-    .subtitle{font-size:13px;fill:var(--nn-ink-muted);}
-    .footer{font-size:11px;fill:var(--nn-ink-subtle);}
-    .shape-card{fill:var(--nn-surface);stroke:var(--nn-border);stroke-width:1;}
-    .shape-tag{font-weight:700;font-size:11px;fill:var(--nn-ink-muted);text-transform:uppercase;letter-spacing:0.06em;}
-    .shape-big{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:18px;font-weight:700;fill:var(--nn-ink);}
-    .shape-desc{font-size:11px;fill:var(--nn-ink-muted);}
-    .dim-batch{font-size:11px;font-weight:700;fill:var(--nn-primary);}
-    .dim-feat{font-size:11px;font-weight:700;fill:var(--nn-accent);}
-    .op-arrow{stroke:var(--nn-ink-muted);stroke-width:1.5;fill:none;}
-    .op-arrow-head{fill:var(--nn-ink-muted);}
-    .op-label{font-size:11px;fill:var(--nn-ink);font-weight:600;}
-    .op-sub{font-size:10px;fill:var(--nn-ink-muted);}
-    .insight-band{fill:var(--nn-primary);fill-opacity:0.08;stroke:var(--nn-primary);stroke-width:1.5;}
-    .insight-head{font-weight:700;font-size:13px;fill:var(--nn-primary);}
-    .insight-body{font-size:11px;fill:var(--nn-ink);}
-  ]]></style>
-
-  <defs>
-    <marker id="aM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M0,0 L10,5 L0,10 z" class="op-arrow-head"/>
-    </marker>
-  </defs>
-
-  <rect class="bg" width="960" height="420"/>
-
-  <text class="title"    x="48" y="48">Shape audit through the pipeline</text>
-  <text class="subtitle" x="48" y="70">Batch dim never changes. Feature dim only changes at dense layers.</text>
-
-  <!-- ======= Step 0: X ======= -->
-  <rect class="shape-card" x="48" y="120" width="120" height="100" rx="10"/>
-  <text class="shape-tag"  x="108" y="142" text-anchor="middle">step 0 · X</text>
-  <text class="shape-big"  x="108" y="178" text-anchor="middle">(300, 2)</text>
-  <text class="shape-desc" x="108" y="202" text-anchor="middle">input data</text>
-
-  <!-- arrow w/ op label -->
-  <line class="op-arrow" x1="172" y1="170" x2="220" y2="170" marker-end="url(#aM)"/>
-  <text class="op-label" x="196" y="158" text-anchor="middle">dense1</text>
-  <text class="op-sub"   x="196" y="188" text-anchor="middle">linear</text>
-
-  <!-- ======= Step 1 ======= -->
-  <rect class="shape-card" x="224" y="120" width="120" height="100" rx="10"/>
-  <text class="shape-tag"  x="284" y="142" text-anchor="middle">step 1</text>
-  <text class="shape-big"  x="284" y="178" text-anchor="middle">(300, 3)</text>
-  <text class="shape-desc" x="284" y="202" text-anchor="middle">linear out</text>
-
-  <line class="op-arrow" x1="348" y1="170" x2="396" y2="170" marker-end="url(#aM)"/>
-  <text class="op-label" x="372" y="158" text-anchor="middle">act1</text>
-  <text class="op-sub"   x="372" y="188" text-anchor="middle">ReLU</text>
-
-  <!-- ======= Step 2 ======= -->
-  <rect class="shape-card" x="400" y="120" width="120" height="100" rx="10"/>
-  <text class="shape-tag"  x="460" y="142" text-anchor="middle">step 2</text>
-  <text class="shape-big"  x="460" y="178" text-anchor="middle">(300, 3)</text>
-  <text class="shape-desc" x="460" y="202" text-anchor="middle">ReLU'd</text>
-
-  <line class="op-arrow" x1="524" y1="170" x2="572" y2="170" marker-end="url(#aM)"/>
-  <text class="op-label" x="548" y="158" text-anchor="middle">dense2</text>
-  <text class="op-sub"   x="548" y="188" text-anchor="middle">linear</text>
-
-  <!-- ======= Step 3 ======= -->
-  <rect class="shape-card" x="576" y="120" width="120" height="100" rx="10"/>
-  <text class="shape-tag"  x="636" y="142" text-anchor="middle">step 3</text>
-  <text class="shape-big"  x="636" y="178" text-anchor="middle">(300, 3)</text>
-  <text class="shape-desc" x="636" y="202" text-anchor="middle">logits</text>
-
-  <line class="op-arrow" x1="700" y1="170" x2="748" y2="170" marker-end="url(#aM)"/>
-  <text class="op-label" x="724" y="158" text-anchor="middle">act2</text>
-  <text class="op-sub"   x="724" y="188" text-anchor="middle">Softmax</text>
-
-  <!-- ======= Step 4 ======= -->
-  <rect class="shape-card" x="752" y="120" width="160" height="100" rx="10" style="fill:var(--nn-success);fill-opacity:0.12;stroke:var(--nn-success);"/>
-  <text class="shape-tag"  x="832" y="142" text-anchor="middle">step 4 · ŷ</text>
-  <text class="shape-big"  x="832" y="178" text-anchor="middle">(300, 3)</text>
-  <text class="shape-desc" x="832" y="202" text-anchor="middle">probabilities</text>
-
-  <!-- ======= Dimension annotation row ======= -->
-  <text class="dim-batch" x="108" y="252" text-anchor="middle">batch: 300</text>
-  <text class="dim-batch" x="284" y="252" text-anchor="middle">batch: 300</text>
-  <text class="dim-batch" x="460" y="252" text-anchor="middle">batch: 300</text>
-  <text class="dim-batch" x="636" y="252" text-anchor="middle">batch: 300</text>
-  <text class="dim-batch" x="832" y="252" text-anchor="middle">batch: 300</text>
-
-  <text class="dim-feat" x="108" y="270" text-anchor="middle">features: 2</text>
-  <text class="dim-feat" x="284" y="270" text-anchor="middle">features: 3</text>
-  <text class="dim-feat" x="460" y="270" text-anchor="middle">features: 3</text>
-  <text class="dim-feat" x="636" y="270" text-anchor="middle">features: 3</text>
-  <text class="dim-feat" x="832" y="270" text-anchor="middle">features: 3</text>
-
-  <!-- ======= Insight band ======= -->
-  <rect class="insight-band" x="48" y="296" width="864" height="80" rx="12"/>
-  <text class="insight-head" x="68" y="322">Two invariants to keep in mind:</text>
-  <text class="insight-body" x="68" y="344">1) The batch dimension (300) is preserved everywhere. A change here means something is transposed.</text>
-  <text class="insight-body" x="68" y="362">2) Activations leave the shape alone. Only dense layers change the feature dim (here, 2 → 3 at dense1; unchanged at dense2 since both layers are 3-wide).</text>
-
-  <!-- Footer -->
-  <text class="footer" x="48"  y="400">Printing .shape after every step catches almost every "shape mismatch" bug before it becomes a stack trace.</text>
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-blue { fill: var(--nn-blue); }
+  .f-blue-ink { fill: var(--nn-blue-ink); }
+  .f-blue-soft { fill: var(--nn-blue-soft); }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-green-soft { fill: var(--nn-green-soft); }
+  .f-orange { fill: var(--nn-orange); }
+  .f-orange-ink { fill: var(--nn-orange-ink); }
+  .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .s-blue { stroke: var(--nn-blue); }
+  .s-orange { stroke: var(--nn-orange); }
+</style>
+<defs>
+<marker id="nn-02-shape-audit-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="720"/>
+<text x="40" y="48" class="t-title">Rows come from the batch, columns from the last dense layer</text>
+<text x="40" y="76" class="t-subtitle">snippets/shape_audit.py, run on all 300 spiral points and again on the first 7.</text>
+<text x="40" y="128" class="t-head">All 300 rows</text>
+<rect x="56" y="176" width="16" height="144" class="cell f-blue-soft"/>
+<rect x="72" y="176" width="16" height="144" class="cell f-blue-soft"/>
+<rect x="56" y="176" width="32" height="144" class="frame" data-fit="skip"/>
+<text x="72" y="160" text-anchor="middle" class="t-code f-blue-ink">X</text>
+<text x="72" y="348" text-anchor="middle" class="t-label">(<tspan class="b f-blue-ink">300</tspan>, <tspan class="b f-orange-ink">2</tspan>)</text>
+<rect x="232" y="176" width="16" height="144" class="cell f-green-soft"/>
+<rect x="248" y="176" width="16" height="144" class="cell f-green-soft"/>
+<rect x="264" y="176" width="16" height="144" class="cell f-green-soft"/>
+<rect x="232" y="176" width="48" height="144" class="frame" data-fit="skip"/>
+<text x="256" y="160" text-anchor="middle" class="t-code f-green-ink">dense1.output</text>
+<text x="256" y="348" text-anchor="middle" class="t-label">(<tspan class="b f-blue-ink">300</tspan>, <tspan class="b f-orange-ink">3</tspan>)</text>
+<rect x="424" y="176" width="16" height="144" class="cell f-green-soft"/>
+<rect x="440" y="176" width="16" height="144" class="cell f-green-soft"/>
+<rect x="456" y="176" width="16" height="144" class="cell f-green-soft"/>
+<rect x="424" y="176" width="48" height="144" class="frame" data-fit="skip"/>
+<text x="448" y="160" text-anchor="middle" class="t-code f-green-ink">activation1.output</text>
+<text x="448" y="348" text-anchor="middle" class="t-label">(<tspan class="b f-blue-ink">300</tspan>, <tspan class="b f-orange-ink">3</tspan>)</text>
+<rect x="616" y="176" width="16" height="144" class="cell f-green-soft"/>
+<rect x="632" y="176" width="16" height="144" class="cell f-green-soft"/>
+<rect x="648" y="176" width="16" height="144" class="cell f-green-soft"/>
+<rect x="616" y="176" width="48" height="144" class="frame" data-fit="skip"/>
+<text x="640" y="160" text-anchor="middle" class="t-code f-green-ink">dense2.output</text>
+<text x="640" y="348" text-anchor="middle" class="t-label">(<tspan class="b f-blue-ink">300</tspan>, <tspan class="b f-orange-ink">3</tspan>)</text>
+<rect x="808" y="176" width="16" height="144" class="cell f-green-soft"/>
+<rect x="824" y="176" width="16" height="144" class="cell f-green-soft"/>
+<rect x="840" y="176" width="16" height="144" class="cell f-green-soft"/>
+<rect x="808" y="176" width="48" height="144" class="frame" data-fit="skip"/>
+<text x="832" y="160" text-anchor="middle" class="t-code f-green-ink">activation2.output</text>
+<text x="832" y="348" text-anchor="middle" class="t-label">(<tspan class="b f-blue-ink">300</tspan>, <tspan class="b f-orange-ink">3</tspan>)</text>
+<path d="M96,248 L221,248" class="flow" marker-end="url(#nn-02-shape-audit-arrow)"/>
+<text x="160" y="236" text-anchor="middle" class="t-code f-orange-ink">dense1</text>
+<text x="160" y="276" text-anchor="middle" class="t-note">weights (2, <tspan class="b f-orange-ink">3</tspan>)</text>
+<path d="M288,248 L413,248" class="flow" marker-end="url(#nn-02-shape-audit-arrow)"/>
+<text x="352" y="236" text-anchor="middle" class="t-code">activation1</text>
+<text x="352" y="276" text-anchor="middle" class="t-note">no weights</text>
+<path d="M480,248 L605,248" class="flow" marker-end="url(#nn-02-shape-audit-arrow)"/>
+<text x="544" y="236" text-anchor="middle" class="t-code f-orange-ink">dense2</text>
+<text x="544" y="276" text-anchor="middle" class="t-note">weights (3, <tspan class="b f-orange-ink">3</tspan>)</text>
+<path d="M672,248 L797,248" class="flow" marker-end="url(#nn-02-shape-audit-arrow)"/>
+<text x="736" y="236" text-anchor="middle" class="t-code">activation2</text>
+<text x="736" y="276" text-anchor="middle" class="t-note">no weights</text>
+<path d="M232,364 Q232,368 240,368 L536,368 Q544,368 544,372 Q544,368 552,368 L848,368 Q856,368 856,364" class="brace"/>
+<g data-grid="skip">
+<text x="544" y="392" text-anchor="middle" class="t-note">four arrays of the same shape, (<tspan class="b f-blue-ink">300</tspan>, <tspan class="b f-orange-ink">3</tspan>): a mix-up between them raises no error</text>
+</g>
+<text x="40" y="440" class="t-head">The first 7 rows, <tspan class="mono">X[:7]</tspan>, through the same four objects</text>
+<rect x="56" y="456" width="16" height="16" class="cell f-blue-soft"/>
+<rect x="72" y="456" width="16" height="16" class="cell f-blue-soft"/>
+<rect x="56" y="472" width="16" height="16" class="cell f-blue-soft"/>
+<rect x="72" y="472" width="16" height="16" class="cell f-blue-soft"/>
+<rect x="56" y="488" width="16" height="16" class="cell f-blue-soft"/>
+<rect x="72" y="488" width="16" height="16" class="cell f-blue-soft"/>
+<rect x="56" y="504" width="16" height="16" class="cell f-blue-soft"/>
+<rect x="72" y="504" width="16" height="16" class="cell f-blue-soft"/>
+<rect x="56" y="520" width="16" height="16" class="cell f-blue-soft"/>
+<rect x="72" y="520" width="16" height="16" class="cell f-blue-soft"/>
+<rect x="56" y="536" width="16" height="16" class="cell f-blue-soft"/>
+<rect x="72" y="536" width="16" height="16" class="cell f-blue-soft"/>
+<rect x="56" y="552" width="16" height="16" class="cell f-blue-soft"/>
+<rect x="72" y="552" width="16" height="16" class="cell f-blue-soft"/>
+<rect x="56" y="456" width="32" height="112" class="frame" data-fit="skip"/>
+<text x="72" y="596" text-anchor="middle" class="t-label">(<tspan class="b f-blue-ink">7</tspan>, <tspan class="b f-orange-ink">2</tspan>)</text>
+<rect x="232" y="456" width="16" height="16" class="cell f-green-soft"/>
+<rect x="248" y="456" width="16" height="16" class="cell f-green-soft"/>
+<rect x="264" y="456" width="16" height="16" class="cell f-green-soft"/>
+<rect x="232" y="472" width="16" height="16" class="cell f-green-soft"/>
+<rect x="248" y="472" width="16" height="16" class="cell f-green-soft"/>
+<rect x="264" y="472" width="16" height="16" class="cell f-green-soft"/>
+<rect x="232" y="488" width="16" height="16" class="cell f-green-soft"/>
+<rect x="248" y="488" width="16" height="16" class="cell f-green-soft"/>
+<rect x="264" y="488" width="16" height="16" class="cell f-green-soft"/>
+<rect x="232" y="504" width="16" height="16" class="cell f-green-soft"/>
+<rect x="248" y="504" width="16" height="16" class="cell f-green-soft"/>
+<rect x="264" y="504" width="16" height="16" class="cell f-green-soft"/>
+<rect x="232" y="520" width="16" height="16" class="cell f-green-soft"/>
+<rect x="248" y="520" width="16" height="16" class="cell f-green-soft"/>
+<rect x="264" y="520" width="16" height="16" class="cell f-green-soft"/>
+<rect x="232" y="536" width="16" height="16" class="cell f-green-soft"/>
+<rect x="248" y="536" width="16" height="16" class="cell f-green-soft"/>
+<rect x="264" y="536" width="16" height="16" class="cell f-green-soft"/>
+<rect x="232" y="552" width="16" height="16" class="cell f-green-soft"/>
+<rect x="248" y="552" width="16" height="16" class="cell f-green-soft"/>
+<rect x="264" y="552" width="16" height="16" class="cell f-green-soft"/>
+<rect x="232" y="456" width="48" height="112" class="frame" data-fit="skip"/>
+<text x="256" y="596" text-anchor="middle" class="t-label">(<tspan class="b f-blue-ink">7</tspan>, <tspan class="b f-orange-ink">3</tspan>)</text>
+<rect x="424" y="456" width="16" height="16" class="cell f-green-soft"/>
+<rect x="440" y="456" width="16" height="16" class="cell f-green-soft"/>
+<rect x="456" y="456" width="16" height="16" class="cell f-green-soft"/>
+<rect x="424" y="472" width="16" height="16" class="cell f-green-soft"/>
+<rect x="440" y="472" width="16" height="16" class="cell f-green-soft"/>
+<rect x="456" y="472" width="16" height="16" class="cell f-green-soft"/>
+<rect x="424" y="488" width="16" height="16" class="cell f-green-soft"/>
+<rect x="440" y="488" width="16" height="16" class="cell f-green-soft"/>
+<rect x="456" y="488" width="16" height="16" class="cell f-green-soft"/>
+<rect x="424" y="504" width="16" height="16" class="cell f-green-soft"/>
+<rect x="440" y="504" width="16" height="16" class="cell f-green-soft"/>
+<rect x="456" y="504" width="16" height="16" class="cell f-green-soft"/>
+<rect x="424" y="520" width="16" height="16" class="cell f-green-soft"/>
+<rect x="440" y="520" width="16" height="16" class="cell f-green-soft"/>
+<rect x="456" y="520" width="16" height="16" class="cell f-green-soft"/>
+<rect x="424" y="536" width="16" height="16" class="cell f-green-soft"/>
+<rect x="440" y="536" width="16" height="16" class="cell f-green-soft"/>
+<rect x="456" y="536" width="16" height="16" class="cell f-green-soft"/>
+<rect x="424" y="552" width="16" height="16" class="cell f-green-soft"/>
+<rect x="440" y="552" width="16" height="16" class="cell f-green-soft"/>
+<rect x="456" y="552" width="16" height="16" class="cell f-green-soft"/>
+<rect x="424" y="456" width="48" height="112" class="frame" data-fit="skip"/>
+<text x="448" y="596" text-anchor="middle" class="t-label">(<tspan class="b f-blue-ink">7</tspan>, <tspan class="b f-orange-ink">3</tspan>)</text>
+<rect x="616" y="456" width="16" height="16" class="cell f-green-soft"/>
+<rect x="632" y="456" width="16" height="16" class="cell f-green-soft"/>
+<rect x="648" y="456" width="16" height="16" class="cell f-green-soft"/>
+<rect x="616" y="472" width="16" height="16" class="cell f-green-soft"/>
+<rect x="632" y="472" width="16" height="16" class="cell f-green-soft"/>
+<rect x="648" y="472" width="16" height="16" class="cell f-green-soft"/>
+<rect x="616" y="488" width="16" height="16" class="cell f-green-soft"/>
+<rect x="632" y="488" width="16" height="16" class="cell f-green-soft"/>
+<rect x="648" y="488" width="16" height="16" class="cell f-green-soft"/>
+<rect x="616" y="504" width="16" height="16" class="cell f-green-soft"/>
+<rect x="632" y="504" width="16" height="16" class="cell f-green-soft"/>
+<rect x="648" y="504" width="16" height="16" class="cell f-green-soft"/>
+<rect x="616" y="520" width="16" height="16" class="cell f-green-soft"/>
+<rect x="632" y="520" width="16" height="16" class="cell f-green-soft"/>
+<rect x="648" y="520" width="16" height="16" class="cell f-green-soft"/>
+<rect x="616" y="536" width="16" height="16" class="cell f-green-soft"/>
+<rect x="632" y="536" width="16" height="16" class="cell f-green-soft"/>
+<rect x="648" y="536" width="16" height="16" class="cell f-green-soft"/>
+<rect x="616" y="552" width="16" height="16" class="cell f-green-soft"/>
+<rect x="632" y="552" width="16" height="16" class="cell f-green-soft"/>
+<rect x="648" y="552" width="16" height="16" class="cell f-green-soft"/>
+<rect x="616" y="456" width="48" height="112" class="frame" data-fit="skip"/>
+<text x="640" y="596" text-anchor="middle" class="t-label">(<tspan class="b f-blue-ink">7</tspan>, <tspan class="b f-orange-ink">3</tspan>)</text>
+<rect x="808" y="456" width="16" height="16" class="cell f-green-soft"/>
+<rect x="824" y="456" width="16" height="16" class="cell f-green-soft"/>
+<rect x="840" y="456" width="16" height="16" class="cell f-green-soft"/>
+<rect x="808" y="472" width="16" height="16" class="cell f-green-soft"/>
+<rect x="824" y="472" width="16" height="16" class="cell f-green-soft"/>
+<rect x="840" y="472" width="16" height="16" class="cell f-green-soft"/>
+<rect x="808" y="488" width="16" height="16" class="cell f-green-soft"/>
+<rect x="824" y="488" width="16" height="16" class="cell f-green-soft"/>
+<rect x="840" y="488" width="16" height="16" class="cell f-green-soft"/>
+<rect x="808" y="504" width="16" height="16" class="cell f-green-soft"/>
+<rect x="824" y="504" width="16" height="16" class="cell f-green-soft"/>
+<rect x="840" y="504" width="16" height="16" class="cell f-green-soft"/>
+<rect x="808" y="520" width="16" height="16" class="cell f-green-soft"/>
+<rect x="824" y="520" width="16" height="16" class="cell f-green-soft"/>
+<rect x="840" y="520" width="16" height="16" class="cell f-green-soft"/>
+<rect x="808" y="536" width="16" height="16" class="cell f-green-soft"/>
+<rect x="824" y="536" width="16" height="16" class="cell f-green-soft"/>
+<rect x="840" y="536" width="16" height="16" class="cell f-green-soft"/>
+<rect x="808" y="552" width="16" height="16" class="cell f-green-soft"/>
+<rect x="824" y="552" width="16" height="16" class="cell f-green-soft"/>
+<rect x="840" y="552" width="16" height="16" class="cell f-green-soft"/>
+<rect x="808" y="456" width="48" height="112" class="frame" data-fit="skip"/>
+<text x="832" y="596" text-anchor="middle" class="t-label">(<tspan class="b f-blue-ink">7</tspan>, <tspan class="b f-orange-ink">3</tspan>)</text>
+<path d="M96,512 L221,512" class="flow" marker-end="url(#nn-02-shape-audit-arrow)"/>
+<path d="M288,512 L413,512" class="flow" marker-end="url(#nn-02-shape-audit-arrow)"/>
+<path d="M480,512 L605,512" class="flow" marker-end="url(#nn-02-shape-audit-arrow)"/>
+<path d="M672,512 L797,512" class="flow" marker-end="url(#nn-02-shape-audit-arrow)"/>
+<rect x="40" y="620" width="16" height="16" class="f-blue s-blue w1"/>
+<text x="72" y="632" class="t-label">rows: one per point of the batch</text>
+<rect x="312" y="620" width="16" height="16" class="f-orange s-orange w1"/>
+<text x="344" y="632" class="t-label">columns: the features; a dense layer sets them to its neuron count</text>
+<text x="40" y="684" class="t-note">Section 9 hands dense2 the wrong one of the four; only a check on the values catches it.</text>
 </svg>

@@ -1,0 +1,227 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="nn-03-why-uniform-title" aria-describedby="nn-03-why-uniform-desc">
+<title id="nn-03-why-uniform-title">Logits in ten-thousandths give probabilities near 1/3</title>
+<desc id="nn-03-why-uniform-desc">Left, a dot plot on a log scale from 10 to the minus 5 to 1 of the size of the entries at each stage of the forward pass on the 300 spiral points, the mean absolute entry as a grey circle and the largest as a green diamond: X, mean 0.318836, largest 0.97939; dense1.output, mean 0.004043, largest 0.01746; activation1.output, mean 0.002029, largest 0.01731; dense2.output, the logits, mean 0.000046, largest 0.00023. Right, row 99, the least uniform row of the output: logits minus 0.0002333, minus 0.0002187, 0.0000813 for classes 0, 1 and 2, and probabilities 0.333297, 0.333302, 0.333402, drawn as three bars on a scale from 0 to 1 that look equal. A note gives the largest logit gap, 0.0003146, and e to that gap, 1.000315, the largest probability over the smallest.</desc>
+<style>
+  :root {
+    --nn-bg: #FAFAF7;
+    --nn-surface: #FFFFFF;
+    --nn-ink: #1A1A1A;
+    --nn-ink-muted: #5C5C5C;
+    --nn-ink-subtle: #9A9A9A;
+    --nn-border: #D9D9D4;
+    --nn-primary: #5B7FBF;
+    --nn-accent: #D98E5F;
+    --nn-success: #5C9E78;
+    --nn-warn: #B8895A;
+    --nn-alert: #C66B5E;
+    --nn-neutral-1: #EAEAE4;
+    --nn-neutral-2: #CFCFC8;
+    --nn-neutral-3: #8E8E88;
+    --nn-on-fill: #FFFDF9;
+    --nn-on-accent: #1A1A1A;
+    --nn-grid: rgba(26, 26, 26, 0.06);
+    --nn-contour: rgba(91, 127, 191, 0.10);
+    --nn-contour-line: rgba(91, 127, 191, 0.35);
+    --nn-rule: #8E8E88;
+    --nn-arrow: #6E6E68;
+    --nn-neutral-soft: #F2F2EE;
+    --nn-blue: #0072B2;
+    --nn-blue-ink: #005A8C;
+    --nn-blue-soft: #E3F0F8;
+    --nn-blue-line: #9CC6E0;
+    --nn-orange: #C98500;
+    --nn-orange-ink: #8A5B00;
+    --nn-orange-soft: #FBF0D9;
+    --nn-orange-line: #E5C27A;
+    --nn-green: #008F68;
+    --nn-green-ink: #006B4E;
+    --nn-green-soft: #DFF3EC;
+    --nn-green-line: #8FCDB8;
+    --nn-red: #A8322A;
+    --nn-red-ink: #8F2A23;
+    --nn-red-soft: #F8E3E1;
+    --nn-red-line: #DDA49F;
+    --nn-purple: #A14D8C;
+    --nn-purple-ink: #833E72;
+    --nn-purple-soft: #F4E4EF;
+    --nn-purple-line: #D3A5C6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --nn-bg: #0E0F12;
+      --nn-surface: #16181C;
+      --nn-ink: #F2F2EE;
+      --nn-ink-muted: #B4B4AE;
+      --nn-ink-subtle: #6E6E68;
+      --nn-border: #2A2D33;
+      --nn-primary: #8BA8E0;
+      --nn-accent: #E8B088;
+      --nn-success: #7FBF9B;
+      --nn-warn: #D4B58A;
+      --nn-alert: #D88880;
+      --nn-neutral-1: #1F2229;
+      --nn-neutral-2: #2C3038;
+      --nn-neutral-3: #6E6E68;
+      --nn-on-fill: #14161A;
+      --nn-on-accent: #1A1A1A;
+      --nn-grid: rgba(241, 238, 232, 0.08);
+      --nn-contour: rgba(139, 168, 224, 0.10);
+      --nn-contour-line: rgba(139, 168, 224, 0.35);
+      --nn-rule: #6A6D74;
+      --nn-arrow: #9A9A94;
+      --nn-neutral-soft: #1C1E23;
+      --nn-blue: #5AA8E0;
+      --nn-blue-ink: #7DBBE8;
+      --nn-blue-soft: #14283A;
+      --nn-blue-line: #2E5878;
+      --nn-orange: #E8B040;
+      --nn-orange-ink: #F0C060;
+      --nn-orange-soft: #33260F;
+      --nn-orange-line: #6E5222;
+      --nn-green: #3CC497;
+      --nn-green-ink: #62D1AC;
+      --nn-green-soft: #10302A;
+      --nn-green-line: #2A6A55;
+      --nn-red: #E8796E;
+      --nn-red-ink: #F09A90;
+      --nn-red-soft: #3A1A18;
+      --nn-red-line: #7A3A34;
+      --nn-purple: #D58CC4;
+      --nn-purple-ink: #E2A6D3;
+      --nn-purple-soft: #331F2E;
+      --nn-purple-line: #6E4466;
+    }
+  }
+  .bg { fill: var(--nn-bg); }
+  text { font-family: -apple-system, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif; fill: var(--nn-ink); }
+  .t-title { font-size: 24px; font-weight: 600; fill: var(--nn-ink); }
+  .t-subtitle { font-size: 15px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-head { font-size: 16px; font-weight: 600; fill: var(--nn-ink); }
+  .t-label { font-size: 14px; font-weight: 400; fill: var(--nn-ink); }
+  .t-note { font-size: 14px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-value { font-size: 14px; font-weight: 600; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-tick { font-size: 13px; font-weight: 400; fill: var(--nn-ink-muted); font-variant-numeric: tabular-nums; }
+  .t-math { font-size: 17px; font-weight: 400; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-op { font-size: 24px; font-weight: 400; fill: var(--nn-ink-muted); }
+  .t-code { font-size: 14px; font-weight: 400; fill: var(--nn-ink); font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .t-cell14 { font-size: 14px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell16 { font-size: 16px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .t-cell18 { font-size: 18px; font-weight: 500; fill: var(--nn-ink); font-variant-numeric: tabular-nums; }
+  .i { font-style: italic; }
+  .sub { font-size: 13px; }
+  .b { font-weight: 700; }
+  .nofill { fill: none; }
+  .cell { fill: var(--nn-surface); stroke: var(--nn-rule); stroke-width: 1; }
+  .card { fill: var(--nn-neutral-soft); stroke: var(--nn-border); stroke-width: 1; }
+  .frame { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1.5; }
+  .rule1 { fill: none; stroke: var(--nn-rule); stroke-width: 1; }
+  .fine { fill: none; stroke: var(--nn-border); stroke-width: 0.75; }
+  .gridline { fill: none; stroke: var(--nn-grid); stroke-width: 0.75; }
+  .axis { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .flow { fill: none; stroke: var(--nn-arrow); stroke-width: 1.5; }
+  .lead { fill: none; stroke: var(--nn-arrow); stroke-width: 1; stroke-dasharray: 4 4; }
+  .brace { fill: none; stroke: var(--nn-ink-muted); stroke-width: 1; }
+  .arrowhead { fill: var(--nn-arrow); }
+  .emph { fill: none; stroke-width: 2.5; }
+  .w1 { stroke-width: 1; }
+  .w15 { stroke-width: 1.5; }
+  .d-proj { stroke-dasharray: 6 4; }
+  .d-ref { stroke-dasharray: 1.5 3.5; stroke-linecap: round; }
+  .d-lead { stroke-dasharray: 4 4; }
+  .f-green { fill: var(--nn-green); }
+  .f-green-ink { fill: var(--nn-green-ink); }
+  .f-rule { fill: var(--nn-rule); }
+  .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace; }
+  .s-rule { stroke: var(--nn-rule); }
+  .s-surface { stroke: var(--nn-surface); }
+</style>
+<defs>
+<marker id="nn-03-why-uniform-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" class="arrowhead"/></marker>
+<clipPath id="nn-03-why-uniform-clip-1"><rect x="608" y="320" width="232" height="108"/></clipPath>
+</defs>
+<rect class="bg" data-fit="skip" x="0" y="0" width="960" height="540"/>
+<text x="40" y="48" class="t-title">Logits in ten-thousandths give probabilities near 1/3</text>
+<text x="40" y="76" class="t-subtitle">snippets/uniform_baseline.py: the entries of every stage on the 300 points, and row 99 of the output.</text>
+<text x="40" y="120" class="t-head">The entries shrink at every layer</text>
+<g data-grid="skip">
+<path d="M200,136V364M246.4,136V364M292.8,136V364M339.2,136V364M385.6,136V364M432,136V364" class="gridline"/>
+<text x="200" y="384" text-anchor="middle" class="t-tick">10<tspan class="sub" dy="-6">−5</tspan><tspan dy="6">​</tspan></text>
+<text x="246.4" y="384" text-anchor="middle" class="t-tick">10<tspan class="sub" dy="-6">−4</tspan><tspan dy="6">​</tspan></text>
+<text x="292.8" y="384" text-anchor="middle" class="t-tick">10<tspan class="sub" dy="-6">−3</tspan><tspan dy="6">​</tspan></text>
+<text x="339.2" y="384" text-anchor="middle" class="t-tick">10<tspan class="sub" dy="-6">−2</tspan><tspan dy="6">​</tspan></text>
+<text x="385.6" y="384" text-anchor="middle" class="t-tick">10<tspan class="sub" dy="-6">−1</tspan><tspan dy="6">​</tspan></text>
+<text x="432" y="384" text-anchor="middle" class="t-tick">10<tspan class="sub" dy="-6">0</tspan><tspan dy="6">​</tspan></text>
+<path d="M200,364H432" class="axis"/>
+<path d="M408.97,164.5H431.58" class="s-rule w15 nofill"/>
+<circle cx="408.97" cy="164.5" r="5" class="f-rule s-surface w1"/>
+<path d="M431.58,158.5 L437.58,164.5 L431.58,170.5 L425.58,164.5 Z" class="f-green s-surface w1"/>
+<text x="40" y="169.5" class="t-label"><tspan class="mono">X</tspan></text>
+<path d="M320.95,221.5H350.43" class="s-rule w15 nofill"/>
+<circle cx="320.95" cy="221.5" r="5" class="f-rule s-surface w1"/>
+<path d="M350.43,215.5 L356.43,221.5 L350.43,227.5 L344.43,221.5 Z" class="f-green s-surface w1"/>
+<text x="40" y="226.5" class="t-label"><tspan class="mono">dense1.output</tspan></text>
+<path d="M307.06,278.5H350.26" class="s-rule w15 nofill"/>
+<circle cx="307.06" cy="278.5" r="5" class="f-rule s-surface w1"/>
+<path d="M350.26,272.5 L356.26,278.5 L350.26,284.5 L344.26,278.5 Z" class="f-green s-surface w1"/>
+<text x="40" y="283.5" class="t-label"><tspan class="mono">activation1.output</tspan></text>
+<path d="M230.7,335.5H263.47" class="s-rule w15 nofill"/>
+<circle cx="230.7" cy="335.5" r="5" class="f-rule s-surface w1"/>
+<path d="M263.47,329.5 L269.47,335.5 L263.47,341.5 L257.47,335.5 Z" class="f-green s-surface w1"/>
+<text x="40" y="340.5" class="t-label"><tspan class="mono">dense2.output</tspan></text>
+</g>
+<text x="316" y="408" text-anchor="middle" class="t-note">size of an entry, log scale</text>
+<g data-grid="skip">
+<text x="443.58" y="169.5" class="t-value f-green-ink">0.97939</text>
+<text x="362.43" y="226.5" class="t-value f-green-ink">0.01746</text>
+<text x="362.26" y="283.5" class="t-value f-green-ink">0.01731</text>
+<text x="275.47" y="340.5" class="t-value f-green-ink">0.00023</text>
+</g>
+<circle cx="48" cy="452" r="5" class="f-rule s-surface w1"/>
+<text x="72" y="456" class="t-label">mean |entry|</text>
+<path d="M192,446 L198,452 L192,458 L186,452 Z" class="f-green s-surface w1"/>
+<text x="216" y="456" class="t-label">largest |entry|</text>
+<text x="536" y="120" class="t-head">Row 99, the least uniform row</text>
+<rect x="536" y="136" width="64" height="32" class="nofill"/>
+<rect x="600" y="136" width="120" height="32" class="nofill"/>
+<rect x="536" y="168" width="64" height="32" class="nofill"/>
+<rect x="600" y="168" width="120" height="32" class="nofill"/>
+<rect x="536" y="200" width="64" height="32" class="nofill"/>
+<rect x="600" y="200" width="120" height="32" class="nofill"/>
+<rect x="536" y="232" width="64" height="32" class="nofill"/>
+<rect x="600" y="232" width="120" height="32" class="nofill"/>
+<path d="M536,136H720M536,264H720" class="axis"/>
+<path d="M536,168H720" class="rule1"/>
+<text x="544" y="156" class="t-head">class</text>
+<text x="712" y="156" text-anchor="end" class="t-head">logit</text>
+<text x="544" y="188" class="t-label">0</text>
+<text x="712" y="188" text-anchor="end" class="t-label">−0.0002333</text>
+<text x="544" y="220" class="t-label">1</text>
+<text x="712" y="220" text-anchor="end" class="t-label">−0.0002187</text>
+<text x="544" y="252" class="t-label">2</text>
+<text x="712" y="252" text-anchor="end" class="t-label">0.0000813</text>
+<text x="744" y="188" class="t-note">largest logit gap:</text>
+<text x="744" y="208" class="t-note">0.0003146</text>
+<text x="744" y="236" class="t-note"><tspan class="i">e</tspan> to that gap: 1.000315,</text>
+<text x="744" y="256" class="t-note">the largest probability</text>
+<text x="744" y="276" class="t-note">over the smallest</text>
+<text x="536" y="304" class="t-head">Softmax of the row</text>
+<g data-grid="skip">
+<path d="M608,320V428M724,320V428M840,320V428" class="gridline"/>
+<text x="608" y="448" text-anchor="middle" class="t-tick">0</text>
+<text x="724" y="448" text-anchor="middle" class="t-tick">0.5</text>
+<text x="840" y="448" text-anchor="middle" class="t-tick">1</text>
+<g clip-path="url(#nn-03-why-uniform-clip-1)">
+<rect x="608" y="330" width="77.32" height="16" class="f-green" data-fit="skip"/>
+<rect x="608" y="366" width="77.33" height="16" class="f-green" data-fit="skip"/>
+<rect x="608" y="402" width="77.35" height="16" class="f-green" data-fit="skip"/>
+</g>
+<path d="M608,320V428" class="axis"/>
+<text x="536" y="343" class="t-label">class 0</text>
+<text x="693.32" y="343" class="t-value f-green-ink">0.333297</text>
+<text x="536" y="379" class="t-label">class 1</text>
+<text x="693.33" y="379" class="t-value f-green-ink">0.333302</text>
+<text x="536" y="415" class="t-label">class 2</text>
+<text x="693.35" y="415" class="t-value f-green-ink">0.333402</text>
+</g>
+<text x="724" y="472" text-anchor="middle" class="t-note">probability</text>
+</svg>

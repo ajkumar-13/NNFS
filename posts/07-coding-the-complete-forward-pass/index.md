@@ -13,7 +13,7 @@
 > - Check an untrained forward pass against its baseline: rows that sum to 1 and accuracy near one in three.
 > - Extend the script to a deeper network by adding Layer_Dense and Activation_ReLU pairs whose shapes chain.
 
-![A pipeline drawn left to right. The input X of shape (N, 2) enters dense1, a Layer_Dense(2, 3) that computes X times W1 plus b1; then activation1, an Activation_ReLU; then dense2, a Layer_Dense(3, 3) whose output is the logits; then activation2, an Activation_Softmax, which gives the probabilities y-hat of shape (N, 3). A row of shape badges under the boxes reads (N, 2) once and (N, 3) five times. Below, a code panel lists the three class definitions, the four objects built from them, and the four forward calls in order.](diagrams/01-pipeline-anatomy.svg)
+![The forward pass as a chain of five arrays drawn as bands, one column per feature: X with 2 columns, then dense1.output, activation1.output, dense2.output and activation2.output with 3 each, named Z1, A1, Z2 for the logits and y-hat for the probabilities. Between them the objects dense1, computing X W1 plus b1, activation1, taking max of 0 and each entry, dense2, computing A1 W2 plus b2, and activation2, the softmax of each row. Below, a card with the four lines that build the objects and the four forward calls, and the first five rows the script prints: row 0, the origin, exactly 1/3 in every entry, rows 1 to 4 within 0.000002 of 1/3, and every entry of all 300 rows between 0.333297 and 0.333402.](diagrams/01-pipeline.svg)
 
 *One script, four objects, end to end. The loss of post 08 is computed from its output, and the backward pass of posts 12 to 21 walks it in reverse.*
 
@@ -132,17 +132,17 @@ Slicing with `[:5]` keeps the output readable; the full array has 300 rows, one 
 
 The first row is exactly uniform. The first spiral point is the origin, the biases are all zero, and an all-zero input then gives all-zero logits whatever the weights are; the softmax of three equal logits is exactly $1/3$ each, which `float32` stores as 0.33333334. The other four rows belong to the next four points along the first arm, and none of their entries is more than two millionths from $1/3$. Section 5 explains why the drift is that small.
 
-Apart from the imports, the `nnfs.init()` call, and the class definitions, the script is ten lines: one for the data, four that build the objects, four `forward` calls, and one `print`. Each object stores its result in its own `output` attribute, and the next call reads it from there. The wiring never calls `np.dot` or `np.exp` directly; the classes hide them.
+Apart from the imports, the `nnfs.init()` call, and the class definitions, the script is ten lines: one for the data, four that build the objects, four `forward` calls, and one `print`. Each object stores its result in its own `output` attribute, and the next call reads it from there. The wiring never calls `np.dot` or `np.exp` directly; the classes hide them. The figure at the top of the post draws this script: the arrays it hands from object to object, its eight lines, and the five rows it prints.
 
 ---
 
 ## 4. Tracing the shapes
 
-For the standard spiral input (100 samples per class times 3 classes, so 300 rows of 2 features):
+For the standard spiral input (100 samples per class times 3 classes, so 300 rows of 2 features), the figure draws every array of the pass twice, once for all 300 rows and once for the first 7:
 
-![Shape audit drawn left to right for a batch of 300 spiral points. X has shape (300, 2); dense1 gives (300, 3); the ReLU leaves (300, 3); dense2 gives the logits, (300, 3); softmax gives the probabilities, (300, 3). Under each stage the batch count reads 300, and the feature count reads 2 at the input and 3 afterwards. Two notes state that the batch dimension is preserved everywhere and that only dense layers change the feature dimension.](diagrams/02-shape-audit.svg)
+![The five arrays of the forward pass drawn as bands, one column per feature. For all 300 spiral points X is (300, 2) and dense1.output, activation1.output, dense2.output and activation2.output are (300, 3) each; between them dense1 with weights (2, 3), activation1 with no weights, dense2 with weights (3, 3) and activation2 with no weights. A bracket marks the four arrays that share the shape (300, 3), so a mix-up between them raises no error. Below, the same pass on the first 7 rows, drawn cell by cell: (7, 2), then (7, 3) four times.](diagrams/02-shape-audit.svg)
 
-*The batch dimension 300 is preserved at every step. Only the feature dimension changes, and only at a dense layer.*
+*The batch sets the row count at every step. Only a dense layer changes the column count, to the number of its neurons.*
 
 The diary in table form:
 
@@ -200,17 +200,17 @@ The audit has a blind spot: a mistake that leaves every shape intact passes it. 
 
 A trained classifier on this dataset would output rows such as `[0.95, 0.03, 0.02]` for a confident class-0 sample and `[0.10, 0.85, 0.05]` for a class-1 sample; those two rows are illustrations, not measurements. The output here is `[0.333, 0.333, 0.333]` for every sample, to three decimal places. Two facts explain it, and `snippets/uniform_baseline.py` measures both.
 
-![Two bar charts of one output row each. At initialisation the three bars for classes 0, 1 and 2 are almost equal, each close to one third. After training one bar at 0.950 stands over two bars at 0.030 and 0.020. Notes under both charts say the row sums to 1.0. A band beneath traces the cause from small weights times small features to near-equal logits, and from near-equal logits to a softmax output close to one over the class count.](diagrams/03-uniform-baseline.svg)
-
-*Both rows sum to 1. What separates them is not whether they are well formed but where the mass sits, and at initialisation it is spread evenly over the three classes.*
-
 **The weights are random and small.** `0.01 * np.random.randn(n_inputs, n_neurons)` draws values with a standard deviation of 0.01. The spiral points lie within distance 1 of the origin, so the first layer multiplies inputs no larger than 1 by weights near 0.01, and the largest entry of `dense1.output` is 0.017 in absolute value. After the ReLU, 456 of the 900 hidden values are exactly zero, and the rest have passed through unchanged. The second layer multiplies by weights near 0.01 once more, so the logits are about 75 times smaller again: the largest is 0.00023 in absolute value, and their mean absolute value is 0.000046. A logit of this network is measured in ten-thousandths, not in hundredths; the hundredths belong to the hidden layer.
 
 **Softmax of near-equal logits is near-uniform.** With $K$ classes, $K$ equal logits give exactly $1/K$ each, as post 06 showed, and logits that differ by a few ten-thousandths give almost that. The definition of softmax says by how much. For two classes $a$ and $b$ of the same row, the shared denominator cancels:
 
 $$\frac{\hat{y}_a}{\hat{y}_b} = \frac{e^{z_a}}{e^{z_b}} = e^{z_a - z_b}$$
 
-Only the difference between two logits matters, and a difference near zero gives a ratio near 1. The least uniform of the 300 rows is row 99, the outermost point of the first arm, with logits $-0.0002333$, $-0.0002187$, and $0.0000813$. Its largest logit gap is $0.0003146$, and $e^{0.0003146} = 1.000315$, so its largest probability is only 0.03 percent bigger than its smallest: 0.333402 against 0.333297. Those two are also the extremes of the whole output, in which no probability is further than 0.00007 from $1/3$.
+Only the difference between two logits matters, and a difference near zero gives a ratio near 1. The least uniform of the 300 rows is row 99, the outermost point of the first arm, with logits $-0.0002333$, $-0.0002187$, and $0.0000813$. Its largest logit gap is $0.0003146$, and $e^{0.0003146} = 1.000315$, so its largest probability is only 0.03 percent bigger than its smallest: 0.333402 against 0.333297. Those two are also the extremes of the whole output, in which no probability is further than 0.00007 from $1/3$. The figure draws both facts from the script's arrays.
+
+![Left, a dot plot on a log scale of the size of the entries at each stage, the mean absolute entry as a grey circle and the largest as a green diamond: X, largest 0.97939; dense1.output, 0.01746; activation1.output, 0.01731; dense2.output, the logits, 0.00023. Right, row 99, the least uniform row: logits minus 0.0002333, minus 0.0002187 and 0.0000813, a largest logit gap of 0.0003146, and e to that gap, 1.000315, the largest probability over the smallest; then its probabilities 0.333297, 0.333302 and 0.333402 as three bars on a scale from 0 to 1 that look equal.](diagrams/03-why-uniform.svg)
+
+*Two layers of 0.01-scaled weights shrink the entries to logits of ten-thousandths, and even the least uniform row is 1/3 to three decimal places.*
 
 Both facts turn into checks that the pipeline must pass before any training. The script computes them in three lines:
 
@@ -223,7 +223,11 @@ accuracy    = np.mean(predictions == y)             # fraction of rows predicted
 - **The output is well formed.** Every row must be a probability distribution: positive entries that sum to 1. Here 261 of the 300 row sums are exactly 1, and the other 39 miss by at most $1.2 \times 10^{-7}$, which is `float32` rounding and is normal. With three classes, a row sum that is off by $10^{-5}$ or more is not rounding; it means the softmax is broken. `np.allclose(row_sums, 1)` is the one-line test, and its default tolerance sits at that threshold.
 - **The output beats chance by nothing.** The network can already make predictions: the predicted class of a row is the index of its largest probability, which `np.argmax(probabilities, axis=1)` returns for all 300 rows at once. Those predictions are right for 102 of the 300 points, so the accuracy, the fraction of correct predictions, is 0.34. The three classes hold 100 points each, so answering any one class for every point scores exactly 100 of 300. Training must beat this baseline to do anything useful.
 
-The untrained network reaches its 0.34 by doing almost exactly that, and not by guessing at random: 292 of its 300 predictions are class 2 and the other 8 are class 0. The reason is in the nine numbers of `dense2.weights`. In each of its three rows the largest weight sits in column 2, and after ReLU no hidden value is negative, so the class-2 logit is the largest of the three whenever at least one hidden value is positive. The 8 exceptions are the rows whose three hidden values are all zero, the origins of the three arms among them. Their logits are exactly 0, 0, 0, the three probabilities tie, and `np.argmax` returns the first index of a tie, which is 0. Another seed draws other weights and collapses onto another class, or splits its predictions between two classes or among all three, and lands in the same place: over seeds 0 to 199 the script measures a mean accuracy of 0.333, with single runs between 0.24 and 0.42.
+The untrained network reaches its 0.34 by doing almost exactly that, and not by guessing at random: 292 of its 300 predictions are class 2 and the other 8 are class 0, as the figure below counts them by true class. The reason is in the nine numbers of `dense2.weights`. In each of its three rows the largest weight sits in column 2, and after ReLU no hidden value is negative, so the class-2 logit is the largest of the three whenever at least one hidden value is positive. The 8 exceptions are the rows whose three hidden values are all zero, the origins of the three arms among them. Their logits are exactly 0, 0, 0, the three probabilities tie, and `np.argmax` returns the first index of a tie, which is 0. Another seed draws other weights and collapses onto another class, or splits its predictions between two classes or among all three, and lands in the same place: over seeds 0 to 199 the script measures a mean accuracy of 0.333, with single runs between 0.24 and 0.42.
+
+![Three stacked horizontal bars, one per true class of 100 points, split by the predicted class: true class 0, 3 predicted as class 0 and 97 as class 2; true class 1, 4 and 96; true class 2, 1 and 99, each split written after its bar as 3 + 97, 4 + 96 and 1 + 99. No point is predicted as class 1. A column on the right counts the correct answers, 3, 0 and 99, 102 of 300, an accuracy of 0.34, and a note says that the 8 points predicted as class 0 have three logits of exactly 0, a tie np.argmax gives to class 0.](diagrams/04-baseline.svg)
+
+*Almost every point gets the same answer, class 2, so the accuracy is what one fixed answer scores: about a third.*
 
 The training loop of post 22 will repeatedly compute this forward pass, measure the loss against the true labels, and adjust the weights to reduce that loss. The arithmetic of the forward pass does not change; the weights do.
 
