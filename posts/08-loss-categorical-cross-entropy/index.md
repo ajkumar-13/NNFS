@@ -1,6 +1,6 @@
 # 08 - Loss: categorical cross-entropy
 
-> **TL;DR.** Categorical cross-entropy scores one sample as the negative natural logarithm of the probability the network gave to the true class, and a batch as the mean of those scores. The score is 0 only when that probability is exactly 1, grows without bound as it approaches 0, and equals $\ln K$ for a uniform guess over $K$ classes, which is why the untrained spiral network of post 07 scores 1.0986. Predictions are clipped to $[10^{-7}, 1 - 10^{-7}]$ before the logarithm so that an exact zero cannot make the loss infinite. Two classes, `Loss` and `Loss_CategoricalCrossentropy`, carry the calculation for integer and one-hot labels, and accuracy is reported beside the loss because it ignores confidence and cannot be differentiated.
+> **TL;DR.** Categorical cross-entropy scores one sample as the negative natural logarithm of the probability the network gave to the true class, and a batch as the mean of those scores. The score is 0 only when that probability is exactly 1, grows without bound as it approaches 0, and equals $\ln K$ for a uniform guess over $K$ classes, which is why the untrained spiral network of [post 07](../07-coding-the-complete-forward-pass/index.md) scores 1.0986. Predictions are clipped to $[10^{-7}, 1 - 10^{-7}]$ before the logarithm so that an exact zero cannot make the loss infinite. Two classes, `Loss` and `Loss_CategoricalCrossentropy`, carry the calculation for integer and one-hot labels, and accuracy is reported beside the loss because it ignores confidence and cannot be differentiated.
 >
 > **Prerequisites:** [Post 06](../06-activation-functions-relu-and-softmax/index.md), [Post 07](../07-coding-the-complete-forward-pass/index.md).
 > **Safe to skip?** Skip it if the reader can already compute the categorical cross-entropy of a batch from integer or one-hot labels, say why an untrained three-class network scores about 1.0986, and say what the clip before the logarithm protects against.
@@ -20,14 +20,14 @@
 
 ## 1. The question: how wrong is a batch of predictions, as one number?
 
-The forward pass of post 07 turns each of the 300 spiral points into a row of three probabilities. With untrained weights, every row is approximately `[1/3, 1/3, 1/3]`. The forward pass cannot, by itself, tell whether those probabilities are good or bad. Something else has to turn the prediction and the true label into one summary number.
+The forward pass of [post 07](../07-coding-the-complete-forward-pass/index.md) turns each of the 300 spiral points into a row of three probabilities. With untrained weights, every row is approximately `[1/3, 1/3, 1/3]`. The forward pass cannot, by itself, tell whether those probabilities are good or bad. Something else has to turn the prediction and the true label into one summary number.
 
 That number is the **loss**. A loss function takes a model's output and the true target and returns one number, lower being better: small when the prediction is good and large when it is bad. Training is the process of adjusting the weights to reduce this number.
 
 Two roles fall out of this definition:
 
 - **The scoreboard.** A loss number is a single comparable measurement: 1.10 is worse than 0.40, and the relative magnitude is meaningful, not just the ordering.
-- **The optimisation target.** Training works by computing the gradient of the loss with respect to every weight (post 09 introduces the idea and post 10 the calculus), so the loss has to be differentiable. The number is what gets minimised; the gradient says *how* to minimise it.
+- **The optimisation target.** Training works by computing the gradient of the loss with respect to every weight ([post 09](../09-introduction-to-optimisation/index.md) introduces the idea and [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) the calculus), so the loss has to be differentiable. The number is what gets minimised; the gradient says *how* to minimise it.
 
 For multi-class classification with softmax outputs, the standard loss is **categorical cross-entropy**. This post asks how that loss turns a batch of softmax outputs and its labels into one number, and why the negative logarithm is the function that does it.
 
@@ -63,18 +63,18 @@ Maximising the likelihood of the training labels is therefore the same as minimi
 
 The name is from information theory. Shannon's entropy of a distribution $p$ (1948) is $-\sum_k p_k \log p_k$; the cross-entropy of a second distribution $q$ measured against $p$ keeps the weights and changes the term inside the logarithm, $-\sum_k p_k \log q_k$. With the one-hot label as $p$ and the prediction as $q$, that is the formula of this section, and "categorical" says that the label is one of $K$ categories.
 
-The pairing with softmax is not a coincidence either. Bridle (1990), the paper that named softmax (post 06), set out the pair: a softmax output trained with a probability score in place of squared error. Minimising cross-entropy over a softmax output is maximum-likelihood estimation under a categorical distribution, and Goodfellow, Bengio, and Courville (*Deep Learning*, sections 5.5 and 6.2.2) give the derivation in full. For this series the practical takeaway is that **softmax on the output layer and cross-entropy as the loss are the default pair for multi-class classification**.
+The pairing with softmax is not a coincidence either. Bridle (1990), the paper that named softmax ([post 06](../06-activation-functions-relu-and-softmax/index.md)), set out the pair: a softmax output trained with a probability score in place of squared error. Minimising cross-entropy over a softmax output is maximum-likelihood estimation under a categorical distribution, and Goodfellow, Bengio, and Courville (*Deep Learning*, sections 5.5 and 6.2.2) give the derivation in full. For this series the practical takeaway is that **softmax on the output layer and cross-entropy as the loss are the default pair for multi-class classification**.
 
-A second property of the pair is worth flagging: their combined derivative is unusually short (post 19). The two functions are not just compatible; differentiated together, they need less work in the backward pass than either one alone.
+A second property of the pair is worth flagging: their combined derivative is unusually short ([post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)). The two functions are not just compatible; differentiated together, they need less work in the backward pass than either one alone.
 
 ### 2.2. What this loss is *not*
 
 A boundary section, because the function gets misapplied often.
 
-- **It is not for regression.** Cross-entropy expects probabilities and class labels, not arbitrary real numbers. Regression uses mean squared error, which this series trains with only in its California housing regression project (post 12 borrows the squared error of a single neuron as an example). Nothing in the code stops the mistake: the clip of section 6 forces whatever it is given into the valid range, and the result is a number without meaning. Handed the logits of section 8's network in place of its probabilities, the class of section 7 returns 14.3504 where the loss is 1.0986 (`snippets/pitfalls.py`).
-- **It is not the usual choice for binary classification.** With two classes the usual choice is *binary* cross-entropy (post 34), the single-output equivalent with a simpler formula. Categorical cross-entropy still works for two classes, with two softmax outputs; binary cross-entropy is the more economical pairing.
-- **It does not produce a gradient on its own.** The class of this post only measures. Post 18 adds the `backward` method that differentiates the loss, and the optimisers from post 22 onward use that derivative to update the weights.
-- **It is not the same as accuracy.** Two networks can have the same accuracy (the same count of correct top predictions) and very different losses, because the loss also depends on confidence. Section 8.2 returns to this.
+- **It is not for regression.** Cross-entropy expects probabilities and class labels, not arbitrary real numbers. Regression uses mean squared error, which this series trains with only in its California housing regression project ([post 12](../12-backprop-through-a-single-neuron/index.md) borrows the squared error of a single neuron as an example). Nothing in the code stops the mistake: the clip of [section 6](#6-clipping-never-take-log0) forces whatever it is given into the valid range, and the result is a number without meaning. Handed the logits of [section 8](#8-make-it-run-the-forward-pass-with-a-loss-and-an-accuracy)'s network in place of its probabilities, the class of [section 7](#7-the-two-classes-loss-and-loss_categoricalcrossentropy) returns 14.3504 where the loss is 1.0986 (`snippets/pitfalls.py`).
+- **It is not the usual choice for binary classification.** With two classes the usual choice is *binary* cross-entropy ([post 34](../34-sigmoid-and-binary-cross-entropy/index.md)), the single-output equivalent with a simpler formula. Categorical cross-entropy still works for two classes, with two softmax outputs; binary cross-entropy is the more economical pairing.
+- **It does not produce a gradient on its own.** The class of this post only measures. [Post 18](../18-backpropagation-through-the-loss-function/index.md) adds the `backward` method that differentiates the loss, and the optimisers from [post 22](../22-gradient-descent-optimiser/index.md) onward use that derivative to update the weights.
+- **It is not the same as accuracy.** Two networks can have the same accuracy (the same count of correct top predictions) and very different losses, because the loss also depends on confidence. [Section 8.2](#82-accuracy-the-complementary-metric) returns to this.
 
 ---
 
@@ -96,7 +96,7 @@ Two properties hold for every point on the curve:
 - **Loss is non-negative.** The probability lives in $(0, 1]$, so $\log(p) \le 0$, so $-\log(p) \ge 0$.
 - **Loss is zero only at perfect confidence.** $\log(1) = 0$, so the only way to score zero loss on a sample is to give the true class a probability of exactly 1.
 
-The curve steepens as $p$ approaches zero. A probability of 0.01 on the true class costs 4.605, which is 6.64 times the 0.693 of a probability of 0.5. Raising a probability from 0.01 to 0.10 removes 2.303 of loss; the step of the same size from 0.90 to 0.99 removes 0.095. A loss that fell in a straight line, such as $1 - p$, would pay 0.09 for either step. This uneven charge is the source of the loss's training signal: the samples the network gets most wrong dominate the mean, so the largest corrections go to them. Post 19 computes the gradient that carries those corrections.
+The curve steepens as $p$ approaches zero. A probability of 0.01 on the true class costs 4.605, which is 6.64 times the 0.693 of a probability of 0.5. Raising a probability from 0.01 to 0.10 removes 2.303 of loss; the step of the same size from 0.90 to 0.99 removes 0.095. A loss that fell in a straight line, such as $1 - p$, would pay 0.09 for either step. This uneven charge is the source of the loss's training signal: the samples the network gets most wrong dominate the mean, so the largest corrections go to them. [Post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) computes the gradient that carries those corrections.
 
 In one sentence: $-\log(p)$ is zero when the true class gets probability 1, positive otherwise, unbounded as that probability goes to 0, and it adds over samples in the same way that their probabilities multiply. The table and the numbers of this section are printed by `snippets/neg_log_curve.py`, and the figure at the top of the post draws the curve with the two steps of equal width shaded.
 
@@ -122,9 +122,9 @@ Sample 3 has the lowest loss (0.90 on the right class). Sample 2 has the highest
 
 ## 5. Two label formats, two ways to index
 
-Datasets ship class labels in one of two formats. Both formats encode the same information; the implementation has to handle each one differently, and the figure below follows the worked batch of section 4 down both paths.
+Datasets ship class labels in one of two formats. Both formats encode the same information; the implementation has to handle each one differently, and the figure below follows the worked batch of [section 4](#4-worked-example) down both paths.
 
-| Format | The labels of section 4 | Shape | Where it comes from |
+| Format | The labels of [section 4](#4-worked-example) | Shape | Where it comes from |
 |---|---|:---:|---|
 | **Integer index** | `[0, 1, 1]` | $(N,)$ | one integer per sample; what `spiral_data` returns |
 | **One-hot vector** | `[[1,0,0], [0,1,0], [0,1,0]]` | $(N, K)$ | an encoding step, such as `np.eye(3)[class_targets]` |
@@ -173,9 +173,9 @@ correct_confidences = np.sum(
 print(correct_confidences)
 ```
 
-The element-wise product `class_targets_onehot * softmax_outputs` zeros out every wrong-class column. Summing along `axis=1` collapses each row to the single surviving value: the probability on the true class. No `keepdims` is needed here, because the result is not broadcast back against the batch (post 05).
+The element-wise product `class_targets_onehot * softmax_outputs` zeros out every wrong-class column. Summing along `axis=1` collapses each row to the single surviving value: the probability on the true class. No `keepdims` is needed here, because the result is not broadcast back against the batch ([post 05](../05-array-summation-keepdims-and-broadcasting/index.md)).
 
-The two paths produce identical results, and the losses of section 4 take two more lines:
+The two paths produce identical results, and the losses of [section 4](#4-worked-example) take two more lines:
 
 ```python
 sample_losses = -np.log(correct_confidences)
@@ -192,15 +192,15 @@ The three blocks are consecutive lines of `snippets/worked_example.py`, whose fi
 0.38506088005216804
 ```
 
-The implementation in section 7 checks the number of dimensions of the label array and picks the matching path.
+The implementation in [section 7](#7-the-two-classes-loss-and-loss_categoricalcrossentropy) checks the number of dimensions of the label array and picks the matching path.
 
-One-hot labels cost more memory and one more operation, and they exist because they generalise. A row such as `[0.9, 0.05, 0.05]`, a *soft label*, can say that a sample is mostly class 0; label smoothing and mixup are built on such rows. This series uses hard labels only, and section 9 shows that the multiply-and-sum path is not the right formula for soft ones.
+One-hot labels cost more memory and one more operation, and they exist because they generalise. A row such as `[0.9, 0.05, 0.05]`, a *soft label*, can say that a sample is mostly class 0; label smoothing and mixup are built on such rows. This series uses hard labels only, and [section 9](#9-what-can-go-wrong) shows that the multiply-and-sum path is not the right formula for soft ones.
 
 ---
 
 ## 6. Clipping: never take `log(0)`
 
-A softmax output can be exactly zero in floating point. Post 06 showed the softmax of $[0, -800]$ coming out as `[1. 0.]`. In float32, the type that `nnfs.init()` sets, the exponential underflows to exactly 0 once a logit sits about 104 below the largest logit of its row (about 745 in float64). If that zero is the probability of the true class, the loss is $-\log(0)$: NumPy returns `inf`, and one infinite sample makes the mean of the whole batch infinite.
+A softmax output can be exactly zero in floating point. [Post 06](../06-activation-functions-relu-and-softmax/index.md) showed the softmax of $[0, -800]$ coming out as `[1. 0.]`. In float32, the type that `nnfs.init()` sets, the exponential underflows to exactly 0 once a logit sits about 104 below the largest logit of its row (about 745 in float64). If that zero is the probability of the true class, the loss is $-\log(0)$: NumPy returns `inf`, and one infinite sample makes the mean of the whole batch infinite.
 
 The standard fix is to **clip** predictions into a safe range before taking the logarithm:
 
@@ -224,11 +224,11 @@ This keeps every value in $[10^{-7}, 1 - 10^{-7}]$. `snippets/clipping.py` takes
    the smallest, -log(1 - 1e-7): 1.000e-07
 ```
 
-Three things are visible. The lower bound is the one that matters: it replaces an infinite loss by $-\log(10^{-7}) = 16.118$, large enough to mark the sample as badly wrong and finite, so the mean survives. The upper bound turns a loss of exactly 0 into about $10^{-7}$ and protects nothing in this class, because $\log(1) = 0$ is harmless. It is there because the reference implementation (Kinsley and Kukieła) clips both sides by the same amount, so that the clip does not pull the mean towards either end, and it becomes necessary in binary cross-entropy (post 34), where $\log(1 - \hat{y})$ is taken as well and a prediction of exactly 1 is the one that produces $\log(0)$. And the ordinary prediction is untouched, 0.35667494 both times; the worked batch of section 4 has the same mean loss, 0.38506088005216804, with and without the clip.
+Three things are visible. The lower bound is the one that matters: it replaces an infinite loss by $-\log(10^{-7}) = 16.118$, large enough to mark the sample as badly wrong and finite, so the mean survives. The upper bound turns a loss of exactly 0 into about $10^{-7}$ and protects nothing in this class, because $\log(1) = 0$ is harmless. It is there because the reference implementation (Kinsley and Kukieła) clips both sides by the same amount, so that the clip does not pull the mean towards either end, and it becomes necessary in binary cross-entropy ([post 34](../34-sigmoid-and-binary-cross-entropy/index.md)), where $\log(1 - \hat{y})$ is taken as well and a prediction of exactly 1 is the one that produces $\log(0)$. And the ordinary prediction is untouched, 0.35667494 both times; the worked batch of [section 4](#4-worked-example) has the same mean loss, 0.38506088005216804, with and without the clip.
 
 The value $10^{-7}$ is a convention with one reason behind it. Any small positive lower bound would cap the loss. The upper bound $1 - \epsilon$, though, has to stay below 1 in float32, and $1 - 10^{-8}$ does not: it rounds to exactly 1.0, while $1 - 10^{-7}$ is stored as 0.9999999. So $10^{-7}$ is the smallest power of ten that works at both ends.
 
-The clip belongs to implementations that take the logarithm of a probability. Framework losses such as PyTorch's `CrossEntropyLoss` take the logits instead and compute the logarithm of the softmax in one step; post 19 joins the same two functions for the backward pass.
+The clip belongs to implementations that take the logarithm of a probability. Framework losses such as PyTorch's `CrossEntropyLoss` take the logits instead and compute the logarithm of the softmax in one step; [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) joins the same two functions for the backward pass.
 
 ---
 
@@ -269,14 +269,14 @@ class Loss_CategoricalCrossentropy(Loss):
 Three design choices are worth naming.
 
 - **`forward` returns per-sample losses.** One number per sample, shape $(N,)$. This is the array to look at when the mean is bad, because it shows which samples are responsible.
-- **`calculate` returns the batch mean.** A single scalar is what the optimiser will minimise, and what gets logged each epoch. The method sits in the base class because every loss needs it, and the name `data_loss` looks ahead to post 30, which adds a second term to the same base class, the regularisation penalty.
-- **The label format is detected at run time.** Checking `len(y_true.shape)` lets the caller pass either format without converting beforehand: one dimension selects the indexing path of section 5.1, two dimensions the multiply-and-sum path of section 5.2. The check looks at nothing but the number of dimensions, and section 9 lists what that lets through.
+- **`calculate` returns the batch mean.** A single scalar is what the optimiser will minimise, and what gets logged each epoch. The method sits in the base class because every loss needs it, and the name `data_loss` looks ahead to [post 30](../30-l1-and-l2-regularisation/index.md), which adds a second term to the same base class, the regularisation penalty.
+- **The label format is detected at run time.** Checking `len(y_true.shape)` lets the caller pass either format without converting beforehand: one dimension selects the indexing path of [section 5.1](#51-integer-labels-advanced-indexing), two dimensions the multiply-and-sum path of [section 5.2](#52-one-hot-labels-element-wise-multiply-then-sum). The check looks at nothing but the number of dimensions, and [section 9](#9-what-can-go-wrong) lists what that lets through.
 
 ---
 
 ## 8. Make it run: the forward pass with a loss and an accuracy
 
-`snippets/forward_pass_with_loss.py` is the script of post 07 with a measurement at the end. The file opens with the three imports of post 07 (`numpy`, `nnfs`, and `spiral_data`), the classes `Layer_Dense`, `Activation_ReLU`, and `Activation_Softmax` as posts 04 and 06 wrote them, and the two loss classes of section 7. The rest of the file is below. It needs NumPy and the `nnfs` package, and it runs in under a second from the series root with `python posts/08-loss-categorical-cross-entropy/snippets/forward_pass_with_loss.py`.
+`snippets/forward_pass_with_loss.py` is the script of [post 07](../07-coding-the-complete-forward-pass/index.md) with a measurement at the end. The file opens with the three imports of [post 07](../07-coding-the-complete-forward-pass/index.md) (`numpy`, `nnfs`, and `spiral_data`), the classes `Layer_Dense`, `Activation_ReLU`, and `Activation_Softmax` as posts [04](../04-dense-layer-class-and-spiral-data/index.md) and [06](../06-activation-functions-relu-and-softmax/index.md) wrote them, and the two loss classes of [section 7](#7-the-two-classes-loss-and-loss_categoricalcrossentropy). The rest of the file is below. It needs NumPy and the `nnfs` package, and it runs in under a second from the series root with `python posts/08-loss-categorical-cross-entropy/snippets/forward_pass_with_loss.py`.
 
 ```python
 nnfs.init()
@@ -324,7 +324,7 @@ predictions per class: [  8   0 292]
 
 The loss of 1.0986 is not a random number. With three classes and an output of $1/3$ per class, the loss is $-\log(1/3) = \ln 3 = 1.0986122886681098$, and the script's float32 value, 1.0986104, agrees with it to five decimals. The 300 per-sample losses that `forward` returns run only from 1.0984 to 1.0987, and the one-hot path gives the same mean as the integer path. The match confirms two things: the softmax is producing the expected near-uniform distribution, and the cross-entropy is computing the right loss from it.
 
-Five more scripts in the same directory produce the numbers of the other sections: `neg_log_curve.py` (sections 2.1, 3, and 8.1), `worked_example.py` (sections 4 and 5), `clipping.py` (section 6), `loss_vs_accuracy.py` (section 8.2), and `pitfalls.py` (sections 2.2 and 9). Each runs the same way in under a second; all need NumPy only, except `pitfalls.py`, which also loads the spiral data from `nnfs`.
+Five more scripts in the same directory produce the numbers of the other sections: `neg_log_curve.py` (sections [2.1](#21-where-the-formula-comes-from), [3](#3-the-intuition-of-the--log-curve), and [8.1](#81-reference-numbers-the-uniform-guess-baseline)), `worked_example.py` (sections [4](#4-worked-example) and [5](#5-two-label-formats-two-ways-to-index)), `clipping.py` ([section 6](#6-clipping-never-take-log0)), `loss_vs_accuracy.py` ([section 8.2](#82-accuracy-the-complementary-metric)), and `pitfalls.py` (sections [2.2](#22-what-this-loss-is-not) and [9](#9-what-can-go-wrong)). Each runs the same way in under a second; all need NumPy only, except `pitfalls.py`, which also loads the spiral data from `nnfs`.
 
 ### 8.1. Reference numbers: the uniform-guess baseline
 
@@ -338,7 +338,7 @@ Five more scripts in the same directory produce the numbers of the other section
 
 Before training, a network with small random weights should score close to the baseline for its class count; a first loss far from it points at a bug in the forward pass or in the loss, not at an unlucky initialisation.
 
-The baseline is also what makes a later loss readable. A mean loss $L$ corresponds to a typical probability on the true class of $e^{-L}$, the geometric mean of the batch's true-class probabilities: $e^{-1.0986} = 1/3$ for the untrained network, and $e^{-0.385} = 0.680$ for the worked batch of section 4, whose three values were 0.7, 0.5, and 0.9. A loss below $\ln K$ therefore means the network puts, in that sense, more probability on the true class than a uniform guess does, and training pushes the number down from there.
+The baseline is also what makes a later loss readable. A mean loss $L$ corresponds to a typical probability on the true class of $e^{-L}$, the geometric mean of the batch's true-class probabilities: $e^{-1.0986} = 1/3$ for the untrained network, and $e^{-0.385} = 0.680$ for the worked batch of [section 4](#4-worked-example), whose three values were 0.7, 0.5, and 0.9. A loss below $\ln K$ therefore means the network puts, in that sense, more probability on the true class than a uniform guess does, and training pushes the number down from there.
 
 The converse needs care: a loss above the baseline does not show that the top predictions are at chance. Nine predictions of 0.9 on the true class and one of $10^{-6}$ have an accuracy of 0.9 and a loss of 1.476, above $\ln 3 = 1.099$, because the single confident mistake costs 13.8 by itself (`snippets/pitfalls.py`).
 
@@ -346,7 +346,7 @@ The converse needs care: a loss above the baseline does not show that the top pr
 
 Accuracy counts how often the top prediction is correct, ignoring how confident the network was. The script computes it in two lines. `np.argmax(activation2.output, axis=1)` returns, for every row, the column index of the largest value: the class the network is betting on. `np.mean(predictions == y)` is the fraction of rows where that index equals the true label.
 
-The script prints 0.340: 102 of the 300 predictions are right. That is the score of one fixed answer and not of 300 informed guesses, and post 07 traced the reason: 292 of the predictions are class 2, the other 8 are class 0, and each class holds 100 points. A uniform guess over $K$ balanced classes scores about $1/K$ in accuracy, as it scores $\ln K$ in loss.
+The script prints 0.340: 102 of the 300 predictions are right. That is the score of one fixed answer and not of 300 informed guesses, and [post 07](../07-coding-the-complete-forward-pass/index.md) traced the reason: 292 of the predictions are class 2, the other 8 are class 0, and each class holds 100 points. A uniform guess over $K$ balanced classes scores about $1/K$ in accuracy, as it scores $\ln K$ in loss.
 
 | Metric | What it measures | Differentiable? | Used for |
 |---|---|:---:|---|
@@ -365,11 +365,11 @@ Accuracy cannot stand in for the loss during training. A tiny change in the weig
 
 ## 9. What can go wrong?
 
-- **A zero reaches the logarithm.** Without the clip, a probability of exactly 0 on the true class gives a per-sample loss of `inf` and a batch mean of `inf` (section 6). A version that codes the full sum, `-np.sum(y_true * np.log(y_pred), axis=1)`, fails more easily: a zero on a *wrong* class produces $0 \times (-\infty)$, which is `nan`, on the row `[0.6, 0.0, 0.4]` with true class 0, where the class of section 7 returns 0.5108.
-- **The labels have the wrong number of dimensions.** The class chooses between its two paths from `len(y_true.shape)` alone. Integer labels stored as a column of shape $(N, 1)$ count as two-dimensional, take the one-hot path, and broadcast. For the labels 0, 1, 2 on the batch of section 4 the class then returns per-sample losses of `inf`, 0, and $-0.693$, a negative loss, where the correct values are 0.357, 0.693, and 2.526. No error is raised. Flattening the labels with `y.ravel()` restores the right answer.
-- **A hand-written path meets the other format.** Outside the class, each path of section 5 fails in its own way when it is given the other kind of label. On the 300 spiral samples, integer labels in the multiply-and-sum path raise `ValueError: operands could not be broadcast together with shapes (300,3) (300,)`, and one-hot labels in the indexing path raise `IndexError: shape mismatch: indexing arrays could not be broadcast together with shapes (300,) (300,3)`. With as many samples as classes there is no error at all: on the three samples of section 4 the first mistake returns `[0.3 0.9 0.98]` in place of `[0.7 0.5 0.9]`, and the second returns an array of shape $(3, 3)$. This is the square-array trap of post 05.
+- **A zero reaches the logarithm.** Without the clip, a probability of exactly 0 on the true class gives a per-sample loss of `inf` and a batch mean of `inf` ([section 6](#6-clipping-never-take-log0)). A version that codes the full sum, `-np.sum(y_true * np.log(y_pred), axis=1)`, fails more easily: a zero on a *wrong* class produces $0 \times (-\infty)$, which is `nan`, on the row `[0.6, 0.0, 0.4]` with true class 0, where the class of [section 7](#7-the-two-classes-loss-and-loss_categoricalcrossentropy) returns 0.5108.
+- **The labels have the wrong number of dimensions.** The class chooses between its two paths from `len(y_true.shape)` alone. Integer labels stored as a column of shape $(N, 1)$ count as two-dimensional, take the one-hot path, and broadcast. For the labels 0, 1, 2 on the batch of [section 4](#4-worked-example) the class then returns per-sample losses of `inf`, 0, and $-0.693$, a negative loss, where the correct values are 0.357, 0.693, and 2.526. No error is raised. Flattening the labels with `y.ravel()` restores the right answer.
+- **A hand-written path meets the other format.** Outside the class, each path of [section 5](#5-two-label-formats-two-ways-to-index) fails in its own way when it is given the other kind of label. On the 300 spiral samples, integer labels in the multiply-and-sum path raise `ValueError: operands could not be broadcast together with shapes (300,3) (300,)`, and one-hot labels in the indexing path raise `IndexError: shape mismatch: indexing arrays could not be broadcast together with shapes (300,) (300,3)`. With as many samples as classes there is no error at all: on the three samples of [section 4](#4-worked-example) the first mistake returns `[0.3 0.9 0.98]` in place of `[0.7 0.5 0.9]`, and the second returns an array of shape $(3, 3)$. This is the square-array trap of [post 05](../05-array-summation-keepdims-and-broadcasting/index.md).
 - **Soft labels go through the one-hot path.** The multiply-and-sum path computes $-\log \sum_k y_k \hat{y}_k$, which is guaranteed to equal the cross-entropy $-\sum_k y_k \log \hat{y}_k$ only when the label row is exactly one-hot. For the soft label `[0.9, 0.05, 0.05]` against the prediction `[0.7, 0.1, 0.2]`, the class returns 0.4385 and the cross-entropy is 0.5166. Soft labels need the full sum, taken on clipped predictions.
-- **The per-sample losses are summed instead of averaged.** The batch of section 4 has a sum of 1.155 and a mean of 0.385; the same batch repeated ten times has a sum of 11.552 and a mean of 0.385. A summed loss grows with the batch size at the same prediction quality, so losses from batches of different sizes stop being comparable, and post 18 shows that the gradient, and with it the usable learning rate, would depend on the batch size as well.
+- **The per-sample losses are summed instead of averaged.** The batch of [section 4](#4-worked-example) has a sum of 1.155 and a mean of 0.385; the same batch repeated ten times has a sum of 11.552 and a mean of 0.385. A summed loss grows with the batch size at the same prediction quality, so losses from batches of different sizes stop being comparable, and [post 18](../18-backpropagation-through-the-loss-function/index.md) shows that the gradient, and with it the usable learning rate, would depend on the batch size as well.
 - **The loss is read without its baseline.** A loss of 1.5 is worse than a uniform guess for 3 classes ($\ln 3 = 1.099$) and far better than one for 100 classes ($\ln 100 = 4.605$). A first loss of 1.099 on a three-class problem is not a decent start; it is exactly the uniform guess, and nothing has been learned yet.
 
 `snippets/pitfalls.py` runs every one of these cases and prints the values and error messages quoted here.
@@ -403,14 +403,12 @@ Accuracy cannot stand in for the loss during training. A tiny change in the weig
 
 ## Further reading
 
-- Bishop, C. M., *Pattern Recognition and Machine Learning*, section 4.3.4 (Springer, 2006).
-- Bridle, J. S., *"Probabilistic Interpretation of Feedforward Classification Network Outputs"* (Neurocomputing, NATO ASI Series, 1990).
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, sections 5.5 and 6.2.2 (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 5 (2020).
-- PyTorch documentation, `torch.nn.CrossEntropyLoss` (latest).
-- Shannon, C. E., *"A Mathematical Theory of Communication"* (Bell System Technical Journal, 1948).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Bishop, C. M., *[Pattern Recognition and Machine Learning](https://www.microsoft.com/en-us/research/people/cmbishop/prml-book/)*, section 4.3.4 (Springer, 2006).
+- Bridle, J. S., *["Probabilistic Interpretation of Feedforward Classification Network Outputs"](https://doi.org/10.1007/978-3-642-76153-9_28)* (Neurocomputing, NATO ASI Series, 1990).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/ml.html)*, sections 5.5 and 6.2.2 (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 5 (2020).
+- PyTorch documentation, [`torch.nn.CrossEntropyLoss`](https://docs.pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html) (latest).
+- Shannon, C. E., *["A Mathematical Theory of Communication"](https://doi.org/10.1002/j.1538-7305.1948.tb01338.x)* (Bell System Technical Journal, 1948).
 
 ---
 
