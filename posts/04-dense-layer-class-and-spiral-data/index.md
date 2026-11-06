@@ -1,6 +1,6 @@
 # 04 - The Dense layer class and spiral data
 
-> **TL;DR.** Hand-writing `np.dot` calls for every layer is tractable for two layers and unmaintainable for fifty. This post packages the forward pass into a reusable `Layer_Dense` class, switches the weight matrix to one column per neuron so that the transpose leaves the forward call, and introduces the spiral dataset, a deliberately non-linear three-class benchmark that the series works on up to post 31.
+> **TL;DR.** Hand-writing `np.dot` calls for every layer is tractable for two layers and unmaintainable for fifty. This post packages the forward pass into a reusable `Layer_Dense` class, switches the weight matrix to one column per neuron so that the transpose leaves the forward call, and introduces the spiral dataset, a deliberately non-linear three-class benchmark that the series works on up to [post 31](../31-dropout/index.md).
 >
 > **Prerequisites:** [Post 03](../03-stacking-layers-and-the-forward-pass/index.md).
 > **Safe to skip?** Skip it if the reader can already write `Layer_Dense` with its `(n_inputs, n_neurons)` weights from memory, knows the shapes that `spiral_data(samples=100, classes=3)` returns, and can say why a linear model fails on that data.
@@ -15,7 +15,7 @@
 
 ![Scatter of all 300 spiral points, class 0 as blue circles, class 1 as orange squares and class 2 as green triangles, each class an arm winding out from the origin, over three straight-edged regions, each tinted in the colour of the class a trained Layer_Dense(2, 3) answers there. Every arm crosses the edges, and the layer gets 118 of 300 points right, 39.3 percent, against 100 of 300 for one fixed answer.](diagrams/01-spiral-data.svg)
 
-*The series' standard benchmark, all 300 points that `spiral_data(samples=100, classes=3)` returns. The tints are the regions of the straight-line model of section 2.1; the rest of the series builds a network whose boundary bends around the arms.*
+*The series' standard benchmark, all 300 points that `spiral_data(samples=100, classes=3)` returns. The tints are the regions of the straight-line model of [section 2.1](#21-how-well-does-a-fitted-straight-line-model-do); the rest of the series builds a network whose boundary bends around the arms.*
 
 ---
 
@@ -26,7 +26,7 @@ Up to now the forward pass has been hand-coded for each layer. That worked for a
 Two additions make the rest of the series possible:
 
 1. **A `Layer_Dense` class.** One object per layer, holding its own weights and biases. The forward pass becomes a single method call. The class is the smallest possible mirror of what every production framework calls a module or a layer: PyTorch's `nn.Module`, Keras's `Layer`, Flax's `nn.Module`, whose dense layers are `nn.Linear`, `Dense` and `nn.Dense`. The pattern travels.
-2. **A standard dataset to point the network at.** The spiral dataset is hard enough to require a real network and small enough to train on a laptop in seconds. Its generator comes from the neural-network case study in the Stanford CS231n course notes, and the `nnfs` helper package that accompanies the book of Kinsley and Kukieła (2020) ships a version of it as `spiral_data`. This post generates it; post 06 passes it through the first activation functions, and the training loop that learns it is written in post 22.
+2. **A standard dataset to point the network at.** The spiral dataset is hard enough to require a real network and small enough to train on a laptop in seconds. Its generator comes from the neural-network case study in the Stanford CS231n course notes, and the `nnfs` helper package that accompanies the book of Kinsley and Kukieła (2020) ships a version of it as `spiral_data`. This post generates it; [post 06](../06-activation-functions-relu-and-softmax/index.md) passes it through the first activation functions, and the training loop that learns it is written in [post 22](../22-gradient-descent-optimiser/index.md).
 
 Together they are the smallest amount of scaffolding needed before training can begin.
 
@@ -80,7 +80,7 @@ The rows are ordered by class: rows 0 to 99 belong to class 0, rows 100 to 199 t
 
 A linear classifier for three classes computes three scores, each a weighted sum of the two coordinates plus a bias, and answers with the class whose score is largest. That cuts the plane into at most three regions with straight edges, and no arrangement of straight cuts can follow three arms that wrap around one another. A linear model, no matter how its inputs are weighted, therefore cannot separate the classes, and in practice it does only a little better than chance, which for three equally frequent classes is one in three, 33.3 percent.
 
-The script `snippets/linear_baseline.py` puts a number on it. One `Layer_Dense(2, 3)` followed by softmax is exactly such a linear classifier; trained until it stops improving on the 300 points, it gets 118 of them right, 39.3 percent; the tints of the figure at the top of the post are its three regions. A least-squares fit, an unrelated way of fitting a straight-line model, also gets 118. Always answering the same class gets 100. Both fits minimise a smooth loss and not the number of wrong answers, so 118 is what a fitted linear model scores here, not the most that three straight-edged regions could get right. The script borrows its training loop from later posts (the softmax of post 06, the loss of post 08, the gradient of post 19, the update of post 22) and nothing else in this post depends on it; it is there to turn "hard" into a number.
+The script `snippets/linear_baseline.py` puts a number on it. One `Layer_Dense(2, 3)` followed by softmax is exactly such a linear classifier; trained until it stops improving on the 300 points, it gets 118 of them right, 39.3 percent; the tints of the figure at the top of the post are its three regions. A least-squares fit, an unrelated way of fitting a straight-line model, also gets 118. Always answering the same class gets 100. Both fits minimise a smooth loss and not the number of wrong answers, so 118 is what a fitted linear model scores here, not the most that three straight-edged regions could get right. The script borrows its training loop from later posts (the softmax of [post 06](../06-activation-functions-relu-and-softmax/index.md), the loss of [post 08](../08-loss-categorical-cross-entropy/index.md), the gradient of [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md), the update of [post 22](../22-gradient-descent-optimiser/index.md)) and nothing else in this post depends on it; it is there to turn "hard" into a number.
 
 ### 2.2. Why this dataset and not MNIST
 
@@ -122,7 +122,7 @@ For a deeper Python refresher the standard reference is Ramalho's *Fluent Python
 
 ## 4. The weight-matrix convention, revisited
 
-Posts 01 to 03 stored weights with one row per neuron: $\mathbf{W}$ of shape $(n_\text{neurons}, n_\text{inputs})$, which post 03 wrote as $(m, n)$ for $m$ neurons of $n$ inputs each. Every batch forward pass needed a transpose: `np.dot(X, W.T) + b`.
+Posts 01 to 03 stored weights with one row per neuron: $\mathbf{W}$ of shape $(n_\text{neurons}, n_\text{inputs})$, which [post 03](../03-stacking-layers-and-the-forward-pass/index.md) wrote as $(m, n)$ for $m$ neurons of $n$ inputs each. Every batch forward pass needed a transpose: `np.dot(X, W.T) + b`.
 
 This post switches conventions. From now on, weights are stored with one **column** per neuron: $\mathbf{W}$ of shape $(n_\text{inputs}, n_\text{neurons})$. The transpose disappears, and a layer computes
 
@@ -131,9 +131,9 @@ $$\mathbf{Z} = \mathbf{X}\mathbf{W} + \mathbf{b}$$
 | Convention | $\mathbf{W}$ shape | Forward pass |
 |---|---|---|
 | Old (posts 01 to 03) | $(n_\text{neurons}, n_\text{inputs})$, rows are neurons | `np.dot(X, W.T) + b` |
-| New (post 04 onward) | $(n_\text{inputs}, n_\text{neurons})$, columns are neurons | `np.dot(X, W) + b` |
+| New ([post 04](index.md) onward) | $(n_\text{inputs}, n_\text{neurons})$, columns are neurons | `np.dot(X, W) + b` |
 
-The arithmetic is identical. The numbers come out the same. Only the layout of `W` in memory and the call site change, and converting a layer from one convention to the other is a single transpose. The script `snippets/weight_convention.py` checks this on the first layer of post 03, 3 neurons over 4 inputs, written out in both layouts:
+The arithmetic is identical. The numbers come out the same. Only the layout of `W` in memory and the call site change, and converting a layer from one convention to the other is a single transpose. The script `snippets/weight_convention.py` checks this on the first layer of [post 03](../03-stacking-layers-and-the-forward-pass/index.md), 3 neurons over 4 inputs, written out in both layouts:
 
 ```python
 # Old layout (posts 01 to 03): one ROW per neuron, shape (n_neurons, n_inputs) = (3, 4).
@@ -150,7 +150,7 @@ weights_new = np.array([[ 0.2,   0.5,  -0.26],
 output_new = np.dot(inputs, weights_new) + biases
 ```
 
-The first row of `weights_old` is the first column of `weights_new`: the same four weights of the same neuron, stored along the other axis. Both calls print the output of post 03, whose first row is 4.8, 1.21, 2.385, and the script ends with `outputs identical: True`. The figure below shades that neuron in both layouts.
+The first row of `weights_old` is the first column of `weights_new`: the same four weights of the same neuron, stored along the other axis. Both calls print the output of [post 03](../03-stacking-layers-and-the-forward-pass/index.md), whose first row is 4.8, 1.21, 2.385, and the script ends with `outputs identical: True`. The figure below shades that neuron in both layouts.
 
 ![Two grids of the same twelve weights from post 03. On the left weights_old, shape (3, 4), a row per neuron, used as np.dot(inputs, weights_old.T) + biases; on the right weights_new, shape (4, 3), a column per neuron, used as np.dot(inputs, weights_new) + biases. Neuron 1's weights 0.20, 0.80, minus 0.50 and 1.00 are shaded as a row on the left and as a column on the right, and an arrow labelled transpose joins the two grids.](diagrams/02-weight-convention.svg)
 
@@ -165,7 +165,7 @@ Two reasons, both practical.
 - **No transpose in the call site.** `np.dot(X, W) + b` reads more naturally than `np.dot(X, W.T) + b`, and there is one fewer place for a missing `.T` to break the code.
 - **Weight initialisation matches the call shape.** When the new layer is created, the weights are allocated as `np.random.randn(n_inputs, n_neurons)`. This is the same shape that will be passed to `np.dot`. The two operations stay consistent.
 
-The cost is a one-time mental adjustment: the row count of $\mathbf{W}$ is now the input size, not the neuron count. The bias changes shape at the same time, from the $(n_\text{neurons},)$ array of post 03 to a $(1, n_\text{neurons})$ row; section 5.1 gives the reason.
+The cost is a one-time mental adjustment: the row count of $\mathbf{W}$ is now the input size, not the neuron count. The bias changes shape at the same time, from the $(n_\text{neurons},)$ array of [post 03](../03-stacking-layers-and-the-forward-pass/index.md) to a $(1, n_\text{neurons})$ row; [section 5.1](#51-__init__-allocates-the-state) gives the reason.
 
 ---
 
@@ -185,7 +185,7 @@ class Layer_Dense:
         self.output = np.dot(inputs, self.weights) + self.biases
 ```
 
-The figure below draws the class as a blueprint and, under it, the two instances that section 6 creates from it.
+The figure below draws the class as a blueprint and, under it, the two instances that [section 6](#6-using-the-class) creates from it.
 
 ![A card with the six lines of the Layer_Dense class, the constructor marked as running once when an instance is made and the forward method as running on every call, joined by dashed lines to two instance cards below. X, shape (300, 2), flows into dense1 = Layer_Dense(2, 3), with weights (2, 3) and biases (1, 3); its output, (300, 3), flows into dense2 = Layer_Dense(3, 3), with weights (3, 3) and biases (1, 3), which gives dense2.output, (300, 3). dense1 holds 9 parameters, 6 weights and 3 biases, and dense2 12, 9 weights and 3 biases.](diagrams/03-dense-layer-class.svg)
 
@@ -199,7 +199,7 @@ The constructor takes two integers: how many inputs each neuron consumes (`n_inp
 
 **`self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)`** draws each weight independently from a standard normal distribution and scales the result by 0.01. `np.random.normal(0, 1, (n_inputs, n_neurons))` draws from the same distribution; `randn` is the shorter form, and `normal` is preferred when the distribution's parameters are not 0 and 1. The reason for the scaling is to keep the layer outputs small at the start of training. Pure $\mathcal{N}(0, 1)$ weights are too large once layers are stacked: each layer multiplies the typical size of its input by roughly the weight scale times the square root of the number of inputs per neuron, so the outputs grow exponentially with depth.
 
-The script `snippets/init_scale.py` measures this on six stacked layers of 64 neurons fed with the spiral data. With a scale of 1.0 the standard deviation of the outputs is 0.57 after the first layer and 21,510 after the sixth, about 8 times larger per layer ($1.0 \times \sqrt{64} = 8$). With 0.01 the same stack runs the other way, from 0.0057 down to $2.2 \times 10^{-8}$, about 12 times smaller per layer ($0.01 \times \sqrt{64} = 0.08$). A multiplier of 0.01 is therefore a deliberately conservative default: it works for the shallow networks of this series, and in a deep one it fades the signal out instead of blowing it up. The scale that does neither depends on the width of the layer. For 64 inputs per neuron it is $1/\sqrt{64} = 0.125$, and with that scale the script's third column stays between 0.07 and 0.09 through all six layers. Choosing the scale per layer in this way is what Xavier/Glorot initialisation (Glorot & Bengio, 2010) and He initialisation (He et al., 2015) do; they are the subject of post 33, and neither is needed yet.
+The script `snippets/init_scale.py` measures this on six stacked layers of 64 neurons fed with the spiral data. With a scale of 1.0 the standard deviation of the outputs is 0.57 after the first layer and 21,510 after the sixth, about 8 times larger per layer ($1.0 \times \sqrt{64} = 8$). With 0.01 the same stack runs the other way, from 0.0057 down to $2.2 \times 10^{-8}$, about 12 times smaller per layer ($0.01 \times \sqrt{64} = 0.08$). A multiplier of 0.01 is therefore a deliberately conservative default: it works for the shallow networks of this series, and in a deep one it fades the signal out instead of blowing it up. The scale that does neither depends on the width of the layer. For 64 inputs per neuron it is $1/\sqrt{64} = 0.125$, and with that scale the script's third column stays between 0.07 and 0.09 through all six layers. Choosing the scale per layer in this way is what Xavier/Glorot initialisation (Glorot & Bengio, 2010) and He initialisation (He et al., 2015) do; they are the subject of [post 33](../33-weight-initialisation/index.md), and neither is needed yet.
 
 The figure below plots the three columns of the script's table on a log scale.
 
@@ -207,20 +207,20 @@ The figure below plots the three columns of the script's table on a log scale.
 
 *Each layer multiplies the spread by about the scale times $\sqrt{64}$, so only $0.125 = 1/\sqrt{64}$ holds it level.*
 
-**`self.biases = np.zeros((1, n_neurons))`** starts every bias at zero. Asymmetry between neurons comes from the random weights: if every weight started at the same value, all the neurons of a layer would compute the same output and, once training begins, receive the same update, so they would stay copies of one another. Random weights rule that out, which is known as symmetry breaking; adding random biases on top does not help and complicates debugging. The shape is `(1, n_neurons)` and not `(n_neurons,)`. Both work in the forward pass, because NumPy broadcasts the bias across the batch either way (post 05 gives the rule), but the `(1, n_neurons)` shape makes the intent ("this is a row vector that gets added to each row of the output") explicit, which helps when reading the code months later.
+**`self.biases = np.zeros((1, n_neurons))`** starts every bias at zero. Asymmetry between neurons comes from the random weights: if every weight started at the same value, all the neurons of a layer would compute the same output and, once training begins, receive the same update, so they would stay copies of one another. Random weights rule that out, which is known as symmetry breaking; adding random biases on top does not help and complicates debugging. The shape is `(1, n_neurons)` and not `(n_neurons,)`. Both work in the forward pass, because NumPy broadcasts the bias across the batch either way ([post 05](../05-array-summation-keepdims-and-broadcasting/index.md) gives the rule), but the `(1, n_neurons)` shape makes the intent ("this is a row vector that gets added to each row of the output") explicit, which helps when reading the code months later.
 
 ### 5.2. `forward` runs the computation
 
-`forward` takes the layer's input (either the original data or the previous layer's output), runs the matrix multiplication, adds the bias, and stores the result on the instance as `self.output`. The method returns nothing. Storing the result on the instance is the convention that every component in this series follows: the next layer reads `dense1.output`, and a script can print or check any intermediate array after the call. The backward pass will need one more stored array, the layer's input, and post 16 adds it.
+`forward` takes the layer's input (either the original data or the previous layer's output), runs the matrix multiplication, adds the bias, and stores the result on the instance as `self.output`. The method returns nothing. Storing the result on the instance is the convention that every component in this series follows: the next layer reads `dense1.output`, and a script can print or check any intermediate array after the call. The backward pass will need one more stored array, the layer's input, and [post 16](../16-coding-backpropagation/index.md) adds it.
 
 ### 5.3. What `Layer_Dense` is *not*
 
 A boundary section, because the class is intentionally minimal and the next several posts will extend it.
 
-- **It is not non-linear.** There is no activation function in `forward`. Stacking these layers alone produces the same problem as in post 03: a stack of linear layers is itself linear. Activations enter in post 06.
+- **It is not non-linear.** There is no activation function in `forward`. Stacking these layers alone produces the same problem as in [post 03](../03-stacking-layers-and-the-forward-pass/index.md): a stack of linear layers is itself linear. Activations enter in [post 06](../06-activation-functions-relu-and-softmax/index.md).
 - **It is not a model.** A trained model is a stack of layers plus a loss plus a training loop. This class is just one layer's forward pass.
 - **It does not train itself.** The weights are random and stay random. Updating them requires gradients (posts 12 to 21) and an optimiser (posts 22 to 27).
-- **It does not yet remember its input.** Calling `forward` overwrites `self.output` and keeps no reference to `inputs`. For the backward pass to work, `self.inputs = inputs` must also be stored; this is added in post 16. It is left out here to keep this version minimal.
+- **It does not yet remember its input.** Calling `forward` overwrites `self.output` and keeps no reference to `inputs`. For the backward pass to work, `self.inputs = inputs` must also be stored; this is added in [post 16](../16-coding-backpropagation/index.md). It is left out here to keep this version minimal.
 
 ---
 
@@ -282,11 +282,11 @@ print(dense2.output[:5])
  [7.5680446e-06 7.4703939e-06 4.0358373e-06]]
 ```
 
-`dense2` is created with `n_inputs=3` because that is what `dense1` produces. The shape-continuity rule from post 03 is still in force; the class does not relax it. Its output has shape $(300, 3)$, from $(300, 3) \cdot (3, 3)$ plus a $(1, 3)$ bias. The two layers happen to have the same number of neurons here, but nothing requires that: layer widths are hyperparameters, making them all equal is a default and not a rule, and common topologies taper down towards the output. Only the `n_inputs` of each layer is fixed, by the data for the first layer and by the layer before it for every other one.
+`dense2` is created with `n_inputs=3` because that is what `dense1` produces. The shape-continuity rule from [post 03](../03-stacking-layers-and-the-forward-pass/index.md) is still in force; the class does not relax it. Its output has shape $(300, 3)$, from $(300, 3) \cdot (3, 3)$ plus a $(1, 3)$ bias. The two layers happen to have the same number of neurons here, but nothing requires that: layer widths are hyperparameters, making them all equal is a default and not a rule, and common topologies taper down towards the output. Only the `n_inputs` of each layer is fixed, by the data for the first layer and by the layer before it for every other one.
 
 The two instances do not share weights. `dense1.weights` is a different array, with different random numbers, from `dense2.weights`. Their forward passes do not interfere with one another. This is what object orientation buys: state encapsulated in instances and not smeared across the script. `dense2` owns $3 \times 3 + 3 = 12$ numbers, so the two-layer stack has $9 + 12 = 21$ parameters.
 
-The outputs of the second layer are smaller again, at most 0.00021 in absolute value against 0.0175 for the first: every layer with 0.01-scaled weights shrinks the signal, the effect that section 5.1 measured on a deeper stack.
+The outputs of the second layer are smaller again, at most 0.00021 in absolute value against 0.0175 for the first: every layer with 0.01-scaled weights shrinks the signal, the effect that [section 5.1](#51-__init__-allocates-the-state) measured on a deeper stack.
 
 ---
 
@@ -296,13 +296,13 @@ Every printed block in this post comes from a script in `snippets/`, and so does
 
 | Script | Section | What it prints |
 |---|---|---|
-| `spiral_dataset.py` | 2 | the shapes, types and first rows shown in section 2, each arm running from distance 0.00 to 1.00, and the shapes `(30, 2)`, `(3000, 2)` and `(500, 2)` for other arguments |
+| `spiral_dataset.py` | 2 | the shapes, types and first rows shown in [section 2](#2-the-spiral-dataset), each arm running from distance 0.00 to 1.00, and the shapes `(30, 2)`, `(3000, 2)` and `(500, 2)` for other arguments |
 | `linear_baseline.py` | 2.1 | the block below: 100 of 300 for one fixed answer, 118 of 300 for a trained linear layer and for least squares |
 | `classes_and_instances.py` | 3 | `Buddy Lucy`, then `Rex Lucy` |
 | `weight_convention.py` | 4 | the same $(3, 3)$ output from both layouts, then `outputs identical: True` |
-| `dense_layer.py` | 5 and 6 | the two five-row blocks of section 6, the shapes of section 6.1, the parameter counts 9 and 12, and the largest absolute outputs 0.017456729 and 0.00020713627 |
+| `dense_layer.py` | 5 and 6 | the two five-row blocks of [section 6](#6-using-the-class), the shapes of [section 6.1](#61-shape-trace), the parameter counts 9 and 12, and the largest absolute outputs 0.017456729 and 0.00020713627 |
 | `init_scale.py` | 5.1 | the table below |
-| `pitfalls.py` | 8 | every error message and comparison quoted in section 8 |
+| `pitfalls.py` | 8 | every error message and comparison quoted in [section 8](#8-what-can-go-wrong) |
 
 `linear_baseline.py` prints:
 
@@ -316,7 +316,7 @@ least squares: 118 of 300 correct, 39.3%
 least-squares predictions per class: [100 129  71]
 ```
 
-Between step 100 and step 1,000 neither the loss, to four decimals, nor the number of correct answers changes: the fit has converged, and more training does not move it past 118. The loss column is explained in post 08.
+Between step 100 and step 1,000 neither the loss, to four decimals, nor the number of correct answers changes: the fit has converged, and more training does not move it past 118. The loss column is explained in [post 08](../08-loss-categorical-cross-entropy/index.md).
 
 `init_scale.py` prints:
 
@@ -346,9 +346,9 @@ Each failure below is triggered on purpose by `snippets/pitfalls.py`, which prin
 - **The batch size is passed as `n_inputs`.** `n_inputs` is the number of features, 2 for the spiral data however many samples `X` holds. `Layer_Dense(300, 3)` builds a $(300, 3)$ weight matrix, and the forward pass stops with `ValueError: shapes (300,2) and (300,3) not aligned: 2 (dim 1) != 300 (dim 0)`.
 - **The weights are left in the old layout.** With a $(3, 2)$ matrix, one row per neuron, `np.dot(X, W)` fails loudly: `ValueError: shapes (300,2) and (3,2) not aligned: 2 (dim 1) != 3 (dim 0)`. The dangerous case is a layer with as many neurons as inputs. Both layouts are then $(3, 3)$, no error is raised, and the output has the right shape and the wrong numbers.
 - **The return value of `forward` is used.** The method stores its result and returns `None`, so `result = dense1.forward(X)` followed by `result[:5]` raises `TypeError: 'NoneType' object is not subscriptable`. The output is read from `dense1.output`.
-- **The numbers do not match the ones printed here.** The weights of a layer are the next numbers in the random stream, so they depend on everything drawn before them. In section 6 `spiral_data` draws 300 numbers first, the noise on each point's angle, and `dense1` receives the six after those; its first weight row is `[-0.01306527  0.01658131 -0.00118164]`. Created before the data, the same layer receives the first six numbers of the stream, and its first row is `[0.01764052 0.00400157 0.00978738]`. Without any seed the weights change on every run. Two instances created in one run always differ, and setting the seed again replays the same weights.
-- **`nnfs.init()` is left out, or added to an older script.** Without it, the same seed gives `float64` arrays. The outputs of section 6 then agree with the printed ones to within $1.6 \times 10^{-9}$, but they print with one more digit, and the memory footprint doubles. With it, `np.dot` accepts arrays only: the plain Python lists that post 01 handed to `np.dot` now raise `AttributeError: 'list' object has no attribute 'astype'`, and wrapping them in `np.array` is the fix. The call belongs at the top of the script, before any array or layer is created.
-- **The 0.01 scale is carried into a deep network.** Nothing raises an error. The outputs just shrink layer after layer, to a standard deviation of $2.2 \times 10^{-8}$ after six 64-neuron layers in section 7. Post 33 shows what that does to training and replaces the fixed 0.01 with a scale computed from the layer's width.
+- **The numbers do not match the ones printed here.** The weights of a layer are the next numbers in the random stream, so they depend on everything drawn before them. In [section 6](#6-using-the-class) `spiral_data` draws 300 numbers first, the noise on each point's angle, and `dense1` receives the six after those; its first weight row is `[-0.01306527  0.01658131 -0.00118164]`. Created before the data, the same layer receives the first six numbers of the stream, and its first row is `[0.01764052 0.00400157 0.00978738]`. Without any seed the weights change on every run. Two instances created in one run always differ, and setting the seed again replays the same weights.
+- **`nnfs.init()` is left out, or added to an older script.** Without it, the same seed gives `float64` arrays. The outputs of [section 6](#6-using-the-class) then agree with the printed ones to within $1.6 \times 10^{-9}$, but they print with one more digit, and the memory footprint doubles. With it, `np.dot` accepts arrays only: the plain Python lists that [post 01](../01-neurons-and-layers/index.md) handed to `np.dot` now raise `AttributeError: 'list' object has no attribute 'astype'`, and wrapping them in `np.array` is the fix. The call belongs at the top of the script, before any array or layer is created.
+- **The 0.01 scale is carried into a deep network.** Nothing raises an error. The outputs just shrink layer after layer, to a standard deviation of $2.2 \times 10^{-8}$ after six 64-neuron layers in [section 7](#7-make-it-run-seven-short-scripts). [Post 33](../33-weight-initialisation/index.md) shows what that does to training and replaces the fixed 0.01 with a scale computed from the layer's width.
 
 ---
 
@@ -380,14 +380,12 @@ Each failure below is triggered on purpose by `snippets/pitfalls.py`, which prin
 
 ## Further reading
 
-- Glorot, X. and Bengio, Y., *"Understanding the Difficulty of Training Deep Feedforward Neural Networks"* (AISTATS, 2010).
-- He, K., Zhang, X., Ren, S., and Sun, J., *"Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification"* (ICCV, 2015).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 3 (2020), and the `nnfs` package that ships `spiral_data`.
-- Paszke, A., et al., *"PyTorch: An Imperative Style, High-Performance Deep Learning Library"* (NeurIPS, 2019).
-- Ramalho, L., *Fluent Python*, the chapters on classes and protocols (O'Reilly, 2nd edition, 2022).
+- Glorot, X. and Bengio, Y., *["Understanding the Difficulty of Training Deep Feedforward Neural Networks"](https://proceedings.mlr.press/v9/glorot10a.html)* (AISTATS, 2010).
+- He, K., Zhang, X., Ren, S., and Sun, J., *["Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification"](https://arxiv.org/abs/1502.01852)* (ICCV, 2015).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 3 (2020), and the `nnfs` package that ships `spiral_data`.
+- Paszke, A., et al., *["PyTorch: An Imperative Style, High-Performance Deep Learning Library"](https://arxiv.org/abs/1912.01703)* (NeurIPS, 2019).
+- Ramalho, L., *[Fluent Python](https://www.oreilly.com/library/view/fluent-python-2nd/9781492056348/)*, the chapters on classes and protocols (O'Reilly, 2nd edition, 2022).
 - Stanford CS231n, *Convolutional Neural Networks for Visual Recognition*, course notes, ["Putting it together: Minimal Neural Network Case Study"](https://cs231n.github.io/neural-networks-case-study/). The source of the spiral generator.
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
 
 ---
 
