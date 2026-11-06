@@ -485,7 +485,7 @@ Every step in this post computes the loss on all 300 points; computing it on a r
 ## Further reading
 
 - Cauchy, A.-L., *["Méthode générale pour la résolution des systèmes d'équations simultanées"](https://cs.uwaterloo.ca/~y328yu/classics/cauchy-fr.pdf)* (Comptes rendus de l'Académie des sciences, 1847).
-- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/numerical.html)*, chapter 4 (Numerical Computation) and chapter 8 (Optimization for Training Deep Models) (MIT Press, 2016).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/numerical.html)*, [chapter 4 (Numerical Computation)](https://www.deeplearningbook.org/contents/numerical.html) and [chapter 8 (Optimization for Training Deep Models)](https://www.deeplearningbook.org/contents/optimization.html) (MIT Press, 2016).
 - Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 6 (2020). The two random strategies and the `vertical_data` example come from this chapter.
 - Rumelhart, D., Hinton, G., and Williams, R., *["Learning Representations by Back-Propagating Errors"](https://doi.org/10.1038/323533a0)* (Nature, 1986).
 - Ruder, S., *["An Overview of Gradient Descent Optimization Algorithms"](https://arxiv.org/abs/1609.04747)* (arXiv:1609.04747, 2016).
