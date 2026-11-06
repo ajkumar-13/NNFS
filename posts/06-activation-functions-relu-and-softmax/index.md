@@ -63,7 +63,7 @@ A1        = np.maximum(0, Z1)
 with_relu = np.dot(A1, W2) + b2
 ```
 
-The first computation is the stack of post 03. The second is the single layer it collapses into, with $\mathbf{W}_\ast = \mathbf{W}_1 \mathbf{W}_2$ and $\mathbf{b}_\ast = \mathbf{b}_1 \mathbf{W}_2 + \mathbf{b}_2$. The third puts `np.maximum(0, Z1)`, the activation of section 2, between the same two layers. The script prints all three for the nine inputs:
+The first computation is the stack of [post 03](../03-stacking-layers-and-the-forward-pass/index.md). The second is the single layer it collapses into, with $\mathbf{W}_\ast = \mathbf{W}_1 \mathbf{W}_2$ and $\mathbf{b}_\ast = \mathbf{b}_1 \mathbf{W}_2 + \mathbf{b}_2$. The third puts `np.maximum(0, Z1)`, the activation of [section 2](#2-relu-formally), between the same two layers. The script prints all three for the nine inputs:
 
 ```text
 W_star = [1.]  b_star = [-2.]
@@ -108,13 +108,13 @@ The rectified linear unit (**ReLU**) is the function:
 
 $$\text{ReLU}(z) = \max(0, z).$$
 
-Negative inputs become zero. Positive inputs pass through unchanged. The plot is two straight lines meeting at the origin, with a sharp kink at $z = 0$. The left half of the figure below draws it, with the five inputs of section 2.3 marked; the right half draws its slope beside those of the sigmoid and tanh, which section 2.1 compares.
+Negative inputs become zero. Positive inputs pass through unchanged. The plot is two straight lines meeting at the origin, with a sharp kink at $z = 0$. The left half of the figure below draws it, with the five inputs of [section 2.3](#23-implementation) marked; the right half draws its slope beside those of the sigmoid and tanh, which [section 2.1](#21-why-relu-and-not-the-older-alternatives) compares.
 
 ![Two charts. Left, ReLU of z = max(0, z) for z from -3 to 3: a flat line at 0 for negative inputs, labelled negative in, 0 out, a kink at z = 0, and a diagonal labelled positive in, unchanged, with dots at the five inputs 1, -2, 3, -0.5 and 0 and their outputs 1, 0, 3, 0 and 0, also listed as an in and out table in the upper left. Right, the slopes for z from -5 to 5: ReLU's is 0 below zero and 1 above it, with a solid dot at 0 and an open dot at 1 for z = 0, and a legend saying the solid one is used at z = 0 and the open one is not; the sigmoid's peaks at 0.25 at z = 0 and tanh's at 1, and both fall towards 0 on either side.](diagrams/02-relu.svg)
 
 *Left, two straight lines meeting at the origin: every bend a network makes traces back to this one kink. Right, the slopes: ReLU's stays at 1 for every positive input, the sigmoid's never exceeds 0.25.*
 
-That kink is everything. A single ReLU adds one bend to the function the network represents. Giving many neurons different weights and biases shifts and scales these bends, as the three neurons of section 1.1 did. Putting them in two or three layers lets the network compose hundreds of bends into a close approximation of any continuous shape: spirals, decision boundaries, image edges.
+That kink is everything. A single ReLU adds one bend to the function the network represents. Giving many neurons different weights and biases shifts and scales these bends, as the three neurons of [section 1.1](#11-one-network-run-both-ways) did. Putting them in two or three layers lets the network compose hundreds of bends into a close approximation of any continuous shape: spirals, decision boundaries, image edges.
 
 ### 2.1. Why ReLU and not the older alternatives
 
@@ -139,9 +139,9 @@ Nair and Hinton (2010) showed that rectified linear units improve restricted Bol
 
 A boundary section, because the function has well-known limitations that later posts will refine.
 
-- **ReLU is not smooth.** Its slope jumps from 0 to 1 at $z = 0$, so its derivative is not defined there. Implementations pick a value and move on; the backward pass of post 17 uses 0. It is often said that an input is never exactly zero in practice. In this series it is: the first sample of every spiral arm is the origin (post 04), so with zero biases all of its weighted sums are exactly 0, and in the forward pass of section 5 that makes 9 of the 900 inputs to the ReLU exact zeros. The value chosen at the kink is therefore used on real data, not only in theory.
+- **ReLU is not smooth.** Its slope jumps from 0 to 1 at $z = 0$, so its derivative is not defined there. Implementations pick a value and move on; the backward pass of [post 17](../17-backpropagation-through-activation-functions/index.md) uses 0. It is often said that an input is never exactly zero in practice. In this series it is: the first sample of every spiral arm is the origin ([post 04](../04-dense-layer-class-and-spiral-data/index.md)), so with zero biases all of its weighted sums are exactly 0, and in the forward pass of [section 5](#5-the-forward-pass-end-to-end) that makes 9 of the 900 inputs to the ReLU exact zeros. The value chosen at the kink is therefore used on real data, not only in theory.
 - **ReLU does not centre activations around zero.** All outputs are non-negative, so their average is above zero. `snippets/relu.py` draws 100,000 standard-normal inputs whose mean is 0.002 and whose mean after ReLU is 0.398; the exact value for a standard normal is $1/\sqrt{2\pi} \approx 0.399$. The inputs of the next layer are therefore shifted to one side. Batch normalisation (`cnn-014`, Convolutional Neural Networks from Scratch) subtracts a mean from the values it is applied to, which is one way of removing a shift of this kind.
-- **ReLU does not save dead neurons.** A **dead neuron** is a ReLU neuron whose weighted sum is negative for every sample. It outputs zero everywhere, the correction signal that would repair its weights is multiplied by a slope of zero, and so its weights stop updating. Section 7 builds one on the spiral data. This "dying ReLU" problem motivates variants such as Leaky ReLU, which gives negative inputs a small slope in place of zero. GELU (Hendrycks and Gimpel, 2016), a smooth relative of ReLU, does not set negative inputs to exactly zero either. Post 17 names them; this series does not need them.
+- **ReLU does not save dead neurons.** A **dead neuron** is a ReLU neuron whose weighted sum is negative for every sample. It outputs zero everywhere, the correction signal that would repair its weights is multiplied by a slope of zero, and so its weights stop updating. [Section 7](#7-what-can-go-wrong) builds one on the spiral data. This "dying ReLU" problem motivates variants such as Leaky ReLU, which gives negative inputs a small slope in place of zero. GELU (Hendrycks and Gimpel, 2016), a smooth relative of ReLU, does not set negative inputs to exactly zero either. [Post 17](../17-backpropagation-through-activation-functions/index.md) names them; this series does not need them.
 - **ReLU is not a probability function.** Its outputs can be any non-negative number, including 0, 5, or 10,000. Classification needs something else for the output layer.
 
 ### 2.3. Implementation
@@ -217,7 +217,7 @@ Two consequences of the exponential are worth reading off the example. The ratio
 
 ### 4.1. Where softmax comes from
 
-The function is older than its name: it is the Boltzmann distribution of statistical physics and the multinomial logistic model of statistics. Bridle's 1990 paper *"Probabilistic Interpretation of Feedforward Classification Network Outputs"* named it softmax and proposed it, as the generalisation of the sigmoid to more than two classes, for the output layer of classification networks, so that the outputs can be read as probabilities. Minimising the cross-entropy loss of post 08 on softmax outputs is maximum-likelihood estimation of the network's parameters under a categorical distribution, and that pairing is the standard choice for multi-class classification today.
+The function is older than its name: it is the Boltzmann distribution of statistical physics and the multinomial logistic model of statistics. Bridle's 1990 paper *"Probabilistic Interpretation of Feedforward Classification Network Outputs"* named it softmax and proposed it, as the generalisation of the sigmoid to more than two classes, for the output layer of classification networks, so that the outputs can be read as probabilities. Minimising the cross-entropy loss of [post 08](../08-loss-categorical-cross-entropy/index.md) on softmax outputs is maximum-likelihood estimation of the network's parameters under a categorical distribution, and that pairing is the standard choice for multi-class classification today.
 
 ### 4.2. The numerical-stability trick
 
@@ -265,9 +265,9 @@ class Activation_Softmax:
         self.output   = probabilities
 ```
 
-The `axis=1, keepdims=True` argument pair is exactly what [post 05](../05-array-summation-keepdims-and-broadcasting/index.md) was for. `axis=1` reduces along the class axis, giving one result per sample; `keepdims=True` returns a column of shape `(N, 1)` that broadcasts correctly when subtracted from the original `(N, K)` matrix. Without `keepdims=True` the maxima come back with shape `(N,)` and line up with the columns, the bug of post 05, section 3.1. On the `(300, 3)` batch of this series that stops the program with a `ValueError`, which is the lucky outcome. On a square batch, with as many samples as classes, it runs, and section 7 shows the result: rows that still sum to 1 and hold the wrong probabilities.
+The `axis=1, keepdims=True` argument pair is exactly what [post 05](../05-array-summation-keepdims-and-broadcasting/index.md) was for. `axis=1` reduces along the class axis, giving one result per sample; `keepdims=True` returns a column of shape `(N, 1)` that broadcasts correctly when subtracted from the original `(N, K)` matrix. Without `keepdims=True` the maxima come back with shape `(N,)` and line up with the columns, the bug of [post 05](../05-array-summation-keepdims-and-broadcasting/index.md), [section 3.1](../05-array-summation-keepdims-and-broadcasting/index.md#31-the-silent-bug-example-per-row-max-subtraction). On the `(300, 3)` batch of this series that stops the program with a `ValueError`, which is the lucky outcome. On a square batch, with as many samples as classes, it runs, and [section 7](#7-what-can-go-wrong) shows the result: rows that still sum to 1 and hold the wrong probabilities.
 
-The two classes of this post differ in one structural way. ReLU treats every entry on its own. Softmax couples the entries of a row: each output depends on every logit in that row, and raising one logit lowers the probability of every other class. The difference returns in the backward pass, where ReLU needs only a mask (post 17) and softmax needs a post of its own (post 19).
+The two classes of this post differ in one structural way. ReLU treats every entry on its own. Softmax couples the entries of a row: each output depends on every logit in that row, and raising one logit lowers the probability of every other class. The difference returns in the backward pass, where ReLU needs only a mask ([post 17](../17-backpropagation-through-activation-functions/index.md)) and softmax needs a post of its own ([post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)).
 
 ### 4.4. Temperature
 
@@ -283,13 +283,13 @@ For the logits $[1, 2, 3]$ the script prints:
 8. T = 10.0: [0.30061  0.33222  0.36717]
 ```
 
-A low temperature stretches the gaps between the logits and pushes nearly all of the probability onto one class; a high temperature shrinks the gaps and pushes it towards uniform; $T = 1$ is the plain softmax. The name comes from the Boltzmann distribution of section 4.1. The classes of this series always use $T = 1$, and the three rows are here for the contrast with section 4.2: adding a constant to every logit changes nothing, while multiplying every logit by a constant changes every probability.
+A low temperature stretches the gaps between the logits and pushes nearly all of the probability onto one class; a high temperature shrinks the gaps and pushes it towards uniform; $T = 1$ is the plain softmax. The name comes from the Boltzmann distribution of [section 4.1](#41-where-softmax-comes-from). The classes of this series always use $T = 1$, and the three rows are here for the contrast with [section 4.2](#42-the-numerical-stability-trick): adding a constant to every logit changes nothing, while multiplying every logit by a constant changes every probability.
 
 ---
 
 ## 5. The forward pass, end to end
 
-The pieces from posts 04 and 05 plus the two activations from this post now form a complete (untrained) classifier. The script `snippets/forward_pass.py` defines `Layer_Dense` exactly as [post 04](../04-dense-layer-class-and-spiral-data/index.md) wrote it, then the two `Activation_` classes above, and runs them in order:
+The pieces from posts [04](../04-dense-layer-class-and-spiral-data/index.md) and [05](../05-array-summation-keepdims-and-broadcasting/index.md) plus the two activations from this post now form a complete (untrained) classifier. The script `snippets/forward_pass.py` defines `Layer_Dense` exactly as [post 04](../04-dense-layer-class-and-spiral-data/index.md) wrote it, then the two `Activation_` classes above, and runs them in order:
 
 ```python
 nnfs.init()
@@ -320,7 +320,7 @@ print(activation2.output[:5])
  [0.33333233 0.3333324  0.33333528]]
 ```
 
-Every entry of these five rows is within 0.000002 of one third, because the network is untrained and, more to the point, its weights are small. With the 0.01 scale of post 04 the largest logit over all 300 rows is 0.00023 in absolute value, and logits that are nearly equal give probabilities that are nearly equal (section 4). The first row is exactly uniform: that sample is the origin, all its weighted sums are 0, and three equal logits give exactly one third each. The row furthest from uniform is row 99, `[0.33329675 0.33330163 0.33340165]`, still within 0.00007 of one third. Once training starts in post 22 the weights move, the logits spread apart, and rows sharpen towards confident predictions of the form `[0.95, 0.03, 0.02]`, an illustration of the pattern and not the output of a script.
+Every entry of these five rows is within 0.000002 of one third, because the network is untrained and, more to the point, its weights are small. With the 0.01 scale of [post 04](../04-dense-layer-class-and-spiral-data/index.md) the largest logit over all 300 rows is 0.00023 in absolute value, and logits that are nearly equal give probabilities that are nearly equal ([section 4](#4-softmax-formally)). The first row is exactly uniform: that sample is the origin, all its weighted sums are 0, and three equal logits give exactly one third each. The row furthest from uniform is row 99, `[0.33329675 0.33330163 0.33340165]`, still within 0.00007 of one third. Once training starts in [post 22](../22-gradient-descent-optimiser/index.md) the weights move, the logits spread apart, and rows sharpen towards confident predictions of the form `[0.95, 0.03, 0.02]`, an illustration of the pattern and not the output of a script.
 
 Each row sums to 1 up to `float32` rounding: the smallest of the 300 row sums is 0.9999999 and the largest 1.0000001. The hidden layer shows what ReLU does on real data. Of the 900 weighted sums that `dense1` produces, 447 are negative, 9 are exactly zero, and 444 are positive, so ReLU hands 456 zeros to `dense2`, a little over half of its outputs.
 
@@ -349,16 +349,16 @@ For every classification network in this series, and for most of those in use el
 | every hidden layer | **ReLU** | cheap non-linearity, gradient-friendly, the usual default since the early 2010s |
 | output layer (classification) | **Softmax** | probability distribution over classes |
 | output layer (regression) | none (identity) | the prediction is a real number, not a probability |
-| output layer (binary classification) | **sigmoid** | a single probability for "is this class 1?"; covered in post 34 |
+| output layer (binary classification) | **sigmoid** | a single probability for "is this class 1?"; covered in [post 34](../34-sigmoid-and-binary-cross-entropy/index.md) |
 
 A network that follows this default has its activations in the right places without further thought. Departures from the pattern have specific reasons; without one, follow the default. Four placement rules follow from what each function does.
 
-- **An activation goes after a dense layer, between it and the next one.** That is the only position in which it prevents the collapse of section 1: two dense layers with nothing between them merge into one, wherever else in the network an activation has been placed.
+- **An activation goes after a dense layer, between it and the next one.** That is the only position in which it prevents the collapse of [section 1](#1-the-question-what-has-to-sit-between-two-layers): two dense layers with nothing between them merge into one, wherever else in the network an activation has been placed.
 - **The input data gets no activation.** The input is not the output of a layer; it is the original feature vector. Applying ReLU to it would destroy every negative feature for no benefit, and 305 of the 600 spiral coordinates are negative.
-- **The logits get softmax, never ReLU and then softmax.** A ReLU in front of the softmax throws away every negative logit before it can be exponentiated; section 7 shows a row of three different negative logits coming out as exactly uniform.
+- **The logits get softmax, never ReLU and then softmax.** A ReLU in front of the softmax throws away every negative logit before it can be exponentiated; [section 7](#7-what-can-go-wrong) shows a row of three different negative logits coming out as exactly uniform.
 - **A regression output gets no activation.** The prediction has to be free to take any real value, positive or negative, and passing it through ReLU or softmax would constrain it in a way the task does not want.
 
-During training, softmax is still applied to the logits, exactly as here. What changes in post 19 is the backward pass: differentiating softmax and the cross-entropy loss together gives a formula so short that the full softmax derivative never has to be built. For now, applying the two separately is correct.
+During training, softmax is still applied to the logits, exactly as here. What changes in [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) is the backward pass: differentiating softmax and the cross-entropy loss together gives a formula so short that the full softmax derivative never has to be built. For now, applying the two separately is correct.
 
 ---
 
@@ -368,13 +368,13 @@ Every number and every printed block in this post comes from a script in `snippe
 
 | Script | Section | What it prints |
 |---|---|---|
-| `why_nonlinearity.py` | 1.1 | the table of section 1.1: two layers without an activation equal to the line $x - 2$, and the zigzag with ReLU between them |
-| `relu.py` | 2 | `[1. 0. 3. 0. 0.]`, the `(2, 3)` batch of section 2.3, the slope table of section 2.1, and the means 0.002 and 0.398 of section 2.2 |
+| `why_nonlinearity.py` | 1.1 | the table of [section 1.1](#11-one-network-run-both-ways): two layers without an activation equal to the line $x - 2$, and the zigzag with ReLU between them |
+| `relu.py` | 2 | `[1. 0. 3. 0. 0.]`, the `(2, 3)` batch of [section 2.3](#23-implementation), the slope table of [section 2.1](#21-why-relu-and-not-the-older-alternatives), and the means 0.002 and 0.398 of [section 2.2](#22-what-relu-is-not) |
 | `softmax.py` | 4 | one row by hand, the shift, the overflow, the two overflow limits, equal logits, a batch of three rows, and three temperatures |
-| `forward_pass.py` | 5 | the five rows of section 5, the shape of every array, the counts 447, 9, and 444, and the row sums |
-| `pitfalls.py` | 7 | every error message and wrong result quoted in section 7 |
+| `forward_pass.py` | 5 | the five rows of [section 5](#5-the-forward-pass-end-to-end), the shape of every array, the counts 447, 9, and 444, and the row sums |
+| `pitfalls.py` | 7 | every error message and wrong result quoted in [section 7](#7-what-can-go-wrong) |
 
-`softmax.py` prints eight numbered items. Item 1 is the row worked by hand in section 4, item 3 the overflow of section 4.2, and item 8 the temperatures of section 4.4. Item 2 is the shift check of section 4.2, three rows that differ by a constant and print the same probabilities. Items 4 to 7 are:
+`softmax.py` prints eight numbered items. Item 1 is the row worked by hand in [section 4](#4-softmax-formally), item 3 the overflow of [section 4.2](#42-the-numerical-stability-trick), and item 8 the temperatures of [section 4.4](#44-temperature). Item 2 is the shift check of [section 4.2](#42-the-numerical-stability-trick), three rows that differ by a constant and print the same probabilities. Items 4 to 7 are:
 
 ```text
 4. largest float64 = exp(709.78)   largest float32 = exp(88.72)
@@ -393,9 +393,9 @@ Every number and every printed block in this post comes from a script in `snippe
    row sums: [1. 1. 1.]
 ```
 
-Item 4 is where the two limits of section 4.2 come from: the natural logarithm of the largest `float64` is 709.78 and that of the largest `float32` is 88.72, so `np.exp(709)` is still a number in `float64` and `np.exp(710)` is not, and the same holds for 88 and 89 in `float32`. Item 7 passes three rows at once. Each is normalised on its own: the row $[2, 2, 2]$ comes out uniform, and the row $[0, 5, 0]$ puts 0.987 on its middle class.
+Item 4 is where the two limits of [section 4.2](#42-the-numerical-stability-trick) come from: the natural logarithm of the largest `float64` is 709.78 and that of the largest `float32` is 88.72, so `np.exp(709)` is still a number in `float64` and `np.exp(710)` is not, and the same holds for 88 and 89 in `float32`. Item 7 passes three rows at once. Each is normalised on its own: the row $[2, 2, 2]$ comes out uniform, and the row $[0, 5, 0]$ puts 0.987 on its middle class.
 
-The naive formula that items 3 and 5 run is the definition of section 4 typed in directly, with no shift:
+The naive formula that items 3 and 5 run is the definition of [section 4](#4-softmax-formally) typed in directly, with no shift:
 
 ```python
 def naive_softmax(logits):
@@ -410,13 +410,13 @@ def naive_softmax(logits):
 
 Each failure below is triggered on purpose by `snippets/pitfalls.py`, which prints the messages and arrays quoted here.
 
-- **`np.max` is written where `np.maximum` was meant.** `np.max(inputs)` runs and returns `3.0` for the five-element array of section 2.3, a single number in place of an array. With the zero in front, `np.max(0, inputs)` raises `TypeError: only integer scalar arrays can be converted to a scalar index`, because `np.max` reads its second argument as an axis.
+- **`np.max` is written where `np.maximum` was meant.** `np.max(inputs)` runs and returns `3.0` for the five-element array of [section 2.3](#23-implementation), a single number in place of an array. With the zero in front, `np.max(0, inputs)` raises `TypeError: only integer scalar arrays can be converted to a scalar index`, because `np.max` reads its second argument as an axis.
 - **`keepdims=True` is left off the softmax.** On a batch of 4 rows and 3 columns NumPy stops with `ValueError: operands could not be broadcast together with shapes (4,3) (4,)`. On a square batch of 3 rows and 3 columns nothing is raised. With `keepdims` missing from the max alone, the rows $[1, 2, 3]$, $[3, 2, 1]$, and $[0, 0, 5]$ come out as `[0.212 0.576 0.212]`, `[0.721 0.265 0.013]`, and `[0.045 0.045 0.909]`: every row sums to 1 and every row is wrong, the first one being `[0.09 0.245 0.665]` when computed correctly. With `keepdims` missing from the sum as well, the row sums are 0.6, 1.848, and 1.023 and one "probability" is 1.566, which at least looks wrong.
 - **`axis=1` is left off as well.** `np.max(inputs)` and `np.sum(exp_values)` then run over the whole batch, which is normalised as if it were one long row. All 12 entries of the 4-row batch sum to 1, and the four row sums are 0.13, 0.13, 0.646, and 0.095. No error is raised.
 - **The max subtraction is skipped.** The naive formula works on small logits and fails on the first large one. In `float32` the row $[90, 91, 89]$ already gives `[nan nan nan]`, where the shifted version gives `[0.245 0.665 0.09]`. The only sign is a pair of `RuntimeWarning` lines, and every number computed from a `nan` is a `nan`.
 - **A ReLU is placed between the last dense layer and the softmax.** The logits $[-2, -1, -3]$ should give `[0.245 0.665 0.09]`. After a ReLU they are $[0, 0, 0]$ and the output is `[0.333 0.333 0.333]`: the network's preference for the second class is gone. For $[2, -1, -3]$ the correct `[0.946 0.047 0.006]` becomes `[0.787 0.107 0.107]`.
-- **A probability underflows to exactly zero.** The table of section 4 says every output is positive, which holds for real numbers and not for floats: the softmax of $[0, -800]$ is `[1. 0.]`, with a second entry equal to 0.0. The loss of post 08 takes the logarithm of a probability, and $\log 0$ is $-\infty$, which is why that post clips its inputs first.
-- **A ReLU neuron dies.** A neuron with weights $(1, 1)$ and bias $-3$ has a negative weighted sum on every one of the 300 spiral samples, the largest being $-1.653$, so 0 of its 300 outputs are non-zero. Nothing downstream can tell it apart from a missing neuron, and section 2.2 gives the reason it stays that way. A large negative bias produces one directly, as here; during training, an update that pushes a neuron's weights too far can do the same.
+- **A probability underflows to exactly zero.** The table of [section 4](#4-softmax-formally) says every output is positive, which holds for real numbers and not for floats: the softmax of $[0, -800]$ is `[1. 0.]`, with a second entry equal to 0.0. The loss of [post 08](../08-loss-categorical-cross-entropy/index.md) takes the logarithm of a probability, and $\log 0$ is $-\infty$, which is why that post clips its inputs first.
+- **A ReLU neuron dies.** A neuron with weights $(1, 1)$ and bias $-3$ has a negative weighted sum on every one of the 300 spiral samples, the largest being $-1.653$, so 0 of its 300 outputs are non-zero. Nothing downstream can tell it apart from a missing neuron, and [section 2.2](#22-what-relu-is-not) gives the reason it stays that way. A large negative bias produces one directly, as here; during training, an update that pushes a neuron's weights too far can do the same.
 - **A single sample is passed as a 1-D array.** The class reduces along `axis=1`, and a 1-D array has no axis 1: `AxisError: axis 1 is out of bounds for array of dimension 1`. One sample is a batch of one row, shape `(1, 3)`, written with two pairs of brackets.
 
 ---
@@ -449,23 +449,21 @@ Each failure below is triggered on purpose by `snippets/pitfalls.py`, which prin
 
 ## Further reading
 
-- Bridle, J. S., *"Probabilistic Interpretation of Feedforward Classification Network Outputs"* (Neurocomputing, NATO ASI Series, 1990).
-- Cybenko, G., *"Approximation by Superpositions of a Sigmoidal Function"* (Mathematics of Control, Signals and Systems, 1989).
-- Glorot, X., Bordes, A., and Bengio, Y., *"Deep Sparse Rectifier Neural Networks"* (AISTATS, 2011).
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6, "Deep Feedforward Networks" (MIT Press, 2016).
-- Hendrycks, D. and Gimpel, K., *"Gaussian Error Linear Units (GELUs)"* (arXiv:1606.08415, 2016).
-- Hochreiter, S., *"Untersuchungen zu dynamischen neuronalen Netzen"* (Diploma thesis, TU München, 1991).
-- Hornik, K., *"Approximation Capabilities of Multilayer Feedforward Networks"* (Neural Networks, 1991).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 4 (2020).
-- Krizhevsky, A., Sutskever, I., and Hinton, G., *"ImageNet Classification with Deep Convolutional Neural Networks"* (NeurIPS, 2012).
-- Leshno, M., Lin, V. Ya., Pinkus, A., and Schocken, S., *"Multilayer Feedforward Networks with a Nonpolynomial Activation Function Can Approximate Any Function"* (Neural Networks, 1993).
-- Nair, V. and Hinton, G. E., *"Rectified Linear Units Improve Restricted Boltzmann Machines"* (ICML, 2010).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Bridle, J. S., *["Probabilistic Interpretation of Feedforward Classification Network Outputs"](https://doi.org/10.1007/978-3-642-76153-9_28)* (Neurocomputing, NATO ASI Series, 1990).
+- Cybenko, G., *["Approximation by Superpositions of a Sigmoidal Function"](https://doi.org/10.1007/BF02551274)* (Mathematics of Control, Signals and Systems, 1989).
+- Glorot, X., Bordes, A., and Bengio, Y., *["Deep Sparse Rectifier Neural Networks"](https://proceedings.mlr.press/v15/glorot11a.html)* (AISTATS, 2011).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/mlp.html)*, chapter 6, "Deep Feedforward Networks" (MIT Press, 2016).
+- Hendrycks, D. and Gimpel, K., *["Gaussian Error Linear Units (GELUs)"](https://arxiv.org/abs/1606.08415)* (arXiv:1606.08415, 2016).
+- Hochreiter, S., *["Untersuchungen zu dynamischen neuronalen Netzen"](https://people.idsia.ch/~juergen/SeppHochreiter1991ThesisAdvisorSchmidhuber.pdf)* (Diploma thesis, TU München, 1991).
+- Hornik, K., *["Approximation Capabilities of Multilayer Feedforward Networks"](https://doi.org/10.1016/0893-6080%2891%2990009-T)* (Neural Networks, 1991).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 4 (2020).
+- Krizhevsky, A., Sutskever, I., and Hinton, G., *["ImageNet Classification with Deep Convolutional Neural Networks"](https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks)* (NeurIPS, 2012).
+- Leshno, M., Lin, V. Ya., Pinkus, A., and Schocken, S., *["Multilayer Feedforward Networks with a Nonpolynomial Activation Function Can Approximate Any Function"](https://doi.org/10.1016/S0893-6080%2805%2980131-5)* (Neural Networks, 1993).
+- Nair, V. and Hinton, G. E., *["Rectified Linear Units Improve Restricted Boltzmann Machines"](https://www.cs.toronto.edu/~hinton/absps/reluICML.pdf)* (ICML, 2010).
 
 ---
 
 ## What to read next
 
-- **[Post 07 - Coding the complete forward pass](../07-coding-the-complete-forward-pass/index.md):** the four objects of section 5 assembled into one script, with the shape of every intermediate array audited against the architecture.
-- **[Post 19 - Softmax derivatives and the combined backward pass](../19-softmax-derivatives-and-the-combined-backward-pass/index.md):** the backward pass of the softmax written here, and the cancellation that makes it short when it is paired with the cross-entropy loss of post 08.
+- **[Post 07 - Coding the complete forward pass](../07-coding-the-complete-forward-pass/index.md):** the four objects of [section 5](#5-the-forward-pass-end-to-end) assembled into one script, with the shape of every intermediate array audited against the architecture.
+- **[Post 19 - Softmax derivatives and the combined backward pass](../19-softmax-derivatives-and-the-combined-backward-pass/index.md):** the backward pass of the softmax written here, and the cancellation that makes it short when it is paired with the cross-entropy loss of [post 08](../08-loss-categorical-cross-entropy/index.md).
