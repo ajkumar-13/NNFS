@@ -24,9 +24,9 @@ Most numerical bugs make themselves known: a shape mismatch raises a `ValueError
 
 The question therefore has two halves. First, what do `axis` and `keepdims` do to the shape of a *reduction*, an operation such as `np.sum`, `np.max`, or `np.mean` that collapses many numbers into fewer? Second, which pairs of shapes will NumPy combine *element-wise*, entry by entry, and what does it do when the two shapes differ? The mechanism behind the second half is called *broadcasting*.
 
-Softmax (post 06), categorical cross-entropy (post 08), the bias gradient (post 16), and almost every loss function the series meets require a correct reduction along a chosen axis, and most of them then combine the result with the array it came from. Settling these mechanics now is cheaper than debugging them inside a forward pass later.
+Softmax ([post 06](../06-activation-functions-relu-and-softmax/index.md)), categorical cross-entropy ([post 08](../08-loss-categorical-cross-entropy/index.md)), the bias gradient ([post 16](../16-coding-backpropagation/index.md)), and almost every loss function the series meets require a correct reduction along a chosen axis, and most of them then combine the result with the array it came from. Settling these mechanics now is cheaper than debugging them inside a forward pass later.
 
-Neither mechanism is new, and neither is specific to NumPy. NumPy emerged in 2005 as the unification of two earlier Python array packages, Numeric, from the mid-1990s, and Numarray, and the design of this line of tools was informed by older languages such as APL, whose notation Iverson published in 1962. The libraries that came after kept its conventions: the array types of PyTorch, TensorFlow, and JAX often mimic the NumPy interface (Harris et al., 2020). The rules in section 4 are therefore not a NumPy quirk; the same shape reasoning carries over to each of those frameworks.
+Neither mechanism is new, and neither is specific to NumPy. NumPy emerged in 2005 as the unification of two earlier Python array packages, Numeric, from the mid-1990s, and Numarray, and the design of this line of tools was informed by older languages such as APL, whose notation Iverson published in 1962. The libraries that came after kept its conventions: the array types of PyTorch, TensorFlow, and JAX often mimic the NumPy interface (Harris et al., 2020). The rules in [section 4](#4-the-broadcasting-rules) are therefore not a NumPy quirk; the same shape reasoning carries over to each of those frameworks.
 
 ---
 
@@ -42,7 +42,7 @@ a = np.array([[1, 2, 3],
               [7, 8, 9]])
 ```
 
-`np.sum` reduces the array along one or more axes. Three behaviours are worth distinguishing. Every code block in this section and the next is an excerpt of `snippets/axis_keepdims.py`, and section 7 gives the command that runs it.
+`np.sum` reduces the array along one or more axes. Three behaviours are worth distinguishing. Every code block in this section and the next is an excerpt of `snippets/axis_keepdims.py`, and [section 7](#7-make-it-run-the-four-rules-as-one-short-function) gives the command that runs it.
 
 ### 2.1. No `axis`: flatten everything
 
@@ -89,9 +89,9 @@ Axes can also be counted from the end, as list indices can: `axis=-1` is the las
 
 ### 2.5. What is *not* obvious about the result
 
-Both `np.sum(a, axis=0)` and `np.sum(a, axis=1)` return a 1-D array of shape `(3,)`. Nothing in that shape records which axis was reduced, and that 1-D shape is the source of the silent bug that section 3 works through. The right half of the figure at the top of the post draws the two results as flat strips, one above the other, with the same shape; its left half shows the row and the column that `keepdims=True` (section 3) returns instead.
+Both `np.sum(a, axis=0)` and `np.sum(a, axis=1)` return a 1-D array of shape `(3,)`. Nothing in that shape records which axis was reduced, and that 1-D shape is the source of the silent bug that [section 3](#3-keepdimstrue-preserving-the-reduced-axis) works through. The right half of the figure at the top of the post draws the two results as flat strips, one above the other, with the same shape; its left half shows the row and the column that `keepdims=True` ([section 3](#3-keepdimstrue-preserving-the-reduced-axis)) returns instead.
 
-A 1-D `(n,)` array is not the same thing as a row vector of shape `(1, n)` or a column vector of shape `(n, 1)`: the first has one axis and the other two have two. Section 4 shows that broadcasting against a 2-D array treats the first exactly like the second and never like the third. At the `print` site the only trace of the difference is the bracketing: `[12 15 18]` for the 1-D array, `[[12 15 18]]` for the row vector.
+A 1-D `(n,)` array is not the same thing as a row vector of shape `(1, n)` or a column vector of shape `(n, 1)`: the first has one axis and the other two have two. [Section 4](#4-the-broadcasting-rules) shows that broadcasting against a 2-D array treats the first exactly like the second and never like the third. At the `print` site the only trace of the difference is the bracketing: `[12 15 18]` for the 1-D array, `[[12 15 18]]` for the row vector.
 
 ---
 
@@ -189,7 +189,7 @@ ValueError: operands could not be broadcast together with shapes (4,3) (4,)
  [-2 -1  0]]
 ```
 
-The error is the lucky outcome. The layer output of post 04 has 300 rows and 3 columns, so a forgotten `keepdims` in a per-row reduction on it would stop the program at once. The silent case arrives when the number of rows equals the number of columns: a quick test on 3 samples of a 3-class problem, a 10-by-10 table of counts, any square intermediate. Code that has only ever been tried on a small square example can therefore look correct with the bug in place.
+The error is the lucky outcome. The layer output of [post 04](../04-dense-layer-class-and-spiral-data/index.md) has 300 rows and 3 columns, so a forgotten `keepdims` in a per-row reduction on it would stop the program at once. The silent case arrives when the number of rows equals the number of columns: a quick test on 3 samples of a 3-class problem, a 10-by-10 table of counts, any square intermediate. Code that has only ever been tried on a small square example can therefore look correct with the bug in place.
 
 `snippets/axis_keepdims.py` makes the boundary exact by running the line without `keepdims` on every shape from `(1, 1)` to `(4, 4)` and comparing it with the correct result:
 
@@ -201,7 +201,7 @@ The error is the lucky outcome. The layer output of post 04 has 300 rows and 3 c
 4 rows  wrong   error   error   wrong
 ```
 
-NumPy raises exactly when the number of rows differs from the number of columns and neither of them is 1. The line raises nothing on a square array with more than one row and its numbers are wrong there unless every row happens to have the same maximum; the same holds for a single column, where an `(N, 1)` array minus an `(N,)` array comes back with shape `(N, N)` (section 8). It is right only for a single row, which has one maximum and nothing to misalign.
+NumPy raises exactly when the number of rows differs from the number of columns and neither of them is 1. The line raises nothing on a square array with more than one row and its numbers are wrong there unless every row happens to have the same maximum; the same holds for a single column, where an `(N, 1)` array minus an `(N,)` array comes back with shape `(N, N)` ([section 8](#8-what-can-go-wrong)). It is right only for a single row, which has one maximum and nothing to misalign.
 
 A second per-row pattern, dividing every row by its own sum, shows what "silently wrong" means for the numbers. Each row of the correct result sums to 1; the row sums of the wrong one do not:
 
@@ -239,7 +239,7 @@ The figure below applies rules 1 to 3 to four pairs of shapes, writing each pair
 
 *Against a 2-D array, a 1-D shape `(n,)` is always padded to `(1, n)`. It can never be interpreted as a column on its own.*
 
-A few worked compatibility checks, each one confirmed by the script of section 7:
+A few worked compatibility checks, each one confirmed by the script of [section 7](#7-make-it-run-the-four-rules-as-one-short-function):
 
 | Left shape | Right shape | Result | Reason |
 |---|---|---|---|
@@ -252,13 +252,13 @@ A few worked compatibility checks, each one confirmed by the script of section 7
 | `(3, 3)` | `(3, 2)` | error | column sizes are 3 and 2; neither is 1 |
 | `(5, 3)` | `(5,)` | error | `(5,)` padded to `(1, 5)`; column sizes are 3 and 5 |
 
-For the first failing pair NumPy's message is `ValueError: operands could not be broadcast together with shapes (3,3) (2,3)`. The fifth row deserves a second look: neither operand has the result's shape, both are stretched, and no error is raised. Section 8 returns to it.
+For the first failing pair NumPy's message is `ValueError: operands could not be broadcast together with shapes (3,3) (2,3)`. The fifth row deserves a second look: neither operand has the result's shape, both are stretched, and no error is raised. [Section 8](#8-what-can-go-wrong) returns to it.
 
 ### 4.1. What broadcasting is *not*
 
 A boundary section, because the distinction matters in code.
 
-- **Broadcasting is not matrix multiplication.** `a + b` and `a * b` are element-wise after broadcasting; they are not `np.dot(a, b)`. For the 3-by-3 `a` of section 2, the first row of `a * a` is `[1, 4, 9]` and the first row of `np.dot(a, a)` is `[30, 36, 42]`. Mixing the two up is an easy mistake in a hand-written layer.
+- **Broadcasting is not matrix multiplication.** `a + b` and `a * b` are element-wise after broadcasting; they are not `np.dot(a, b)`. For the 3-by-3 `a` of [section 2](#2-array-summation-with-axis), the first row of `a * a` is `[1, 4, 9]` and the first row of `np.dot(a, a)` is `[30, 36, 42]`. Mixing the two up is an easy mistake in a hand-written layer.
 - **Broadcasting is not a reshape.** It does not copy data; it sets up a virtual replication that the underlying loop uses without ever materialising a stretched copy of the smaller operand. This is fast, but it means the result's shape is determined by the rules, not by what was intended.
 - **Broadcasting does not depend on operand order.** `a + b` and `b + a` always give the same numbers, and the broadcast shape is determined symmetrically from both operands. The order only matters for in-place operations like `a += b`, where the left operand's shape must already be the shape of the result.
 
@@ -266,7 +266,7 @@ A boundary section, because the distinction matters in code.
 
 ## 5. Broadcasting in a neural-network forward pass
 
-The bias addition from post 04 is the textbook example. The dot product produces a `(300, 3)` matrix of layer outputs. The bias is stored as a `(1, 3)` row vector. Adding them looks like a shape mismatch and works anyway:
+The bias addition from [post 04](../04-dense-layer-class-and-spiral-data/index.md) is the textbook example. The dot product produces a `(300, 3)` matrix of layer outputs. The bias is stored as a `(1, 3)` row vector. Adding them looks like a shape mismatch and works anyway:
 
 ```python
 out = np.dot(X, W) + b          # X: (300, 2), W: (2, 3), b: (1, 3)
@@ -276,11 +276,11 @@ out = np.dot(X, W) + b          # X: (300, 2), W: (2, 3), b: (1, 3)
 print(np.dot(X, W).shape, b.shape, out.shape)
 ```
 
-In `snippets/broadcasting.py`, `X` and `W` are seeded random stand-ins for the spiral batch and the weights of post 04's `Layer_Dense(2, 3)`, and `b` is set to `[[0.1, 0.2, 0.3]]` instead of zeros so that the addition changes something. The line prints `(300, 3) (1, 3) (300, 3)`.
+In `snippets/broadcasting.py`, `X` and `W` are seeded random stand-ins for the spiral batch and the weights of [post 04](../04-dense-layer-class-and-spiral-data/index.md)'s `Layer_Dense(2, 3)`, and `b` is set to `[[0.1, 0.2, 0.3]]` instead of zeros so that the addition changes something. The line prints `(300, 3) (1, 3) (300, 3)`.
 
 The bias of shape `(1, 3)` is implicitly replicated 300 times down the row axis. Every sample sees the same three bias values added to its three neuron outputs. No `for` loop. No `np.tile`. One operator. The script checks both halves of that statement: adding an explicit `np.tile(b, (300, 1))` copy gives an identical array, and `np.broadcast_to(b, (300, 3))`, which exposes the stretched operand, shares its memory with the three numbers of `b`, so the 300 rows are never written out.
 
-The same pattern returns throughout the series, in three variants. Softmax in post 06 subtracts a per-row max and then divides by a per-row sum; both reductions use `axis=1, keepdims=True`, so each result is an `(N, 1)` column that broadcasts back against the original 2-D array. The bias gradient in post 16 is `np.sum(dvalues, axis=0, keepdims=True)`, a reduction over the batch axis kept as a `(1, n_neurons)` row so that it matches the stored bias. Categorical cross-entropy in post 08 reduces along `axis=1` and keeps the 1-D result on purpose, one loss per sample, because that result is averaged and never broadcast back. Beyond this series, batch normalisation (`cnn-014`, Convolutional Neural Networks from Scratch) subtracts a per-channel mean and divides by a per-channel standard deviation, which takes a reduction over every axis except the channel axis and a reshape before the result broadcasts back. Internalising the pattern now pays back across the rest of the series.
+The same pattern returns throughout the series, in three variants. Softmax in [post 06](../06-activation-functions-relu-and-softmax/index.md) subtracts a per-row max and then divides by a per-row sum; both reductions use `axis=1, keepdims=True`, so each result is an `(N, 1)` column that broadcasts back against the original 2-D array. The bias gradient in [post 16](../16-coding-backpropagation/index.md) is `np.sum(dvalues, axis=0, keepdims=True)`, a reduction over the batch axis kept as a `(1, n_neurons)` row so that it matches the stored bias. Categorical cross-entropy in [post 08](../08-loss-categorical-cross-entropy/index.md) reduces along `axis=1` and keeps the 1-D result on purpose, one loss per sample, because that result is averaged and never broadcast back. Beyond this series, batch normalisation (`cnn-014`, Convolutional Neural Networks from Scratch) subtracts a per-channel mean and divides by a per-channel standard deviation, which takes a reduction over every axis except the channel axis and a reshape before the result broadcasts back. Internalising the pattern now pays back across the rest of the series.
 
 ---
 
@@ -306,11 +306,11 @@ A 1-D array of shape $(n_\text{features},)$ and a row vector of shape $(1, n_\te
 
 Three scripts under `snippets/` produce every array, shape, and error message quoted in this post. Each needs only NumPy, runs from the series root in a second or two, and prints the same output on every run:
 
-- `python posts/05-array-summation-keepdims-and-broadcasting/snippets/axis_keepdims.py` runs sections 2 and 3: the reductions of the 3-by-3 array, `keepdims`, the per-row max subtraction with and without it, and the non-square case that raises.
+- `python posts/05-array-summation-keepdims-and-broadcasting/snippets/axis_keepdims.py` runs sections [2](#2-array-summation-with-axis) and [3](#3-keepdimstrue-preserving-the-reduced-axis): the reductions of the 3-by-3 array, `keepdims`, the per-row max subtraction with and without it, and the non-square case that raises.
 - `python posts/05-array-summation-keepdims-and-broadcasting/snippets/broadcasting.py` runs sections 4 to 6: the compatibility table, the bias addition, and the shape diary.
-- `python posts/05-array-summation-keepdims-and-broadcasting/snippets/broadcast_traps.py` runs every failure of section 8.
+- `python posts/05-array-summation-keepdims-and-broadcasting/snippets/broadcast_traps.py` runs every failure of [section 8](#8-what-can-go-wrong).
 
-The second script also states the rules of section 4 as code. `broadcast_shape` takes two shapes and applies rules 1 to 3 with nothing but tuples and a loop; rule 4, the arithmetic itself, is left to NumPy:
+The second script also states the rules of [section 4](#4-the-broadcasting-rules) as code. `broadcast_shape` takes two shapes and applies rules 1 to 3 with nothing but tuples and a loop; rule 4, the arithmetic itself, is left to NumPy:
 
 ```python
 def broadcast_shape(left, right):
@@ -329,7 +329,7 @@ def broadcast_shape(left, right):
     return tuple(result)
 ```
 
-The script runs it on the eight pairs of section 4 next to NumPy itself, which is asked to add two arrays of zeros with those shapes:
+The script runs it on the eight pairs of [section 4](#4-the-broadcasting-rules) next to NumPy itself, which is asked to add two arrays of zeros with those shapes:
 
 ```text
 (3, 3)   with (3, 1) -> by hand (3, 3)   NumPy (3, 3)
@@ -342,7 +342,7 @@ The script runs it on the eight pairs of section 4 next to NumPy itself, which i
 (5, 3)   with (5,)   -> by hand error    NumPy error
 ```
 
-Eight pairs are an illustration, not a test, so the script then tries every shape with 0 to 3 axes whose sizes are 1, 2, or 3. There are 40 such shapes and 1,600 ordered pairs of them; the hand-written rules and NumPy agree on all 1,600, of which NumPy refuses 660. The four rules of section 4, which are also the ones NumPy's documentation states, are the whole mechanism.
+Eight pairs are an illustration, not a test, so the script then tries every shape with 0 to 3 axes whose sizes are 1, 2, or 3. There are 40 such shapes and 1,600 ordered pairs of them; the hand-written rules and NumPy agree on all 1,600, of which NumPy refuses 660. The four rules of [section 4](#4-the-broadcasting-rules), which are also the ones NumPy's documentation states, are the whole mechanism.
 
 ---
 
@@ -350,13 +350,13 @@ Eight pairs are an illustration, not a test, so the script then tries every shap
 
 Every item below is run by `snippets/broadcast_traps.py`, and the outputs quoted are the ones it prints.
 
-- **A column meets a 1-D array, and both stretch.** A single-output layer returns predictions of shape `(4, 1)`; the labels arrive as `(4,)`. Their difference is not `(4, 1)`. The 1-D array is padded to `(1, 4)`, the column stretches across and the row stretches down, and the result has shape `(4, 4)`: every prediction minus every label. For predictions `0.9, 0.2, 0.8, 0.4` and labels `1, 0, 1, 0`, the mean squared difference over those 16 entries is 0.3375; with the labels reshaped to `(4, 1)` it is 0.0625, the mean over the 4 pairs that belong together. No error is raised in either case. Post 34 meets exactly this pair of shapes and reshapes its labels to `(N, 1)` so that the two match.
+- **A column meets a 1-D array, and both stretch.** A single-output layer returns predictions of shape `(4, 1)`; the labels arrive as `(4,)`. Their difference is not `(4, 1)`. The 1-D array is padded to `(1, 4)`, the column stretches across and the row stretches down, and the result has shape `(4, 4)`: every prediction minus every label. For predictions `0.9, 0.2, 0.8, 0.4` and labels `1, 0, 1, 0`, the mean squared difference over those 16 entries is 0.3375; with the labels reshaped to `(4, 1)` it is 0.0625, the mean over the 4 pairs that belong together. No error is raised in either case. [Post 34](../34-sigmoid-and-binary-cross-entropy/index.md) meets exactly this pair of shapes and reshapes its labels to `(N, 1)` so that the two match.
 - **Broadcasting cannot be switched off.** NumPy has no setting that disables it. `np.add(a, row, out=out)` with a `(3,)` `row` and a `(3, 3)` `out` still broadcasts the row; the `out` argument only has to be able to hold the result. The guard that works is an explicit assertion on the shape that was meant, such as `assert max_vals.shape == (3, 1)`, which fails with a readable message the moment a 1-D `(3,)` array turns up.
-- **The wrong result looks plausible.** The silent failure is easy to miss because the wrong result still has a plausible shape and plausible numbers; the per-row max subtraction of section 3.1 returns nine small integers either way. Nothing in the output points at the reduction, so the first sign tends to be indirect, such as rows of probabilities that no longer sum to 1. Checking `.shape` on the reduced array and checking one property the result must have (section 3.2) finds it directly.
-- **In-place operators need room on the left.** `a + row` and `row + a` both have shape `(3, 3)` and equal values, but `row += a` raises `ValueError: non-broadcastable output operand with shape (3,) doesn't match the broadcast shape (3,3)`, because the result has to be stored in `row`. The same rule decides how biases are stored: a bias of shape `(3,)` cannot take the `(1, 3)` gradient of post 16 in place (`doesn't match the broadcast shape (1,3)`), while the `(1, 3)` bias that `Layer_Dense` stores takes it without complaint.
-- **`np.mean`, `np.max`, and `np.std` share the trap.** They take the same `axis` and `keepdims` arguments and follow the same rules: each returns shape `(3, 1)` for the 3-by-3 array with `axis=1, keepdims=True` and `(3,)` without. The bug of section 3.1 happens whenever any of them is fed back into a broadcasting operation.
+- **The wrong result looks plausible.** The silent failure is easy to miss because the wrong result still has a plausible shape and plausible numbers; the per-row max subtraction of [section 3.1](#31-the-silent-bug-example-per-row-max-subtraction) returns nine small integers either way. Nothing in the output points at the reduction, so the first sign tends to be indirect, such as rows of probabilities that no longer sum to 1. Checking `.shape` on the reduced array and checking one property the result must have ([section 3.2](#32-when-the-mistake-is-silent-and-when-it-is-loud)) finds it directly.
+- **In-place operators need room on the left.** `a + row` and `row + a` both have shape `(3, 3)` and equal values, but `row += a` raises `ValueError: non-broadcastable output operand with shape (3,) doesn't match the broadcast shape (3,3)`, because the result has to be stored in `row`. The same rule decides how biases are stored: a bias of shape `(3,)` cannot take the `(1, 3)` gradient of [post 16](../16-coding-backpropagation/index.md) in place (`doesn't match the broadcast shape (1,3)`), while the `(1, 3)` bias that `Layer_Dense` stores takes it without complaint.
+- **`np.mean`, `np.max`, and `np.std` share the trap.** They take the same `axis` and `keepdims` arguments and follow the same rules: each returns shape `(3, 1)` for the 3-by-3 array with `axis=1, keepdims=True` and `(3,)` without. The bug of [section 3.1](#31-the-silent-bug-example-per-row-max-subtraction) happens whenever any of them is fed back into a broadcasting operation.
 - **Avoiding `keepdims=True` to save time or memory.** There is nothing to save. The output is the same numbers with one extra dimension of length 1: both forms of the row sum hold 3 elements, and no extra data is allocated.
-- **Using `keepdims=True` where the 1-D form is the right one.** The 1-D form should be preferred when the result is the final output of a script or a reduction that will not be broadcast again, such as the per-sample losses of post 08. A kept axis carries its own risk there: an `(N, 1)` result that later meets an `(N,)` array is the first item of this list. For intermediates inside a layer, `keepdims=True` is the safer default.
+- **Using `keepdims=True` where the 1-D form is the right one.** The 1-D form should be preferred when the result is the final output of a script or a reduction that will not be broadcast again, such as the per-sample losses of [post 08](../08-loss-categorical-cross-entropy/index.md). A kept axis carries its own risk there: an `(N, 1)` result that later meets an `(N,)` array is the first item of this list. For intermediates inside a layer, `keepdims=True` is the safer default.
 - **Naming an axis the array does not have.** `np.sum(a, axis=2)` on a 2-D array raises `AxisError: axis 2 is out of bounds for array of dimension 2`. This one is loud, and the message says exactly what is wrong.
 
 ---
@@ -380,20 +380,18 @@ Every item below is run by `snippets/broadcast_traps.py`, and the outputs quoted
 2. **Expecting `(n,)` to broadcast as a column.** It will not. To get column behaviour, use `(n, 1)` explicitly, either via `keepdims=True` or `.reshape(-1, 1)`.
 3. **Using `*` and expecting matrix multiplication.** `*` is element-wise (with broadcasting). For matrix multiplication, use `np.dot`, `@`, or `np.matmul`.
 4. **Allowing broadcasting along a dimension that was not intended.** An `(N, 3)` array plus an `(N,)` array pads the second to `(1, N)` and then fails unless `N` is 3 or 1; with `N = 3` it runs and adds along the wrong axis. An `(N, 1)` array combined with an `(N,)` array never fails and returns `(N, N)`. Be deliberate about which operand is a row and which is a column.
-5. **Storing biases with shape `(n_neurons,)` instead of `(1, n_neurons)`.** Both work for the forward pass, but the explicit `(1, n_neurons)` shape is clearer about intent and matches the `(1, n_neurons)` gradient of post 16, so the in-place update works; a `(n_neurons,)` bias raises on that update.
+5. **Storing biases with shape `(n_neurons,)` instead of `(1, n_neurons)`.** Both work for the forward pass, but the explicit `(1, n_neurons)` shape is clearer about intent and matches the `(1, n_neurons)` gradient of [post 16](../16-coding-backpropagation/index.md), so the in-place update works; a `(n_neurons,)` bias raises on that update.
 6. **Trusting a print to confirm the shape.** `[12 15 18]` and `[[12 15 18]]` differ by one pair of brackets and by one axis: the shapes are `(3,)` and `(1, 3)`. Always check `arr.shape`.
 
 ---
 
 ## Further reading
 
-- Harris, C. R., et al., *"Array Programming with NumPy"* (Nature, 2020). The array model, reductions along axes, broadcasting, and the libraries that adopted them.
-- Iverson, K. E., *A Programming Language* (Wiley, 1962). The notation behind APL, one of the array languages that informed NumPy's design.
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 4 (2020). Uses `axis=1, keepdims=True` for the per-row maximum and the per-row sum of the softmax activation.
-- NumPy documentation, *"Broadcasting"* (latest). The rules of section 4 in NumPy's own words.
-- NumPy documentation, `numpy.sum`, `numpy.max`, `numpy.mean` (latest). The `axis` and `keepdims` arguments of each reduction.
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Harris, C. R., et al., *["Array Programming with NumPy"](https://doi.org/10.1038/s41586-020-2649-2)* (Nature, 2020). The array model, reductions along axes, broadcasting, and the libraries that adopted them.
+- Iverson, K. E., *[A Programming Language](https://www.jsoftware.com/papers/APL.htm)* (Wiley, 1962). The notation behind APL, one of the array languages that informed NumPy's design.
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 4 (2020). Uses `axis=1, keepdims=True` for the per-row maximum and the per-row sum of the softmax activation.
+- NumPy documentation, *["Broadcasting"](https://numpy.org/doc/stable/user/basics.broadcasting.html)* (latest). The rules of [section 4](#4-the-broadcasting-rules) in NumPy's own words.
+- NumPy documentation, [`numpy.sum`](https://numpy.org/doc/stable/reference/generated/numpy.sum.html), [`numpy.max`](https://numpy.org/doc/stable/reference/generated/numpy.max.html), [`numpy.mean`](https://numpy.org/doc/stable/reference/generated/numpy.mean.html) (latest). The `axis` and `keepdims` arguments of each reduction.
 
 ---
 
