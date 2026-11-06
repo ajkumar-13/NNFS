@@ -41,7 +41,7 @@ The fragment is shown for contrast only; it needs TensorFlow and a dataset with 
 
 A neural network is not exotic mathematics. It is a stack of weighted sums, activation functions, and partial derivatives. Implementing each piece by hand replaces trust in a library with understanding. This series builds every component (neurons, layers, activations, losses, backpropagation, optimisers, regularisation) in Python and NumPy, without relying on a framework to do the thinking.
 
-This first post stays at the most basic operation in the stack and asks one question: what does a single neuron compute, and what changes when several neurons share the same inputs? The answer is the **forward pass through a single neuron, then a layer**. Activation functions arrive in post 06, the loss in post 08, and backpropagation begins in post 12. Everything that comes later is layered on top of what is built here.
+This first post stays at the most basic operation in the stack and asks one question: what does a single neuron compute, and what changes when several neurons share the same inputs? The answer is the **forward pass through a single neuron, then a layer**. Activation functions arrive in [post 06](../06-activation-functions-relu-and-softmax/index.md), the loss in [post 08](../08-loss-categorical-cross-entropy/index.md), and backpropagation begins in [post 12](../12-backprop-through-a-single-neuron/index.md). Everything that comes later is layered on top of what is built here.
 
 ## 2. Where the neuron came from
 
@@ -53,7 +53,7 @@ Fifteen years later, Frank Rosenblatt's **perceptron** made the connection stren
 
 The name is a historical analogy. The mathematical object has very little to do with a biological neuron beyond many inputs, one output, and a threshold-like response; the word was already in use long before deep learning made it standard.
 
-The implication for this series is small and useful. **The weighted sum inside every dense layer of a 2026 neural network is the weighted sum Rosenblatt published in 1958, repeated many times in parallel.** Everything from post 02 onward is concerned with computing those sums quickly, stacking them, and learning the weights through gradient descent.
+The implication for this series is small and useful. **The weighted sum inside every dense layer of a 2026 neural network is the weighted sum Rosenblatt published in 1958, repeated many times in parallel.** Everything from [post 02](../02-numpy-and-the-dot-product/index.md) onward is concerned with computing those sums quickly, stacking them, and learning the weights through gradient descent.
 
 ## 3. The neuron, formally
 
@@ -61,9 +61,9 @@ A neuron receives a vector of inputs (an ordered list of numbers), multiplies ea
 
 $$z = \sum_{i=1}^{n_\text{inputs}} w_i x_i + b.$$
 
-The sum of products is the **weighted sum**, and $z$ is that sum with the bias added. There is no activation function yet; activations are the subject of post 06. For now the neuron stops at $z$, and "output" in this post always means $z$. Later posts, where an activation follows, call $z$ the pre-activation.
+The sum of products is the **weighted sum**, and $z$ is that sum with the bias added. There is no activation function yet; activations are the subject of [post 06](../06-activation-functions-relu-and-softmax/index.md). For now the neuron stops at $z$, and "output" in this post always means $z$. Later posts, where an activation follows, call $z$ the pre-activation.
 
-Each symbol carries a specific role. The shape column says how many numbers a component holds, in the notation NumPy uses from section 9 on: $(n_\text{inputs},)$ is a flat list of $n_\text{inputs}$ numbers, and a scalar is a single number. Reading the table left to right gives the entire surface area of the neuron:
+Each symbol carries a specific role. The shape column says how many numbers a component holds, in the notation NumPy uses from [section 9](#9-why-numpy-wins) on: $(n_\text{inputs},)$ is a flat list of $n_\text{inputs}$ numbers, and a scalar is a single number. Reading the table left to right gives the entire surface area of the neuron:
 
 | Component | Symbol | Shape (single neuron) | Role | Lifetime | What fails when it is wrong |
 |---|---|---|---|---|---|
@@ -72,7 +72,7 @@ Each symbol carries a specific role. The shape column says how many numbers a co
 | Bias | $b$ | scalar | A constant offset, one per neuron | learned during training, frozen at inference | a missing bias forces the output to 0 whenever every input is 0 |
 | Output | $z$ | scalar | The weighted sum plus the bias | recomputed every forward pass | downstream layers receive the wrong signal |
 
-A large weight magnifies its input's contribution, a near-zero weight ignores it, and a negative weight makes the input count against the output. The bias shifts the output by the same amount whatever the inputs are. It is what allows a neuron to fit data whose target is offset from the origin: when every input is zero the products vanish and the output is exactly $b$, so a neuron without a bias could only ever answer zero there. Section 7 checks this on a layer.
+A large weight magnifies its input's contribution, a near-zero weight ignores it, and a negative weight makes the input count against the output. The bias shifts the output by the same amount whatever the inputs are. It is what allows a neuron to fit data whose target is offset from the origin: when every input is zero the products vanish and the output is exactly $b$, so a neuron without a bias could only ever answer zero there. [Section 7](#7-a-layer-by-hand) checks this on a layer.
 
 The bias is one number per neuron, not one per input, because it is added after the weighted sum has collapsed the inputs to a single number: one sum, one offset. Giving every input its own offset $c_i$ would buy nothing, since $\sum_i w_i (x_i + c_i) = \sum_i w_i x_i + \sum_i w_i c_i$ and the last term is again one constant.
 
@@ -80,9 +80,9 @@ The bias is one number per neuron, not one per input, because it is added after 
 
 The boundary helps as much as the definition.
 
-- **A neuron is not a classifier on its own.** It produces a single number, not a class label. Turning the numbers of an output layer into probabilities takes an activation function (post 06), turning them into a label takes a rule such as picking the largest, and judging how good the answer is takes a loss function (post 08).
-- **A neuron is not non-linear.** The weighted sum plus bias is a straight-line function of its inputs (strictly an affine one: linear plus a constant). Stacking such neurons without activations between them gives back another function of the same kind, no more expressive than a single layer; post 03 works the collapse out.
-- **A neuron is not learned in this post.** The weights and bias are *given*, not optimised. When training does start they are drawn at random: post 04 fills the weights with small random numbers and the biases with zeros, and post 33 treats initialisation in detail. Learning itself enters the series in post 09 (gradient descent) and post 12 (backpropagation).
+- **A neuron is not a classifier on its own.** It produces a single number, not a class label. Turning the numbers of an output layer into probabilities takes an activation function ([post 06](../06-activation-functions-relu-and-softmax/index.md)), turning them into a label takes a rule such as picking the largest, and judging how good the answer is takes a loss function ([post 08](../08-loss-categorical-cross-entropy/index.md)).
+- **A neuron is not non-linear.** The weighted sum plus bias is a straight-line function of its inputs (strictly an affine one: linear plus a constant). Stacking such neurons without activations between them gives back another function of the same kind, no more expressive than a single layer; [post 03](../03-stacking-layers-and-the-forward-pass/index.md) works the collapse out.
+- **A neuron is not learned in this post.** The weights and bias are *given*, not optimised. When training does start they are drawn at random: [post 04](../04-dense-layer-class-and-spiral-data/index.md) fills the weights with small random numbers and the biases with zeros, and [post 33](../33-weight-initialisation/index.md) treats initialisation in detail. Learning itself enters the series in [post 09](../09-introduction-to-optimisation/index.md) (gradient descent) and [post 12](../12-backprop-through-a-single-neuron/index.md) (backpropagation).
 
 ## 4. Coding a neuron with three inputs
 
@@ -156,7 +156,7 @@ The shape of the operation is invariant: one weight per input, one bias per neur
 
 ## 6. From a neuron to a layer
 
-A **layer** is a group of neurons that all receive the same input vector while each keeps its own weights and its own bias. The figure below draws the layer of section 7, three such neurons over the four inputs of section 5, first as wiring and then as one matrix.
+A **layer** is a group of neurons that all receive the same input vector while each keeps its own weights and its own bias. The figure below draws the layer of [section 7](#7-a-layer-by-hand), three such neurons over the four inputs of [section 5](#5-coding-a-neuron-with-four-inputs), first as wiring and then as one matrix.
 
 ![Two panels. On the left, four inputs x1 to x4, holding 1.0, 2.0, 3.0, 2.5, each connect to all three neuron boxes, sigma plus b1, sigma plus b2 and sigma plus b3, twelve lines, with neuron 2's lines in the weight colour and a note that they are row 2 of W; the boxes give z1, z2 and z3. On the right, the same layer as z equals W x plus b: W is a 3 by 4 grid with one row of weights per neuron, x holds 1.0, 2.0, 3.0, 2.5, b holds 2.0, 3.0, 0.5, and z holds 4.800, 1.210, 2.385. Row 2 of W, b2 and z2 are outlined: minus 1.79 plus 3.0 is 1.21.](diagrams/02-a-layer.svg)
 
@@ -184,7 +184,7 @@ The same three lines, written compactly:
 
 $$\mathbf{z} = \mathbf{W} \mathbf{x} + \mathbf{b}.$$
 
-The matrix $\mathbf{W}$, a rectangular grid of numbers, holds one row of weights per neuron, so its shape, rows first and then columns, is $(n_\text{neurons}, n_\text{inputs})$, here $(3, 4)$; $\mathbf{x}$ has shape $(n_\text{inputs},)$; $\mathbf{b}$ has shape $(n_\text{neurons},)$; and the output $\mathbf{z}$ has shape $(n_\text{neurons},)$. The shape diary in section 10 tracks all of this through a batch, and says how later posts store $\mathbf{W}$.
+The matrix $\mathbf{W}$, a rectangular grid of numbers, holds one row of weights per neuron, so its shape, rows first and then columns, is $(n_\text{neurons}, n_\text{inputs})$, here $(3, 4)$; $\mathbf{x}$ has shape $(n_\text{inputs},)$; $\mathbf{b}$ has shape $(n_\text{neurons},)$; and the output $\mathbf{z}$ has shape $(n_\text{neurons},)$. The shape diary in [section 10](#10-handling-batches-and-the-shape-diary) tracks all of this through a batch, and says how later posts store $\mathbf{W}$.
 
 ## 7. A layer, by hand
 
@@ -225,13 +225,13 @@ print(outputs)
 | 2 | $1(0.5) + 2(-0.91) + 3(0.26) + 2.5(-0.5) = -1.79$ | $+ 3$ | $1.21$ |
 | 3 | $1(-0.26) + 2(-0.27) + 3(0.17) + 2.5(0.87) = 1.885$ | $+ 0.5$ | $2.385$ |
 
-The second column is what the layer would output with every bias set to zero: $2.8$, $-1.79$, $1.885$. Setting every input to zero instead leaves only the third column: the layer outputs its biases, $2$, $3$, $0.5$, whatever its weights are. The script `snippets/what_can_go_wrong.py` of section 13 runs both cases.
+The second column is what the layer would output with every bias set to zero: $2.8$, $-1.79$, $1.885$. Setting every input to zero instead leaves only the third column: the layer outputs its biases, $2$, $3$, $0.5$, whatever its weights are. The script `snippets/what_can_go_wrong.py` of [section 13](#13-what-can-go-wrong) runs both cases.
 
 The code is correct but does not scale: fifty neurons would mean fifty hand-written summations.
 
 ## 8. The same operation, three implementations
 
-The neuron does not care which Python construct computes it. Three implementations (the hand-written sums of section 7, two nested loops, and one NumPy call) produce the same numbers; each replaces the previous one's repetition with a stronger abstraction. The arithmetic does not change; the representation does, and with it the length of the code and its speed, which section 9 measures.
+The neuron does not care which Python construct computes it. Three implementations (the hand-written sums of [section 7](#7-a-layer-by-hand), two nested loops, and one NumPy call) produce the same numbers; each replaces the previous one's repetition with a stronger abstraction. The arithmetic does not change; the representation does, and with it the length of the code and its speed, which [section 9](#9-why-numpy-wins) measures.
 
 Two nested loops handle any number of neurons and any number of inputs.
 
@@ -267,7 +267,7 @@ Tracing the outer loop once per neuron:
 - Iteration 2: weights $[0.5, -0.91, 0.26, -0.5]$, bias $3$. Inner sum $-1.79$, plus bias gives $1.21$.
 - Iteration 3: weights $[-0.26, -0.27, 0.17, 0.87]$, bias $0.5$. Inner sum $1.885$, plus bias gives $2.385$.
 
-Same numbers as section 7, with code that no longer cares about the network's width. The inner loop is still a Python loop, however, and that is the next bottleneck.
+Same numbers as [section 7](#7-a-layer-by-hand), with code that no longer cares about the network's width. The inner loop is still a Python loop, however, and that is the next bottleneck.
 
 ## 9. Why NumPy wins
 
@@ -317,9 +317,9 @@ print(np.dot(weights, inputs) + biases)
 
 Two lines do the work, the import and one expression, and they give the same numbers as the hand-written and looped versions. The output looks different because it is a NumPy array, which prints its elements padded to a common width and without commas.
 
-How much faster this is depends on the size of the layer. The script `snippets/loop_vs_numpy.py`, listed in section 12, times the loops of section 8 against `np.dot` on two layers filled with seeded random numbers: the layer of this post, and a layer of 128 neurons over 784 inputs, the size of the first layer in the series' MNIST project. On the machine used to check this post (Python 3.13.5, NumPy 2.3.5), ten consecutive runs showed three things.
+How much faster this is depends on the size of the layer. The script `snippets/loop_vs_numpy.py`, listed in [section 12](#12-make-it-run-ten-scripts-every-printed-number), times the loops of [section 8](#8-the-same-operation-three-implementations) against `np.dot` on two layers filled with seeded random numbers: the layer of this post, and a layer of 128 neurons over 784 inputs, the size of the first layer in the series' MNIST project. On the machine used to check this post (Python 3.13.5, NumPy 2.3.5), ten consecutive runs showed three things.
 
-- **At scale NumPy wins by two orders of magnitude.** For the $100{,}352$ multiplications of the large layer, `np.dot` on NumPy arrays was between 177 and 340 times faster than the loops; the run printed in section 12 shows 265.
+- **At scale NumPy wins by two orders of magnitude.** For the $100{,}352$ multiplications of the large layer, `np.dot` on NumPy arrays was between 177 and 340 times faster than the loops; the run printed in [section 12](#12-make-it-run-ten-scripts-every-printed-number) shows 265.
 - **On a tiny layer there is little to win.** For the 12 multiplications of this post's layer the ratio stayed between 1.0 and 1.9, and at 1.2 or below in eight of the ten runs. The fixed cost of the two NumPy calls, `np.dot` and the addition of the biases, is about the cost of the whole loop.
 - **NumPy is fast only when the numbers already sit in a NumPy array.** Handed Python lists, `np.dot` first copies every number into an array, and for the large layer that copy cost more than the loop it was meant to replace in all ten runs: 4,795.9 microseconds against 3,766.7 in the printed one. This post passes lists to `np.dot` because lists are the only container it assumes; later posts create their data as arrays.
 
@@ -341,7 +341,7 @@ $$\mathbf{Z} = \mathbf{X} \mathbf{W}^{\top} + \mathbf{b}.$$
 
 Here $\mathbf{X}$ is the batch, of shape $(N, n_\text{inputs})$ for $N$ samples, and $\mathbf{Z}$ holds one row of outputs per sample, shape $(N, n_\text{neurons})$.
 
-The transpose is needed only because this post stores one row of weights per neuron. Posts 01 to 03 keep that layout, $(n_\text{neurons}, n_\text{inputs})$. From post 04 on, the `Layer_Dense` class stores the weights already transposed, $(n_\text{inputs}, n_\text{neurons})$, so that the same forward pass reads $\mathbf{Z} = \mathbf{X} \mathbf{W} + \mathbf{b}$ with no transpose, and it stores the biases as a $(1, n_\text{neurons})$ row instead of the flat list used here. Both layouts compute the same numbers.
+The transpose is needed only because this post stores one row of weights per neuron. Posts 01 to 03 keep that layout, $(n_\text{neurons}, n_\text{inputs})$. From [post 04](../04-dense-layer-class-and-spiral-data/index.md) on, the `Layer_Dense` class stores the weights already transposed, $(n_\text{inputs}, n_\text{neurons})$, so that the same forward pass reads $\mathbf{Z} = \mathbf{X} \mathbf{W} + \mathbf{b}$ with no transpose, and it stores the biases as a $(1, n_\text{neurons})$ row instead of the flat list used here. Both layouts compute the same numbers.
 
 The shape diary below follows the same operation at three sizes. Tracking shapes is the cheapest debugging tool in deep learning: write them down before a call and print them after it.
 
@@ -373,7 +373,7 @@ parameters in the layer: 12 weights + 3 biases = 15
 
 NumPy writes the shape of a scalar as `()`. The batch of two comes out as $(2, 3)$: samples on the rows, neurons on the columns.
 
-The transpose changes how the call is written, not the arithmetic: entry $(i, j)$ of the result is still the dot product of sample $i$ with the weights of neuron $j$, plus the bias of neuron $j$. NumPy's broadcasting then adds the $(n_\text{neurons},)$ bias vector to every one of the $N$ rows of the $(N, n_\text{neurons})$ product, so each neuron's bias lands in its own column; post 05 states the rule. In the code, `weights` is a Python list, and a list has no `.T`, so it is converted with `np.array(weights)` before it is transposed.
+The transpose changes how the call is written, not the arithmetic: entry $(i, j)$ of the result is still the dot product of sample $i$ with the weights of neuron $j$, plus the bias of neuron $j$. NumPy's broadcasting then adds the $(n_\text{neurons},)$ bias vector to every one of the $N$ rows of the $(N, n_\text{neurons})$ product, so each neuron's bias lands in its own column; [post 05](../05-array-summation-keepdims-and-broadcasting/index.md) states the rule. In the code, `weights` is a Python list, and a list has no `.T`, so it is converted with `np.array(weights)` before it is transposed.
 
 ```python
 import numpy as np
@@ -399,7 +399,7 @@ print(np.dot(inputs, np.array(weights).T) + biases)
  [ 1.41   1.051  0.026]]
 ```
 
-Each row is the layer's output for one input sample; each column belongs to one neuron. The first row is the single-sample result of section 9. The figure below draws the same call as grids.
+Each row is the layer's output for one input sample; each column belongs to one neuron. The first row is the single-sample result of [section 9](#9-why-numpy-wins). The figure below draws the same call as grids.
 
 ![The equation Z equals X W transposed plus b and the call np.dot(X, W.T) + b, above four grids in a row. X, 3 by 4, one sample per row, times W transposed, 4 by 3, one neuron per column, plus b broadcast to 3 by 3, every row 2.0, 3.0, 0.5, copied from the stored b of shape (3,) above it, equals Z, 3 by 3: 4.800, 1.210, 2.385, then 8.900, minus 1.810, 0.200, then 1.410, 1.051, 0.026. Sample 2's row, neuron 2's column, its bias and Z entry (2, 2) are outlined: minus 4.81 plus 3.0 is minus 1.81.](diagrams/03-batch-in-one-call.svg)
 
@@ -415,15 +415,15 @@ A layer computes $\mathbf{z} = \mathbf{W} \mathbf{x} + \mathbf{b}$ for one sampl
 
 | What is added | When it arrives | Why |
 |---|---|---|
-| Activation functions (ReLU, Softmax) | Post 06 | Without them, stacking layers collapses to a single linear layer. |
-| Loss functions (cross-entropy) | Post 08 | A way to score the predicted outputs against the truth. |
+| Activation functions (ReLU, Softmax) | [Post 06](../06-activation-functions-relu-and-softmax/index.md) | Without them, stacking layers collapses to a single linear layer. |
+| Loss functions (cross-entropy) | [Post 08](../08-loss-categorical-cross-entropy/index.md) | A way to score the predicted outputs against the truth. |
 | Backpropagation and an optimiser | Posts 09 to 27 | A way to adjust $\mathbf{W}$ and $\mathbf{b}$ so the loss goes down. |
 
-Posts 28 to 34 then deal with training the finished stack well: testing, validation, regularisation, mini-batches, initialisation, and a second output activation for yes-or-no problems. Post 35 says what to read after the series. Once the three additions are in place, the same forward pass that produced `[4.8, 1.21, 2.385]` becomes the inner loop of a network that can classify the spiral data, recognise handwritten digits, or predict house prices.
+Posts 28 to 34 then deal with training the finished stack well: testing, validation, regularisation, mini-batches, initialisation, and a second output activation for yes-or-no problems. [Post 35](../35-whats-next/index.md) says what to read after the series. Once the three additions are in place, the same forward pass that produced `[4.8, 1.21, 2.385]` becomes the inner loop of a network that can classify the spiral data, recognise handwritten digits, or predict house prices.
 
 ## 12. Make it run: ten scripts, every printed number
 
-Every code block in this post except the Keras fragment of section 1 comes from a file under `snippets/`, and every number the post quotes is printed by one of the ten scripts there or follows from a formula stated beside it. The first four need only Python; the rest need NumPy. Each runs in about a second or less from the series root, for example `python posts/01-neurons-and-layers/snippets/layer_batch.py`.
+Every code block in this post except the Keras fragment of [section 1](#1-the-question-what-does-a-neuron-compute-and-why-build-it-from-scratch) comes from a file under `snippets/`, and every number the post quotes is printed by one of the ten scripts there or follows from a formula stated beside it. The first four need only Python; the rest need NumPy. Each runs in about a second or less from the series root, for example `python posts/01-neurons-and-layers/snippets/layer_batch.py`.
 
 | Script | Section | What it prints |
 |---|---|---|
@@ -436,9 +436,9 @@ Every code block in this post except the Keras fragment of section 1 comes from 
 | `layer_batch.py` | 10 | the $3 \times 3$ batch output |
 | `shape_diary.py` | 10 | the shape diary on real arrays and the count of 15 parameters |
 | `loop_vs_numpy.py` | 9 | the timing of the loops against `np.dot` |
-| `what_can_go_wrong.py` | 13 | every error and every wrong answer quoted in section 13 |
+| `what_can_go_wrong.py` | 13 | every error and every wrong answer quoted in [section 13](#13-what-can-go-wrong) |
 
-The first seven are listed in the sections named. `shape_diary.py` and `what_can_go_wrong.py` only wrap calls those sections already show, so their listings are left to the folder. The timing script is listed here in full, because its numbers depend on how the timing is done. It reuses the loops of section 8 as a function, draws the weights, inputs, and biases from a generator seeded with 0, and reports the best of five rounds for each variant.
+The first seven are listed in the sections named. `shape_diary.py` and `what_can_go_wrong.py` only wrap calls those sections already show, so their listings are left to the folder. The timing script is listed here in full, because its numbers depend on how the timing is done. It reuses the loops of [section 8](#8-the-same-operation-three-implementations) as a function, draws the weights, inputs, and biases from a generator seeded with 0, and reports the best of five rounds for each variant.
 
 ```python
 import timeit
@@ -491,7 +491,7 @@ compare("the layer of this post", 3, 4, calls=5000)
 compare("a layer the size of an MNIST hidden layer", 128, 784, calls=3)
 ```
 
-The first of the ten runs of section 9 printed the following. The timings change from run to run; on that machine the multiplication counts and the two differences did not.
+The first of the ten runs of [section 9](#9-why-numpy-wins) printed the following. The timings change from run to run; on that machine the multiplication counts and the two differences did not.
 
 ```text
 the layer of this post: 3 neurons, 4 inputs, 12 multiplications
@@ -508,25 +508,25 @@ a layer the size of an MNIST hidden layer: 128 neurons, 784 inputs, 100,352 mult
   largest difference between the two results: 8.5e-14
 ```
 
-The last line of each block shows that the loops and `np.dot` agree to better than $10^{-13}$, but not bit for bit. Section 13 explains why.
+The last line of each block shows that the loops and `np.dot` agree to better than $10^{-13}$, but not bit for bit. [Section 13](#13-what-can-go-wrong) explains why.
 
 ## 13. What can go wrong?
 
 The script `snippets/what_can_go_wrong.py` runs every call in this section on the arrays of this post and prints what happens. The messages and arrays below are its output under NumPy 2.3.5.
 
-**Swapping the arguments of `np.dot`.** For one neuron the order is free: two vectors of equal length give the same sum either way. With a matrix it is not. `np.dot(weights, inputs)` pairs each row of four weights with the four inputs. `np.dot(inputs, weights)` tries to pair the four inputs with the first axis of `weights`, which has length 3, and raises an error. Post 02 goes through the argument orders one by one.
+**Swapping the arguments of `np.dot`.** For one neuron the order is free: two vectors of equal length give the same sum either way. With a matrix it is not. `np.dot(weights, inputs)` pairs each row of four weights with the four inputs. `np.dot(inputs, weights)` tries to pair the four inputs with the first axis of `weights`, which has length 3, and raises an error. [Post 02](../02-numpy-and-the-dot-product/index.md) goes through the argument orders one by one.
 
 ```text
 ValueError: shapes (4,) and (3,4) not aligned: 4 (dim 0) != 3 (dim 0)
 ```
 
-**Feeding a batch without the transpose.** `np.dot(batch, weights)` with two $(3, 4)$ arrays fails for the reason given in section 10, and the message names the two sizes that had to agree: the last axis of the first array (4 inputs per sample) and the first axis of the second (3 neurons).
+**Feeding a batch without the transpose.** `np.dot(batch, weights)` with two $(3, 4)$ arrays fails for the reason given in [section 10](#10-handling-batches-and-the-shape-diary), and the message names the two sizes that had to agree: the last axis of the first array (4 inputs per sample) and the first axis of the second (3 neurons).
 
 ```text
 ValueError: shapes (3,4) and (3,4) not aligned: 4 (dim 1) != 3 (dim 0)
 ```
 
-Writing `weights.T` on the list fails differently, with `AttributeError: 'list' object has no attribute 'T'`, which is why the code of section 10 wraps the list in `np.array` first.
+Writing `weights.T` on the list fails differently, with `AttributeError: 'list' object has no attribute 'T'`, which is why the code of [section 10](#10-handling-batches-and-the-shape-diary) wraps the list in `np.array` first.
 
 **Transposing the batch instead of the weights.** `np.dot(weights, np.array(batch).T)` is a legal product, $(3, 4)$ times $(4, N)$, but its result has shape $(n_\text{neurons}, N)$: neurons on the rows and samples on the columns, the transpose of what the rest of the code expects. With a batch of two the mistake is caught when the biases are added:
 
@@ -542,29 +542,27 @@ With the batch of three used in this post nothing is caught. The product is $(3,
  [ 3.885  2.7    0.026]]
 ```
 
-in which only the diagonal agrees with the correct output of section 10. A batch size equal to the number of neurons hides this bug, which is why `shape_diary.py` also runs a batch of two. A batch of one raises no error either: the $(3, 1)$ product broadcasts against the $(3,)$ biases into a $(3, 3)$ array, nine numbers for a single sample, and only a look at the shape gives the mistake away.
+in which only the diagonal agrees with the correct output of [section 10](#10-handling-batches-and-the-shape-diary). A batch size equal to the number of neurons hides this bug, which is why `shape_diary.py` also runs a batch of two. A batch of one raises no error either: the $(3, 1)$ product broadcasts against the $(3,)$ biases into a $(3, 3)$ array, nine numbers for a single sample, and only a look at the shape gives the mistake away.
 
 **Reading index 0.** `inputs[0]` is the first input, `1.0`, when `inputs` holds one sample, and the whole first sample, `[1.0, 2.0, 3.0, 2.5]`, when it holds a batch. `np.shape(inputs)` says which case applies, $(4,)$ or $(3, 4)$, and it works on lists as well as on arrays.
 
-**Expecting exact decimals.** The table of section 4 shows $0.2 + 1.6 - 1.5 = 0.3$, but Python prints `0.30000000000000004` for that sum, because 0.2 and 1.6 have no exact binary representation; adding the bias happens to round back to `2.3`. Rounding also makes the order of additions matter. Adding the four products of neuron 2 in the order 1, 2, 3, 4 and then the bias gives `1.21`; swapping the last two products gives `1.2099999999999997`. The loops use the first order. `np.dot` runs a compiled routine that is free to choose its own, and on the checking machine it returned `1.2099999999999997` for neuron 2, a difference of $2.2 \times 10^{-16}$ from the loops. Another processor or another NumPy build may return `1.21` there, because the library chooses the routine. A printed array rounds to eight decimal places, so both display as `1.21`. Results that should be equal are therefore compared with `np.allclose`, which returns `True` here, never with `==`.
+**Expecting exact decimals.** The table of [section 4](#4-coding-a-neuron-with-three-inputs) shows $0.2 + 1.6 - 1.5 = 0.3$, but Python prints `0.30000000000000004` for that sum, because 0.2 and 1.6 have no exact binary representation; adding the bias happens to round back to `2.3`. Rounding also makes the order of additions matter. Adding the four products of neuron 2 in the order 1, 2, 3, 4 and then the bias gives `1.21`; swapping the last two products gives `1.2099999999999997`. The loops use the first order. `np.dot` runs a compiled routine that is free to choose its own, and on the checking machine it returned `1.2099999999999997` for neuron 2, a difference of $2.2 \times 10^{-16}$ from the loops. Another processor or another NumPy build may return `1.21` there, because the library chooses the routine. A printed array rounds to eight decimal places, so both display as `1.21`. Results that should be equal are therefore compared with `np.allclose`, which returns `True` here, never with `==`.
 
 ## Common pitfalls
 
 1. **Confusing the number of weights with the number of neurons.** A layer has (number of neurons) × (inputs per neuron) weights. Only the bias count equals the neuron count: three neurons over four inputs have 12 weights and 3 biases.
-2. **Transposing the wrong matrix when moving to batches.** With one row of weights per neuron, the batch call is `np.dot(inputs, weights.T)`, not `np.dot(weights, inputs.T)`. The second form does not always raise an error: section 13 shows it returning wrong numbers silently when the batch size equals the number of neurons, and for a batch of one.
+2. **Transposing the wrong matrix when moving to batches.** With one row of weights per neuron, the batch call is `np.dot(inputs, weights.T)`, not `np.dot(weights, inputs.T)`. The second form does not always raise an error: [section 13](#13-what-can-go-wrong) shows it returning wrong numbers silently when the batch size equals the number of neurons, and for a batch of one.
 3. **Adding the bias inside the dot product.** The bias is added once to each neuron's weighted sum, not to each input and not to each product.
-4. **Treating a layer as non-linear.** Without an activation function, stacking layers is equivalent to a single linear layer with composed weights. The non-linearity arrives in post 06.
+4. **Treating a layer as non-linear.** Without an activation function, stacking layers is equivalent to a single linear layer with composed weights. The non-linearity arrives in [post 06](../06-activation-functions-relu-and-softmax/index.md).
 5. **Dropping the bias to "simplify" the network.** Without a bias, every neuron's output is zero when every input is zero. The bias costs one number per neuron and almost always pays for itself.
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6, "Deep Feedforward Networks" (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 2 (2020). The inputs, weights, and biases used throughout this post are that chapter's.
-- McCulloch, W. S. and Pitts, W., *"A Logical Calculus of the Ideas Immanent in Nervous Activity"* (Bulletin of Mathematical Biophysics, 1943).
-- NumPy documentation, `numpy.dot` (latest).
-- Rosenblatt, F., *"The Perceptron: A Probabilistic Model for Information Storage and Organization in the Brain"* (Psychological Review, 1958).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6, ["Deep Feedforward Networks"](https://www.deeplearningbook.org/contents/mlp.html) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 2 (2020). The inputs, weights, and biases used throughout this post are that chapter's.
+- McCulloch, W. S. and Pitts, W., *["A Logical Calculus of the Ideas Immanent in Nervous Activity"](https://doi.org/10.1007/BF02478259)* (Bulletin of Mathematical Biophysics, 1943).
+- NumPy documentation, [`numpy.dot`](https://numpy.org/doc/stable/reference/generated/numpy.dot.html) (latest).
+- Rosenblatt, F., *["The Perceptron: A Probabilistic Model for Information Storage and Organization in the Brain"](https://doi.org/10.1037/h0042519)* (Psychological Review, 1958).
 
 ## What to read next
 
