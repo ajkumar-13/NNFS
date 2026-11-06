@@ -67,15 +67,15 @@ The biases $\mathbf{b}_1$ and $\mathbf{b}_2$ have shape $(3,)$ each, one bias pe
 
 ### 3.1. What stacking does *not* do
 
-A boundary section, because post 06 depends on it.
+A boundary section, because [post 06](../06-activation-functions-relu-and-softmax/index.md) depends on it.
 
-- **Stacking does not add expressive power on its own.** A composition of linear maps is itself a linear map: $\mathbf{X} \mapsto \mathbf{X} \mathbf{W}_1^\top \mathbf{W}_2^\top + (\text{constants})$. Strictly, a dense layer is an affine map, a linear map plus the constant shift of its bias; this series follows common usage and calls it linear. The two layers can be collapsed into a single equivalent layer of the same input and output shape; section 4 works the substitution out line by line and names that layer's weight and bias. Without a non-linearity between them, depth is decorative.
+- **Stacking does not add expressive power on its own.** A composition of linear maps is itself a linear map: $\mathbf{X} \mapsto \mathbf{X} \mathbf{W}_1^\top \mathbf{W}_2^\top + (\text{constants})$. Strictly, a dense layer is an affine map, a linear map plus the constant shift of its bias; this series follows common usage and calls it linear. The two layers can be collapsed into a single equivalent layer of the same input and output shape; [section 4](#4-the-forward-pass-chain) works the substitution out line by line and names that layer's weight and bias. Without a non-linearity between them, depth is decorative.
 - **Stacking does not create features automatically.** The intermediate array $\mathbf{Z}_1$ is sometimes called a "representation" (the re-encoding of the input that a layer hands to the next layer), but for a stack of linear layers that representation is just another linear projection of the input. Real feature learning needs the activations introduced in [post 06](../06-activation-functions-relu-and-softmax/index.md).
 - **Stacking does not change the cost of `np.dot`.** Each layer is one matrix multiplication, and the total cost is the sum over the layers: layer $\ell$ does $m_\ell \cdot m_{\ell - 1}$ multiplications per sample, so the two layers here do $3 \cdot 4 + 3 \cdot 3 = 21$. Adding a layer adds its own term to that sum. Widening is steeper: a layer that maps $m$ inputs to $m$ neurons does $m^2$ multiplications per sample, so doubling the width of every layer in a stack roughly quadruples the work.
 
-This post leaves the activation function out on purpose. The goal here is to make the forward pass mechanical and to set up the structural argument above; activations enter in post 06, where the stack stops being linear.
+This post leaves the activation function out on purpose. The goal here is to make the forward pass mechanical and to set up the structural argument above; activations enter in [post 06](../06-activation-functions-relu-and-softmax/index.md), where the stack stops being linear.
 
-The universal-approximation results of Cybenko (1989) and Hornik (1991) explain why post 06 matters: a network with a single hidden layer, a suitable non-linear activation, and enough neurons in that layer can approximate any continuous function on a closed, bounded region of its input space as closely as desired. Cybenko proved it for sigmoid-shaped activations and Hornik for a much wider class. The non-linearity is doing the heavy lifting, not the depth.
+The universal-approximation results of Cybenko (1989) and Hornik (1991) explain why [post 06](../06-activation-functions-relu-and-softmax/index.md) matters: a network with a single hidden layer, a suitable non-linear activation, and enough neurons in that layer can approximate any continuous function on a closed, bounded region of its input space as closely as desired. Cybenko proved it for sigmoid-shaped activations and Hornik for a much wider class. The non-linearity is doing the heavy lifting, not the depth.
 
 Depth still matters once activations are in place, but it is not a free win. A deeper network does not always beat a wider one: for a fixed number of parameters, depth against width is a genuine trade-off. Very deep networks gain expressive power but are harder to optimise (vanishing gradients, in particular). This series stays with shallow networks because the implementation is clearer there; the same principles scale.
 
@@ -97,7 +97,7 @@ $$\mathbf{Z}_2 = \mathbf{X} \underbrace{(\mathbf{W}_1^\top \mathbf{W}_2^\top)}_{
 
 The bias multiplies out cleanly because $\mathbf{b}_1$ is the same row for every sample: passing it through layer 2 gives every sample the same extra row $\mathbf{b}_1 \mathbf{W}_2^\top$, a constant that merges with $\mathbf{b}_2$.
 
-The right-hand side is a single dense layer. Its matrix $\mathbf{W}_\ast = \mathbf{W}_1^\top \mathbf{W}_2^\top$ has shape $(4, 3)$ and already faces the input, so it is applied without a transpose; in the one-row-per-neuron layout of this post the same layer stores $\mathbf{W}_\ast^\top = \mathbf{W}_2 \mathbf{W}_1$, of shape $(3, 4)$, three neurons with four weights each. Its bias $\mathbf{b}_\ast$ has shape $(3,)$. The two layers are mathematically one, which is the point section 3.1 made, and section 8.1 confirms it on numbers. Post 06 breaks that linearity by inserting an activation function between $\mathbf{Z}_1$ and the multiplication by $\mathbf{W}_2^\top$, so $\mathbf{Z}_1$ can no longer be substituted away.
+The right-hand side is a single dense layer. Its matrix $\mathbf{W}_\ast = \mathbf{W}_1^\top \mathbf{W}_2^\top$ has shape $(4, 3)$ and already faces the input, so it is applied without a transpose; in the one-row-per-neuron layout of this post the same layer stores $\mathbf{W}_\ast^\top = \mathbf{W}_2 \mathbf{W}_1$, of shape $(3, 4)$, three neurons with four weights each. Its bias $\mathbf{b}_\ast$ has shape $(3,)$. The two layers are mathematically one, which is the point [section 3.1](#31-what-stacking-does-not-do) made, and [section 8.1](#81-one-layer-that-does-the-work-of-two) confirms it on numbers. [Post 06](../06-activation-functions-relu-and-softmax/index.md) breaks that linearity by inserting an activation function between $\mathbf{Z}_1$ and the multiplication by $\mathbf{W}_2^\top$, so $\mathbf{Z}_1$ can no longer be substituted away.
 
 The collapse never adds anything, and it can take something away. If the hidden layer is narrower than both the input and the output, say a stack of sizes $4 \to 2 \to 3$, every sample is squeezed through two numbers on the way, so its three outputs are computed from those two numbers alone. A single layer from 4 inputs to 3 neurons has no such restriction. A linear stack is at most as powerful as one layer, never more.
 
@@ -119,7 +119,7 @@ Concrete shapes for the batch case, with $N = 3$ samples flowing through the net
 | Layer 2 | $\mathbf{Z}_1 \mathbf{W}_2^\top$ | $(3, 3) \cdot (3, 3)$ | $(3, 3)$ | inner sizes match, 3 and 3 |
 | Layer 2 | $+\ \mathbf{b}_2$ | $(3, 3) + (3,)$ | $(3, 3)$ | bias broadcast across rows |
 
-The figure fills the same arrays with the numbers of section 8. Each product is drawn with its left factor beside the result and its right factor above it, so row $i$ of the left factor and column $k$ of the right factor meet at entry $(i, k)$; $\mathbf{Z}_1$ is the result of layer 1 and, in the same place, the left factor of layer 2.
+The figure fills the same arrays with the numbers of [section 8](#8-make-it-run-two-layers-in-numpy). Each product is drawn with its left factor beside the result and its right factor above it, so row $i$ of the left factor and column $k$ of the right factor meet at entry $(i, k)$; $\mathbf{Z}_1$ is the result of layer 1 and, in the same place, the left factor of layer 2.
 
 ![Every array of the forward pass for the batch of 3 samples, each product drawn with its left factor beside the result and its right factor above it. Layer 1: the input X, shape (3, 4), one row per sample; above the result, W1 transposed, shape (4, 3), whose column k holds the weights of neuron k, and the bias b1, shape (3,), 2.0, 3.0, 0.5; the result Z1, shape (3, 3), holds 4.8, 1.21, 2.385 in its first row. Z1 is also the left factor of layer 2, under W2 transposed, shape (3, 3), and b2, minus 1.0, 2.0, minus 0.5; the result Z2, shape (3, 3), starts 0.5031, minus 1.04185, minus 2.03875. Row 1 of Z1, column 1 of W2 transposed and the first bias of b2, minus 1.0, are outlined, and arrows lead from the row and from the bias into 0.5031, which a caption line works out as 0.1 times 4.8, minus 0.14 times 1.21, plus 0.5 times 2.385, minus 1.0. A note at the top left says that row i on the left meets column k above at entry (i, k), and under it stand the two layer calls, Z1 = X W1 transposed + b1 and Z2 = Z1 W2 transposed + b2, and the same calls as the code writes them, np.dot(inputs, weights1.T) + biases1 and np.dot(layer1_outputs, weights2.T) + biases2.](diagrams/02-batch-through-two-layers.svg)
 
@@ -148,7 +148,7 @@ The same table counts the parameters. Layer $\ell$ owns $m_\ell \cdot m_{\ell - 
 
 $$\sum_{\ell = 1}^{L} m_\ell \, (m_{\ell - 1} + 1), \qquad m_0 = n,$$
 
-parameters in total. For the network of this post that is $3 \cdot (4 + 1) + 3 \cdot (3 + 1) = 15 + 12 = 27$. The single equivalent layer of section 4 has $3 \cdot (4 + 1) = 15$: without an activation, the 12 parameters of the second layer buy no function that the 15 could not already express.
+parameters in total. For the network of this post that is $3 \cdot (4 + 1) + 3 \cdot (3 + 1) = 15 + 12 = 27$. The single equivalent layer of [section 4](#4-the-forward-pass-chain) has $3 \cdot (4 + 1) = 15$: without an activation, the 12 parameters of the second layer buy no function that the 15 could not already express.
 
 ## 7. What the forward pass means
 
@@ -156,7 +156,7 @@ The word "forward" refers to the direction of data flow, not of time. The data s
 
 In a trained network, the forward pass is what produces predictions at inference time. In a training loop, the forward pass is the first half of every step; the backward pass that follows (posts 12 to 21) walks through the same layers in the opposite direction, computing the gradient of the loss with respect to every weight and bias. The two halves share their architecture exactly.
 
-Mistakes in the forward pass are of two kinds. Some stop the program: a weight matrix of the wrong size makes `np.dot` raise a `ValueError`, and a shape diary catches these before the code runs. Others run and return wrong numbers of the right shape: a transpose dropped on a square weight matrix, or a bias with the wrong orientation, raises nothing and returns an array of the expected shape, so no later line complains either. Section 9 runs both kinds. A shape check cannot expose the second kind. Checking one output entry by hand does, as section 8 does, and so does testing with a batch size of at least two that differs from every layer width, on layers that are not square, so that a wrong orientation cannot line up by accident. [Post 04](../04-dense-layer-class-and-spiral-data/index.md) reduces the room for such slips by wrapping each call in a `Layer_Dense` class that keeps a layer's weights, biases, and output together in one object.
+Mistakes in the forward pass are of two kinds. Some stop the program: a weight matrix of the wrong size makes `np.dot` raise a `ValueError`, and a shape diary catches these before the code runs. Others run and return wrong numbers of the right shape: a transpose dropped on a square weight matrix, or a bias with the wrong orientation, raises nothing and returns an array of the expected shape, so no later line complains either. [Section 9](#9-what-can-go-wrong) runs both kinds. A shape check cannot expose the second kind. Checking one output entry by hand does, as [section 8](#8-make-it-run-two-layers-in-numpy) does, and so does testing with a batch size of at least two that differs from every layer width, on layers that are not square, so that a wrong orientation cannot line up by accident. [Post 04](../04-dense-layer-class-and-spiral-data/index.md) reduces the room for such slips by wrapping each call in a `Layer_Dense` class that keeps a layer's weights, biases, and output together in one object.
 
 ## 8. Make it run: two layers in NumPy
 
@@ -210,11 +210,11 @@ Layer 2 outputs: (3, 3)
  [-0.99314  1.41254 -0.35655]]
 ```
 
-The layer-1 block is the output that posts 01 and 02 computed for the same batch and the same layer. In both blocks each row belongs to one sample and each column to one neuron of the layer that produced it. One entry by hand: the first neuron of layer 2 has weights $[0.1, -0.14, 0.5]$ and bias $-1.0$, and the first sample arrives from layer 1 as $[4.8, 1.21, 2.385]$, so its output is $0.1 \cdot 4.8 - 0.14 \cdot 1.21 + 0.5 \cdot 2.385 - 1.0 = 0.5031$, the top-left entry of the layer-2 block. The figure in section 5 lays out both blocks beside the arrays that produce them and outlines the row and the column that meet in this entry.
+The layer-1 block is the output that posts [01](../01-neurons-and-layers/index.md) and [02](../02-numpy-and-the-dot-product/index.md) computed for the same batch and the same layer. In both blocks each row belongs to one sample and each column to one neuron of the layer that produced it. One entry by hand: the first neuron of layer 2 has weights $[0.1, -0.14, 0.5]$ and bias $-1.0$, and the first sample arrives from layer 1 as $[4.8, 1.21, 2.385]$, so its output is $0.1 \cdot 4.8 - 0.14 \cdot 1.21 + 0.5 \cdot 2.385 - 1.0 = 0.5031$, the top-left entry of the layer-2 block. The figure in [section 5](#5-tracing-the-shapes) lays out both blocks beside the arrays that produce them and outlines the row and the column that meet in this entry.
 
 ### 8.1. One layer that does the work of two
 
-`snippets/linear_collapse.py` starts from the same five arrays and builds the single equivalent layer of section 4:
+`snippets/linear_collapse.py` starts from the same five arrays and builds the single equivalent layer of [section 4](#4-the-forward-pass-chain):
 
 ```python
 # The single equivalent layer of section 4.
@@ -247,7 +247,7 @@ The figure sets the two forms side by side, with every weight matrix stored one 
 
 *Without an activation between the layers, the 12 parameters of layer 2 buy no function that the 15 parameters of one layer cannot already compute.*
 
-One matrix and one bias vector reproduce the layer-2 numbers of the two-layer network. The largest difference, $8.9 \times 10^{-16}$ in this run, is floating-point rounding: the two routes group the same arithmetic differently, so they agree to about fifteen decimal places and not bit for bit, and the exact size of that residue can vary from one machine to another. The collapse is the property section 3.1 warned about. Until the activation function arrives in post 06, $\mathbf{Z}_2$ is just a linear function of $\mathbf{X}$ wearing a slightly more complicated outfit.
+One matrix and one bias vector reproduce the layer-2 numbers of the two-layer network. The largest difference, $8.9 \times 10^{-16}$ in this run, is floating-point rounding: the two routes group the same arithmetic differently, so they agree to about fifteen decimal places and not bit for bit, and the exact size of that residue can vary from one machine to another. The collapse is the property [section 3.1](#31-what-stacking-does-not-do) warned about. Until the activation function arrives in [post 06](../06-activation-functions-relu-and-softmax/index.md), $\mathbf{Z}_2$ is just a linear function of $\mathbf{X}$ wearing a slightly more complicated outfit.
 
 The script ends with an experiment that shows a layer doing nothing new without any algebra. It replaces $\mathbf{W}_2$ by the $3 \times 3$ identity matrix, which has ones on its diagonal and zeros elsewhere:
 
@@ -287,7 +287,7 @@ z4 = np.dot(z3, w4.T) + b4
 z5 = np.dot(z4, w5.T) + b5    # final output
 ```
 
-Each of the five lines is structurally identical. The only constraint is that every weight matrix has as many columns as the previous layer has neurons, which is the rule of section 6 and is what the list comprehension builds. The script prints every shape:
+Each of the five lines is structurally identical. The only constraint is that every weight matrix has as many columns as the previous layer has neurons, which is the rule of [section 6](#6-the-weight-matrix-shape-rule-restated) and is what the list comprehension builds. The script prints every shape:
 
 ```text
 X (3, 4)
@@ -311,11 +311,11 @@ for w, b in zip(weights, biases):
     z = np.dot(z, w.T) + b
 ```
 
-The last four lines of the output repeat the argument of section 4 at depth five. With no activation anywhere, the 109 parameters of the five layers compute what one layer from 4 inputs to 2 neurons computes, and that layer has $2 \cdot (4 + 1) = 10$ parameters.
+The last four lines of the output repeat the argument of [section 4](#4-the-forward-pass-chain) at depth five. With no activation anywhere, the 109 parameters of the five layers compute what one layer from 4 inputs to 2 neurons computes, and that layer has $2 \cdot (4 + 1) = 10$ parameters.
 
 ## 9. What can go wrong?
 
-`snippets/shape_bugs.py` runs five checks on the forward pass of section 8: four mistakes, made one at a time, and one repeat of the correct pass. It prints what NumPy does with each. The arrays `inputs`, `weights1`, `biases1`, `weights2`, and `biases2` are those of section 8.
+`snippets/shape_bugs.py` runs five checks on the forward pass of [section 8](#8-make-it-run-two-layers-in-numpy): four mistakes, made one at a time, and one repeat of the correct pass. It prints what NumPy does with each. The arrays `inputs`, `weights1`, `biases1`, `weights2`, and `biases2` are those of [section 8](#8-make-it-run-two-layers-in-numpy).
 
 ```python
 # 1. Layer 2 sized for the 4 original features instead of the 3 outputs of layer 1.
@@ -381,25 +381,23 @@ correct layer-2 output, sample 1: [ 0.5031  -1.04185 -2.03875]
 
 ## Common pitfalls
 
-1. **Forgetting that a stack of linear layers is itself linear.** Until post 06 puts an activation between the layers, the network is one matrix and one bias vector in disguise. Activation-free layers add parameters, not capability.
+1. **Forgetting that a stack of linear layers is itself linear.** Until [post 06](../06-activation-functions-relu-and-softmax/index.md) puts an activation between the layers, the network is one matrix and one bias vector in disguise. Activation-free layers add parameters, not capability.
 2. **Sizing $\mathbf{W}_2$ from the original input instead of from layer 1's output.** $\mathbf{W}_2$ consumes the layer-1 output (length $m_1$), not the original input (length $n$).
 3. **Forgetting the transpose on a later layer, or swapping the two sizes of a weight matrix.** Every `np.dot(Z, W.T)` needs its `.T`, not just the first one. A matrix of shape $(m_{\ell-1}, m_\ell)$ in place of $(m_\ell, m_{\ell-1})$ raises an error when the two sizes differ and runs silently, with the roles of neurons and inputs exchanged, when they are equal.
 4. **Storing biases as a column instead of a 1-D array.** A bias of shape $(m,)$ lines up with the $m$ columns of the output. A bias of shape $(m, 1)$ lines up with the rows: an error for most batch sizes, and a silent wrong answer when $N = m$ or $N = 1$.
-5. **Keeping only the final output.** The backward pass (posts 12 to 21) needs what each layer received: the weight gradient of a layer is computed from that layer's input. From post 16 on, `Layer_Dense.forward` stores it as `self.inputs`; a forward pass that throws its intermediates away has to be run again before any gradient can be computed.
+5. **Keeping only the final output.** The backward pass (posts 12 to 21) needs what each layer received: the weight gradient of a layer is computed from that layer's input. From [post 16](../16-coding-backpropagation/index.md) on, `Layer_Dense.forward` stores it as `self.inputs`; a forward pass that throws its intermediates away has to be run again before any gradient can be computed.
 
 ## Further reading
 
-- Cybenko, G., *"Approximation by Superpositions of a Sigmoidal Function"* (Mathematics of Control, Signals and Systems, 1989).
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6, "Deep Feedforward Networks" (MIT Press, 2016).
-- Hornik, K., *"Approximation Capabilities of Multilayer Feedforward Networks"* (Neural Networks, 1991).
-- Ivakhnenko, A. G. and Lapa, V. G., *"Cybernetic Predicting Devices"* (CCM Information Corporation, 1965).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 3 (2020).
-- Nielsen, M., *Neural Networks and Deep Learning*, chapter 1 (online, 2015).
-- Rumelhart, D., Hinton, G., and Williams, R., *"Learning Representations by Back-Propagating Errors"* (Nature, 1986).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Cybenko, G., *["Approximation by Superpositions of a Sigmoidal Function"](https://doi.org/10.1007/BF02551274)* (Mathematics of Control, Signals and Systems, 1989).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/mlp.html)*, chapter 6, "Deep Feedforward Networks" (MIT Press, 2016).
+- Hornik, K., *["Approximation Capabilities of Multilayer Feedforward Networks"](https://doi.org/10.1016/0893-6080%2891%2990009-T)* (Neural Networks, 1991).
+- Ivakhnenko, A. G. and Lapa, V. G., *["Cybernetic Predicting Devices"](https://gwern.net/doc/ai/1966-ivakhnenko.pdf)* (CCM Information Corporation, 1965).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 3 (2020).
+- Nielsen, M., *[Neural Networks and Deep Learning](https://neuralnetworksanddeeplearning.com/chap1.html)*, chapter 1 (online, 2015).
+- Rumelhart, D., Hinton, G., and Williams, R., *["Learning Representations by Back-Propagating Errors"](https://doi.org/10.1038/323533a0)* (Nature, 1986).
 
 ## What to read next
 
-- **[Post 04 - The Dense layer class and spiral data](../04-dense-layer-class-and-spiral-data/index.md):** wraps the per-layer call of this post in a `Layer_Dense` class and introduces the spiral dataset that the series trains on from there to post 31.
+- **[Post 04 - The Dense layer class and spiral data](../04-dense-layer-class-and-spiral-data/index.md):** wraps the per-layer call of this post in a `Layer_Dense` class and introduces the spiral dataset that the series trains on from there to [post 31](../31-dropout/index.md).
 - **[Post 06 - Activation functions: ReLU and Softmax](../06-activation-functions-relu-and-softmax/index.md):** adds the non-linearity between layers that stops the stack collapsing into one layer, which is what makes depth matter.
