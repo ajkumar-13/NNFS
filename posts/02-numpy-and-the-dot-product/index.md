@@ -20,11 +20,11 @@
 
 ## 1. The question: what does one `np.dot` call compute?
 
-Post 01 implemented a layer three ways, each more compact than the last. The final NumPy version came down to one expression, `np.dot(weights, inputs) + biases`. The same function appeared there with two flat lists, with a list of lists and a flat list, and with two 2-D arguments, and it returned a number, a vector, and a matrix in turn. That leaves the question this post answers: which computation does `np.dot` run for a given pair of shapes, and which neural-network object does each one stand for?
+[Post 01](../01-neurons-and-layers/index.md) implemented a layer three ways, each more compact than the last. The final NumPy version came down to one expression, `np.dot(weights, inputs) + biases`. The same function appeared there with two flat lists, with a list of lists and a flat list, and with two 2-D arguments, and it returned a number, a vector, and a matrix in turn. That leaves the question this post answers: which computation does `np.dot` run for a given pair of shapes, and which neural-network object does each one stand for?
 
-The question matters because the call is everywhere. Every modern deep-learning framework reduces the forward pass through a dense layer to the same product in different syntax: PyTorch's `nn.Linear` computes `x @ W.T + b`, and Keras's `Dense` computes `dot(x, W) + b` with its weights stored the other way round (section 7). On a CPU each of these ends in a matrix-multiply routine of the kind standardised by the **BLAS** (Basic Linear Algebra Subprograms), an interface first specified for Fortran in 1979 (Lawson et al., 1979). That first specification covered operations on vectors, the dot product among them; routines for a matrix times a vector and for a matrix times a matrix joined the same interface in 1988 and 1990. NumPy's standard builds pass floating-point `np.dot` calls to an optimised BLAS library, and GPU libraries implement the same interface. The arithmetic has not changed since; only its packaging has.
+The question matters because the call is everywhere. Every modern deep-learning framework reduces the forward pass through a dense layer to the same product in different syntax: PyTorch's `nn.Linear` computes `x @ W.T + b`, and Keras's `Dense` computes `dot(x, W) + b` with its weights stored the other way round ([section 7](#7-the-transpose-and-when-to-reach-for-it)). On a CPU each of these ends in a matrix-multiply routine of the kind standardised by the **BLAS** (Basic Linear Algebra Subprograms), an interface first specified for Fortran in 1979 (Lawson et al., 1979). That first specification covered operations on vectors, the dot product among them; routines for a matrix times a vector and for a matrix times a matrix joined the same interface in 1988 and 1990. NumPy's standard builds pass floating-point `np.dot` calls to an optimised BLAS library, and GPU libraries implement the same interface. The arithmetic has not changed since; only its packaging has.
 
-The implication for this series is direct. Every dense layer in every post, forward and backward, goes through `np.dot`. Getting comfortable with its three forms is the highest-leverage thing this post can teach. Section 10 measures what the call buys over the loops of post 01: on a realistic batch, on the machine that ran it, the loops took about a thousand times as long.
+The implication for this series is direct. Every dense layer in every post, forward and backward, goes through `np.dot`. Getting comfortable with its three forms is the highest-leverage thing this post can teach. [Section 10](#10-make-it-run-every-block-and-the-speed-gap-measured) measures what the call buys over the loops of [post 01](../01-neurons-and-layers/index.md): on a realistic batch, on the machine that ran it, the loops took about a thousand times as long.
 
 ## 2. The dot product, formally
 
@@ -53,7 +53,7 @@ On the 1-D and 2-D arrays this series uses, NumPy gives one function name three 
 
 The three forms share a single rule: **the last axis of the first argument is contracted with the first axis of the second argument**, where contracted means multiplied pairwise and summed. Those two axes must have the same length. They disappear from the result, and the axes that are left form the output shape. A 1-D array has only one axis, which serves as both its first and its last.
 
-The third row is written neurons-first, as the figure at the top draws it: the weights come first and the $p$ samples are the columns of the second matrix. Section 8 turns it round into the samples-first layout the series uses, in which every sample is a row.
+The third row is written neurons-first, as the figure at the top draws it: the weights come first and the $p$ samples are the columns of the second matrix. [Section 8](#8-batching-end-to-end) turns it round into the samples-first layout the series uses, in which every sample is a row.
 
 One function carries three behaviours for historical reasons. `np.dot` predates the `@` operator, which arrived with Python 3.5 in 2015, and the NumPy documentation now recommends `@` or `np.matmul` when both arguments are 2-D. This series uses `np.dot` because the book it follows (Kinsley and Kukieła, 2020) does; for the arrays of this series the choice is cosmetic.
 
@@ -63,7 +63,7 @@ A short boundary section, because NumPy has several operations that look similar
 
 - **`np.dot` is not element-wise multiplication.** The product `A * B` requires the two arrays to have identical or broadcast-compatible shapes, multiplies them position by position, and returns an array of the shape they share. Nothing is summed. It is a different operation entirely.
 - **`np.dot` is not always interchangeable with `@` (the `__matmul__` operator) or `np.matmul`.** They agree for 1-D and 2-D arrays and diverge in two places. For arrays of three or more dimensions `@` treats each argument as a stack of matrices and broadcasts over the leading axes, while `np.dot` contracts the last axis of the first argument with the second-to-last axis of the second: shapes $(2, 3, 4)$ and $(2, 4, 5)$ give $(2, 3, 5)$ under `@` and $(2, 3, 2, 5)$ under `np.dot`. And `np.dot` accepts a scalar argument, which `np.matmul` rejects. The dense layers of this series only ever pass 1-D and 2-D arrays, so the two are interchangeable here.
-- **`np.dot` is not a geometric dot product when given matrices.** With 2-D arguments it is matrix multiplication, and the angle reading of section 2 does not apply.
+- **`np.dot` is not a geometric dot product when given matrices.** With 2-D arguments it is matrix multiplication, and the angle reading of [section 2](#2-the-dot-product-formally) does not apply.
 
 ## 4. Vector by vector: order does not matter
 
@@ -166,7 +166,7 @@ ValueError: shapes (3,) and (2,3) not aligned: 3 (dim 0) != 2 (dim 0)
 
 The message names the two shapes and then the two sizes that failed to meet: the vector's only axis, of size 3, and the first axis of the matrix, of size 2.
 
-This is the layer call of post 01. With `W` of shape $(m, n)$, one row per neuron, and one sample `x` of shape $(n,)$, `np.dot(W, x)` returns the $m$ weighted sums. The other order, `np.dot(x, W)`, raises unless $m = n$, and when $m = n$ it runs and returns different numbers (section 11).
+This is the layer call of [post 01](../01-neurons-and-layers/index.md). With `W` of shape $(m, n)$, one row per neuron, and one sample `x` of shape $(n,)$, `np.dot(W, x)` returns the $m$ weighted sums. The other order, `np.dot(x, W)`, raises unless $m = n$, and when $m = n$ it runs and returns different numbers ([section 11](#11-what-can-go-wrong)).
 
 ## 6. Matrix by matrix: the shape rule, once and for all
 
@@ -211,7 +211,7 @@ print(np.dot(B, A).shape)           # (4, 3) with (3, 4): inner 3s meet, result 
 
 The top-left entry is row 1 of `A` with column 1 of `B`: $1 \cdot 1 + 2 \cdot 4 + 3 \cdot 7 + 4 \cdot 10 = 70$. Swapping the arguments is legal here, because the inner sizes of $(4, 3)$ and $(3, 4)$ are both 3, but it is a different product with a different shape, $(4, 4)$. For two matrices the order changes the answer even when both orders run.
 
-The same rule explains the matrix by vector case of section 5. A 1-D vector of length $n$ acts as a $(1, n)$ row when it is the first argument and as an $(n, 1)$ column when it is the second. The contracted axis is always the inner one.
+The same rule explains the matrix by vector case of [section 5](#5-matrix-by-vector-order-matters). A 1-D vector of length $n$ acts as a $(1, n)$ row when it is the first argument and as an $(n, 1)$ column when it is the second. The contracted axis is always the inner one.
 
 ## 7. The transpose, and when to reach for it
 
@@ -274,22 +274,22 @@ AttributeError: 'list' object has no attribute 'T'
 [3 6]
 ```
 
-Adding two lists concatenates them and multiplying a list by 3 repeats it; the same operators on arrays work element by element. `np.dot` converts list arguments itself, which is why the list-based code of post 01 ran, but any other arithmetic on them needs arrays.
+Adding two lists concatenates them and multiplying a list by 3 repeats it; the same operators on arrays work element by element. `np.dot` converts list arguments itself, which is why the list-based code of [post 01](../01-neurons-and-layers/index.md) ran, but any other arithmetic on them needs arrays.
 
 The transpose enters neural-network code for one reason. Posts 01 to 03 store the **weights with one row per neuron**: $\mathbf{W}$ has shape $(m, n)$, where $m$ is the number of neurons in the layer and $n$ is the number of inputs each neuron consumes. The convention for inputs is **one row per sample**: $\mathbf{X}$ has shape $(N, n)$, where $N$ is the batch size and $n$ is the feature count. The two letters are easy to conflate in running prose, so to be explicit: capital $N$ counts samples, lowercase $n$ counts features. The [notation guide](../../notation_guide.md) writes $n_\text{neurons}$ for $m$ and $n_\text{inputs}$ for $n$.
 
-One row per neuron is one of two conventions in use, and the frameworks do not agree on it. PyTorch's `nn.Linear` stores its weight with shape `(out_features, in_features)`, one row per neuron, and transposes in the call. Keras's `Dense` stores its kernel with shape `(input_dim, units)`, one column per neuron, and does not. The two layouts differ by a transpose and nothing else; they are matters of agreement, not necessity. Post 04 switches the layer class of this series to one column per neuron, and the `.T` leaves the forward call.
+One row per neuron is one of two conventions in use, and the frameworks do not agree on it. PyTorch's `nn.Linear` stores its weight with shape `(out_features, in_features)`, one row per neuron, and transposes in the call. Keras's `Dense` stores its kernel with shape `(input_dim, units)`, one column per neuron, and does not. The two layouts differ by a transpose and nothing else; they are matters of agreement, not necessity. [Post 04](../04-dense-layer-class-and-spiral-data/index.md) switches the layer class of this series to one column per neuron, and the `.T` leaves the forward call.
 
 Two layouts now exist, and they must be reconciled:
 
 - **One sample at a time.** $\mathbf{x}$ is a 1-D vector of shape $(n,)$. The call `np.dot(W, x)` is $(m, n) \cdot (n,) \to (m,)$, which lines up; no transpose is needed.
 - **A batch of $N$ samples.** $\mathbf{X}$ is a 2-D matrix of shape $(N, n)$. The call `np.dot(X, W)` is $(N, n) \cdot (m, n)$, whose inner sizes are $n$ and $m$. Unless the layer happens to have as many neurons as inputs, they do not match. The fix is to transpose `W` to $(n, m)$: `np.dot(X, W.T)` is $(N, n) \cdot (n, m) \to (N, m)$.
 
-In both cases the answer comes out the same way: every output is the dot product of one sample with one neuron's row of weights. The transpose is bookkeeping, not arithmetic. It returns in post 14, where the same shape rule decides which matrix is transposed in the weight gradient.
+In both cases the answer comes out the same way: every output is the dot product of one sample with one neuron's row of weights. The transpose is bookkeeping, not arithmetic. It returns in [post 14](../14-matrices-in-backpropagation/index.md), where the same shape rule decides which matrix is transposed in the weight gradient.
 
 ## 8. Batching, end to end
 
-The matrix by matrix form of section 3 was framed neurons-first, as $(m, n) \cdot (n, p)$. A batch turns that round to samples-first, which is why the transpose appears: the inputs lead with the sample count, so the weights are transposed to bring the shared feature axis inward. A batch of three samples through a layer of three neurons, drawn in the figure and computed in the code below it:
+The matrix by matrix form of [section 3](#3-the-three-forms-of-npdot) was framed neurons-first, as $(m, n) \cdot (n, p)$. A batch turns that round to samples-first, which is why the transpose appears: the inputs lead with the sample count, so the weights are transposed to bring the shared feature axis inward. A batch of three samples through a layer of three neurons, drawn in the figure and computed in the code below it:
 
 ![Section 8's batch, samples-first, laid out as one line read left to right: the inputs, shape (3, 4), one row per sample, times weights.T, shape (4, 3), one column per neuron, plus the bias row 2.0, 3.0, 0.5, added to every row, equals the outputs, shape (3, 3): 4.800, 1.210, 2.385; 8.900, minus 1.810, 0.200; 1.410, 1.051, 0.026. Above, the stored weights, shape (3, 4), one row per neuron, lead through an arrow labelled transpose down to weights.T. The row of sample 1 and the column of neuron 1 are outlined, and their output 4.800 is bold, worked out as 1.0 times 0.20 plus 2.0 times 0.80 plus 3.0 times minus 0.50 plus 2.5 times 1.00 plus the bias 2.0. A note beside the stored weights says that without the transpose the 4 meets a 3 and NumPy raises ValueError.](diagrams/04-batch-transpose.svg)
 
@@ -320,7 +320,7 @@ print(outputs)
  [ 1.41   1.051  0.026]]
 ```
 
-Each row of the output is one sample's result across every neuron. Each column belongs to one neuron's results across every sample. The bias vector of shape $(3,)$ is added to all three rows, so each neuron's bias lands in its own column; that is broadcasting, covered in detail in post 05. Three more lines of the same script check the bookkeeping:
+Each row of the output is one sample's result across every neuron. Each column belongs to one neuron's results across every sample. The bias vector of shape $(3,)$ is added to all three rows, so each neuron's bias lands in its own column; that is broadcasting, covered in detail in [post 05](../05-array-summation-keepdims-and-broadcasting/index.md). Three more lines of the same script check the bookkeeping:
 
 ```python
 print(inputs.shape, weights.T.shape, outputs.shape)
@@ -336,13 +336,13 @@ print(np.allclose(np.dot(weights, inputs.T).T, np.dot(inputs, weights.T)))
 True
 ```
 
-The shapes follow the rule: $(3, 4) \cdot (4, 3) \to (3, 3)$. Sample 1 on its own, through the matrix by vector form with no transpose, gives the first row of the batch result, the `[4.8, 1.21, 2.385]` that post 01 computed by hand. The last line confirms that the two framings are one computation: the neurons-first product `np.dot(weights, inputs.T)` has one column per sample, and its transpose is the samples-first result, $(\mathbf{W}\mathbf{X}^{\top})^{\top} = \mathbf{X}\mathbf{W}^{\top}$.
+The shapes follow the rule: $(3, 4) \cdot (4, 3) \to (3, 3)$. Sample 1 on its own, through the matrix by vector form with no transpose, gives the first row of the batch result, the `[4.8, 1.21, 2.385]` that [post 01](../01-neurons-and-layers/index.md) computed by hand. The last line confirms that the two framings are one computation: the neurons-first product `np.dot(weights, inputs.T)` has one column per sample, and its transpose is the samples-first result, $(\mathbf{W}\mathbf{X}^{\top})^{\top} = \mathbf{X}\mathbf{W}^{\top}$.
 
 The two equivalent ways to phrase the layer call:
 
 $$\text{single sample:} \quad \mathbf{W}\mathbf{x} + \mathbf{b} \qquad \text{batch:} \quad \mathbf{X}\mathbf{W}^{\top} + \mathbf{b}$$
 
-The layer code of this series takes a batch from here on, because every real training step is a batch step. Post 03 chains two calls of the batch form; from post 04 the `Layer_Dense` class stores its weights already transposed, and the same product is written `np.dot(inputs, self.weights)`.
+The layer code of this series takes a batch from here on, because every real training step is a batch step. [Post 03](../03-stacking-layers-and-the-forward-pass/index.md) chains two calls of the batch form; from [post 04](../04-dense-layer-class-and-spiral-data/index.md) the `Layer_Dense` class stores its weights already transposed, and the same product is written `np.dot(inputs, self.weights)`.
 
 ## 9. The shape diary for `np.dot`
 
@@ -357,9 +357,9 @@ The fastest debugging move when a shape error is raised is to print the `.shape`
 
 ## 10. Make it run: every block, and the speed gap measured
 
-Every code block in this post is a file under `snippets/`, or a contiguous part of one, and runs from the series root, for example `python posts/02-numpy-and-the-dot-product/snippets/batch_layer.py`. The files are `vector_dot.py` (section 4), `order_matters.py` (section 5), `shape_rule.py` (section 6), `transpose.py` (section 7), `batch_layer.py` (section 8), and `silent_failures.py` (section 11). They need only NumPy, and each prints the output shown under its block.
+Every code block in this post is a file under `snippets/`, or a contiguous part of one, and runs from the series root, for example `python posts/02-numpy-and-the-dot-product/snippets/batch_layer.py`. The files are `vector_dot.py` ([section 4](#4-vector-by-vector-order-does-not-matter)), `order_matters.py` ([section 5](#5-matrix-by-vector-order-matters)), `shape_rule.py` ([section 6](#6-matrix-by-matrix-the-shape-rule-once-and-for-all)), `transpose.py` ([section 7](#7-the-transpose-and-when-to-reach-for-it)), `batch_layer.py` ([section 8](#8-batching-end-to-end)), and `silent_failures.py` ([section 11](#11-what-can-go-wrong)). They need only NumPy, and each prints the output shown under its block.
 
-Post 01 timed its loops against `np.dot` for one sample through one layer. The batch form of this post does more work in a single call, and `snippets/loop_vs_dot.py` measures what that is worth: it computes the same batched layer with nested loops and with `np.dot`, checks that the two results agree, and reports how many times longer the loops take, for the toy layer of this post and for a batch of 1,000 samples with 100 features through 64 neurons.
+[Post 01](../01-neurons-and-layers/index.md) timed its loops against `np.dot` for one sample through one layer. The batch form of this post does more work in a single call, and `snippets/loop_vs_dot.py` measures what that is worth: it computes the same batched layer with nested loops and with `np.dot`, checks that the two results agree, and reports how many times longer the loops take, for the toy layer of this post and for a batch of 1,000 samples with 100 features through 64 neurons.
 
 ```python
 """Time one batched layer call two ways: nested Python loops and np.dot.
@@ -432,7 +432,7 @@ compare(1000, 100, 64, loop_repeats=3, dot_repeats=20)      # a realistic batch
   the loops take 1,059 times as long
 ```
 
-The large case is one call of the batch form: $1{,}000 \cdot 64 = 64{,}000$ dot products of 100 terms each. In this run the loops needed about 260 ms and `np.dot` about a quarter of a millisecond. Twenty-six runs of the script on a 6-core, 12-thread Intel laptop CPU gave ratios between about 900 and 1,600, so three orders of magnitude is the honest summary and the exact figure is not worth remembering. The loops execute several interpreter instructions and create a new Python number object for every product, while `np.dot` makes one call into compiled code that walks the arrays' memory directly, the BLAS routine of section 1.
+The large case is one call of the batch form: $1{,}000 \cdot 64 = 64{,}000$ dot products of 100 terms each. In this run the loops needed about 260 ms and `np.dot` about a quarter of a millisecond. Twenty-six runs of the script on a 6-core, 12-thread Intel laptop CPU gave ratios between about 900 and 1,600, so three orders of magnitude is the honest summary and the exact figure is not worth remembering. The loops execute several interpreter instructions and create a new Python number object for every product, while `np.dot` makes one call into compiled code that walks the arrays' memory directly, the BLAS routine of [section 1](#1-the-question-what-does-one-npdot-call-compute).
 
 The toy layer tells the other half. With 36 multiply-adds the loops took only about 4 times as long in nearly all of the same runs, because at that size the fixed cost of entering a NumPy call is most of the time. Vectorisation pays in proportion to the size of the arrays, and neural-network arrays are large.
 
@@ -497,10 +497,10 @@ np.matmul(2, square): ValueError
 ```
 
 - **A missing transpose that raises.** `np.dot(inputs, weights)` stops with the first line above: the two shapes, then the two sizes that failed to meet, axis 1 of the first argument (the 4 features) and axis 0 of the second (the 3 neurons). This is the failure to hope for, because it stops at the faulty line.
-- **A missing transpose that runs.** When a layer has as many neurons as inputs, $\mathbf{W}$ is square, and both `np.dot(X, W)` and `np.dot(X, W.T)` satisfy the shape rule. For the sample $(1, 0, 0)$ the correct call returns `[[1. 4. 7.]]`, the first weight of each neuron; without the transpose the call returns `[[1. 2. 3.]]`, the three weights of neuron 1, and nothing is raised. The square `B` of section 5 ran in both orders for the same reason: both of its axes match the vector's length, so either alignment is legal. The defence is a test with a layer whose sizes are all different.
+- **A missing transpose that runs.** When a layer has as many neurons as inputs, $\mathbf{W}$ is square, and both `np.dot(X, W)` and `np.dot(X, W.T)` satisfy the shape rule. For the sample $(1, 0, 0)$ the correct call returns `[[1. 4. 7.]]`, the first weight of each neuron; without the transpose the call returns `[[1. 2. 3.]]`, the three weights of neuron 1, and nothing is raised. The square `B` of [section 5](#5-matrix-by-vector-order-matters) ran in both orders for the same reason: both of its axes match the vector's length, so either alignment is legal. The defence is a test with a layer whose sizes are all different.
 - **`*` where `np.dot` was meant.** The star operator multiplies position by position and sums nothing. It runs here because both shapes are $(3, 4)$, and returns a $(3, 4)$ array that is not a layer output; with five samples it raises. It is silent exactly when the two shapes happen to be equal or to broadcast.
 - **`np.dot` where `@` was meant.** Above two dimensions the two return different shapes, $(2, 3, 2, 5)$ against $(2, 3, 5)$ here, and only `np.dot` accepts a scalar. Code that will ever hold a stack of matrices should use `@`.
-- **A 1-D result is neither a row nor a column.** `np.dot(W, x)` returns shape $(m,)$, not $(m, 1)$ or $(1, m)$, and transposing it changes nothing (section 7). An $(n,)$ array standing where a column was intended is the silent bug that post 05 takes apart.
+- **A 1-D result is neither a row nor a column.** `np.dot(W, x)` returns shape $(m,)$, not $(m, 1)$ or $(1, m)$, and transposing it changes nothing ([section 7](#7-the-transpose-and-when-to-reach-for-it)). An $(n,)$ array standing where a column was intended is the silent bug that [post 05](../05-array-summation-keepdims-and-broadcasting/index.md) takes apart.
 
 ## Common pitfalls
 
@@ -508,19 +508,17 @@ np.matmul(2, square): ValueError
 2. **Trusting a call because it ran.** A square weight matrix lets a missing transpose through without an error, and two equal shapes let `*` through. Check one output against a dot product worked by hand, and test with sizes that are all different.
 3. **Using `*` instead of `np.dot`.** `*` is element-wise multiplication, not matrix multiplication. It requires shapes to match or be broadcast-compatible and returns an array of that shape, not a contracted one.
 4. **Forgetting `np.array()` before `.T` or before arithmetic.** Python lists have no `.T` attribute, and their `+` and `*` concatenate and repeat. `np.array(weights).T` is the cheapest fix; converting the weights once at the top of the function is cleaner.
-5. **Confusing row-per-neuron with column-per-neuron.** Posts 01 to 03 store one row per neuron and transpose in the batch call; from post 04 the `Layer_Dense` class stores one column per neuron and does not. Mixing the two inside one project gives a shape error or, for a square layer, wrong numbers and no error.
+5. **Confusing row-per-neuron with column-per-neuron.** Posts 01 to 03 store one row per neuron and transpose in the batch call; from [post 04](../04-dense-layer-class-and-spiral-data/index.md) the `Layer_Dense` class stores one column per neuron and does not. Mixing the two inside one project gives a shape error or, for a square layer, wrong numbers and no error.
 6. **Trusting a 3-D `np.dot` call to do what `@` would do.** They disagree for arrays of three or more dimensions. Stick with `@` or `np.matmul` if the number of dimensions ever climbs above two.
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 2, "Linear Algebra" (MIT Press, 2016).
-- Harris, C. R., et al., *"Array Programming with NumPy"* (Nature, 2020).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 2 (2020).
-- Lawson, C., Hanson, R., Kincaid, D., and Krogh, F., *"Basic Linear Algebra Subprograms for FORTRAN Usage"* (ACM Transactions on Mathematical Software, 1979).
-- NumPy documentation: `numpy.dot`, `numpy.matmul`, and the `@` operator (latest).
-- Strang, G., *Introduction to Linear Algebra*, chapter 1 (Wellesley-Cambridge, 6th edition, 2023).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/linear_algebra.html)*, chapter 2, "Linear Algebra" (MIT Press, 2016).
+- Harris, C. R., et al., *["Array Programming with NumPy"](https://doi.org/10.1038/s41586-020-2649-2)* (Nature, 2020).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 2 (2020).
+- Lawson, C., Hanson, R., Kincaid, D., and Krogh, F., *["Basic Linear Algebra Subprograms for FORTRAN Usage"](https://doi.org/10.1145/355841.355847)* (ACM Transactions on Mathematical Software, 1979).
+- NumPy documentation: [`numpy.dot`](https://numpy.org/doc/stable/reference/generated/numpy.dot.html), [`numpy.matmul`](https://numpy.org/doc/stable/reference/generated/numpy.matmul.html), and the [`@` operator](https://numpy.org/doc/stable/reference/generated/numpy.matmul.html) (latest).
+- Strang, G., *[Introduction to Linear Algebra](https://math.mit.edu/~gs/linearalgebra/ila6/indexila6.html)*, chapter 1 (Wellesley-Cambridge, 6th edition, 2023).
 
 ## What to read next
 
