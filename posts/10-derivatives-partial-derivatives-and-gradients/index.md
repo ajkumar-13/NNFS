@@ -1,6 +1,6 @@
 # 10 - Derivatives, partial derivatives, and gradients
 
-> **TL;DR.** Gradient descent (post 09) needs the gradient of the loss, and a gradient is a vector of partial derivatives, each of which is an ordinary derivative taken with every other variable held fixed. This post builds the three ideas in order: the **derivative** (the slope of a single-variable function), the **partial derivative** (the same slope along one axis of a multi-variable function), and the **gradient** (all the partial derivatives packed into one vector, which points in the direction of steepest ascent). It then measures them with **finite differences**: for $x^3$ at $x = 2$ a forward difference with $h = 10^{-3}$ gives 12.006001 and a central difference 12.000001 against the exact 12, and shrinking $h$ helps the central difference only down to about $10^{-5}$, below which rounding error takes over.
+> **TL;DR.** Gradient descent ([post 09](../09-introduction-to-optimisation/index.md)) needs the gradient of the loss, and a gradient is a vector of partial derivatives, each of which is an ordinary derivative taken with every other variable held fixed. This post builds the three ideas in order: the **derivative** (the slope of a single-variable function), the **partial derivative** (the same slope along one axis of a multi-variable function), and the **gradient** (all the partial derivatives packed into one vector, which points in the direction of steepest ascent). It then measures them with **finite differences**: for $x^3$ at $x = 2$ a forward difference with $h = 10^{-3}$ gives 12.006001 and a central difference 12.000001 against the exact 12, and shrinking $h$ helps the central difference only down to about $10^{-5}$, below which rounding error takes over.
 >
 > **Prerequisites:** [Post 09](../09-introduction-to-optimisation/index.md).
 > **Safe to skip?** Skip it if the reader can already differentiate $5x^3 + 2x$, find both partial derivatives of $x^2 y + 3y$, say what one component of a loss gradient means for one weight, and explain why a finite difference gets worse when its step is made too small.
@@ -20,21 +20,21 @@
 
 ## 1. The question: what is a gradient, and why this calculus specifically?
 
-Post 09 ended with the gradient-descent update rule: every parameter moves a small step against its own slope of the loss. With $\theta$ standing for the parameters, the rule reads
+[Post 09](../09-introduction-to-optimisation/index.md) ended with the gradient-descent update rule: every parameter moves a small step against its own slope of the loss. With $\theta$ standing for the parameters, the rule reads
 
 $$\theta \leftarrow \theta - \alpha \, \nabla L.$$
 
-Three symbols carry weight in that line. The learning rate $\alpha$ is a positive scalar, covered from post 22 onward. The parameters $\theta$ are the weights and biases held by the `Layer_Dense` class. The third symbol, $\nabla L$, is the **gradient** of the loss with respect to the parameters. Computing $\nabla L$ is what backpropagation does (posts 12 to 21), but understanding what it *is* requires three building blocks of calculus:
+Three symbols carry weight in that line. The learning rate $\alpha$ is a positive scalar, covered from [post 22](../22-gradient-descent-optimiser/index.md) onward. The parameters $\theta$ are the weights and biases held by the `Layer_Dense` class. The third symbol, $\nabla L$, is the **gradient** of the loss with respect to the parameters. Computing $\nabla L$ is what backpropagation does (posts 12 to 21), but understanding what it *is* requires three building blocks of calculus:
 
 | Building block | Question it answers | Where it appears next |
 |---|---|---|
-| **Derivative** | How does $f(x)$ change with $x$, for a function of a single variable? | Activation derivatives (post 17), loss derivatives (post 18) |
+| **Derivative** | How does $f(x)$ change with $x$, for a function of a single variable? | Activation derivatives ([post 17](../17-backpropagation-through-activation-functions/index.md)), loss derivatives ([post 18](../18-backpropagation-through-the-loss-function/index.md)) |
 | **Partial derivative** | How does $f(w_1, w_2, \dots)$ change with one of its variables, the others held fixed? | Layer derivatives (posts 13 to 15), every weight update |
-| **Gradient** | What is the vector of all the partial derivatives, taken together? | The right-hand side of every optimiser update (post 22 onward) |
+| **Gradient** | What is the vector of all the partial derivatives, taken together? | The right-hand side of every optimiser update ([post 22](../22-gradient-descent-optimiser/index.md) onward) |
 
-Differential calculus is far older than neural networks. Newton and Leibniz developed it independently, Newton in the mid-1660s and Leibniz in the mid-1670s. Leibniz published first, in 1684, and Newton's own treatise on the method, written in 1671, was printed only in 1736; the artificial neuron of post 01 dates from 1943. The neural-network use of the subject is narrow: only the derivatives of polynomials, of ReLU, of the exponential inside softmax and sigmoid, and of the logarithm inside cross-entropy will appear in this series. This post covers polynomials and ReLU, and section 7 names the post in which each of the others is derived.
+Differential calculus is far older than neural networks. Newton and Leibniz developed it independently, Newton in the mid-1660s and Leibniz in the mid-1670s. Leibniz published first, in 1684, and Newton's own treatise on the method, written in 1671, was printed only in 1736; the artificial neuron of [post 01](../01-neurons-and-layers/index.md) dates from 1943. The neural-network use of the subject is narrow: only the derivatives of polynomials, of ReLU, of the exponential inside softmax and sigmoid, and of the logarithm inside cross-entropy will appear in this series. This post covers polynomials and ReLU, and [section 7](#7-what-can-go-wrong) names the post in which each of the others is derived.
 
-A fourth idea rides along with the three. A derivative can also be *measured*, by evaluating the function at two nearby points and taking the slope between them. That finite-difference estimate (section 2.5) is how every rule in this post is checked in section 6, and it returns in post 21 as the test of a complete backward pass.
+A fourth idea rides along with the three. A derivative can also be *measured*, by evaluating the function at two nearby points and taking the slope between them. That finite-difference estimate ([section 2.5](#25-measuring-a-derivative-finite-differences)) is how every rule in this post is checked in [section 6](#6-make-it-run-finite-differences-against-the-rules), and it returns in [post 21](../21-coding-the-full-backpropagation/index.md) as the test of a complete backward pass.
 
 ---
 
@@ -58,7 +58,7 @@ The same expansion works for any whole-number power, and the result is the **pow
 
 $$\frac{d}{dx}\bigl[a x^n\bigr] = n \cdot a \cdot x^{n-1}.$$
 
-Together with the sum rule of section 2.2, this one rule differentiates every polynomial.
+Together with the sum rule of [section 2.2](#22-the-sum-rule), this one rule differentiates every polynomial.
 
 | $f(x)$ | $f'(x)$ | Note |
 |:---:|:---:|:---|
@@ -91,7 +91,7 @@ The numerical value of $f'(x)$ at a point has three readings, all useful for neu
 - **Near-zero slope.** A small change in $x$ causes almost no change in $f$. Sensitivity is low; the input barely matters near this point.
 - **Negative slope.** A small increase in $x$ causes a *decrease* in $f$. The input still matters, but the direction is reversed.
 
-The figure below applies the three readings to a single weight, with the loss $L = (w - 1)^2$ of section 4.3 and the update rule of section 1.
+The figure below applies the three readings to a single weight, with the loss $L = (w - 1)^2$ of [section 4.3](#43-what-the-gradient-is-not) and the update rule of [section 1](#1-the-question-what-is-a-gradient-and-why-this-calculus-specifically).
 
 ![The loss L(w) = (w - 1) squared plotted against one weight w, with its tangent at w = 2, w = 1 and w = 0, of slope +2, 0 and -2. Arrows at w = 2 and w = 0 point towards w = 1, where the loss is lowest. Three cards apply the update w gets w minus alpha times dL/dw: at w = 2 it gives 2 minus 2 alpha and w falls, at w = 1 it gives 1 and w stays, and at w = 0 it gives 2 alpha and w rises.](diagrams/02-slope-to-update.svg)
 
@@ -104,9 +104,9 @@ When $f$ is the loss and $x$ is a weight, all three readings turn into update de
 A boundary section, because the concept gets misused often.
 
 - **A derivative is not a delta.** It is a *rate*, not a difference. The actual change in $f$ for a finite step $h$ is approximately $f'(x) \cdot h$, not $f'(x)$ itself, and the approximation improves as the step shrinks. For $f(x) = x^3$ at $x = 2$, where the slope is 12, a step of 0.1 changes $f$ by 1.261 against a predicted 1.2, and a step of 0.01 changes it by 0.120601 against a predicted 0.12.
-- **A derivative is not always defined.** Functions with corners (like ReLU at $z = 0$) are non-differentiable at the corner. Practical implementations pick one side and move on (section 7).
+- **A derivative is not always defined.** Functions with corners (like ReLU at $z = 0$) are non-differentiable at the corner. Practical implementations pick one side and move on ([section 7](#7-what-can-go-wrong)).
 - **A derivative is not a function value.** $f(x)$ is what the function equals at $x$; $f'(x)$ is how steeply it changes there. The two coincide for the special case $f(x) = e^x$.
-- **A derivative is not a finite difference.** A finite difference stops the limit at a small but non-zero $h$, so it is an estimate that carries an error. Section 2.5 defines it. It is the right tool for checking a derivative and the wrong one for computing gradients during training (section 7).
+- **A derivative is not a finite difference.** A finite difference stops the limit at a small but non-zero $h$, so it is an estimate that carries an error. [Section 2.5](#25-measuring-a-derivative-finite-differences) defines it. It is the right tool for checking a derivative and the wrong one for computing gradients during training ([section 7](#7-what-can-go-wrong)).
 
 ### 2.5. Measuring a derivative: finite differences
 
@@ -126,13 +126,13 @@ $$D_{\text{fwd}}(h) = 3x^2 + 3xh + h^2, \qquad D_{\text{cen}}(h) = 3x^2 + h^2.$$
 
 The exact derivative is $3x^2$, so everything after it is error. The forward difference is off by $3xh + h^2$, which shrinks in proportion to $h$: a step ten times smaller gives an error about ten times smaller. In the central difference the terms $x^3$ and $3xh^2$ are the same on both sides and cancel in the subtraction, the numerator is $6x^2 h + 2h^3$, and the error is $h^2$: a step ten times smaller gives an error a hundred times smaller. At $x = 2$ with $h = 10^{-3}$ the exact derivative is 12, the forward difference is $12 + 0.006 + 0.000001 = 12.006001$, and the central difference is $12.000001$.
 
-The error that comes from stopping the limit early is called the **truncation error**. It is of order $h$ for the forward difference and of order $h^2$ for the central difference, and that holds for any smooth function, not only for $x^3$. The central difference is therefore the default choice, at the price of one extra function evaluation when $f(x)$ is already known. The algebra also suggests that a smaller step is always better. Section 6.1 measures both claims, and the second turns out to be false on a computer.
+The error that comes from stopping the limit early is called the **truncation error**. It is of order $h$ for the forward difference and of order $h^2$ for the central difference, and that holds for any smooth function, not only for $x^3$. The central difference is therefore the default choice, at the price of one extra function evaluation when $f(x)$ is already known. The algebra also suggests that a smaller step is always better. [Section 6.1](#61-forward-against-central-and-the-sweep-over-the-step-size) measures both claims, and the second turns out to be false on a computer.
 
 ---
 
 ## 3. Partial derivatives
 
-A real neural network has many parameters. The loss is a function of all of them at once; for the 21-parameter network of post 09,
+A real neural network has many parameters. The loss is a function of all of them at once; for the 21-parameter network of [post 09](../09-introduction-to-optimisation/index.md),
 
 $$L = f(w_1, w_2, \dots, w_{21}).$$
 
@@ -140,11 +140,11 @@ A **partial derivative** measures the sensitivity of $f$ to one of its inputs wh
 
 $$\frac{\partial f}{\partial w_k} = \text{slope of } f \text{ along the } w_k \text{ axis, with all other } w_j \text{ frozen.}$$
 
-As a limit, it is the definition of section 2 with the step $h$ added to one variable only:
+As a limit, it is the definition of [section 2](#2-derivatives-formally) with the step $h$ added to one variable only:
 
 $$\frac{\partial f}{\partial w_k} = \lim_{h \to 0} \frac{f(w_1, \dots, w_k + h, \dots, w_{21}) - f(w_1, \dots, w_k, \dots, w_{21})}{h}.$$
 
-The mechanical rule for computing one follows directly. To compute $\frac{\partial f}{\partial x}$ of a function $f(x, y, z)$, **treat $y$ and $z$ as constants** and differentiate with respect to $x$ by the rules of section 2.
+The mechanical rule for computing one follows directly. To compute $\frac{\partial f}{\partial x}$ of a function $f(x, y, z)$, **treat $y$ and $z$ as constants** and differentiate with respect to $x$ by the rules of [section 2](#2-derivatives-formally).
 
 ### 3.1. Worked examples
 
@@ -152,7 +152,7 @@ The mechanical rule for computing one follows directly. To compute $\frac{\parti
 
 $$\frac{\partial f}{\partial x} = 2, \qquad \frac{\partial f}{\partial y} = 6y.$$
 
-When $x$ is the variable, the $3y^2$ term is a constant and contributes zero. When $y$ is the variable, the $2x$ term is a constant and contributes zero. A frozen variable standing in a term of its own behaves like the constant $6$ of section 2.2: its derivative is zero.
+When $x$ is the variable, the $3y^2$ term is a constant and contributes zero. When $y$ is the variable, the $2x$ term is a constant and contributes zero. A frozen variable standing in a term of its own behaves like the constant $6$ of [section 2.2](#22-the-sum-rule): its derivative is zero.
 
 **Example 2.** $f(x, y, z) = 3x^3 z - y^2 + 5z + 2yz$.
 
@@ -172,7 +172,7 @@ Three terms involve $z$; differentiate each with respect to $z$ and sum.
 
 $$\frac{d}{dz} \text{ReLU}(z) = \begin{cases} 1 & \text{if } z > 0 \\ 0 & \text{if } z \le 0 \end{cases}$$
 
-For $z > 0$ the function is $z$ itself, with slope 1 by the power rule; for $z < 0$ it is the constant 0, with slope 0. This is the exact formula backpropagation will use for the ReLU layer in [post 17](../17-backpropagation-through-activation-functions/index.md). At $z = 0$ the two sides disagree and the derivative is undefined; by convention the series' code, like the major frameworks, uses 0 there (section 7). The zero slope over the whole negative side is what makes the dead neuron of post 06 possible: a neuron whose input is negative for every sample passes back no gradient, so its weights stop updating.
+For $z > 0$ the function is $z$ itself, with slope 1 by the power rule; for $z < 0$ it is the constant 0, with slope 0. This is the exact formula backpropagation will use for the ReLU layer in [post 17](../17-backpropagation-through-activation-functions/index.md). At $z = 0$ the two sides disagree and the derivative is undefined; by convention the series' code, like the major frameworks, uses 0 there ([section 7](#7-what-can-go-wrong)). The zero slope over the whole negative side is what makes the dead neuron of [post 06](../06-activation-functions-relu-and-softmax/index.md) possible: a neuron whose input is negative for every sample passes back no gradient, so its weights stop updating.
 
 ### 3.2. Why the variable-freezing trick works
 
@@ -180,7 +180,7 @@ The trick has a geometric reading. A function of two variables defines a surface
 
 Frozen does not mean irrelevant. The other variables are held at their current values, and those values still appear in the answer. In example 2, $\partial f / \partial x = 9x^2 z$ at $x = 1$ is 27 when $z = 3$, zero when $z = 0$, and $-27$ when $z = -3$: starting the walk from a different point of the surface changes the slope met along the $x$ direction.
 
-This is also why neural-network calculus is friendly. Each of the network's 21 parameters poses its own one-variable question, with the other 20 frozen at their current values, and each question is answered with the rules of section 2. Backpropagation (posts 12 to 21) answers all 21 in a single backward pass by sharing the work the questions have in common.
+This is also why neural-network calculus is friendly. Each of the network's 21 parameters poses its own one-variable question, with the other 20 frozen at their current values, and each question is answered with the rules of [section 2](#2-derivatives-formally). Backpropagation (posts 12 to 21) answers all 21 in a single backward pass by sharing the work the questions have in common.
 
 ---
 
@@ -192,7 +192,7 @@ $$\nabla f = \left( \frac{\partial f}{\partial w_1},\ \frac{\partial f}{\partial
 
 For a function of $n$ variables, the gradient is a vector of $n$ numbers, one per variable. It is the natural object to manipulate in code: NumPy, PyTorch, and JAX all store a gradient as an array of the same shape as the parameters it belongs to.
 
-For example 2 of section 3.1 the gradient is $\nabla f = (9x^2 z,\ -2y + 2z,\ 3x^3 + 5 + 2y)$, and at the point $(x, y, z) = (1, 2, 3)$ it is the three numbers $(27, 2, 12)$. The figure below finds each component as the slope of $f$ along one axis through that point and assembles the three.
+For example 2 of [section 3.1](#31-worked-examples) the gradient is $\nabla f = (9x^2 z,\ -2y + 2z,\ 3x^3 + 5 + 2y)$, and at the point $(x, y, z) = (1, 2, 3)$ it is the three numbers $(27, 2, 12)$. The figure below finds each component as the slope of $f$ along one axis through that point and assembles the three.
 
 ![Three panels slice f(x, y, z) = 3 x cubed z minus y squared plus 5z plus 2yz through the point (1, 2, 3), where f = 32, each along one axis with the other two variables frozen. Along x the slice is 9 x cubed plus 23, with slope 9 x squared z = 27 at x = 1; along y it is minus y squared plus 6y plus 24, slope minus 2y plus 2z = 2; along z it is 12z minus 4, slope 3 x cubed plus 5 plus 2y = 12. Arrows carry the three slopes into the gradient (27, 2, 12), whose central differences are 27.00000000, 2.00000000 and 12.00000000 and whose length is the square root of 877, about 29.61.](diagrams/03-partials-to-gradient.svg)
 
@@ -200,13 +200,13 @@ For example 2 of section 3.1 the gradient is $\nabla f = (9x^2 z,\ -2y + 2z,\ 3x
 
 ### 4.1. Two properties that matter for training
 
-**The gradient points in the direction of steepest ascent.** Moving in parameter space (the space whose axes are the parameters $w_1, \dots, w_n$) along $\nabla f$ increases $f$ as fast as possible per unit step. The reason is that the rate of change of $f$ per unit distance in the direction of a unit vector $\mathbf{u}$ is the dot product $\nabla f \cdot \mathbf{u}$, called the directional derivative. By the geometric form of the dot product (post 02, section 2) that product equals $\|\nabla f\| \cos\phi$, where $\|\nabla f\|$ is the length of the gradient and $\phi$ is the angle between the gradient and $\mathbf{u}$. The cosine is largest, 1, when the step lines up with $\nabla f$; it is zero at right angles to the gradient and $-1$ in the opposite direction. Therefore moving along $-\nabla f$ decreases $f$ as fast as possible per unit step, which is the geometric reason gradient descent uses the *negative* gradient.
+**The gradient points in the direction of steepest ascent.** Moving in parameter space (the space whose axes are the parameters $w_1, \dots, w_n$) along $\nabla f$ increases $f$ as fast as possible per unit step. The reason is that the rate of change of $f$ per unit distance in the direction of a unit vector $\mathbf{u}$ is the dot product $\nabla f \cdot \mathbf{u}$, called the directional derivative. By the geometric form of the dot product ([post 02](../02-numpy-and-the-dot-product/index.md), [section 2](../02-numpy-and-the-dot-product/index.md#2-the-dot-product-formally)) that product equals $\|\nabla f\| \cos\phi$, where $\|\nabla f\|$ is the length of the gradient and $\phi$ is the angle between the gradient and $\mathbf{u}$. The cosine is largest, 1, when the step lines up with $\nabla f$; it is zero at right angles to the gradient and $-1$ in the opposite direction. Therefore moving along $-\nabla f$ decreases $f$ as fast as possible per unit step, which is the geometric reason gradient descent uses the *negative* gradient.
 
-Section 6.3 measures this for example 2 at $(1, 2, 3)$. The gradient $(27, 2, 12)$ has length $\sqrt{877} \approx 29.61$; $f$ rises at 29.61 per unit distance along it, falls at 29.61 against it, does not change at right angles to it, and not one of 10,000 random directions climbs faster.
+[Section 6.3](#63-partial-derivatives-and-the-gradient-checked) measures this for example 2 at $(1, 2, 3)$. The gradient $(27, 2, 12)$ has length $\sqrt{877} \approx 29.61$; $f$ rises at 29.61 per unit distance along it, falls at 29.61 against it, does not change at right angles to it, and not one of 10,000 random directions climbs faster.
 
 **The magnitude of the gradient encodes the local steepness.** $\|\nabla f\|$ is small where $f$ is nearly flat and large where it is steep. When the magnitude becomes very small, the optimiser is near a point where the surface is level (a minimum, a maximum, or a saddle point: a spot that slopes up in some directions and down in others) and the steps it takes are small.
 
-For neural networks, this is everything. In the update of section 1,
+For neural networks, this is everything. In the update of [section 1](#1-the-question-what-is-a-gradient-and-why-this-calculus-specifically),
 
 $$\theta \leftarrow \theta - \alpha \, \nabla L,$$
 
@@ -214,7 +214,7 @@ $\theta$ is the vector of all the parameters and $\nabla L$ is the vector, of th
 
 ### 4.2. Reading a gradient component-by-component
 
-For the 21-parameter network of post 09 (6 weights and 3 biases in the first layer, 9 weights and 3 biases in the second), the loss gradient is a vector of 21 numbers. Component $k$ is the partial derivative of the loss with respect to one specific weight or bias:
+For the 21-parameter network of [post 09](../09-introduction-to-optimisation/index.md) (6 weights and 3 biases in the first layer, 9 weights and 3 biases in the second), the loss gradient is a vector of 21 numbers. Component $k$ is the partial derivative of the loss with respect to one specific weight or bias:
 
 $$\nabla L = \left( \frac{\partial L}{\partial w_1},\ \frac{\partial L}{\partial w_2},\ \dots,\ \frac{\partial L}{\partial w_{21}} \right).$$
 
@@ -224,7 +224,7 @@ Each component answers a single, local question:
 - **Large negative component** ($\partial L / \partial w \ll 0$). Increasing this weight would decrease the loss. The optimiser, via the minus sign, increases it.
 - **Near-zero component** ($\partial L / \partial w \approx 0$). This weight barely affects the loss right now. The optimiser leaves it nearly unchanged.
 
-The size of a component is a sensitivity, and example 2 shows it in numbers. At $(1, 2, 3)$ a nudge of $+0.01$ in $x$ alone, whose component is 27, changes $f$ by 0.2727. The same nudge in $y$, whose component is 2, changes $f$ by 0.0199, and in $z$, whose component is 12, by 0.1200. Each change is close to the component times the nudge (0.27, 0.02, and 0.12), which is the rate-not-delta reading of section 2.4 applied to one axis at a time.
+The size of a component is a sensitivity, and example 2 shows it in numbers. At $(1, 2, 3)$ a nudge of $+0.01$ in $x$ alone, whose component is 27, changes $f$ by 0.2727. The same nudge in $y$, whose component is 2, changes $f$ by 0.0199, and in $z$, whose component is 12, by 0.1200. Each change is close to the component times the nudge (0.27, 0.02, and 0.12), which is the rate-not-delta reading of [section 2.4](#24-what-a-derivative-is-not) applied to one axis at a time.
 
 The whole training loop is the repeated application of those three rules across every parameter at once.
 
@@ -233,9 +233,9 @@ The whole training loop is the repeated application of those three rules across 
 A boundary section.
 
 - **It is not the function value.** Knowing $\nabla L$ does not reveal what $L$ is, only how it would change for small parameter moves.
-- **It is not unique to a parameterisation.** Writing the same loss in terms of a new parameter $u$, with $w = 2u$, makes the derivative with respect to $u$ twice the derivative with respect to $w$: for $L = (w - 1)^2$ at $w = 2$ the first is 4 and the second is 2. The chain rule of post 11 explains the factor. The optimiser's behaviour follows whichever parameterisation is used.
+- **It is not unique to a parameterisation.** Writing the same loss in terms of a new parameter $u$, with $w = 2u$, makes the derivative with respect to $u$ twice the derivative with respect to $w$: for $L = (w - 1)^2$ at $w = 2$ the first is 4 and the second is 2. The chain rule of [post 11](../11-the-chain-rule/index.md) explains the factor. The optimiser's behaviour follows whichever parameterisation is used.
 - **It is not the direction to the global minimum.** It is the direction of *local* steepest descent, and it need not even point at the nearest minimum. The bowl $f(x, y) = x^2 + 10y^2$ has its only minimum at the origin, yet at $(1, 1)$ the negative gradient is $(-2, -20)$, while the origin lies in the direction $(-1, -1)$. Global minimisation is a separate problem; gradient descent walks downhill into whichever minimum its path leads to.
-- **It is not free in cost.** Computing $\nabla L$ for a deep network takes a backward pass that costs about as much as a forward pass, up to a small constant factor. Posts 12 to 21 derive that efficient algorithm, backpropagation. The naive alternative, a finite difference for every parameter, has a cost that scales with the number of parameters (section 7).
+- **It is not free in cost.** Computing $\nabla L$ for a deep network takes a backward pass that costs about as much as a forward pass, up to a small constant factor. Posts 12 to 21 derive that efficient algorithm, backpropagation. The naive alternative, a finite difference for every parameter, has a cost that scales with the number of parameters ([section 7](#7-what-can-go-wrong)).
 
 ---
 
@@ -245,13 +245,13 @@ The pieces line up cleanly:
 
 | Calculus object | What it computes for the network | Where it lives in code |
 |---|---|---|
-| Derivative $f'(x)$ | Per-element activation slope (for ReLU, 0 or 1) | `Activation_ReLU.backward` (post 17) |
-| Partial derivative $\partial L / \partial w$ | Sensitivity of the loss to one weight | one entry of a layer's `dweights` array (from post 16 on) |
+| Derivative $f'(x)$ | Per-element activation slope (for ReLU, 0 or 1) | `Activation_ReLU.backward` ([post 17](../17-backpropagation-through-activation-functions/index.md)) |
+| Partial derivative $\partial L / \partial w$ | Sensitivity of the loss to one weight | one entry of a layer's `dweights` array (from [post 16](../16-coding-backpropagation/index.md) on) |
 | Gradient $\nabla L$ | The full vector of partial derivatives | every layer's `dweights` and `dbiases`, taken together |
 
 The chain rule, introduced in [post 11](../11-the-chain-rule/index.md), is what lets the partial derivatives of layered functions be computed by composing the partial derivatives of the pieces. Without the chain rule, computing the partial derivative of the loss with respect to a single first-layer weight would require expanding the entire forward pass into one giant expression and differentiating it. With the chain rule, the same number can be computed by multiplying together small per-layer derivatives, which is exactly what backpropagation does.
 
-Working every partial derivative out by hand is useful for a single neuron (post 12) and a single layer (post 13). For a whole stack it is the labour that backpropagation automates, and the algorithm, not the hand derivation, is what the later posts rely on.
+Working every partial derivative out by hand is useful for a single neuron ([post 12](../12-backprop-through-a-single-neuron/index.md)) and a single layer ([post 13](../13-backprop-through-a-layer/index.md)). For a whole stack it is the labour that backpropagation automates, and the algorithm, not the hand derivation, is what the later posts rely on.
 
 ---
 
@@ -259,11 +259,11 @@ Working every partial derivative out by hand is useful for a single neuron (post
 
 Nothing later in the series imports the code of this post; it exists to check the calculus above. Three scripts under `snippets/` produce every number the post quotes. Each runs from the series root in under a second and prints the same output on every run:
 
-- `python posts/10-derivatives-partial-derivatives-and-gradients/snippets/finite_differences.py` runs sections 2.4, 2.5, 6.1, and 6.2. It needs only the standard library.
-- `python posts/10-derivatives-partial-derivatives-and-gradients/snippets/partials_and_gradient.py` runs sections 3, 4, and 6.3. It needs NumPy and seeds its random directions with `np.random.seed(0)`.
-- `python posts/10-derivatives-partial-derivatives-and-gradients/snippets/what_can_go_wrong.py` runs section 7. It needs NumPy.
+- `python posts/10-derivatives-partial-derivatives-and-gradients/snippets/finite_differences.py` runs sections [2.4](#24-what-a-derivative-is-not), [2.5](#25-measuring-a-derivative-finite-differences), [6.1](#61-forward-against-central-and-the-sweep-over-the-step-size), and [6.2](#62-the-rules-checked). It needs only the standard library.
+- `python posts/10-derivatives-partial-derivatives-and-gradients/snippets/partials_and_gradient.py` runs sections [3](#3-partial-derivatives), [4](#4-the-gradient), and [6.3](#63-partial-derivatives-and-the-gradient-checked). It needs NumPy and seeds its random directions with `np.random.seed(0)`.
+- `python posts/10-derivatives-partial-derivatives-and-gradients/snippets/what_can_go_wrong.py` runs [section 7](#7-what-can-go-wrong). It needs NumPy.
 
-The two estimates of section 2.5 are one line each:
+The two estimates of [section 2.5](#25-measuring-a-derivative-finite-differences) are one line each:
 
 ```python
 def forward_difference(f, x, h):
@@ -278,7 +278,7 @@ def central_difference(f, x, h):
 
 ### 6.1. Forward against central, and the sweep over the step size
 
-For $f(x) = x^3$ at $x = 2$ with $h = 0.001$ the first script prints both estimates next to the algebra of section 2.5:
+For $f(x) = x^3$ at $x = 2$ with $h = 0.001$ the first script prints both estimates next to the algebra of [section 2.5](#25-measuring-a-derivative-finite-differences):
 
 ```text
 == Section 2.5: forward against central at h = 0.001
@@ -322,11 +322,11 @@ The cause is **rounding error**. A float64 number carries about 16 significant d
 
 The total error therefore has two parts that pull in opposite directions: truncation error, which falls as $h$ shrinks, and rounding error, which rises. The best step is where they meet. For the central difference, $h^2 = 10^{-15} / h$ gives $h = 10^{-5}$; for the forward difference, $6h = 10^{-15} / h$ gives $h \approx 1.3 \times 10^{-8}$. The measured minima sit at those powers of ten: $2.1 \times 10^{-10}$ at $h = 10^{-5}$ for the central difference and $7.3 \times 10^{-8}$ at $h = 10^{-8}$ for the forward one. The central difference is more accurate at a given large step, and its best achievable error is 344 times smaller as well.
 
-The working rule for float64 arithmetic, with inputs and outputs of ordinary size, is a central difference with $h$ near $10^{-5}$. That is the step the gradient check of post 21 uses.
+The working rule for float64 arithmetic, with inputs and outputs of ordinary size, is a central difference with $h$ near $10^{-5}$. That is the step the gradient check of [post 21](../21-coding-the-full-backpropagation/index.md) uses.
 
 ### 6.2. The rules, checked
 
-The same central difference, with $h = 10^{-5}$, checks every row of the power-rule table of section 2.1, the sum-rule example of section 2.2, and three more functions:
+The same central difference, with $h = 10^{-5}$, checks every row of the power-rule table of [section 2.1](#21-the-power-rule), the sum-rule example of [section 2.2](#22-the-sum-rule), and three more functions:
 
 ```text
 every row at x = 1.5
@@ -343,11 +343,11 @@ x^3 + 2x^2 + 6    12.75     12.750000000   2.3e-10
 largest gap between a rule and its central difference: 3.3e-09
 ```
 
-Every rule agrees with its measurement to better than $10^{-8}$. The last row is the one a hand calculation most often gets wrong. Expanded, $(2x + 1)^2 = 4x^2 + 4x + 1$ and its derivative is $8x + 4$, which is 16 at $x = 1.5$. Applying the power rule to the bracket as if it were a bare $x$ gives $2(2x + 1) = 8$, half the measured slope; the missing factor of 2 is what the chain rule of post 11 supplies.
+Every rule agrees with its measurement to better than $10^{-8}$. The last row is the one a hand calculation most often gets wrong. Expanded, $(2x + 1)^2 = 4x^2 + 4x + 1$ and its derivative is $8x + 4$, which is 16 at $x = 1.5$. Applying the power rule to the bracket as if it were a bare $x$ gives $2(2x + 1) = 8$, half the measured slope; the missing factor of 2 is what the chain rule of [post 11](../11-the-chain-rule/index.md) supplies.
 
 ### 6.3. Partial derivatives and the gradient, checked
 
-A partial derivative is measured the same way, with the step applied to one coordinate while the others stay where they are. That is the freezing rule of section 3 written as code:
+A partial derivative is measured the same way, with the step applied to one coordinate while the others stay where they are. That is the freezing rule of [section 3](#3-partial-derivatives) written as code:
 
 ```python
 def numerical_gradient(f, point, h=1e-5):
@@ -361,7 +361,7 @@ def numerical_gradient(f, point, h=1e-5):
     return grad
 ```
 
-For example 2 of section 3.1 the three partial derivatives found by freezing agree with the three measured ones:
+For example 2 of [section 3.1](#31-worked-examples) the three partial derivatives found by freezing agree with the three measured ones:
 
 ```text
 == Section 3.1, example 2: f(x, y, z) = 3x^3 z - y^2 + 5z + 2yz at (x, y, z) = (1, 2, 3)
@@ -372,7 +372,7 @@ df/dz = 3x^3 + 5 + 2y  freezing rule  12.0   central difference  12.00000000
 largest gap between the two columns: 1.1e-09
 ```
 
-The script then measures the rate of change of $f$ per unit distance from $(1, 2, 3)$ in several directions, which is the first property of section 4.1:
+The script then measures the rate of change of $f$ per unit distance from $(1, 2, 3)$ in several directions, which is the first property of [section 4.1](#41-two-properties-that-matter-for-training):
 
 ```text
 == Section 4.1: the gradient at (1, 2, 3), and the rate of change of f in several directions
@@ -386,15 +386,15 @@ random directions steeper than the gradient direction: 0
 random directions that go uphill: 4973 of 10000
 ```
 
-No direction beats the gradient, and the steepest of the 10,000 random directions only approaches it. About half of the random directions go uphill, 4,973 of 10,000 here. That is the direction-blindness that defeated random perturbation in post 09: a random step is as likely to raise the loss as to lower it, while the gradient names the best direction without trying any.
+No direction beats the gradient, and the steepest of the 10,000 random directions only approaches it. About half of the random directions go uphill, 4,973 of 10,000 here. That is the direction-blindness that defeated random perturbation in [post 09](../09-introduction-to-optimisation/index.md): a random step is as likely to raise the loss as to lower it, while the gradient names the best direction without trying any.
 
-Finally, one step of size $\alpha = 0.001$ against the gradient takes $f$ from 32 down to 31.1454, and the same step along the gradient takes it up to 32.8999. The first-order prediction for both, from the rate-not-delta reading of section 2.4, is a change of $\alpha \|\nabla f\|^2 = 0.877$.
+Finally, one step of size $\alpha = 0.001$ against the gradient takes $f$ from 32 down to 31.1454, and the same step along the gradient takes it up to 32.8999. The first-order prediction for both, from the rate-not-delta reading of [section 2.4](#24-what-a-derivative-is-not), is a change of $\alpha \|\nabla f\|^2 = 0.877$.
 
 ---
 
 ## 7. What can go wrong?
 
-`snippets/what_can_go_wrong.py` reproduces four ways in which a derivative, or the estimate of one, misleads. It first repeats the sweep of section 6.1 in float32, the precision that `nnfs.init()` gives the series' arrays (post 04, section 2):
+`snippets/what_can_go_wrong.py` reproduces four ways in which a derivative, or the estimate of one, misleads. It first repeats the sweep of [section 6.1](#61-forward-against-central-and-the-sweep-over-the-step-size) in float32, the precision that `nnfs.init()` gives the series' arrays ([post 04](../04-dense-layer-class-and-spiral-data/index.md), [section 2](../04-dense-layer-class-and-spiral-data/index.md#2-the-spiral-dataset)):
 
 ```text
 == The sweep over h in float32: f(x) = x^3 at x = 2, exact derivative 12
@@ -428,12 +428,12 @@ dL/du at u = 1: 4.000000   (the same point, since w = 2u = 2)
 central-difference gradient of a 21-parameter function: 42 evaluations of the function
 ```
 
-- **The step is too small, or the arithmetic is float32.** Section 6.1 showed the float64 case: below $h = 10^{-5}$ a smaller step makes the central difference worse. A float32 number keeps only about 7 significant digits (machine epsilon $1.2 \times 10^{-7}$), and the same sweep breaks down far sooner. The step $h = 10^{-5}$ that left an error of $2.1 \times 10^{-10}$ in float64 leaves $1.6 \times 10^{-2}$ here, the best central error on the grid is $8.4 \times 10^{-5}$ at $h = 10^{-2}$, and at $h = 10^{-7}$ the forward difference returns exactly 0 because `2.0 + 1e-7 == 2.0` in float32. A numerical check of a derivative is therefore run in float64, in a process that has not called `nnfs.init()`: after that call `np.dot` returns float32 even for float64 copies of the arrays (post 21, section 11).
-- **The function has a corner.** At $z = 0$ the slope of ReLU is 1 on the right and 0 on the left, and strictly the derivative does not exist. Code has to return something, and `Activation_ReLU.backward` (post 17) returns 0 at exactly 0. A central difference that straddles the corner returns 0.5, which is neither slope, so a numerical check that lands within $h$ of a corner disagrees with a correct backward pass. The absolute value in the L1 penalty of post 30 has the same kind of corner at $w = 0$. Subgradient methods, which extend gradient descent to functions with many corners, are out of scope for this series.
-- **The gradient is compared across parameterisations.** The same loss at the same point has slope 2 with respect to $w$ and slope 4 with respect to $u = w/2$. A gradient is a statement about one particular set of variables, and rescaling a parameter rescales its component (section 4.3).
-- **A numerical gradient is used for training.** It needs two evaluations of the loss for every parameter: 42 forward passes for the 21 parameters of the post 09 network, and 2,000,000 for a network with a million parameters, all for a single update. Backpropagation delivers every partial derivative for about the price of one more pass. Finite differences are for checking a backward pass, not for replacing it.
-- **A rule this post does not cover is needed.** The power and sum rules handle polynomials and nothing else. Every further derivative the series needs is derived in the post that uses it: the chain rule for nested functions in post 11, the slopes of sigmoid and tanh in post 17, the derivative of $-\log x$ (which is $-1/x$) in post 18, and the exponentials inside softmax in post 19. None of them has to be memorised in advance.
-- **A derivative is confused with a differential.** The two are closely related. The derivative $f'(x)$ is the slope; the differential $dy = f'(x)\,dx$ uses that slope to estimate the change in $y$ for a small change $dx$ in $x$. This is the rate-not-delta distinction of section 2.4 under another name.
+- **The step is too small, or the arithmetic is float32.** [Section 6.1](#61-forward-against-central-and-the-sweep-over-the-step-size) showed the float64 case: below $h = 10^{-5}$ a smaller step makes the central difference worse. A float32 number keeps only about 7 significant digits (machine epsilon $1.2 \times 10^{-7}$), and the same sweep breaks down far sooner. The step $h = 10^{-5}$ that left an error of $2.1 \times 10^{-10}$ in float64 leaves $1.6 \times 10^{-2}$ here, the best central error on the grid is $8.4 \times 10^{-5}$ at $h = 10^{-2}$, and at $h = 10^{-7}$ the forward difference returns exactly 0 because `2.0 + 1e-7 == 2.0` in float32. A numerical check of a derivative is therefore run in float64, in a process that has not called `nnfs.init()`: after that call `np.dot` returns float32 even for float64 copies of the arrays ([post 21](../21-coding-the-full-backpropagation/index.md), [section 11](../21-coding-the-full-backpropagation/index.md#11-what-can-go-wrong)).
+- **The function has a corner.** At $z = 0$ the slope of ReLU is 1 on the right and 0 on the left, and strictly the derivative does not exist. Code has to return something, and `Activation_ReLU.backward` ([post 17](../17-backpropagation-through-activation-functions/index.md)) returns 0 at exactly 0. A central difference that straddles the corner returns 0.5, which is neither slope, so a numerical check that lands within $h$ of a corner disagrees with a correct backward pass. The absolute value in the L1 penalty of [post 30](../30-l1-and-l2-regularisation/index.md) has the same kind of corner at $w = 0$. Subgradient methods, which extend gradient descent to functions with many corners, are out of scope for this series.
+- **The gradient is compared across parameterisations.** The same loss at the same point has slope 2 with respect to $w$ and slope 4 with respect to $u = w/2$. A gradient is a statement about one particular set of variables, and rescaling a parameter rescales its component ([section 4.3](#43-what-the-gradient-is-not)).
+- **A numerical gradient is used for training.** It needs two evaluations of the loss for every parameter: 42 forward passes for the 21 parameters of the [post 09](../09-introduction-to-optimisation/index.md) network, and 2,000,000 for a network with a million parameters, all for a single update. Backpropagation delivers every partial derivative for about the price of one more pass. Finite differences are for checking a backward pass, not for replacing it.
+- **A rule this post does not cover is needed.** The power and sum rules handle polynomials and nothing else. Every further derivative the series needs is derived in the post that uses it: the chain rule for nested functions in [post 11](../11-the-chain-rule/index.md), the slopes of sigmoid and tanh in [post 17](../17-backpropagation-through-activation-functions/index.md), the derivative of $-\log x$ (which is $-1/x$) in [post 18](../18-backpropagation-through-the-loss-function/index.md), and the exponentials inside softmax in [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md). None of them has to be memorised in advance.
+- **A derivative is confused with a differential.** The two are closely related. The derivative $f'(x)$ is the slope; the differential $dy = f'(x)\,dx$ uses that slope to estimate the change in $y$ for a small change $dx$ in $x$. This is the rate-not-delta distinction of [section 2.4](#24-what-a-derivative-is-not) under another name.
 - **The gradient is expected to be a row, or a column.** Textbooks differ on whether a gradient is written as a row vector or as a column vector, and the choice is pure convention. The series sidesteps it: every gradient array has the shape of the parameter array it belongs to (`dweights` has the shape of `weights`), and the update needs only an element-wise multiplication and a subtraction.
 
 ---
@@ -456,28 +456,26 @@ central-difference gradient of a 21-parameter function: 42 evaluations of the fu
 
 ## Common pitfalls
 
-1. **Forgetting the chain rule when a variable is buried inside.** $\frac{d}{dx}(2x + 1)^2$ is not $2 \cdot (2x + 1)$; it is $8x + 4$, twice as large (section 6.2). Post 11 covers this. Until then, the power rule applies only when the thing raised to a power is the variable itself.
+1. **Forgetting the chain rule when a variable is buried inside.** $\frac{d}{dx}(2x + 1)^2$ is not $2 \cdot (2x + 1)$; it is $8x + 4$, twice as large ([section 6.2](#62-the-rules-checked)). [Post 11](../11-the-chain-rule/index.md) covers this. Until then, the power rule applies only when the thing raised to a power is the variable itself.
 2. **Confusing $f(x)$ with $f'(x)$.** They take the same input and answer different questions: $f(x)$ is the height of the curve at $x$, and $f'(x)$ is its slope there. A loss can be large where its slope is zero and small where its slope is steep.
 3. **Mishandling a frozen variable in a partial derivative.** A term with no trace of the live variable contributes zero: $3y^2$ adds nothing to $\partial f / \partial x$. A frozen variable that *multiplies* the live one stays as a constant factor: $\partial (2yz) / \partial y$ is $2z$, not 0 and not 2.
 4. **Treating the gradient as a scalar.** It is a vector with one component per parameter. The learning rate is a single number that multiplies every component, and the subtraction is then component by component, so each weight moves by its own amount.
 5. **Mixing up gradient ascent and descent.** $+\nabla L$ goes uphill (increases the loss); $-\nabla L$ goes downhill (decreases the loss). The optimiser always subtracts. A loss that rises on every iteration is the usual symptom of a flipped sign.
-6. **Making $h$ as small as possible in a finite difference.** Below about $10^{-5}$ in float64 a central difference gets worse, not better, and at $h = 10^{-16}$ it returns 0 (section 6.1). In float32 the trouble starts near $10^{-2}$ (section 7).
+6. **Making $h$ as small as possible in a finite difference.** Below about $10^{-5}$ in float64 a central difference gets worse, not better, and at $h = 10^{-16}$ it returns 0 ([section 6.1](#61-forward-against-central-and-the-sweep-over-the-step-size)). In float32 the trouble starts near $10^{-2}$ ([section 7](#7-what-can-go-wrong)).
 
 ---
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, section 4.3 (Gradient-Based Optimization) for the derivative, the partial derivative, and the gradient as the direction of steepest ascent, and section 11.5 (Debugging Strategies) for comparing a backward pass with finite differences (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapters 7 and 8 (2020).
-- Leibniz, G. W., *"Nova Methodus pro Maximis et Minimis"* (Acta Eruditorum, 1684).
-- Newton, I., *Method of Fluxions* (1671; published 1736).
-- Strang, G., *Calculus*, chapters 1 to 4 for derivatives and chapter 13 for partial derivatives and the gradient (Wellesley-Cambridge, 2010).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/numerical.html)*, section 4.3 (Gradient-Based Optimization) for the derivative, the partial derivative, and the gradient as the direction of steepest ascent, and section 11.5 (Debugging Strategies) for comparing a backward pass with finite differences (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapters 7 and 8 (2020).
+- Leibniz, G. W., *["Nova Methodus pro Maximis et Minimis"](https://www.si.edu/object/siris_sil_698366)* (Acta Eruditorum, 1684).
+- Newton, I., *[Method of Fluxions](https://www.loc.gov/item/42048007/)* (1671; published 1736).
+- Strang, G., *[Calculus](https://ocw.mit.edu/courses/res-18-001-calculus-fall-2023/)*, chapters 1 to 4 for derivatives and chapter 13 for partial derivatives and the gradient (Wellesley-Cambridge, 2010).
 
 ---
 
 ## What to read next
 
 - **[Post 11 - The chain rule](../11-the-chain-rule/index.md):** the rule that composes derivatives through a stack of functions, and the engine behind backpropagation.
-- **[Post 21 - Coding the full backpropagation](../21-coding-the-full-backpropagation/index.md):** where the central difference of section 2.5 returns as the gradient check that tests a complete backward pass.
+- **[Post 21 - Coding the full backpropagation](../21-coding-the-full-backpropagation/index.md):** where the central difference of [section 2.5](#25-measuring-a-derivative-finite-differences) returns as the gradient check that tests a complete backward pass.
