@@ -15,7 +15,7 @@
 
 ![The forward pass as a chain of five arrays drawn as bands, one column per feature and 300 rows drawn short: X with 2 columns, then dense1.output, activation1.output, dense2.output and activation2.output with 3 each, named Z1, A1, Z2 for the logits and y-hat for the probabilities. Between them the objects dense1, computing X W1 plus b1, activation1, taking max of 0 and each entry, dense2, computing A1 W2 plus b2, and activation2, the softmax of each row. Below, a card with the four lines that build the objects and the four forward calls, and the first five rows the script prints: row 0, the origin, exactly 1/3 in every entry, rows 1 to 4 within 0.000002 of 1/3, and every entry of all 300 rows between 0.333297 and 0.333402.](diagrams/01-pipeline.svg)
 
-*One script, four objects, end to end. The loss of post 08 is computed from its output, and the backward pass of posts 12 to 21 walks it in reverse.*
+*One script, four objects, end to end. The loss of [post 08](../08-loss-categorical-cross-entropy/index.md) is computed from its output, and the backward pass of posts 12 to 21 walks it in reverse.*
 
 ---
 
@@ -30,7 +30,7 @@ The last four posts each added one piece:
 
 This post puts all of them into one self-contained script and asks two questions of it. How do the three classes fit together, and what shape does every array have along the way? And what should an untrained network print, so that a correct pipeline can be told from a broken one before any training exists?
 
-The second question matters because the numbers the script prints are uninformative on purpose: nothing has been trained yet. What is solid after this post is the forward pass itself, ready to be paired with a loss function in post 08 and with a learning algorithm in the posts after it. The output is not a trained classifier; it is an object with the shape of a classifier, whose outputs are well formed and say nothing yet about the classes. Training will later push that same output into something useful.
+The second question matters because the numbers the script prints are uninformative on purpose: nothing has been trained yet. What is solid after this post is the forward pass itself, ready to be paired with a loss function in [post 08](../08-loss-categorical-cross-entropy/index.md) and with a learning algorithm in the posts after it. The output is not a trained classifier; it is an object with the shape of a classifier, whose outputs are well formed and say nothing yet about the classes. Training will later push that same output into something useful.
 
 In production terms, this is the **inference path** of a classification network: data in, probabilities out, no weight changed. Posts 12 to 27 build the **training path** that adjusts the weights inside `dense1` and `dense2` so that the same forward pass produces useful predictions.
 
@@ -53,7 +53,7 @@ $$\hat{\mathbf{y}} = \text{softmax}\bigl( \text{ReLU}(\mathbf{X}\mathbf{W}_1 + \
 
 ReLU acts on every entry and softmax on every row. $\mathbf{Z}_2$, the output of the last dense layer, holds the **logits**: the raw scores, one per class, that softmax turns into probabilities.
 
-Three hidden neurons are enough to make the function non-linear, and few enough that every array can be printed and checked by eye. They are not enough to separate the spiral classes: three ReLU neurons cut the plane with three straight lines into at most seven pieces, and on each piece the logits are a linear function of the input plus a constant, which is too coarse for three arms that wrap around one another. Post 22 widens the hidden layer to 64 neurons before it trains. The activations hold no parameters, so the network has the 21 numbers that post 04 counted for its two dense layers: 9 in `dense1` and 12 in `dense2`.
+Three hidden neurons are enough to make the function non-linear, and few enough that every array can be printed and checked by eye. They are not enough to separate the spiral classes: three ReLU neurons cut the plane with three straight lines into at most seven pieces, and on each piece the logits are a linear function of the input plus a constant, which is too coarse for three arms that wrap around one another. [Post 22](../22-gradient-descent-optimiser/index.md) widens the hidden layer to 64 neurons before it trains. The activations hold no parameters, so the network has the 21 numbers that [post 04](../04-dense-layer-class-and-spiral-data/index.md) counted for its two dense layers: 9 in `dense1` and 12 in `dense2`.
 
 Every component is something the previous posts already built. This post calls them in order.
 
@@ -130,7 +130,7 @@ print(activation2.output[:5])
 
 Slicing with `[:5]` keeps the output readable; the full array has 300 rows, one per spiral point. Every row shown is $[1/3, 1/3, 1/3]$ to four decimal places. The network is producing well-formed probability distributions; it has no opinion yet about which distribution is right.
 
-The first row is exactly uniform. The first spiral point is the origin, the biases are all zero, and an all-zero input then gives all-zero logits whatever the weights are; the softmax of three equal logits is exactly $1/3$ each, which `float32` stores as 0.33333334. The other four rows belong to the next four points along the first arm, and none of their entries is more than two millionths from $1/3$. Section 5 explains why the drift is that small.
+The first row is exactly uniform. The first spiral point is the origin, the biases are all zero, and an all-zero input then gives all-zero logits whatever the weights are; the softmax of three equal logits is exactly $1/3$ each, which `float32` stores as 0.33333334. The other four rows belong to the next four points along the first arm, and none of their entries is more than two millionths from $1/3$. [Section 5](#5-what-the-uniform-output-means) explains why the drift is that small.
 
 Apart from the imports, the `nnfs.init()` call, and the class definitions, the script is ten lines: one for the data, four that build the objects, four `forward` calls, and one `print`. Each object stores its result in its own `output` attribute, and the next call reads it from there. The wiring never calls `np.dot` or `np.exp` directly; the classes hide them. The figure at the top of the post draws this script: the arrays it hands from object to object, its eight lines, and the five rows it prints.
 
@@ -156,7 +156,7 @@ The diary in table form:
 
 Here $\mathbf{A}_1$ is the ReLU output from step 2 (`activation1.output`), the array fed forward into `dense2`.
 
-`snippets/shape_audit.py` runs the script of section 3 and prints the same diary from the live arrays:
+`snippets/shape_audit.py` runs the script of [section 3](#3-the-complete-script) and prints the same diary from the live arrays:
 
 ```python
 # The audit: one line per array, in the order the forward pass creates them.
@@ -192,7 +192,7 @@ First, **the batch dimension 300 never changes**. Every step keeps one row per s
 
 Second, **activation functions never change the shape**. ReLU acts on each entry and softmax normalises each row. The shape changes only at a dense layer, where the new feature count is the layer's neuron count.
 
-The audit has a blind spot: a mistake that leaves every shape intact passes it. In this network four of the five arrays share the shape `(300, 3)`, because the hidden layer happens to be as wide as the number of classes, so a call that is handed the wrong one of them raises no error. A softmax that normalises along the wrong axis keeps its shape as well. Section 9 runs both mistakes. Catching them takes a check on the values, and the next section builds the two that every forward pass should pass.
+The audit has a blind spot: a mistake that leaves every shape intact passes it. In this network four of the five arrays share the shape `(300, 3)`, because the hidden layer happens to be as wide as the number of classes, so a call that is handed the wrong one of them raises no error. A softmax that normalises along the wrong axis keeps its shape as well. [Section 9](#9-what-can-go-wrong) runs both mistakes. Catching them takes a check on the values, and the next section builds the two that every forward pass should pass.
 
 ---
 
@@ -202,7 +202,7 @@ A trained classifier on this dataset would output rows such as `[0.95, 0.03, 0.0
 
 **The weights are random and small.** `0.01 * np.random.randn(n_inputs, n_neurons)` draws values with a standard deviation of 0.01. The spiral points lie within distance 1 of the origin, so the first layer multiplies inputs no larger than 1 by weights near 0.01, and the largest entry of `dense1.output` is 0.017 in absolute value. After the ReLU, 456 of the 900 hidden values are exactly zero, and the rest have passed through unchanged. The second layer multiplies by weights near 0.01 once more, so the logits are about 75 times smaller again: the largest is 0.00023 in absolute value, and their mean absolute value is 0.000046. A logit of this network is measured in ten-thousandths, not in hundredths; the hundredths belong to the hidden layer.
 
-**Softmax of near-equal logits is near-uniform.** With $K$ classes, $K$ equal logits give exactly $1/K$ each, as post 06 showed, and logits that differ by a few ten-thousandths give almost that. The definition of softmax says by how much. For two classes $a$ and $b$ of the same row, the shared denominator cancels:
+**Softmax of near-equal logits is near-uniform.** With $K$ classes, $K$ equal logits give exactly $1/K$ each, as [post 06](../06-activation-functions-relu-and-softmax/index.md) showed, and logits that differ by a few ten-thousandths give almost that. The definition of softmax says by how much. For two classes $a$ and $b$ of the same row, the shared denominator cancels:
 
 $$\frac{\hat{y}_a}{\hat{y}_b} = \frac{e^{z_a}}{e^{z_b}} = e^{z_a - z_b}$$
 
@@ -229,7 +229,7 @@ The untrained network reaches its 0.34 by doing almost exactly that, and not by 
 
 *Almost every point gets the same answer, class 2, so the accuracy is what one fixed answer scores: about a third.*
 
-The training loop of post 22 will repeatedly compute this forward pass, measure the loss against the true labels, and adjust the weights to reduce that loss. The arithmetic of the forward pass does not change; the weights do.
+The training loop of [post 22](../22-gradient-descent-optimiser/index.md) will repeatedly compute this forward pass, measure the loss against the true labels, and adjust the weights to reduce that loss. The arithmetic of the forward pass does not change; the weights do.
 
 ---
 
@@ -238,15 +238,15 @@ The training loop of post 22 will repeatedly compute this forward pass, measure 
 A boundary section, because the integration is the headline and the limits are easy to overlook.
 
 - **It is not training.** The weights are random and stay random. No gradients are computed. No optimiser runs.
-- **It is not a measurement of model quality.** The script prints probabilities and nothing else. Section 5 scores them once by hand; the loss, the number that training will push down, arrives in post 08 together with accuracy as a reported metric.
+- **It is not a measurement of model quality.** The script prints probabilities and nothing else. [Section 5](#5-what-the-uniform-output-means) scores them once by hand; the loss, the number that training will push down, arrives in [post 08](../08-loss-categorical-cross-entropy/index.md) together with accuracy as a reported metric.
 - **It is not the only architecture this code supports.** The same three classes wire up a feed-forward classifier of any depth. Adding a second hidden layer is one more `Layer_Dense` and `Activation_ReLU` pair in front of the output layer.
-- **It is not a final implementation.** Post 16 revisits `Layer_Dense.forward` and adds `self.inputs = inputs` so that the backward pass can use it. The current version is the smallest forward-pass-only form.
+- **It is not a final implementation.** [Post 16](../16-coding-backpropagation/index.md) revisits `Layer_Dense.forward` and adds `self.inputs = inputs` so that the backward pass can use it. The current version is the smallest forward-pass-only form.
 
 ---
 
 ## 7. Extending the depth
 
-Adding layers requires no new code patterns. `snippets/deeper_network.py` keeps the classes and the data of section 3 and builds two hidden layers of 64 neurons:
+Adding layers requires no new code patterns. `snippets/deeper_network.py` keeps the classes and the data of [section 3](#3-the-complete-script) and builds two hidden layers of 64 neurons:
 
 ```python
 dense1      = Layer_Dense(2, 64)
@@ -293,9 +293,9 @@ predictions per class: [  3 191 106]
 correct: 84 of 300, accuracy 0.28
 ```
 
-The same two calls per layer, a dense `forward` and an activation `forward`, repeated. The only constraint is the shape-continuity rule from [post 03](../03-stacking-layers-and-the-forward-pass/index.md): each layer's `n_inputs` must equal the previous layer's `n_neurons`, here 2, then 64, then 64. The audit of section 4 reads the same way as before: 300 rows at every step, and a column count that follows the dense layers from 2 to 64 to 64 to 3.
+The same two calls per layer, a dense `forward` and an activation `forward`, repeated. The only constraint is the shape-continuity rule from [post 03](../03-stacking-layers-and-the-forward-pass/index.md): each layer's `n_inputs` must equal the previous layer's `n_neurons`, here 2, then 64, then 64. The audit of [section 4](#4-tracing-the-shapes) reads the same way as before: 300 rows at every step, and a column count that follows the dense layers from 2 to 64 to 64 to 3.
 
-The untrained output is uniform again, and more closely than before. A third layer of small weights shrinks the logits a third time, to at most 0.000044 in size, and no probability is further than 0.000014 from $1/3$. The 4,547 parameters of this network buy nothing over the 21 of section 3 until they are trained: 84 of the 300 predictions are right, an accuracy of 0.28, inside the range that section 5 measured for the small network across seeds.
+The untrained output is uniform again, and more closely than before. A third layer of small weights shrinks the logits a third time, to at most 0.000044 in size, and no probability is further than 0.000014 from $1/3$. The 4,547 parameters of this network buy nothing over the 21 of [section 3](#3-the-complete-script) until they are trained: 84 of the 300 predictions are right, an accuracy of 0.28, inside the range that [section 5](#5-what-the-uniform-output-means) measured for the small network across seeds.
 
 Production code typically wraps these calls in a model class that stores a list of layers and walks through them in order. The posts of this series do not build that wrapper; they keep every layer as a named variable so that each call stays visible.
 
@@ -310,8 +310,8 @@ Every number and every printed block in this post comes from a script in `snippe
 | `forward_pass.py` | 3 | the first five rows of the output |
 | `shape_audit.py` | 4 | the shape of every array, the 21 parameters, and the same pass on a batch of 7 rows |
 | `uniform_baseline.py` | 5 | the block below |
-| `deeper_network.py` | 7 | the block of section 7: five rows, shapes, 4,547 parameters, 84 of 300 correct |
-| `pitfalls.py` | 9 | every error message and wrong result quoted in section 9 |
+| `deeper_network.py` | 7 | the block of [section 7](#7-extending-the-depth): five rows, shapes, 4,547 parameters, 84 of 300 correct |
+| `pitfalls.py` | 9 | every error message and wrong result quoted in [section 9](#9-what-can-go-wrong) |
 
 `uniform_baseline.py` prints:
 
@@ -355,13 +355,13 @@ Every number and every printed block in this post comes from a script in `snippe
    rows given to the most-predicted class: mean 192 of 300, fewest 108
 ```
 
-Block 1 is the first fact of section 5, block 2 the second, and blocks 3 and 4 are the two baseline checks. Block 5 accounts for the split of the predictions: the 292 rows with at least one positive hidden value go to class 2, and the 8 rows of exact ties go to class 0, where 3 of them belong. With the 99 class-2 points that are predicted as class 2, that makes the 102 correct answers. Block 6 repeats the whole experiment under 200 seeds; on average the most-predicted class takes 192 of the 300 rows, so collapsing most of the predictions onto one class is the usual state of this untrained network and not a quirk of seed 0.
+Block 1 is the first fact of [section 5](#5-what-the-uniform-output-means), block 2 the second, and blocks 3 and 4 are the two baseline checks. Block 5 accounts for the split of the predictions: the 292 rows with at least one positive hidden value go to class 2, and the 8 rows of exact ties go to class 0, where 3 of them belong. With the 99 class-2 points that are predicted as class 2, that makes the 102 correct answers. Block 6 repeats the whole experiment under 200 seeds; on average the most-predicted class takes 192 of the 300 rows, so collapsing most of the predictions onto one class is the usual state of this untrained network and not a quirk of seed 0.
 
 ---
 
 ## 9. What can go wrong?
 
-`snippets/pitfalls.py` makes each mistake below on purpose, on the network of section 3, and prints what NumPy does with it:
+`snippets/pitfalls.py` makes each mistake below on purpose, on the network of [section 3](#3-the-complete-script), and prints what NumPy does with it:
 
 ```text
 1. dense2 fed dense1.output: the ReLU is skipped and nothing complains
@@ -400,13 +400,13 @@ Block 1 is the first fact of section 5, block 2 the second, and blocks 3 and 4 a
 
 The two differences printed in cases 1 and 7, $1.5 \times 10^{-11}$ and $4.6 \times 10^{-8}$, are rounding residues. Their exact size can differ slightly from one machine to another; their order of magnitude does not.
 
-- **Skipping the activation raises nothing.** `dense2.forward(dense1.output)` in place of `dense2.forward(activation1.output)` runs, because both arrays have shape `(300, 3)`. Without the ReLU the two dense layers collapse into one linear layer, as post 03 showed: the biases are zero here, and the output equals $\mathbf{X}(\mathbf{W}_1\mathbf{W}_2)$ to within $1.5 \times 10^{-11}$, which is rounding. It differs from the correct logits by up to 0.00022, as much as the logits themselves. Neither the shape audit nor the baseline checks see this mistake, since a linear network with small weights also prints a near-uniform output: its rows sum to 1 and none of its probabilities is further than 0.000024 from $1/3$. Comparing the logits with that single-layer product, as case 1 does, is the direct test.
+- **Skipping the activation raises nothing.** `dense2.forward(dense1.output)` in place of `dense2.forward(activation1.output)` runs, because both arrays have shape `(300, 3)`. Without the ReLU the two dense layers collapse into one linear layer, as [post 03](../03-stacking-layers-and-the-forward-pass/index.md) showed: the biases are zero here, and the output equals $\mathbf{X}(\mathbf{W}_1\mathbf{W}_2)$ to within $1.5 \times 10^{-11}$, which is rounding. It differs from the correct logits by up to 0.00022, as much as the logits themselves. Neither the shape audit nor the baseline checks see this mistake, since a linear network with small weights also prints a near-uniform output: its rows sum to 1 and none of its probabilities is further than 0.000024 from $1/3$. Comparing the logits with that single-layer product, as case 1 does, is the direct test.
 - **A layer sized from the wrong neighbour fails at once.** `Layer_Dense(2, 3)` used as the second layer expects 2 inputs and receives the 3 hidden values, and `np.dot` raises `ValueError: shapes (300,3) and (2,3) not aligned: 3 (dim 1) != 2 (dim 0)`. The message names both shapes. The fix is `Layer_Dense(3, 3)`, whose `n_inputs` is the `n_neurons` of the layer before it.
 - **`forward` returns nothing.** Every `forward` in this series stores its result in `self.output` and returns `None`, so `result = activation2.forward(dense2.output)` followed by `result.shape` raises `AttributeError: 'NoneType' object has no attribute 'shape'`. The probabilities are read from `activation2.output`.
-- **A softmax along the wrong axis passes the shape audit.** With `axis=0` in place of `axis=1` the output still has shape `(300, 3)`, but now each column sums to 1 and each row sums to about 0.01: a total of 3 shared among 300 nearly identical rows. The row-sum check of section 5 catches it, and `np.allclose(row_sums, 1)` returns `False`.
+- **A softmax along the wrong axis passes the shape audit.** With `axis=0` in place of `axis=1` the output still has shape `(300, 3)`, but now each column sums to 1 and each row sums to about 0.01: a total of 3 shared among 300 nearly identical rows. The row-sum check of [section 5](#5-what-the-uniform-output-means) catches it, and `np.allclose(row_sums, 1)` returns `False`.
 - **Softmax in a hidden position ties the hidden values together.** Softmax belongs at the very end of a classification network. Used in place of the ReLU it forces every hidden row to sum to 1, so each hidden value depends on the other two and the three of them carry only two independent numbers. Here it also squeezes all of them into the range 0.328 to 0.339.
 - **`np.argmax` without `axis=1` returns one number.** `np.argmax(activation2.output)` flattens the array and returns 299, the position of its single largest entry, which is row 99, column 2. The per-row prediction needs `axis=1`, which returns 300 class indices. On an exact tie `np.argmax` returns the first index, which is why the first row, the origin, is predicted as class 0.
-- **The numbers differ from the ones printed here.** `nnfs.init()` seeds NumPy's random generator with 0, so the script prints the same numbers on every run; the call belongs directly after the imports. With `np.random.seed(0)` in its place the arrays are `float64` and the probabilities agree with the `float32` ones to within $4.6 \times 10^{-8}$. With no seed at all, the data and the weights change on every run. The order of creation matters as well, as post 04 showed: when both layers are created before the data, `dense1` receives the first six numbers of the random stream, and the predictions split 256, 0, 44 where section 5 found 8, 0, 292. The accuracy is 0.34 in both cases: each run gives most of its rows to one class, and that scores about a third whichever class it is.
+- **The numbers differ from the ones printed here.** `nnfs.init()` seeds NumPy's random generator with 0, so the script prints the same numbers on every run; the call belongs directly after the imports. With `np.random.seed(0)` in its place the arrays are `float64` and the probabilities agree with the `float32` ones to within $4.6 \times 10^{-8}$. With no seed at all, the data and the weights change on every run. The order of creation matters as well, as [post 04](../04-dense-layer-class-and-spiral-data/index.md) showed: when both layers are created before the data, `dense1` receives the first six numbers of the random stream, and the predictions split 256, 0, 44 where [section 5](#5-what-the-uniform-output-means) found 8, 0, 292. The accuracy is 0.34 in both cases: each run gives most of its rows to one class, and that scores about a third whichever class it is.
 
 ---
 
@@ -430,18 +430,16 @@ The two differences printed in cases 1 and 7, $1.5 \times 10^{-11}$ and $4.6 \ti
 3. **Forgetting `nnfs.init()`.** Without it, and without another seed, the results vary from run to run, and NumPy computes in `float64` where the printed outputs of this series are `float32`. The forward pass still works; reproducing the printed numbers does not.
 4. **Reading the output along the wrong axis.** The output has shape `(N, K)`, where $K$ is the number of classes: each row is one sample's probability distribution, and each column holds one class's probability for all $N$ samples. Predictions come from `np.argmax(..., axis=1)` and row sums from `np.sum(..., axis=1)`; without the axis, or with `axis=0`, both answer a different question.
 5. **Putting softmax in the middle of the network.** Softmax belongs at the very end of a classification network. Inserted earlier it makes every hidden row sum to 1, which ties the hidden values to one another and is rarely what is wanted.
-6. **Assuming the network is doing something useful.** It is not. An accuracy of 0.34 on three balanced classes is what one fixed answer scores. Until the training loop of post 22, the output is structurally correct and says nothing about the classes.
+6. **Assuming the network is doing something useful.** It is not. An accuracy of 0.34 on three balanced classes is what one fixed answer scores. Until the training loop of [post 22](../22-gradient-descent-optimiser/index.md), the output is structurally correct and says nothing about the classes.
 
 ---
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6, "Deep Feedforward Networks" (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 4 (2020). Activation functions, and the Dense, ReLU, Dense, Softmax forward pass on the spiral data.
-- NumPy documentation, `numpy.argmax` (latest). The reduction that turns a row of probabilities into a predicted class, and its first-index rule for ties.
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/mlp.html)*, chapter 6, "Deep Feedforward Networks" (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 4 (2020). Activation functions, and the Dense, ReLU, Dense, Softmax forward pass on the spiral data.
+- NumPy documentation, [`numpy.argmax`](https://numpy.org/doc/stable/reference/generated/numpy.argmax.html) (latest). The reduction that turns a row of probabilities into a predicted class, and its first-index rule for ties.
 - Stanford CS231n, *Convolutional Neural Networks for Visual Recognition*, course notes, ["Putting it together: Minimal Neural Network Case Study"](https://cs231n.github.io/neural-networks-case-study/). A two-layer network on the same kind of spiral data, with the remark that small initial random weights give every class a probability of about one third.
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
 
 ---
 
