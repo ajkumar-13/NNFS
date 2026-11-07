@@ -1,6 +1,6 @@
 # 12 - Backpropagation through a single neuron
 
-> **TL;DR.** Backpropagation is the chain rule of post 11 walked from the loss back to the parameters, and the smallest network on which that chain has more than one factor is a single neuron with three inputs, a ReLU, and a squared-error loss. For one weight the chain has four local derivatives: three are shared by every parameter and multiply into one **upstream gradient**, here 12, and the fourth is the input attached to that weight, so the four gradients are 12, $-24$, 36, and 12. One gradient-descent step with a learning rate of 0.01 takes the loss from 36 to 17.64, and every further step multiplies it by 0.49. A central difference confirms the four gradients to within $10^{-9}$, and a 200-iteration loop confirms the decay.
+> **TL;DR.** Backpropagation is the chain rule of [post 11](../11-the-chain-rule/index.md) walked from the loss back to the parameters, and the smallest network on which that chain has more than one factor is a single neuron with three inputs, a ReLU, and a squared-error loss. For one weight the chain has four local derivatives: three are shared by every parameter and multiply into one **upstream gradient**, here 12, and the fourth is the input attached to that weight, so the four gradients are 12, $-24$, 36, and 12. One gradient-descent step with a learning rate of 0.01 takes the loss from 36 to 17.64, and every further step multiplies it by 0.49. A central difference confirms the four gradients to within $10^{-9}$, and a 200-iteration loop confirms the decay.
 >
 > **Prerequisites:** [Post 10](../10-derivatives-partial-derivatives-and-gradients/index.md), [Post 11](../11-the-chain-rule/index.md).
 > **Safe to skip?** Skip it if the reader can already write $\partial L / \partial w_i$ for a ReLU neuron with a squared-error loss as a product of local derivatives, say which of those factors every parameter shares, and predict the loss after one gradient-descent step.
@@ -19,7 +19,7 @@
 
 ## 1. The question: what does the chain rule look like on the smallest network?
 
-[Post 11](../11-the-chain-rule/index.md) stated the chain rule: the derivative of a composition is the product of the local derivatives along the chain. Post 09 stated what the result is for: every parameter moves a small step against its own slope of the loss. What is still missing is one complete, worked case in which a loss is traced back to actual weights, with numbers at every step.
+[Post 11](../11-the-chain-rule/index.md) stated the chain rule: the derivative of a composition is the product of the local derivatives along the chain. [Post 09](../09-introduction-to-optimisation/index.md) stated what the result is for: every parameter moves a small step against its own slope of the loss. What is still missing is one complete, worked case in which a loss is traced back to actual weights, with numbers at every step.
 
 This post takes the smallest network on which the chain rule still has more than one factor. It has one neuron, three inputs, three weights, one bias, a ReLU (rectified linear unit) activation, and a squared-error loss against a target. The question is: **which local derivatives multiply together to give the gradient of the loss with respect to each of the four parameters, and what do they come to?**
 
@@ -38,7 +38,7 @@ A single neuron with three inputs:
 | Bias | $b$ | $1$ |
 | Target output | $y$ | $0$ |
 
-As in post 01, the mathematics counts from 1 and the code from 0, so `inputs[0]` holds $x_1$. The forward computation is three functions, one after another:
+As in [post 01](../01-neurons-and-layers/index.md), the mathematics counts from 1 and the code from 0, so `inputs[0]` holds $x_1$. The forward computation is three functions, one after another:
 
 $$z = x_1 w_1 + x_2 w_2 + x_3 w_3 + b,$$
 
@@ -46,15 +46,15 @@ $$\hat{y} = \text{ReLU}(z) = \max(0, z),$$
 
 $$L = (\hat{y} - y)^2 = \hat{y}^2 \quad (\text{since } y = 0).$$
 
-Here $z$ is the pre-activation of post 01 (the weighted sum plus the bias) and $\hat{y}$ is the output of the neuron. In posts 06 to 08, $\hat{y}$ was a predicted probability; here it is a prediction of a real number, and the target $y$ is a real number as well.
+Here $z$ is the pre-activation of [post 01](../01-neurons-and-layers/index.md) (the weighted sum plus the bias) and $\hat{y}$ is the output of the neuron. In posts 06 to 08, $\hat{y}$ was a predicted probability; here it is a prediction of a real number, and the target $y$ is a real number as well.
 
 The inputs and the target are data. They do not change during training and are treated as constants throughout the backward pass. The three weights and the bias are the parameters, the four numbers gradient descent is allowed to move.
 
-**Goal of this post:** compute $\partial L / \partial w_1$, $\partial L / \partial w_2$, $\partial L / \partial w_3$, and $\partial L / \partial b$. Together those four numbers are the gradient $\nabla L$ of post 10, section 4, and they are everything the update rule needs.
+**Goal of this post:** compute $\partial L / \partial w_1$, $\partial L / \partial w_2$, $\partial L / \partial w_3$, and $\partial L / \partial b$. Together those four numbers are the gradient $\nabla L$ of [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md), [section 4](../10-derivatives-partial-derivatives-and-gradients/index.md#4-the-gradient), and they are everything the update rule needs.
 
 ### 2.1. Why squared error here and not cross-entropy
 
-Squared error is the loss for a real-valued target (post 08, section 2.2), and its derivative is one line: $\partial L / \partial \hat{y} = 2(\hat{y} - y)$. Averaged over a batch it is the mean squared error of the regression project `nn-p04`. Cross-entropy returns in [post 18](../18-backpropagation-through-the-loss-function/index.md).
+Squared error is the loss for a real-valued target ([post 08](../08-loss-categorical-cross-entropy/index.md), [section 2.2](../08-loss-categorical-cross-entropy/index.md#22-what-this-loss-is-not)), and its derivative is one line: $\partial L / \partial \hat{y} = 2(\hat{y} - y)$. Averaged over a batch it is the mean squared error of the regression project `nn-p04`. Cross-entropy returns in [post 18](../18-backpropagation-through-the-loss-function/index.md).
 
 ---
 
@@ -88,7 +88,7 @@ Each of the four factors is a **local derivative**: the derivative of one functi
 
 $$\frac{\partial L}{\partial \hat{y}} = 2(\hat{y} - y) = 2 \cdot (6 - 0) = 12.$$
 
-**Factor 2** is the derivative of ReLU at $z = 6$. Since $z > 0$, the derivative is $1$ (post 10, section 3.1):
+**Factor 2** is the derivative of ReLU at $z = 6$. Since $z > 0$, the derivative is $1$ ([post 10](../10-derivatives-partial-derivatives-and-gradients/index.md), [section 3.1](../10-derivatives-partial-derivatives-and-gradients/index.md#31-worked-examples)):
 
 $$\frac{\partial \hat{y}}{\partial z} = 1.$$
 
@@ -104,7 +104,7 @@ Multiplying all four:
 
 $$\frac{\partial L}{\partial w_1} = 12 \cdot 1 \cdot 1 \cdot 1 = 12.$$
 
-That is the gradient of the loss with respect to the first weight. It is a rate (post 10, section 2.4): nudging $w_1$ up by $0.001$ raises the loss by about $0.012$. Three more parameters remain.
+That is the gradient of the loss with respect to the first weight. It is a rate ([post 10](../10-derivatives-partial-derivatives-and-gradients/index.md), [section 2.4](../10-derivatives-partial-derivatives-and-gradients/index.md#24-what-a-derivative-is-not)): nudging $w_1$ up by $0.001$ raises the loss by about $0.012$. Three more parameters remain.
 
 ### 4.1. The pattern is clearer than the formula
 
@@ -117,17 +117,17 @@ In one line each:
 
 $$\frac{\partial L}{\partial w_i} = \frac{\partial L}{\partial z} \cdot x_i, \qquad \frac{\partial L}{\partial b} = \frac{\partial L}{\partial z}.$$
 
-This is the part that scales unchanged to bigger networks: every weight's gradient is **the upstream gradient times the input connected to that weight**. That one sentence is most of backpropagation. Here every factor is a plain scalar; in the next posts the same sentence holds with the upstream gradient and the inputs promoted to vectors and matrices, and from post 16 on the upstream gradient is the array called `dvalues`.
+This is the part that scales unchanged to bigger networks: every weight's gradient is **the upstream gradient times the input connected to that weight**. That one sentence is most of backpropagation. Here every factor is a plain scalar; in the next posts the same sentence holds with the upstream gradient and the inputs promoted to vectors and matrices, and from [post 16](../16-coding-backpropagation/index.md) on the upstream gradient is the array called `dvalues`.
 
 ### 4.2. When the ReLU is off
 
-Factor 2 is 1 only because $z = 6$ is positive. If the pre-activation were negative, the ReLU would output 0, its derivative would be 0, and the upstream gradient would be factor 1 times 0, which is 0 whatever the loss is. All four gradients would then be zero and no parameter would move. This is the dead neuron of post 06, section 2.2, on the smallest possible scale: with a single sample, one negative pre-activation is enough. At exactly $z = 0$ the code uses a derivative of 0, the convention of post 10, section 3.1.
+Factor 2 is 1 only because $z = 6$ is positive. If the pre-activation were negative, the ReLU would output 0, its derivative would be 0, and the upstream gradient would be factor 1 times 0, which is 0 whatever the loss is. All four gradients would then be zero and no parameter would move. This is the dead neuron of [post 06](../06-activation-functions-relu-and-softmax/index.md), [section 2.2](../06-activation-functions-relu-and-softmax/index.md#22-what-relu-is-not), on the smallest possible scale: with a single sample, one negative pre-activation is enough. At exactly $z = 0$ the code uses a derivative of 0, the convention of [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md), [section 3.1](../10-derivatives-partial-derivatives-and-gradients/index.md#31-worked-examples).
 
 ---
 
 ## 5. All four gradients
 
-Applying the rule of section 4.1:
+Applying the rule of [section 4.1](#41-the-pattern-is-clearer-than-the-formula):
 
 | Parameter | Upstream gradient (factors 1 to 3) | Factor 4 | Gradient |
 |:---:|:---:|:---:|:---:|
@@ -140,13 +140,13 @@ As a vector, $\nabla L = (12, -24, 36, 12)$.
 
 The signs make sense. The output, 6, is above the target, 0, so the loss falls when $z$ falls. The weight $w_2$ is multiplied by a negative input, so increasing $w_2$ lowers $z$: its gradient is negative, and the update will *increase* it. The other three gradients are positive, and the update will decrease those parameters.
 
-The sizes follow the inputs: $w_3$ has the largest input and the largest gradient, and a weight whose input is 0 would have a gradient of 0 however large the upstream gradient, because with that input the weight has no effect on the output. Section 9.1 measures the four numbers with the central difference of post 10 and finds the same values.
+The sizes follow the inputs: $w_3$ has the largest input and the largest gradient, and a weight whose input is 0 would have a gradient of 0 however large the upstream gradient, because with that input the weight has no effect on the output. [Section 9.1](#91-the-four-gradients-computed-and-measured) measures the four numbers with the central difference of [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) and finds the same values.
 
 ---
 
 ## 6. One gradient-descent step
 
-With a learning rate $\alpha = 0.01$ and the update rule of post 09, $w_{\text{new}} = w_{\text{old}} - \alpha \cdot (\partial L / \partial w)$, applied to each parameter:
+With a learning rate $\alpha = 0.01$ and the update rule of [post 09](../09-introduction-to-optimisation/index.md), $w_{\text{new}} = w_{\text{old}} - \alpha \cdot (\partial L / \partial w)$, applied to each parameter:
 
 | Parameter | Old value | Gradient | $-\alpha \cdot \text{gradient}$ | New value |
 |:---:|:---:|:---:|:---:|:---:|
@@ -181,7 +181,7 @@ Each step multiplies the pre-activation by $0.7$, and the loss, which is $z^2$, 
 
 $$z_t = 6 \cdot 0.7^{\,t}, \qquad L_t = 36 \cdot 0.49^{\,t}.$$
 
-The loss therefore decays geometrically: 36, 17.64, 8.6436, 4.2354, and so on. The factor depends on the learning rate and on the inputs, not on the weights, and section 10 shows what happens when $1 - 30\alpha$ drops below zero.
+The loss therefore decays geometrically: 36, 17.64, 8.6436, 4.2354, and so on. The factor depends on the learning rate and on the inputs, not on the weights, and [section 10](#10-what-can-go-wrong) shows what happens when $1 - 30\alpha$ drops below zero.
 
 ### 6.1. Why the loss approaches zero but never exactly reaches it
 
@@ -189,7 +189,7 @@ The formula $L_t = 36 \cdot 0.49^{\,t}$ is positive for every $t$. In exact arit
 
 The first is display rounding. Printed to four decimal places, the loss reads `0.0000` from iteration 19 onward, but at iteration 20 its value is $36 \cdot 0.49^{20} \approx 2.3 \times 10^{-5}$: a small positive number, with a non-zero gradient.
 
-The second is real. In the float64 run of section 9.2 the loss does become exactly `0.0`, at iteration 113. The pre-activation is a sum of four terms of ordinary size, and such a sum cannot resolve a result much smaller than $10^{-16}$ (the rounding error of post 10, section 6.1). At iteration 100 the computed $z$ is $1.8 \times 10^{-15}$, and at iteration 113 the four terms cancel exactly; from then on every gradient is zero. Whether the loss lands on exactly `0.0`, and at which iteration, is a property of the rounding: it can differ between machines and NumPy builds, and regrouping the update as `(lr * upstream) * inputs` leaves this run stalled at $z = 2.2 \times 10^{-16}$ with no exact zero at all. The geometric decay before that point does not change.
+The second is real. In the float64 run of [section 9.2](#92-the-training-loop) the loss does become exactly `0.0`, at iteration 113. The pre-activation is a sum of four terms of ordinary size, and such a sum cannot resolve a result much smaller than $10^{-16}$ (the rounding error of [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md), [section 6.1](../10-derivatives-partial-derivatives-and-gradients/index.md#61-forward-against-central-and-the-sweep-over-the-step-size)). At iteration 100 the computed $z$ is $1.8 \times 10^{-15}$, and at iteration 113 the four terms cancel exactly; from then on every gradient is zero. Whether the loss lands on exactly `0.0`, and at which iteration, is a property of the rounding: it can differ between machines and NumPy builds, and regrouping the update as `(lr * upstream) * inputs` leaves this run stalled at $z = 2.2 \times 10^{-16}$ with no exact zero at all. The geometric decay before that point does not change.
 
 The figure below draws both on a log axis, where a constant factor per step is a straight line.
 
@@ -197,9 +197,9 @@ The figure below draws both on a log axis, where a constant factor per step is a
 
 *The printed 0.0000 is rounding; the exact zero from iteration 113 comes from the rounding of the float64 sum.*
 
-Where the parameters stop is predictable. Every gradient is a multiple of $(x_1, x_2, x_3, 1) = (1, -2, 3, 1)$, so the parameters move along that one direction. Bringing $z$ from 6 to 0 takes a displacement $c$ with $15c = 6$, so $c = 0.4$, and they end at $(-3, -1, 2, 1) - 0.4 \cdot (1, -2, 3, 1) = (-3.4, -0.2, 0.8, 0.6)$, as section 9.2 prints.
+Where the parameters stop is predictable. Every gradient is a multiple of $(x_1, x_2, x_3, 1) = (1, -2, 3, 1)$, so the parameters move along that one direction. Bringing $z$ from 6 to 0 takes a displacement $c$ with $15c = 6$, so $c = 0.4$, and they end at $(-3, -1, 2, 1) - 0.4 \cdot (1, -2, 3, 1) = (-3.4, -0.2, 0.8, 0.6)$, as [section 9.2](#92-the-training-loop) prints.
 
-One caution: with a target of 0 the loss is exactly zero for every $z \le 0$, since a ReLU outputs 0 there. The descent above stops at the edge of that region; a step that is too long jumps into it (section 10).
+One caution: with a target of 0 the loss is exactly zero for every $z \le 0$, since a ReLU outputs 0 there. The descent above stops at the edge of that region; a step that is too long jumps into it ([section 10](#10-what-can-go-wrong)).
 
 ---
 
@@ -214,15 +214,15 @@ Loss  <-  ReLU  <-  Sum  <-  Multiply  <-  Weights
 
 The running gradient is 12 on leaving the loss, still 12 after the ReLU and after the sum, and becomes $12 x_i$ at weight $i$.
 
-The factors are plain numbers, so the direction of the walk does not change the product. It changes the cost. From the loss, the shared factors 1 to 3 are computed once and reused: four gradients cost one upstream gradient and four multiplications. From a parameter, the whole chain has to be walked again for every parameter. A network has many parameters and one loss, so the walk starts at the loss; that is the "back" in backpropagation, and the reason a complete gradient costs about one more pass through the network (post 10, section 4.3).
+The factors are plain numbers, so the direction of the walk does not change the product. It changes the cost. From the loss, the shared factors 1 to 3 are computed once and reused: four gradients cost one upstream gradient and four multiplications. From a parameter, the whole chain has to be walked again for every parameter. A network has many parameters and one loss, so the walk starts at the loss; that is the "back" in backpropagation, and the reason a complete gradient costs about one more pass through the network ([post 10](../10-derivatives-partial-derivatives-and-gradients/index.md), [section 4.3](../10-derivatives-partial-derivatives-and-gradients/index.md#43-what-the-gradient-is-not)).
 
 ---
 
 ## 8. What this version of backpropagation is *not*
 
-- **It is not vectorised.** Section 9 treats one neuron and one sample with scalar arithmetic. Posts 13 and 14 compute the same thing for a layer and a batch.
-- **It is not the gradient with respect to the inputs.** This post computes $\partial L / \partial w$, not $\partial L / \partial x$, which is what a layer passes back to the layer before it (post 15).
-- **It is not a numerical gradient.** The central difference appears in section 9.1 only as a check. Checking a complete network that way is the subject of post 21.
+- **It is not vectorised.** [Section 9](#9-make-it-run-the-hand-calculation-and-the-200-iteration-loop) treats one neuron and one sample with scalar arithmetic. Posts [13](../13-backprop-through-a-layer/index.md) and [14](../14-matrices-in-backpropagation/index.md) compute the same thing for a layer and a batch.
+- **It is not the gradient with respect to the inputs.** This post computes $\partial L / \partial w$, not $\partial L / \partial x$, which is what a layer passes back to the layer before it ([post 15](../15-gradients-with-respect-to-inputs/index.md)).
+- **It is not a numerical gradient.** The central difference appears in [section 9.1](#91-the-four-gradients-computed-and-measured) only as a check. Checking a complete network that way is the subject of [post 21](../21-coding-the-full-backpropagation/index.md).
 
 ---
 
@@ -230,13 +230,13 @@ The factors are plain numbers, so the direction of the walk does not change the 
 
 Three scripts under `snippets/` produce every number the post quotes. Each runs from the series root in about a second, uses no random numbers, and needs only NumPy:
 
-- `python posts/12-backprop-through-a-single-neuron/snippets/by_hand.py` runs sections 3 to 6 and the gradient check of section 9.1.
-- `python posts/12-backprop-through-a-single-neuron/snippets/training_loop.py` runs the loop of section 9.2.
-- `python posts/12-backprop-through-a-single-neuron/snippets/what_can_go_wrong.py` runs section 10.
+- `python posts/12-backprop-through-a-single-neuron/snippets/by_hand.py` runs sections 3 to 6 and the gradient check of [section 9.1](#91-the-four-gradients-computed-and-measured).
+- `python posts/12-backprop-through-a-single-neuron/snippets/training_loop.py` runs the loop of [section 9.2](#92-the-training-loop).
+- `python posts/12-backprop-through-a-single-neuron/snippets/what_can_go_wrong.py` runs [section 10](#10-what-can-go-wrong).
 
 ### 9.1. The four gradients, computed and measured
 
-The backward pass of sections 4 and 5 is one short function. It takes the two values the forward pass left behind, $z$ and $\hat{y}$, and returns the upstream gradient and the four gradients:
+The backward pass of sections [4](#4-the-backward-pass) and [5](#5-all-four-gradients) is one short function. It takes the two values the forward pass left behind, $z$ and $\hat{y}$, and returns the upstream gradient and the four gradients:
 
 ```python
 def backward(z, yhat, inputs, target):
@@ -250,9 +250,9 @@ def backward(z, yhat, inputs, target):
     return upstream, dweights, dbias
 ```
 
-A leading `d` marks the gradient of the loss with respect to the named quantity (`notation_guide.md`), and `upstream * inputs` multiplies one number by an array of three, giving all three weight gradients at once. The script prints the factors and gradients of sections 4 and 5.
+A leading `d` marks the gradient of the loss with respect to the named quantity (`notation_guide.md`), and `upstream * inputs` multiplies one number by an array of three, giving all three weight gradients at once. The script prints the factors and gradients of sections [4](#4-the-backward-pass) and [5](#5-all-four-gradients).
 
-A derivation can be wrong in ways that still produce plausible numbers, so the script also *measures* the four gradients with the central difference of post 10 and the step that post settled on, $h = 10^{-5}$: each parameter in turn is moved to $+h$ and to $-h$ with the other three held fixed, and the difference of the two losses is divided by $2h$. The measurement, `numerical_gradients` in the script, never looks at the chain rule:
+A derivation can be wrong in ways that still produce plausible numbers, so the script also *measures* the four gradients with the central difference of [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) and the step that post settled on, $h = 10^{-5}$: each parameter in turn is moved to $+h$ and to $-h$ with the other three held fixed, and the difference of the two losses is divided by $2h$. The measurement, `numerical_gradients` in the script, never looks at the chain rule:
 
 ```text
 == The same four numbers measured: central difference, h = 1e-5
@@ -263,7 +263,7 @@ dL/db    chain rule   12.0   central difference   12.000000000
 largest gap between the two columns: 7.7e-10
 ```
 
-The two columns agree to better than $10^{-9}$. The measurement needed eight forward passes for four parameters; the chain rule needed one backward walk. The script goes on to take the step of section 6 and prints the numbers of that section's table, with measured shrink factors of 0.70 for $z$ and 0.49 for the loss.
+The two columns agree to better than $10^{-9}$. The measurement needed eight forward passes for four parameters; the chain rule needed one backward walk. The script goes on to take the step of [section 6](#6-one-gradient-descent-step) and prints the numbers of that section's table, with measured shrink factors of 0.70 for $z$ and 0.49 for the loss.
 
 ### 9.2. The training loop
 
@@ -316,7 +316,7 @@ print(f"final bias    = {bias:.6f}")
 print(f"final z       = {float(np.dot(inputs, weights)) + bias:.3e}")
 ```
 
-The loss printed at iteration $i$ is the one computed before that iteration's update, so iteration 0 shows the 36 of section 3. Each line prints the loss to four decimal places and in scientific notation.
+The loss printed at iteration $i$ is the one computed before that iteration's update, so iteration 0 shows the 36 of [section 3](#3-the-forward-pass-by-hand). Each line prints the loss to four decimal places and in scientific notation.
 
 ```text
 iter   0  loss = 36.0000   (exactly 3.600e+01)
@@ -337,7 +337,7 @@ final bias    = 0.600000
 final z       = 0.000e+00
 ```
 
-Every printed loss up to iteration 60 is $36 \cdot 0.49^{\,i}$ to the digits shown. After that rounding shows (at iteration 80 the formula gives $5.915 \times 10^{-24}$), and it ends as section 6.1 described: an exact zero from iteration 113, with the parameters at $(-3.4, -0.2, 0.8)$ and $0.6$.
+Every printed loss up to iteration 60 is $36 \cdot 0.49^{\,i}$ to the digits shown. After that rounding shows (at iteration 80 the formula gives $5.915 \times 10^{-24}$), and it ends as [section 6.1](#61-why-the-loss-approaches-zero-but-never-exactly-reaches-it) described: an exact zero from iteration 113, with the parameters at $(-3.4, -0.2, 0.8)$ and $0.6$.
 
 Forward to compute, backward to differentiate, update to descend: every training loop later in the series has the same three stages in the same order.
 
@@ -345,7 +345,7 @@ Forward to compute, backward to differentiate, update to descend: every training
 
 ## 10. What can go wrong?
 
-`snippets/what_can_go_wrong.py` reproduces the failures below. The first is the learning rate. With a general target $y$ the algebra of section 6 gives $z_{\text{new}} - y = (z - y)(1 - 30\alpha)$ for as long as $z$ stays positive: the gap between output and target shrinks by the factor. The script sweeps the learning rate for the target 0 of this post and for a target of 1:
+`snippets/what_can_go_wrong.py` reproduces the failures below. The first is the learning rate. With a general target $y$ the algebra of [section 6](#6-one-gradient-descent-step) gives $z_{\text{new}} - y = (z - y)(1 - 30\alpha)$ for as long as $z$ stays positive: the gap between output and target shrinks by the factor. The script sweeps the learning rate for the target 0 of this post and for a target of 1:
 
 ```text
 == 1. The learning rate: z after the first update, and the loss after 200 updates
@@ -375,9 +375,9 @@ dbias = upstream * x_3  (wrong)   =   36.0   central difference 12.000000   rela
 
 - **The learning rate is too large, and one step kills the neuron.** Once $30\alpha$ exceeds 1 the factor is negative and the first update carries $z$ past the target. With $\alpha = 0.035$ and a target of 1 the overshoot is small, $z$ lands at 0.75, still positive, and the run recovers. With $\alpha = 0.05$ it lands at $-1.5$: the ReLU outputs 0, factor 2 is 0, every gradient is 0, and the loss stays at $(0 - 1)^2 = 1$ for all 200 updates.
 - **With the target of this post, the same overshoot looks like a success.** For $y = 0$ every $\alpha$ from 0.035 upward ends with a loss of exactly zero after a single update, including $\alpha = 1$, which throws $z$ to $-174$. A dead neuron outputs 0, and 0 happens to be the target: the run switched the neuron off, and the loss cannot tell the difference. Hence the second sweep, with a target of 1.
-- **The neuron starts dead.** With weights $(-3, -1, -2)$ the pre-activation is $-6$ and, as section 4.2 said, all four gradients are zero: the script's loss against a target of 1 is still 1.0 after 200 updates. No learning rate helps.
+- **The neuron starts dead.** With weights $(-3, -1, -2)$ the pre-activation is $-6$ and, as [section 4.2](#42-when-the-relu-is-off) said, all four gradients are zero: the script's loss against a target of 1 is still 1.0 after 200 updates. No learning rate helps.
 - **The bias gradient is multiplied by an input.** The bias gradient is the upstream gradient alone. The update still runs with a wrong one, so the error is easy to miss by eye, but the central difference above catches it at once. The relative error is the absolute difference of the two values divided by the larger of their absolute values. Multiplying by $x_1 = 1$ would have gone unnoticed, which is a reason not to test with inputs equal to 1.
-- **The gradient check lands on the corner.** At a pre-activation of exactly 0 the script's backward pass returns a bias gradient of 0 and the central difference about $-1$; the comparison is invalid there, not the backward pass (post 10, section 7).
+- **The gradient check lands on the corner.** At a pre-activation of exactly 0 the script's backward pass returns a bias gradient of 0 and the central difference about $-1$; the comparison is invalid there, not the backward pass ([post 10](../10-derivatives-partial-derivatives-and-gradients/index.md), [section 7](../10-derivatives-partial-derivatives-and-gradients/index.md#7-what-can-go-wrong)).
 
 ---
 
@@ -407,14 +407,12 @@ dbias = upstream * x_3  (wrong)   =   36.0   central difference 12.000000   rela
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, section 6.5 (Back-Propagation and Other Differentiation Algorithms) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 9 (2020).
-- Linnainmaa, S., *"The Representation of the Cumulative Rounding Error of an Algorithm as a Taylor Expansion of the Local Rounding Errors"* (Master's thesis, University of Helsinki, 1970).
-- Nielsen, M., *Neural Networks and Deep Learning*, chapter 2 (online, 2015).
-- Rumelhart, D., Hinton, G., and Williams, R., *"Learning Representations by Back-Propagating Errors"* (Nature, 1986).
-- Werbos, P. J., *"Beyond Regression: New Tools for Prediction and Analysis in the Behavioral Sciences"* (PhD thesis, Harvard University, 1974).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/mlp.html)*, section 6.5 (Back-Propagation and Other Differentiation Algorithms) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 9 (2020).
+- Linnainmaa, S., *["The Representation of the Cumulative Rounding Error of an Algorithm as a Taylor Expansion of the Local Rounding Errors"](https://people.idsia.ch/~juergen/linnainmaa1970thesis.pdf)* (Master's thesis, University of Helsinki, 1970).
+- Nielsen, M., *[Neural Networks and Deep Learning](https://neuralnetworksanddeeplearning.com/chap2.html)*, chapter 2 (online, 2015).
+- Rumelhart, D., Hinton, G., and Williams, R., *["Learning Representations by Back-Propagating Errors"](https://doi.org/10.1038/323533a0)* (Nature, 1986).
+- Werbos, P. J., *["Beyond Regression: New Tools for Prediction and Analysis in the Behavioral Sciences"](https://gwern.net/doc/ai/nn/1974-werbos.pdf)* (PhD thesis, Harvard University, 1974).
 
 ---
 
