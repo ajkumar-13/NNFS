@@ -1,6 +1,6 @@
 # 14 - Matrices in backpropagation
 
-> **TL;DR.** The twelve per-weight gradients of post 13 are the entries of one matrix product, $\partial L / \partial \mathbf{W} = (\partial L / \partial \mathbf{Z})^{\top} \mathbf{X}$, and the three bias gradients are one sum of the upstream gradient over the batch axis. This post derives that two-line backward pass, checks that it returns post 13's numbers exactly (43.2, 86.4, 129.6, and 172.8 in every row), and shows that the same two lines serve a batch of any size, because the product sums the per-sample contributions over the axis it contracts. A central-difference check on a three-sample batch agrees with the two lines to a relative error of about $10^{-10}$.
+> **TL;DR.** The twelve per-weight gradients of [post 13](../13-backprop-through-a-layer/index.md) are the entries of one matrix product, $\partial L / \partial \mathbf{W} = (\partial L / \partial \mathbf{Z})^{\top} \mathbf{X}$, and the three bias gradients are one sum of the upstream gradient over the batch axis. This post derives that two-line backward pass, checks that it returns [post 13](../13-backprop-through-a-layer/index.md)'s numbers exactly (43.2, 86.4, 129.6, and 172.8 in every row), and shows that the same two lines serve a batch of any size, because the product sums the per-sample contributions over the axis it contracts. A central-difference check on a three-sample batch agrees with the two lines to a relative error of about $10^{-10}$.
 >
 > **Prerequisites:** [Post 13](../13-backprop-through-a-layer/index.md).
 > **Safe to skip?** Skip it if the reader can already write the weight and bias gradients of a dense layer as two NumPy lines in either weight layout, give the shape of each, and say why neither line changes when one sample becomes a batch.
@@ -20,30 +20,30 @@
 
 ## 1. The question: how do twelve gradients become one matrix product?
 
-Post 13 derived twelve weight gradients by writing one expression per weight. That worked for a layer of three neurons over four inputs. A layer of 10,000 neurons over 1,000 inputs has 10,000,000 weights, and no usable implementation computes ten million gradients one Python expression at a time.
+[Post 13](../13-backprop-through-a-layer/index.md) derived twelve weight gradients by writing one expression per weight. That worked for a layer of three neurons over four inputs. A layer of 10,000 neurons over 1,000 inputs has 10,000,000 weights, and no usable implementation computes ten million gradients one Python expression at a time.
 
-The remedy is to express the whole computation as a single matrix product. The chain rule does not change; the bookkeeping does. The per-neuron, per-input gradient that post 13 arrived at,
+The remedy is to express the whole computation as a single matrix product. The chain rule does not change; the bookkeeping does. The per-neuron, per-input gradient that [post 13](../13-backprop-through-a-layer/index.md) arrived at,
 
 $$\frac{\partial L}{\partial w_{kj}} = \frac{\partial L}{\partial z_k} \cdot x_j,$$
 
-is the entry in row $k$ and column $j$ of a matrix whose rows are neurons and whose columns are inputs. This post derives the product that fills that matrix, checks it against the numbers of post 13, and then asks what happens when the single sample becomes a batch. The answer to that second question is the reason the matrix form is used everywhere: the same product, with no change, adds up the contributions of every sample in the batch.
+is the entry in row $k$ and column $j$ of a matrix whose rows are neurons and whose columns are inputs. This post derives the product that fills that matrix, checks it against the numbers of [post 13](../13-backprop-through-a-layer/index.md), and then asks what happens when the single sample becomes a batch. The answer to that second question is the reason the matrix form is used everywhere: the same product, with no change, adds up the contributions of every sample in the batch.
 
 ---
 
 ## 2. The weight gradient as a matrix product
 
-This post keeps the layout of [post 13](../13-backprop-through-a-layer/index.md): the weights are stored with **one row per neuron and one column per input**, shape $(m, n)$ for $m$ neurons over $n$ inputs. That is also the layout of posts 01 to 03. The `Layer_Dense` class of post 04 stores the transpose, one column per neuron, and section 8 converts every formula of this post to that layout.
+This post keeps the layout of [post 13](../13-backprop-through-a-layer/index.md): the weights are stored with **one row per neuron and one column per input**, shape $(m, n)$ for $m$ neurons over $n$ inputs. That is also the layout of posts 01 to 03. The `Layer_Dense` class of [post 04](../04-dense-layer-class-and-spiral-data/index.md) stores the transpose, one column per neuron, and [section 8](#8-the-convention-reconciliation) converts every formula of this post to that layout.
 
-Single elements keep the lowercase symbols of post 13: $x_j$ for an input, $w_{kj}$ for the weight from input $j$ to neuron $k$, $z_k$ for a pre-activation, and $a_k$ for an activation. Bold capitals stand for whole arrays. For a single sample the arrays and their shapes are:
+Single elements keep the lowercase symbols of [post 13](../13-backprop-through-a-layer/index.md): $x_j$ for an input, $w_{kj}$ for the weight from input $j$ to neuron $k$, $z_k$ for a pre-activation, and $a_k$ for an activation. Bold capitals stand for whole arrays. For a single sample the arrays and their shapes are:
 
 | Quantity | Shape | Meaning |
 |---|:---:|---|
 | $\mathbf{X}$ | $(1, n)$ | one sample, $n$ inputs |
 | $\mathbf{Z}$ | $(1, m)$ | the pre-activations, one per neuron |
-| $\partial L / \partial \mathbf{Z}$ | $(1, m)$ | the upstream gradient: the sensitivity of the loss to each pre-activation (section 3) |
+| $\partial L / \partial \mathbf{Z}$ | $(1, m)$ | the upstream gradient: the sensitivity of the loss to each pre-activation ([section 3](#3-where-partial-l--partial-mathbfz-comes-from)) |
 | $\partial L / \partial \mathbf{W}$ | $(m, n)$ | one row per neuron, one column per input |
 
-The entry formula comes from the forward pass. Neuron $k$ computes $z_k = \sum_{j} w_{kj} x_j + b_k$, so the weight $w_{kj}$ appears in exactly one pre-activation, $z_k$, and there it multiplies $x_j$. The local derivative is $\partial z_k / \partial w_{kj} = x_j$, the chain rule (post 11) multiplies it by the gradient arriving at $z_k$, and no other path leads from $w_{kj}$ to the loss:
+The entry formula comes from the forward pass. Neuron $k$ computes $z_k = \sum_{j} w_{kj} x_j + b_k$, so the weight $w_{kj}$ appears in exactly one pre-activation, $z_k$, and there it multiplies $x_j$. The local derivative is $\partial z_k / \partial w_{kj} = x_j$, the chain rule ([post 11](../11-the-chain-rule/index.md)) multiplies it by the gradient arriving at $z_k$, and no other path leads from $w_{kj}$ to the loss:
 
 $$\frac{\partial L}{\partial w_{kj}} = \frac{\partial L}{\partial z_k} \cdot \frac{\partial z_k}{\partial w_{kj}} = \frac{\partial L}{\partial z_k} \cdot x_j.$$
 
@@ -51,7 +51,7 @@ One factor depends only on the neuron $k$ and the other only on the input $j$. A
 
 $$\frac{\partial L}{\partial \mathbf{W}} = \left(\frac{\partial L}{\partial \mathbf{Z}}\right)^{\top} \mathbf{X}.$$
 
-The shape rule of post 02 confirms it: $(m, 1) \cdot (1, n) \rightarrow (m, n)$. The inner sizes are both 1, they match and disappear, and the outer sizes $m$ and $n$ survive. The result illustrates a rule that holds for every gradient in the series: **a gradient has the shape of the array it updates**. Here that is the stored weight matrix, so the update of post 09 can be applied element by element as `weights -= lr * dL_dW`.
+The shape rule of [post 02](../02-numpy-and-the-dot-product/index.md) confirms it: $(m, 1) \cdot (1, n) \rightarrow (m, n)$. The inner sizes are both 1, they match and disappear, and the outer sizes $m$ and $n$ survive. The result illustrates a rule that holds for every gradient in the series: **a gradient has the shape of the array it updates**. Here that is the stored weight matrix, so the update of [post 09](../09-introduction-to-optimisation/index.md) can be applied element by element as `weights -= lr * dL_dW`.
 
 ### 2.1. Why this is an outer product, not a dot product
 
@@ -78,23 +78,23 @@ outer product:
  [12. 15. 18.]]
 ```
 
-The dot product multiplies matching positions and adds the results: $4 + 10 + 18 = 32$. The outer product multiplies every position of the first vector by every position of the second and adds nothing. The gradient needs the second structure, because each of the $m \times n$ weights needs a number of its own. The outer product also does not require the two vectors to have the same length: the upstream gradient has $m$ entries and the input has $n$. In code it is written `dL_dZ.T @ X`; for two-dimensional arrays `@` is the same product as the `np.dot` of post 02.
+The dot product multiplies matching positions and adds the results: $4 + 10 + 18 = 32$. The outer product multiplies every position of the first vector by every position of the second and adds nothing. The gradient needs the second structure, because each of the $m \times n$ weights needs a number of its own. The outer product also does not require the two vectors to have the same length: the upstream gradient has $m$ entries and the input has $n$. In code it is written `dL_dZ.T @ X`; for two-dimensional arrays `@` is the same product as the `np.dot` of [post 02](../02-numpy-and-the-dot-product/index.md).
 
 ---
 
 ## 3. Where $\partial L / \partial \mathbf{Z}$ comes from
 
-The matrix product consumes the upstream gradient $\partial L / \partial \mathbf{Z}$. That quantity is the chain rule applied to everything between the loss and the layer's pre-activations. In the example of post 13 the three ReLU outputs $a_k$ are summed to $\hat{y}$ and the loss is $L = \hat{y}^2$, so three factors lie between $L$ and $z_k$:
+The matrix product consumes the upstream gradient $\partial L / \partial \mathbf{Z}$. That quantity is the chain rule applied to everything between the loss and the layer's pre-activations. In the example of [post 13](../13-backprop-through-a-layer/index.md) the three ReLU outputs $a_k$ are summed to $\hat{y}$ and the loss is $L = \hat{y}^2$, so three factors lie between $L$ and $z_k$:
 
 $$\frac{\partial L}{\partial z_k} = \frac{\partial L}{\partial \hat{y}} \cdot \frac{\partial \hat{y}}{\partial a_k} \cdot \frac{\partial a_k}{\partial z_k}.$$
 
 | Factor | Value in the example |
 |---|:---:|
-| $\partial L / \partial \hat{y}$ | $2\hat{y} = 43.2$, one scalar shared by all neurons (post 13's layer sum was $\hat{y} = 21.6$) |
+| $\partial L / \partial \hat{y}$ | $2\hat{y} = 43.2$, one scalar shared by all neurons ([post 13](../13-backprop-through-a-layer/index.md)'s layer sum was $\hat{y} = 21.6$) |
 | $\partial \hat{y} / \partial a_k$ | $1$, the derivative of a sum with respect to one of its terms |
 | $\partial a_k / \partial z_k$ | the ReLU gate, $1$ where $z_k > 0$ and $0$ elsewhere; here $1$ for every $k$ |
 
-`snippets/single_sample.py` holds the inputs, weights, and biases of post 13, with the sample stored as a $(1, 4)$ row `X`, and computes the forward pass and the three factors. The code names are post 13's: `Z`, `A`, `Y` for the layer sum $\hat{y}$, and a gradient named by its fraction.
+`snippets/single_sample.py` holds the inputs, weights, and biases of [post 13](../13-backprop-through-a-layer/index.md), with the sample stored as a $(1, 4)$ row `X`, and computes the forward pass and the three factors. The code names are [post 13](../13-backprop-through-a-layer/index.md)'s: `Z`, `A`, `Y` for the layer sum $\hat{y}$, and a gradient named by its fraction.
 
 ```python
 # Forward pass: the three outputs are summed and the sum is squared.
@@ -124,7 +124,7 @@ So $\partial L / \partial \mathbf{Z} = [43.2,\ 43.2,\ 43.2]$, one value per neur
 
 *The three factors of the chain rule, step by step. Whatever follows the layer reaches it as one array of shape (1, 3).*
 
-The matrix product of section 2 never looks inside this array: whatever follows the layer is summarised in the upstream gradient, which is why one backward pass for a dense layer serves at every depth.
+The matrix product of [section 2](#2-the-weight-gradient-as-a-matrix-product) never looks inside this array: whatever follows the layer is summarised in the upstream gradient, which is why one backward pass for a dense layer serves at every depth.
 
 ---
 
@@ -143,7 +143,7 @@ print(dL_dW)
  [ 43.2  86.4 129.6 172.8]]
 ```
 
-These are the twelve numbers of post 13's table, arranged as a $(3, 4)$ matrix whose rows are neurons and whose columns are inputs. Column $j$ is $43.2 \cdot x_j$: $43.2$, $86.4$, $129.6$, and $172.8$ for the inputs $1$, $2$, $3$, and $4$. The figure at the top of the post draws this product with the upstream column beside the result and the input row above it, so each entry sits where its two factors meet. The script then rebuilds the same matrix the slow way, with one chain-rule product per weight, and compares:
+These are the twelve numbers of [post 13](../13-backprop-through-a-layer/index.md)'s table, arranged as a $(3, 4)$ matrix whose rows are neurons and whose columns are inputs. Column $j$ is $43.2 \cdot x_j$: $43.2$, $86.4$, $129.6$, and $172.8$ for the inputs $1$, $2$, $3$, and $4$. The figure at the top of the post draws this product with the upstream column beside the result and the input row above it, so each entry sits where its two factors meet. The script then rebuilds the same matrix the slow way, with one chain-rule product per weight, and compares:
 
 ```python
 # The same twelve numbers, one chain-rule expression per weight, as post 13 wrote them.
@@ -204,7 +204,7 @@ Training feeds the layer a batch of $N$ samples, one per row. The shapes change 
 
 The inputs and the upstream gradient gain rows; the two gradients do not, since a layer has one set of weights and biases however many samples pass through it.
 
-The derivation repeats section 2 with one more index. Sample $i$ has its own inputs $x_{ij}$ and its own pre-activations, $z_{ik} = \sum_j x_{ij} w_{kj} + b_k$, and the same weight $w_{kj}$ now appears in $z_{1k}, z_{2k}, \dots, z_{Nk}$: once per sample. A variable that reaches the loss along several paths collects one chain-rule term per path, and the terms add:
+The derivation repeats [section 2](#2-the-weight-gradient-as-a-matrix-product) with one more index. Sample $i$ has its own inputs $x_{ij}$ and its own pre-activations, $z_{ik} = \sum_j x_{ij} w_{kj} + b_k$, and the same weight $w_{kj}$ now appears in $z_{1k}, z_{2k}, \dots, z_{Nk}$: once per sample. A variable that reaches the loss along several paths collects one chain-rule term per path, and the terms add:
 
 $$\frac{\partial L}{\partial w_{kj}} = \sum_{i=1}^{N} \frac{\partial L}{\partial z_{ik}} \cdot x_{ij}.$$
 
@@ -218,7 +218,7 @@ For the biases the same argument applies with the constant input 1 in place of $
 
 $$\frac{\partial L}{\partial b_k} = \sum_{i=1}^{N} \frac{\partial L}{\partial z_{ik}}.$$
 
-In NumPy that is `np.sum(dL_dZ, axis=0)`: axis 0 is the batch axis, and the sum removes it (post 05). Both gradients are thus summed over the batch in the same way. The weight sum is hidden inside the matrix product, where each term is scaled by an input value; the bias sum has no input to scale it and is written out.
+In NumPy that is `np.sum(dL_dZ, axis=0)`: axis 0 is the batch axis, and the sum removes it ([post 05](../05-array-summation-keepdims-and-broadcasting/index.md)). Both gradients are thus summed over the batch in the same way. The weight sum is hidden inside the matrix product, where each term is scaled by an input value; the bias sum has no input to scale it and is written out.
 
 ### 6.1. Worked batch example
 
@@ -253,7 +253,7 @@ The weight-gradient matrix has shape $(3, 4)$, as in the single-sample case, and
 
 ### 6.2. The sum, one sample at a time
 
-The claim of this section is that the matrix product equals the sum of the per-sample outer products of section 4. The same script checks it with a loop:
+The claim of this section is that the matrix product equals the sum of the per-sample outer products of [section 4](#4-numerical-verification-single-input). The same script checks it with a loop:
 
 ```python
 # The same result built one sample at a time: an outer product per sample, then a sum.
@@ -282,7 +282,7 @@ Each sample contributes its input row scaled by its upstream value. By hand, the
 
 ### 6.3. Sum or mean?
 
-The matrix product delivers the **sum** of the per-sample contributions. Whether the final gradient is a sum or a mean over the batch is decided earlier, by the loss. The loss of post 08 is a mean over the batch, so its derivative carries a factor $1/N$, and that factor arrives inside the upstream gradient: every entry of $\partial L / \partial \mathbf{Z}$ is already divided by $N$. The sum of $N$ contributions that each carry $1/N$ is their mean, so the two lines of this post need no division of their own, and dividing again would leave every gradient $N$ times too small (section 10).
+The matrix product delivers the **sum** of the per-sample contributions. Whether the final gradient is a sum or a mean over the batch is decided earlier, by the loss. The loss of [post 08](../08-loss-categorical-cross-entropy/index.md) is a mean over the batch, so its derivative carries a factor $1/N$, and that factor arrives inside the upstream gradient: every entry of $\partial L / \partial \mathbf{Z}$ is already divided by $N$. The sum of $N$ contributions that each carry $1/N$ is their mean, so the two lines of this post need no division of their own, and dividing again would leave every gradient $N$ times too small ([section 10](#10-what-can-go-wrong)).
 
 ---
 
@@ -295,9 +295,9 @@ dL_dW = dL_dZ.T @ X              # weight gradient: (m, n)
 dL_db = np.sum(dL_dZ, axis=0)    # bias gradient:   (m,)
 ```
 
-The lines are the same for any layer width and any batch size, and they do not depend on what produced `dL_dZ`. Read as shapes, the first is $(m, N) \cdot (N, n) \rightarrow (m, n)$ and the second reduces $(N, m)$ to $(m,)$. Post 16 wraps the pair, in the layout of section 8, inside `Layer_Dense.backward`, and post 21 (Coding the full backpropagation) runs it as part of a complete backward pass.
+The lines are the same for any layer width and any batch size, and they do not depend on what produced `dL_dZ`. Read as shapes, the first is $(m, N) \cdot (N, n) \rightarrow (m, n)$ and the second reduces $(N, m)$ to $(m,)$. [Post 16](../16-coding-backpropagation/index.md) wraps the pair, in the layout of [section 8](#8-the-convention-reconciliation), inside `Layer_Dense.backward`, and [post 21](../21-coding-the-full-backpropagation/index.md) (Coding the full backpropagation) runs it as part of a complete backward pass.
 
-The two lines cover the layer's parameters and nothing more. They assume that the upstream gradient already includes the derivative of whatever follows the layer, as the ReLU gate was included in section 3; post 17 gives each activation a backward step of its own, and posts 18 and 19 start the chain at the loss. They also do not produce $\partial L / \partial \mathbf{X}$, the gradient a layer hands to the layer before it, which is the subject of [post 15](../15-gradients-with-respect-to-inputs/index.md).
+The two lines cover the layer's parameters and nothing more. They assume that the upstream gradient already includes the derivative of whatever follows the layer, as the ReLU gate was included in [section 3](#3-where-partial-l--partial-mathbfz-comes-from); [post 17](../17-backpropagation-through-activation-functions/index.md) gives each activation a backward step of its own, and posts [18](../18-backpropagation-through-the-loss-function/index.md) and [19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) start the chain at the loss. They also do not produce $\partial L / \partial \mathbf{X}$, the gradient a layer hands to the layer before it, which is the subject of [post 15](../15-gradients-with-respect-to-inputs/index.md).
 
 ---
 
@@ -307,7 +307,7 @@ The series uses two layouts for the weights of a layer, and the two gradient lin
 
 | | Row per neuron | Column per neuron |
 |---|:---:|:---:|
-| Where | posts 01 to 03, and the layer of posts 13 and 14 | `Layer_Dense`, post 04 onward |
+| Where | posts 01 to 03, and the layer of posts [13](../13-backprop-through-a-layer/index.md) and [14](index.md) | `Layer_Dense`, [post 04](../04-dense-layer-class-and-spiral-data/index.md) onward |
 | `weights.shape` | $(m, n)$ | $(n, m)$ |
 | Forward pass on a batch | `X @ weights.T + biases` | `X @ weights + biases` |
 | Weight gradient | `dL_dZ.T @ X`, shape $(m, n)$ | `X.T @ dL_dZ`, shape $(n, m)$ |
@@ -317,11 +317,11 @@ The two weight gradients are transposes of each other, by the rule $(\mathbf{P}\
 
 $$\left[\left(\frac{\partial L}{\partial \mathbf{Z}}\right)^{\top} \mathbf{X}\right]^{\top} = \mathbf{X}^{\top} \, \frac{\partial L}{\partial \mathbf{Z}}.$$
 
-The right-hand side is the form the notation guide gives for the whole series. Its shapes are $(n, N) \cdot (N, m) \rightarrow (n, m)$: the batch axis is again the inner, contracted one, so everything section 6 said about the sum over the batch holds unchanged. The entry for input $j$ and neuron $k$ is still $\sum_i x_{ij} \, \partial L / \partial z_{ik}$; it has only moved from row $k$, column $j$ to row $j$, column $k$.
+The right-hand side is the form the notation guide gives for the whole series. Its shapes are $(n, N) \cdot (N, m) \rightarrow (n, m)$: the batch axis is again the inner, contracted one, so everything [section 6](#6-extending-to-batches) said about the sum over the batch holds unchanged. The entry for input $j$ and neuron $k$ is still $\sum_i x_{ij} \, \partial L / \partial z_{ik}$; it has only moved from row $k$, column $j$ to row $j$, column $k$.
 
-The row-per-neuron layout keeps each neuron's numbers in one row, which suits a hand derivation; the column-per-neuron layout removes the transpose from the forward pass (post 04, section 4). The bias line differs for a separate reason: `Layer_Dense` stores its biases as a $(1, m)$ row, and `keepdims=True` (post 05) keeps the summed axis so that the gradient comes out as a $(1, m)$ row as well.
+The row-per-neuron layout keeps each neuron's numbers in one row, which suits a hand derivation; the column-per-neuron layout removes the transpose from the forward pass ([post 04](../04-dense-layer-class-and-spiral-data/index.md), [section 4](../04-dense-layer-class-and-spiral-data/index.md#4-the-weight-matrix-convention-revisited)). The bias line differs for a separate reason: `Layer_Dense` stores its biases as a $(1, m)$ row, and `keepdims=True` ([post 05](../05-array-summation-keepdims-and-broadcasting/index.md)) keeps the summed axis so that the gradient comes out as a $(1, m)$ row as well.
 
-`snippets/conventions.py` holds the same layer in both layouts and runs the batch of section 6.1 through each:
+`snippets/conventions.py` holds the same layer in both layouts and runs the batch of [section 6.1](#61-worked-batch-example) through each:
 
 ```python
 # Weight gradient in each layout.
@@ -343,15 +343,15 @@ dW_cols (4, 3) matches W_cols (4, 3)
 dW_cols is the transpose of dW_rows: True
 ```
 
-The numbers of section 6.1 reappear with rows and columns exchanged. The script also confirms that the two forward passes agree and that one update step in each layout leaves the two copies of the layer identical. Either layout is correct; mixing them inside one program is not (section 10).
+The numbers of [section 6.1](#61-worked-batch-example) reappear with rows and columns exchanged. The script also confirms that the two forward passes agree and that one update step in each layout leaves the two copies of the layer identical. Either layout is correct; mixing them inside one program is not ([section 10](#10-what-can-go-wrong)).
 
 ---
 
 ## 9. Make it run: the two lines against a numerical gradient
 
-Sections 4 and 6 checked the matrix form against the per-weight chain rule. Both sides of that comparison rest on the same derivation, so a mistake in the derivation would pass unnoticed. `snippets/gradient_check.py` makes an independent check: it measures each gradient with the central difference of post 10, which needs only the forward pass. It needs NumPy only and runs in under a second from the series root with `python posts/14-matrices-in-backpropagation/snippets/gradient_check.py`.
+Sections [4](#4-numerical-verification-single-input) and [6](#6-extending-to-batches) checked the matrix form against the per-weight chain rule. Both sides of that comparison rest on the same derivation, so a mistake in the derivation would pass unnoticed. `snippets/gradient_check.py` makes an independent check: it measures each gradient with the central difference of [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md), which needs only the forward pass. It needs NumPy only and runs in under a second from the series root with `python posts/14-matrices-in-backpropagation/snippets/gradient_check.py`.
 
-The script puts the batch of section 6.1 through the layer of post 13. Each sample's three ReLU outputs are summed to $\hat{y}_i$ (the column `Y` in the code), and the loss is the mean of $\hat{y}_i^2$ over the batch. By section 6.3 the upstream gradient therefore carries the factor $1/N$: $\partial L / \partial z_{ik} = (2 \hat{y}_i / N)$ times the ReLU gate.
+The script puts the batch of [section 6.1](#61-worked-batch-example) through the layer of [post 13](../13-backprop-through-a-layer/index.md). Each sample's three ReLU outputs are summed to $\hat{y}_i$ (the column `Y` in the code), and the loss is the mean of $\hat{y}_i^2$ over the batch. By [section 6.3](#63-sum-or-mean) the upstream gradient therefore carries the factor $1/N$: $\partial L / \partial z_{ik} = (2 \hat{y}_i / N)$ times the ReLU gate.
 
 ```python
 # Forward pass and the upstream gradient, one row per sample.
@@ -365,7 +365,7 @@ dL_dW = dL_dZ.T @ X              # weight gradient: (m, n)
 dL_db = np.sum(dL_dZ, axis=0)    # bias gradient:   (m,)
 ```
 
-The script then measures each of the fifteen parameters in turn: it moves that one parameter by $+h$ and by $-h$, evaluates the loss twice, and divides the difference by $2h$. The arrays are float64 and the step is $h = 10^{-5}$, the choice post 10 arrived at for a central difference.
+The script then measures each of the fifteen parameters in turn: it moves that one parameter by $+h$ and by $-h$, evaluates the loss twice, and divides the difference by $2h$. The arrays are float64 and the step is $h = 10^{-5}$, the choice [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) arrived at for a central difference.
 
 ```text
 dL_dW, matrix form:
@@ -382,13 +382,13 @@ largest relative error, weights: 1.1e-10
 largest relative error, biases:  8.3e-11
 ```
 
-The three rows of the upstream gradient are 12, 10.2, and 5.48, so the first weight gradient is $12 \cdot 1.0 + 10.2 \cdot 2.0 + 5.48 \cdot (-1.5) = 24.18$ and each bias gradient is $12 + 10.2 + 5.48 = 27.68$. The numerical gradient, which uses no chain rule at all, agrees with all fifteen analytic values to a relative error of about $10^{-10}$, far below the $10^{-7}$ that the series treats as the mark of a correct backward pass. The other four scripts in the directory run the same way: `single_sample.py` (sections 2.1 to 5), `batch.py` (section 6), `conventions.py` (section 8), and `what_can_go_wrong.py` (section 10).
+The three rows of the upstream gradient are 12, 10.2, and 5.48, so the first weight gradient is $12 \cdot 1.0 + 10.2 \cdot 2.0 + 5.48 \cdot (-1.5) = 24.18$ and each bias gradient is $12 + 10.2 + 5.48 = 27.68$. The numerical gradient, which uses no chain rule at all, agrees with all fifteen analytic values to a relative error of about $10^{-10}$, far below the $10^{-7}$ that the series treats as the mark of a correct backward pass. The other four scripts in the directory run the same way: `single_sample.py` (sections 2.1 to 5), `batch.py` ([section 6](#6-extending-to-batches)), `conventions.py` ([section 8](#8-the-convention-reconciliation)), and `what_can_go_wrong.py` ([section 10](#10-what-can-go-wrong)).
 
 ---
 
 ## 10. What can go wrong?
 
-`snippets/what_can_go_wrong.py` runs six mistakes on the single sample of section 4 and the batch of section 6.1, and prints what NumPy does with each. Several of them raise no error.
+`snippets/what_can_go_wrong.py` runs six mistakes on the single sample of [section 4](#4-numerical-verification-single-input) and the batch of [section 6.1](#61-worked-batch-example), and prints what NumPy does with each. Several of them raise no error.
 
 ```text
 == 1. The transpose is left out
@@ -421,11 +421,11 @@ square layer: both gradients have shape (3, 3) (3, 3)
 equal: False  transposes of each other: True
 ```
 
-- **The transpose is left out.** `dL_dZ @ X` multiplies $(N, m)$ by $(N, n)$, whose inner sizes are $m$ and $N$. When they differ NumPy raises a `ValueError`. When the batch size happens to equal the number of neurons, as here with $N = m = 3$, the call returns an array of the right shape, $(3, 4)$, filled with the wrong numbers: its first row is 1.5, 9.7, 5.3, 3.7 where the gradient is 0.5, 20.1, 10.9, 4.1. A shape check cannot catch this; the numerical check of section 9 can, and so can a test layer in which the batch size, the number of inputs, and the number of neurons are three different numbers.
+- **The transpose is left out.** `dL_dZ @ X` multiplies $(N, m)$ by $(N, n)$, whose inner sizes are $m$ and $N$. When they differ NumPy raises a `ValueError`. When the batch size happens to equal the number of neurons, as here with $N = m = 3$, the call returns an array of the right shape, $(3, 4)$, filled with the wrong numbers: its first row is 1.5, 9.7, 5.3, 3.7 where the gradient is 0.5, 20.1, 10.9, 4.1. A shape check cannot catch this; the numerical check of [section 9](#9-make-it-run-the-two-lines-against-a-numerical-gradient) can, and so can a test layer in which the batch size, the number of inputs, and the number of neurons are three different numbers.
 - **The upstream gradient is one-dimensional.** The transpose of a 1-D array is the same array, so `.T` does nothing to an upstream gradient of shape $(m,)$. Against a three-sample batch a length-3 vector multiplies silently and returns a vector of shape $(n,)$ where a matrix was wanted. Every quantity therefore keeps one row per sample, even when there is a single sample.
 - **`np.outer` is used on a batch.** `np.outer` flattens both arguments before it multiplies. For one sample that is harmless: a $(1, 3)$ row and a $(1, 4)$ row give the correct $(3, 4)$ matrix. For the batch, the $(3, 3)$ and $(3, 4)$ arrays flatten to lengths 9 and 12 and give a $(9, 12)$ array of every pairwise product, in which nothing has been summed.
 - **The axis is left out of the bias sum.** `np.sum(dL_dZ)` with no axis returns the single number 18.0, and a scalar broadcasts against the biases without complaint, so every bias moves by the same wrong amount. `axis=1` is the opposite slip: it returns one number per sample (3, 6, 9), which has the shape of the biases only when $N = m$.
-- **The batch average is applied twice.** When the loss is a mean over the batch the factor $1/N$ is already inside the upstream gradient (section 6.3). Dividing the weight gradient by $N$ again leaves it $N$ times too small: 0.0556 in place of 0.1667 for the first weight here.
+- **The batch average is applied twice.** When the loss is a mean over the batch the factor $1/N$ is already inside the upstream gradient ([section 6.3](#63-sum-or-mean)). Dividing the weight gradient by $N$ again leaves it $N$ times too small: 0.0556 in place of 0.1667 for the first weight here.
 - **The two weight layouts are mixed.** Subtracting a $(4, 3)$ gradient from $(3, 4)$ weights raises a `ValueError`, but only because the layer is not square. For a layer with as many neurons as inputs both layouts give a $(3, 3)$ gradient, the two are transposes and not equal, and the update runs silently with each weight receiving the gradient of another.
 
 ---
@@ -447,7 +447,7 @@ equal: False  transposes of each other: True
 
 ## Common pitfalls
 
-Section 10 runs each of these and shows what NumPy returns.
+[Section 10](#10-what-can-go-wrong) runs each of these and shows what NumPy returns.
 
 1. **Forgetting the transpose.** `dL_dZ @ X` is silent when the batch size equals the number of neurons.
 2. **Letting an array become one-dimensional.** `.T` does nothing to a shape `(m,)` array; every quantity keeps its batch axis.
@@ -460,12 +460,10 @@ Section 10 runs each of these and shows what NumPy returns.
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, section 6.5 (Back-Propagation and Other Differentiation Algorithms) (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 9 (2020).
-- Magnus, J. R. and Neudecker, H., *Matrix Differential Calculus with Applications in Statistics and Econometrics* (Wiley, 3rd edition, 2019).
-- Petersen, K. B. and Pedersen, M. S., *The Matrix Cookbook* (2012).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/mlp.html)*, section 6.5 (Back-Propagation and Other Differentiation Algorithms) (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 9 (2020).
+- Magnus, J. R. and Neudecker, H., *[Matrix Differential Calculus with Applications in Statistics and Econometrics](https://doi.org/10.1002/9781119541219)* (Wiley, 3rd edition, 2019).
+- Petersen, K. B. and Pedersen, M. S., *[The Matrix Cookbook](https://www.math.uwaterloo.ca/~hwolkowi/matrixcookbook.pdf)* (2012).
 
 ---
 
