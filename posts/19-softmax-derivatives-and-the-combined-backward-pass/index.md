@@ -1,6 +1,6 @@
 # 19 - Softmax derivatives and the combined backward pass
 
-> **TL;DR.** Every softmax output depends on every logit, so the softmax Jacobian of one sample is a full $K \times K$ matrix with $\hat{y}_k(1 - \hat{y}_k)$ on the diagonal and $-\hat{y}_k \hat{y}_j$ off it. Multiplied by the cross-entropy gradient $-\mathbf{y}/\hat{\mathbf{y}}$ of post 18, the matrix collapses: each division by $\hat{y}_k$ meets a factor $\hat{y}_k$, and what is left is $\partial L / \partial \mathbf{Z} = (\hat{\mathbf{y}} - \mathbf{y})/N$ for one-hot labels and a batch-mean loss. `Activation_Softmax_Loss_CategoricalCrossentropy` computes that in three lines, agrees with the Jacobian route to $10^{-16}$ and with a central difference to $10^{-10}$, and stays finite where the separate route returns `nan`.
+> **TL;DR.** Every softmax output depends on every logit, so the softmax Jacobian of one sample is a full $K \times K$ matrix with $\hat{y}_k(1 - \hat{y}_k)$ on the diagonal and $-\hat{y}_k \hat{y}_j$ off it. Multiplied by the cross-entropy gradient $-\mathbf{y}/\hat{\mathbf{y}}$ of [post 18](../18-backpropagation-through-the-loss-function/index.md), the matrix collapses: each division by $\hat{y}_k$ meets a factor $\hat{y}_k$, and what is left is $\partial L / \partial \mathbf{Z} = (\hat{\mathbf{y}} - \mathbf{y})/N$ for one-hot labels and a batch-mean loss. `Activation_Softmax_Loss_CategoricalCrossentropy` computes that in three lines, agrees with the Jacobian route to $10^{-16}$ and with a central difference to $10^{-10}$, and stays finite where the separate route returns `nan`.
 >
 > **Prerequisites:** [Post 17](../17-backpropagation-through-activation-functions/index.md), [Post 18](../18-backpropagation-through-the-loss-function/index.md).
 > **Safe to skip?** Skip it if the reader can already derive the softmax Jacobian, show that it multiplies the cross-entropy gradient into $(\hat{\mathbf{y}} - \mathbf{y})/N$, and code that result for integer and one-hot labels.
@@ -19,13 +19,13 @@
 
 ## 1. The question: does the softmax backward need a matrix?
 
-One `backward` method is still missing after post 18, the softmax's. The loss now produces the first gradient, $\partial L / \partial \hat{\mathbf{y}} = -\mathbf{y} / (N \hat{\mathbf{y}})$, and the softmax has to turn it into $\partial L / \partial \mathbf{Z}$, the gradient with respect to the logits, which the last dense layer receives as its `dvalues`.
+One `backward` method is still missing after [post 18](../18-backpropagation-through-the-loss-function/index.md), the softmax's. The loss now produces the first gradient, $\partial L / \partial \hat{\mathbf{y}} = -\mathbf{y} / (N \hat{\mathbf{y}})$, and the softmax has to turn it into $\partial L / \partial \mathbf{Z}$, the gradient with respect to the logits, which the last dense layer receives as its `dvalues`.
 
-Post 17 showed why this step cannot be the one-line multiply of ReLU. For one sample with logits $z_1, \dots, z_K$, softmax is
+[Post 17](../17-backpropagation-through-activation-functions/index.md) showed why this step cannot be the one-line multiply of ReLU. For one sample with logits $z_1, \dots, z_K$, softmax is
 
 $$\hat{y}_k = \frac{e^{z_k}}{\sum_{j} e^{z_j}},$$
 
-and the denominator contains every logit. Post 17 wrote the output as $a_k$; at the output layer it is the prediction $\hat{y}_k$ of post 08. Raising $z_2$ raises the denominator, which changes $\hat{y}_1$, $\hat{y}_3$, and every other output, so the table of local derivatives $\partial \hat{y}_k / \partial z_j$, the Jacobian, has no zero entries. Post 17 quoted those entries and promised a derivation.
+and the denominator contains every logit. [Post 17](../17-backpropagation-through-activation-functions/index.md) wrote the output as $a_k$; at the output layer it is the prediction $\hat{y}_k$ of [post 08](../08-loss-categorical-cross-entropy/index.md). Raising $z_2$ raises the denominator, which changes $\hat{y}_1$, $\hat{y}_3$, and every other output, so the table of local derivatives $\partial \hat{y}_k / \partial z_j$, the Jacobian, has no zero entries. [Post 17](../17-backpropagation-through-activation-functions/index.md) quoted those entries and promised a derivation.
 
 This post gives it, and then answers the practical question. Building a $K \times K$ matrix for every sample of the batch works and is wasteful. Softmax is almost always followed by categorical cross-entropy, and differentiating the two together cancels nearly all of the matrix.
 
@@ -35,11 +35,11 @@ This post gives it, and then answers the practical question. Building a $K \time
 
 ### 2.1. One new derivative: the exponential
 
-Post 10 left the exponential for this post. Its difference quotient is
+[Post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) left the exponential for this post. Its difference quotient is
 
 $$\frac{e^{x + h} - e^{x}}{h} = e^{x} \cdot \frac{e^{h} - 1}{h},$$
 
-and $(e^h - 1)/h$ tends to 1 as $h$ shrinks, which is the property that singles out the base $e$ (the mirror image of the limit post 18 used for the logarithm). So
+and $(e^h - 1)/h$ tends to 1 as $h$ shrinks, which is the property that singles out the base $e$ (the mirror image of the limit [post 18](../18-backpropagation-through-the-loss-function/index.md) used for the logarithm). So
 
 $$\frac{d}{dx} e^{x} = e^{x}:$$
 
@@ -53,15 +53,15 @@ $$\log \hat{y}_k = z_k - \log \sum_{j} e^{z_j}.$$
 
 Both sides are now differentiated with respect to one logit $z_j$, the others held fixed.
 
-- **Left side.** By the chain rule of post 11 and the derivative of the logarithm from post 18, it is $\dfrac{1}{\hat{y}_k} \dfrac{\partial \hat{y}_k}{\partial z_j}$.
+- **Left side.** By the chain rule of [post 11](../11-the-chain-rule/index.md) and the derivative of the logarithm from [post 18](../18-backpropagation-through-the-loss-function/index.md), it is $\dfrac{1}{\hat{y}_k} \dfrac{\partial \hat{y}_k}{\partial z_j}$.
 - **First term on the right.** $z_k$ has slope 1 with respect to $z_j$ when $k = j$ and slope 0 otherwise.
 - **Second term on the right.** The chain rule again: the outer logarithm gives one over the sum, and inside the sum only $e^{z_j}$ depends on $z_j$, with slope $e^{z_j}$. The product is $e^{z_j} / \sum_{m} e^{z_m}$, which is $\hat{y}_j$.
 
-Multiplying through by $\hat{y}_k$ gives the entries post 17 quoted:
+Multiplying through by $\hat{y}_k$ gives the entries [post 17](../17-backpropagation-through-activation-functions/index.md) quoted:
 
 $$\frac{\partial \hat{y}_k}{\partial z_j} = \begin{cases} \hat{y}_k (1 - \hat{y}_k) & k = j \\ -\hat{y}_k \hat{y}_j & k \ne j. \end{cases}$$
 
-The convention is that of post 17: row $k$ is an output, column $j$ is a logit. Every probability lies strictly between 0 and 1, so no entry is zero. The diagonal is positive, since raising a logit raises its own probability, and everything off the diagonal is negative, since that probability is taken from the other classes. This is the whole reason the Jacobian is **full**: an element-wise activation has $\partial a_k / \partial z_j = 0$ for $k \ne j$, and softmax has $-\hat{y}_k \hat{y}_j$ there.
+The convention is that of [post 17](../17-backpropagation-through-activation-functions/index.md): row $k$ is an output, column $j$ is a logit. Every probability lies strictly between 0 and 1, so no entry is zero. The diagonal is positive, since raising a logit raises its own probability, and everything off the diagonal is negative, since that probability is taken from the other classes. This is the whole reason the Jacobian is **full**: an element-wise activation has $\partial a_k / \partial z_j = 0$ for $k \ne j$, and softmax has $-\hat{y}_k \hat{y}_j$ there.
 
 ### 2.3. The Jacobian of one sample
 
@@ -81,7 +81,7 @@ All nine entries are non-zero and match slopes measured by nudging one logit at 
 
 ## 3. The cancellation
 
-The backward step of an activation is the incoming gradient times the Jacobian (post 17). For one sample the incoming gradient is that of post 18, $\partial L_i / \partial \hat{y}_k = -y_k / \hat{y}_k$, so
+The backward step of an activation is the incoming gradient times the Jacobian ([post 17](../17-backpropagation-through-activation-functions/index.md)). For one sample the incoming gradient is that of [post 18](../18-backpropagation-through-the-loss-function/index.md), $\partial L_i / \partial \hat{y}_k = -y_k / \hat{y}_k$, so
 
 $$\frac{\partial L_i}{\partial z_j} = \sum_{k} \left(-\frac{y_k}{\hat{y}_k}\right) \frac{\partial \hat{y}_k}{\partial z_j}.$$
 
@@ -99,9 +99,9 @@ dvalues @ J       = [-0.300000  0.200000  0.100000]
 y_hat - y         = [-0.300000  0.200000  0.100000]
 ```
 
-The single non-zero entry of post 18's gradient, $-1/0.7$, picks out the first row of the Jacobian and rescales it into $\hat{\mathbf{y}} - \mathbf{y}$. The figure at the top of the post draws this product and the subtraction side by side.
+The single non-zero entry of [post 18](../18-backpropagation-through-the-loss-function/index.md)'s gradient, $-1/0.7$, picks out the first row of the Jacobian and rescales it into $\hat{\mathbf{y}} - \mathbf{y}$. The figure at the top of the post draws this product and the subtraction side by side.
 
-For a batch, $L$ is the mean of the $L_i$ and logit $z_{i,k}$ belongs to sample $i$ alone, so the factor $1/N$ of post 18 carries over unchanged:
+For a batch, $L$ is the mean of the $L_i$ and logit $z_{i,k}$ belongs to sample $i$ alone, so the factor $1/N$ of [post 18](../18-backpropagation-through-the-loss-function/index.md) carries over unchanged:
 
 $$\frac{\partial L}{\partial \mathbf{Z}} = \frac{\hat{\mathbf{y}} - \mathbf{y}}{N}.$$
 
@@ -109,14 +109,14 @@ The division by $N$ happens once. In the Jacobian route it is the one inside `Lo
 
 ### 3.1. Why this is not magic
 
-A second derivation reaches the same place without a Jacobian. With a one-hot label whose true class is $c$, the loss of the sample is $L_i = -\log \hat{y}_c$, and the identity of section 2.2 writes it in the logits directly:
+A second derivation reaches the same place without a Jacobian. With a one-hot label whose true class is $c$, the loss of the sample is $L_i = -\log \hat{y}_c$, and the identity of [section 2.2](#22-the-entries) writes it in the logits directly:
 
 $$L_i = -z_c + \log \sum_{j} e^{z_j}.$$
 
 For $[0.7, 0.2, 0.1]$ both forms give 0.356675. Differentiating with respect to $z_k$ takes two steps:
 
 - The term $-z_c$ contributes $-1$ when $k = c$ and 0 otherwise, which is exactly $-y_k$.
-- The term $\log \sum_j e^{z_j}$ contributes $\hat{y}_k$, as in section 2.2.
+- The term $\log \sum_j e^{z_j}$ contributes $\hat{y}_k$, as in [section 2.2](#22-the-entries).
 
 The sum is $\hat{y}_k - y_k$ again. The Jacobian has not disappeared; its effect is folded into the rewritten loss. The logarithm in the loss undoes the exponential in softmax, and that is why this particular pair cancels and an arbitrary activation and loss do not.
 
@@ -132,15 +132,15 @@ Two reasons, and both are counted or measured in this post, not timed; the figur
 
 **Work.** The Jacobian route builds $K^2$ numbers for every sample and multiplies a row into them; the combined route computes $K$. For the spiral's three classes that is 9 against 3. At 1,000 classes it is 1,000,000 against 1,000, and at 50,000 classes, the size of a language-model vocabulary, 2,500,000,000 against 50,000 for each sample. The ratio is $K$ itself.
 
-**No division.** The separate route divides by $\hat{y}$ and then multiplies by it. On paper the two cancel; in floating point they do not when $\hat{y}$ has underflowed to exactly 0, and section 8 shows the separate route returning `nan` where $\hat{\mathbf{y}} - \mathbf{y}$ is finite. Every entry of $\hat{\mathbf{y}} - \mathbf{y}$ lies between $-1$ and 1.
+**No division.** The separate route divides by $\hat{y}$ and then multiplies by it. On paper the two cancel; in floating point they do not when $\hat{y}$ has underflowed to exactly 0, and [section 8](#8-what-can-go-wrong) shows the separate route returning `nan` where $\hat{\mathbf{y}} - \mathbf{y}$ is finite. Every entry of $\hat{\mathbf{y}} - \mathbf{y}$ lies between $-1$ and 1.
 
-Framework losses go one step further. PyTorch's `CrossEntropyLoss`, for instance, takes the logits and computes the logarithm of the softmax in one step. The form $-z_c + \log \sum_j e^{z_j}$ is what makes that possible: with the max-subtraction of post 06 it needs no probability before the logarithm, and so no clip. The class of this series joins the two functions for the backward pass only: its forward pass still runs softmax and then the clipped loss of post 08. The same cancellation appears once more in the series, for sigmoid with binary cross-entropy (post 34).
+Framework losses go one step further. PyTorch's `CrossEntropyLoss`, for instance, takes the logits and computes the logarithm of the softmax in one step. The form $-z_c + \log \sum_j e^{z_j}$ is what makes that possible: with the max-subtraction of [post 06](../06-activation-functions-relu-and-softmax/index.md) it needs no probability before the logarithm, and so no clip. The class of this series joins the two functions for the backward pass only: its forward pass still runs softmax and then the clipped loss of [post 08](../08-loss-categorical-cross-entropy/index.md). The same cancellation appears once more in the series, for sigmoid with binary cross-entropy ([post 34](../34-sigmoid-and-binary-cross-entropy/index.md)).
 
 ---
 
 ## 4. Worked example
 
-The batch of post 08, three samples and three classes:
+The batch of [post 08](../08-loss-categorical-cross-entropy/index.md), three samples and three classes:
 
 | Sample | Softmax output $\hat{\mathbf{y}}$ | True class | $\mathbf{y}$ (one-hot) | $\hat{\mathbf{y}} - \mathbf{y}$ |
 |:---:|:---:|:---:|:---:|:---:|
@@ -183,15 +183,15 @@ print(dinputs)
 
 *Line 2 changes one entry per row, at the true class; line 3 divides every entry by the batch size.*
 
-The figure follows the batch through the three lines. Post 18's gradient had one non-zero entry in each row. This one has none that is zero: the Jacobian has spread each row's single entry over all the logits. Sample 3, the most confident and correct, has the smallest gradient, and sample 2, with only 0.5 on its true class, the largest.
+The figure follows the batch through the three lines. [Post 18](../18-backpropagation-through-the-loss-function/index.md)'s gradient had one non-zero entry in each row. This one has none that is zero: the Jacobian has spread each row's single entry over all the logits. Sample 3, the most confident and correct, has the smallest gradient, and sample 2, with only 0.5 on its true class, the largest.
 
-The subtraction uses the advanced indexing of post 08: row $i$, column `y_true[i]`. With integer labels the one-hot matrix is never built, because subtracting $\mathbf{y}$ changes only one entry per row.
+The subtraction uses the advanced indexing of [post 08](../08-loss-categorical-cross-entropy/index.md): row $i$, column `y_true[i]`. With integer labels the one-hot matrix is never built, because subtracting $\mathbf{y}$ changes only one entry per row.
 
 ---
 
 ## 5. The combined class
 
-For completeness, and for the check of section 7, the Jacobian route is a `backward` method on the softmax class of post 06:
+For completeness, and for the check of [section 7](#7-make-it-run-both-routes-against-a-central-difference), the Jacobian route is a `backward` method on the softmax class of [post 06](../06-activation-functions-relu-and-softmax/index.md):
 
 ```python
     def backward(self, dvalues):
@@ -236,27 +236,27 @@ class Activation_Softmax_Loss_CategoricalCrossentropy:
 
 Three things to flag, each visible in the figure.
 
-**`forward` is a thin wrapper.** It runs the softmax of post 06 on the logits and the loss of post 08 on the result, stores the probabilities as `self.output`, and returns the batch loss. The reported loss is the number the two separate classes would give.
+**`forward` is a thin wrapper.** It runs the softmax of [post 06](../06-activation-functions-relu-and-softmax/index.md) on the logits and the loss of [post 08](../08-loss-categorical-cross-entropy/index.md) on the result, stores the probabilities as `self.output`, and returns the batch loss. The reported loss is the number the two separate classes would give.
 
-**`dvalues` is the softmax output.** As in post 18, nothing comes after this class, so its upstream gradient is 1 and the argument carries the predictions: the caller passes `softmax_loss.output`. The copy keeps the subtraction from changing that array.
+**`dvalues` is the softmax output.** As in [post 18](../18-backpropagation-through-the-loss-function/index.md), nothing comes after this class, so its upstream gradient is 1 and the argument carries the predictions: the caller passes `softmax_loss.output`. The copy keeps the subtraction from changing that array.
 
-**`dinputs` is the gradient with respect to the logits.** It has shape $(N, K)$, one row per sample and one column per class, the shape of the logits, and the last dense layer reads it as its `dvalues`. All $K$ columns are needed because column $k$ feeds the weights of output neuron $k$. `Loss_CategoricalCrossentropy.backward` and `Activation_Softmax.backward` are not called at all; calling either as well applies part of the chain twice (section 8).
+**`dinputs` is the gradient with respect to the logits.** It has shape $(N, K)$, one row per sample and one column per class, the shape of the logits, and the last dense layer reads it as its `dvalues`. All $K$ columns are needed because column $k$ feeds the weights of output neuron $k$. `Loss_CategoricalCrossentropy.backward` and `Activation_Softmax.backward` are not called at all; calling either as well applies part of the chain twice ([section 8](#8-what-can-go-wrong)).
 
 ---
 
 ## 6. Label formats
 
-The class works on integer labels, because the subtraction is an indexing operation. One-hot labels are converted first: `np.argmax(y_true, axis=1)` returns the column of the single 1 in each row. This is the reverse of post 18, whose `backward` turned integer labels into one-hot rows for its division. After the conversion `y_true` is a 1-D array of class indices, and the three lines do not branch on the format.
+The class works on integer labels, because the subtraction is an indexing operation. One-hot labels are converted first: `np.argmax(y_true, axis=1)` returns the column of the single 1 in each row. This is the reverse of [post 18](../18-backpropagation-through-the-loss-function/index.md), whose `backward` turned integer labels into one-hot rows for its division. After the conversion `y_true` is a 1-D array of class indices, and the three lines do not branch on the format.
 
-Two inputs pass the check on the number of dimensions and are still wrong. Integer labels stored as an $(N, 1)$ column are taken for one-hot rows, as in posts 08 and 18. Soft labels such as $[0.9, 0.05, 0.05]$ are two-dimensional as well, and `argmax` reduces each to its largest entry. The derivation of section 3 does hold for them, since it needed only a label row that sums to 1, but the code for it is `(dvalues - y_true) / samples`, not an index, and `forward` would have to change with it: the multiply-and-sum path of post 08 reports the cross-entropy for one-hot rows only. The series uses hard labels only; section 8 measures both failures.
+Two inputs pass the check on the number of dimensions and are still wrong. Integer labels stored as an $(N, 1)$ column are taken for one-hot rows, as in posts [08](../08-loss-categorical-cross-entropy/index.md) and [18](../18-backpropagation-through-the-loss-function/index.md). Soft labels such as $[0.9, 0.05, 0.05]$ are two-dimensional as well, and `argmax` reduces each to its largest entry. The derivation of [section 3](#3-the-cancellation) does hold for them, since it needed only a label row that sums to 1, but the code for it is `(dvalues - y_true) / samples`, not an index, and `forward` would have to change with it: the multiply-and-sum path of [post 08](../08-loss-categorical-cross-entropy/index.md) reports the cross-entropy for one-hot rows only. The series uses hard labels only; [section 8](#8-what-can-go-wrong) measures both failures.
 
 ---
 
 ## 7. Make it run: both routes against a central difference
 
-`snippets/combined_class.py` holds the two `backward` methods of section 5 with the softmax class of post 06 and the loss classes of posts 08 and 18 around them. It needs NumPy only and runs in under a second from the series root with `python posts/19-softmax-derivatives-and-the-combined-backward-pass/snippets/combined_class.py`.
+`snippets/combined_class.py` holds the two `backward` methods of [section 5](#5-the-combined-class) with the softmax class of [post 06](../06-activation-functions-relu-and-softmax/index.md) and the loss classes of posts [08](../08-loss-categorical-cross-entropy/index.md) and [18](../18-backpropagation-through-the-loss-function/index.md) around them. It needs NumPy only and runs in under a second from the series root with `python posts/19-softmax-derivatives-and-the-combined-backward-pass/snippets/combined_class.py`.
 
-The script draws five rows of four logits and five labels in float64 from a generator with seed 4, chosen so that the five labels cover all four classes. It computes $\partial L / \partial \mathbf{Z}$ three ways: with the combined class, with post 18's loss `backward` followed by the softmax `backward`, and with the central difference of post 10 ($h = 10^{-5}$), which nudges each of the 20 logits in turn and divides the change in the loss returned by `forward` by $2h$.
+The script draws five rows of four logits and five labels in float64 from a generator with seed 4, chosen so that the five labels cover all four classes. It computes $\partial L / \partial \mathbf{Z}$ three ways: with the combined class, with [post 18](../18-backpropagation-through-the-loss-function/index.md)'s loss `backward` followed by the softmax `backward`, and with the central difference of [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) ($h = 10^{-5}$), which nudges each of the 20 logits in turn and divides the change in the loss returned by `forward` by $2h$.
 
 ```text
 labels: [1 2 1 3 0]  loss: 1.891199
@@ -274,15 +274,15 @@ section 4 batch, largest |combined - Jacobian route| = 5.55e-17
 numbers built: Jacobian route 80  combined 20
 ```
 
-The two analytic routes differ by rounding in the last bit, on this batch and on the batch of section 4. That is the statement that the shortcut is exact and not an approximation. Both agree with the measured slopes to about $2 \times 10^{-11}$, for integer and for one-hot labels, and since the measurement differentiates the batch mean, it confirms the single division by $N$ as well. The Jacobian route built $5 \times 4^2 = 80$ numbers to get there and the combined route 20.
+The two analytic routes differ by rounding in the last bit, on this batch and on the batch of [section 4](#4-worked-example). That is the statement that the shortcut is exact and not an approximation. Both agree with the measured slopes to about $2 \times 10^{-11}$, for integer and for one-hot labels, and since the measurement differentiates the batch mean, it confirms the single division by $N$ as well. The Jacobian route built $5 \times 4^2 = 80$ numbers to get there and the combined route 20.
 
-Three more scripts in the same directory print the other numbers of this post, each in under a second: `softmax_jacobian.py` (sections 2 and 3), `worked_example.py` (section 4), and `what_can_go_wrong.py` (section 8).
+Three more scripts in the same directory print the other numbers of this post, each in under a second: `softmax_jacobian.py` (sections [2](#2-the-softmax-jacobian) and [3](#3-the-cancellation)), `worked_example.py` ([section 4](#4-worked-example)), and `what_can_go_wrong.py` ([section 8](#8-what-can-go-wrong)).
 
 ---
 
 ## 8. What can go wrong?
 
-`snippets/what_can_go_wrong.py` runs each case on the seeded batch of section 7 unless another input is named.
+`snippets/what_can_go_wrong.py` runs each case on the seeded batch of [section 7](#7-make-it-run-both-routes-against-a-central-difference) unless another input is named.
 
 - **The division by $N$ is left out, or done twice.** Without `self.dinputs /= samples` every entry is exactly 5 times the measured slope at $N = 5$. A second division, in a layer or an optimiser, leaves 0.2 times the slope. Neither raises an error or changes the direction of the step.
 
@@ -296,7 +296,7 @@ Three more scripts in the same directory print the other numbers of this post, e
    central difference:   [[-0.2   0.05  0.15]]
 ```
 
-The class returns the gradient for the hard label $[1, 0, 0]$. The measured slopes of the cross-entropy $-\sum_k y_k \log \hat{y}_k$ are $\hat{\mathbf{y}} - \mathbf{y}$ with the soft label, which the Jacobian route reproduces because post 18's `backward` keeps the general division.
+The class returns the gradient for the hard label $[1, 0, 0]$. The measured slopes of the cross-entropy $-\sum_k y_k \log \hat{y}_k$ are $\hat{\mathbf{y}} - \mathbf{y}$ with the soft label, which the Jacobian route reproduces because [post 18](../18-backpropagation-through-the-loss-function/index.md)'s `backward` keeps the general division.
 
 - **Integer labels arrive as a column.** With the labels `[1 2 1 3 0]` reshaped to $(5, 1)$, `argmax` over a row of one number returns 0 every time, so the 1 is subtracted in column 0 of every row. The largest gap to the central difference is 0.200, which is $1/N$, and no error is raised. `y.ravel()` restores the right answer.
 
@@ -311,7 +311,7 @@ The class returns the gradient for the hard label $[1, 0, 0]$. The measured slop
 
 The separate route computes $-1/0 = -\infty$ and then multiplies it by Jacobian entries that are 0, which is `nan`. The combined class returns $\hat{\mathbf{y}} - \mathbf{y}$, the correct gradient, and the sample that most needs a correction gets the largest one.
 
-- **The gradient is expected to follow the clipped loss.** For the logits $[-20, 0, 0]$ with true class 0, the true-class probability is $1.031 \times 10^{-9}$, below the lower clip bound of post 08. `forward` reports 16.1181 where the unclipped loss is 20.6931, and the reported number is flat there: its measured slopes are `[0. 0. 0.]`. `backward` returns `[-1. 0.5 0.5]`, the gradient of the unclipped loss. The clip changes the number that is logged and leaves the gradient alone, which is the useful behaviour; a gradient check on such a sample fails for a reason that is not a bug.
+- **The gradient is expected to follow the clipped loss.** For the logits $[-20, 0, 0]$ with true class 0, the true-class probability is $1.031 \times 10^{-9}$, below the lower clip bound of [post 08](../08-loss-categorical-cross-entropy/index.md). `forward` reports 16.1181 where the unclipped loss is 20.6931, and the reported number is flat there: its measured slopes are `[0. 0. 0.]`. `backward` returns `[-1. 0.5 0.5]`, the gradient of the unclipped loss. The clip changes the number that is logged and leaves the gradient alone, which is the useful behaviour; a gradient check on such a sample fails for a reason that is not a bug.
 
 - **The formula is used with another loss.** The cancellation belongs to softmax with cross-entropy. For softmax followed by a squared error against the one-hot labels, the measured slopes of the first row are `[-0.0069 -0.0489 0.0666 -0.0108]` and $(\hat{\mathbf{y}} - \mathbf{y})/N$ is `[0.0122 -0.1804 0.1232 0.0451]`: different sizes and, in two places, different signs.
 
@@ -345,13 +345,11 @@ The separate route computes $-1/0 = -\infty$ and then multiplies it by Jacobian 
 
 ## Further reading
 
-- Bishop, C. M., *Pattern Recognition and Machine Learning*, section 4.3.4 (Springer, 2006).
-- Bridle, J. S., *"Probabilistic Interpretation of Feedforward Classification Network Outputs"* (Neurocomputing, NATO ASI Series, 1990).
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, section 6.2.2.3 (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 9 (2020).
-- PyTorch documentation, `torch.nn.CrossEntropyLoss` (latest).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Bishop, C. M., *[Pattern Recognition and Machine Learning](https://www.microsoft.com/en-us/research/people/cmbishop/prml-book/)*, section 4.3.4 (Springer, 2006).
+- Bridle, J. S., *["Probabilistic Interpretation of Feedforward Classification Network Outputs"](https://doi.org/10.1007/978-3-642-76153-9_28)* (Neurocomputing, NATO ASI Series, 1990).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/mlp.html)*, section 6.2.2.3 (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 9 (2020).
+- PyTorch documentation, [`torch.nn.CrossEntropyLoss`](https://docs.pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html) (latest).
 
 ---
 
