@@ -21,11 +21,11 @@
 
 ## 1. The question: how is a derivative buried several functions deep computed?
 
-The forward pass of a neural network is a **composition of functions**: the output of one function is the input of the next. In the classifier of [post 07](../07-coding-the-complete-forward-pass/index.md) one sample $\mathbf{x}$ is multiplied by $\mathbf{W}_1$, has a bias added, passes through ReLU, is multiplied by $\mathbf{W}_2$, has another bias added, passes through softmax, and finally enters the cross-entropy of post 08 with the true label $y$ to produce the loss. Written as one line, with CE for cross-entropy:
+The forward pass of a neural network is a **composition of functions**: the output of one function is the input of the next. In the classifier of [post 07](../07-coding-the-complete-forward-pass/index.md) one sample $\mathbf{x}$ is multiplied by $\mathbf{W}_1$, has a bias added, passes through ReLU, is multiplied by $\mathbf{W}_2$, has another bias added, passes through softmax, and finally enters the cross-entropy of [post 08](../08-loss-categorical-cross-entropy/index.md) with the true label $y$ to produce the loss. Written as one line, with CE for cross-entropy:
 
 $$L = \text{CE}\Bigl(\text{softmax}\bigl(\text{ReLU}(\mathbf{x}\mathbf{W}_1 + \mathbf{b}_1)\,\mathbf{W}_2 + \mathbf{b}_2\bigr),\ y\Bigr).$$
 
-To update $\mathbf{W}_1$, gradient descent needs $\partial L / \partial \mathbf{W}_1$: how the loss at the outside of that expression changes when an entry of $\mathbf{W}_1$, at the very inside, is nudged. The power and sum rules of post 10 differentiate a polynomial in the variable itself and do not reach inside a nested expression. The missing piece is a rule for functions inside functions.
+To update $\mathbf{W}_1$, gradient descent needs $\partial L / \partial \mathbf{W}_1$: how the loss at the outside of that expression changes when an entry of $\mathbf{W}_1$, at the very inside, is nudged. The power and sum rules of [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) differentiate a polynomial in the variable itself and do not reach inside a nested expression. The missing piece is a rule for functions inside functions.
 
 That rule is the **chain rule**. Each function in the composition is differentiated on its own, as if nothing else existed, and the results are multiplied. The derivative of one function with respect to its own input is called a **local derivative**, and the gradient of the loss with respect to any parameter is a product of local derivatives, one per function between the parameter and the loss.
 
@@ -45,21 +45,21 @@ $$\frac{dy}{dx} = \frac{dy}{dz} \cdot \frac{dz}{dx} = f'(z) \cdot g'(x) = f'(g(x
 
 In one sentence: **the derivative of a composition is the derivative of the outer function, evaluated at the value the inner function produced, times the derivative of the inner function.** The point of evaluation is part of the rule: $g'$ is taken at the original $x$, and $f'$ at $z = g(x)$, the value $f$ actually received.
 
-The reason is the reading of a derivative as a rate from post 10 (section 2.4). A small nudge $\Delta x$ changes $z$ by about $g'(x)\,\Delta x$, and that change is itself a small nudge to the input of $f$:
+The reason is the reading of a derivative as a rate from [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) ([section 2.4](../10-derivatives-partial-derivatives-and-gradients/index.md#24-what-a-derivative-is-not)). A small nudge $\Delta x$ changes $z$ by about $g'(x)\,\Delta x$, and that change is itself a small nudge to the input of $f$:
 
 $$\Delta y \approx f'(z)\,\Delta z \approx f'(z)\,g'(x)\,\Delta x.$$
 
 Dividing by $\Delta x$ gives the rate $f'(z)\,g'(x)$, and both approximations become exact as the nudge shrinks to zero: two rescalings in a row multiply. In Leibniz's notation the rule looks like the cancellation of $dz$ between two fractions. That is a useful way to remember it and to check units, but the argument above is what makes it true; a complete proof also has to treat the case in which the change in $z$ is exactly zero, a point a calculus text raises (Strang, 2010).
 
-### 2.1. A first example, and two debts from post 10
+### 2.1. A first example, and two debts from [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md)
 
 Take $y = (2x + 1)^2$. The inner function is $g(x) = 2x + 1$ and the outer one is $f(z) = z^2$. Their local derivatives are $g'(x) = 2$ and $f'(z) = 2z$, so
 
 $$\frac{dy}{dx} = f'(g(x)) \cdot g'(x) = 2(2x + 1) \cdot 2 = 8x + 4.$$
 
-At $x = 1.5$ the inner value is $z = 4$, the two factors are $8$ and $2$, and the slope is $16$, the value post 10 measured with a central difference (section 6.2 there). The tempting answer $2(2x + 1) = 8$, which post 10 found to be half the measured slope, is the outer factor alone: the inner factor $g'(x) = 2$ was left out.
+At $x = 1.5$ the inner value is $z = 4$, the two factors are $8$ and $2$, and the slope is $16$, the value [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) measured with a central difference ([section 6.2](../10-derivatives-partial-derivatives-and-gradients/index.md#62-the-rules-checked) there). The tempting answer $2(2x + 1) = 8$, which [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) found to be half the measured slope, is the outer factor alone: the inner factor $g'(x) = 2$ was left out.
 
-Post 10 (section 4.3) also noted that the loss $L = (w - 1)^2$ has slope 2 with respect to $w$ at $w = 2$, and slope 4 with respect to a new parameter $u$ defined by $w = 2u$. That is a chain with $w = g(u) = 2u$ inside:
+[Post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) ([section 4.3](../10-derivatives-partial-derivatives-and-gradients/index.md#43-what-the-gradient-is-not)) also noted that the loss $L = (w - 1)^2$ has slope 2 with respect to $w$ at $w = 2$, and slope 4 with respect to a new parameter $u$ defined by $w = 2u$. That is a chain with $w = g(u) = 2u$ inside:
 
 $$\frac{dL}{du} = \frac{dL}{dw} \cdot \frac{dw}{du} = 2(w - 1) \cdot 2 = 2 \cdot 2 = 4 \quad \text{at } u = 1.$$
 
@@ -68,7 +68,7 @@ Rescaling a parameter inserts one more function into the chain, and with it one 
 ### 2.2. What the chain rule is *not*
 
 - **It is not the product rule.** The chain rule is for *composition*, $f$ applied to $g(x)$. A *product* of two functions of the same variable, $f(x) \cdot g(x)$, is differentiated with the product rule, $f'(x)\,g(x) + f(x)\,g'(x)$, which is a sum of two terms and not a product of two slopes. $(2x + 1)^2$ is a composition; $x^2 \cdot (2x + 1)$ is a product.
-- **It is not a single-variable theorem.** The same rule holds for the partial derivatives of functions of several variables (section 5.1), and backpropagation uses that form everywhere.
+- **It is not a single-variable theorem.** The same rule holds for the partial derivatives of functions of several variables ([section 5.1](#51-the-same-rule-with-partial-derivatives)), and backpropagation uses that form everywhere.
 
 ---
 
@@ -96,7 +96,7 @@ Compute $\frac{d}{dx}\bigl[3(2x^2)^5\bigr]$, a power applied to a polynomial, in
 
 **Step 1. Identify inner and outer.** Let $g(x) = 2x^2$ (the inner function) and $f(z) = 3z^5$ (the outer function, applied to $z = g(x)$).
 
-**Step 2. Local derivatives.** Each is a single use of the power rule of post 10:
+**Step 2. Local derivatives.** Each is a single use of the power rule of [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md):
 
 $$g'(x) = 4x, \qquad f'(z) = 15 z^4.$$
 
@@ -124,13 +124,13 @@ The network in the next section uses partial derivatives in place of plain $d$, 
 
 $$\frac{\partial L}{\partial x} = \frac{\partial L}{\partial u} \cdot \frac{\partial u}{\partial x} + \frac{\partial L}{\partial v} \cdot \frac{\partial v}{\partial x} = 1 \cdot 2 + 1 \cdot 2x = 2 + 2x.$$
 
-At $x = 3$ the two paths contribute 2 and 6, and the slope is 8, the same as differentiating $L = 2x + x^2$ directly. The one new ingredient is that a variable which reaches the output along two paths *sums* the contributions of the paths; along each single path the product of local derivatives is unchanged. The sum over paths returns in post 15, where one input feeds several neurons.
+At $x = 3$ the two paths contribute 2 and 6, and the slope is 8, the same as differentiating $L = 2x + x^2$ directly. The one new ingredient is that a variable which reaches the output along two paths *sums* the contributions of the paths; along each single path the product of local derivatives is unchanged. The sum over paths returns in [post 15](../15-gradients-with-respect-to-inputs/index.md), where one input feeds several neurons.
 
 ---
 
 ## 6. The chain rule, applied to a neural network
 
-Take the two-layer classifier of section 1 and one sample $\mathbf{x}$, a row of features. Read from the inside out, four functions stand between the input and the loss:
+Take the two-layer classifier of [section 1](#1-the-question-how-is-a-derivative-buried-several-functions-deep-computed) and one sample $\mathbf{x}$, a row of features. Read from the inside out, four functions stand between the input and the loss:
 
 | Position | Function | Symbol |
 |:---:|---|---|
@@ -139,19 +139,19 @@ Take the two-layer classifier of section 1 and one sample $\mathbf{x}$, a row of
 | next | second dense layer | $\mathbf{z}_2 = \mathbf{a}_1\mathbf{W}_2 + \mathbf{b}_2$ |
 | outermost | softmax and cross-entropy | $L = \text{CE}(\text{softmax}(\mathbf{z}_2),\ y)$ |
 
-Softmax and cross-entropy are counted as one function from the logits $\mathbf{z}_2$ to the loss, because the series differentiates them together (post 19). The lowercase bold letters are the single-sample rows of the batch matrices $\mathbf{Z}_1$, $\mathbf{A}_1$, and $\mathbf{Z}_2$ of the [notation guide](../../notation_guide.md), and $L$ is a single number.
+Softmax and cross-entropy are counted as one function from the logits $\mathbf{z}_2$ to the loss, because the series differentiates them together ([post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)). The lowercase bold letters are the single-sample rows of the batch matrices $\mathbf{Z}_1$, $\mathbf{A}_1$, and $\mathbf{Z}_2$ of the [notation guide](../../notation_guide.md), and $L$ is a single number.
 
 For $\partial L / \partial \mathbf{W}_1$ the chain rule produces one factor per function in the chain:
 
 $$\frac{\partial L}{\partial \mathbf{W}_1} = \frac{\partial L}{\partial \mathbf{z}_2} \cdot \frac{\partial \mathbf{z}_2}{\partial \mathbf{a}_1} \cdot \frac{\partial \mathbf{a}_1}{\partial \mathbf{z}_1} \cdot \frac{\partial \mathbf{z}_1}{\partial \mathbf{W}_1}.$$
 
-The figure below draws the chain for the sample of section 8.2, with each factor measured and placed under the function it belongs to.
+The figure below draws the chain for the sample of [section 8.2](#82-the-four-factors-of-the-network-measured), with each factor measured and placed under the function it belongs to.
 
 ![Forward, left to right: x = (1, minus 2) passes Dense 1 to give z1 = (1.2, minus 1.6, 1.7), ReLU to give a1 = (1.2, 0.0, 1.7), Dense 2 to give z2 = (minus 0.66, 1.39, 0.84), and softmax with cross-entropy to give L = 2.584; the second hidden neuron is outlined as switched off. Under each function, its measured table of local derivatives, with arrows running right to left: dL/dz2 of shape (1, 3) is minus 0.9245, 0.5863, 0.3383; dz2/da1 of shape (3, 3) holds the entries of W2; da1/dz1 of shape (3, 3) has 1, 0, 1 on its diagonal; dz1/dW1 of shape (3, 6) holds only the inputs 1 and minus 2. Their product, reshaped to (2, 3), is minus 0.2255, 0, 1.15 and 0.451, 0, minus 2.3, with a zero middle column, and a central difference through the whole network agrees to 6.0 times 10 to the minus 11.](diagrams/02-chain-in-a-network.svg)
 
 *Read the lower row from right to left: the combined softmax and cross-entropy, the second dense layer, ReLU, the first dense layer. Four functions, four factors, and the zero of the switched-off neuron carries through to its two weights.*
 
-Because the quantities are rows of numbers and not single numbers, each factor is a table of partial derivatives with one row per output of its function and one column per input (such a table is called a Jacobian, a name post 17 returns to), and the dots are matrix products (post 02). For the network of post 09, with 2 inputs, 3 hidden neurons, and 3 classes, the four factors are:
+Because the quantities are rows of numbers and not single numbers, each factor is a table of partial derivatives with one row per output of its function and one column per input (such a table is called a Jacobian, a name [post 17](../17-backpropagation-through-activation-functions/index.md) returns to), and the dots are matrix products ([post 02](../02-numpy-and-the-dot-product/index.md)). For the network of [post 09](../09-introduction-to-optimisation/index.md), with 2 inputs, 3 hidden neurons, and 3 classes, the four factors are:
 
 | Factor | Function it belongs to | Shape | What it holds |
 |---|---|:---:|---|
@@ -160,9 +160,9 @@ Because the quantities are rows of numbers and not single numbers, each factor i
 | $\partial \mathbf{a}_1 / \partial \mathbf{z}_1$ | ReLU | $(3, 3)$ | the ReLU slope of each hidden neuron, 1 or 0, on the diagonal |
 | $\partial \mathbf{z}_1 / \partial \mathbf{W}_1$ | first dense layer | $(3, 6)$ | how each weighted sum responds to each of the six weights: the inputs $\mathbf{x}$ |
 
-The product has shape $(1, 6)$: one number per entry of $\mathbf{W}_1$, which is what a gradient is (post 10, section 4). Section 8.2 measures all four tables and multiplies them.
+The product has shape $(1, 6)$: one number per entry of $\mathbf{W}_1$, which is what a gradient is ([post 10](../10-derivatives-partial-derivatives-and-gradients/index.md), [section 4](../10-derivatives-partial-derivatives-and-gradients/index.md#4-the-gradient)). [Section 8.2](#82-the-four-factors-of-the-network-measured) measures all four tables and multiplies them.
 
-Each factor is something one class can supply from its own inputs and outputs: the combined softmax and cross-entropy class, `Layer_Dense`, and `Activation_ReLU` each get a `backward` method for it from post 16 on. A backward pass walks the chain from the loss towards the input, multiplying a running gradient by the local derivative of each function it passes. That walk is **backpropagation**. What this post does not supply is the formula for each local derivative, which posts 12 to 19 derive, one function at a time.
+Each factor is something one class can supply from its own inputs and outputs: the combined softmax and cross-entropy class, `Layer_Dense`, and `Activation_ReLU` each get a `backward` method for it from [post 16](../16-coding-backpropagation/index.md) on. A backward pass walks the chain from the loss towards the input, multiplying a running gradient by the local derivative of each function it passes. That walk is **backpropagation**. What this post does not supply is the formula for each local derivative, which posts 12 to 19 derive, one function at a time.
 
 ### 6.1. Counting the factors
 
@@ -189,7 +189,7 @@ For $K = 2$ this gives 4 and 2, as in the table; for a three-layer network it gi
 
 The gradients for $\mathbf{W}_1$ and $\mathbf{W}_2$ begin with the same factor, $\partial L / \partial \mathbf{z}_2$, and so do those for $\mathbf{b}_1$ and $\mathbf{b}_2$. A product that is built up starting from the loss computes that shared part once and hands it on: the running product at any point of the walk is the gradient of the loss with respect to the value at that point, and every parameter further in reuses it. This reuse is what the [glossary](../../GLOSSARY.md) means when it calls backpropagation the chain rule applied in an order that reuses every intermediate product.
 
-The order also decides the size of the intermediate results: starting from the loss the running product is always a single row, because $L$ is one number, while starting from $\mathbf{W}_1$ it is a table with one column per weight. This is why the pass runs backward, and why post 10 could say that backpropagation delivers every partial derivative for about the price of one more pass through the network.
+The order also decides the size of the intermediate results: starting from the loss the running product is always a single row, because $L$ is one number, while starting from $\mathbf{W}_1$ it is a table with one column per weight. This is why the pass runs backward, and why [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) could say that backpropagation delivers every partial derivative for about the price of one more pass through the network.
 
 The chain rule therefore does two things for a neural network. It makes the gradient *computable*, although the forward expression is deeply nested, and it makes the gradient *modular*: each class needs to know only its own local derivative, and combining them is the chain rule's job.
 
@@ -197,26 +197,26 @@ The chain rule therefore does two things for a neural network. It makes the grad
 
 ## 7. The pattern, in three steps
 
-Reading off the chain rule for any composition is mechanical. The figure below repeats the three steps of section 4 on $3(2x^2)^5$ and draws what the third step guards against:
+Reading off the chain rule for any composition is mechanical. The figure below repeats the three steps of [section 4](#4-a-polynomial-example) on $3(2x^2)^5$ and draws what the third step guards against:
 
 ![Three cards work the derivative of 3 times (2x squared) to the fifth. Split it: g(x) = 2x squared, f(z) = 3z to the fifth. Differentiate each: g prime (x) = 4x, f prime (z) = 15z to the fourth. Multiply, with f prime at z = g(x): 960x to the ninth, which at x = 1 is f prime (2) times g prime (1) = 240 times 4 = 960. Beside them, the curve near x = 1 with its tangent of slope 960 at the point (1, 96), and an almost flat line of slope 60, f prime (1) times g prime (1).](diagrams/03-three-step-pattern.svg)
 
 *Taking the outer derivative at $x$ in place of the inner value $z = 2$ gives a slope of 60, a sixteenth of the true 960. The same three steps produce the four-factor gradient of the network.*
 
-Step 1, identifying the chain of functions, is reading the architecture. Step 3, multiplying, is matrix arithmetic, whose shapes and order posts 13 and 14 work through. The substance of the posts that follow is **step 2**: deriving the local derivatives of `Layer_Dense`, `Activation_ReLU`, and the combined softmax and cross-entropy in posts 12 to 19, before posts 20 and 21 assemble them into one backward pass. Step 2 is also why a backward pass needs the forward pass first: every local derivative is evaluated at a value the forward pass produced, so those values must have been computed, and kept.
+Step 1, identifying the chain of functions, is reading the architecture. Step 3, multiplying, is matrix arithmetic, whose shapes and order posts [13](../13-backprop-through-a-layer/index.md) and [14](../14-matrices-in-backpropagation/index.md) work through. The substance of the posts that follow is **step 2**: deriving the local derivatives of `Layer_Dense`, `Activation_ReLU`, and the combined softmax and cross-entropy in posts 12 to 19, before posts [20](../20-assembling-full-backpropagation/index.md) and [21](../21-coding-the-full-backpropagation/index.md) assemble them into one backward pass. Step 2 is also why a backward pass needs the forward pass first: every local derivative is evaluated at a value the forward pass produced, so those values must have been computed, and kept.
 
 ---
 
 ## 8. Make it run: the chain rule against finite differences
 
-Nothing later in the series imports the code of this post; it checks the calculus above with the central difference of post 10, at the step $h = 10^{-5}$ recommended there. Two scripts under `snippets/` produce every number the post quotes. Each runs from the series root in about a second, uses no random numbers, and prints the same output on every run:
+Nothing later in the series imports the code of this post; it checks the calculus above with the central difference of [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md), at the step $h = 10^{-5}$ recommended there. Two scripts under `snippets/` produce every number the post quotes. Each runs from the series root in about a second, uses no random numbers, and prints the same output on every run:
 
-- `python posts/11-the-chain-rule/snippets/chain_rule_checks.py` runs the scalar examples of sections 2 to 5 and the corner case of section 9. It needs only the standard library.
-- `python posts/11-the-chain-rule/snippets/network_chain.py` runs sections 6 and 8.2 and the dropped factor of section 9. It needs NumPy.
+- `python posts/11-the-chain-rule/snippets/chain_rule_checks.py` runs the scalar examples of sections 2 to 5 and the corner case of [section 9](#9-what-can-go-wrong). It needs only the standard library.
+- `python posts/11-the-chain-rule/snippets/network_chain.py` runs sections [6](#6-the-chain-rule-applied-to-a-neural-network) and [8.2](#82-the-four-factors-of-the-network-measured) and the dropped factor of [section 9](#9-what-can-go-wrong). It needs NumPy.
 
 ### 8.1. Scalar chains
 
-The three steps of section 7 fit in one function. It walks the chain forward, recording each local derivative at the value its function receives, and then multiplies the recorded factors starting from the output end:
+The three steps of [section 7](#7-the-pattern-in-three-steps) fit in one function. It walks the chain forward, recording each local derivative at the value its function receives, and then multiplies the recorded factors starting from the output end:
 
 ```python
 def chain_derivative(functions, derivatives, x):
@@ -235,7 +235,7 @@ def chain_derivative(functions, derivatives, x):
     return product, factors
 ```
 
-For the polynomial of section 4 the script prints the factors, their product, and a central difference of the whole composition:
+For the polynomial of [section 4](#4-a-polynomial-example) the script prints the factors, their product, and a central difference of the whole composition:
 
 ```text
 == Section 4: y = 3(2x^2)^5 at x = 1
@@ -248,7 +248,7 @@ The central difference never sees the inner and outer functions separately. It e
 
 ### 8.2. The four factors of the network, measured
 
-The second script sends one sample, $\mathbf{x} = (1, -2)$ with true class 0, through the 2-3-3 network of section 6 with fixed weights. It uses no formula for any local derivative. Each of the four tables is *measured* on its own function, with one central difference per input of that function, at the value the forward pass delivered there:
+The second script sends one sample, $\mathbf{x} = (1, -2)$ with true class 0, through the 2-3-3 network of [section 6](#6-the-chain-rule-applied-to-a-neural-network) with fixed weights. It uses no formula for any local derivative. Each of the four tables is *measured* on its own function, with one central difference per input of that function, at the value the forward pass delivered there:
 
 ```python
 def local_derivatives(function, point, h=1e-5):
@@ -289,7 +289,7 @@ dz1/dW1  shape (3, 6)
  [ 0.0000  0.0000  1.0000  0.0000  0.0000 -2.0000]]
 ```
 
-Each table can be read against section 6. The ReLU table is diagonal, with a 0 for the middle neuron, whose weighted sum is $-1.6$. The second dense layer's table holds the entries of $\mathbf{W}_2$, and the first dense layer's table holds only the inputs 1 and $-2$. The loss factor equals the softmax output with 1 subtracted at the true class, $0.0755 - 1 = -0.9245$, a pattern post 19 derives.
+Each table can be read against [section 6](#6-the-chain-rule-applied-to-a-neural-network). The ReLU table is diagonal, with a 0 for the middle neuron, whose weighted sum is $-1.6$. The second dense layer's table holds the entries of $\mathbf{W}_2$, and the first dense layer's table holds only the inputs 1 and $-2$. The loss factor equals the softmax output with 1 subtracted at the true class, $0.0755 - 1 = -0.9245$, a pattern [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) derives.
 
 The script then multiplies the four tables in the order of the formula and compares the product with a central difference taken through the whole network, in which one entry of $\mathbf{W}_1$ at a time is moved and the loss is recomputed from scratch:
 
@@ -304,9 +304,9 @@ central difference through the whole network:
 largest gap between the two: 6.0e-11
 ```
 
-The two agree to within $6.0 \times 10^{-11}$, which is the size of the error the central differences themselves carry at this step. The middle column is zero in both: the second hidden neuron is switched off for this sample, its ReLU factor is 0, and no change to its two weights can move the loss. The same check passes for $\mathbf{W}_2$ and $\mathbf{b}_1$, with the factor counts of section 6.1.
+The two agree to within $6.0 \times 10^{-11}$, which is the size of the error the central differences themselves carry at this step. The middle column is zero in both: the second hidden neuron is switched off for this sample, its ReLU factor is 0, and no change to its two weights can move the loss. The same check passes for $\mathbf{W}_2$ and $\mathbf{b}_1$, with the factor counts of [section 6.1](#61-counting-the-factors).
 
-Measuring every table by finite differences is far too slow for training (post 10, section 7). It serves here to show that the product of local derivatives is the derivative of the whole, with no formula taken on trust. Posts 13 to 15 replace the measured tables by the three matrix expressions of the notation guide and never build them in full.
+Measuring every table by finite differences is far too slow for training ([post 10](../10-derivatives-partial-derivatives-and-gradients/index.md), [section 7](../10-derivatives-partial-derivatives-and-gradients/index.md#7-what-can-go-wrong)). It serves here to show that the product of local derivatives is the derivative of the whole, with no formula taken on trust. Posts 13 to 15 replace the measured tables by the three matrix expressions of the notation guide and never build them in full.
 
 ---
 
@@ -322,10 +322,10 @@ product without da1/dz1, reshaped to the shape of W1:
 largest gap to the measured gradient: 1.4477
 ```
 
-- **A factor is dropped.** In a scalar chain the result is wrong by exactly the missing factor, as in section 2.1, so the symptom is a numerical check that disagrees by a constant factor, often 2 or the value of an input. In the network the effect is less uniform: above, four of the six entries are still right, because the two active neurons have a ReLU factor of 1, and only the entries of the switched-off neuron are wrong. A dropped factor can therefore survive a check on a few entries; the comparison has to cover every entry.
-- **A local derivative does not exist.** $\text{ReLU}(2x - 1)$ has its corner where the inner function is zero, at $x = 0.5$. Away from it the chain rule and the measurement agree: slope 0 where the inner value is negative and 2 where it is positive. On the corner the convention of post 10 (section 3.1) gives $0 \cdot 2 = 0$, while a central difference straddles the corner and returns 1, the average of the one-sided slopes 0 and 2. A check that lands on a corner disagrees with a correct backward pass.
-- **A variable reaches the loss along several paths and only one is counted.** The contributions of the paths add (section 5.1). In a network every hidden activation feeds several neurons of the next layer, and post 15 sums over them.
-- **The matrix factors are multiplied in another order.** Scalar factors commute; tables of partial derivatives do not. With the shapes of section 6 the product is defined in the order written, and $(3, 6)$ times $(3, 3)$ is not defined at all (the inner-dimension rule of post 02).
+- **A factor is dropped.** In a scalar chain the result is wrong by exactly the missing factor, as in [section 2.1](#21-a-first-example-and-two-debts-from-post-10), so the symptom is a numerical check that disagrees by a constant factor, often 2 or the value of an input. In the network the effect is less uniform: above, four of the six entries are still right, because the two active neurons have a ReLU factor of 1, and only the entries of the switched-off neuron are wrong. A dropped factor can therefore survive a check on a few entries; the comparison has to cover every entry.
+- **A local derivative does not exist.** $\text{ReLU}(2x - 1)$ has its corner where the inner function is zero, at $x = 0.5$. Away from it the chain rule and the measurement agree: slope 0 where the inner value is negative and 2 where it is positive. On the corner the convention of [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) ([section 3.1](../10-derivatives-partial-derivatives-and-gradients/index.md#31-worked-examples)) gives $0 \cdot 2 = 0$, while a central difference straddles the corner and returns 1, the average of the one-sided slopes 0 and 2. A check that lands on a corner disagrees with a correct backward pass.
+- **A variable reaches the loss along several paths and only one is counted.** The contributions of the paths add ([section 5.1](#51-the-same-rule-with-partial-derivatives)). In a network every hidden activation feeds several neurons of the next layer, and [post 15](../15-gradients-with-respect-to-inputs/index.md) sums over them.
+- **The matrix factors are multiplied in another order.** Scalar factors commute; tables of partial derivatives do not. With the shapes of [section 6](#6-the-chain-rule-applied-to-a-neural-network) the product is defined in the order written, and $(3, 6)$ times $(3, 3)$ is not defined at all (the inner-dimension rule of [post 02](../02-numpy-and-the-dot-product/index.md)).
 
 ---
 
@@ -346,28 +346,26 @@ largest gap to the measured gradient: 1.4477
 ## Common pitfalls
 
 1. **Confusing the chain rule with the product rule.** $f(g(x))$ gives a product of slopes; $f(x) \cdot g(x)$ gives a sum of two terms.
-2. **Evaluating the outer derivative at the wrong point.** $f'(g(x))$ is $f'$ with $g(x)$ substituted. Using $f'(x)$ gives 60 in place of 960 in section 4.
+2. **Evaluating the outer derivative at the wrong point.** $f'(g(x))$ is $f'$ with $g(x)$ substituted. Using $f'(x)$ gives 60 in place of 960 in [section 4](#4-a-polynomial-example).
 3. **Dropping a factor in a long chain.** Writing the chain as an explicit product, one factor per function, before simplifying anything is the remedy.
-4. **Reading a zero ReLU factor as a bug.** A switched-off neuron contributes a factor of 0, so its weights receive no gradient from that sample. Those zeros are correct; if they occur for every sample, the neuron is the dead neuron of post 06.
+4. **Reading a zero ReLU factor as a bug.** A switched-off neuron contributes a factor of 0, so its weights receive no gradient from that sample. Those zeros are correct; if they occur for every sample, the neuron is the dead neuron of [post 06](../06-activation-functions-relu-and-softmax/index.md).
 5. **Expanding the whole forward expression before differentiating.** That worked for $3(2x^2)^5$ and is hopeless for a network. Each function is differentiated on its own, and only the results are combined.
 
 ---
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, section 6.5 (Back-Propagation and Other Differentiation Algorithms), in particular section 6.5.2 on the chain rule of calculus (MIT Press, 2016).
-- Griewank, A. and Walther, A., *Evaluating Derivatives: Principles and Techniques of Algorithmic Differentiation*, chapter 3, for the forward and the reverse order of evaluating a chain and their costs (SIAM, 2008).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 8 (2020).
-- Linnainmaa, S., *"The Representation of the Cumulative Rounding Error of an Algorithm as a Taylor Expansion of the Local Rounding Errors"* (Master's thesis, University of Helsinki, 1970).
-- Rumelhart, D., Hinton, G., and Williams, R., *"Learning Representations by Back-Propagating Errors"* (Nature, 1986).
-- Strang, G., *Calculus*, chapter 4 (Derivatives by the Chain Rule), for the rule and its proof (Wellesley-Cambridge, 2010).
-- Werbos, P. J., *"Beyond Regression: New Tools for Prediction and Analysis in the Behavioral Sciences"* (PhD thesis, Harvard University, 1974).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/mlp.html)*, section 6.5 (Back-Propagation and Other Differentiation Algorithms), in particular section 6.5.2 on the chain rule of calculus (MIT Press, 2016).
+- Griewank, A. and Walther, A., *[Evaluating Derivatives: Principles and Techniques of Algorithmic Differentiation](https://doi.org/10.1137/1.9780898717761)*, chapter 3, for the forward and the reverse order of evaluating a chain and their costs (SIAM, 2008).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 8 (2020).
+- Linnainmaa, S., *["The Representation of the Cumulative Rounding Error of an Algorithm as a Taylor Expansion of the Local Rounding Errors"](https://people.idsia.ch/~juergen/linnainmaa1970thesis.pdf)* (Master's thesis, University of Helsinki, 1970).
+- Rumelhart, D., Hinton, G., and Williams, R., *["Learning Representations by Back-Propagating Errors"](https://doi.org/10.1038/323533a0)* (Nature, 1986).
+- Strang, G., *[Calculus](https://ocw.mit.edu/courses/res-18-001-calculus-fall-2023/)*, chapter 4 (Derivatives by the Chain Rule), for the rule and its proof (Wellesley-Cambridge, 2010).
+- Werbos, P. J., *["Beyond Regression: New Tools for Prediction and Analysis in the Behavioral Sciences"](https://gwern.net/doc/ai/nn/1974-werbos.pdf)* (PhD thesis, Harvard University, 1974).
 
 ---
 
 ## What to read next
 
 - **[Post 12 - Backpropagation through a single neuron](../12-backprop-through-a-single-neuron/index.md):** the first concrete application of the chain rule, on the smallest network whose chain has more than one factor.
-- **[Post 19 - Softmax derivatives and the combined backward pass](../19-softmax-derivatives-and-the-combined-backward-pass/index.md):** where the loss factor $\partial L / \partial \mathbf{z}_2$ measured in section 8.2 gets its formula.
+- **[Post 19 - Softmax derivatives and the combined backward pass](../19-softmax-derivatives-and-the-combined-backward-pass/index.md):** where the loss factor $\partial L / \partial \mathbf{z}_2$ measured in [section 8.2](#82-the-four-factors-of-the-network-measured) gets its formula.
