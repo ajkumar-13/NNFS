@@ -27,7 +27,7 @@ Posts 16 to 19 gave every component of the classifier a `backward` method, one c
 | `Activation_ReLU` | $\max(0, \mathbf{Z})$ | `dinputs`, a masked copy of `dvalues` | no |
 | `Activation_Softmax_Loss_CategoricalCrossentropy` | softmax, then the mean cross-entropy | `dinputs` $= (\hat{\mathbf{y}} - \mathbf{y})/N$ | no |
 
-The network is the one of [post 07](../07-coding-the-complete-forward-pass/index.md): two inputs, a hidden layer of three ReLU neurons, an output layer of three neurons, softmax, and the cross-entropy loss. It has four parameter arrays, the weights and biases of the two dense layers, with $2 \cdot 3 + 3 + 3 \cdot 3 + 3 = 21$ numbers between them. This post runs it on a batch of four hand-written samples, small enough to print; post 21 runs the same calls on the spiral data.
+The network is the one of [post 07](../07-coding-the-complete-forward-pass/index.md): two inputs, a hidden layer of three ReLU neurons, an output layer of three neurons, softmax, and the cross-entropy loss. It has four parameter arrays, the weights and biases of the two dense layers, with $2 \cdot 3 + 3 + 3 \cdot 3 + 3 = 21$ numbers between them. This post runs it on a batch of four hand-written samples, small enough to print; [post 21](../21-coding-the-full-backpropagation/index.md) runs the same calls on the spiral data.
 
 ---
 
@@ -52,7 +52,7 @@ dense2.forward(activation1.output)                  # A1 -> Z2
 loss = loss_activation.forward(dense2.output, y)    # Z2 -> predictions -> loss
 ```
 
-Four objects, four calls. `loss_activation` is the combined class of post 19, which named its instance `softmax_loss` there. Each call stores its result in `self.output`, and the next call reads it. The last call differs from the other three in two ways: it also takes the labels, and it returns the loss, because the combined class runs softmax and the cross-entropy one after the other. The dense layers and the ReLU also keep the inputs they were given (the cache of post 16), and the combined class keeps its predictions; the backward pass needs both.
+Four objects, four calls. `loss_activation` is the combined class of [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md), which named its instance `softmax_loss` there. Each call stores its result in `self.output`, and the next call reads it. The last call differs from the other three in two ways: it also takes the labels, and it returns the loss, because the combined class runs softmax and the cross-entropy one after the other. The dense layers and the ReLU also keep the inputs they were given (the cache of [post 16](../16-coding-backpropagation/index.md)), and the combined class keeps its predictions; the backward pass needs both.
 
 With $N = 4$ samples, every array between `X` and the loss has shape `(4, 3)`: `dense1.output` ($\mathbf{Z}_1$), `activation1.output` ($\mathbf{A}_1$), `dense2.output` ($\mathbf{Z}_2$) and `loss_activation.output` ($\hat{\mathbf{y}}$). The script prints the loss:
 
@@ -60,7 +60,7 @@ With $N = 4$ samples, every array between `X` and the loss has shape `(4, 3)`: `
 loss 1.098629   ln 3 = 1.098612
 ```
 
-The weights start at a scale of 0.01, so the logits are close to zero, every prediction is close to $1/3$, and the loss is close to $\ln 3$, the loss of a uniform guess over three classes (post 08).
+The weights start at a scale of 0.01, so the logits are close to zero, every prediction is close to $1/3$, and the loss is close to $\ln 3$, the loss of a uniform guess over three classes ([post 08](../08-loss-categorical-cross-entropy/index.md)).
 
 ---
 
@@ -83,7 +83,7 @@ dense1.backward(activation1.dinputs)                  # dL/dZ1 -> dweights, dbia
 | 3 | `activation1.backward` | `dense2.dinputs` | `dinputs` $= \partial L / \partial \mathbf{Z}_1$ |
 | 4 | `dense1.backward` | `activation1.dinputs` | `dweights`, `dbiases`, `dinputs` $= \partial L / \partial \mathbf{X}$ |
 
-**The first call has no upstream gradient to receive.** The loss is the right-hand end of the chain, and the derivative of the loss with respect to itself is 1, so there is nothing to multiply by. The combined class goes straight to its own gradient, $(\hat{\mathbf{y}} - \mathbf{y})/N$, and for that it needs the predictions and the labels. Its first parameter is still named `dvalues`, to keep one signature across the series, but what it must be given is `loss_activation.output`. The division by $N$, which comes from the mean over the batch (post 18), happens inside this call and nowhere else in the chain.
+**The first call has no upstream gradient to receive.** The loss is the right-hand end of the chain, and the derivative of the loss with respect to itself is 1, so there is nothing to multiply by. The combined class goes straight to its own gradient, $(\hat{\mathbf{y}} - \mathbf{y})/N$, and for that it needs the predictions and the labels. Its first parameter is still named `dvalues`, to keep one signature across the series, but what it must be given is `loss_activation.output`. The division by $N$, which comes from the mean over the batch ([post 18](../18-backpropagation-through-the-loss-function/index.md)), happens inside this call and nowhere else in the chain.
 
 **Calls 2 to 4 are each handed the `dinputs` of the call before.** No `backward` returns anything; each stores its results on the object, and the next line of the script reads them from there. The figure at the top of the post draws the four calls this way, with the shape of every array they store.
 
@@ -140,7 +140,7 @@ db1 = np.sum(dZ1, axis=0, keepdims=True)
 largest difference over the four parameter gradients: 0.0e+00
 ```
 
-Each line uses the result of an earlier line, and the two lines marked "hands back" are the `dinputs` of the objects. The four calls of section 3 are these nine lines, sorted into the classes that own them.
+Each line uses the result of an earlier line, and the two lines marked "hands back" are the `dinputs` of the objects. The four calls of [section 3](#3-the-backward-pass) are these nine lines, sorted into the classes that own them.
 
 The same pattern carries any depth. Each further hidden layer adds one `Layer_Dense` and one `Activation_ReLU`: two forward calls, two backward calls, one more hand-off of each kind, and two more parameter arrays. Nothing else changes.
 
@@ -165,7 +165,7 @@ sum of squared gradients 0.041968   -learning_rate * sum -4.197e-04
 dense2.biases after the update [[-0.000834  0.001667 -0.000833]]
 ```
 
-The loss fell by $4.19 \times 10^{-4}$. The size of the fall can be predicted. For a small step, the change of the loss is close to the sum, over all 21 parameters, of gradient times change (post 10). Each change is $-\alpha$ times the gradient, so the sum is $-\alpha$ times the sum of the squared gradients: $-0.01 \cdot 0.041968 = -4.197 \times 10^{-4}$. The prediction is never positive, which is why a small enough step cannot raise the loss. The biases of `dense2` show the direction of the step: the bias of class 1, the commonest label in the batch, went up, and the other two went down.
+The loss fell by $4.19 \times 10^{-4}$. The size of the fall can be predicted. For a small step, the change of the loss is close to the sum, over all 21 parameters, of gradient times change ([post 10](../10-derivatives-partial-derivatives-and-gradients/index.md)). Each change is $-\alpha$ times the gradient, so the sum is $-\alpha$ times the sum of the squared gradients: $-0.01 \cdot 0.041968 = -4.197 \times 10^{-4}$. The prediction is never positive, which is why a small enough step cannot raise the loss. The biases of `dense2` show the direction of the step: the bias of class 1, the commonest label in the batch, went up, and the other two went down.
 
 The fall barely depends on the seed here. For seeds 0 to 9 the script prints falls between $4.169 \times 10^{-4}$ and $4.191 \times 10^{-4}$. It does depend on the batch:
 
@@ -194,7 +194,7 @@ python posts/20-assembling-full-backpropagation/snippets/assemble.py
 python posts/20-assembling-full-backpropagation/snippets/what_can_go_wrong.py
 ```
 
-`assemble.py` defines the classes and runs sections 2 to 5 in order. The classes are those of posts 16, 18 and 19, unchanged. `what_can_go_wrong.py` runs the mistakes of section 7 on the same batch.
+`assemble.py` defines the classes and runs sections 2 to 5 in order. The classes are those of posts [16](../16-coding-backpropagation/index.md), [18](../18-backpropagation-through-the-loss-function/index.md) and [19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md), unchanged. `what_can_go_wrong.py` runs the mistakes of [section 7](#7-what-can-go-wrong) on the same batch.
 
 ---
 
@@ -235,7 +235,7 @@ IndexError: boolean index did not match indexed array along axis 0; size of axis
 
 **Predictions without labels.** `loss_activation.forward` requires `y_true`, so calling it with the logits alone raises a `TypeError`. When only predictions are wanted, the softmax inside the combined class is called directly: `loss_activation.activation.forward(dense2.output)`, with the result in `loss_activation.activation.output`.
 
-A sixth mistake, a `backward` that runs against the cache of a different batch, belongs to the classes and is measured in post 16.
+A sixth mistake, a `backward` that runs against the cache of a different batch, belongs to the classes and is measured in [post 16](../16-coding-backpropagation/index.md).
 
 ---
 
@@ -264,15 +264,13 @@ A sixth mistake, a `backward` that runs against the cache of a different batch, 
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 6, algorithm 6.4 (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 9 (2020).
-- Rumelhart, D., Hinton, G., and Williams, R., *"Learning Representations by Back-Propagating Errors"* (Nature, 1986).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/mlp.html)*, chapter 6, algorithm 6.4 (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 9 (2020).
+- Rumelhart, D., Hinton, G., and Williams, R., *["Learning Representations by Back-Propagating Errors"](https://doi.org/10.1038/323533a0)* (Nature, 1986).
 
 ---
 
 ## What to read next
 
 - **[Post 21 - Coding the full backpropagation](../21-coding-the-full-backpropagation/index.md):** the same calls as one short script on the spiral data, with the gradients inspected and checked.
-- **[Post 22 - Gradient-descent optimiser](../22-gradient-descent-optimiser/index.md):** the four subtractions of section 5 packaged into a class that Part VI then extends.
+- **[Post 22 - Gradient-descent optimiser](../22-gradient-descent-optimiser/index.md):** the four subtractions of [section 5](#5-the-gradient-descent-update) packaged into a class that Part VI then extends.
