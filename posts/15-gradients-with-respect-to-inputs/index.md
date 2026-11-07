@@ -249,7 +249,7 @@ These three lines are the **entire backward pass** of a dense layer. [Post 16](.
 
 ## 7. Make it run: the input gradient, checked
 
-The scripts under `snippets/` produce every number the post quotes. Each needs only NumPy, uses no random numbers, computes in float64, and runs in under a second from the series root, as `python posts/15-gradients-with-respect-to-inputs/snippets/<name>.py`: `input_gradient.py` for sections 2 to 4 and 7.1, `batch_and_handoff.py` for sections [5](#5-batches), [6](#6-the-complete-backward-toolkit-for-a-dense-layer), [7.2](#72-the-batch), and [7.3](#73-two-layers-the-hand-off), and `what_can_go_wrong.py` for [section 8](#8-what-can-go-wrong).
+The scripts under `snippets/` produce every number the post quotes. Each needs only NumPy, uses no random numbers, computes in float64, and runs in under a second from the series root, as `python posts/15-gradients-with-respect-to-inputs/snippets/<name>.py`: `input_gradient.py` for sections 2 to 4 and [7.1](#71-a-finite-difference-on-each-input), `batch_and_handoff.py` for sections [5](#5-batches), [6](#6-the-complete-backward-toolkit-for-a-dense-layer), [7.2](#72-the-batch), and [7.3](#73-two-layers-the-hand-off), and `what_can_go_wrong.py` for [section 8](#8-what-can-go-wrong).
 
 ### 7.1. A finite difference on each input
 
