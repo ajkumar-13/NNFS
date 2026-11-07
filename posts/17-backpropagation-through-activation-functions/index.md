@@ -23,28 +23,28 @@ A typical block of the forward pass is a dense layer followed by an activation:
 
 $$\mathbf{Z} = \mathbf{X} \mathbf{W} + \mathbf{b}, \qquad \mathbf{A} = f(\mathbf{Z}).$$
 
-Post 16 gave `Layer_Dense` and `Activation_ReLU` a `backward` method each. During the backward pass the activation is reached first. It receives the gradient of the loss at its *output*, $\partial L / \partial \mathbf{A}$ (named `dvalues` in code), and must produce the gradient at its *input*, $\partial L / \partial \mathbf{Z}$ (stored as `dinputs`), which the dense layer before it then receives as its own `dvalues`.
+[Post 16](../16-coding-backpropagation/index.md) gave `Layer_Dense` and `Activation_ReLU` a `backward` method each. During the backward pass the activation is reached first. It receives the gradient of the loss at its *output*, $\partial L / \partial \mathbf{A}$ (named `dvalues` in code), and must produce the gradient at its *input*, $\partial L / \partial \mathbf{Z}$ (stored as `dinputs`), which the dense layer before it then receives as its own `dvalues`.
 
-Take one sample, with pre-activations $z_1, \dots, z_m$ and outputs $a_1, \dots, a_m$. The loss depends on $z_j$ through every output that $z_j$ influences, so the chain rule sums over the outputs, as it summed over the neurons of a layer in post 15:
+Take one sample, with pre-activations $z_1, \dots, z_m$ and outputs $a_1, \dots, a_m$. The loss depends on $z_j$ through every output that $z_j$ influences, so the chain rule sums over the outputs, as it summed over the neurons of a layer in [post 15](../15-gradients-with-respect-to-inputs/index.md):
 
 $$\frac{\partial L}{\partial z_j} = \sum_{k=1}^{m} \frac{\partial L}{\partial a_k} \cdot \frac{\partial a_k}{\partial z_j}.$$
 
 The factors $\partial a_k / \partial z_j$ are the local derivatives of the activation. Arranged in an $m \times m$ table with row $k$ and column $j$, they form its **Jacobian**. How many of them are non-zero depends on the kind of activation, and two cases matter:
 
-- **Element-wise activation** (ReLU, sigmoid, tanh, and the variants of section 3.3). $a_k$ depends on $z_k$ alone. Every term of the sum with $k \ne j$ is zero, and one term is left.
+- **Element-wise activation** (ReLU, sigmoid, tanh, and the variants of [section 3.3](#33-why-relus-backward-needs-the-least-arithmetic)). $a_k$ depends on $z_k$ alone. Every term of the sum with $k \ne j$ is zero, and one term is left.
 - **Coupled activation** (softmax). $a_k$ depends on *every* $z_j$, because the softmax denominator sums over all the inputs. No term drops out.
 
-Sections 2 and 3 work out the first case, where the sum collapses to one multiplication per element. Section 4 shows on three numbers why the second case does not collapse. The figure at the top of the post puts the two cases side by side on those three numbers: the sigmoid Jacobian of section 3.2 above the softmax Jacobian of section 4.
+Sections [2](#2-relus-backward-in-detail) and [3](#3-the-general-element-wise-pattern) work out the first case, where the sum collapses to one multiplication per element. [Section 4](#4-why-softmax-is-different) shows on three numbers why the second case does not collapse. The figure at the top of the post puts the two cases side by side on those three numbers: the sigmoid Jacobian of [section 3.2](#32-the-jacobian-view) above the softmax Jacobian of [section 4](#4-why-softmax-is-different).
 
 ---
 
 ## 2. ReLU's backward, in detail
 
-ReLU is $f(z) = \max(0, z)$, and post 10 found its derivative, a step function:
+ReLU is $f(z) = \max(0, z)$, and [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) found its derivative, a step function:
 
 $$\frac{d \, \text{ReLU}(z)}{dz} = \begin{cases} 1 & z > 0 \\ 0 & z \le 0. \end{cases}$$
 
-At $z = 0$ the two sides disagree and the derivative is strictly undefined; the series' code uses 0 there, as post 10 stated. With only the $k = j$ term left in the sum of section 1, the chain rule for neuron $k$ is
+At $z = 0$ the two sides disagree and the derivative is strictly undefined; the series' code uses 0 there, as [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) stated. With only the $k = j$ term left in the sum of [section 1](#1-the-question-what-does-an-activation-do-to-the-gradient-on-its-way-back), the chain rule for neuron $k$ is
 
 $$\frac{\partial L}{\partial z_k} = \frac{\partial L}{\partial a_k} \cdot \frac{d a_k}{d z_k} = \begin{cases} \dfrac{\partial L}{\partial a_k} & z_k > 0 \\ 0 & z_k \le 0. \end{cases}$$
 
@@ -58,7 +58,7 @@ In words: **the gradient passes through unchanged where the input was positive a
 | 2 | $-2.0$ (not positive) | $6$ | $\mathbf{0}$ |
 | 3 | $3.0$ (positive) | $7$ | $\mathbf{7}$ |
 
-Neuron 2's gradient is zeroed because its input fell in ReLU's flat region: a small change in $z_2$ leaves $a_2$ at 0, so it cannot change the loss, whatever the 6 arriving from above says. For this one sample neuron 2 passes back nothing. If the same happens for every sample, the neuron is the **dead neuron** of post 06, and section 7 shows what that does to the weights behind it.
+Neuron 2's gradient is zeroed because its input fell in ReLU's flat region: a small change in $z_2$ leaves $a_2$ at 0, so it cannot change the loss, whatever the 6 arriving from above says. For this one sample neuron 2 passes back nothing. If the same happens for every sample, the neuron is the **dead neuron** of [post 06](../06-activation-functions-relu-and-softmax/index.md), and [section 7](#7-what-can-go-wrong) shows what that does to the weights behind it.
 
 On the positive side nothing is lost. The slope is exactly 1, so the 5 and the 7 arrive at the dense layer at full size.
 
@@ -76,7 +76,7 @@ class Activation_ReLU:
         self.dinputs[self.inputs <= 0] = 0      # no gradient where the input was not positive
 ```
 
-This is the class of post 16, unchanged. `forward` caches its input because `backward` runs later and needs to know which inputs were positive. `backward` starts from a copy of `dvalues` and overwrites with 0 every position where the cached input was not positive. The `.copy()` matters: without it `self.dinputs` would be a second name for the caller's array, and the masking line would overwrite it (section 7). The method stores its result in `self.dinputs` and returns nothing, like `Layer_Dense.backward`, because the next component reads the attribute.
+This is the class of [post 16](../16-coding-backpropagation/index.md), unchanged. `forward` caches its input because `backward` runs later and needs to know which inputs were positive. `backward` starts from a copy of `dvalues` and overwrites with 0 every position where the cached input was not positive. The `.copy()` matters: without it `self.dinputs` would be a second name for the caller's array, and the masking line would overwrite it ([section 7](#7-what-can-go-wrong)). The method stores its result in `self.dinputs` and returns nothing, like `Layer_Dense.backward`, because the next component reads the attribute.
 
 The figure below runs the worked example through the class: the forward method turns the input on the left into the output on the right, and the backward method turns the gradient arriving on the right into the masked gradient on the left.
 
@@ -113,11 +113,11 @@ The series tests the input because that is the form in which the derivative is w
 
 ## 3. The general element-wise pattern
 
-ReLU is one instance of a broader pattern. For any element-wise activation $a_k = f(z_k)$, the sum of section 1 keeps one term:
+ReLU is one instance of a broader pattern. For any element-wise activation $a_k = f(z_k)$, the sum of [section 1](#1-the-question-what-does-an-activation-do-to-the-gradient-on-its-way-back) keeps one term:
 
 $$\frac{\partial L}{\partial z_k} = \frac{\partial L}{\partial a_k} \cdot f'(z_k).$$
 
-For a whole batch this is one **element-wise multiplication** in NumPy, `dinputs = dvalues * f_prime(Z)`, with no matrix product, no reshape, and no transpose. `dvalues`, `Z`, and `dinputs` all have the shape $(N, n_\text{neurons})$. ReLU's mask is this line with a slope of 0 or 1: multiplying by 1 keeps an entry and multiplying by 0 clears it. The figure below draws the three activations of the table that follows with their slopes, and sends the upstream gradient of section 2.1 through each.
+For a whole batch this is one **element-wise multiplication** in NumPy, `dinputs = dvalues * f_prime(Z)`, with no matrix product, no reshape, and no transpose. `dvalues`, `Z`, and `dinputs` all have the shape $(N, n_\text{neurons})$. ReLU's mask is this line with a slope of 0 or 1: multiplying by 1 keeps an entry and multiplying by 0 clears it. The figure below draws the three activations of the table that follows with their slopes, and sends the upstream gradient of [section 2.1](#21-worked-example) through each.
 
 ![Three charts for z from minus 4 to 4, each with an activation in green and its slope in purple: ReLU, whose slope steps from 0 to 1 at z = 0 and is 0 at z = 0 itself; sigmoid, whose slope a(1 - a) peaks at 0.25; and tanh, whose slope 1 - a squared peaks at 1. Dots mark the slope at z = 1, minus 2, 3. The tables under the charts give the slopes and dinputs for dvalues = 5, 6, 7: 1, 0, 1 and 5, 0, 7 for ReLU; 0.197, 0.105, 0.045 and 0.983, 0.630, 0.316 for sigmoid; 0.420, 0.071, 0.010 and 2.100, 0.424, 0.069 for tanh. A line at the bottom gives the code all three share, dinputs = dvalues * f_prime(Z).](diagrams/03-elementwise-family.svg)
 
@@ -131,7 +131,7 @@ For a whole batch this is one **element-wise multiplication** in NumPy, `dinputs
 
 ### 3.1. The slopes of sigmoid and tanh
 
-Both slopes follow from the chain rule of post 11 and two facts that post 10 did not derive. The first is that $e^z$ is its own derivative, which post 10 mentioned in its section 2.4. The second is that the power rule, stated there for whole-number powers, also holds for the exponent $-1$: the derivative of $u^{-1}$ is $-u^{-2}$.
+Both slopes follow from the chain rule of [post 11](../11-the-chain-rule/index.md) and two facts that [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) did not derive. The first is that $e^z$ is its own derivative, which [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) mentioned in its [section 2.4](../10-derivatives-partial-derivatives-and-gradients/index.md#24-what-a-derivative-is-not). The second is that the power rule, stated there for whole-number powers, also holds for the exponent $-1$: the derivative of $u^{-1}$ is $-u^{-2}$.
 
 **Sigmoid.** Write $\sigma(z) = u^{-1}$ with $u = 1 + e^{-z}$. The power rule gives $d\sigma/du = -u^{-2}$, and $du/dz = -e^{-z}$, so
 
@@ -170,7 +170,7 @@ class Activation_Tanh:
         self.dinputs = dvalues * (1 - self.output ** 2)
 ```
 
-`Activation_Sigmoid` returns in post 34 as the output activation for binary classification. `Activation_Tanh` is written here for the pattern and is not used again in the series. `snippets/elementwise_backward.py` sends the upstream gradient of section 2.1 through all three:
+`Activation_Sigmoid` returns in [post 34](../34-sigmoid-and-binary-cross-entropy/index.md) as the output activation for binary classification. `Activation_Tanh` is written here for the pattern and is not used again in the series. `snippets/elementwise_backward.py` sends the upstream gradient of [section 2.1](#21-worked-example) through all three:
 
 ```text
 == Section 3: one upstream gradient through three activations
@@ -191,13 +191,13 @@ sigmoid slope      2.50e-01    1.05e-01    6.65e-03    4.54e-05
 tanh slope         1.00e+00    7.07e-02    1.82e-04    8.24e-09
 ```
 
-This is the saturation of post 06, which listed the same slopes before the series had a backward pass to use them in. In the backward line the slope is the factor itself: a sigmoid never passes more than a quarter of the gradient it receives, and at $z = 10$ it passes less than a twenty-thousandth.
+This is the saturation of [post 06](../06-activation-functions-relu-and-softmax/index.md), which listed the same slopes before the series had a backward pass to use them in. In the backward line the slope is the factor itself: a sigmoid never passes more than a quarter of the gradient it receives, and at $z = 10$ it passes less than a twenty-thousandth.
 
 ### 3.2. The Jacobian view
 
 For one sample with $m$ neurons, the Jacobian $\partial \mathbf{a} / \partial \mathbf{z}$ is the $m \times m$ matrix whose $(k, j)$ entry is $\partial a_k / \partial z_j$. For an element-wise activation the entry is zero unless $k = j$, because $a_k$ does not depend on $z_j$ when $k \ne j$. The Jacobian is therefore **diagonal**, with $f'(z_k)$ on the diagonal.
 
-With the gradient written as a row vector, the sum of section 1 is the product of that row with the Jacobian, `dvalues @ J`. Multiplying a row by a diagonal matrix multiplies each entry by the matching diagonal value, which is exactly the element-wise line. The script builds the sigmoid Jacobian for the sample above and computes both:
+With the gradient written as a row vector, the sum of [section 1](#1-the-question-what-does-an-activation-do-to-the-gradient-on-its-way-back) is the product of that row with the Jacobian, `dvalues @ J`. Multiplying a row by a diagonal matrix multiplies each entry by the matching diagonal value, which is exactly the element-wise line. The script builds the sigmoid Jacobian for the sample above and computes both:
 
 ```text
 == Section 3.2: the Jacobian of one sample is diagonal
@@ -221,7 +221,7 @@ The three classes have the same shape: cache in `forward`, one line of real work
 
 This is a count of arithmetic operations per element, not a timing. `Activation_ReLU.backward` as written also copies `dvalues` and writes its zeros through a boolean mask, and NumPy does neither for free, so the count does not say which of the `backward` calls returns first on a given machine.
 
-The second difference is in what arrives, not in what it costs to compute. On its active side ReLU multiplies the gradient by exactly 1, so the gradient crosses any number of active ReLU layers without shrinking. Sigmoid multiplies by at most 0.25 even at its best point, and tanh by less than 1 everywhere except at $z = 0$. Post 06 worked out the consequence: ten sigmoid layers scale a gradient by at most $0.25^{10} \approx 9.5 \times 10^{-7}$ through the activations alone. This is why ReLU is the default for hidden layers, and why sigmoid and tanh are listed here for the pattern and not as a recommendation.
+The second difference is in what arrives, not in what it costs to compute. On its active side ReLU multiplies the gradient by exactly 1, so the gradient crosses any number of active ReLU layers without shrinking. Sigmoid multiplies by at most 0.25 even at its best point, and tanh by less than 1 everywhere except at $z = 0$. [Post 06](../06-activation-functions-relu-and-softmax/index.md) worked out the consequence: ten sigmoid layers scale a gradient by at most $0.25^{10} \approx 9.5 \times 10^{-7}$ through the activations alone. This is why ReLU is the default for hidden layers, and why sigmoid and tanh are listed here for the pattern and not as a recommendation.
 
 ReLU's own weakness is the zero on the other side, and several variants relax it. Leaky ReLU replaces the flat region with a small slope, commonly 0.01, so its derivative is 1 for $z > 0$ and 0.01 otherwise, and its backward is `dvalues * np.where(self.inputs > 0, 1.0, 0.01)`. Parametric ReLU (He and colleagues, 2015) learns that slope, and GELU (Hendrycks and Gimpel, 2016) replaces the corner with a smooth curve. All of them are element-wise, so each backward is still one line with a different derivative.
 
@@ -233,7 +233,7 @@ Softmax is **not** element-wise. For one sample, each output is
 
 $$a_k = \frac{e^{z_k}}{\sum_{j} e^{z_j}},$$
 
-so $a_k$ depends on every $z_j$ through the denominator. Raising one input raises its own output and, because the outputs must still sum to 1, lowers all the others. `snippets/softmax_is_coupled.py` shows it on the inputs of section 2.1:
+so $a_k$ depends on every $z_j$ through the denominator. Raising one input raises its own output and, because the outputs must still sum to 1, lowers all the others. `snippets/softmax_is_coupled.py` shows it on the inputs of [section 2.1](#21-worked-example):
 
 ```text
 == Section 4: one sample through softmax
@@ -249,7 +249,7 @@ Only $z_1$ moved, and all three outputs changed. The Jacobian therefore has entr
 
 $$\frac{\partial a_k}{\partial z_j} = \begin{cases} a_k (1 - a_k) & k = j \\ -a_k a_j & k \ne j. \end{cases}$$
 
-Post 19 derives these entries; here they are only evaluated.
+[Post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) derives these entries; here they are only evaluated.
 
 ```text
 == The Jacobian, entry (k, j) = d a_k / d z_j
@@ -260,7 +260,7 @@ non-zero entries: 9 of 9
 every column sums to zero: True
 ```
 
-All 9 entries are non-zero, and none of the terms in the sum of section 1 can be dropped. The diagonal entries $a_k(1 - a_k)$ have the same form as the sigmoid slope, which makes the element-wise line tempting. The script computes both candidates and measures the true gradient with the central difference of post 10:
+All 9 entries are non-zero, and none of the terms in the sum of [section 1](#1-the-question-what-does-an-activation-do-to-the-gradient-on-its-way-back) can be dropped. The diagonal entries $a_k(1 - a_k)$ have the same form as the sigmoid slope, which makes the element-wise line tempting. The script computes both candidates and measures the true gradient with the central difference of [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md):
 
 ```python
 full = dvalues @ jacobian                       # sum over k of dL/da_k * d a_k / d z_j
@@ -284,24 +284,24 @@ The cost of doing it properly is a matrix product for every sample: softmax over
 
 ## 5. Toolkit status
 
-After posts 16 and 17 the classes of the series stand as follows.
+After posts [16](../16-coding-backpropagation/index.md) and [17](index.md) the classes of the series stand as follows.
 
 | Class | `forward` | `backward` |
 |---|:---:|:---:|
-| `Layer_Dense` | post 04 | post 16 |
-| `Activation_ReLU` | post 06 | post 16, explained in detail here |
-| `Activation_Softmax` | post 06 | **pending** (post 19) |
-| `Loss_CategoricalCrossentropy` | post 08 | **pending** (post 18) |
+| `Layer_Dense` | [post 04](../04-dense-layer-class-and-spiral-data/index.md) | [post 16](../16-coding-backpropagation/index.md) |
+| `Activation_ReLU` | [post 06](../06-activation-functions-relu-and-softmax/index.md) | [post 16](../16-coding-backpropagation/index.md), explained in detail here |
+| `Activation_Softmax` | [post 06](../06-activation-functions-relu-and-softmax/index.md) | **pending** ([post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)) |
+| `Loss_CategoricalCrossentropy` | [post 08](../08-loss-categorical-cross-entropy/index.md) | **pending** ([post 18](../18-backpropagation-through-the-loss-function/index.md)) |
 
-Two backward methods are left: the cross-entropy backward of post 18, and the softmax backward that post 19 combines with it.
+Two backward methods are left: the cross-entropy backward of [post 18](../18-backpropagation-through-the-loss-function/index.md), and the softmax backward that [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) combines with it.
 
 ---
 
 ## 6. Make it run: every backward against a finite difference
 
-Four scripts under `snippets/` produce every number in this post: `relu_backward.py` (section 2), `elementwise_backward.py` (section 3), `softmax_is_coupled.py` (section 4), and `what_can_go_wrong.py` (section 7). Each needs only NumPy, prints the same output on every run, and runs from the series root in about a second, for example `python posts/17-backpropagation-through-activation-functions/snippets/relu_backward.py`.
+Four scripts under `snippets/` produce every number in this post: `relu_backward.py` ([section 2](#2-relus-backward-in-detail)), `elementwise_backward.py` ([section 3](#3-the-general-element-wise-pattern)), `softmax_is_coupled.py` ([section 4](#4-why-softmax-is-different)), and `what_can_go_wrong.py` ([section 7](#7-what-can-go-wrong)). Each needs only NumPy, prints the same output on every run, and runs from the series root in about a second, for example `python posts/17-backpropagation-through-activation-functions/snippets/relu_backward.py`.
 
-A backward method is a claim about a derivative, and post 10 gave the tool for testing one: a central difference with $h = 10^{-5}$ in float64. The test needs a scalar loss whose gradient at the activation's output is known. The scripts use $L = \sum \text{dvalues} \cdot f(\mathbf{Z})$, summed over every entry, with `dvalues` a fixed array of random numbers: its gradient with respect to $\mathbf{A} = f(\mathbf{Z})$ is exactly `dvalues`. Each entry of $\mathbf{Z}$ is then nudged by $\pm h$ in turn, and the measured slope is compared with what `backward` stored in `dinputs`. On a seeded $3 \times 4$ batch (`np.random.seed(0)`):
+A backward method is a claim about a derivative, and [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) gave the tool for testing one: a central difference with $h = 10^{-5}$ in float64. The test needs a scalar loss whose gradient at the activation's output is known. The scripts use $L = \sum \text{dvalues} \cdot f(\mathbf{Z})$, summed over every entry, with `dvalues` a fixed array of random numbers: its gradient with respect to $\mathbf{A} = f(\mathbf{Z})$ is exactly `dvalues`. Each entry of $\mathbf{Z}$ is then nudged by $\pm h$ in turn, and the measured slope is compared with what `backward` stored in `dinputs`. On a seeded $3 \times 4$ batch (`np.random.seed(0)`):
 
 ```text
 == Section 6: each backward against a central difference, h = 1e-5, float64
@@ -310,13 +310,13 @@ sigmoid  largest gap between dinputs and the central difference: 2.2e-11
 tanh     largest gap between dinputs and the central difference: 8.3e-11
 ```
 
-All three agree with the measurement to better than $10^{-10}$. For ReLU the check is only meaningful away from the corner: a central difference taken at $z = 0$ returns 0.5, which is neither slope (post 10, section 7), and one taken within $h$ of the corner returns some other value between 0 and 1. The smallest $|z|$ in this batch is 0.1032, far more than $h$ from the corner.
+All three agree with the measurement to better than $10^{-10}$. For ReLU the check is only meaningful away from the corner: a central difference taken at $z = 0$ returns 0.5, which is neither slope ([post 10](../10-derivatives-partial-derivatives-and-gradients/index.md), [section 7](../10-derivatives-partial-derivatives-and-gradients/index.md#7-what-can-go-wrong)), and one taken within $h$ of the corner returns some other value between 0 and 1. The smallest $|z|$ in this batch is 0.1032, far more than $h$ from the corner.
 
 ---
 
 ## 7. What can go wrong?
 
-`snippets/what_can_go_wrong.py` reproduces three failures, and section 4 has already shown a fourth.
+`snippets/what_can_go_wrong.py` reproduces three failures, and [section 4](#4-why-softmax-is-different) has already shown a fourth.
 
 ```text
 == 1. The copy is left out
@@ -341,9 +341,9 @@ dbiases: [[0.600 0.000 0.900]]
 ```
 
 - **The copy is left out.** `self.dinputs = dvalues` gives the caller's array a second name, and the masking line then writes zeros into it. The activation's own result is still right, $[5, 0, 7]$, which is why the bug is hard to see; the damage is to the caller's $[5, 6, 7]$, which now also reads $[5, 0, 7]$. Any code that uses that array afterwards computes with the wrong numbers.
-- **The slope is evaluated on the wrong array.** The formula $\sigma (1 - \sigma)$ takes the sigmoid's *output*. Writing `dvalues * Z * (1 - Z)` applies it to the input. The result has the right shape and raises no error, and it is off by as much as 2.59 on a batch where the correct line is within $2.2 \times 10^{-11}$ of the measurement. The same slip with tanh is `1 - Z ** 2`. The check of section 6 catches both at once.
+- **The slope is evaluated on the wrong array.** The formula $\sigma (1 - \sigma)$ takes the sigmoid's *output*. Writing `dvalues * Z * (1 - Z)` applies it to the input. The result has the right shape and raises no error, and it is off by as much as 2.59 on a batch where the correct line is within $2.2 \times 10^{-11}$ of the measurement. The same slip with tanh is `1 - Z ** 2`. The check of [section 6](#6-make-it-run-every-backward-against-a-finite-difference) catches both at once.
 - **A neuron is dead.** In the third block the second column of $\mathbf{Z}$ is negative for all four samples. The mask zeroes that whole column of `dinputs`, and the dense layer before the activation then computes a zero column of `dweights` and a zero in `dbiases` for that neuron. Its parameters receive no update from this batch. If the same holds for every batch, the neuron stays as it is for good. The backward pass describes the problem and does not repair it; a smaller learning rate and a leaky ReLU are the usual remedies.
-- **The element-wise line is applied to softmax.** Section 4 measured it: a gap of 0.731 and two wrong signs, with no error raised.
+- **The element-wise line is applied to softmax.** [Section 4](#4-why-softmax-is-different) measured it: a gap of 0.731 and two wrong signs, with no error raised.
 
 ---
 
@@ -356,14 +356,14 @@ dbiases: [[0.600 0.000 0.900]]
 | ReLU backward | A masked copy: keep the gradient where the input was positive, zero it elsewhere |
 | Sigmoid and tanh backward | Multiply by $a(1 - a)$ and by $1 - a^2$, read from the cached output |
 | Why ReLU needs least arithmetic | A comparison and no arithmetic; a slope of exactly 1 on the active side |
-| Softmax backward | Full Jacobian; a matrix product per sample; derived in post 19 |
+| Softmax backward | Full Jacobian; a matrix product per sample; derived in [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) |
 | Practical default | ReLU on every hidden layer; softmax on the output for classification |
 
 ---
 
 ## Common pitfalls
 
-1. **Forgetting `.copy()` in the masked backward.** Without it the mask is written into the caller's `dvalues`, and the bug shows up somewhere else (section 7).
+1. **Forgetting `.copy()` in the masked backward.** Without it the mask is written into the caller's `dvalues`, and the bug shows up somewhere else ([section 7](#7-what-can-go-wrong)).
 2. **Forgetting to cache in `forward`.** ReLU's mask needs `self.inputs`, and the sigmoid and tanh lines need `self.output`. An activation whose `forward` does not store them has nothing to compute its slope from.
 3. **Computing the sigmoid or tanh slope from the input.** $\sigma(1 - \sigma)$ and $1 - \tanh^2$ take the output of the activation. Applied to `Z` they return an array of the right shape and the wrong values.
 4. **Backpropagating softmax element-wise.** Softmax is the one activation of the series whose Jacobian is full. Multiplying by $a_k(1 - a_k)$ keeps the diagonal and silently drops six of the nine terms in the three-class example.
@@ -374,17 +374,15 @@ dbiases: [[0.600 0.000 0.900]]
 
 ## Further reading
 
-- Glorot, X., Bordes, A., and Bengio, Y., *"Deep Sparse Rectifier Neural Networks"* (AISTATS, 2011).
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, section 6.3 (Hidden Units) (MIT Press, 2016).
-- He, K., Zhang, X., Ren, S., and Sun, J., *"Delving Deep into Rectifiers"* (ICCV, 2015), for the parametric ReLU.
-- Hendrycks, D. and Gimpel, K., *"Gaussian Error Linear Units (GELUs)"* (arXiv:1606.08415, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 9 (2020).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Glorot, X., Bordes, A., and Bengio, Y., *["Deep Sparse Rectifier Neural Networks"](https://proceedings.mlr.press/v15/glorot11a.html)* (AISTATS, 2011).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/mlp.html)*, section 6.3 (Hidden Units) (MIT Press, 2016).
+- He, K., Zhang, X., Ren, S., and Sun, J., *["Delving Deep into Rectifiers"](https://arxiv.org/abs/1502.01852)* (ICCV, 2015), for the parametric ReLU.
+- Hendrycks, D. and Gimpel, K., *["Gaussian Error Linear Units (GELUs)"](https://arxiv.org/abs/1606.08415)* (arXiv:1606.08415, 2016).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 9 (2020).
 
 ---
 
 ## What to read next
 
 - **[Post 18 - Backpropagation through the loss function](../18-backpropagation-through-the-loss-function/index.md):** where the first `dvalues` of the backward pass comes from.
-- **[Post 19 - Softmax derivatives and the combined backward pass](../19-softmax-derivatives-and-the-combined-backward-pass/index.md):** the full softmax Jacobian of section 4, and the cancellation that avoids building it.
+- **[Post 19 - Softmax derivatives and the combined backward pass](../19-softmax-derivatives-and-the-combined-backward-pass/index.md):** the full softmax Jacobian of [section 4](#4-why-softmax-is-different), and the cancellation that avoids building it.
