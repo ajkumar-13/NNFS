@@ -1,6 +1,6 @@
 # 16 - Coding backpropagation
 
-> **TL;DR.** The three gradient formulas of posts 13 to 15 become a `backward` method on `Layer_Dense`: one NumPy line each for `dweights`, `dbiases`, and `dinputs`, fed by the inputs that `forward` now caches. `Activation_ReLU` gets a `backward` that is a **masked copy**: the upstream gradient, with a zero wherever the cached input was not positive. On the three-sample batch of post 14 the class returns that post's weight gradient with rows and columns exchanged, and a central-difference check of a Dense, ReLU, Dense chain built from the two classes agrees with all five of its gradients to a relative error of $1.2 \times 10^{-10}$ or less on the seed shown, while a ReLU without its mask fails the same check by more than 1 on each of ten seeds.
+> **TL;DR.** The three gradient formulas of posts 13 to 15 become a `backward` method on `Layer_Dense`: one NumPy line each for `dweights`, `dbiases`, and `dinputs`, fed by the inputs that `forward` now caches. `Activation_ReLU` gets a `backward` that is a **masked copy**: the upstream gradient, with a zero wherever the cached input was not positive. On the three-sample batch of [post 14](../14-matrices-in-backpropagation/index.md) the class returns that post's weight gradient with rows and columns exchanged, and a central-difference check of a Dense, ReLU, Dense chain built from the two classes agrees with all five of its gradients to a relative error of $1.2 \times 10^{-10}$ or less on the seed shown, while a ReLU without its mask fails the same check by more than 1 on each of ten seeds.
 >
 > **Prerequisites:** [Post 14](../14-matrices-in-backpropagation/index.md), [Post 15](../15-gradients-with-respect-to-inputs/index.md).
 > **Safe to skip?** Skip it if the reader can already write both `backward` methods from memory, say which array each `forward` must keep for them, and explain why the ReLU version starts from `dvalues.copy()`.
@@ -29,7 +29,7 @@
 
 This is the whole contract: a component that offers `forward`, `backward`, and `dinputs` can sit anywhere in a stack, and a component with parameters adds one gradient per parameter array. `dvalues` always has the shape of the component's `output`, because it is the gradient with respect to that output; an array of any other shape is a bug in whatever produced it. The figure at the top of the post draws this contract for `Layer_Dense`, with the shape of every array that enters or leaves it.
 
-The three matrix expressions were derived in posts 14 and 15, and the notation guide lists them in this layout:
+The three matrix expressions were derived in posts [14](../14-matrices-in-backpropagation/index.md) and [15](../15-gradients-with-respect-to-inputs/index.md), and the notation guide lists them in this layout:
 
 | Gradient | Formula | NumPy |
 |---|:---:|---|
@@ -60,11 +60,11 @@ class Layer_Dense:
         self.dinputs = np.dot(dvalues, self.weights.T)          # shape of inputs
 ```
 
-The constructor and the computation in `forward` are those of post 04. Three things are new.
+The constructor and the computation in `forward` are those of [post 04](../04-dense-layer-class-and-spiral-data/index.md). Three things are new.
 
 **`forward` caches `self.inputs`.** The weight gradient multiplies the upstream gradient by the inputs the layer saw, and by the time `backward` runs, `forward` has long returned. Without the cached array the first line of `backward` has nothing to multiply. The assignment stores a reference to an array that already exists, so it copies nothing.
 
-**The bias gradient uses `keepdims=True`.** The sum over axis 0 then keeps the shape `(1, n_neurons)` of `self.biases` instead of `(n_neurons,)` (post 05). The updated biases are the same either way (section 8); the flag is kept for the rule that **a gradient has the shape of the array it updates**.
+**The bias gradient uses `keepdims=True`.** The sum over axis 0 then keeps the shape `(1, n_neurons)` of `self.biases` instead of `(n_neurons,)` ([post 05](../05-array-summation-keepdims-and-broadcasting/index.md)). The updated biases are the same either way ([section 8](#8-what-can-go-wrong)); the flag is kept for the rule that **a gradient has the shape of the array it updates**.
 
 **`self.dinputs` is the gradient with respect to the layer's inputs, not its weights.** The layer itself never uses it. The component before it reads it as its own `dvalues`, and that hand-off is what carries the gradient through a stack of layers.
 
@@ -72,13 +72,13 @@ None of the three lines accumulates. Each call to `backward` assigns fresh array
 
 ### 2.1. The weight layout and where the transposes come from
 
-The class stores one column of weights per neuron, shape `(n_inputs, n_neurons)`, the layout of post 04, and the transposes in `backward` belong to that layout: $(n, N) \cdot (N, m) \rightarrow (n, m)$ for the weight gradient and $(N, m) \cdot (m, n) \rightarrow (N, n)$ for the input gradient. Posts 13 and 14 derived the weight gradient with one *row* per neuron, where it reads `dL_dZ.T @ X` and has shape $(m, n)$. The two results are transposes of each other, as the two stored weight arrays are (post 14, section 8).
+The class stores one column of weights per neuron, shape `(n_inputs, n_neurons)`, the layout of [post 04](../04-dense-layer-class-and-spiral-data/index.md), and the transposes in `backward` belong to that layout: $(n, N) \cdot (N, m) \rightarrow (n, m)$ for the weight gradient and $(N, m) \cdot (m, n) \rightarrow (N, n)$ for the input gradient. Posts [13](../13-backprop-through-a-layer/index.md) and [14](../14-matrices-in-backpropagation/index.md) derived the weight gradient with one *row* per neuron, where it reads `dL_dZ.T @ X` and has shape $(m, n)$. The two results are transposes of each other, as the two stored weight arrays are ([post 14](../14-matrices-in-backpropagation/index.md), [section 8](../14-matrices-in-backpropagation/index.md#8-the-convention-reconciliation)).
 
 ---
 
 ## 3. A numerical check against posts 13 to 15
 
-`snippets/backward_classes.py` holds the two classes of this post and runs them on numbers the reader has already seen. The first part takes the three-sample batch of post 14, section 6.1, and that post's made-up upstream gradient, in which every neuron receives 1 from the first sample, 2 from the second, and 3 from the third. The weights are those of the layer of post 13, stored one column per neuron.
+`snippets/backward_classes.py` holds the two classes of this post and runs them on numbers the reader has already seen. The first part takes the three-sample batch of [post 14](../14-matrices-in-backpropagation/index.md), [section 6.1](../14-matrices-in-backpropagation/index.md#61-worked-batch-example), and that post's made-up upstream gradient, in which every neuron receives 1 from the first sample, 2 from the second, and 3 from the third. The weights are those of the layer of [post 13](../13-backprop-through-a-layer/index.md), stored one column per neuron.
 
 ```python
 X = np.array([[ 1.0,  2.0,  3.0,  2.5],
@@ -120,15 +120,15 @@ dbiases has the shape of biases: True
 dinputs has the shape of inputs: True
 ```
 
-Every number can be followed by hand. The first entry of `dweights` pairs the first input of each sample with its upstream value: $1.0 \cdot 1 + 2.0 \cdot 2 + (-1.5) \cdot 3 = 0.5$. Post 14 printed the same twelve numbers as three rows of $[0.5, 20.1, 10.9, 4.1]$, one row per neuron; here they stand in columns, one column per neuron. Each bias gradient is $1 + 2 + 3 = 6$. The first row of `dinputs` is the sum of each weight row, $0.1 + 0.5 + 0.9 = 1.5$ and so on, which is the vector $[1.5, 1.8, 2.1, 2.4]$ of post 15, and the second and third rows are 2 and 3 times it, because their upstream rows are.
+Every number can be followed by hand. The first entry of `dweights` pairs the first input of each sample with its upstream value: $1.0 \cdot 1 + 2.0 \cdot 2 + (-1.5) \cdot 3 = 0.5$. [Post 14](../14-matrices-in-backpropagation/index.md) printed the same twelve numbers as three rows of $[0.5, 20.1, 10.9, 4.1]$, one row per neuron; here they stand in columns, one column per neuron. Each bias gradient is $1 + 2 + 3 = 6$. The first row of `dinputs` is the sum of each weight row, $0.1 + 0.5 + 0.9 = 1.5$ and so on, which is the vector $[1.5, 1.8, 2.1, 2.4]$ of [post 15](../15-gradients-with-respect-to-inputs/index.md), and the second and third rows are 2 and 3 times it, because their upstream rows are.
 
-Agreement with earlier posts shows the class is a faithful copy of the formulas. It does not test the formulas a second time, since both sides rest on the same derivation. Section 7 makes the independent test.
+Agreement with earlier posts shows the class is a faithful copy of the formulas. It does not test the formulas a second time, since both sides rest on the same derivation. [Section 7](#7-make-it-run-a-gradient-check-on-the-classes) makes the independent test.
 
 ---
 
 ## 4. ReLU with a backward method
 
-ReLU's local derivative is 1 where its input was positive and 0 elsewhere, including the corner $z = 0$, where the series takes 0 (post 10). For one element, with $a = \max(0, z)$:
+ReLU's local derivative is 1 where its input was positive and 0 elsewhere, including the corner $z = 0$, where the series takes 0 ([post 10](../10-derivatives-partial-derivatives-and-gradients/index.md)). For one element, with $a = \max(0, z)$:
 
 $$\frac{\partial L}{\partial z} = \frac{\partial L}{\partial a} \cdot \mathbb{1}[z > 0].$$
 
@@ -146,7 +146,7 @@ class Activation_ReLU:
         self.dinputs[self.inputs <= 0] = 0                      # closed gates pass nothing back
 ```
 
-**`forward` caches `self.inputs`** for the same reason `Layer_Dense` does: `backward` must know which entries were positive, and the upstream gradient does not say. For ReLU the cached output would serve as well, since the output is positive exactly where the input is. Post 17 meets activations whose derivative is most easily written from the output.
+**`forward` caches `self.inputs`** for the same reason `Layer_Dense` does: `backward` must know which entries were positive, and the upstream gradient does not say. For ReLU the cached output would serve as well, since the output is positive exactly where the input is. [Post 17](../17-backpropagation-through-activation-functions/index.md) meets activations whose derivative is most easily written from the output.
 
 **`backward` is a masked copy.** It starts from a copy of `dvalues` and writes 0 at every position where the cached input was not positive. The class has no weights and no biases, so it stores no `dweights` or `dbiases`: its only gradient is `dinputs`.
 
@@ -175,7 +175,7 @@ The middle input was $-2$, so its gate is closed and the 6 that arrived there is
 
 *Both versions leave the same numbers in `dinputs`. Only the right-hand one leaves the array it was handed as it found it.*
 
-`self.dinputs = dvalues`, without `.copy()`, does not create an array. It gives a second name to the caller's array, and the masking line then writes zeros into the array the caller still holds, as the left panel of the figure shows. In the chain of section 6 that array is `dense2.dinputs`, and anything that reads it later would read a gradient the layer never computed. The copy costs one allocation and buys a simple guarantee: `backward` reads its argument and never writes to it. Section 8 runs both versions.
+`self.dinputs = dvalues`, without `.copy()`, does not create an array. It gives a second name to the caller's array, and the masking line then writes zeros into the array the caller still holds, as the left panel of the figure shows. In the chain of [section 6](#6-the-backward-chain-previewed) that array is `dense2.dinputs`, and anything that reads it later would read a gradient the layer never computed. The copy costs one allocation and buys a simple guarantee: `backward` reads its argument and never writes to it. [Section 8](#8-what-can-go-wrong) runs both versions.
 
 ---
 
@@ -190,15 +190,15 @@ Every `backward` in the series follows the same rule: `forward` keeps what `back
 
 `Layer_Dense` needs one more array in `backward`, its own weights, for the input gradient. Those are already stored on the layer, so only the inputs have to be added. The bias gradient needs neither: it is a sum of the upstream gradient alone.
 
-The later components keep to the rule. The softmax of post 19 builds its derivative from its own output, which `forward` has already stored, and the loss of post 18 is handed the predictions and the labels as arguments of its `backward`, so it caches nothing.
+The later components keep to the rule. The softmax of [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) builds its derivative from its own output, which `forward` has already stored, and the loss of [post 18](../18-backpropagation-through-the-loss-function/index.md) is handed the predictions and the labels as arguments of its `backward`, so it caches nothing.
 
-A layer holds only the inputs of its most recent `forward` call, so every `backward` belongs to the `forward` immediately before it; section 8 shows what happens when another batch slips in between.
+A layer holds only the inputs of its most recent `forward` call, so every `backward` belongs to the `forward` immediately before it; [section 8](#8-what-can-go-wrong) shows what happens when another batch slips in between.
 
 ---
 
 ## 6. The backward chain, previewed
 
-With a `backward` on both classes, a stack can be walked in both directions. The softmax and the cross-entropy loss do not have their backward methods yet (posts 18 and 19), so the script stands in for them with the loss of posts 14 and 15: each sample's outputs are summed to $\hat{y}_i$ (the column `Y` in the code), and $L$ is the mean of $\hat{y}_i^2$ over the batch. Its gradient with respect to the last layer's output is $2 \hat{y}_i / N$ in every column of row $i$.
+With a `backward` on both classes, a stack can be walked in both directions. The softmax and the cross-entropy loss do not have their backward methods yet (posts [18](../18-backpropagation-through-the-loss-function/index.md) and [19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)), so the script stands in for them with the loss of posts [14](../14-matrices-in-backpropagation/index.md) and [15](../15-gradients-with-respect-to-inputs/index.md): each sample's outputs are summed to $\hat{y}_i$ (the column `Y` in the code), and $L$ is the mean of $\hat{y}_i^2$ over the batch. Its gradient with respect to the last layer's output is $2 \hat{y}_i / N$ in every column of row $i$.
 
 ```python
 dense1 = Layer_Dense(4, 3)
@@ -239,9 +239,9 @@ dense1.dinputs        (3, 4)    the gradient at the data; nothing reads it
 closed ReLU gates: 2 of 9; zeros in activation1.dinputs: 2
 ```
 
-All four parameter gradients have the shapes of their parameters. The array that travels changes width as it goes: `dense2` receives one column per neuron of its own and returns one column per input of its own, which is one column per neuron of `dense1`. Two of the nine ReLU gates were closed on this batch, and `activation1.dinputs` has zeros in exactly those two places. The loss is tiny because the weights start at a scale of 0.01 (post 04); the shapes do not depend on that.
+All four parameter gradients have the shapes of their parameters. The array that travels changes width as it goes: `dense2` receives one column per neuron of its own and returns one column per input of its own, which is one column per neuron of `dense1`. Two of the nine ReLU gates were closed on this batch, and `activation1.dinputs` has zeros in exactly those two places. The loss is tiny because the weights start at a scale of 0.01 ([post 04](../04-dense-layer-class-and-spiral-data/index.md)); the shapes do not depend on that.
 
-Post 20 assembles the same chain with the real softmax and loss at its right-hand end, and post 21 runs it on the spiral data.
+[Post 20](../20-assembling-full-backpropagation/index.md) assembles the same chain with the real softmax and loss at its right-hand end, and [post 21](../21-coding-the-full-backpropagation/index.md) runs it on the spiral data.
 
 The arrangement is a choice. A `backward` could return its gradients instead of storing them, or take the cached arrays as arguments. The series stores them on `self`, as `forward` stores `self.output`, so that the optimiser and the next component find them under fixed names.
 
@@ -251,11 +251,11 @@ The arrangement is a choice. A `backward` could return its gradients instead of 
 
 Three scripts under `snippets/` produce every number in this post. Each needs only NumPy, sets `np.random.seed(0)`, and runs from the series root in under a second:
 
-- `python posts/16-coding-backpropagation/snippets/backward_classes.py` runs sections 3, 4, and 6.
+- `python posts/16-coding-backpropagation/snippets/backward_classes.py` runs sections [3](#3-a-numerical-check-against-posts-13-to-15), [4](#4-relu-with-a-backward-method), and [6](#6-the-backward-chain-previewed).
 - `python posts/16-coding-backpropagation/snippets/gradient_check.py` runs this section.
-- `python posts/16-coding-backpropagation/snippets/what_can_go_wrong.py` runs section 8.
+- `python posts/16-coding-backpropagation/snippets/what_can_go_wrong.py` runs [section 8](#8-what-can-go-wrong).
 
-Section 3 compared the class with the formulas it was copied from. A **gradient check** is independent of them: it measures each gradient with the central difference of post 10, which uses only the forward pass. One entry of an array is moved by $+h$ and by $-h$, the loss is recomputed both times, and the slope between the two is the measured partial derivative.
+[Section 3](#3-a-numerical-check-against-posts-13-to-15) compared the class with the formulas it was copied from. A **gradient check** is independent of them: it measures each gradient with the central difference of [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md), which uses only the forward pass. One entry of an array is moved by $+h$ and by $-h$, the loss is recomputed both times, and the slope between the two is the measured partial derivative.
 
 ```python
 def numerical_gradient(loss_fn, array, h=1e-5):
@@ -272,9 +272,9 @@ def numerical_gradient(loss_fn, array, h=1e-5):
     return grad
 ```
 
-`loss_fn` takes no arguments and reruns the whole forward pass, so the function can be pointed at any array the forward pass reads: `dense1.weights`, `dense2.biases`, or the data `X`. The step is $h = 10^{-5}$ and the arrays are float64, as post 10 recommends. The measured and the analytic gradient are compared entry by entry through the relative error $|a - n| / \max(|a|, |n|)$, with an entry where both are exactly 0 counted as agreeing, and the largest value over the array is reported. As in post 14, a largest relative error below $10^{-7}$ counts as a pass.
+`loss_fn` takes no arguments and reruns the whole forward pass, so the function can be pointed at any array the forward pass reads: `dense1.weights`, `dense2.biases`, or the data `X`. The step is $h = 10^{-5}$ and the arrays are float64, as [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md) recommends. The measured and the analytic gradient are compared entry by entry through the relative error $|a - n| / \max(|a|, |n|)$, with an entry where both are exactly 0 counted as agreeing, and the largest value over the array is reported. As in [post 14](../14-matrices-in-backpropagation/index.md), a largest relative error below $10^{-7}$ counts as a pass.
 
-The script builds the chain of section 6 on five random samples. It replaces the 0.01-scale weights and the zero biases by standard-normal draws, so that the gradients are not all tiny, as they were in section 6, and the biases take part.
+The script builds the chain of [section 6](#6-the-backward-chain-previewed) on five random samples. It replaces the 0.01-scale weights and the zero biases by standard-normal draws, so that the gradients are not all tiny, as they were in [section 6](#6-the-backward-chain-previewed), and the biases take part.
 
 ```text
 == Activation_ReLU as written, seed 0
@@ -287,7 +287,7 @@ dense1.dinputs   (5, 4)  largest relative error 1.2e-10  pass
 loss evaluations for the numerical side: 86; backward calls: 3
 ```
 
-All five gradients agree with the measurement to about ten significant digits. `dense1.dweights` is the demanding line: it is correct only if `dense2` returned the right `dinputs`, the ReLU masked it at the right places, and `dense1` multiplied it by the inputs it had cached. The smallest pre-activation of the first layer is 0.091 in size, far more than $h$, so no step crosses a ReLU corner, where a finite difference and the convention of section 4 would disagree (post 10). The numerical side costs 86 forward passes, two for each of the 43 numbers checked, against three `backward` calls for the analytic side. Seed 0 is a lopsided test, though: 13 of its 15 gates are closed, so the mask is exercised at thirteen places and the open path at only two, and an entry that is exactly zero on both sides agrees without testing any arithmetic. That is one reason for the ten seeds below.
+All five gradients agree with the measurement to about ten significant digits. `dense1.dweights` is the demanding line: it is correct only if `dense2` returned the right `dinputs`, the ReLU masked it at the right places, and `dense1` multiplied it by the inputs it had cached. The smallest pre-activation of the first layer is 0.091 in size, far more than $h$, so no step crosses a ReLU corner, where a finite difference and the convention of [section 4](#4-relu-with-a-backward-method) would disagree ([post 10](../10-derivatives-partial-derivatives-and-gradients/index.md)). The numerical side costs 86 forward passes, two for each of the 43 numbers checked, against three `backward` calls for the analytic side. Seed 0 is a lopsided test, though: 13 of its 15 gates are closed, so the mask is exercised at thirteen places and the open path at only two, and an entry that is exactly zero on both sides agrees without testing any arithmetic. That is one reason for the ten seeds below.
 
 The check is also run on a ReLU whose `backward` returns `dvalues.copy()` and forgets the mask. Every shape is still right and no error is raised, but `dense1.dweights`, `dense1.dbiases`, and `dense1.dinputs` now fail with relative errors of 1.8, 1.0, and 1.3: they are wrong by as much as their own size. The two gradients of `dense2` still pass, because they are computed before the ReLU's `backward` is called. A failed check therefore also narrows the search: the bug lies after the last gradient that passes and before the first that fails, here in the `dinputs` line of `dense2` or in the ReLU.
 
@@ -312,7 +312,7 @@ seed   without the mask   as written   at an entry of     analytic value   absol
 
 *The two error columns of the table on one log scale: the broken ReLU sits near 1 on every seed, the classes as written below the pass line on nine of ten.*
 
-The figure plots the two error columns of the table. The broken ReLU fails on all ten seeds, with errors between 1.1 and 1.9. The correct classes stay below $10^{-7}$ on nine seeds and reach $4.8 \times 10^{-6}$ on seed 2, where the code is no different. The last three columns explain it. The entry concerned is a gradient of $-2.58 \times 10^{-6}$, and the measurement differs from it by $1.2 \times 10^{-11}$, an absolute gap of the same order as on the other seeds. Dividing an ordinary rounding error by a very small gradient gives a large relative error. This is the caveat the glossary attaches to the $10^{-7}$ threshold: it holds for gradients that are not themselves tiny. The absolute gap separates the two cases: a relative error of $10^{-6}$ on one entry near zero, with a gap no larger than on the seeds that pass, is a rounding effect, and relative errors near 1 are a bug. Post 21 returns to the point for a whole network.
+The figure plots the two error columns of the table. The broken ReLU fails on all ten seeds, with errors between 1.1 and 1.9. The correct classes stay below $10^{-7}$ on nine seeds and reach $4.8 \times 10^{-6}$ on seed 2, where the code is no different. The last three columns explain it. The entry concerned is a gradient of $-2.58 \times 10^{-6}$, and the measurement differs from it by $1.2 \times 10^{-11}$, an absolute gap of the same order as on the other seeds. Dividing an ordinary rounding error by a very small gradient gives a large relative error. This is the caveat the glossary attaches to the $10^{-7}$ threshold: it holds for gradients that are not themselves tiny. The absolute gap separates the two cases: a relative error of $10^{-6}$ on one entry near zero, with a gap no larger than on the seeds that pass, is a rounding effect, and relative errors near 1 are a bug. [Post 21](../21-coding-the-full-backpropagation/index.md) returns to the point for a whole network.
 
 ---
 
@@ -329,7 +329,7 @@ AttributeError: 'Layer_Dense' object has no attribute 'inputs'
 
 This is the one mistake of the five that announces itself. Leaving the line `self.inputs = inputs` out of `forward` gives the same message.
 
-**An alias instead of a copy.** The two ReLU versions of section 4.1, on the three-element example:
+**An alias instead of a copy.** The two ReLU versions of [section 4.1](#41-why-a-copy-and-not-an-assignment), on the three-element example:
 
 ```text
 == 2. alias or copy in the ReLU backward
@@ -351,7 +351,7 @@ np.sum(d, axis=1, keepdims=True)   shape (2, 1)  biases - 0.1 * dbiases has shap
 
 The first line is the class. The second, without `keepdims`, gives the same biases, because a `(3,)` array broadcasts as a row; only the shape of the gradient differs from the shape of its parameter. The third forgets the axis: the sum is the single number 21, broadcasting hands it to every bias, and the biases keep their shape while each is moved by the total over every neuron and every sample. The fourth sums over the neurons instead of the samples and turns the bias row into a $(2, 3)$ array, one row per sample, which raises an error only at a later forward pass on a batch of three or more samples. Comparing `dbiases.shape` with `biases.shape` after the first backward pass catches all three.
 
-**A second `forward` before `backward`.** The layer of section 3 is run forward on its batch, then forward on a second batch of the same shape, and then backward with the gradient meant for the first:
+**A second `forward` before `backward`.** The layer of [section 3](#3-a-numerical-check-against-posts-13-to-15) is run forward on its batch, then forward on a second batch of the same shape, and then backward with the gradient meant for the first:
 
 ```text
 == 4. a second forward call overwrites the cache
@@ -369,7 +369,7 @@ The second result is a perfectly formed weight gradient for a pairing of inputs 
 inputs  [[-1.  0.  1.]]   dinputs [[0. 0. 7.]]
 ```
 
-ReLU has no derivative at 0, and the series takes 0 there, so `<= 0` is the mask and `< 0` would be a different convention. A gradient check must stay away from such points, as section 7 did.
+ReLU has no derivative at 0, and the series takes 0 there, so `<= 0` is the mask and `< 0` would be a different convention. A gradient check must stay away from such points, as [section 7](#7-make-it-run-a-gradient-check-on-the-classes) did.
 
 ---
 
@@ -384,32 +384,30 @@ ReLU has no derivative at 0, and the series takes 0 there, so `<= 0` is the mask
 | Caching | `forward` keeps the inputs; `backward` belongs to the `forward` call just before it |
 | Chain | each component's `dinputs` is the `dvalues` of the component before it |
 | Gradient check | central differences at $h = 10^{-5}$ agree to $1.2 \times 10^{-10}$ on seed 0; a missing mask gives errors above 1 |
-| Still missing | the backward of softmax and of the loss (posts 18 and 19) |
+| Still missing | the backward of softmax and of the loss (posts [18](../18-backpropagation-through-the-loss-function/index.md) and [19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)) |
 
 ---
 
 ## Common pitfalls
 
-1. **Leaving `self.inputs = inputs` out of `forward`.** The first backward call raises `AttributeError`, as does calling `backward` before any `forward` (section 8).
-2. **Assigning `dvalues` instead of copying it.** The `dinputs` returned is right either way, so only the caller's array shows the bug (section 4.1).
-3. **Summing the bias gradient over the wrong axis, or over none.** `np.sum(dvalues)` returns one number that broadcasts to every bias without complaint; `dbiases.shape` must equal `biases.shape` (section 8).
-4. **Mixing the two weight layouts.** The transposes in `backward` belong to the `(n_inputs, n_neurons)` layout of the class and are wrong for the row-per-neuron layout of posts 13 and 14 (section 2.1).
-5. **Running another `forward` between a `forward` and its `backward`.** The cache holds the latest inputs only, and the gradient that comes out has the right shape and the wrong numbers (section 8).
-6. **Reading `dweights` as the new weights.** It is a gradient; the optimiser subtracts it, scaled by the learning rate (post 22).
+1. **Leaving `self.inputs = inputs` out of `forward`.** The first backward call raises `AttributeError`, as does calling `backward` before any `forward` ([section 8](#8-what-can-go-wrong)).
+2. **Assigning `dvalues` instead of copying it.** The `dinputs` returned is right either way, so only the caller's array shows the bug ([section 4.1](#41-why-a-copy-and-not-an-assignment)).
+3. **Summing the bias gradient over the wrong axis, or over none.** `np.sum(dvalues)` returns one number that broadcasts to every bias without complaint; `dbiases.shape` must equal `biases.shape` ([section 8](#8-what-can-go-wrong)).
+4. **Mixing the two weight layouts.** The transposes in `backward` belong to the `(n_inputs, n_neurons)` layout of the class and are wrong for the row-per-neuron layout of posts [13](../13-backprop-through-a-layer/index.md) and [14](../14-matrices-in-backpropagation/index.md) ([section 2.1](#21-the-weight-layout-and-where-the-transposes-come-from)).
+5. **Running another `forward` between a `forward` and its `backward`.** The cache holds the latest inputs only, and the gradient that comes out has the right shape and the wrong numbers ([section 8](#8-what-can-go-wrong)).
+6. **Reading `dweights` as the new weights.** It is a gradient; the optimiser subtracts it, scaled by the learning rate ([post 22](../22-gradient-descent-optimiser/index.md)).
 
 ---
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, section 6.5 (Back-Propagation and Other Differentiation Algorithms) for the general algorithm, and section 11.5 (Debugging Strategies) for comparing a backward pass with finite differences (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 9 (Backpropagation), the source of the class design and the names `dvalues` and `dinputs` (2020).
-- Nielsen, M., *Neural Networks and Deep Learning*, chapter 2 (How the backpropagation algorithm works) (online, 2015).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/mlp.html)*, section 6.5 (Back-Propagation and Other Differentiation Algorithms) for the general algorithm, and section 11.5 (Debugging Strategies) for comparing a backward pass with finite differences (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 9 (Backpropagation), the source of the class design and the names `dvalues` and `dinputs` (2020).
+- Nielsen, M., *[Neural Networks and Deep Learning](https://neuralnetworksanddeeplearning.com/chap2.html)*, chapter 2 (How the backpropagation algorithm works) (online, 2015).
 
 ---
 
 ## What to read next
 
 - **[Post 17 - Backpropagation through activation functions](../17-backpropagation-through-activation-functions/index.md):** the ReLU backward in more detail, the same one-line pattern for sigmoid and tanh, and why softmax does not fit it.
-- **[Post 20 - Assembling full backpropagation](../20-assembling-full-backpropagation/index.md):** the chain of section 6 with the real softmax and loss at its end, and the `dinputs` to `dvalues` hand-off traced through every component.
+- **[Post 20 - Assembling full backpropagation](../20-assembling-full-backpropagation/index.md):** the chain of [section 6](#6-the-backward-chain-previewed) with the real softmax and loss at its end, and the `dinputs` to `dvalues` hand-off traced through every component.
