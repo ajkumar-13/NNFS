@@ -1,6 +1,6 @@
 # 24 - Momentum
 
-> **TL;DR.** Gradient descent uses the current gradient and nothing else, so it bounces between the walls of a narrow valley and crawls across flat ground. **Momentum** keeps a velocity for every parameter, $v \leftarrow \beta v - \alpha g$, and steps by it: parts of consecutive steps that oppose each other cancel, and parts that agree add up to as much as $1/(1 - \beta)$ times one step. On the spiral run of post 23, adding `momentum=0.9` takes the final loss from 0.7612 to 0.1209 and the accuracy from 64.7 to 95.7 percent on seed 0. Over five seeds the loss is lower every time, the accuracy is higher in four, and the accuracy ranges from 68.7 to 98.0 percent.
+> **TL;DR.** Gradient descent uses the current gradient and nothing else, so it bounces between the walls of a narrow valley and crawls across flat ground. **Momentum** keeps a velocity for every parameter, $v \leftarrow \beta v - \alpha g$, and steps by it: parts of consecutive steps that oppose each other cancel, and parts that agree add up to as much as $1/(1 - \beta)$ times one step. On the spiral run of [post 23](../23-learning-rate-decay/index.md), adding `momentum=0.9` takes the final loss from 0.7612 to 0.1209 and the accuracy from 64.7 to 95.7 percent on seed 0. Over five seeds the loss is lower every time, the accuracy is higher in four, and the accuracy ranges from 68.7 to 98.0 percent.
 >
 > **Prerequisites:** [Post 22](../22-gradient-descent-optimiser/index.md), [Post 23](../23-learning-rate-decay/index.md).
 > **Safe to skip?** Skip it if the reader can write the velocity update from memory, say where the learning rate enters it in each of the two common conventions, and add it to an optimiser class as one buffer per parameter array.
@@ -13,7 +13,7 @@
 
 ![Two charts of the ravine L = (x squared + 100 y squared)/2 with elliptical contours, each a 100-step path from (10, 1) with learning rate 0.019. Without momentum the path zig-zags from wall to wall while it creeps along the floor and ends at x = 1.4686, loss 1.0784. With momentum 0.9 it holds still across on every second step, runs past the minimum to x = -2.84, comes back and ends at x = 0.0523, loss 0.0027. Travel across is 18.999 against 18.902, travel along 8.531 against 17.834.](diagrams/01-ravine-paths.svg)
 
-*The ravine of section 1, 100 steps of `ravine.py` each. With momentum the path crosses the ravine about as much, travels twice as far along the floor, and ends with a loss 400 times lower.*
+*The ravine of [section 1](#1-the-question-what-does-gradient-descent-lose-by-forgetting), 100 steps of `ravine.py` each. With momentum the path crosses the ravine about as much, travels twice as far along the floor, and ends with a loss 400 times lower.*
 
 ---
 
@@ -71,7 +71,7 @@ beta    x      |y|        loss      travel across  travel along  across steps th
 
 The loss is 400 times lower with momentum (0.0027 against 1.0784), and all of that gain is along the floor: $x$ has gone from 10 to 0.0523 instead of 1.4686. The bounce has not vanished. The across step reverses 49 times instead of 99, but the distance travelled across the ravine is almost the same (18.902 against 18.999), and the remaining $|y|$ is larger with momentum. What the velocity does on this surface is hold the across motion still on every second step and use the agreement along the floor to go twice as far. The figure at the top of the post draws the two paths.
 
-Flat ground works the same way. Where the current gradient is tiny, the velocity inherited from many steps in one direction is not, and the optimiser keeps moving. Section 3 puts a number on it.
+Flat ground works the same way. Where the current gradient is tiny, the velocity inherited from many steps in one direction is not, and the optimiser keeps moving. [Section 3](#3-the-momentum-formula) puts a number on it.
 
 ---
 
@@ -83,10 +83,10 @@ Here $\theta$ is any trainable parameter, a weight or a bias, and $g_t = \partia
 
 - $v_t$ is the **velocity**: one number per parameter, so the velocity of an array has the shape of that array.
 - $\beta$ is the **momentum coefficient**, a number in $[0, 1)$, `momentum` in the code. It is the fraction of the previous velocity that survives a step.
-- $\alpha$ is the **current** learning rate of post 23, so a decay schedule still applies.
+- $\alpha$ is the **current** learning rate of [post 23](../23-learning-rate-decay/index.md), so a decay schedule still applies.
 - The velocity before the first step is zero, so the first step is $-\alpha g_1$, a plain gradient step, whatever $\beta$ is.
 
-**With $\beta = 0$** the rule is $v_t = -\alpha g_t$ and $\theta_t = \theta_{t-1} - \alpha g_t$: the update of post 22. `ravine.py` runs the class of section 5 against the two lines above written out, and with `momentum=0.0` against `theta -= alpha * g`:
+**With $\beta = 0$** the rule is $v_t = -\alpha g_t$ and $\theta_t = \theta_{t-1} - \alpha g_t$: the update of [post 22](../22-gradient-descent-optimiser/index.md). `ravine.py` runs the class of [section 5](#5-the-optimiser-class-with-momentum) against the two lines above written out, and with `momentum=0.0` against `theta -= alpha * g`:
 
 ```text
 beta 0.9: largest gap between class and formula over 100 steps 0.0e+00
@@ -99,13 +99,13 @@ momentum 0.0 against theta -= alpha * g: largest gap 0.0e+00
 beta 0.90  t=1: 1.000  t=2: 1.900  t=3: 2.710  t=10: 6.513  t=50: 9.948  t=1000: 10.000   1 / (1 - beta) = 10
 ```
 
-This is the speed that builds up along a consistent direction: with $\beta = 0.9$ the step grows to ten times a plain gradient step, and with 0.99 to a hundred times. Unrolled, $v_t = -\alpha \sum_{k \ge 0} \beta^k g_{t-k}$ at a constant rate: a weighted sum of all past gradients in which a gradient $k$ steps old counts $\beta^k$. The weights add up to $1/(1 - \beta)$, which is why that number is quoted as the horizon of the velocity; with $\beta = 0.9$ the latest ten gradients carry 0.651 of the total weight. It is a sum and not an average: there is no factor $(1 - \beta)$ in front of the gradient, as there will be in Adam (post 27). The figure below draws both the growth and the weights.
+This is the speed that builds up along a consistent direction: with $\beta = 0.9$ the step grows to ten times a plain gradient step, and with 0.99 to a hundred times. Unrolled, $v_t = -\alpha \sum_{k \ge 0} \beta^k g_{t-k}$ at a constant rate: a weighted sum of all past gradients in which a gradient $k$ steps old counts $\beta^k$. The weights add up to $1/(1 - \beta)$, which is why that number is quoted as the horizon of the velocity; with $\beta = 0.9$ the latest ten gradients carry 0.651 of the total weight. It is a sum and not an average: there is no factor $(1 - \beta)$ in front of the gradient, as there will be in Adam ([post 27](../27-adam-optimiser/index.md)). The figure below draws both the growth and the weights.
 
 ![Left, the size of the velocity under a gradient that never changes, against the step on logarithmic axes, for beta 0.5, 0.9 and 0.99: it levels off at 2, 10 and 100 plain steps, and the values printed at t = 1, 2, 3, 10, 50 and 1,000 are marked. Right, stems for the weight 0.9 to the k of a gradient k steps old, k from 0 to 29: the latest ten carry 0.651 of a total weight of 10.](diagrams/03-velocity-horizon.svg)
 
 *Both panels are computed from the formulas above; the marks on the left are the values `ravine.py` prints.*
 
-**With $\beta = 1$** nothing is ever forgotten, and on the ravine the path never settles (section 10).
+**With $\beta = 1$** nothing is ever forgotten, and on the ravine the path never settles ([section 10](#10-what-can-go-wrong)).
 
 The idea is older than deep learning. Polyak's heavy-ball method of 1964 writes the same step as $\theta_{t+1} = \theta_t - \alpha g + \beta (\theta_t - \theta_{t-1})$, which is the rule above because $v_t = \theta_t - \theta_{t-1}$. Rumelhart, Hinton and Williams used such a term in their 1986 backpropagation paper, and Sutskever and co-authors (2013), who write the rule in the form used here, studied how much it matters for training deep networks. Their paper also treats Nesterov's variant, which evaluates the gradient at the point the velocity is about to reach; this series does not implement it.
 
@@ -132,12 +132,12 @@ With a learning rate that changes they are two different algorithms, and the sec
 
 ## 4. Where the velocity lives
 
-The optimiser of post 23 held only numbers of its own: the learning rate, the decay, and the step counter. Momentum adds state **per parameter**: one velocity array for each weight array and one for each bias array.
+The optimiser of [post 23](../23-learning-rate-decay/index.md) held only numbers of its own: the learning rate, the decay, and the step counter. Momentum adds state **per parameter**: one velocity array for each weight array and one for each bias array.
 
 This series attaches that state to the layer, as `layer.weight_momentums` and `layer.bias_momentums`, each with the shape of the parameter it belongs to. The optimiser creates the two arrays the first time it meets a layer and reads and replaces them on every later call. Two things follow:
 
 - **One optimiser object serves any number of layers** without a table of buffers indexed by layer.
-- **The buffer travels with the layer.** A layer that is saved, or reused in a second run, carries its velocity along, which section 10 shows can be a trap.
+- **The buffer travels with the layer.** A layer that is saved, or reused in a second run, carries its velocity along, which [section 10](#10-what-can-go-wrong) shows can be a trap.
 
 Keeping the buffers inside the optimiser, keyed by parameter, is the other common design. The bookkeeping is the same either way: one velocity per parameter array.
 
@@ -145,7 +145,7 @@ Keeping the buffers inside the optimiser, keyed by parameter, is the other commo
 
 ## 5. The optimiser class with momentum
 
-The class of post 23 gains one constructor argument, one attribute, and a new body for `update_params`. `pre_update_params` and `post_update_params` are unchanged.
+The class of [post 23](../23-learning-rate-decay/index.md) gains one constructor argument, one attribute, and a new body for `update_params`. `pre_update_params` and `post_update_params` are unchanged.
 
 ```python
 class Optimizer_SGD:
@@ -190,21 +190,21 @@ class Optimizer_SGD:
         self.iterations += 1
 ```
 
-Sign by sign, the code is the formula of section 3: the old velocity times `self.momentum`, **minus** the current learning rate times the gradient, and the result **added** to the parameter.
+Sign by sign, the code is the formula of [section 3](#3-the-momentum-formula): the old velocity times `self.momentum`, **minus** the current learning rate times the gradient, and the result **added** to the parameter.
 
 **The buffers are created lazily.** The `hasattr` test means a layer needs to know nothing about the optimiser that will train it. On the first call the buffers are zeros, so the first step is a plain gradient step.
 
 **The buffer always holds the latest velocity.** The line that computes `weight_updates` reads the velocity of the previous step, and the next line stores the new one under the same name. The same array object is then added to the weights, which is harmless because nothing modifies it afterwards.
 
-**The `if self.momentum:` guard keeps the behaviour of post 23.** With the default `momentum=0.0` no buffer is created and the update is `-current_learning_rate * gradient`, as before.
+**The `if self.momentum:` guard keeps the behaviour of [post 23](../23-learning-rate-decay/index.md).** With the default `momentum=0.0` no buffer is created and the update is `-current_learning_rate * gradient`, as before.
 
-**Each call handles one layer completely.** `update_params(dense1)` computes and applies both updates of `dense1` before `dense2` is touched. That is safe for the reason post 20 gave: by the time the optimiser runs, every gradient of the backward pass is already stored.
+**Each call handles one layer completely.** `update_params(dense1)` computes and applies both updates of `dense1` before `dense2` is touched. That is safe for the reason [post 20](../20-assembling-full-backpropagation/index.md) gave: by the time the optimiser runs, every gradient of the backward pass is already stored.
 
 ---
 
 ## 6. The training loop
 
-The loop is the one of post 23. Only the constructor call differs: `Optimizer_SGD(learning_rate=1.0, decay=1e-3, momentum=0.9)`.
+The loop is the one of [post 23](../23-learning-rate-decay/index.md). Only the constructor call differs: `Optimizer_SGD(learning_rate=1.0, decay=1e-3, momentum=0.9)`.
 
 ```python
     for epoch in range(epochs):
@@ -229,13 +229,13 @@ The loop is the one of post 23. Only the constructor call differs: `Optimizer_SG
         optimizer.post_update_params()
 ```
 
-The three-call contract of post 23 absorbs the new feature without a change to the loop, which is what the contract is for. In `snippets/momentum_sgd.py` the loop sits inside a function, `train`, so that the same lines serve every run of this post; the function also records, for each step, whether it points against the step before.
+The three-call contract of [post 23](../23-learning-rate-decay/index.md) absorbs the new feature without a change to the loop, which is what the contract is for. In `snippets/momentum_sgd.py` the loop sits inside a function, `train`, so that the same lines serve every run of this post; the function also records, for each step, whether it points against the step before.
 
 ---
 
 ## 7. What happens when it runs
 
-The setup is the shared one of Part VI, printed by every script: `nnfs.init()` (float32), `spiral_data(samples=100, classes=3)`, `Layer_Dense(2, 64)`, ReLU, `Layer_Dense(64, 3)`, the combined softmax and loss, weights of scale 0.01, 10,001 full-batch epochs, and seed 0, the seed `nnfs.init()` sets. `momentum_sgd.py` runs it twice, with the optimiser of post 23 and with momentum added:
+The setup is the shared one of Part VI, printed by every script: `nnfs.init()` (float32), `spiral_data(samples=100, classes=3)`, `Layer_Dense(2, 64)`, ReLU, `Layer_Dense(64, 3)`, the combined softmax and loss, weights of scale 0.01, 10,001 full-batch epochs, and seed 0, the seed `nnfs.init()` sets. `momentum_sgd.py` runs it twice, with the optimiser of [post 23](../23-learning-rate-decay/index.md) and with momentum added:
 
 ```text
 decay only (post 23)
@@ -247,7 +247,7 @@ decay and momentum 0.9
   epoch 10000  loss 0.1209  acc 0.9567
 ```
 
-On this seed momentum takes the final loss from 0.7612 to 0.1209 and the accuracy from 64.7 to 95.7 percent, with the same learning rate, the same decay, and the same number of epochs. The first 1,000 epochs show the flat ground of section 1. Both runs start at a loss of 1.0986, which is $\ln 3$; the run without momentum has moved to 1.0631 and the run with it to 0.4472.
+On this seed momentum takes the final loss from 0.7612 to 0.1209 and the accuracy from 64.7 to 95.7 percent, with the same learning rate, the same decay, and the same number of epochs. The first 1,000 epochs show the flat ground of [section 1](#1-the-question-what-does-gradient-descent-lose-by-forgetting). Both runs start at a loss of 1.0986, which is $\ln 3$; the run without momentum has moved to 1.0631 and the run with it to 0.4472.
 
 The second table of the script is about the path:
 
@@ -257,7 +257,7 @@ decay only (post 23)          0.7612    0.6467      1.099 (    0)      3,973    
 decay and momentum 0.9        0.1209    0.9567      4.690 ( 1765)      2,856                  1,128
 ```
 
-"Step against the last" counts the steps whose dot product with the previous step, over all 387 parameters, is negative. Without momentum that is 8,188 of 10,000 pairs: for most of the run the optimiser undoes part of its previous step, which is the zig-zag of section 1 on a real network. With momentum it is 1,128.
+"Step against the last" counts the steps whose dot product with the previous step, over all 387 parameters, is negative. Without momentum that is 8,188 of 10,000 pairs: for most of the run the optimiser undoes part of its previous step, which is the zig-zag of [section 1](#1-the-question-what-does-gradient-descent-lose-by-forgetting) on a real network. With momentum it is 1,128.
 
 One seed is not a result. `snippets/seed_spread.py` repeats both runs for seeds 0 to 4, set with `np.random.seed` after `nnfs.init()`, so the data and the initial weights both change:
 
@@ -277,13 +277,13 @@ seed  optimiser      loss@1000  final loss  accuracy  peak loss  loss rose  step
 
 What holds in every one of the five seeds: momentum ends with the lower loss (0.0865 to 0.5986 against 0.7310 to 0.9107), and it is far ahead after 1,000 epochs (0.3697 to 0.6630 against 1.0303 to 1.0631). What does not hold in every seed is the size of the gain. The accuracy with momentum ranges from 68.7 to 98.0 percent, against 58.0 to 69.3 without, and on seed 1 it is slightly lower with momentum (68.7 against 69.3). Seed 0, the documented run, is one of the two best of the five; the mean accuracy is 83.4 percent against 64.5.
 
-The path measures are mixed in the same honest way. Momentum has fewer steps against the last in four seeds of five; in the fifth, seed 2, the run without momentum hardly zig-zags at all (542 pairs) and still ends with the highest loss of the table. The number of epochs in which the loss rose is lower with momentum in two seeds and higher in three, so momentum does not make the loss curve smoother. And its peak loss is above the starting loss in every seed, which section 10 returns to.
+The path measures are mixed in the same honest way. Momentum has fewer steps against the last in four seeds of five; in the fifth, seed 2, the run without momentum hardly zig-zags at all (542 pairs) and still ends with the highest loss of the table. The number of epochs in which the loss rose is lower with momentum in two seeds and higher in three, so momentum does not make the loss curve smoother. And its peak loss is above the starting loss in every seed, which [section 10](#10-what-can-go-wrong) returns to.
 
 ---
 
 ## 8. Choosing $\beta$
 
-On the ravine of section 1, the four coefficients after 100 steps:
+On the ravine of [section 1](#1-the-question-what-does-gradient-descent-lose-by-forgetting), the four coefficients after 100 steps:
 
 ```text
 beta    x      |y|        loss      travel across  travel along  across steps that reverse
@@ -295,7 +295,7 @@ beta    x      |y|        loss      travel across  travel along  across steps th
 
 A coefficient of 0.5 damps the bounce best (the travel across falls from 18.999 to 4.872), 0.9 gives the lowest loss because it gains most along the floor, and 0.99 ends with about 23 times the loss of no momentum at all: it travels 96.638 across a ravine whose walls started 1 away.
 
-On the spiral, `snippets/beta_sweep.py` runs 0.5 and 0.99 over the same five seeds, with the same decay; the rows for 0 and 0.9 are those of section 7.
+On the spiral, `snippets/beta_sweep.py` runs 0.5 and 0.99 over the same five seeds, with the same decay; the rows for 0 and 0.9 are those of [section 7](#7-what-happens-when-it-runs).
 
 | $\beta$ | Horizon $1/(1 - \beta)$ | Final loss, five seeds | Accuracy, five seeds | Mean accuracy | Steps against the last |
 |:---:|:---:|:---:|:---:|:---:|:---:|
@@ -330,7 +330,7 @@ python posts/24-momentum/snippets/beta_sweep.py
 python posts/24-momentum/snippets/what_can_go_wrong.py
 ```
 
-`momentum_sgd.py` holds the classes, the `train` function and the documented run, and needs NumPy and the `nnfs` package; it takes about 15 seconds. `seed_spread.py` and `beta_sweep.py` import from it and make ten full runs each, about 70 seconds apiece. `ravine.py` and `what_can_go_wrong.py` work on the two-parameter ravine in float64, are not random, and finish in about a second. The network classes are those of posts 16 and 19, unchanged.
+`momentum_sgd.py` holds the classes, the `train` function and the documented run, and needs NumPy and the `nnfs` package; it takes about 15 seconds. `seed_spread.py` and `beta_sweep.py` import from it and make ten full runs each, about 70 seconds apiece. `ravine.py` and `what_can_go_wrong.py` work on the two-parameter ravine in float64, are not random, and finish in about a second. The network classes are those of posts [16](../16-coding-backpropagation/index.md) and [19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md), unchanged.
 
 ---
 
@@ -396,20 +396,18 @@ With nothing forgotten there is no friction. Between steps 1,000 and 2,000 the l
 3. **Raising $\beta$ without lowering $\alpha$.** The step can grow to $\alpha/(1 - \beta)$: ten times at 0.9, a hundred times at 0.99.
 4. **Forgetting that decay still applies.** The velocity line reads `current_learning_rate`, the decayed rate, and `pre_update_params` must still be called first.
 5. **Reusing layers across runs.** The buffer stays on the layer and the next run starts with a velocity that is not its own.
-6. **Reading Adam's $\beta_1$ as this $\beta$.** Adam multiplies the gradient by $(1 - \beta_1)$ before adding it; classical momentum does not (post 27).
+6. **Reading Adam's $\beta_1$ as this $\beta$.** Adam multiplies the gradient by $(1 - \beta_1)$ before adding it; classical momentum does not ([post 27](../27-adam-optimiser/index.md)).
 
 ---
 
 ## Further reading
 
-- Polyak, B. T., *"Some Methods of Speeding up the Convergence of Iteration Methods"* (USSR Computational Mathematics and Mathematical Physics, 1964). The heavy-ball method.
-- Rumelhart, D., Hinton, G., and Williams, R., *"Learning Representations by Back-Propagating Errors"* (Nature, 1986).
-- Sutskever, I., Martens, J., Dahl, G., and Hinton, G., *"On the Importance of Initialization and Momentum in Deep Learning"* (ICML, 2013).
-- Qian, N., *"On the Momentum Term in Gradient Descent Learning Algorithms"* (Neural Networks, 1999).
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 8 (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 10 (2020).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Polyak, B. T., *["Some Methods of Speeding up the Convergence of Iteration Methods"](https://doi.org/10.1016/0041-5553%2864%2990137-5)* (USSR Computational Mathematics and Mathematical Physics, 1964). The heavy-ball method.
+- Rumelhart, D., Hinton, G., and Williams, R., *["Learning Representations by Back-Propagating Errors"](https://doi.org/10.1038/323533a0)* (Nature, 1986).
+- Sutskever, I., Martens, J., Dahl, G., and Hinton, G., *["On the Importance of Initialization and Momentum in Deep Learning"](https://proceedings.mlr.press/v28/sutskever13.html)* (ICML, 2013).
+- Qian, N., *["On the Momentum Term in Gradient Descent Learning Algorithms"](https://doi.org/10.1016/S0893-6080%2898%2900116-6)* (Neural Networks, 1999).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/optimization.html)*, chapter 8 (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 10 (2020).
 
 ---
 
