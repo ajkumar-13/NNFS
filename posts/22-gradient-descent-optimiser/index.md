@@ -13,13 +13,13 @@
 
 ![Two charts of the documented run against the epoch, 0 to 10,000. Top, the loss of every epoch as a thin red line that bounces around the eleven printed rows, which fall from ln 3 = 1.0986 to 0.8737; the largest single rise, 0.0553, ends at epoch 1,604, and the lowest loss is 0.8343, at epoch 7,874. Bottom, the accuracy of every epoch around the printed rows, from 0.3600 to 0.6467, with the last 1,000 epochs shaded, where it moved between 0.5633 and 0.6533.](diagrams/01-documented-run.svg)
 
-*The documented run of section 4, every epoch drawn: eleven printed rows read as a steady descent, while the loss rose on 4,628 of the 10,000 updates.*
+*The documented run of [section 4](#4-what-the-run-produces), every epoch drawn: eleven printed rows read as a steady descent, while the loss rose on 4,628 of the 10,000 updates.*
 
 ---
 
 ## 1. The question: what turns four gradient arrays into a network that learns?
 
-Post 21 ends with a gradient stored beside each of the four parameter arrays of the spiral classifier: `dense1.dweights`, `dense1.dbiases`, `dense2.dweights` and `dense2.dbiases`. Nothing has moved yet. [Post 20](../20-assembling-full-backpropagation/index.md), section 5, made one update by writing four subtractions, and left two things open: who owns those subtractions, and what happens when the cycle of forward pass, backward pass and update is repeated ten thousand times. The question of this post is: **what is the simplest rule that turns gradients into new weights, and how far does it get on the spiral?**
+[Post 21](../21-coding-the-full-backpropagation/index.md) ends with a gradient stored beside each of the four parameter arrays of the spiral classifier: `dense1.dweights`, `dense1.dbiases`, `dense2.dweights` and `dense2.dbiases`. Nothing has moved yet. [Post 20](../20-assembling-full-backpropagation/index.md), [section 5](../20-assembling-full-backpropagation/index.md#5-the-gradient-descent-update), made one update by writing four subtractions, and left two things open: who owns those subtractions, and what happens when the cycle of forward pass, backward pass and update is repeated ten thousand times. The question of this post is: **what is the simplest rule that turns gradients into new weights, and how far does it get on the spiral?**
 
 The rule is the one [post 09](../09-introduction-to-optimisation/index.md) introduced. For any parameter $\theta$, a weight or a bias, with gradient $g = \partial L / \partial \theta$:
 
@@ -37,7 +37,7 @@ The class is named `Optimizer_SGD`, for stochastic gradient descent. The stochas
 | How a gradient becomes a new parameter | the optimiser's `update_params` |
 | The learning rate, and anything remembered between steps | the optimiser |
 
-The two sides meet in four attributes. A layer with parameters stores `weights`, `biases`, `dweights` and `dbiases`; the optimiser reads the last two and writes the first two, and knows nothing about how the gradients were computed. That is the contract every optimiser of Part VI keeps: `update_params(layer)` is called once for each layer that has parameters, after the backward pass is complete. Post 23 adds two calls around it, `pre_update_params` and `post_update_params`, once per step each; from then on a new optimiser is a change of one line in the loop.
+The two sides meet in four attributes. A layer with parameters stores `weights`, `biases`, `dweights` and `dbiases`; the optimiser reads the last two and writes the first two, and knows nothing about how the gradients were computed. That is the contract every optimiser of Part VI keeps: `update_params(layer)` is called once for each layer that has parameters, after the backward pass is complete. [Post 23](../23-learning-rate-decay/index.md) adds two calls around it, `pre_update_params` and `post_update_params`, once per step each; from then on a new optimiser is a change of one line in the loop.
 
 ---
 
@@ -83,22 +83,22 @@ Three things follow from the eight lines of the class.
 
 - **It works on anything that has the four arrays.** The `layer` above is a bare `SimpleNamespace`, not a `Layer_Dense`. `Activation_ReLU` and the combined softmax and loss class have no parameters, so they are never handed to it.
 - **It writes in place.** `-=` changes the array the layer already holds, so the next forward pass sees the new parameters without anything being handed back.
-- **It remembers nothing.** The only attribute is the learning rate; each call uses the gradients of the moment and forgets them. Its default of 1.0 is the value the documented run of section 3 uses, not a recommendation; section 5 measures what other values do.
+- **It remembers nothing.** The only attribute is the learning rate; each call uses the gradients of the moment and forgets them. Its default of 1.0 is the value the documented run of [section 3](#3-the-training-loop) uses, not a recommendation; [section 5](#5-the-learning-rate-trade-off) measures what other values do.
 
-The same script repeats the single update of post 20, section 5, on that post's batch and seed, with `Optimizer_SGD(learning_rate=0.01)` in place of the four written-out subtractions:
+The same script repeats the single update of [post 20](../20-assembling-full-backpropagation/index.md), [section 5](../20-assembling-full-backpropagation/index.md#5-the-gradient-descent-update), on that post's batch and seed, with `Optimizer_SGD(learning_rate=0.01)` in place of the four written-out subtractions:
 
 ```text
 loss before 1.098629   after 1.098210
 largest difference from the four subtractions written out: 0.0e+00
 ```
 
-These are post 20's two losses, and the parameters agree to the last bit. The class adds no arithmetic; it gives the subtractions an owner.
+These are [post 20](../20-assembling-full-backpropagation/index.md)'s two losses, and the parameters agree to the last bit. The class adds no arithmetic; it gives the subtractions an owner.
 
 ---
 
 ## 3. The training loop
 
-`snippets/train_sgd.py` puts the four objects of post 20, the optimiser, and a loop over epochs together:
+`snippets/train_sgd.py` puts the four objects of [post 20](../20-assembling-full-backpropagation/index.md), the optimiser, and a loop over epochs together:
 
 ```python
 nnfs.init()                                   # seed 0, float32 arrays, and a patched np.dot
@@ -141,13 +141,13 @@ for epoch in range(10001):
         print(f"epoch {epoch:5d}  loss {loss:.4f}  acc {accuracy:.4f}")
 ```
 
-The forward and backward calls are those of posts 20 and 21, and the classes are those of posts 16 and 19, unchanged. Four things about the loop are fixed here, because every later post of Part VI repeats this run and compares its own optimiser with it.
+The forward and backward calls are those of posts [20](../20-assembling-full-backpropagation/index.md) and [21](../21-coding-the-full-backpropagation/index.md), and the classes are those of posts [16](../16-coding-backpropagation/index.md) and [19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md), unchanged. Four things about the loop are fixed here, because every later post of Part VI repeats this run and compares its own optimiser with it.
 
-**The setup.** `nnfs.init()` seeds NumPy with 0 and makes every array `float32`; the data are the 300 spiral points of post 04; the weights start as `0.01 * np.random.randn` and the biases at zero; the learning rate is 1.0; the loop runs 10,001 times. The script prints this setup.
+**The setup.** `nnfs.init()` seeds NumPy with 0 and makes every array `float32`; the data are the 300 spiral points of [post 04](../04-dense-layer-class-and-spiral-data/index.md); the weights start as `0.01 * np.random.randn` and the biases at zero; the learning rate is 1.0; the loop runs 10,001 times. The script prints this setup.
 
-**The hidden layer has 64 neurons, not 3.** The network has $2 \cdot 64 + 64 + 64 \cdot 3 + 3 = 387$ parameters where the network of post 20 had 21. Post 09, section 4, ran gradient descent on both for 10,000 steps: it ended at a loss of 1.0776 with 3 hidden neurons and at 0.8737 with 64.
+**The hidden layer has 64 neurons, not 3.** The network has $2 \cdot 64 + 64 + 64 \cdot 3 + 3 = 387$ parameters where the network of [post 20](../20-assembling-full-backpropagation/index.md) had 21. [Post 09](../09-introduction-to-optimisation/index.md), [section 4](../09-introduction-to-optimisation/index.md#4-why-random-search-cannot-scale), ran gradient descent on both for 10,000 steps: it ended at a loss of 1.0776 with 3 hidden neurons and at 0.8737 with 64.
 
-**An epoch is one pass over the whole training set.** All 300 samples go through at once, so here one epoch is one update. With mini-batches (post 32) an epoch is several updates.
+**An epoch is one pass over the whole training set.** All 300 samples go through at once, so here one epoch is one update. With mini-batches ([post 32](../32-mini-batching/index.md)) an epoch is several updates.
 
 **The loss and the accuracy are measured before the update.** The numbers logged at epoch $t$ belong to the parameters after $t$ updates, so epoch 0 shows the untrained network and epoch 10,000 the result of 10,000 updates. Accuracy is only reported; the gradient comes from the loss.
 
@@ -169,9 +169,9 @@ epoch  9000  loss 0.8717  acc 0.5700
 epoch 10000  loss 0.8737  acc 0.6467
 ```
 
-The first row is the untrained network: a loss of $\ln 3 = 1.0986$ and 108 of 300 correct. The last row, a loss of 0.8737 and 194 of 300 correct, is the result post 09 obtained with the same steps written without classes. It is the **documented run** of Part VI.
+The first row is the untrained network: a loss of $\ln 3 = 1.0986$ and 108 of 300 correct. The last row, a loss of 0.8737 and 194 of 300 correct, is the result [post 09](../09-introduction-to-optimisation/index.md) obtained with the same steps written without classes. It is the **documented run** of Part VI.
 
-**The start is slow.** After 100 updates the loss is 1.0869, and after 1,000 it is 1.0623 with 40 percent correct. The cause is the one post 20, section 5, measured on a small batch: with weights at a scale of 0.01 and every class equally frequent, the first gradients are tiny, and a step of $\alpha$ times a tiny gradient is tiny whatever $\alpha$ is.
+**The start is slow.** After 100 updates the loss is 1.0869, and after 1,000 it is 1.0623 with 40 percent correct. The cause is the one [post 20](../20-assembling-full-backpropagation/index.md), [section 5](../20-assembling-full-backpropagation/index.md#5-the-gradient-descent-update), measured on a small batch: with weights at a scale of 0.01 and every class equally frequent, the first gradients are tiny, and a step of $\alpha$ times a tiny gradient is tiny whatever $\alpha$ is.
 
 **The log hides most of what the loss did.** Eleven rows a thousand epochs apart read as a steady descent; the figure at the top of the post draws every epoch of the run beside them. The script also looks between them:
 
@@ -232,11 +232,11 @@ seed 0 to 4: [64, 38, 36, 79, 38]
 
 **Fast and unsteady: 1 and 3.** Both rates raise the loss on more than four updates in ten, with single rises as large as 1.1 and 1.8 and peaks far above the 1.0986 the run started from, and both end lower than 0.1 does in every seed. At 3 the peaks are higher and the final losses lie in a lower, narrower band than at 1. On this network the rate that gets furthest in the budget is a rate that bounces.
 
-**Too large: 10.** All 64 hidden neurons are dead by epoch 79 at the latest, in every one of the five runs. This is the failure posts 12 and 13 showed on one neuron and one layer: a step long enough to push every pre-activation of a ReLU below zero for every sample. From then on `activation1.output` is all zeros, so `dense2.dweights` is zero and nothing reaches `dense1`; only the three biases of `dense2` still move, every sample gets the same three logits, and the accuracy is exactly 100 of 300. The loss does not become `inf` or `nan`: it ends between 1.1854 and 1.9295, still rising on about two updates in three, in a network that can no longer learn.
+**Too large: 10.** All 64 hidden neurons are dead by epoch 79 at the latest, in every one of the five runs. This is the failure posts [12](../12-backprop-through-a-single-neuron/index.md) and [13](../13-backprop-through-a-layer/index.md) showed on one neuron and one layer: a step long enough to push every pre-activation of a ReLU below zero for every sample. From then on `activation1.output` is all zeros, so `dense2.dweights` is zero and nothing reaches `dense1`; only the three biases of `dense2` still move, every sample gets the same three logits, and the accuracy is exactly 100 of 300. The loss does not become `inf` or `nan`: it ends between 1.1854 and 1.9295, still rising on about two updates in three, in a network that can no longer learn.
 
-A handful of dead neurons, 2 to 13 of 64, appears at every rate from 0.01 to 3 and does not stop those runs; all 64 is what ends training. Post 17 names the usual remedies, a smaller learning rate and a leaky ReLU.
+A handful of dead neurons, 2 to 13 of 64, appears at every rate from 0.01 to 3 and does not stop those runs; all 64 is what ends training. [Post 17](../17-backpropagation-through-activation-functions/index.md) names the usual remedies, a smaller learning rate and a leaky ReLU.
 
-This is the one-parameter experiment of post 09, section 5.1, on a real network: crawl, steady descent, bouncing, and, where the parabola diverged, a network of dead ReLUs. The difference is that no rate here is both steady and quick. The rates that never raise the loss are too slow for the budget, and the rates that use the budget spend nearly half their steps going up. The figure below puts the six rows of the table on one axis.
+This is the one-parameter experiment of [post 09](../09-introduction-to-optimisation/index.md), [section 5.1](../09-introduction-to-optimisation/index.md#51-one-parameter-by-hand), on a real network: crawl, steady descent, bouncing, and, where the parabola diverged, a network of dead ReLUs. The difference is that no rate here is both steady and quick. The rates that never raise the loss are too slow for the budget, and the rates that use the budget spend nearly half their steps going up. The figure below puts the six rows of the table on one axis.
 
 ![Six rows, one per learning rate, each a band from the smallest to the largest final loss over seeds 0 to 4, beside a dotted line at ln 3 = 1.0986, with how many updates raised the loss and how many hidden neurons are dead. 0.001: 1.0984 to 1.0985, with 292 to 462 rises that are float32 rounding. 0.01: 1.0702 to 1.0867 and 0.1: 1.0014 to 1.0583, the loss never rose. 1: 0.3943 to 0.9906 and 3: 0.3746 to 0.5482, rising on 4,154 to 4,907 updates. 10: 1.1854 to 1.9295, all 64 hidden neurons dead.](diagrams/03-learning-rates.svg)
 
@@ -248,7 +248,7 @@ This is the one-parameter experiment of post 09, section 5.1, on a real network:
 
 A final accuracy between 43 and 87 percent invites the reading that three interleaved spirals are too hard for this network. Two measurements say otherwise.
 
-The first is in section 4: on the same kind of data and the same architecture, seed 3 ends at 87.0 percent. The second is the budget. `snippets/seed_spread.py long` runs seeds 0 to 4 for 50,001 epochs and prints the loss and the accuracy at five epochs:
+The first is in [section 4](#4-what-the-run-produces): on the same kind of data and the same architecture, seed 3 ends at 87.0 percent. The second is the budget. `snippets/seed_spread.py long` runs seeds 0 to 4 for 50,001 epochs and prints the loss and the accuracy at five epochs:
 
 ```text
 seed         10,000         20,000         30,000         40,000         50,000   mean accuracy, last 1,000
@@ -260,7 +260,7 @@ seed         10,000         20,000         30,000         40,000         50,000 
 accuracy at epoch 50,000: 0.7433 to 0.9633; mean of the last 1,000 epochs: 0.7237 to 0.9481
 ```
 
-In every one of the five seeds the accuracy at epoch 50,000 is higher than at epoch 10,000, and four of the five end above 90 percent; averaged over the last thousand epochs, which is steadier than one epoch, the runs stand between 72.4 and 94.8 percent. The same 387 parameters on the same 300 points get there with the same rule, given five times the updates. The network can fit the spiral; gradient descent with one constant rate is slow at finding the fit. The figure below sets the ten seeds of section 4 beside these five longer runs.
+In every one of the five seeds the accuracy at epoch 50,000 is higher than at epoch 10,000, and four of the five end above 90 percent; averaged over the last thousand epochs, which is steadier than one epoch, the runs stand between 72.4 and 94.8 percent. The same 387 parameters on the same 300 points get there with the same rule, given five times the updates. The network can fit the spiral; gradient descent with one constant rate is slow at finding the fit. The figure below sets the ten seeds of [section 4](#4-what-the-run-produces) beside these five longer runs.
 
 ![Ten rows, seeds 0 to 9, on an accuracy axis. Each row has a band from the lowest to the highest accuracy over epochs 9,001 to 10,000 and a circle at the accuracy of epoch 10,000, from 0.4300 for seed 5 to 0.8700 for seed 3, with 0.6467 for seed 0, the documented run. Seeds 0 to 4 also have a diamond at epoch 50,000: 0.9067, 0.9267, 0.7433, 0.9500 and 0.9633, each higher than at epoch 10,000.](diagrams/04-seeds-and-budget.svg)
 
@@ -268,11 +268,11 @@ In every one of the five seeds the accuracy at epoch 50,000 is higher than at ep
 
 Three properties of the rule are the candidates for the cause, and each of the next posts changes one of them.
 
-- **One rate for the whole run.** Section 5 showed that the rates that make progress also bounce. The rule cannot take long steps early and short ones late. Post 23 lets the rate shrink as training goes on.
-- **No memory.** Each step uses the gradient of the moment and nothing else, so the rule cannot take into account that its last step raised the loss, as nearly half of them do at a rate of 1. Post 24 gives the step a memory of the steps before it.
+- **One rate for the whole run.** [Section 5](#5-the-learning-rate-trade-off) showed that the rates that make progress also bounce. The rule cannot take long steps early and short ones late. [Post 23](../23-learning-rate-decay/index.md) lets the rate shrink as training goes on.
+- **No memory.** Each step uses the gradient of the moment and nothing else, so the rule cannot take into account that its last step raised the loss, as nearly half of them do at a rate of 1. [Post 24](../24-momentum/index.md) gives the step a memory of the steps before it.
 - **One rate for all 387 parameters.** A weight whose gradient is large and a weight whose gradient is small are scaled by the same $\alpha$. Posts 25 to 27 give every parameter its own rate.
 
-What those changes buy is measured in those posts, against the run of section 3. One thing none of them changes: gradient descent in any form walks downhill from where it starts, and post 09, section 6, already said that this guarantees no global minimum.
+What those changes buy is measured in those posts, against the run of [section 3](#3-the-training-loop). One thing none of them changes: gradient descent in any form walks downhill from where it starts, and [post 09](../09-introduction-to-optimisation/index.md), [section 6](../09-introduction-to-optimisation/index.md#6-what-gradient-descent-is-not), already said that this guarantees no global minimum.
 
 ---
 
@@ -282,15 +282,15 @@ Six scripts hold every code block and every number of this post. All run from th
 
 | Script | Section | Prints | Time |
 |---|:---:|---|:---:|
-| `optimizer_sgd.py` | 2 | the classes of posts 16 and 19 and `Optimizer_SGD`; the other scripts import them from here | 1 s |
-| `one_update.py` | 2 | the update checked by hand, and the update of post 20 made by the class | 1 s |
+| `optimizer_sgd.py` | 2 | the classes of posts [16](../16-coding-backpropagation/index.md) and [19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) and `Optimizer_SGD`; the other scripts import them from here | 1 s |
+| `one_update.py` | 2 | the update checked by hand, and the update of [post 20](../20-assembling-full-backpropagation/index.md) made by the class | 1 s |
 | `train_sgd.py` | 3, 4 | the documented run, its setup, and what happened between the logged epochs | 7 s |
 | `seed_spread.py` | 4 | the run from seeds 0 to 4 | 35 s |
-| `seed_spread.py 10` | 4 | the run from seeds 0 to 9: the table of section 4 | 70 s |
+| `seed_spread.py 10` | 4 | the run from seeds 0 to 9: the table of [section 4](#4-what-the-run-produces) | 70 s |
 | `seed_spread.py long` | 6 | 50,001 epochs from seeds 0 to 4 | 160 s |
 | `learning_rate.py` | 5 | the six rates after 2,001 epochs, and the epochs at which a rate of 10 kills the hidden layer | 40 s |
-| `learning_rate.py full` | 5 | the six rates after 10,001 epochs: the table of section 5 | 185 s |
-| `what_can_go_wrong.py` | 8 | the three failures of section 8 | 35 s |
+| `learning_rate.py full` | 5 | the six rates after 10,001 epochs: the table of [section 5](#5-the-learning-rate-trade-off) | 185 s |
+| `what_can_go_wrong.py` | 8 | the three failures of [section 8](#8-what-can-go-wrong) | 35 s |
 
 ---
 
@@ -322,7 +322,7 @@ seed  loss at epochs 0, 10, 50, 100       first nan at epoch  accuracy at the en
 0     1.0986  1.0987  10.7454  10.7454    109                 0.3333
 ```
 
-The other four seeds print the same losses to within 0.0003, with the first `nan` between epochs 107 and 110. The loss climbs from the first update. By epoch 50 the network gives one and the same class a probability of 1 for all 300 samples: the 200 samples of the other two classes each cost $-\ln 10^{-7} = 16.1181$, the clipping limit of post 08, and their share of the mean is $2/3 \cdot 16.1181 = 10.7454$. The weights keep growing until `float32` overflows, the loss becomes `nan`, and the accuracy is 100 of 300, because `argmax` of a row of `nan` is 0.
+The other four seeds print the same losses to within 0.0003, with the first `nan` between epochs 107 and 110. The loss climbs from the first update. By epoch 50 the network gives one and the same class a probability of 1 for all 300 samples: the 200 samples of the other two classes each cost $-\ln 10^{-7} = 16.1181$, the clipping limit of [post 08](../08-loss-categorical-cross-entropy/index.md), and their share of the mean is $2/3 \cdot 16.1181 = 10.7454$. The weights keep growing until `float32` overflows, the loss becomes `nan`, and the accuracy is 100 of 300, because `argmax` of a row of `nan` is 0.
 
 ---
 
@@ -354,13 +354,11 @@ The other four seeds print the same losses to within 0.0003, with the first `nan
 
 ## Further reading
 
-- Cauchy, A.-L., *"Méthode générale pour la résolution des systèmes d'équations simultanées"* (Comptes rendus de l'Académie des sciences, 1847).
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 8 (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 10 (2020).
-- Robbins, H. and Monro, S., *"A Stochastic Approximation Method"* (Annals of Mathematical Statistics, 1951).
-- Ruder, S., *"An Overview of Gradient Descent Optimization Algorithms"* (arXiv:1609.04747, 2016).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Cauchy, A.-L., *["Méthode générale pour la résolution des systèmes d'équations simultanées"](https://cs.uwaterloo.ca/~y328yu/classics/cauchy-fr.pdf)* (Comptes rendus de l'Académie des sciences, 1847).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/optimization.html)*, chapter 8 (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 10 (2020).
+- Robbins, H. and Monro, S., *["A Stochastic Approximation Method"](https://doi.org/10.1214/aoms/1177729586)* (Annals of Mathematical Statistics, 1951).
+- Ruder, S., *["An Overview of Gradient Descent Optimization Algorithms"](https://arxiv.org/abs/1609.04747)* (arXiv:1609.04747, 2016).
 
 ---
 
