@@ -13,7 +13,7 @@
 
 ![A flow diagram of the Adam update for one parameter. The gradient g t forks into two lanes. Top, the first moment with beta 1 = 0.9, m t = beta 1 m t minus 1 plus (1 minus beta 1) g t, the averaging of momentum from post 24, then its correction, m hat t = m t over (1 minus beta 1 to the t). Bottom, the second moment with beta 2 = 0.999, the cache of RMSProp from post 26, then its correction v hat t = v t over (1 minus beta 2 to the t). Both feed the update theta t = theta t minus 1 minus alpha times m hat t over (root of v hat t plus epsilon), with epsilon = 10 to the minus 7. Under each line, the first update of a constant gradient 0.5: m 1 = 0.05 and v 1 = 0.00025, corrected to 0.5 and 0.25, a step of one learning rate, against 3.162 learning rates without the corrections.](diagrams/01-adam-update.svg)
 
-*Two averages, two corrections, one update, with the numbers of the first update for a constant gradient of 0.5 (section 3).*
+*Two averages, two corrections, one update, with the numbers of the first update for a constant gradient of 0.5 ([section 3](#3-bias-correction)).*
 
 ---
 
@@ -23,11 +23,11 @@ Part VI has changed the update $\theta \leftarrow \theta - \alpha g$ of [post 22
 
 | Post | Idea | What it changes in the update |
 |---|---|---|
-| Post 22 | Gradient descent | nothing: the baseline |
-| Post 23 | Learning-rate decay | $\alpha$ shrinks as training proceeds |
-| Post 24 | Momentum | $g$ is replaced by a velocity that remembers earlier gradients |
-| Post 25 | AdaGrad | each parameter's step is divided by the root of its summed squared gradients |
-| Post 26 | RMSProp | the sum becomes an exponential moving average, so the divisor stops growing |
+| [Post 22](../22-gradient-descent-optimiser/index.md) | Gradient descent | nothing: the baseline |
+| [Post 23](../23-learning-rate-decay/index.md) | Learning-rate decay | $\alpha$ shrinks as training proceeds |
+| [Post 24](../24-momentum/index.md) | Momentum | $g$ is replaced by a velocity that remembers earlier gradients |
+| [Post 25](../25-adagrad/index.md) | AdaGrad | each parameter's step is divided by the root of its summed squared gradients |
+| [Post 26](../26-rmsprop/index.md) | RMSProp | the sum becomes an exponential moving average, so the divisor stops growing |
 
 Two of these act on different parts of the update.
 
@@ -50,9 +50,9 @@ v_t &= \beta_2 \, v_{t-1} + (1 - \beta_2) \, g_t^2 \quad &\text{(second moment)}
 \theta_t &= \theta_{t-1} - \alpha \cdot \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon} \quad &\text{(parameter update)}
 \end{aligned}$$
 
-Five lines, all applied element by element to a whole weight or bias array; the figure at the top of the post draws them as two lanes that meet in the update. The second line is the cache of post 26 with $\rho$ renamed $\beta_2$; here $v$ is the second moment, not the velocity that post 24 called $v$. The last line has the form of the RMSProp update, $\alpha$ divided by $\sqrt{\cdot} + \epsilon$, with $\hat{m}_t$ where RMSProp has the raw gradient.
+Five lines, all applied element by element to a whole weight or bias array; the figure at the top of the post draws them as two lanes that meet in the update. The second line is the cache of [post 26](../26-rmsprop/index.md) with $\rho$ renamed $\beta_2$; here $v$ is the second moment, not the velocity that [post 24](../24-momentum/index.md) called $v$. The last line has the form of the RMSProp update, $\alpha$ divided by $\sqrt{\cdot} + \epsilon$, with $\hat{m}_t$ where RMSProp has the raw gradient.
 
-The first line is not the velocity of post 24. That velocity was $v \leftarrow \beta v - \alpha g$, and the parameter moved by it. Adam's $m$ carries the factor $(1 - \beta_1)$ and no learning rate, so it is an exponential moving average (EMA) of the gradient: a weighted mean, in the units of $g$, whose weights sum to $1 - \beta_1^t$. The learning rate enters once, in the last line.
+The first line is not the velocity of [post 24](../24-momentum/index.md). That velocity was $v \leftarrow \beta v - \alpha g$, and the parameter moved by it. Adam's $m$ carries the factor $(1 - \beta_1)$ and no learning rate, so it is an exponential moving average (EMA) of the gradient: a weighted mean, in the units of $g$, whose weights sum to $1 - \beta_1^t$. The learning rate enters once, in the last line.
 
 ---
 
@@ -113,14 +113,14 @@ bias after       [-9.09090909e-05]  = -0.001 * 1e-8 / (1e-8 + 1e-7)
 
 Gradients eight orders of magnitude apart all move their weight by 0.001. Only a gradient as small as $\epsilon$ itself moves less: the bias, with a gradient of $10^{-8}$, moves by an eleventh of the learning rate.
 
-`snippets/no_bias_correction.py` removes the two correction lines from the class and trains on the setup of section 6, with the same learning rate and decay, for five seeds. Final training accuracy, in percent:
+`snippets/no_bias_correction.py` removes the two correction lines from the class and trains on the setup of [section 6](#6-what-happens-when-it-runs), with the same learning rate and decay, for five seeds. Final training accuracy, in percent:
 
 | Seed | 0 | 1 | 2 | 3 | 4 | mean |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
 | Adam (`seeds_adam.py`) | 96.3 | 82.3 | 81.3 | 88.7 | 96.3 | 89.0 |
 | Adam, uncorrected | 96.7 | 97.0 | 96.3 | 93.3 | 97.3 | 96.1 |
 
-The uncorrected optimiser is not slower to start. Its loss at epoch 100 is between 0.4487 and 0.6775, against 0.7692 to 0.9988 with the correction, and it ends with the lower loss and the higher accuracy in every one of the five runs. At this learning rate the problem rewards larger early steps, and section 7 finds the same by raising the rate of the corrected optimiser. At a larger rate it does not. `snippets/no_bias_correction_high.py` runs the uncorrected optimiser at 0.1, where the corrected one ends between 89.3 and 98.7 percent (section 7): it ends between 41.7 and 52.0 percent, behind on all five seeds. Removing the correction multiplies the early steps by up to 6.6, and whether that helps depends on how far $\alpha$ lies below the largest rate the problem tolerates. Kingma and Ba report the failure on a variational autoencoder, where training without the correction was unstable in its first epochs when $\beta_2$ was close to 1. What the correction buys is that $\alpha$ is the size of the step from the first update, whatever $\beta_1$ and $\beta_2$ are. Without it, the early steps depend on the two decay rates: with $\beta_2 = 0.9999$ the first step would be $0.1 / \sqrt{0.0001} = 10$ learning rates.
+The uncorrected optimiser is not slower to start. Its loss at epoch 100 is between 0.4487 and 0.6775, against 0.7692 to 0.9988 with the correction, and it ends with the lower loss and the higher accuracy in every one of the five runs. At this learning rate the problem rewards larger early steps, and [section 7](#7-six-optimisers-five-seeds) finds the same by raising the rate of the corrected optimiser. At a larger rate it does not. `snippets/no_bias_correction_high.py` runs the uncorrected optimiser at 0.1, where the corrected one ends between 89.3 and 98.7 percent ([section 7](#7-six-optimisers-five-seeds)): it ends between 41.7 and 52.0 percent, behind on all five seeds. Removing the correction multiplies the early steps by up to 6.6, and whether that helps depends on how far $\alpha$ lies below the largest rate the problem tolerates. Kingma and Ba report the failure on a variational autoencoder, where training without the correction was unstable in its first epochs when $\beta_2$ was close to 1. What the correction buys is that $\alpha$ is the size of the step from the first update, whatever $\beta_1$ and $\beta_2$ are. Without it, the early steps depend on the two decay rates: with $\beta_2 = 0.9999$ the first step would be $0.1 / \sqrt{0.0001} = 10$ learning rates.
 
 ### 3.3. What the defaults mean
 
@@ -192,13 +192,13 @@ class Optimizer_Adam:
         self.iterations += 1
 ```
 
-**The contract is unchanged.** `pre_update_params` once, `update_params` once per layer, `post_update_params` once: the three methods of post 23. The constructor and the first and last methods are those of `Optimizer_RMSprop` with `rho` renamed `beta_2` and its default raised from 0.9 to 0.999, `beta_1` added, and a default learning rate of 0.001 in place of 0.02. Everything new is inside `update_params`.
+**The contract is unchanged.** `pre_update_params` once, `update_params` once per layer, `post_update_params` once: the three methods of [post 23](../23-learning-rate-decay/index.md). The constructor and the first and last methods are those of `Optimizer_RMSprop` with `rho` renamed `beta_2` and its default raised from 0.9 to 0.999, `beta_1` added, and a default learning rate of 0.001 in place of 0.02. Everything new is inside `update_params`.
 
 **Two buffers per parameter array.** Momentum stored `weight_momentums` and RMSProp stored `weight_cache`; Adam stores both under the same names. The corrected values `weight_m_hat` and `weight_v_hat` are temporary: the buffers keep the uncorrected $m$ and $v$, because the next update must continue from those. For the network of this post the two layers hold 387 parameters and the optimiser 774 further numbers.
 
-**$t$ is `self.iterations + 1`.** The counter starts at 0 and is raised after the layers have been updated, so the first call must use $t = 1$. With $t = 0$ both denominators are $1 - \beta^0 = 0$ (section 12).
+**$t$ is `self.iterations + 1`.** The counter starts at 0 and is raised after the layers have been updated, so the first call must use $t = 1$. With $t = 0$ both denominators are $1 - \beta^0 = 0$ ([section 12](#12-what-can-go-wrong)).
 
-**$\epsilon$ is outside the square root**, as in the classes of posts 25 and 26.
+**$\epsilon$ is outside the square root**, as in the classes of posts [25](../25-adagrad/index.md) and [26](../26-rmsprop/index.md).
 
 The released projects `nn-p01` to `nn-p04` all train with this class. Their copies have the same arguments, defaults and arithmetic; those of `nn-p01`, `nn-p03` and `nn-p04` also refuse, when the optimiser is built, a learning rate or an epsilon that is not positive, a negative decay, and a $\beta$ outside $[0, 1)$.
 
@@ -223,7 +223,7 @@ and inside `train`, after the backward pass:
         optimizer.post_update_params()
 ```
 
-A learning rate of 0.02 is twenty times the class default. It is the documented setting of this run, not a tuned one; section 7 tries 0.001 and 0.1 as well. The decay of $10^{-5}$ does little in 10,001 epochs: the script prints a learning rate of 0.018182 at the last epoch, $0.02 / 1.1$.
+A learning rate of 0.02 is twenty times the class default. It is the documented setting of this run, not a tuned one; [section 7](#7-six-optimisers-five-seeds) tries 0.001 and 0.1 as well. The decay of $10^{-5}$ does little in 10,001 epochs: the script prints a learning rate of 0.018182 at the last epoch, $0.02 / 1.1$.
 
 ---
 
@@ -293,12 +293,12 @@ The best figure of each seed is in bold, and four different optimisers hold one.
 What the five seeds support:
 
 - **Adam is the best of the six on seed 0 and on no other seed.** It is second on seeds 1 and 4 and third on seeds 2 and 3. Its final accuracy runs from 81.3 to 96.3 percent and its final loss from 0.0806 to 0.4722.
-- **On these five seeds RMSProp has the highest mean and the narrowest range**, 87.3 to 95.0 percent, and it ends above Adam on three. Five more seeds undo both leads. On seeds 5 to 9 post 26 measures 77.3, 89.0, 77.0, 85.7 and 85.3 percent for RMSProp, and `seeds_adam_more.py` 84.0, 79.7, 86.7, 82.0 and 95.7 for Adam. Over the ten seeds RMSProp runs from 77.0 to 95.0 percent with a mean of 86.7 and Adam from 79.7 to 96.3 with a mean of 87.3, and each ends above the other on five.
-- **The last epoch is a steadier reading for Adam than for RMSProp.** Post 22 warned that a final epoch is one draw from the end of a jumpy run. In epochs 9,001 to 10,000 Adam's accuracy is never more than 4.7 points under its final figure on seeds 0 to 4, while RMSProp's falls to between 52.0 and 70.0 percent somewhere in that window on every one of them, the late spikes of post 26. The means over the window, which both scripts print, are within 1.6 points of the final figures for Adam and within 0.9 for RMSProp, and they put the two optimisers in the same order as the final figures on all five seeds.
+- **On these five seeds RMSProp has the highest mean and the narrowest range**, 87.3 to 95.0 percent, and it ends above Adam on three. Five more seeds undo both leads. On seeds 5 to 9 [post 26](../26-rmsprop/index.md) measures 77.3, 89.0, 77.0, 85.7 and 85.3 percent for RMSProp, and `seeds_adam_more.py` 84.0, 79.7, 86.7, 82.0 and 95.7 for Adam. Over the ten seeds RMSProp runs from 77.0 to 95.0 percent with a mean of 86.7 and Adam from 79.7 to 96.3 with a mean of 87.3, and each ends above the other on five.
+- **The last epoch is a steadier reading for Adam than for RMSProp.** [Post 22](../22-gradient-descent-optimiser/index.md) warned that a final epoch is one draw from the end of a jumpy run. In epochs 9,001 to 10,000 Adam's accuracy is never more than 4.7 points under its final figure on seeds 0 to 4, while RMSProp's falls to between 52.0 and 70.0 percent somewhere in that window on every one of them, the late spikes of [post 26](../26-rmsprop/index.md). The means over the window, which both scripts print, are within 1.6 points of the final figures for Adam and within 0.9 for RMSProp, and they put the two optimisers in the same order as the final figures on all five seeds.
 - **Adam ends above momentum on four of the five seeds.** Momentum's range, 68.7 to 98.0 percent, is about twice as wide as Adam's.
 - **Adam passes 90 percent on two of the five seeds**, at epochs 722 and 1,057. RMSProp passes it on four, and never before epoch 3,518.
 - **Adam is ahead of RMSProp early.** Its loss at epoch 1,000 is the lower of the two on all five seeds, 0.2382 to 0.6623 against 0.5399 to 0.7692.
-- **In final accuracy, no optimiser of Part VI improves on its predecessor on every seed.** Decay ends below the constant rate on three of the five, and AdaGrad below momentum on two. Momentum comes closest: it ends below decay on seed 1 only, by two of the 300 points, and post 24 shows its loss is the lower one on all five.
+- **In final accuracy, no optimiser of Part VI improves on its predecessor on every seed.** Decay ends below the constant rate on three of the five, and AdaGrad below momentum on two. Momentum comes closest: it ends below decay on seed 1 only, by two of the 300 points, and [post 24](../24-momentum/index.md) shows its loss is the lower one on all five.
 
 The ranking on seed 0 is therefore a property of that seed. With these settings and five seeds, the claim that Adam is the best optimiser on the spiral does not hold, and neither does any other ordering of the top four.
 
@@ -310,7 +310,7 @@ The learning rate was not tuned either. `rate_low.py` and `rate_high.py` rerun A
 | 0.02 (documented) | 81.3 to 96.3 | 89.0 | 0.0806 to 0.4722 | 2 |
 | 0.1 | 89.3 to 98.7 | 94.8 | 0.0390 to 0.2655 | 5 |
 
-Across a factor of 100 in the learning rate every one of the fifteen runs trains, to between 81.3 and 98.7 percent. The largest rate does best on four of the five seeds, which agrees with the uncorrected runs of section 3.2: this network on this data wants larger steps than 0.02 gives it. At a rate of 1.0, the setting of post 22, Adam fails on all five seeds (section 12). The figure puts the fifteen runs beside the ten uncorrected ones of section 3.2.
+Across a factor of 100 in the learning rate every one of the fifteen runs trains, to between 81.3 and 98.7 percent. The largest rate does best on four of the five seeds, which agrees with the uncorrected runs of [section 3.2](#32-what-the-correction-does-to-the-step): this network on this data wants larger steps than 0.02 gives it. At a rate of 1.0, the setting of [post 22](../22-gradient-descent-optimiser/index.md), Adam fails on all five seeds ([section 12](#12-what-can-go-wrong)). The figure puts the fifteen runs beside the ten uncorrected ones of [section 3.2](#32-what-the-correction-does-to-the-step).
 
 ![A chart of Adam's final training accuracy on the spiral after 10,001 epochs, one row per setting, each a band from the lowest to the highest of seeds 0 to 4 with a tick per seed and a dot for seed 0, on an axis from 40 to 100 percent, with the mean and the number of seeds past 90 percent at the right. In blue, with the correction: learning rate 0.001, 88.0 to 93.3, mean 90.6, 3 of 5; 0.02, 81.3 to 96.3, mean 89.0, 2 of 5; 0.1, 89.3 to 98.7, mean 94.8, 5 of 5. In grey, without the correction: 0.02, 93.3 to 97.3, mean 96.1, 5 of 5; 0.1, 41.7 to 52.0, mean 46.7, 0 of 5.](diagrams/03-rates-and-correction.svg)
 
@@ -322,11 +322,11 @@ Across a factor of 100 in the learning rate every one of the fifteen runs trains
 
 Adam is the optimiser most code reaches for first, and the four projects of this series do the same: `nn-p01` and `nn-p03` train with the default learning rate of 0.001, `nn-p02` and `nn-p04` with 0.01, all with the default $\beta_1$, $\beta_2$ and $\epsilon$. The reasons are in the update rule and not in a table of final accuracies.
 
-**The learning rate has a meaning.** The step of each parameter is about $\alpha$ when its recent gradients agree in sign, and smaller when they disagree, because $m$ then averages towards zero while $v$ does not: for a gradient that flips between $+1$ and $-1$ at every update, `bias_correction.py` prints a step of 0.0526 learning rates. It can also be larger than $\alpha$: for a parameter whose gradient was zero for a long time and then appears, the step approaches $(1 - \beta_1) / \sqrt{1 - \beta_2} = 3.16$ learning rates, the upper bound Kingma and Ba give. The step does not grow with the size of the gradient (section 3.2). A rate chosen for one layer, or one problem, is therefore a reasonable guess for another. In gradient descent the step is $\alpha g$, and $g$ can differ by orders of magnitude between layers.
+**The learning rate has a meaning.** The step of each parameter is about $\alpha$ when its recent gradients agree in sign, and smaller when they disagree, because $m$ then averages towards zero while $v$ does not: for a gradient that flips between $+1$ and $-1$ at every update, `bias_correction.py` prints a step of 0.0526 learning rates. It can also be larger than $\alpha$: for a parameter whose gradient was zero for a long time and then appears, the step approaches $(1 - \beta_1) / \sqrt{1 - \beta_2} = 3.16$ learning rates, the upper bound Kingma and Ba give. The step does not grow with the size of the gradient ([section 3.2](#32-what-the-correction-does-to-the-step)). A rate chosen for one layer, or one problem, is therefore a reasonable guess for another. In gradient descent the step is $\alpha g$, and $g$ can differ by orders of magnitude between layers.
 
-**The usable range is wide.** Section 7 measured it on this problem: rates from 0.001 to 0.1 all train.
+**The usable range is wide.** [Section 7](#7-six-optimisers-five-seeds) measured it on this problem: rates from 0.001 to 0.1 all train.
 
-**Each parameter gets its own rate, and the rate does not die.** This is inherited from posts 25 and 26.
+**Each parameter gets its own rate, and the rate does not die.** This is inherited from posts [25](../25-adagrad/index.md) and [26](../26-rmsprop/index.md).
 
 **The start is controlled.** The bias correction keeps the first steps at $\alpha$ for any $\beta_1$ and $\beta_2$, so changing a decay rate does not silently change the early step size.
 
@@ -334,7 +334,7 @@ Adam is the optimiser most code reaches for first, and the four projects of this
 
 ## 9. When Adam is the wrong default
 
-**When a tuned alternative generalises better.** Wilson et al. (2017) compared adaptive methods with gradient descent and momentum on several deep-learning tasks and found that the adaptive methods, Adam among them, often generalised worse on held-out data, even where their training performance was better. This post measures training accuracy only; held-out data starts in post 28.
+**When a tuned alternative generalises better.** Wilson et al. (2017) compared adaptive methods with gradient descent and momentum on several deep-learning tasks and found that the adaptive methods, Adam among them, often generalised worse on held-out data, even where their training performance was better. This post measures training accuracy only; held-out data starts in [post 28](../28-generalization-and-testing/index.md).
 
 **When memory is the constraint.** Adam keeps two extra numbers per parameter, momentum one, plain gradient descent none. For a model of 100 million float32 parameters the two buffers are $2 \cdot 10^8 \cdot 4$ bytes, 800 MB of optimiser state.
 
@@ -364,15 +364,15 @@ python posts/27-adam-optimiser/snippets/adam.py
 | Script | What it runs | Time |
 |---|---|---|
 | `adam.py` | the classes, `Optimizer_Adam`, `train`, the documented run | about 10 s |
-| `bias_correction.py` | the factors, the traces and the first update of section 3 | 1 s |
+| `bias_correction.py` | the factors, the traces and the first update of [section 3](#3-bias-correction) | 1 s |
 | `all_six.py` | six optimisers on seed 0 | about 45 s |
 | `seeds_adam.py`, `seeds_rmsprop.py` | one optimiser each, seeds 0 to 4 | about 40 s each |
 | `seeds_adam_more.py` | Adam, seeds 5 to 9 | about 40 s |
 | `no_bias_correction.py`, `rate_low.py`, `rate_high.py` | Adam uncorrected, at 0.001 and at 0.1, seeds 0 to 4 | about 40 s each |
 | `no_bias_correction_high.py` | Adam uncorrected at 0.1, seeds 0 to 4 | about 40 s |
-| `what_can_go_wrong.py` | the mistakes of section 12 | about 5 s |
+| `what_can_go_wrong.py` | the mistakes of [section 12](#12-what-can-go-wrong) | about 5 s |
 
-All need NumPy and the `nnfs` package. The network classes are those of posts 16 and 19, unchanged; `all_six.py` holds the optimiser classes of posts 22 to 26. Each spread covers five seeds, which is enough to show that an ordering is not stable and too few to rank optimisers that are close.
+All need NumPy and the `nnfs` package. The network classes are those of posts [16](../16-coding-backpropagation/index.md) and [19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md), unchanged; `all_six.py` holds the optimiser classes of posts 22 to 26. Each spread covers five seeds, which is enough to show that an ordering is not stable and too few to rank optimisers that are close.
 
 ---
 
@@ -416,7 +416,7 @@ AttributeError: 'Layer_Dense' object has no attribute 'weight_momentums'
 
 A change of optimiser needs fresh layers, or the old buffers deleted.
 
-**The correction removed.** Nothing is raised. At the documented rate of 0.02 the spiral runs are better; at 0.1 all five end between 41.7 and 52.0 percent, where the corrected optimiser reaches 89.3 to 98.7 (section 3.2). The early steps are up to 6.6 times the learning rate that was asked for, and the multiple depends on $\beta_1$ and $\beta_2$.
+**The correction removed.** Nothing is raised. At the documented rate of 0.02 the spiral runs are better; at 0.1 all five end between 41.7 and 52.0 percent, where the corrected optimiser reaches 89.3 to 98.7 ([section 3.2](#32-what-the-correction-does-to-the-step)). The early steps are up to 6.6 times the learning rate that was asked for, and the multiple depends on $\beta_1$ and $\beta_2$.
 
 ---
 
@@ -447,16 +447,14 @@ A change of optimiser needs fresh layers, or the old buffers deleted.
 
 ## Further reading
 
-- Chen, X., et al., *"Symbolic Discovery of Optimization Algorithms"* (NeurIPS, 2023). Lion.
-- Dozat, T., *"Incorporating Nesterov Momentum into Adam"* (ICLR Workshop, 2016). NAdam.
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 8 (MIT Press, 2016).
-- Kingma, D. P. and Ba, J., *"Adam: A Method for Stochastic Optimization"* (ICLR, 2015). The original paper.
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 10 (2020).
-- Loshchilov, I. and Hutter, F., *"Decoupled Weight Decay Regularization"* (ICLR, 2019). AdamW.
-- Reddi, S. J., Kale, S., and Kumar, S., *"On the Convergence of Adam and Beyond"* (ICLR, 2018). AMSGrad.
-- Wilson, A. C., Roelofs, R., Stern, M., Srebro, N., and Recht, B., *"The Marginal Value of Adaptive Gradient Methods in Machine Learning"* (NeurIPS, 2017).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Chen, X., et al., *["Symbolic Discovery of Optimization Algorithms"](https://arxiv.org/abs/2302.06675)* (NeurIPS, 2023). Lion.
+- Dozat, T., *["Incorporating Nesterov Momentum into Adam"](https://openreview.net/forum?id=OM0jvwB8jIp57ZJjtNEZ)* (ICLR Workshop, 2016). NAdam.
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/optimization.html)*, chapter 8 (MIT Press, 2016).
+- Kingma, D. P. and Ba, J., *["Adam: A Method for Stochastic Optimization"](https://arxiv.org/abs/1412.6980)* (ICLR, 2015). The original paper.
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 10 (2020).
+- Loshchilov, I. and Hutter, F., *["Decoupled Weight Decay Regularization"](https://arxiv.org/abs/1711.05101)* (ICLR, 2019). AdamW.
+- Reddi, S. J., Kale, S., and Kumar, S., *["On the Convergence of Adam and Beyond"](https://openreview.net/forum?id=ryQu7f-RZ)* (ICLR, 2018). AMSGrad.
+- Wilson, A. C., Roelofs, R., Stern, M., Srebro, N., and Recht, B., *["The Marginal Value of Adaptive Gradient Methods in Machine Learning"](https://arxiv.org/abs/1705.08292)* (NeurIPS, 2017).
 
 ---
 
