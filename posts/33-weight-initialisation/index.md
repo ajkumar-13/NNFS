@@ -19,7 +19,7 @@
 
 ## 1. The question: why does a fixed scale work in a shallow network and fail in a deep one?
 
-Every dense layer of posts 04 to 32 drew its weights as `0.01 * np.random.randn(n_inputs, n_neurons)`, mean 0 and standard deviation 0.01, and set its biases to zero. [Post 04](../04-dense-layer-class-and-spiral-data/index.md), section 5.1, measured six stacked 64-neuron layers with nothing between them: at 0.01 the outputs shrink about 12 times per layer, to a standard deviation of $2.2 \times 10^{-8}$; at 1.0 they grow 8 times per layer; at $1/\sqrt{64} = 0.125$ they keep their size.
+Every dense layer of posts 04 to 32 drew its weights as `0.01 * np.random.randn(n_inputs, n_neurons)`, mean 0 and standard deviation 0.01, and set its biases to zero. [Post 04](../04-dense-layer-class-and-spiral-data/index.md), [section 5.1](../04-dense-layer-class-and-spiral-data/index.md#51-__init__-allocates-the-state), measured six stacked 64-neuron layers with nothing between them: at 0.01 the outputs shrink about 12 times per layer, to a standard deviation of $2.2 \times 10^{-8}$; at 1.0 they grow 8 times per layer; at $1/\sqrt{64} = 0.125$ they keep their size.
 
 The question here is: **which weight scale lets a signal, and the gradient that returns through the same weights, keep its size through any number of layers, and what does a network look like when the scale is wrong?** The answer is a derivation with four assumptions and a factor of one half for ReLU, each factor measured on ten stacked layers, and one new argument of `Layer_Dense`.
 
@@ -56,25 +56,25 @@ he       2.0000          1.9963                                27.8063
 
 The mean-square column reproduces the factor to the third decimal. The variance column is off by a factor of 14, the ratio of the input's mean square to its variance.
 
-After $L$ linear layers of the same width the factor is applied $L$ times, $(n_\text{in} \cdot \text{Var}(W))^L$. Above 1 the signal grows exponentially with depth, **exploding activations**; below 1 it shrinks exponentially, **vanishing activations**. With the scale 0.01 and 64 inputs the factor is $64 \cdot 0.01^2 = 0.0064$, whose square root 0.08 is the shrinkage per layer of post 04. The factor is 1 when
+After $L$ linear layers of the same width the factor is applied $L$ times, $(n_\text{in} \cdot \text{Var}(W))^L$. Above 1 the signal grows exponentially with depth, **exploding activations**; below 1 it shrinks exponentially, **vanishing activations**. With the scale 0.01 and 64 inputs the factor is $64 \cdot 0.01^2 = 0.0064$, whose square root 0.08 is the shrinkage per layer of [post 04](../04-dense-layer-class-and-spiral-data/index.md). The factor is 1 when
 
 $$\text{Var}(W) = \frac{1}{n_\text{in}}$$
 
-that is, a standard deviation of $1/\sqrt{n_\text{in}}$, the scale LeCun, Bottou, Orr and Müller (1998) recommend and the 0.125 of post 04's third column.
+that is, a standard deviation of $1/\sqrt{n_\text{in}}$, the scale LeCun, Bottou, Orr and Müller (1998) recommend and the 0.125 of [post 04](../04-dense-layer-class-and-spiral-data/index.md)'s third column.
 
 ---
 
 ## 3. Glorot initialisation: the backward pass has a factor too
 
-The gradient travels through the same weights in the other direction. `Layer_Dense.backward` computes `dinputs = np.dot(dvalues, self.weights.T)` (post 16), which for one input is a sum over the layer's $n_\text{out}$ neurons:
+The gradient travels through the same weights in the other direction. `Layer_Dense.backward` computes `dinputs = np.dot(dvalues, self.weights.T)` ([post 16](../16-coding-backpropagation/index.md)), which for one input is a sum over the layer's $n_\text{out}$ neurons:
 
 $$\frac{\partial L}{\partial x_j} = \sum_{k=1}^{n_\text{out}} w_{kj} \, \frac{\partial L}{\partial z_k}$$
 
-This is the sum of section 2 with $n_\text{out}$ terms in place of $n_\text{in}$. Under a further assumption,
+This is the sum of [section 2](#2-one-linear-layer-the-factor-n_textin-cdot-textvarw) with $n_\text{out}$ terms in place of $n_\text{in}$. Under a further assumption,
 
 3. the weights are independent of the gradient $\partial L / \partial z_k$ that arrives from above,
 
-the same steps give a factor of $n_\text{out} \cdot \text{Var}(W)$ on the mean square of the gradient. Assumption 3 is only approximately true: the arriving gradient was computed from a forward pass through these very weights. The script checks the arithmetic on a fixed gradient row, where the assumption holds, and prints 0.0064, 1.0035 and 2.0070 against factors of 0.0064, 1 and 2; section 5 checks the assumption itself on a real backward pass.
+the same steps give a factor of $n_\text{out} \cdot \text{Var}(W)$ on the mean square of the gradient. Assumption 3 is only approximately true: the arriving gradient was computed from a forward pass through these very weights. The script checks the arithmetic on a fixed gradient row, where the assumption holds, and prints 0.0064, 1.0035 and 2.0070 against factors of 0.0064, 1 and 2; [section 5](#5-ten-layers-measured-forward-and-backward) checks the assumption itself on a real backward pass.
 
 So there are two conditions, $n_\text{in} \cdot \text{Var}(W) = 1$ for the signal and $n_\text{out} \cdot \text{Var}(W) = 1$ for the gradient, and a layer whose two sizes differ cannot meet both. Glorot and Bengio (2010) proposed the compromise that uses the average of the two sizes:
 
@@ -106,7 +106,7 @@ The figure below draws the two halves of $z$ and sets the three ratios beside th
 
 *What ReLU does to a zero-centred pre-activation: the negative half moves to zero, half of the mean square survives, and 0.34 of the variance.*
 
-The mean square is the quantity that matters, because section 2 showed that the next layer scales the mean square of what it receives. A dense layer followed by a ReLU therefore multiplies the mean square by
+The mean square is the quantity that matters, because [section 2](#2-one-linear-layer-the-factor-n_textin-cdot-textvarw) showed that the next layer scales the mean square of what it receives. A dense layer followed by a ReLU therefore multiplies the mean square by
 
 $$\frac{n_\text{in} \cdot \text{Var}(W)}{2}$$
 
@@ -133,7 +133,7 @@ the gate keeps half of the mean square of the gradient, and the backward factor 
 
 ## 5. Ten layers, measured forward and backward
 
-`snippets/ten_layers.py` builds the stack of the first figure on the spiral data: ten `Layer_Dense` layers of 64 neurons, each followed by `Activation_ReLU`, then `Layer_Dense(64, 3)` and the combined softmax and loss. Unlike post 04's `init_scale.py` it has an activation after every layer, ten layers, and float64 without `nnfs.init()`; it first repeats post 04's six linear layers and prints the same $2.2 \times 10^{-8}$. The three schemes get the same standard normal draws, so only the scale differs. On seed 0:
+`snippets/ten_layers.py` builds the stack of the first figure on the spiral data: ten `Layer_Dense` layers of 64 neurons, each followed by `Activation_ReLU`, then `Layer_Dense(64, 3)` and the combined softmax and loss. Unlike [post 04](../04-dense-layer-class-and-spiral-data/index.md)'s `init_scale.py` it has an activation after every layer, ten layers, and float64 without `nnfs.init()`; it first repeats [post 04](../04-dense-layer-class-and-spiral-data/index.md)'s six linear layers and prints the same $2.2 \times 10^{-8}$. The three schemes get the same standard normal draws, so only the scale differs. On seed 0:
 
 ```text
 layer   small       xavier      he          fraction of zeros (the same for all three)
@@ -166,9 +166,9 @@ he       1          1.006      1          0.9692 to 1.0153    1          0.9896 
 
 **Backward, the factors are the same three numbers,** measured on the mean square of `dinputs` from one dense layer to the one before it. Assumptions 3 and 4 are not exact, and on this stack the means are still within 2 percent of the prediction.
 
-**The weight gradients are small in every layer at once.** `dweights` of a layer is the product of what arrives from below and what arrives from above (post 16), so a layer near the input has a full-size signal and a shrunken gradient, and a layer near the output the reverse. On seed 0 the root mean square of `dweights` under 0.01 is between $1.0 \times 10^{-16}$ and $7.8 \times 10^{-16}$ in all eleven layers; under Glorot it is $1.8 \times 10^{-5}$ to $2.5 \times 10^{-5}$ in layers 2 to 10; under He it is between 0.0023 and 0.016 in all eleven. A vanished network has no layer that still learns.
+**The weight gradients are small in every layer at once.** `dweights` of a layer is the product of what arrives from below and what arrives from above ([post 16](../16-coding-backpropagation/index.md)), so a layer near the input has a full-size signal and a shrunken gradient, and a layer near the output the reverse. On seed 0 the root mean square of `dweights` under 0.01 is between $1.0 \times 10^{-16}$ and $7.8 \times 10^{-16}$ in all eleven layers; under Glorot it is $1.8 \times 10^{-5}$ to $2.5 \times 10^{-5}$ in layers 2 to 10; under He it is between 0.0023 and 0.016 in all eleven. A vanished network has no layer that still learns.
 
-**Tanh is the mirror case, and a milder one.** The same stack with `Activation_Tanh` of post 17 gives a forward factor of 0.94 to 0.99 with Glorot. He's variance is twice too large for tanh: saturation holds the forward factor to 1.02 to 1.10, and the backward factor is 1.16 to 1.83 per layer.
+**Tanh is the mirror case, and a milder one.** The same stack with `Activation_Tanh` of [post 17](../17-backpropagation-through-activation-functions/index.md) gives a forward factor of 0.94 to 0.99 with Glorot. He's variance is twice too large for tanh: saturation holds the forward factor to 1.02 to 1.10, and the backward factor is 1.16 to 1.83 per layer.
 
 ---
 
@@ -196,7 +196,7 @@ The class is that of [post 30](../30-l1-and-l2-regularisation/index.md) with one
 
 This is the spelling of the released project `nn-p02`, which needs the argument: the same four names, the same default, the same error. The projects `nn-p01`, `nn-p03` and `nn-p04` keep the fixed 0.01 and have no such argument.
 
-**The default is `"he"`, and that changes what an unchanged script computes.** A script of posts 04 to 32 that calls `Layer_Dense(2, 64)` with this class draws weights 100 times larger in its first layer and gets other results. Every number of those posts was produced with 0.01, and reproducing one requires `init="small"`. `snippets/network.py` shows the three scales on the same draws, and the first line is a row that post 04 prints:
+**The default is `"he"`, and that changes what an unchanged script computes.** A script of posts 04 to 32 that calls `Layer_Dense(2, 64)` with this class draws weights 100 times larger in its first layer and gets other results. Every number of those posts was produced with 0.01, and reproducing one requires `init="small"`. `snippets/network.py` shows the three scales on the same draws, and the first line is a row that [post 04](../04-dense-layer-class-and-spiral-data/index.md) prints:
 
 ```text
 init='small'   [0.01764052 0.00400157 0.00978738]
@@ -229,7 +229,7 @@ The first loss is $\ln C$ for $C$ classes, the loss of answering $1/C$ for every
 
 With one hidden layer the two scales are close after 501 epochs. With two, He is below a loss of 1.0 after 77 to 133 epochs on every seed and 0.01 has barely left $\ln 3$; with three, 0.01 has not moved in the fourth decimal.
 
-Adam divides each gradient by a running size of that gradient (post 27), so the scale of the gradient cancels until it falls to the size of Adam's $\epsilon = 10^{-7}$. `snippets/depth_small.py` and `snippets/depth_he.py`, 501 epochs, seeds 0 to 4:
+Adam divides each gradient by a running size of that gradient ([post 27](../27-adam-optimiser/index.md)), so the scale of the gradient cancels until it falls to the size of Adam's $\epsilon = 10^{-7}$. `snippets/depth_small.py` and `snippets/depth_he.py`, 501 epochs, seeds 0 to 4:
 
 | Hidden layers | Largest first gradient, 0.01 | Runs with 0.01 that never go below 1.0 | Loss at epoch 500, 0.01 | Loss at epoch 500, He |
 |:---:|:---:|:---:|:---:|:---:|
@@ -254,7 +254,7 @@ seed  loss, first pass  largest |output|  largest |dweights|  first NaN loss, SG
    1           10.7027           6.7e+07             3.4e+06  epoch 1                      10.6917  0.5373
 ```
 
-The first loss is not NaN, on any of the ten seeds the script runs. The softmax of post 06 subtracts the row maximum before exponentiating, so logits of $10^7$ produce a one-hot row without overflow, and the loss of post 08 clips at $10^{-7}$, so a confidently wrong sample costs $-\ln 10^{-7} = 16.118$. About two thirds of the samples are wrong, and the loss is near $16.118 \cdot 2/3 = 10.745$: between 10.38 and 11.19 on the ten seeds. The NaN arrives one update later. Gradients of $10^6$ under a learning rate of 1.0 move the weights to $10^6$, the next forward pass overflows float32, and the loss of epoch 1, the second epoch, is NaN on all ten seeds, with the warnings `overflow encountered in cast` and `invalid value encountered in dot`. Adam, whose steps are bounded by the learning rate, produces no NaN. Its loss after three updates is still between 9.51 and 11.23, and after 200 it is between 0.16 and 2.26.
+The first loss is not NaN, on any of the ten seeds the script runs. The softmax of [post 06](../06-activation-functions-relu-and-softmax/index.md) subtracts the row maximum before exponentiating, so logits of $10^7$ produce a one-hot row without overflow, and the loss of [post 08](../08-loss-categorical-cross-entropy/index.md) clips at $10^{-7}$, so a confidently wrong sample costs $-\ln 10^{-7} = 16.118$. About two thirds of the samples are wrong, and the loss is near $16.118 \cdot 2/3 = 10.745$: between 10.38 and 11.19 on the ten seeds. The NaN arrives one update later. Gradients of $10^6$ under a learning rate of 1.0 move the weights to $10^6$, the next forward pass overflows float32, and the loss of epoch 1, the second epoch, is NaN on all ten seeds, with the warnings `overflow encountered in cast` and `invalid value encountered in dot`. Adam, whose steps are bounded by the learning rate, produces no NaN. Its loss after three updates is still between 9.51 and 11.23, and after 200 it is between 0.16 and 2.26.
 
 | First two losses | Largest gradient | Reading |
 |---|---|---|
@@ -262,13 +262,13 @@ The first loss is not NaN, on any of the ten seeds the script runs. The softmax 
 | about $16 \cdot (1 - 1/C)$, then NaN, or a slow fall under Adam | many orders above the weights | exploded: scale too large |
 | a little above $\ln C$, then falling | within a few orders of the weights | healthy |
 
-One forward pass and the table of section 5 separate the cases before any training.
+One forward pass and the table of [section 5](#5-ten-layers-measured-forward-and-backward) separate the cases before any training.
 
 ---
 
 ## 8. What changes for the series' own network
 
-The network of Part VI has one hidden layer, so the factor of section 4 is applied once and no signal vanishes. The scale still matters. `snippets/spiral_wins.py` repeats the documented run of [post 28](../28-generalization-and-testing/index.md), `Layer_Dense(2, 64)`, ReLU, `Layer_Dense(64, 3)`, `Optimizer_Adam(learning_rate=0.02, decay=1e-5)`, 10,001 epochs, with nothing changed but `init` on both layers. Accuracies are measured forward-only after the last update, and the test set is 100 points per class drawn after training. Run without arguments it trains seed 0, and its `small` columns are the figures of post 28:
+The network of Part VI has one hidden layer, so the factor of [section 4](#4-he-initialisation-relu-keeps-half-of-the-mean-square) is applied once and no signal vanishes. The scale still matters. `snippets/spiral_wins.py` repeats the documented run of [post 28](../28-generalization-and-testing/index.md), `Layer_Dense(2, 64)`, ReLU, `Layer_Dense(64, 3)`, `Optimizer_Adam(learning_rate=0.02, decay=1e-5)`, 10,001 epochs, with nothing changed but `init` on both layers. Accuracies are measured forward-only after the last update, and the test set is 100 points per class drawn after training. Run without arguments it trains seed 0, and its `small` columns are the figures of [post 28](../28-generalization-and-testing/index.md):
 
 ```text
 seed  train acc: small     he  xavier   test acc: small     he  xavier
@@ -294,7 +294,7 @@ xavier over he     11 (1)     17 (0)
 
 **Test accuracy follows for Glorot and not for He.** Glorot is ahead of 0.01 on 15 of the 20 seeds. He is ahead on 12 and level on one: on 8 of the first ten seeds and on 4 of the next ten.
 
-**He is not ahead of Glorot on this ReLU network.** Glorot has the higher test accuracy on 17 of the 20 seeds, and in training accuracy the two are level, 11 seeds to 8. This does not contradict section 5. With one hidden layer there is no depth over which Glorot's half per layer could compound, and the two schemes differ mainly in the first layer, where two inputs give He a standard deviation of 1 and Glorot one of $\sqrt{2/66} = 0.17$. The evaluation of `nn-p02` reports the same for its two hidden layers: Glorot at 197 to 200 of 200, as He. The case for He over Glorot on ReLU is the factor of one half per layer, and it is a case about depth.
+**He is not ahead of Glorot on this ReLU network.** Glorot has the higher test accuracy on 17 of the 20 seeds, and in training accuracy the two are level, 11 seeds to 8. This does not contradict [section 5](#5-ten-layers-measured-forward-and-backward). With one hidden layer there is no depth over which Glorot's half per layer could compound, and the two schemes differ mainly in the first layer, where two inputs give He a standard deviation of 1 and Glorot one of $\sqrt{2/66} = 0.17$. The evaluation of `nn-p02` reports the same for its two hidden layers: Glorot at 197 to 200 of 200, as He. The case for He over Glorot on ReLU is the factor of one half per layer, and it is a case about depth.
 
 ---
 
@@ -314,12 +314,12 @@ python posts/33-weight-initialisation/snippets/ten_layers.py
 
 | Script | Contents | Time |
 |---|---|---|
-| `network.py` | `Layer_Dense` with `init`, the other classes unchanged, the shared training loop; prints section 6 | 1 s |
+| `network.py` | `Layer_Dense` with `init`, the other classes unchanged, the shared training loop; prints [section 6](#6-the-init-argument-of-layer_dense) | 1 s |
 | `variance_factors.py` | the factors of sections 2 to 4 on random numbers | 1 s |
-| `ten_layers.py` | ten layers under three schemes, forward and backward, ReLU and tanh (section 5) | 10 s |
-| `symptoms.py` | ten hidden layers at scale 0.01 and at scale 1.0 (section 7) | 30 to 40 s |
-| `depth_sgd.py`, `depth_small.py`, `depth_he.py` | depth sweeps over five seeds (section 7) | 25 to 40 s each |
-| `spiral_wins.py` | the run of post 28 under each scheme, seed by seed, with ranges and counts (section 8) | 25 s for seed 0; 7 min for seeds 0 to 19 |
+| `ten_layers.py` | ten layers under three schemes, forward and backward, ReLU and tanh ([section 5](#5-ten-layers-measured-forward-and-backward)) | 10 s |
+| `symptoms.py` | ten hidden layers at scale 0.01 and at scale 1.0 ([section 7](#7-symptoms-of-a-wrong-scale)) | 30 to 40 s |
+| `depth_sgd.py`, `depth_small.py`, `depth_he.py` | depth sweeps over five seeds ([section 7](#7-symptoms-of-a-wrong-scale)) | 25 to 40 s each |
+| `spiral_wins.py` | the run of [post 28](../28-generalization-and-testing/index.md) under each scheme, seed by seed, with ranges and counts ([section 8](#8-what-changes-for-the-series-own-network)) | 25 s for seed 0; 7 min for seeds 0 to 19 |
 
 The first three run in float64 without `nnfs.init()`. The training scripts call it once and reseed for each run; the depth scripts and `spiral_wins.py` take seeds as arguments. All need NumPy and the `nnfs` package.
 
@@ -362,16 +362,14 @@ ValueError: unknown init: 'He'
 
 ## Further reading
 
-- Glorot, X. and Bengio, Y., *"Understanding the Difficulty of Training Deep Feedforward Neural Networks"* (AISTATS, 2010). The forward and backward conditions and the compromise between them.
-- He, K., Zhang, X., Ren, S., and Sun, J., *"Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification"* (ICCV, 2015). The derivation for rectifiers.
-- LeCun, Y., Bottou, L., Orr, G. B., and Müller, K.-R., *"Efficient BackProp"* (Neural Networks: Tricks of the Trade, 1998).
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, section 8.4 (MIT Press, 2016).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Glorot, X. and Bengio, Y., *["Understanding the Difficulty of Training Deep Feedforward Neural Networks"](https://proceedings.mlr.press/v9/glorot10a.html)* (AISTATS, 2010). The forward and backward conditions and the compromise between them.
+- He, K., Zhang, X., Ren, S., and Sun, J., *["Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification"](https://arxiv.org/abs/1502.01852)* (ICCV, 2015). The derivation for rectifiers.
+- LeCun, Y., Bottou, L., Orr, G. B., and Müller, K.-R., *["Efficient BackProp"](https://doi.org/10.1007/3-540-49430-8_2)* (Neural Networks: Tricks of the Trade, 1998).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/optimization.html)*, section 8.4 (MIT Press, 2016).
 
 ---
 
 ## What to read next
 
-- **[Post 34 - Sigmoid and binary cross-entropy](../34-sigmoid-and-binary-cross-entropy/index.md):** the output layer and the loss for two classes, used by the project whose initialisation failure section 7 quotes.
+- **[Post 34 - Sigmoid and binary cross-entropy](../34-sigmoid-and-binary-cross-entropy/index.md):** the output layer and the loss for two classes, used by the project whose initialisation failure [section 7](#7-symptoms-of-a-wrong-scale) quotes.
 - **[Post 27 - Adam optimiser](../27-adam-optimiser/index.md):** the normalisation by gradient size that lets a small initial scale survive a few more layers.
