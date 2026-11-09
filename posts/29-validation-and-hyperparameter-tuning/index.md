@@ -14,7 +14,7 @@
 
 ![Five rows, folds 1 to 5, each a strip of the five parts A to E of the 300 spiral points of seed 0, 60 points each, with part i in blue as the validation part of fold i and the other four, 240 points, training a new network with learning rate 0.1 and 64 hidden neurons. The validation accuracies are 0.800, 0.817, 0.717, 0.800 and 0.733, mean 0.773. A sixth row, the final model, trains on all 300 points, training accuracy 0.927, and is scored once on a test set of 300 further points that the search never used: 0.793, 238 of 300.](diagrams/01-kfold-and-test-set.svg)
 
-*Seed 0 and the setting that wins the search of section 8: every one of the 300 points is validated once, by the model that did not train on it, and the test set is opened once, at the end.*
+*Seed 0 and the setting that wins the search of [section 8](#8-the-grid-search-loop): every one of the 300 points is validated once, by the model that did not train on it, and the test set is opened once, at the end.*
 
 ---
 
@@ -26,9 +26,9 @@ A neural network has two kinds of numbers: **parameters**, which gradient descen
 |---|---|
 | Architecture | number of hidden layers, neurons per layer, choice of activation |
 | Optimiser | algorithm (Part VI), learning rate $\alpha$, momentum, decay |
-| Regularisation | strength of an L1 or L2 penalty (post 30), dropout rate (post 31) |
-| Training schedule | number of epochs, batch size (post 32) |
-| Initialisation | scale of the random draw (post 33) |
+| Regularisation | strength of an L1 or L2 penalty ([post 30](../30-l1-and-l2-regularisation/index.md)), dropout rate ([post 31](../31-dropout/index.md)) |
+| Training schedule | number of epochs, batch size ([post 32](../32-mini-batching/index.md)) |
+| Initialisation | scale of the random draw ([post 33](../33-weight-initialisation/index.md)) |
 
 Each choice is a hypothesis: this combination will generalise well on this data. [Post 28](../28-generalization-and-testing/index.md) showed that such a hypothesis can only be tested on data the model never saw during training. A search tests many of them, and that raises the question of this post: **when a held-out score has been used to pick the winner of a search, what is left to report as the winner's accuracy on unseen data?**
 
@@ -49,13 +49,13 @@ When data is plentiful, the discipline is simple: three disjoint slices.
 The workflow has four steps:
 
 1. Train every candidate (a setting of the hyperparameters) on the training set.
-2. Evaluate each candidate on the validation set, forward only, and choose the one with the highest validation accuracy or the lowest validation loss. The selection logic is the same for either score, though the two need not pick the same candidate: in post 28 the lowest held-out loss and the highest held-out accuracy fell at different epochs.
+2. Evaluate each candidate on the validation set, forward only, and choose the one with the highest validation accuracy or the lowest validation loss. The selection logic is the same for either score, though the two need not pick the same candidate: in [post 28](../28-generalization-and-testing/index.md) the lowest held-out loss and the highest held-out accuracy fell at different epochs.
 3. Optionally retrain the winning configuration on the union of training and validation data.
 4. Evaluate that final model on the test set and report the number. Do not go back and tune again.
 
 Step 4 is the rule most often broken. The moment a disappointing test number leads to a change of the model, the test set has been used for tuning, and it has become a second validation set.
 
-`snippets/test_set_tuning.py` measures what that costs. For each of five seeds it trains eight candidates, learning rates from 0.01 to 0.1, on the same 300 spiral points (the training setup is stated in section 5), and draws 200 test sets of 300 points each. On every test set it does what the rule forbids: it picks the candidate with the highest test accuracy and reports that accuracy. A further 30,000 points, which no choice ever looks at, say how good the chosen model really is.
+`snippets/test_set_tuning.py` measures what that costs. For each of five seeds it trains eight candidates, learning rates from 0.01 to 0.1, on the same 300 spiral points (the training setup is stated in [section 5](#5-comparing-learning-rates-with-k-fold)), and draws 200 test sets of 300 points each. On every test set it does what the rule forbids: it picks the candidate with the highest test accuracy and reports that accuracy. A further 30,000 points, which no choice ever looks at, say how good the chosen model really is.
 
 ```text
 seed 3  accuracy on the 30,000 further points, per candidate: [0.732 0.75  0.767 0.754 0.681 0.742 0.762 0.759]
@@ -114,7 +114,7 @@ One and the same setting scores anything from 0.600 to 0.883 on a single split o
 
 The price is $k$ trainings per candidate instead of one. The common choices are $k = 5$ and $k = 10$; Kohavi (1995) compared cross-validation and the bootstrap on real datasets and recommended stratified 10-fold cross-validation for model selection.
 
-Cross-validation takes the place of the validation set only. The test set stays outside the rotation, untouched. The figure at the top of the post draws both for seed 0: the five folds of the setting that wins the search of section 8, and its one test.
+Cross-validation takes the place of the validation set only. The test set stays outside the rotation, untouched. The figure at the top of the post draws both for seed 0: the five folds of the setting that wins the search of [section 8](#8-the-grid-search-loop), and its one test.
 
 ---
 
@@ -148,11 +148,11 @@ Four design choices are worth noting.
 
 **The shuffle has its own generator and a fixed seed.** `spiral_data` and the initial weights of `Layer_Dense` draw from NumPy's global random stream. `np.random.default_rng(seed)` is separate from it, so calling the split changes no later draw, and a second call with the same seed returns the same folds. Every candidate can then be scored on identical folds; without that, one candidate might win because its folds were easier.
 
-**`np.array_split` handles a remainder.** When $k$ does not divide $N$, the first $N \bmod k$ folds get one sample more. A fold size of `len(X) // k` loses the remainder (section 10).
+**`np.array_split` handles a remainder.** When $k$ does not divide $N$, the first $N \bmod k$ folds get one sample more. A fold size of `len(X) // k` loses the remainder ([section 10](#10-what-can-go-wrong)).
 
 **The functions use `yield`.** The $k$ splits are produced one at a time, never all held in memory at once.
 
-`snippets/kfold.py` checks the properties that section 3 relies on:
+`snippets/kfold.py` checks the properties that [section 3](#3-k-fold-cross-validation) relies on:
 
 ```text
 n=300 k=5  validation sizes [60, 60, 60, 60, 60]  every sample validated once: True  largest train/validation overlap: 0  train + validation = n: True
@@ -166,7 +166,7 @@ classes per validation fold, shuffled: [[18, 24, 18], [22, 19, 19], [17, 16, 27]
 
 ## 5. Comparing learning rates with k-fold
 
-One function scores one candidate. It builds a new network for every fold, with `train` (1,000 full-batch epochs of the Adam optimiser of [post 27](../27-adam-optimiser/index.md)) and `accuracy` (the forward-only pass of post 28), both defined in `snippets/kfold.py`:
+One function scores one candidate. It builds a new network for every fold, with `train` (1,000 full-batch epochs of the Adam optimiser of [post 27](../27-adam-optimiser/index.md)) and `accuracy` (the forward-only pass of [post 28](../28-generalization-and-testing/index.md)), both defined in `snippets/kfold.py`:
 
 ```python
 def k_fold_accuracies(X, y, learning_rate, n_neurons=64, k=5, seed=0):
@@ -189,7 +189,7 @@ The search is a loop over the candidates around it (`snippets/search.py`, with `
                   f'std={np.std(fold_accs):.3f}  folds {np.round(fold_accs, 3)}')
 ```
 
-The setup, stated once for every training run of this post: `nnfs.init()` is called (float32 arrays and a float32 `np.dot`); for seed $s$ the data are `spiral_data(samples=100, classes=3)` after `np.random.seed(s)`, and a second call of `spiral_data` on the same stream draws the test set; the network is `Layer_Dense(2, 64)`, ReLU, `Layer_Dense(64, 3)` and the combined softmax and loss, with the classes of posts 16 and 19 unchanged; the weights are drawn after `np.random.seed(100 + s)`, so every fold, and every candidate of the same width, starts from the same weights; the optimiser is `Optimizer_Adam(learning_rate=lr)` with no decay; and the folds come from `np.random.default_rng(s)`. This is a shorter and plainer run than the 10,001 epochs with decay of post 27, so the accuracies are not comparable with that post's, nor with those of post 28, which reuses that run. Every standard deviation printed in this post is `np.std` with its default, the population form that divides by the number of values.
+The setup, stated once for every training run of this post: `nnfs.init()` is called (float32 arrays and a float32 `np.dot`); for seed $s$ the data are `spiral_data(samples=100, classes=3)` after `np.random.seed(s)`, and a second call of `spiral_data` on the same stream draws the test set; the network is `Layer_Dense(2, 64)`, ReLU, `Layer_Dense(64, 3)` and the combined softmax and loss, with the classes of posts [16](../16-coding-backpropagation/index.md) and [19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) unchanged; the weights are drawn after `np.random.seed(100 + s)`, so every fold, and every candidate of the same width, starts from the same weights; the optimiser is `Optimizer_Adam(learning_rate=lr)` with no decay; and the folds come from `np.random.default_rng(s)`. This is a shorter and plainer run than the 10,001 epochs with decay of [post 27](../27-adam-optimiser/index.md), so the accuracies are not comparable with that post's, nor with those of [post 28](../28-generalization-and-testing/index.md), which reuses that run. Every standard deviation printed in this post is `np.std` with its default, the population form that divides by the number of values.
 
 ```text
 lr=0.01   mean_acc=0.720 std=0.053  folds [0.7   0.767 0.717 0.783 0.633]
@@ -213,7 +213,7 @@ learning rates   seed 4  0.01: 0.730  0.05: 0.760  0.1: 0.797  0.5: 0.453  1.0: 
 
 **The large learning rates lose in every seed.** With $\alpha = 0.5$ the mean lies between 0.350 and 0.453, and with $\alpha = 1.0$ between 0.343 and 0.403, little above the 0.333 of guessing among three classes. The three smaller rates score at least 0.603 in every seed. A gap of that size is far beyond the spread across folds, and cross-validation settles it.
 
-**The two best learning rates are not separated.** In seed 0 the lead of 0.1 over 0.05 is 0.003, which is one validation sample out of 300, while the accuracies of one candidate differ between folds with a standard deviation of 0.04 to 0.06. Over the five seeds 0.1 has the highest mean four times and 0.05 once, and the difference between the two, 0.1 minus 0.05, is +0.003, +0.010, -0.023, +0.110 and +0.037: a single seed could report anything from a small loss to a clear win. These runs favour 0.1 and do not establish it; an honest report says that 0.05 and 0.1 are not distinguished by this data. The rate 0.01 is another matter: it lies behind 0.1 in all five seeds, by 0.040 to 0.077. The figure below draws the five seeds of every learning rate, together with the two settings of section 8 that have 16 hidden neurons.
+**The two best learning rates are not separated.** In seed 0 the lead of 0.1 over 0.05 is 0.003, which is one validation sample out of 300, while the accuracies of one candidate differ between folds with a standard deviation of 0.04 to 0.06. Over the five seeds 0.1 has the highest mean four times and 0.05 once, and the difference between the two, 0.1 minus 0.05, is +0.003, +0.010, -0.023, +0.110 and +0.037: a single seed could report anything from a small loss to a clear win. These runs favour 0.1 and do not establish it; an honest report says that 0.05 and 0.1 are not distinguished by this data. The rate 0.01 is another matter: it lies behind 0.1 in all five seeds, by 0.040 to 0.077. The figure below draws the five seeds of every learning rate, together with the two settings of [section 8](#8-the-grid-search-loop) that have 16 hidden neurons.
 
 ![Seven rows, each a green band over seeds 0 to 4 of the 5-fold mean accuracy, with a tick per seed and a dot for seed 0, beside a dotted line at 0.333, guessing. Learning rate 0.01: 0.640 to 0.730; 0.05: 0.603 to 0.770, best in 1 of 5 seeds; 0.1: 0.713 to 0.797, best in 4 of 5 seeds; 0.5: 0.350 to 0.453; 1.0: 0.343 to 0.403. With 16 hidden neurons, 0.05: 0.423 to 0.537 and 0.1: 0.423 to 0.517.](diagrams/04-learning-rates-over-seeds.svg)
 
@@ -225,7 +225,7 @@ The last printed line shows what a single validation split would have done on se
 
 ## 6. Data leakage: the silent failure mode
 
-A clean split only helps if nothing about the held-out data reaches the model. **Data leakage** is any path by which information from the validation or test data influences training or model choice. Tuning on the test set (section 2) is one such path. Three more are common.
+A clean split only helps if nothing about the held-out data reaches the model. **Data leakage** is any path by which information from the validation or test data influences training or model choice. Tuning on the test set ([section 2](#2-the-three-way-split)) is one such path. Three more are common.
 
 **Preprocessing fitted on all the data.** Any step that estimates something from the data (the mean and standard deviation of a standardiser, a principal-component basis, a vocabulary, a choice of features) must be fitted on the training part and then applied, unchanged, to the validation and test parts.
 
@@ -278,22 +278,22 @@ The table gives conventions, not measurements; the sizes are orders of magnitude
 |---|---|---|
 | Very large ($10^6$ and more) | one 80/10/10 split | a validation set of 100,000 points has negligible noise, and $k$ trainings are expensive |
 | Large ($10^4$ to $10^6$) | one split, or 5-fold | a trade of compute against precision |
-| Medium ($10^2$ to $10^4$) | 5-fold or 10-fold | the noise of one validation slice matters, as in section 3 |
+| Medium ($10^2$ to $10^4$) | 5-fold or 10-fold | the noise of one validation slice matters, as in [section 3](#3-k-fold-cross-validation) |
 | Small (under $10^2$) | leave-one-out, which is k-fold with $k = N$ | every sample is needed for training |
 
 Leave-one-out needs $N$ trainings, and its estimate can have a high variance, because the $N$ training sets are nearly identical (Hastie, Tibshirani and Friedman, chapter 7), so it is kept for very small data. When a model is too slow for five trainings per candidate, $k = 3$ or a single validation split are the fallbacks.
 
-**Stratification.** The shuffled folds of section 4 hold between 16 and 27 samples of a class where 20 would be even. **Stratified k-fold** shuffles and cuts each class separately, so that every fold has the class proportions of the whole dataset. It matters most when a class is rare: an unstratified fold can then contain no sample of it at all.
+**Stratification.** The shuffled folds of [section 4](#4-a-minimal-k-fold-implementation) hold between 16 and 27 samples of a class where 20 would be even. **Stratified k-fold** shuffles and cuts each class separately, so that every fold has the class proportions of the whole dataset. It matters most when a class is rare: an unstratified fold can then contain no sample of it at all.
 
-**The k-fold score describes models trained on four fifths of the data.** The final model is trained on all of it and is usually a little better, so the k-fold mean tends to understate it. On the spiral this is visible: trained on all 300 points with $\alpha = 0.1$, the network scores 0.818, 0.839, 0.806, 0.759 and 0.827 on the 30,000 further points of section 2 for seeds 0 to 4, against 5-fold means of 0.773, 0.737, 0.713, 0.713 and 0.797. The final model is ahead in all five seeds, by 0.03 to 0.10. The smaller training sets are one reason and need not be the only one: the two numbers are also measured on different points, 300 held-out ones against 30,000 new ones, and these runs do not separate the two effects.
+**The k-fold score describes models trained on four fifths of the data.** The final model is trained on all of it and is usually a little better, so the k-fold mean tends to understate it. On the spiral this is visible: trained on all 300 points with $\alpha = 0.1$, the network scores 0.818, 0.839, 0.806, 0.759 and 0.827 on the 30,000 further points of [section 2](#2-the-three-way-split) for seeds 0 to 4, against 5-fold means of 0.773, 0.737, 0.713, 0.713 and 0.797. The final model is ahead in all five seeds, by 0.03 to 0.10. The smaller training sets are one reason and need not be the only one: the two numbers are also measured on different points, 300 held-out ones against 30,000 new ones, and these runs do not separate the two effects.
 
-**The winner's k-fold score is itself a selected number.** It is the highest of several noisy means, which is the situation of section 2 with the validation data in the place of the test set. The two biases pull in opposite directions and neither is known, so the k-fold score of the winner is a tool for choosing and is not the report. The most careful protocol, **nested cross-validation**, wraps the whole search in an outer k-fold loop and costs the product of the two fold counts in trainings per candidate. With a held-out test set, one final evaluation does the same job.
+**The winner's k-fold score is itself a selected number.** It is the highest of several noisy means, which is the situation of [section 2](#2-the-three-way-split) with the validation data in the place of the test set. The two biases pull in opposite directions and neither is known, so the k-fold score of the winner is a tool for choosing and is not the report. The most careful protocol, **nested cross-validation**, wraps the whole search in an outer k-fold loop and costs the product of the two fold counts in trainings per candidate. With a held-out test set, one final evaluation does the same job.
 
 ---
 
 ## 8. The grid-search loop
 
-k-fold is the measuring instrument; a search strategy decides which candidates to measure. **Grid search** takes a short list of values for each hyperparameter and scores every combination. `snippets/grid.py` does it for two learning rates and two hidden widths, then finishes the protocol of section 2:
+k-fold is the measuring instrument; a search strategy decides which candidates to measure. **Grid search** takes a short list of values for each hyperparameter and scores every combination. `snippets/grid.py` does it for two learning rates and two hidden widths, then finishes the protocol of [section 2](#2-the-three-way-split):
 
 ```python
     for lr in [0.05, 0.1]:
@@ -323,9 +323,9 @@ k-fold mean of the winner 0.773
 retrained on all 300 points: training accuracy 0.927, test accuracy 0.793 (238 of 300)
 ```
 
-The width is settled and the learning rate is not, as in section 5. In all five seeds both settings with 64 neurons (0.603 to 0.797) lie above both settings with 16 (0.423 to 0.537), as the last two rows of the figure in section 5 show. The winner is $(0.1, 64)$ in four seeds and $(0.05, 64)$ in seed 2.
+The width is settled and the learning rate is not, as in [section 5](#5-comparing-learning-rates-with-k-fold). In all five seeds both settings with 64 neurons (0.603 to 0.797) lie above both settings with 16 (0.423 to 0.537), as the last two rows of the figure in [section 5](#5-comparing-learning-rates-with-k-fold) show. The winner is $(0.1, 64)$ in four seeds and $(0.05, 64)$ in seed 2.
 
-The number to report for seed 0 is the test accuracy, **0.793**. It is neither the k-fold mean of 0.773 nor the training accuracy of 0.927, which is 0.13 higher than the test accuracy: the gap of post 28. The other four seeds, each with its own data and its own test set, print test accuracies of 0.857, 0.713, 0.770 and 0.863 beside k-fold means of 0.737, 0.737, 0.713 and 0.797. Whatever the test number is, the search is over once it has been read.
+The number to report for seed 0 is the test accuracy, **0.793**. It is neither the k-fold mean of 0.773 nor the training accuracy of 0.927, which is 0.13 higher than the test accuracy: the gap of [post 28](../28-generalization-and-testing/index.md). The other four seeds, each with its own data and its own test set, print test accuracies of 0.857, 0.713, 0.770 and 0.863 beside k-fold means of 0.737, 0.737, 0.713 and 0.797. Whatever the test number is, the search is over once it has been read.
 
 A grid grows quickly: three values for each of four hyperparameters are 81 candidates, and 405 trainings with 5-fold validation. **Random search** draws each candidate at random instead, the learning rate usually from a log-uniform distribution. Bergstra and Bengio (2012) showed that it finds good settings with fewer trials than a grid when only a few of the hyperparameters matter: a grid spends its trials on repeated values of the important ones, while random draws give every trial a new value of each. **Bayesian optimisation** (Snoek, Larochelle and Adams, 2012) goes a step further and fits a probabilistic model to the scores seen so far, which proposes the next candidate. The skeleton is the same for all three: each candidate is scored on validation data, and the test set is opened once at the end.
 
@@ -346,7 +346,7 @@ python posts/29-validation-and-hyperparameter-tuning/snippets/leakage.py
 python posts/29-validation-and-hyperparameter-tuning/snippets/grid.py
 ```
 
-`kfold.py` defines the classes, the split, `train` and `accuracy`, and the other scripts import them from it. On the machine that produced these numbers one training of 1,000 epochs takes under a second, `kfold.py` and `leakage.py` finish in a few seconds, and each of the others in 10 to 45 seconds. The five seeds of sections 5 and 8 are spread over `search.py`, `grid.py` and the two `seeds` scripts to keep every script short; they run the same functions.
+`kfold.py` defines the classes, the split, `train` and `accuracy`, and the other scripts import them from it. On the machine that produced these numbers one training of 1,000 epochs takes under a second, `kfold.py` and `leakage.py` finish in a few seconds, and each of the others in 10 to 45 seconds. The five seeds of sections [5](#5-comparing-learning-rates-with-k-fold) and [8](#8-the-grid-search-loop) are spread over `search.py`, `grid.py` and the two `seeds` scripts to keep every script short; they run the same functions.
 
 ---
 
@@ -374,9 +374,9 @@ shuffle=True   classes per validation fold [[18, 24, 18], [22, 19, 19], [17, 16,
 
 Without the shuffle each validation fold is a stretch of one or two spiral arms that is missing from the training data, and the same setting that scores 0.770 on shuffled folds scores 0.120, well below guessing.
 
-**A ranking read from one fold or one seed.** On seed 0 two of the five single folds prefer 0.05 and three prefer 0.1, and the five seeds do not agree either (section 5). A difference smaller than the spread across folds is not a finding, however many decimals are printed.
+**A ranking read from one fold or one seed.** On seed 0 two of the five single folds prefer 0.05 and three prefer 0.1, and the five seeds do not agree either ([section 5](#5-comparing-learning-rates-with-k-fold)). A difference smaller than the spread across folds is not a finding, however many decimals are printed.
 
-**Candidates scored on different folds.** In section 3 the shuffle alone moved the 5-fold mean of one fixed setting between 0.723 and 0.800. If each candidate gets its own shuffle, that movement is added to every comparison. One fixed split seed, used for all candidates, removes it.
+**Candidates scored on different folds.** In [section 3](#3-k-fold-cross-validation) the shuffle alone moved the 5-fold mean of one fixed setting between 0.723 and 0.800. If each candidate gets its own shuffle, that movement is added to every comparison. One fixed split seed, used for all candidates, removes it.
 
 ---
 
@@ -385,7 +385,7 @@ Without the shuffle each validation fold is a stretch of one or two spiral arms 
 | Concept | Takeaway |
 |---|---|
 | Three-way split | training data for the weights, validation data for the hyperparameters, test data for the final report only |
-| Test-set discipline | the best of several test scores is biased upward: by up to 1.8 points on 300 test points and up to 5.0 on 60 in the runs of section 2 |
+| Test-set discipline | the best of several test scores is biased upward: by up to 1.8 points on 300 test points and up to 5.0 on 60 in the runs of [section 2](#2-the-three-way-split) |
 | k-fold cross-validation | every sample validates once; the mean of the $k$ accuracies is the candidate's score |
 | Steadiness | under reshuffling a 5-fold mean varied 2.6 times less than a single split of 60 |
 | Reading a search | large gaps (learning rates of 0.5 and 1.0, width 16) hold in every seed; 0.05 against 0.1 stays open |
@@ -407,15 +407,13 @@ Without the shuffle each validation fold is a stretch of one or two spiral arms 
 
 ## Further reading
 
-- Bergstra, J. and Bengio, Y., *"Random Search for Hyper-Parameter Optimization"* (Journal of Machine Learning Research, 2012).
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 5 (MIT Press, 2016).
-- Hastie, T., Tibshirani, R., and Friedman, J., *The Elements of Statistical Learning*, chapter 7, section 7.10 (Springer, 2009).
-- Kaufman, S., Rosset, S., Perlich, C., and Stitelman, O., *"Leakage in Data Mining: Formulation, Detection, and Avoidance"* (ACM Transactions on Knowledge Discovery from Data, 2012). A formal treatment of the leaks of section 6.
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 11 (2020).
-- Kohavi, R., *"A Study of Cross-Validation and Bootstrap for Accuracy Estimation and Model Selection"* (IJCAI, 1995).
-- Snoek, J., Larochelle, H., and Adams, R. P., *"Practical Bayesian Optimization of Machine Learning Algorithms"* (NeurIPS, 2012).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Bergstra, J. and Bengio, Y., *["Random Search for Hyper-Parameter Optimization"](https://jmlr.org/papers/v13/bergstra12a.html)* (Journal of Machine Learning Research, 2012).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/ml.html)*, chapter 5 (MIT Press, 2016).
+- Hastie, T., Tibshirani, R., and Friedman, J., *[The Elements of Statistical Learning](https://hastie.su.domains/ElemStatLearn/)*, chapter 7, section 7.10 (Springer, 2009).
+- Kaufman, S., Rosset, S., Perlich, C., and Stitelman, O., *["Leakage in Data Mining: Formulation, Detection, and Avoidance"](https://doi.org/10.1145/2382577.2382579)* (ACM Transactions on Knowledge Discovery from Data, 2012). A formal treatment of the leaks of [section 6](#6-data-leakage-the-silent-failure-mode).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 11 (2020).
+- Kohavi, R., *["A Study of Cross-Validation and Bootstrap for Accuracy Estimation and Model Selection"](https://www.ijcai.org/Proceedings/95-2/Papers/016.pdf)* (IJCAI, 1995).
+- Snoek, J., Larochelle, H., and Adams, R. P., *["Practical Bayesian Optimization of Machine Learning Algorithms"](https://arxiv.org/abs/1206.2944)* (NeurIPS, 2012).
 
 ---
 
