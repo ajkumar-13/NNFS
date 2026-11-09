@@ -25,7 +25,7 @@ Every training loop of posts 22 to 31 has the same shape: one forward pass over 
 
 **Memory, on large data.** A full-batch forward pass holds one row of activations per sample. For the 60,000 training images of MNIST that is modest: the inputs take 188.2 MB in float32 and a first hidden layer of 128 neurons another 30.7 MB. For 1,281,167 images of $224 \times 224 \times 3$ values, the size of a common image benchmark, the inputs alone take 771 GB. Whether memory binds depends on the dataset; for MNIST it does not.
 
-**One update per pass, always.** Twenty full-batch epochs are 20 updates, however large the dataset. The released project `nn-p01` trains on MNIST for 20 epochs in batches of 128 rows, which is 469 updates per epoch and 9,380 in all, and its published result is 98.00 percent test accuracy (9,800 of 10,000 images). Each of those updates uses a gradient computed from 128 rows instead of 60,000. Section 2 measures how good such a gradient is, and section 6 measures what the trade does to training.
+**One update per pass, always.** Twenty full-batch epochs are 20 updates, however large the dataset. The released project `nn-p01` trains on MNIST for 20 epochs in batches of 128 rows, which is 469 updates per epoch and 9,380 in all, and its published result is 98.00 percent test accuracy (9,800 of 10,000 images). Each of those updates uses a gradient computed from 128 rows instead of 60,000. [Section 2](#2-the-three-regimes) measures how good such a gradient is, and [section 6](#6-what-the-trade-does-to-training-measured) measures what the trade does to training.
 
 ---
 
@@ -39,7 +39,7 @@ One number sets the regime: the **batch size** $B$, the number of rows that cont
 | **Mini-batch SGD** | $1 < B < N$ | $\lceil N / B \rceil$ | $B$ rows | an estimate with sampling noise |
 | **True SGD** | 1 | $N$ | one row | the noisiest estimate |
 
-SGD is stochastic gradient descent (post 22). The name first meant $B = 1$; today it is used for any batch drawn at random, and the $B = 1$ case is called true, pure or online SGD. A **mini-batch** is a batch with $1 < B < N$.
+SGD is stochastic gradient descent ([post 22](../22-gradient-descent-optimiser/index.md)). The name first meant $B = 1$; today it is used for any batch drawn at random, and the $B = 1$ case is called true, pure or online SGD. A **mini-batch** is a batch with $1 < B < N$.
 
 **What a batch gradient is.** The loss is a mean over rows, so the full-batch gradient $\mathbf{g}$ is the mean of the $N$ single-row gradients. A batch gradient $\mathbf{g}_B$ is the mean of $B$ of them. If the batch is drawn at random, its expectation is $\mathbf{g}$: the estimate is unbiased. Its error has a closed form. With $\sigma^2$ the summed variance of the single-row gradients over the training set, and the $B$ rows drawn without replacement,
 
@@ -66,7 +66,7 @@ The second line is the unbiasedness in its exact form: over one epoch of batches
 
 ![A chart on logarithmic axes of the root-mean-square distance between a batch gradient and the full-batch gradient against the batch size from 1 to 300, on the spiral network at fixed weights. Purple diamonds mark the measured values, 3.0115 at 1, 1.0647 at 8, 0.5124 at 32, 0.2489 at 100, 0.2069 at 128 and 0 at 300; they lie on the solid closed form with the factor for rows drawn without replacement, which bends down to 0 at 300, while the dashed line sigma over root B stays straight and ends at 0.1768. A dotted line marks the length of the full gradient, 0.4570, and a table beside the chart lists all three columns.](diagrams/02-gradient-noise.svg)
 
-*The measured noise of section 2 against the two closed forms: the plain $\sigma / \sqrt{B}$ overstates it once the batch is a large part of the training set.*
+*The measured noise of [section 2](#2-the-three-regimes) against the two closed forms: the plain $\sigma / \sqrt{B}$ overstates it once the batch is a large part of the training set.*
 
 **The cost of an epoch is not the same in practice.** Every regime touches each row once per epoch, so the arithmetic on the rows is the same. The work per update is not: the optimiser touches every parameter once per update, and each update pays Python's overhead. `snippets/timing.py` times one epoch of a $784 \to 128 \to 10$ network on 6,400 random rows. The times vary by machine and by run. In the runs behind this post an epoch at $B = 1$ took on the order of a hundred times as long as a full-batch epoch, and an epoch at $B = 128$ stayed within the order of magnitude of a full-batch one. True SGD is rare in NumPy code for this reason alone.
 
@@ -74,7 +74,7 @@ The second line is the unbiasedness in its exact form: over one epoch of batches
 
 ## 3. The two-loop structure
 
-The loop of post 22 gains one inner loop. This is `train()` of `snippets/network.py`:
+The loop of [post 22](../22-gradient-descent-optimiser/index.md) gains one inner loop. This is `train()` of `snippets/network.py`:
 
 ```python
     n_samples = len(X)
@@ -123,13 +123,13 @@ The loop of post 22 gains one inner loop. This is `train()` of `snippets/network
         accuracies.append(n_correct / n_samples)    # share of the rows predicted correctly when they were seen
 ```
 
-Steps 3, 4 and 5 are the loop body of post 22 with `X_batch` and `y_batch` in place of `X` and `y`. `Optimizer_Adam` is the class of post 27, unchanged: it reads `layer.dweights` and `layer.dbiases`, which each layer computes from whatever batch it saw last. The division by the number of samples in the combined class (post 19) is a division by the rows of the batch, so every batch gradient is the gradient of that batch's mean loss, whatever its size.
+Steps 3, 4 and 5 are the loop body of [post 22](../22-gradient-descent-optimiser/index.md) with `X_batch` and `y_batch` in place of `X` and `y`. `Optimizer_Adam` is the class of [post 27](../27-adam-optimiser/index.md), unchanged: it reads `layer.dweights` and `layer.dbiases`, which each layer computes from whatever batch it saw last. The division by the number of samples in the combined class ([post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)) is a division by the rows of the batch, so every batch gradient is the gradient of that batch's mean loss, whatever its size.
 
-**One shuffle per epoch, of rows and labels together.** `idx` is a random order of the row numbers, and the same `idx` indexes `X` and `y`, so each row keeps its label. Cutting that order into consecutive slices gives batches that are disjoint and cover every row exactly once per epoch. Section 10 runs the loop without the shuffle, and with the labels left behind.
+**One shuffle per epoch, of rows and labels together.** `idx` is a random order of the row numbers, and the same `idx` indexes `X` and `y`, so each row keeps its label. Cutting that order into consecutive slices gives batches that are disjoint and cover every row exactly once per epoch. [Section 10](#10-what-can-go-wrong) runs the loop without the shuffle, and with the labels left behind.
 
 **The inner loop runs $\lceil N / B \rceil$ times.** For $N = 60{,}000$ and $B = 128$ that is 469 updates per epoch, and 20 epochs are 9,380 updates. For the 300 spiral points and $B = 32$ it is 10, the schedule the figure at the top of the post draws.
 
-**The last batch is usually shorter.** $60{,}000 / 128 = 468.75$, so the 469th batch holds 96 rows; with 300 rows and $B = 32$ the tenth batch holds 12. The slice `X_shuf[start:start + batch_size]` stops at the end of the array without an error, and every class of the series takes its row count from the array it is given, so the short batch needs no special case. Its gradient is noisier than the others, by the formula of section 2, and its update counts as one update like any other.
+**The last batch is usually shorter.** $60{,}000 / 128 = 468.75$, so the 469th batch holds 96 rows; with 300 rows and $B = 32$ the tenth batch holds 12. The slice `X_shuf[start:start + batch_size]` stops at the end of the array without an error, and every class of the series takes its row count from the array it is given, so the short batch needs no special case. Its gradient is noisier than the others, by the formula of [section 2](#2-the-three-regimes), and its update counts as one update like any other.
 
 **The loop of `nn-p01` is this loop.** The project indexes `X[order[start:start + batch_size]]` instead of making shuffled copies, which gives the same batches without a second copy of the data. It averages its epoch figures in the same way, over a loss that includes its L2 penalty and with dropout active.
 
@@ -137,7 +137,7 @@ Steps 3, 4 and 5 are the loop body of post 22 with `X_batch` and `y_batch` in pl
 
 ## 4. The complete loop with Adam: a documented run
 
-The setup is that of [post 28](../28-generalization-and-testing/index.md), section 3, and `snippets/network.py` prints it: `nnfs.init()` once (seed 0, float32, and its own `np.dot`); then `np.random.seed(0)`, `spiral_data(samples=100, classes=3)`, `Layer_Dense(2, 64)`, ReLU, `Layer_Dense(64, 3)`, the combined softmax and loss, weights of `0.01 * randn`, a test set from a second call of `spiral_data`, and `Optimizer_Adam(learning_rate=0.02, decay=1e-5)`. The shuffles draw from the same global stream, after the test set. The run uses `BATCH_SIZE = 32` for 1,000 epochs:
+The setup is that of [post 28](../28-generalization-and-testing/index.md), [section 3](../28-generalization-and-testing/index.md#3-running-the-test-pass), and `snippets/network.py` prints it: `nnfs.init()` once (seed 0, float32, and its own `np.dot`); then `np.random.seed(0)`, `spiral_data(samples=100, classes=3)`, `Layer_Dense(2, 64)`, ReLU, `Layer_Dense(64, 3)`, the combined softmax and loss, weights of `0.01 * randn`, a test set from a second call of `spiral_data`, and `Optimizer_Adam(learning_rate=0.02, decay=1e-5)`. The shuffles draw from the same global stream, after the test set. The run uses `BATCH_SIZE = 32` for 1,000 epochs:
 
 ```text
 seed 0, 300 rows, BATCH_SIZE = 32, EPOCHS = 1000: 10 batches an epoch, the last of 12 rows
@@ -151,7 +151,7 @@ forward-only after the last update: training loss 0.3025, accuracy 0.8733; test 
 epoch loss over the last 100 epochs: 0.2965 to 0.3972; epoch accuracy: 0.8400 to 0.8833
 ```
 
-**The epoch figures describe a moving network.** Each batch loss is measured before that batch's update, so the ten losses of an epoch belong to ten different sets of weights. The epoch loss of the last epoch is 0.3275; the loss of the finished network on all 300 rows, measured forward-only as in post 28, is 0.3025. The epoch figures are a cheap running report. A figure that is quoted or compared comes from a forward-only pass.
+**The epoch figures describe a moving network.** Each batch loss is measured before that batch's update, so the ten losses of an epoch belong to ten different sets of weights. The epoch loss of the last epoch is 0.3275; the loss of the finished network on all 300 rows, measured forward-only as in [post 28](../28-generalization-and-testing/index.md), is 0.3025. The epoch figures are a cheap running report. A figure that is quoted or compared comes from a forward-only pass.
 
 **The epoch figures jump.** Over the last 100 epochs the epoch loss moves between 0.2965 and 0.3972 and the epoch accuracy between 84.00 and 88.33 percent, although the learning rate barely changes. One run read at one epoch is a draw from that band.
 
@@ -173,17 +173,17 @@ stored order       10001      0.0806     0.9633     1.1168    0.8233
 shuffled order     10001      0.0873     0.9567     0.9908    0.8333
 ```
 
-In stored order the run is the documented run of post 28 to the digit: 96.33 percent on the training set and 82.33 percent on the test set. Shuffled, the same 300 rows are summed in another order, the rounding differs in the last bit from the second update on, and the remaining updates amplify that into a different network.
+In stored order the run is the documented run of [post 28](../28-generalization-and-testing/index.md) to the digit: 96.33 percent on the training set and 82.33 percent on the test set. Shuffled, the same 300 rows are summed in another order, the rounding differs in the last bit from the second update on, and the remaining updates amplify that into a different network.
 
 ---
 
 ## 5. The counter counts updates, so the decay is chosen again
 
-`Optimizer_Adam` raises `iterations` once per call of `post_update_params`, which is once per batch. Two things read that counter. The bias correction of post 27 uses it as $t$, and counting updates is what the correction needs: the counter is never reset between epochs. The decay of post 23 uses it too, and that changes the meaning of a decay value:
+`Optimizer_Adam` raises `iterations` once per call of `post_update_params`, which is once per batch. Two things read that counter. The bias correction of [post 27](../27-adam-optimiser/index.md) uses it as $t$, and counting updates is what the correction needs: the counter is never reset between epochs. The decay of [post 23](../23-learning-rate-decay/index.md) uses it too, and that changes the meaning of a decay value:
 
 $$\alpha_t = \frac{\alpha_0}{1 + \text{decay} \cdot t}$$
 
-with $t$ the number of updates so far, in the code `iterations`. The rate has halved after $1/\text{decay}$ updates. Under full-batch training that was $1/\text{decay}$ epochs; with $\lceil N/B \rceil$ updates per epoch it is that many times sooner. `snippets/counts.py` prints the consequence for the settings of post 23, a learning rate of 1.0 and a decay of $10^{-3}$ over 10,001 epochs:
+with $t$ the number of updates so far, in the code `iterations`. The rate has halved after $1/\text{decay}$ updates. Under full-batch training that was $1/\text{decay}$ epochs; with $\lceil N/B \rceil$ updates per epoch it is that many times sooner. `snippets/counts.py` prints the consequence for the settings of [post 23](../23-learning-rate-decay/index.md), a learning rate of 1.0 and a decay of $10^{-3}$ over 10,001 epochs:
 
 | Batch size | Updates | Decay | Rate in the last update |
 |:---:|:---:|:---:|:---:|
@@ -193,7 +193,7 @@ with $t$ the number of updates so far, in the code `iterations`. The rate has ha
 
 A decay that is to end a run at the same rate is divided by the number of updates per epoch, here 10. This is the reason `nn-p01` uses $10^{-4}$: its rate falls from 0.001 to 0.000516 over its 9,380 updates, and with $10^{-3}$ it would end at 0.000096.
 
-`snippets/decay.py` measures what an unchanged decay does, on the setup of section 4 with 1,000 epochs and a deliberately strong decay of $10^{-2}$, which takes the rate to about a tenth after 1,000 full-batch updates. Ranges are over seeds 0 to 4, forward-only after the last update:
+`snippets/decay.py` measures what an unchanged decay does, on the setup of [section 4](#4-the-complete-loop-with-adam-a-documented-run) with 1,000 epochs and a deliberately strong decay of $10^{-2}$, which takes the rate to about a tenth after 1,000 full-batch updates. Ranges are over seeds 0 to 4, forward-only after the last update:
 
 | Batch size | Decay | Updates | Last rate | Training loss (mean) | Training accuracy |
 |:---:|:---:|:---:|:---:|:---:|:---:|
@@ -203,7 +203,7 @@ A decay that is to end a run at the same rate is divided by the number of update
 
 **The unchanged decay made mini-batching worse than the full batch.** With ten times as many updates, the runs with batches of 32 ended at a higher training loss than the full-batch runs on all five seeds, and on 9 of 10 when the script is given the seeds `0 1 2 3 4 5 6 7 8 9`, for which it prints the counts of this paragraph and the next. The rate had fallen to about a tenth after 100 epochs and to about a hundredth by the end.
 
-**The decay chosen again restored the advantage.** With $10^{-3}$ the training loss is lower than with $10^{-2}$ on all ten seeds, and lower than the full-batch run on 9 of 10. The table does not say that $10^{-3}$ is a good decay for this problem: the runs of section 6 use $10^{-5}$ and end lower still, on all five seeds. It says that a decay value is a statement about a number of updates. The figure below draws the three schedules against the epoch and the five seeds of each run.
+**The decay chosen again restored the advantage.** With $10^{-3}$ the training loss is lower than with $10^{-2}$ on all ten seeds, and lower than the full-batch run on 9 of 10. The table does not say that $10^{-3}$ is a good decay for this problem: the runs of [section 6](#6-what-the-trade-does-to-training-measured) use $10^{-5}$ and end lower still, on all five seeds. It says that a decay value is a statement about a number of updates. The figure below draws the three schedules against the epoch and the five seeds of each run.
 
 ![Top, the learning rate 0.02 over 1 plus decay times t against the epoch from 0 to 1,000 on a logarithmic rate axis, t counting updates: the full batch with decay 10 to the minus 2 and batches of 32 with decay 10 to the minus 3 fall along one curve to 0.00182, while batches of 32 with the decay kept at 10 to the minus 2 count ten updates an epoch and end at 0.000198. Bottom, the training loss after 1,000 epochs on seeds 0 to 4 as one band per run with a tick per seed: 0.3778 to 0.7427, mean 0.5591, for the full batch; 0.8844 to 0.9541, mean 0.9146, with the decay kept; 0.3950 to 0.5213, mean 0.4790, with the decay divided by 10, in blue.](diagrams/03-decay-counts-updates.svg)
 
@@ -213,7 +213,7 @@ A decay that is to end a run at the same rate is divided by the number of update
 
 ## 6. What the trade does to training, measured
 
-All runs use the setup of section 4; only the batch size and the number of epochs change. Each row is five seeds, 0 to 4, measured forward-only after the last update. The loss is the mean over seeds; accuracies are ranges in percent with the mean in brackets.
+All runs use the setup of [section 4](#4-the-complete-loop-with-adam-a-documented-run); only the batch size and the number of epochs change. Each row is five seeds, 0 to 4, measured forward-only after the last update. The loss is the mean over seeds; accuracies are ranges in percent with the mean in brackets.
 
 | Batch size | Epochs | Updates | Script | Training loss | Training accuracy | Test accuracy |
 |:---:|:---:|:---:|---|:---:|:---:|:---:|
@@ -229,7 +229,7 @@ Equal epochs is not equal updates, so the table is read three ways. The figure b
 
 ![Two dot charts with one row per run of the table, each a band over seeds 0 to 4 with a tick per seed and a dot for seed 0, batches of 32 in blue; left the training loss from 0 to 1, right the test accuracy from 50 to 90 percent. At 1,000 epochs each, batches of 32, with 10,000 updates, have a loss band of 0.24 to 0.32 against 0.23 to 0.60 for the full batch, and the highest accuracy band, 77 to 82 percent. At about 10,000 updates each, the full batch, 100 and 32 overlap in both charts and batches of 8 sit far behind, at a loss of 0.59 to 0.78 and 54 to 63 percent. At 1,000 updates each, the full batch is ahead of batches of 32 in both charts.](diagrams/04-epochs-against-updates.svg)
 
-*The runs of section 6 seed by seed. The order between batches of 32 and the full batch depends on what is held equal.*
+*The runs of [section 6](#6-what-the-trade-does-to-training-measured) seed by seed. The order between batches of 32 and the full batch depends on what is held equal.*
 
 **The same number of epochs: the smaller batch won.** The first three rows pass over the data 1,000 times each. Batches of 32 make ten times as many updates as the full batch and end at a lower training loss on four of the five seeds and a higher test accuracy on four of the five. `head_to_head.py` trains both for each seed and prints the counts: 9 of 10 for both on the seeds `0` to `9`, and 8 of 10 for both on the seeds `10` to `19`. The same arithmetic on the rows bought a better network.
 
@@ -237,7 +237,7 @@ Equal epochs is not equal updates, so the table is read three ways. The figure b
 
 **The same number of updates early in training: the exact gradient was worth more.** After 1,000 updates, the first and the last row, the full batch has the lower training loss on 9 of the seeds `0` to `9` and on all of the seeds `10` to `19`. The two findings are consistent: an update on 32 rows is a cheaper, rougher step, and whether ten of them beat one exact step depends on where the run is.
 
-**Batches of 8 failed at this learning rate.** At about 10,000 updates their best training accuracy, 65.67 percent, is below the worst of the batches of 32, 86.67. The last column of the scripts' tables shows the damage: 44 to 52 of the 64 hidden neurons are dead, zero on every training row (post 17, counted as in post 22), against 27 to 38 with batches of 32 and 10 to 26 with the full batch. The length of Adam's step is set by the learning rate and not by the size of the gradient (post 27), so a noisier gradient gives steps of the same length in worse directions, and at a rate of 0.02 they push ReLU neurons to zero on every row, where no gradient reaches them again. With half the learning rate (`batch_8.py`, second table) fewer neurons die on every seed, 32 to 44, and the training accuracy is higher on all five seeds and on 9 of the ten seeds `0` to `9`, at 67.00 to 79.00 percent, still below the batches of 32. A batch size and a learning rate are chosen together.
+**Batches of 8 failed at this learning rate.** At about 10,000 updates their best training accuracy, 65.67 percent, is below the worst of the batches of 32, 86.67. The last column of the scripts' tables shows the damage: 44 to 52 of the 64 hidden neurons are dead, zero on every training row ([post 17](../17-backpropagation-through-activation-functions/index.md), counted as in [post 22](../22-gradient-descent-optimiser/index.md)), against 27 to 38 with batches of 32 and 10 to 26 with the full batch. The length of Adam's step is set by the learning rate and not by the size of the gradient ([post 27](../27-adam-optimiser/index.md)), so a noisier gradient gives steps of the same length in worse directions, and at a rate of 0.02 they push ReLU neurons to zero on every row, where no gradient reaches them again. With half the learning rate (`batch_8.py`, second table) fewer neurons die on every seed, 32 to 44, and the training accuracy is higher on all five seeds and on 9 of the ten seeds `0` to `9`, at 67.00 to 79.00 percent, still below the batches of 32. A batch size and a learning rate are chosen together.
 
 **Does the noise help generalisation?** Keskar et al. (2017) report, on six networks for image and speech data, that large-batch training reached sharper minima and generalised worse than small-batch training; the finding is theirs and the explanation is debated. The spiral runs neither confirm nor contradict it. At equal updates the test accuracy of batches of 32 is higher on 6 of 10 seeds, which is no order, and at equal epochs it is higher on 9 of 10 together with a lower training loss, so it cannot be told apart from better optimisation. No run in this post isolates an effect of the noise on generalisation.
 
@@ -247,13 +247,13 @@ Equal epochs is not equal updates, so the table is read three ways. The figure b
 
 ## 7. Choosing a batch size
 
-The batch size is a hyperparameter of the training schedule (post 29), and the measurements above give its two bounds on this problem.
+The batch size is a hyperparameter of the training schedule ([post 29](../29-validation-and-hyperparameter-tuning/index.md)), and the measurements above give its two bounds on this problem.
 
 | Constraint | What it says |
 |---|---|
 | Memory | an upper bound: the activations of one batch have to fit, with the gradients of the backward pass |
-| Time per epoch | very small batches pay the per-update overhead $N/B$ times (section 2) |
-| Noise | the noise grows as $B$ shrinks, and the usable learning rate shrinks with it (section 6) |
+| Time per epoch | very small batches pay the per-update overhead $N/B$ times ([section 2](#2-the-three-regimes)) |
+| Noise | the noise grows as $B$ shrinks, and the usable learning rate shrinks with it ([section 6](#6-what-the-trade-does-to-training-measured)) |
 | Updates | the number of updates per epoch falls as $B$ grows; with a fixed epoch budget a large batch takes few steps |
 
 Between the bounds the choice is wide. On the spiral, 32 and 100 were hard to separate at equal updates, and 8 was clearly too small for a rate of 0.02. A reasonable procedure is to start from a customary value, such as the 128 that `nn-p01` uses for 60,000 images, and to compare a factor of two to four on either side on validation data over several seeds, with the learning rate tuned for each.
@@ -270,7 +270,7 @@ Between the bounds the choice is wide. On the spiral, 32 and 100 were hard to se
 - **Dropping the last batch.** Some loaders discard a short last batch so that every batch has the same size. The loop of this post keeps it.
 - **Sampling with replacement.** Each batch is drawn independently from the whole set, the scheme most of the theory of SGD assumes (Bottou, Curtis and Nocedal, 2018). A row can then appear twice in an epoch or not at all.
 - **Gradient accumulation.** The gradients of several small batches are summed before one update, to imitate a batch that memory cannot hold. The layers of this series assign `dweights` in every `backward` call, so the sum would be kept outside them.
-- **Evaluation in batches.** A forward-only pass needs no shuffle. A test set that does not fit in memory is passed in slices, and its loss is the mean weighted by slice size (section 4).
+- **Evaluation in batches.** A forward-only pass needs no shuffle. A test set that does not fit in memory is passed in slices, and its loss is the mean weighted by slice size ([section 4](#4-the-complete-loop-with-adam-a-documented-run)).
 
 ---
 
@@ -284,15 +284,15 @@ python posts/32-mini-batching/snippets/head_to_head.py
 
 | Script | Contents | Time |
 |---|---|---|
-| `network.py` | the classes, `train()`, the setup; runs the documented run of section 4 and prints the last-batch losses of section 10 | 3 s |
-| `counts.py` | the closed forms of sections 1, 3 and 5 | under 1 s |
-| `gradient_noise.py` | the batch gradient against the full gradient (sections 2 and 6) | 3 s |
-| `timing.py` | the time of one epoch against the batch size (sections 2 and 7) | 20 s |
-| `full_batch.py` | one batch of 300 rows, stored order and shuffled (section 4) | 15 s |
-| `decay.py` | the decay kept and chosen again, five seeds (section 5) | 35 s |
-| `head_to_head.py` | the full batch and batches of 32, five seeds, two epoch counts each, and the seed-by-seed counts (section 6) | 50 s |
-| `batch_100.py`, `batch_8.py` | five seeds each, two settings each (section 6) | 20 to 25 s each |
-| `no_shuffle.py`, `what_can_go_wrong.py` | the mistakes of section 10 | 15 to 20 s each |
+| `network.py` | the classes, `train()`, the setup; runs the documented run of [section 4](#4-the-complete-loop-with-adam-a-documented-run) and prints the last-batch losses of [section 10](#10-what-can-go-wrong) | 3 s |
+| `counts.py` | the closed forms of sections [1](#1-the-question-what-did-the-full-batch-loop-leave-out), [3](#3-the-two-loop-structure) and [5](#5-the-counter-counts-updates-so-the-decay-is-chosen-again) | under 1 s |
+| `gradient_noise.py` | the batch gradient against the full gradient (sections [2](#2-the-three-regimes) and [6](#6-what-the-trade-does-to-training-measured)) | 3 s |
+| `timing.py` | the time of one epoch against the batch size (sections [2](#2-the-three-regimes) and [7](#7-choosing-a-batch-size)) | 20 s |
+| `full_batch.py` | one batch of 300 rows, stored order and shuffled ([section 4](#4-the-complete-loop-with-adam-a-documented-run)) | 15 s |
+| `decay.py` | the decay kept and chosen again, five seeds ([section 5](#5-the-counter-counts-updates-so-the-decay-is-chosen-again)) | 35 s |
+| `head_to_head.py` | the full batch and batches of 32, five seeds, two epoch counts each, and the seed-by-seed counts ([section 6](#6-what-the-trade-does-to-training-measured)) | 50 s |
+| `batch_100.py`, `batch_8.py` | five seeds each, two settings each ([section 6](#6-what-the-trade-does-to-training-measured)) | 20 to 25 s each |
+| `no_shuffle.py`, `what_can_go_wrong.py` | the mistakes of [section 10](#10-what-can-go-wrong) | 15 to 20 s each |
 
 The training scripts take other seeds as arguments, as in `batch_100.py 5 6 7 8 9`; `head_to_head.py`, `decay.py` and `batch_8.py` print their counts for the seeds they are given, ten seeds in about twice the time. All need NumPy; all but `counts.py` and `timing.py` need the `nnfs` package for `spiral_data`. The training scripts call `nnfs.init()` once and reseed with `np.random.seed` for each run. `counts.py`, `gradient_noise.py` and `timing.py` do not call it, and the second of these runs in float64.
 
@@ -306,7 +306,7 @@ The training scripts take other seeds as arguments, as in `batch_100.py 5 6 7 8 
 batch size 100: [(100, 0, 0), (0, 100, 0), (0, 0, 100)]
 ```
 
-Each batch holds one class, so each update pulls every output towards one label, and the next update pulls it towards another. No batch gradient resembles the full gradient, and the estimate is no longer unbiased. Over five seeds and 1,000 epochs the training accuracy ends at 44.00 to 60.33 percent with batches of 100 and at 38.00 to 61.67 percent with batches of 32, against 79.00 to 87.33 and 86.67 to 91.67 percent with the shuffle (section 6). The one-class updates leave 48 to 63 of the 64 hidden neurons dead, and nothing is raised. Real datasets are often stored in some order.
+Each batch holds one class, so each update pulls every output towards one label, and the next update pulls it towards another. No batch gradient resembles the full gradient, and the estimate is no longer unbiased. Over five seeds and 1,000 epochs the training accuracy ends at 44.00 to 60.33 percent with batches of 100 and at 38.00 to 61.67 percent with batches of 32, against 79.00 to 87.33 and 86.67 to 91.67 percent with the shuffle ([section 6](#6-what-the-trade-does-to-training-measured)). The one-class updates leave 48 to 63 of the 64 hidden neurons dead, and nothing is raised. Real datasets are often stored in some order.
 
 **The rows shuffled and the labels not.** `snippets/what_can_go_wrong.py` indexes `X` with `idx` and leaves `y` alone, for 200 epochs:
 
@@ -316,7 +316,7 @@ seed  first epoch loss  last epoch loss  train loss  train acc
    0            1.1962           1.1005      1.1025     0.3333
 ```
 
-Every row now carries the label of another row. The epoch loss starts above $\ln 3$, the loss of a uniform guess (post 08), is still above it after 200 epochs, and the accuracy is exactly one third, on all five seeds. A loss that stays at $\ln K$ for $K$ classes from the first epoch is the sign of labels that do not belong to their inputs.
+Every row now carries the label of another row. The epoch loss starts above $\ln 3$, the loss of a uniform guess ([post 08](../08-loss-categorical-cross-entropy/index.md)), is still above it after 200 epochs, and the accuracy is exactly one third, on all five seeds. A loss that stays at $\ln K$ for $K$ classes from the first epoch is the sign of labels that do not belong to their inputs.
 
 **The optimiser created inside the batch loop.** Every batch then meets an `Optimizer_Adam` whose `iterations` is 0:
 
@@ -327,9 +327,9 @@ seed  counter at the end  last rate  train loss  train acc
 the corrections with the counter stuck at 0: first moment / 0.1, second moment / 0.001, step x 0.316
 ```
 
-The correct loop ends at 0.3025 on seed 0 and 0.2417 on seed 1, and the table of `head_to_head.py` for batch size 32 and 1,000 epochs has the lower training loss on each of the five seeds. The run with the mistake still learns, so it is easy to miss. In this series the momentum and cache arrays are stored on the layers (post 27), so they survive the new optimiser. What is lost is the counter: the decay never starts, and the bias correction is applied with $t = 1$ to averages that are long past their start, which scales every step by $10 / \sqrt{1{,}000} = 0.316$. Post 27, section 12, shows the same stuck counter from a missing `post_update_params`. The optimiser is created once, before both loops.
+The correct loop ends at 0.3025 on seed 0 and 0.2417 on seed 1, and the table of `head_to_head.py` for batch size 32 and 1,000 epochs has the lower training loss on each of the five seeds. The run with the mistake still learns, so it is easy to miss. In this series the momentum and cache arrays are stored on the layers ([post 27](../27-adam-optimiser/index.md)), so they survive the new optimiser. What is lost is the counter: the decay never starts, and the bias correction is applied with $t = 1$ to averages that are long past their start, which scales every step by $10 / \sqrt{1{,}000} = 0.316$. [Post 27](../27-adam-optimiser/index.md), [section 12](../27-adam-optimiser/index.md#12-what-can-go-wrong), shows the same stuck counter from a missing `post_update_params`. The optimiser is created once, before both loops.
 
-**The last batch's loss read as the epoch's.** A script that prints `loss` after the inner loop prints the loss of the short last batch. For the run of section 4, `snippets/network.py` prints both:
+**The last batch's loss read as the epoch's.** A script that prints `loss` after the inner loop prints the loss of the short last batch. For the run of [section 4](#4-the-complete-loop-with-adam-a-documented-run), `snippets/network.py` prints both:
 
 ```text
 epoch loss over the last 100 epochs: 0.2965 to 0.3972; epoch accuracy: 0.8400 to 0.8833
@@ -369,14 +369,12 @@ Twelve rows give a figure that swings by a factor of 30 between epochs of a run 
 
 ## Further reading
 
-- Bottou, L., Curtis, F. E., and Nocedal, J., *"Optimization Methods for Large-Scale Machine Learning"* (SIAM Review, 2018).
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, section 8.1.3 (MIT Press, 2016).
-- Goyal, P., et al., *"Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour"* (arXiv:1706.02677, 2017).
-- Keskar, N. S., et al., *"On Large-Batch Training for Deep Learning: Generalization Gap and Sharp Minima"* (ICLR, 2017).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 19 (2020).
-- Masters, D. and Luschi, C., *"Revisiting Small Batch Training for Deep Neural Networks"* (arXiv:1804.07612, 2018).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Bottou, L., Curtis, F. E., and Nocedal, J., *["Optimization Methods for Large-Scale Machine Learning"](https://arxiv.org/abs/1606.04838)* (SIAM Review, 2018).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/optimization.html)*, section 8.1.3 (MIT Press, 2016).
+- Goyal, P., et al., *["Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour"](https://arxiv.org/abs/1706.02677)* (arXiv:1706.02677, 2017).
+- Keskar, N. S., et al., *["On Large-Batch Training for Deep Learning: Generalization Gap and Sharp Minima"](https://arxiv.org/abs/1609.04836)* (ICLR, 2017).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 19 (2020).
+- Masters, D. and Luschi, C., *["Revisiting Small Batch Training for Deep Neural Networks"](https://arxiv.org/abs/1804.07612)* (arXiv:1804.07612, 2018).
 
 ---
 
