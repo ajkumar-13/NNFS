@@ -20,9 +20,9 @@
 
 ## 1. The question: what does the whole pass look like as one script, and is its output right?
 
-[Post 20](../20-assembling-full-backpropagation/index.md) wired the classes into four forward calls and four backward calls on a batch of four hand-written samples. This post runs the same calls on the spiral data, as one script, and looks at what they leave behind: four gradient arrays. It stops there. Nothing is updated and nothing is trained; the update and the training loop are post 22's.
+[Post 20](../20-assembling-full-backpropagation/index.md) wired the classes into four forward calls and four backward calls on a batch of four hand-written samples. This post runs the same calls on the spiral data, as one script, and looks at what they leave behind: four gradient arrays. It stops there. Nothing is updated and nothing is trained; the update and the training loop are [post 22](../22-gradient-descent-optimiser/index.md)'s.
 
-The second half of the question is the harder one. A backward pass that is wrong still runs and still returns arrays. Three tests of rising strength are applied to the script: the first loss (section 5), the shapes of the gradients (section 7), and a **gradient check** of every one of the 21 numbers (section 9), which posts 10 and 16 announced for this post.
+The second half of the question is the harder one. A backward pass that is wrong still runs and still returns arrays. Three tests of rising strength are applied to the script: the first loss ([section 5](#5-the-forward-pass)), the shapes of the gradients ([section 7](#7-inspecting-the-gradients)), and a **gradient check** of every one of the 21 numbers ([section 9](#9-the-gradient-check-on-the-whole-network)), which posts [10](../10-derivatives-partial-derivatives-and-gradients/index.md) and [16](../16-coding-backpropagation/index.md) announced for this post.
 
 ---
 
@@ -41,13 +41,13 @@ X (300, 2) float32   y (300,) uint8   samples per class [100 100 100]
 points at the origin: 3   largest distance from it: 1.0
 ```
 
-`X` holds the inputs and `y` one integer label per sample. Two facts of this data return later. The classes are balanced, 100 samples each, which decides the size of one gradient in section 7. And each arm starts at the origin, so three of the 300 points are exactly $(0, 0)$, which the check in section 11 meets again.
+`X` holds the inputs and `y` one integer label per sample. Two facts of this data return later. The classes are balanced, 100 samples each, which decides the size of one gradient in [section 7](#7-inspecting-the-gradients). And each arm starts at the origin, so three of the 300 points are exactly $(0, 0)$, which the check in [section 11](#11-what-can-go-wrong) meets again.
 
 ---
 
 ## 3. The three classes in one place
 
-The script uses three classes: `Layer_Dense` and `Activation_ReLU` as post 16 left them, and the combined softmax and loss class of post 19. They are unchanged.
+The script uses three classes: `Layer_Dense` and `Activation_ReLU` as [post 16](../16-coding-backpropagation/index.md) left them, and the combined softmax and loss class of [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md). They are unchanged.
 
 ```python
 class Layer_Dense:
@@ -101,7 +101,7 @@ class Activation_Softmax_Loss_CategoricalCrossentropy:
         self.dinputs /= samples
 ```
 
-The combined class uses `Activation_Softmax` and `Loss_CategoricalCrossentropy` for its forward pass; both stand above these three in `snippets/forward_backward.py`, as posts 18 and 19 left them. Its backward pass uses neither: it is the three-line shortcut of post 19.
+The combined class uses `Activation_Softmax` and `Loss_CategoricalCrossentropy` for its forward pass; both stand above these three in `snippets/forward_backward.py`, as posts [18](../18-backpropagation-through-the-loss-function/index.md) and [19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) left them. Its backward pass uses neither: it is the three-line shortcut of [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md).
 
 ---
 
@@ -124,7 +124,7 @@ Four objects, of which only the two dense layers have parameters:
 | `dense2.weights` | `(3, 3)` | 9 |
 | `dense2.biases` | `(1, 3)` | 3 |
 
-That is $6 + 3 + 9 + 3 = 21$ parameters, the network of post 20. The weights are drawn at a scale of 0.01 and the biases start at zero.
+That is $6 + 3 + 9 + 3 = 21$ parameters, the network of [post 20](../20-assembling-full-backpropagation/index.md). The weights are drawn at a scale of 0.01 and the biases start at zero.
 
 ---
 
@@ -145,7 +145,7 @@ loss 1.0986104   ln 3 = 1.0986123
 farthest any of the 900 probabilities is from 1/3: 6.8e-05
 ```
 
-This is the first test. With weights of size 0.01 the logits are close to zero, every prediction is close to $1/3$, and the loss must be close to $\ln 3$, the loss of a uniform guess over three classes (post 08, section 8.1). The value 1.0986104 is the one post 08 printed for this network. A first loss far from $\ln 3$ would mean a broken forward pass or loss. A first loss that matches says nothing yet about the backward pass.
+This is the first test. With weights of size 0.01 the logits are close to zero, every prediction is close to $1/3$, and the loss must be close to $\ln 3$, the loss of a uniform guess over three classes ([post 08](../08-loss-categorical-cross-entropy/index.md), [section 8.1](../08-loss-categorical-cross-entropy/index.md#81-reference-numbers-the-uniform-guess-baseline)). The value 1.0986104 is the one [post 08](../08-loss-categorical-cross-entropy/index.md) printed for this network. A first loss far from $\ln 3$ would mean a broken forward pass or loss. A first loss that matches says nothing yet about the backward pass.
 
 ---
 
@@ -159,7 +159,7 @@ activation1.backward(dense2.dinputs)                  # stores (300, 3), masked
 dense1.backward(activation1.dinputs)                  # stores (2, 3), (1, 3), (300, 2)
 ```
 
-The same four objects in the opposite order. The first call is handed the predictions and the labels, and every later call the `dinputs` of the call before it; post 20, section 3, explains both rules.
+The same four objects in the opposite order. The first call is handed the predictions and the labels, and every later call the `dinputs` of the call before it; [post 20](../20-assembling-full-backpropagation/index.md), [section 3](../20-assembling-full-backpropagation/index.md#3-the-backward-pass), explains both rules.
 
 ```text
 gradient                 shape      read by
@@ -199,13 +199,13 @@ dense2.biases    (1, 3)   dense2.dbiases    (1, 3)   True   2.0e-05           0
 gradient entries in all: 21
 ```
 
-Twenty-one gradients for 21 parameters, shape for shape, and none of them exactly zero. A mismatch is always a bug, usually a wrong argument: handing the scalar loss to `dense2.backward` gave `dweights` the shape `(3, 4)` in post 20, section 7.
+Twenty-one gradients for 21 parameters, shape for shape, and none of them exactly zero. A mismatch is always a bug, usually a wrong argument: handing the scalar loss to `dense2.backward` gave `dweights` the shape `(3, 4)` in [post 20](../20-assembling-full-backpropagation/index.md), [section 7](../20-assembling-full-backpropagation/index.md#7-what-can-go-wrong).
 
 **The sizes can be explained.** A row of `loss_activation.dinputs` is $(\hat{\mathbf{y}} - \mathbf{y})/N$. With every prediction near $1/3$ and $N = 300$, it holds about $-2/900$ at the true class and $1/900$ at the other two; the script prints a largest entry of $2.22 \times 10^{-3}$. `dense2.dbiases` is the sum of that array down each column, and each class is the label of 100 samples and not the label of 200:
 
 $$100 \cdot \left(-\frac{2}{900}\right) + 200 \cdot \frac{1}{900} = 0.$$
 
-What survives, $2.0 \times 10^{-5}$ at most, comes from the distance of the predictions from $1/3$. Post 20, section 5, met the same cancellation on its balanced batch of six. The other three arrays each carry a factor from the small weights: `dense2.dweights` multiplies by the activations $\mathbf{A}_1$, which the 0.01 weights keep below 0.018, and both gradients of `dense1` have passed back through `dense2.weights`. Small first gradients are what a balanced data set and this initialisation produce; they are not a fault. What the scale of the initial weights does to a network is the subject of post 33.
+What survives, $2.0 \times 10^{-5}$ at most, comes from the distance of the predictions from $1/3$. [Post 20](../20-assembling-full-backpropagation/index.md), [section 5](../20-assembling-full-backpropagation/index.md#5-the-gradient-descent-update), met the same cancellation on its balanced batch of six. The other three arrays each carry a factor from the small weights: `dense2.dweights` multiplies by the activations $\mathbf{A}_1$, which the 0.01 weights keep below 0.018, and both gradients of `dense1` have passed back through `dense2.weights`. Small first gradients are what a balanced data set and this initialisation produce; they are not a fault. What the scale of the initial weights does to a network is the subject of [post 33](../33-weight-initialisation/index.md).
 
 ---
 
@@ -231,7 +231,7 @@ activation1.backward(dense2.dinputs)                  # stores (300, 3), masked
 dense1.backward(activation1.dinputs)                  # stores (2, 3), (1, 3), (300, 2)
 ```
 
-Fifteen lines: three comments and twelve statements, four per group. The figure at the top of the post sets each line beside what it leaves behind. After the last one the gradients are ready in `dense1.dweights`, `dense1.dbiases`, `dense2.dweights` and `dense2.dbiases`. The script does not grow in kind with the network. A further hidden layer adds one `Layer_Dense` and one `Activation_ReLU`, which is two objects, two forward calls and two backward calls, six lines (post 20, section 4).
+Fifteen lines: three comments and twelve statements, four per group. The figure at the top of the post sets each line beside what it leaves behind. After the last one the gradients are ready in `dense1.dweights`, `dense1.dbiases`, `dense2.dweights` and `dense2.dbiases`. The script does not grow in kind with the network. A further hidden layer adds one `Layer_Dense` and one `Activation_ReLU`, which is two objects, two forward calls and two backward calls, six lines ([post 20](../20-assembling-full-backpropagation/index.md), [section 4](../20-assembling-full-backpropagation/index.md#4-why-dinputs-is-the-glue)).
 
 The script is one pass over all 300 samples as a single batch. Wrapped in a loop, with an update of the four parameter arrays after the backward calls, it becomes a training run, and [post 22](../22-gradient-descent-optimiser/index.md) builds that.
 
@@ -239,11 +239,11 @@ The script is one pass over all 300 samples as a single batch. Wrapped in a loop
 
 ## 9. The gradient check on the whole network
 
-A matching shape says where a number is stored, not whether it is right. Dropping the last line of the combined class, or the mask of the ReLU, changes no shape. The **gradient check** tests the values. It needs only the forward pass: one parameter is moved by $+h$ and by $-h$, the loss is recomputed both times, and the central difference of post 10, section 2.5,
+A matching shape says where a number is stored, not whether it is right. Dropping the last line of the combined class, or the mask of the ReLU, changes no shape. The **gradient check** tests the values. It needs only the forward pass: one parameter is moved by $+h$ and by $-h$, the loss is recomputed both times, and the central difference of [post 10](../10-derivatives-partial-derivatives-and-gradients/index.md), [section 2.5](../10-derivatives-partial-derivatives-and-gradients/index.md#25-measuring-a-derivative-finite-differences),
 
 $$\frac{\partial L}{\partial \theta} \approx \frac{L(\theta + h) - L(\theta - h)}{2h},$$
 
-is compared with the entry the backward pass stored. Post 16, section 7, did this for the two classes with a stand-in loss. Here the loss is the real one, wrapped in a function that takes no arguments and reruns the four forward calls:
+is compared with the entry the backward pass stored. [Post 16](../16-coding-backpropagation/index.md), [section 7](../16-coding-backpropagation/index.md#7-make-it-run-a-gradient-check-on-the-classes), did this for the two classes with a stand-in loss. Here the loss is the real one, wrapped in a function that takes no arguments and reruns the four forward calls:
 
 ```python
     def loss_fn():
@@ -253,14 +253,14 @@ is compared with the entry the backward pass stored. Post 16, section 7, did thi
         return loss_activation.forward(dense2.output, y)
 ```
 
-`numerical_gradient(loss_fn, dense1.weights)` then measures all six entries of that array, and likewise for the other three. The function and the comparison are those of post 16, unchanged: $h = 10^{-5}$, the relative error $|a - n| / \max(|a|, |n|)$ between the analytic entry $a$ and the measured one $n$, the largest value over each array, and a pass below $10^{-7}$.
+`numerical_gradient(loss_fn, dense1.weights)` then measures all six entries of that array, and likewise for the other three. The function and the comparison are those of [post 16](../16-coding-backpropagation/index.md), unchanged: $h = 10^{-5}$, the relative error $|a - n| / \max(|a|, |n|)$ between the analytic entry $a$ and the measured one $n$, the largest value over each array, and a pass below $10^{-7}$.
 
-`snippets/gradient_check.py` differs from the script of section 8 in two ways, and both are needed.
+`snippets/gradient_check.py` differs from the script of [section 8](#8-the-full-fifteen-line-script) in two ways, and both are needed.
 
 - **It runs in float64.** It does not call `nnfs.init()`; `np.random.seed(0)` draws the same data without the conversion to float32.
-- **It redraws the parameters at scale 1.** After the network is built, all four parameter arrays, biases included, are replaced by standard-normal draws, as in post 16. The classes, the data and the eight calls are those of the script. What the check then tests is the code of the backward pass, not the 21 numbers of section 7; section 11 measures those as well, as far as a finite difference can.
+- **It redraws the parameters at scale 1.** After the network is built, all four parameter arrays, biases included, are replaced by standard-normal draws, as in [post 16](../16-coding-backpropagation/index.md). The classes, the data and the eight calls are those of the script. What the check then tests is the code of the backward pass, not the 21 numbers of [section 7](#7-inspecting-the-gradients); [section 11](#11-what-can-go-wrong) measures those as well, as far as a finite difference can.
 
-Section 11 shows what happens without either.
+[Section 11](#11-what-can-go-wrong) shows what happens without either.
 
 ```text
 == Seed 0, float64, h = 1e-05, weights and biases redrawn at scale 1
@@ -274,7 +274,7 @@ dense1.dbiases   (1, 3)   3.3e-01           1.4e-11                  4.7e-12   p
 forward passes for the numerical side: 42; backward calls: 4
 ```
 
-All 21 gradients agree with the measurement to nine digits or more. The two lines of `dense1` are the demanding ones: they are right only if the combined class, `dense2.dinputs` and the ReLU mask before them are right. No entry of $\mathbf{Z}_1$ lies within $h$ of zero, so no step crosses the corner of a ReLU, where a finite difference measures neither of the two slopes (post 10).
+All 21 gradients agree with the measurement to nine digits or more. The two lines of `dense1` are the demanding ones: they are right only if the combined class, `dense2.dinputs` and the ReLU mask before them are right. No entry of $\mathbf{Z}_1$ lies within $h$ of zero, so no step crosses the corner of a ReLU, where a finite difference measures neither of the two slopes ([post 10](../10-derivatives-partial-derivatives-and-gradients/index.md)).
 
 The measurement costs two forward passes per parameter, 42 here against four backward calls. For the network of Part VI, with 64 hidden neurons and $2 \cdot 64 + 64 + 64 \cdot 3 + 3 = 387$ parameters, it would be 774 forward passes for one gradient. That is why the check is a test, run once on a small case, and backpropagation is what training uses.
 
@@ -294,7 +294,7 @@ seed   closed gates   smallest |Z1|   largest relative error   in               
    9   531            4.1e-04         4.5e-08                  dense2.dweights   4.1e-11
 ```
 
-The check passes on all ten, with between 58 and 653 gates closed. The largest relative error is $4.5 \times 10^{-8}$ and no absolute gap exceeds $6.0 \times 10^{-11}$. Ten seeds are not a guarantee: on seeds 10 to 49 the same code is above the pass mark six times, by most on seed 17 with $3.8 \times 10^{-4}$, and no absolute gap exceeds $5.6 \times 10^{-11}$, which is what post 16 found on one of its seeds. The glossary's reading of the number applies: near $10^{-7}$ or below the backward pass is right, above about $10^{-3}$ it is almost certainly wrong, and in between the absolute gap decides, as section 11 shows.
+The check passes on all ten, with between 58 and 653 gates closed. The largest relative error is $4.5 \times 10^{-8}$ and no absolute gap exceeds $6.0 \times 10^{-11}$. Ten seeds are not a guarantee: on seeds 10 to 49 the same code is above the pass mark six times, by most on seed 17 with $3.8 \times 10^{-4}$, and no absolute gap exceeds $5.6 \times 10^{-11}$, which is what [post 16](../16-coding-backpropagation/index.md) found on one of its seeds. The glossary's reading of the number applies: near $10^{-7}$ or below the backward pass is right, above about $10^{-3}$ it is almost certainly wrong, and in between the absolute gap decides, as [section 11](#11-what-can-go-wrong) shows.
 
 ---
 
@@ -308,7 +308,7 @@ python posts/21-coding-the-full-backpropagation/snippets/gradient_check.py
 python posts/21-coding-the-full-backpropagation/snippets/what_can_go_wrong.py
 ```
 
-`forward_backward.py` is sections 2 to 8: the classes, the script, and the prints. It calls `nnfs.init()`, so its arrays are float32. `gradient_check.py` is section 9, in float64. `what_can_go_wrong.py` imports the check and runs section 11.
+`forward_backward.py` is sections 2 to 8: the classes, the script, and the prints. It calls `nnfs.init()`, so its arrays are float32. `gradient_check.py` is [section 9](#9-the-gradient-check-on-the-whole-network), in float64. `what_can_go_wrong.py` imports the check and runs [section 11](#11-what-can-go-wrong).
 
 ---
 
@@ -326,7 +326,7 @@ dense1.dbiases   (1, 3)   3.6e-04           1.0e-01                  1.1e-05   F
 largest |Z1| 1.7e-02; samples with an entry of Z1 within h of 0: 10, of which at the origin: 3
 ```
 
-All four lines fail, for two different reasons. The lines of `dense2` have absolute gaps near $10^{-11}$, the rounding level of the passing check of section 9. Their gradients are about 770 and 23,000 times smaller than there, so the same gap is a larger fraction: this is the tiny-gradient caveat of post 16. The lines of `dense1` have gaps of $6.8 \times 10^{-8}$ and $1.1 \times 10^{-5}$, far above rounding, and those are ReLU corners. The 0.01 weights keep every entry of $\mathbf{Z}_1$ below 0.018, and ten samples have an entry within $h$ of zero. A step of $h$ on a bias carries such an entry across the corner, and the measured slope is then neither the closed gate's nor the open one's. Three of the ten are the points at the origin, where the zero biases leave $\mathbf{Z}_1$ at exactly zero. They do no harm here: the three carry three different labels and the same prediction, so their errors cancel. The gaps come from the other seven, which lie between 0.02 and 0.71 from the origin, each close to a line through the origin on which one neuron's pre-activation changes sign. The figure below draws the three lines and rings the ten samples.
+All four lines fail, for two different reasons. The lines of `dense2` have absolute gaps near $10^{-11}$, the rounding level of the passing check of [section 9](#9-the-gradient-check-on-the-whole-network). Their gradients are about 770 and 23,000 times smaller than there, so the same gap is a larger fraction: this is the tiny-gradient caveat of [post 16](../16-coding-backpropagation/index.md). The lines of `dense1` have gaps of $6.8 \times 10^{-8}$ and $1.1 \times 10^{-5}$, far above rounding, and those are ReLU corners. The 0.01 weights keep every entry of $\mathbf{Z}_1$ below 0.018, and ten samples have an entry within $h$ of zero. A step of $h$ on a bias carries such an entry across the corner, and the measured slope is then neither the closed gate's nor the open one's. Three of the ten are the points at the origin, where the zero biases leave $\mathbf{Z}_1$ at exactly zero. They do no harm here: the three carry three different labels and the same prediction, so their errors cancel. The gaps come from the other seven, which lie between 0.02 and 0.71 from the origin, each close to a line through the origin on which one neuron's pre-activation changes sign. The figure below draws the three lines and rings the ten samples.
 
 ![Two scatter plots of the 300 spiral points of seed 0, class 0 as blue circles, class 1 as orange squares and class 2 as green triangles: the whole plane on the left, the square from minus 0.2 to 0.2 around the origin enlarged on the right. Three grey lines through the origin mark where each hidden neuron's pre-activation is 0 under the 0.01 weights and zero biases. Red rings mark the ten samples with an entry of Z1 within h of 0: three at the origin, one of each class, and seven on the lines, between 0.02 and 0.71 from the origin.](diagrams/02-relu-corners.svg)
 
@@ -342,9 +342,9 @@ dense1.dbiases   (1, 3)   3.0e-04           6.3e-08                  1.2e-11   p
 seeds 0 to 9 on this initialisation: the check fails on 10 of 10
 ```
 
-Every absolute gap is back at $10^{-11}$; what still fails does so on small gradients alone. The last line counts the unchanged initialisation over ten seeds: it fails on every one. Nothing in the backward pass was wrong at any point. A check needs parameters of ordinary size and biases that are not zero, which is why section 9 redraws them, and a failed line is read together with its absolute gap.
+Every absolute gap is back at $10^{-11}$; what still fails does so on small gradients alone. The last line counts the unchanged initialisation over ten seeds: it fails on every one. Nothing in the backward pass was wrong at any point. A check needs parameters of ordinary size and biases that are not zero, which is why [section 9](#9-the-gradient-check-on-the-whole-network) redraws them, and a failed line is read together with its absolute gap.
 
-**The division by the number of samples is left out.** A combined class whose `backward` lacks the line `self.dinputs /= samples`, on the redrawn network of section 9:
+**The division by the number of samples is left out.** A combined class whose `backward` lacks the line `self.dinputs /= samples`, on the redrawn network of [section 9](#9-the-gradient-check-on-the-whole-network):
 
 ```text
 gradient shapes equal parameter shapes: True; largest |row sum| of loss_activation.dinputs: 2.2e-16
@@ -352,7 +352,7 @@ dense2.dweights  (3, 3)   3.7e+01           1.0e+00                  3.7e+01   F
 relative error of dense2.dweights to four decimals: 0.9967; 1 - 1/N = 0.9967
 ```
 
-The loss is unchanged, every shape is right, and the rows of `loss_activation.dinputs` still sum to zero, so neither the first loss, nor the shape test, nor the row-sum test of post 20 notices anything. The gradient check fails on all four arrays with the same relative error, $1 - 1/300$: every gradient is 300 times too large. An error of exactly this form points at a missing or doubled mean. A ReLU without its mask fails only from `dense1` on; post 16, section 7, measured it. The figure below sets the checks of sections 9 and 11 side by side, each gradient array as one point at its relative error and its absolute gap.
+The loss is unchanged, every shape is right, and the rows of `loss_activation.dinputs` still sum to zero, so neither the first loss, nor the shape test, nor the row-sum test of [post 20](../20-assembling-full-backpropagation/index.md) notices anything. The gradient check fails on all four arrays with the same relative error, $1 - 1/300$: every gradient is 300 times too large. An error of exactly this form points at a missing or doubled mean. A ReLU without its mask fails only from `dense1` on; [post 16](../16-coding-backpropagation/index.md), [section 7](../16-coding-backpropagation/index.md#7-make-it-run-a-gradient-check-on-the-classes), measured it. The figure below sets the checks of sections [9](#9-the-gradient-check-on-the-whole-network) and [11](#11-what-can-go-wrong) side by side, each gradient array as one point at its relative error and its absolute gap.
 
 ![A scatter plot on two logarithmic axes, the largest relative error of a gradient array across and its largest absolute gap up, four points per check. The passing check of section 9, blue circles, lies left of the pass mark of 10 to the minus 7 with gaps near 10 to the minus 11. The check on the 0.01 weights, orange triangles, has its two dense2 points just right of the mark at the same gaps, and its two dense1 points far higher, at gaps of 6.8 times 10 to the minus 8 and 1.1 times 10 to the minus 5; dashed arrows take them down to the rounding level once the ten samples are left out, hollow squares. A dotted line marks 6.0 times 10 to the minus 11, the largest gap at scale 1 over 50 seeds. The missing division, red diamonds, sits at a relative error of 1 with gaps from 17 to 140.](diagrams/03-error-and-gap.svg)
 
@@ -376,7 +376,7 @@ arrays cast to float64, h = 1e-05: largest relative error 2.0e-03 in dense1.dwei
 X float64, dense1.weights float64, but np.dot(X, dense1.weights) float32
 ```
 
-A float32 loss keeps about seven digits, and two losses a step of $10^{-5}$ apart differ only around the last of them, so their difference is mostly rounding (post 10, section 7; post 15 met it on one layer). A step of $10^{-2}$ helps and still misses the pass mark by three orders of magnitude. Casting the data and the parameters to float64 afterwards is not enough either: `nnfs.init()` has replaced `np.dot` by a version that returns float32 whatever it is given (post 04), and the relative error stays at $2.0 \times 10^{-3}$. A gradient check belongs in a process that has not called `nnfs.init()`.
+A float32 loss keeps about seven digits, and two losses a step of $10^{-5}$ apart differ only around the last of them, so their difference is mostly rounding ([post 10](../10-derivatives-partial-derivatives-and-gradients/index.md), [section 7](../10-derivatives-partial-derivatives-and-gradients/index.md#7-what-can-go-wrong); [post 15](../15-gradients-with-respect-to-inputs/index.md) met it on one layer). A step of $10^{-2}$ helps and still misses the pass mark by three orders of magnitude. Casting the data and the parameters to float64 afterwards is not enough either: `nnfs.init()` has replaced `np.dot` by a version that returns float32 whatever it is given ([post 04](../04-dense-layer-class-and-spiral-data/index.md)), and the relative error stays at $2.0 \times 10^{-3}$. A gradient check belongs in a process that has not called `nnfs.init()`.
 
 ---
 
@@ -390,7 +390,7 @@ A float32 loss keeps about seven digits, and two losses a step of $10^{-5}$ apar
 | Shape test | each gradient has the shape of its parameter; necessary, and blind to wrong values |
 | First gradients | at most $3.6 \times 10^{-4}$ here: balanced classes and 0.01 weights |
 | Gradient check | central difference, $h = 10^{-5}$, float64, parameters of ordinary size; pass below $10^{-7}$ |
-| Not here | the update and the training loop (post 22) |
+| Not here | the update and the training loop ([post 22](../22-gradient-descent-optimiser/index.md)) |
 
 ---
 
@@ -407,11 +407,9 @@ A float32 loss keeps about seven digits, and two losses a step of $10^{-5}$ apar
 
 ## Further reading
 
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, section 6.5 (Back-Propagation and Other Differentiation Algorithms), and section 11.5 (Debugging Strategies) for comparing a backward pass with finite differences (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 9 (2020).
-- Stanford CS231n, *Convolutional Neural Networks for Visual Recognition*, course notes, "Putting it together: Minimal Neural Network Case Study": a two-layer classifier on the same spiral data, written with loose arrays.
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/mlp.html)*, section 6.5 (Back-Propagation and Other Differentiation Algorithms), and section 11.5 (Debugging Strategies) for comparing a backward pass with finite differences (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 9 (2020).
+- Stanford CS231n, *[Convolutional Neural Networks for Visual Recognition](https://cs231n.github.io/neural-networks-case-study/)*, course notes, "Putting it together: Minimal Neural Network Case Study": a two-layer classifier on the same spiral data, written with loose arrays.
 
 ---
 
