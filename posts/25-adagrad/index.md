@@ -25,7 +25,7 @@ A loss of two weights shows the cost:
 
 $$L(w_1, w_2) = \frac{w_1^2}{100} + w_2^2$$
 
-Its minimum is at $(0, 0)$. At $(w_1, w_2) = (1, 1)$ the partial derivatives are $2 w_1 / 100 = 0.02$ and $2 w_2 = 2.0$, a factor of 100 apart. `snippets/adagrad.py` runs gradient descent on this loss from that point, with the `Optimizer_SGD` of post 24:
+Its minimum is at $(0, 0)$. At $(w_1, w_2) = (1, 1)$ the partial derivatives are $2 w_1 / 100 = 0.02$ and $2 w_2 = 2.0$, a factor of 100 apart. `snippets/adagrad.py` runs gradient descent on this loss from that point, with the `Optimizer_SGD` of [post 24](../24-momentum/index.md):
 
 ```text
 gradient descent, alpha =  0.1: first steps 0.002 and 0.2; after 100 steps w1 = 0.8186, w2 = 2.037e-10
@@ -37,7 +37,7 @@ With $\alpha = 0.1$, $w_2$ has arrived after 100 steps and $w_1$ has covered 18 
 
 The reason is in the update. One step multiplies $w_2$ by $1 - 2\alpha$ and $w_1$ by $1 - \alpha/50$. The first factor is below 1 in size only for $\alpha < 1$, and for every such $\alpha$ the second factor is above 0.98: $w_1$ loses at most 2 percent of its value per step. A rate sized for the large gradient leaves the small-gradient weight crawling, and a rate sized for the small gradient makes the other one diverge.
 
-A network has the same problem with more parameters. In the first backward pass of the spiral classifier of this post, the 387 gradients range in size from $3.4 \times 10^{-8}$ to $1.4 \times 10^{-3}$ (section 7), a factor of about 40,000.
+A network has the same problem with more parameters. In the first backward pass of the spiral classifier of this post, the 387 gradients range in size from $3.4 \times 10^{-8}$ to $1.4 \times 10^{-3}$ ([section 7](#7-what-happens-when-it-runs)), a factor of about 40,000.
 
 ---
 
@@ -51,7 +51,7 @@ The step is then divided by the square root of the cache:
 
 $$\theta_t = \theta_{t-1} - \frac{\alpha}{\sqrt{G_t} + \epsilon} \, g_t$$
 
-Here $\alpha$ is the global learning rate and $\epsilon$ is a small constant, $10^{-7}$ in the class of section 5, that keeps the denominator above zero. The factor $\alpha / (\sqrt{G_t} + \epsilon)$ is the **effective learning rate** of that one parameter. Three properties follow from the two formulas.
+Here $\alpha$ is the global learning rate and $\epsilon$ is a small constant, $10^{-7}$ in the class of [section 5](#5-the-optimiser-class), that keeps the denominator above zero. The factor $\alpha / (\sqrt{G_t} + \epsilon)$ is the **effective learning rate** of that one parameter. Three properties follow from the two formulas.
 
 **The cache has the shape of the parameters.** Every weight and every bias has its own entry of $G$, so every one has its own effective learning rate.
 
@@ -59,7 +59,7 @@ Here $\alpha$ is the global learning rate and $\epsilon$ is a small constant, $1
 
 **The square root makes the step independent of the gradient's scale.** If every gradient of a parameter is multiplied by a constant $c$, its cache is multiplied by $c^2$, the root of the cache by $c$, and the step $\alpha g_t / \sqrt{G_t}$ does not change. In particular the first step is $\alpha g_1 / \lvert g_1 \rvert$: it has the size $\alpha$ whatever the gradient is. Dividing by $G_t$ itself would overcorrect, because the step would then shrink by $c$ when the gradient grows by $c$.
 
-The same two-weight loss, under the `Optimizer_Adagrad` of section 5 with $\alpha = 0.1$:
+The same two-weight loss, under the `Optimizer_Adagrad` of [section 5](#5-the-optimiser-class) with $\alpha = 0.1$:
 
 ```text
 AdaGrad, alpha = 0.1: after   1 steps w1 = 0.900000, w2 = 0.900000, caches 0.0004 and 4
@@ -87,7 +87,7 @@ A single parameter receives the gradient $g = 0.5$ at every update, with $\alpha
 
 The cache is $G_t = 0.25\,t$, so the effective learning rate is $2/\sqrt{t}$ and the step at update $t$, the rate times the gradient, is $1/\sqrt{t}$. The first step is 1, the size of $\alpha$, and the step at update 10,000 is 0.01. The last column is the sum of those steps, which approaches $2\sqrt{t}$: a hundred times the updates buy ten times the distance. Gradient descent with the same $\alpha$ and the same gradient moves 0.5 at every step, 5,000 in all.
 
-This resembles the schedule of post 23, with two differences. It is **per parameter**: the rate of each parameter falls according to its own gradients. Two parameters with constant gradients of size 2.0 and 0.2 hold caches of 4,000 and 40 after 1,000 updates and effective rates of 0.0158 and 0.158. And it is **implicit**: no `decay` argument sets it, the bookkeeping of the optimiser produces it. The figure below draws the rates of those two parameters beside the one of the table, and the distance the table's parameter moves.
+This resembles the schedule of [post 23](../23-learning-rate-decay/index.md), with two differences. It is **per parameter**: the rate of each parameter falls according to its own gradients. Two parameters with constant gradients of size 2.0 and 0.2 hold caches of 4,000 and 40 after 1,000 updates and effective rates of 0.0158 and 0.158. And it is **implicit**: no `decay` argument sets it, the bookkeeping of the optimiser produces it. The figure below draws the rates of those two parameters beside the one of the table, and the distance the table's parameter moves.
 
 ![Two log-log charts over 1 to 10,000 updates with a learning rate of 1. Left, the effective learning rate for three constant gradients, three parallel lines: for 0.2 it falls from 5 to 0.05, for 0.5 from 2 to 0.02, through the table's values, and for 2.0 from 0.5 to 0.005; at update 1,000 the caches are 40 and 4,000 and the rates 0.158 and 0.0158. Right, for the gradient 0.5, the distance moved: AdaGrad through the table's values to 198.54, gradient descent 0.5 per step to 5,000.](diagrams/02-constant-gradient.svg)
 
@@ -111,7 +111,7 @@ The result is a parameter that still receives a gradient and barely follows it. 
 
 ## 5. The optimiser class
 
-The update rule has no velocity, so AdaGrad is a new class beside `Optimizer_SGD`, not an extension of it. The constructor, `pre_update_params` and `post_update_params` are those of post 24 with `momentum` replaced by `epsilon`:
+The update rule has no velocity, so AdaGrad is a new class beside `Optimizer_SGD`, not an extension of it. The constructor, `pre_update_params` and `post_update_params` are those of [post 24](../24-momentum/index.md) with `momentum` replaced by `epsilon`:
 
 ```python
 class Optimizer_Adagrad:
@@ -148,19 +148,19 @@ class Optimizer_Adagrad:
         self.iterations += 1
 ```
 
-**The contract is unchanged.** One `pre_update_params`, one `update_params` per layer, one `post_update_params`, as in post 23. The decay schedule is still there, and it multiplies the cache's own shrinking: the $\alpha$ of the formulas is `current_learning_rate`.
+**The contract is unchanged.** One `pre_update_params`, one `update_params` per layer, one `post_update_params`, as in [post 23](../23-learning-rate-decay/index.md). The decay schedule is still there, and it multiplies the cache's own shrinking: the $\alpha$ of the formulas is `current_learning_rate`.
 
-**The caches live on the layer.** Like the `weight_momentums` of post 24, `weight_cache` and `bias_cache` are created on the first call, with the shapes of `weights` and `biases`, and one optimiser object serves any number of layers. They are also never reset: a second optimiser object handed the same layers finds the old caches and continues from them.
+**The caches live on the layer.** Like the `weight_momentums` of [post 24](../24-momentum/index.md), `weight_cache` and `bias_cache` are created on the first call, with the shapes of `weights` and `biases`, and one optimiser object serves any number of layers. They are also never reset: a second optimiser object handed the same layers finds the old caches and continues from them.
 
 **The order inside `update_params` matters.** The cache is updated first, so the current gradient is already in the denominator of its own step. That is what makes the first step $\alpha$ in size; with the old cache it would be $\alpha g / \epsilon$, ten million times the gradient.
 
-**$\epsilon$ is added to the root, not under it.** The code computes $\sqrt{G} + \epsilon$, as the formula of section 2 does. The other form in use, $\sqrt{G + \epsilon}$, gives the same step only while $\sqrt{G}$ is well above $\sqrt{\epsilon} = 3.2 \times 10^{-4}$; section 10 measures the difference.
+**$\epsilon$ is added to the root, not under it.** The code computes $\sqrt{G} + \epsilon$, as the formula of [section 2](#2-the-adagrad-idea) does. The other form in use, $\sqrt{G + \epsilon}$, gives the same step only while $\sqrt{G}$ is well above $\sqrt{\epsilon} = 3.2 \times 10^{-4}$; [section 10](#10-what-can-go-wrong) measures the difference.
 
 ---
 
 ## 6. The training loop
 
-The loop is the one of post 24. `snippets/adagrad.py` wraps it in a function, so that the same lines serve every run of this post; `dead` counts the hidden neurons whose output is zero for all 300 samples, and `watch` is a hook for printing.
+The loop is the one of [post 24](../24-momentum/index.md). `snippets/adagrad.py` wraps it in a function, so that the same lines serve every run of this post; `dead` counts the hidden neurons whose output is zero for all 300 samples, and `watch` is a hook for printing.
 
 ```python
 def train(optimizer, seed=0, epochs=10001, watch=None):
@@ -202,9 +202,9 @@ def train(optimizer, seed=0, epochs=10001, watch=None):
     return float(loss), float(accuracy), dead
 ```
 
-The documented run is `train(Optimizer_Adagrad(learning_rate=1.0, decay=1e-4))`. The script calls `nnfs.init()` once at the top, which makes the arrays float32 and patches `np.dot` (post 04), and seed 0 is the seed that call sets, so `seed=0` reproduces the series' usual run.
+The documented run is `train(Optimizer_Adagrad(learning_rate=1.0, decay=1e-4))`. The script calls `nnfs.init()` once at the top, which makes the arrays float32 and patches `np.dot` ([post 04](../04-dense-layer-class-and-spiral-data/index.md)), and seed 0 is the seed that call sets, so `seed=0` reproduces the series' usual run.
 
-The decay is $10^{-4}$ where post 24 used $10^{-3}$. Over 10,001 updates the schedule alone leaves $1/(1 + 10^{-4} \cdot 10{,}000) = 0.5$ of the learning rate, against 0.0909 for $10^{-3}$, and that factor multiplies rates the cache is already lowering. Whether the heavier schedule hurts depends on the seed. `snippets/seeds_decay.py` runs `decay=1e-3` on seeds 0 to 4 and ends at losses of 0.5104, 0.4801, 0.3580, 0.5444 and 0.5412; the documented setting gives 0.3847, 0.5319, 0.3792, 0.2191 and 0.4048 (section 7). The heavier decay is worse on seeds 0, 3 and 4 and better on seeds 1 and 2.
+The decay is $10^{-4}$ where [post 24](../24-momentum/index.md) used $10^{-3}$. Over 10,001 updates the schedule alone leaves $1/(1 + 10^{-4} \cdot 10{,}000) = 0.5$ of the learning rate, against 0.0909 for $10^{-3}$, and that factor multiplies rates the cache is already lowering. Whether the heavier schedule hurts depends on the seed. `snippets/seeds_decay.py` runs `decay=1e-3` on seeds 0 to 4 and ends at losses of 0.5104, 0.4801, 0.3580, 0.5444 and 0.5412; the documented setting gives 0.3847, 0.5319, 0.3792, 0.2191 and 0.4048 ([section 7](#7-what-happens-when-it-runs)). The heavier decay is worse on seeds 0, 3 and 4 and better on seeds 1 and 2.
 
 ---
 
@@ -216,7 +216,7 @@ The setup is the shared one of Part VI: `nnfs.init()`, `spiral_data(samples=100,
 first update: |gradient| from 3.4e-08 to 1.4e-03 (median 9.3e-05); |step| from 0.254 to 1.000 (median 0.999)
 ```
 
-This is section 2 on a real network. The gradients span more than four orders of magnitude and almost every parameter moves by about 1, the size of $\alpha$. The few smaller steps belong to gradients that are not large against $\epsilon$. For weights that start at a scale of 0.01, a step of 1 is a jump, and the table that follows shows what it does. Each row gives the loss, the accuracy and the dead neurons of that epoch's forward pass, and then the state after that epoch's update: the scheduled learning rate, the cache $G$ and the effective learning rate over all 387 parameters, how many of the rates are below 1, and the mean size of the step.
+This is [section 2](#2-the-adagrad-idea) on a real network. The gradients span more than four orders of magnitude and almost every parameter moves by about 1, the size of $\alpha$. The few smaller steps belong to gradients that are not large against $\epsilon$. For weights that start at a scale of 0.01, a step of 1 is a jump, and the table that follows shows what it does. Each row gives the loss, the accuracy and the dead neurons of that epoch's forward pass, and then the state after that epoch's update: the scheduled learning rate, the cache $G$ and the effective learning rate over all 387 parameters, how many of the rates are below 1, and the mean size of the step.
 
 ```text
  epoch    loss   acc    dead   lr      G median   G max     rate median  rate min  below 1   mean |step|
@@ -253,7 +253,7 @@ Among the 183 parameters that still learn, the median rate falls from 2.36 to 0.
 
 *Epoch 0, with the loss $\ln 3$ and a median rate of 10,685, lies left of the log axis. By epoch 10, 32 of the 64 hidden neurons are dead; afterwards the rates fall slowly and never rise.*
 
-One seed is not a result. `seeds_adagrad.py`, `seeds_momentum.py` and `seeds_sgd.py` repeat the run for seeds 0 to 4 with the optimiser of this post and with the documented settings of posts 24 and 22. Each cell holds the final loss, the accuracy, and the number of dead neurons of 64:
+One seed is not a result. `seeds_adagrad.py`, `seeds_momentum.py` and `seeds_sgd.py` repeat the run for seeds 0 to 4 with the optimiser of this post and with the documented settings of posts [24](../24-momentum/index.md) and [22](../22-gradient-descent-optimiser/index.md). Each cell holds the final loss, the accuracy, and the number of dead neurons of 64:
 
 | Seed | `Optimizer_SGD(learning_rate=1.0)` | `Optimizer_SGD(learning_rate=1.0, decay=1e-3, momentum=0.9)` | `Optimizer_Adagrad(learning_rate=1.0, decay=1e-4)` |
 |:---:|:---:|:---:|:---:|
@@ -263,7 +263,7 @@ One seed is not a result. `seeds_adagrad.py`, `seeds_momentum.py` and `seeds_sgd
 | 3 | 0.3943, 0.8700, 2 | 0.3687, 0.8167, 37 | 0.2191, 0.9267, 22 |
 | 4 | 0.4843, 0.7867, 3 | 0.0865, 0.9800, 23 | 0.4048, 0.7967, 38 |
 
-Seed 0 reproduces the figures of posts 22 and 24: 0.87 and 64.7 percent, 0.12 and 95.7 percent.
+Seed 0 reproduces the figures of posts [22](../22-gradient-descent-optimiser/index.md) and [24](../24-momentum/index.md): 0.87 and 64.7 percent, 0.12 and 95.7 percent.
 
 **Against plain gradient descent, AdaGrad is ahead on accuracy in all five seeds**, by 1.0 to 28.0 percentage points, and on loss in four of the five (on seed 1 its loss is 0.5319 against 0.5091).
 
@@ -287,7 +287,7 @@ after 1,000 steps: caches 1000 and 10, effective rates 0.0316 and 0.3162, ratio 
 
 The rare parameter has seen ten gradients and still steps ten times as far on its next one. This is the setting of the original paper, which is also where the guarantees of the method are proved: for convex problems, not for a network.
 
-The rule of section 4 says when the price is low. The rate of a parameter is $\alpha / (g_\text{rms} \sqrt{t})$, so short runs and small gradients leave the rates large. Section 7 is the example: after 10,001 updates the parameters that still learn have a median rate of 0.41, where gradients of a typical size of 1 would have left $0.5/\sqrt{10{,}001} = 0.005$. Long runs with gradients arriving at every update are the opposite case, and they are the usual case in deep learning. There the methods of posts 26 and 27, which bound the cache, are the common choice, and AdaGrad is the clearest place to see what dividing by a gradient history does.
+The rule of [section 4](#4-the-structural-flaw-rates-that-only-fall) says when the price is low. The rate of a parameter is $\alpha / (g_\text{rms} \sqrt{t})$, so short runs and small gradients leave the rates large. [Section 7](#7-what-happens-when-it-runs) is the example: after 10,001 updates the parameters that still learn have a median rate of 0.41, where gradients of a typical size of 1 would have left $0.5/\sqrt{10{,}001} = 0.005$. Long runs with gradients arriving at every update are the opposite case, and they are the usual case in deep learning. There the methods of posts [26](../26-rmsprop/index.md) and [27](../27-adam-optimiser/index.md), which bound the cache, are the common choice, and AdaGrad is the clearest place to see what dividing by a gradient history does.
 
 ---
 
@@ -304,7 +304,7 @@ python posts/25-adagrad/snippets/seeds_decay.py
 python posts/25-adagrad/snippets/what_can_go_wrong.py
 ```
 
-`adagrad.py` holds the classes, the `train` function, the small examples of sections 1, 3 and 8, and the documented run; it takes about 7 seconds. The layer, activation and loss classes are those of posts 16 and 19 and `Optimizer_SGD` is that of post 24, all unchanged. The four `seeds_` scripts import from it and make five full runs each, 35 to 50 seconds apiece. `what_can_go_wrong.py` runs the mistakes of section 10 in about 10 seconds.
+`adagrad.py` holds the classes, the `train` function, the small examples of sections [1](#1-the-question-what-does-one-learning-rate-cost), [3](#3-a-worked-example-the-cache-grows-forever) and [8](#8-when-adagrad-is-the-right-choice), and the documented run; it takes about 7 seconds. The layer, activation and loss classes are those of posts [16](../16-coding-backpropagation/index.md) and [19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) and `Optimizer_SGD` is that of [post 24](../24-momentum/index.md), all unchanged. The four `seeds_` scripts import from it and make five full runs each, 35 to 50 seconds apiece. `what_can_go_wrong.py` runs the mistakes of [section 10](#10-what-can-go-wrong) in about 10 seconds.
 
 ---
 
@@ -342,7 +342,7 @@ epoch   100: loss 2.8459, accuracy 0.3600, dead neurons 60 of 64
 epoch 10000: loss 1.0986, accuracy 0.3333, dead neurons 64 of 64
 ```
 
-Every update is as large as the first one of section 7. On seed 0 all 64 hidden neurons are dead at the end and the loss is back at $\ln 3$.
+Every update is as large as the first one of [section 7](#7-what-happens-when-it-runs). On seed 0 all 64 hidden neurons are dead at the end and the loss is back at $\ln 3$.
 
 **The square root left out.** Dividing by the cache itself makes the first step $g / (g^2 + \epsilon)$ for $\alpha = 1$. That is 10 for a gradient of 0.1 and 909 for a gradient of 0.001: far above $\alpha$, and larger for the smaller gradient until $\epsilon$ takes over.
 
@@ -368,32 +368,30 @@ One update takes the weights of the spiral network from a scale of 0.01 to as mu
 | Spiral, seed 0 | loss 0.3847, accuracy 84.0 percent, smallest rate 0.045, 34 of 64 neurons dead |
 | Five seeds | accuracy above plain gradient descent on five, above momentum on three |
 | Best case | sparse gradients; short runs or small gradients |
-| What comes next | a cache that forgets (post 26), then that cache with momentum (post 27) |
+| What comes next | a cache that forgets ([post 26](../26-rmsprop/index.md)), then that cache with momentum ([post 27](../27-adam-optimiser/index.md)) |
 
 ---
 
 ## Common pitfalls
 
-1. **Reading $\alpha$ as in gradient descent.** In AdaGrad the first step of every parameter has the size $\alpha$ itself. With `learning_rate=1.0` and weights of scale 0.01, that is the jump of section 7.
+1. **Reading $\alpha$ as in gradient descent.** In AdaGrad the first step of every parameter has the size $\alpha$ itself. With `learning_rate=1.0` and weights of scale 0.01, that is the jump of [section 7](#7-what-happens-when-it-runs).
 2. **Treating the cache as one number per layer.** It has the shape of the parameters. At the end of the documented run the median cache is 0.172 and the largest is 123.
 3. **Expecting a fresh optimiser to mean fresh rates.** The caches are stored on the layers and survive the optimiser object.
 4. **Moving $\epsilon$ under the root without saying so.** The two forms give different first steps for small gradients, so results from one do not carry over to the other.
-5. **Judging AdaGrad against momentum from one seed.** On the spiral the order of the two changes with the seed (section 7).
+5. **Judging AdaGrad against momentum from one seed.** On the spiral the order of the two changes with the seed ([section 7](#7-what-happens-when-it-runs)).
 
 ---
 
 ## Further reading
 
-- Duchi, J., Hazan, E., and Singer, Y., *"Adaptive Subgradient Methods for Online Learning and Stochastic Optimization"* (Journal of Machine Learning Research, 2011). The original AdaGrad paper.
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 8 (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 10 (2020).
-- Ruder, S., *"An Overview of Gradient Descent Optimization Algorithms"* (arXiv:1609.04747, 2016).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Duchi, J., Hazan, E., and Singer, Y., *["Adaptive Subgradient Methods for Online Learning and Stochastic Optimization"](https://jmlr.org/papers/v12/duchi11a.html)* (Journal of Machine Learning Research, 2011). The original AdaGrad paper.
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/optimization.html)*, chapter 8 (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 10 (2020).
+- Ruder, S., *["An Overview of Gradient Descent Optimization Algorithms"](https://arxiv.org/abs/1609.04747)* (arXiv:1609.04747, 2016).
 
 ---
 
 ## What to read next
 
 - **[Post 26 - RMSProp](../26-rmsprop/index.md):** the sum of squared gradients becomes an exponential moving average, so the cache can shrink.
-- **[Post 27 - Adam](../27-adam-optimiser/index.md):** that cache combined with the velocity of post 24, with a correction for the first steps.
+- **[Post 27 - Adam](../27-adam-optimiser/index.md):** that cache combined with the velocity of [post 24](../24-momentum/index.md), with a correction for the first steps.
