@@ -1,6 +1,6 @@
 # 34 - Sigmoid and binary cross-entropy
 
-> **TL;DR.** With two classes, one output neuron with a **sigmoid** and **binary cross-entropy** is the same model as two softmax outputs: $\sigma(z_2 - z_1)$ equals the softmax probability of class 1, and the two losses agree to the last printed digit. The gradient of the mean loss with respect to a logit is $(\sigma(z) - y)/N$, the prediction-minus-label form of post 19, and the combined class returns it without dividing by the prediction. `Activation_Sigmoid` gets a forward pass that never overflows, and the loss keeps the clip of post 08, which removes `inf` and `nan` and caps the reported loss at 16.118. On two moons the one-output and the two-output network each classified 197 to 200 of 200 test points over ten seeds, with equal counts on nine of them.
+> **TL;DR.** With two classes, one output neuron with a **sigmoid** and **binary cross-entropy** is the same model as two softmax outputs: $\sigma(z_2 - z_1)$ equals the softmax probability of class 1, and the two losses agree to the last printed digit. The gradient of the mean loss with respect to a logit is $(\sigma(z) - y)/N$, the prediction-minus-label form of [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md), and the combined class returns it without dividing by the prediction. `Activation_Sigmoid` gets a forward pass that never overflows, and the loss keeps the clip of [post 08](../08-loss-categorical-cross-entropy/index.md), which removes `inf` and `nan` and caps the reported loss at 16.118. On two moons the one-output and the two-output network each classified 197 to 200 of 200 test points over ten seeds, with equal counts on nine of them.
 >
 > **Prerequisites:** [Post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md).
 > **Safe to skip?** Skip it if the reader can already derive the gradient of binary cross-entropy with respect to the logit, write a sigmoid that does not overflow, and say why one sigmoid output and two softmax outputs describe the same classifier.
@@ -21,7 +21,7 @@
 
 [Post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) completed the classification head of the series: $K$ logits per sample, softmax, categorical cross-entropy, and a combined backward pass that returns $(\hat{\mathbf{y}} - \mathbf{y})/N$. That head treats two classes as it treats ten: two output neurons, two probabilities that sum to 1, and the logarithm of the one that belongs to the true class.
 
-With two classes the second probability carries no information, because $\hat{y}_1 + \hat{y}_2 = 1$ and one fixes the other. A single output neuron is enough. Its output $\hat{y} \in (0, 1)$ is read as the probability of class 1, $1 - \hat{y}$ is the probability of class 0, and a label is one number $y \in \{0, 1\}$. The question of this post is: **which activation and which loss belong to that single output, and does the shortcut of post 19 survive?**
+With two classes the second probability carries no information, because $\hat{y}_1 + \hat{y}_2 = 1$ and one fixes the other. A single output neuron is enough. Its output $\hat{y} \in (0, 1)$ is read as the probability of class 1, $1 - \hat{y}$ is the probability of class 0, and a label is one number $y \in \{0, 1\}$. The question of this post is: **which activation and which loss belong to that single output, and does the shortcut of [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) survive?**
 
 The answer is the sigmoid, binary cross-entropy, and yes.
 
@@ -33,7 +33,7 @@ The answer is the sigmoid, binary cross-entropy, and yes.
 | Last layer after 16 hidden neurons | 34 parameters | 17 parameters |
 | Gradient at the logits | $(\hat{\mathbf{y}} - \mathbf{y})/N$ | $(\hat{y} - y)/N$ |
 
-The saving is one column of the last layer and nothing more. Section 7 shows that the two heads are the same model and measures them side by side. The one-output form is the one the released project `nn-p02` trains, and this post is its theory.
+The saving is one column of the last layer and nothing more. [Section 7](#7-one-sigmoid-output-or-two-softmax-outputs) shows that the two heads are the same model and measures them side by side. The one-output form is the one the released project `nn-p02` trains, and this post is its theory.
 
 ---
 
@@ -56,11 +56,11 @@ slope                [0.0066 0.1050 0.2500 0.1050 0.0066]
 
 **Symmetry.** $\sigma(-z) = 1 - \sigma(z)$. The probability of class 0 is the sigmoid of the negated logit, so no second logit is needed.
 
-**Slope.** $\sigma'(z) = \sigma(z)(1 - \sigma(z))$, derived in post 17, section 3.1. It peaks at 0.25 and falls towards zero on both sides: the saturation of post 06.
+**Slope.** $\sigma'(z) = \sigma(z)(1 - \sigma(z))$, derived in [post 17](../17-backpropagation-through-activation-functions/index.md), [section 3.1](../17-backpropagation-through-activation-functions/index.md#31-the-slopes-of-sigmoid-and-tanh). It peaks at 0.25 and falls towards zero on both sides: the saturation of [post 06](../06-activation-functions-relu-and-softmax/index.md).
 
 ### 2.1. The overflow trap
 
-Post 17 wrote the forward pass in one line and said the class would return here:
+[Post 17](../17-backpropagation-through-activation-functions/index.md) wrote the forward pass in one line and said the class would return here:
 
 ```python
 def sigmoid_naive(z):
@@ -87,7 +87,7 @@ The damage of the naive form is smaller than its warning suggests. In float64, $
 
 *Each one-line form overflows on one side of zero; the stable form picks, by the sign of $z$, the expression that cannot.*
 
-The stable form uses each expression where it is safe, $1/(1 + e^{-z})$ for $z \ge 0$ and $e^z/(1 + e^z)$ for $z < 0$, so `np.exp` never receives a positive argument. It is the principle of post 06, where the largest logit was subtracted before the softmax exponentials. The class of post 17 changes in `forward` only:
+The stable form uses each expression where it is safe, $1/(1 + e^{-z})$ for $z \ge 0$ and $e^z/(1 + e^z)$ for $z < 0$, so `np.exp` never receives a positive argument. It is the principle of [post 06](../06-activation-functions-relu-and-softmax/index.md), where the largest logit was subtracted before the softmax exponentials. The class of [post 17](../17-backpropagation-through-activation-functions/index.md) changes in `forward` only:
 
 ```python
 class Activation_Sigmoid:
@@ -109,7 +109,7 @@ class Activation_Sigmoid:
         self.dinputs = dvalues * self.output * (1 - self.output)
 ```
 
-`backward` is the line of post 17, unchanged. One side effect of the new `forward`: the output array is created as float64, so float32 logits, which are what `nnfs.init()` produces, give a float64 output whose values were computed in float32.
+`backward` is the line of [post 17](../17-backpropagation-through-activation-functions/index.md), unchanged. One side effect of the new `forward`: the output array is created as float64, so float32 logits, which are what `nnfs.init()` produces, give a float64 output whose values were computed in float32.
 
 Saturation in floating point is lopsided, and the next section depends on it. The script finds that in float64 $\sigma(z)$ is exactly 1.0 from $z = 37$ on, because $1 - 8.5 \times 10^{-17}$ rounds to 1, while $\sigma(-z)$ is exactly 0 only from $z = 745$ on. With float32 logits, which a network produces after `nnfs.init()`, the thresholds are 17 and 104; the post's other numbers are float64 unless marked.
 
@@ -123,9 +123,9 @@ $$L_i = -\bigl[\, y \log \hat{y} + (1 - y) \log(1 - \hat{y}) \,\bigr]$$
 
 and the loss of a batch is the mean, $L = \frac{1}{N} \sum_{i=1}^{N} L_i$.
 
-**One term is active.** For $y = 1$ the second term vanishes and the loss is $-\log \hat{y}$; for $y = 0$ the first vanishes and the loss is $-\log(1 - \hat{y})$. Either way it is minus the logarithm of the probability given to the true class, the reading of post 08. A prediction of 0.99 costs 0.0101 when the label is 1 and 4.6052 when it is 0; a prediction of 0.5 costs $\log 2 = 0.6931$ for either label.
+**One term is active.** For $y = 1$ the second term vanishes and the loss is $-\log \hat{y}$; for $y = 0$ the first vanishes and the loss is $-\log(1 - \hat{y})$. Either way it is minus the logarithm of the probability given to the true class, the reading of [post 08](../08-loss-categorical-cross-entropy/index.md). A prediction of 0.99 costs 0.0101 when the label is 1 and 4.6052 when it is 0; a prediction of 0.5 costs $\log 2 = 0.6931$ for either label.
 
-**It is categorical cross-entropy with $K = 2$.** Writing the two class probabilities as $1 - \hat{y}$ and $\hat{y}$ and the one-hot label as $(1 - y, y)$, the sum $-\sum_k y_k \log \hat{y}_k$ of post 08 is the expression above, term for term.
+**It is categorical cross-entropy with $K = 2$.** Writing the two class probabilities as $1 - \hat{y}$ and $\hat{y}$ and the one-hot label as $(1 - y, y)$, the sum $-\sum_k y_k \log \hat{y}_k$ of [post 08](../08-loss-categorical-cross-entropy/index.md) is the expression above, term for term.
 
 The worked batch of this post has four samples. `snippets/binary_classes.py` prints:
 
@@ -141,7 +141,7 @@ The fourth sample is confidently wrong, 0.0474 for a label of 1, and contributes
 
 ### 3.1. What the clip protects
 
-Post 08 clipped predictions to $[10^{-7}, 1 - 10^{-7}]$ before the logarithm. Here both $\hat{y}$ and $1 - \hat{y}$ enter a logarithm, so both bounds matter. `snippets/loss_forms.py` computes the loss three ways:
+[Post 08](../08-loss-categorical-cross-entropy/index.md) clipped predictions to $[10^{-7}, 1 - 10^{-7}]$ before the logarithm. Here both $\hat{y}$ and $1 - \hat{y}$ enter a logarithm, so both bounds matter. `snippets/loss_forms.py` computes the loss three ways:
 
 ```text
 z                            -40        -17         -5          0          5         17         40
@@ -153,9 +153,9 @@ y = 1  clipped             16.12      16.12      5.007     0.6931   0.006715    
 y = 1  from logits            40         17      5.007     0.6931   0.006715   4.14e-08  4.248e-18
 ```
 
-**Without the clip a confident correct prediction returns `nan`.** At $z = 40$ the sigmoid is exactly 1 and $\log(1 - \hat{y})$ is $-\infty$. For $y = 0$ the loss is `inf`. For $y = 1$ the inactive term is $0 \cdot (-\infty)$, which floating point evaluates to `nan`, although the prediction is right. One such sample turns the batch mean into `nan`. At $z = -40$ nothing fails, since $\sigma(-40)$ is $4.2 \times 10^{-18}$ and not 0: the lopsided saturation of section 2.1.
+**Without the clip a confident correct prediction returns `nan`.** At $z = 40$ the sigmoid is exactly 1 and $\log(1 - \hat{y})$ is $-\infty$. For $y = 0$ the loss is `inf`. For $y = 1$ the inactive term is $0 \cdot (-\infty)$, which floating point evaluates to `nan`, although the prediction is right. One such sample turns the batch mean into `nan`. At $z = -40$ nothing fails, since $\sigma(-40)$ is $4.2 \times 10^{-18}$ and not 0: the lopsided saturation of [section 2.1](#21-the-overflow-trap).
 
-**The clip removes both, and caps the loss.** A prediction is changed whenever $|z|$ exceeds $\log\bigl((1 - 10^{-7})/10^{-7}\bigr) = 16.118$. Beyond that the reported loss of a wrong prediction stays at $-\log(10^{-7}) = 16.118$ however wrong the logit is, and the loss of a right one stays at $10^{-7}$. On 100,000 logits drawn uniformly from $[-40, 40]$ with random labels the clipped mean loss is 6.4622 where the exact one is 10.0339. The clip protects the arithmetic and not the value: a loss near 16 means "at least 16". The figure below draws the sigmoid of section 2 with its slope, and the loss of a sample with label 1 against its logit, exact and clipped.
+**The clip removes both, and caps the loss.** A prediction is changed whenever $|z|$ exceeds $\log\bigl((1 - 10^{-7})/10^{-7}\bigr) = 16.118$. Beyond that the reported loss of a wrong prediction stays at $-\log(10^{-7}) = 16.118$ however wrong the logit is, and the loss of a right one stays at $10^{-7}$. On 100,000 logits drawn uniformly from $[-40, 40]$ with random labels the clipped mean loss is 6.4622 where the exact one is 10.0339. The clip protects the arithmetic and not the value: a loss near 16 means "at least 16". The figure below draws the sigmoid of [section 2](#2-the-sigmoid) with its slope, and the loss of a sample with label 1 against its logit, exact and clipped.
 
 ![Two charts. Left, over z from -6 to 6, the sigmoid rising from near 0 to near 1 through 0.5 at z = 0, and its slope peaking at 0.25 at z = 0, with the printed values at z = -5, -2, 0, 2 and 5 marked. Right, the binary cross-entropy of one sample with label 1 over z from -40 to 40: the exact loss, dashed, falls along a line from 40 to near 0; the clipped loss, solid red, follows it from z = -16.118 on and stays at 16.118 below that. Points mark the printed values at z = -40, -17, -5, 0, 5, 17 and 40, and a note says that without the clip z = 40 gives nan.](diagrams/03-sigmoid-and-loss.svg)
 
@@ -169,7 +169,7 @@ def bce_from_logits(z, y):
     return np.maximum(z, 0) - z * y + np.log1p(np.exp(-np.abs(z)))
 ```
 
-This is the third row of each block: 40 at $z = 40$, where the clipped form says 16.12. On 100,000 logits in $[-16, 16]$, where the clip is idle, the two forms agree to $1.4 \times 10^{-9}$; the remainder is the rounding of $1 - \hat{y}$ near 1 in the probability route. The class of section 5 keeps the clipped form, as post 19 kept it for softmax and as `nn-p02` does, so that the numbers of the series stay comparable.
+This is the third row of each block: 40 at $z = 40$, where the clipped form says 16.12. On 100,000 logits in $[-16, 16]$, where the clip is idle, the two forms agree to $1.4 \times 10^{-9}$; the remainder is the rounding of $1 - \hat{y}$ near 1 in the probability route. The class of [section 5](#5-the-combined-class) keeps the clipped form, as [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) kept it for softmax and as `nn-p02` does, so that the numbers of the series stay comparable.
 
 ---
 
@@ -181,7 +181,7 @@ The optimiser needs $\partial L / \partial z$, the slope of the loss with respec
 
 $$\frac{\partial L_i}{\partial \hat{y}} = -\frac{y}{\hat{y}} + \frac{1 - y}{1 - \hat{y}} = \frac{-y(1 - \hat{y}) + (1 - y)\hat{y}}{\hat{y}(1 - \hat{y})} = \frac{\hat{y} - y}{\hat{y}(1 - \hat{y})}$$
 
-**The prediction with respect to the logit.** The slope of section 2:
+**The prediction with respect to the logit.** The slope of [section 2](#2-the-sigmoid):
 
 $$\frac{\partial \hat{y}}{\partial z} = \hat{y}(1 - \hat{y})$$
 
@@ -189,7 +189,7 @@ $$\frac{\partial \hat{y}}{\partial z} = \hat{y}(1 - \hat{y})$$
 
 $$\frac{\partial L_i}{\partial z} = \frac{\hat{y} - y}{\hat{y}(1 - \hat{y})} \cdot \hat{y}(1 - \hat{y}) = \hat{y} - y$$
 
-**The batch.** $L$ is the mean of the $L_i$, and logit $z_i$ enters $L_i$ alone, so the factor $1/N$ carries over as in post 19:
+**The batch.** $L$ is the mean of the $L_i$, and logit $z_i$ enters $L_i$ alone, so the factor $1/N$ carries over as in [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md):
 
 $$\frac{\partial L}{\partial z_i} = \frac{\hat{y}_i - y_i}{N} = \frac{\sigma(z_i) - y_i}{N}$$
 
@@ -197,7 +197,7 @@ On the worked batch, $\hat{\mathbf{y}} - \mathbf{y} = (-0.1192, 0.2689, 0.6225, 
 
 **Prediction minus label.** The gradient is positive where the prediction is above the label and negative where it is below, so a descent step moves each logit towards its label, by an amount proportional to the error.
 
-**No division by the prediction.** The first factor divides by $\hat{y}(1 - \hat{y})$, which is 0 as soon as the sigmoid has rounded to 1. The product needs no division except the one by $N$. Section 6 runs both routes on saturated logits.
+**No division by the prediction.** The first factor divides by $\hat{y}(1 - \hat{y})$, which is 0 as soon as the sigmoid has rounded to 1. The product needs no division except the one by $N$. [Section 6](#6-checking-the-gradient) runs both routes on saturated logits.
 
 **A wrong output keeps its gradient.** At $z = -10$ with $y = 1$ the slope sent to the logit is $-0.999955$, where a squared error, which keeps the factor $\hat{y}(1 - \hat{y})$, would send $-0.000091$ (`snippets/gradient_check.py`). The gradient saturates only when the prediction is right.
 
@@ -205,7 +205,7 @@ On the worked batch, $\hat{\mathbf{y}} - \mathbf{y} = (-0.1192, 0.2689, 0.6225, 
 
 ## 5. The combined class
 
-The class mirrors `Activation_Softmax_Loss_CategoricalCrossentropy` of post 19: it owns its activation, `forward` returns the mean loss, and `backward` receives the cached output and the labels.
+The class mirrors `Activation_Softmax_Loss_CategoricalCrossentropy` of [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md): it owns its activation, `forward` returns the mean loss, and `backward` receives the cached output and the labels.
 
 ```python
 class Activation_Sigmoid_Loss_BinaryCrossentropy:
@@ -240,17 +240,17 @@ It is called as the softmax class is:
     loss_activation.backward(loss_activation.output, y)
 ```
 
-On the worked batch this returns the loss 1.1157 and stores `dinputs` $(-0.0298, 0.0672, 0.1556, -0.2381)$ with shape $(4, 1)$, the numbers of sections 3 and 4. The figure at the top of the post draws the class between the last dense layer and the loss, with the shape of everything that goes in and out.
+On the worked batch this returns the loss 1.1157 and stores `dinputs` $(-0.0298, 0.0672, 0.1556, -0.2381)$ with shape $(4, 1)$, the numbers of sections [3](#3-binary-cross-entropy) and [4](#4-the-combined-gradient). The figure at the top of the post draws the class between the last dense layer and the loss, with the shape of everything that goes in and out.
 
-**`dvalues` is the sigmoid output.** As in post 19, the argument keeps the name of the backward convention and holds the predictions. `backward` stores `dinputs`, returns nothing, and the layer below receives `loss_activation.dinputs`.
+**`dvalues` is the sigmoid output.** As in [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md), the argument keeps the name of the backward convention and holds the predictions. `backward` stores `dinputs`, returns nothing, and the layer below receives `loss_activation.dinputs`.
 
 **The clip is in the loss and not in the gradient.** `backward` reads the unclipped output. $\hat{y} - y$ contains no logarithm and no division by $\hat{y}$, so there is nothing to protect.
 
-**Labels are reshaped inside the class.** Labels of shape $(N,)$ or $(N, 1)$, integer or float, become a float column, so `dvalues - y_true` subtracts row by row. The script prints the same loss and a `dinputs` of shape $(4, 1)$ for all three. Without the reshape, a column minus a flat array broadcasts to $(N, N)$ (post 05).
+**Labels are reshaped inside the class.** Labels of shape $(N,)$ or $(N, 1)$, integer or float, become a float column, so `dvalues - y_true` subtracts row by row. The script prints the same loss and a `dinputs` of shape $(4, 1)$ for all three. Without the reshape, a column minus a flat array broadcasts to $(N, N)$ ([post 05](../05-array-summation-keepdims-and-broadcasting/index.md)).
 
-**The divisions.** `forward` takes `np.mean` over the $N$ sample losses. `backward` divides by `samples`, the same $N$, once, and nothing downstream divides again (post 19). Neither method divides by a number of outputs, because there is one output. The class is written for one: with $J$ output columns `np.mean` would divide by $N \cdot J$ and `backward` by $N$, and the stored gradient would be $J$ times the slope of the reported loss.
+**The divisions.** `forward` takes `np.mean` over the $N$ sample losses. `backward` divides by `samples`, the same $N$, once, and nothing downstream divides again ([post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)). Neither method divides by a number of outputs, because there is one output. The class is written for one: with $J$ output columns `np.mean` would divide by $N \cdot J$ and `backward` by $N$, and the stored gradient would be $J$ times the slope of the reported loss.
 
-**Predictions.** The predicted class is 1 where $\hat{y} \ge 0.5$, which is where $z \ge 0$: `(loss_activation.output >= 0.5)`. On the worked batch that gives $(1, 0, 1, 0)$ against labels $(1, 0, 0, 1)$, an accuracy of 0.50. The threshold 0.5 picks the more probable class. Where the two kinds of error cost differently another threshold can be chosen afterwards, on validation data (post 29), and the loss and the gradient are unaffected.
+**Predictions.** The predicted class is 1 where $\hat{y} \ge 0.5$, which is where $z \ge 0$: `(loss_activation.output >= 0.5)`. On the worked batch that gives $(1, 0, 1, 0)$ against labels $(1, 0, 0, 1)$, an accuracy of 0.50. The threshold 0.5 picks the more probable class. Where the two kinds of error cost differently another threshold can be chosen afterwards, on validation data ([post 29](../29-validation-and-hyperparameter-tuning/index.md)), and the loss and the gradient are unaffected.
 
 The class of `nn-p02` has the same arithmetic line for line, the subtraction `dvalues - y_true` and the single division by `samples` included. It differs in three names (the sigmoid attribute, `logits` for the first argument of `forward`, the clipped prediction) and in carrying a docstring.
 
@@ -258,7 +258,7 @@ The class of `nn-p02` has the same arithmetic line for line, the subtraction `dv
 
 ## 6. Checking the gradient
 
-The check is the one of posts 10, 16 and 21: a central difference with $h = 10^{-5}$ in float64, relative error, pass mark $10^{-7}$, in a process that has not called `nnfs.init()`. `snippets/gradient_check.py` prints:
+The check is the one of posts [10](../10-derivatives-partial-derivatives-and-gradients/index.md), [16](../16-coding-backpropagation/index.md) and [21](../21-coding-the-full-backpropagation/index.md): a central difference with $h = 10^{-5}$ in float64, relative error, pass mark $10^{-7}$, in a process that has not called `nnfs.init()`. `snippets/gradient_check.py` prints:
 
 ```text
 == The worked batch: dinputs against the measured slope of the loss
@@ -277,7 +277,7 @@ dbiases   largest relative error 2.7e-10, largest absolute gap 3.9e-11
 checks above the pass mark: []
 ```
 
-The formula holds, the division by $N$ included, since the measured slope is the slope of the mean loss. The one check above the pass mark is the tiny-gradient case of post 16: a correct, confident prediction with a gradient of $-1.5 \times 10^{-4}$ and an absolute gap of $2.6 \times 10^{-11}$. The third block is a dense layer feeding the head directly, which is logistic regression; its `dweights` and `dbiases` pass on all ten seeds.
+The formula holds, the division by $N$ included, since the measured slope is the slope of the mean loss. The one check above the pass mark is the tiny-gradient case of [post 16](../16-coding-backpropagation/index.md): a correct, confident prediction with a gradient of $-1.5 \times 10^{-4}$ and an absolute gap of $2.6 \times 10^{-11}$. The third block is a dense layer feeding the head directly, which is logistic regression; its `dweights` and `dbiases` pass on all ten seeds.
 
 The two-step route, the loss gradient $-(y/\hat{y} - (1 - y)/(1 - \hat{y}))/N$ handed to `Activation_Sigmoid.backward`, agrees with the combined class to $2.8 \times 10^{-17}$ on the worked batch. On saturated logits it does not:
 
@@ -310,7 +310,7 @@ Beyond $|z| = 16.118$ the reported loss is flat, so its measured slope is 0, whi
 
 $$\hat{y}_2 = \frac{e^{z_2}}{e^{z_1} + e^{z_2}} = \frac{1}{1 + e^{-(z_2 - z_1)}} = \sigma(z_2 - z_1)$$
 
-and likewise $\hat{y}_1 = \sigma(z_1 - z_2)$. Only the difference of the two logits matters. `snippets/softmax_equivalence.py` feeds six random logit pairs to the combined class of post 19 and their differences $z = z_2 - z_1$ to the class of this post:
+and likewise $\hat{y}_1 = \sigma(z_1 - z_2)$. Only the difference of the two logits matters. `snippets/softmax_equivalence.py` feeds six random logit pairs to the combined class of [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) and their differences $z = z_2 - z_1$ to the class of this post:
 
 ```text
 largest |softmax class 1 - sigmoid(z_2 - z_1)|: 0.0e+00
@@ -325,7 +325,7 @@ largest |column z_1 + column z_2|:      2.8e-17
 
 The probabilities, the losses and the gradients agree. The softmax gradient at $z_2$ is the sigmoid gradient, and the gradient at $z_1$ is its negative, so the two softmax logits are pushed apart by equal and opposite amounts. Adding 100 to both logits changes the softmax output by $8.9 \times 10^{-16}$: one direction of the two-logit space does nothing, and the sigmoid head is the softmax head with that direction removed.
 
-**Trained, the two classify alike here.** The same function does not guarantee the same training run, since the two heads have different parameters and Adam scales each one separately. `snippets/seeds.py` trains the network of `nn-p02` with each head. The setup, printed by the script: no `nnfs.init()`, float64 weights; for each seed $s$, 1,000 two-moons points at noise 0.1 from `np.random.default_rng(s)`, split 800 to 200; `np.random.seed(s)`; `Layer_Dense(2, 16)`, ReLU, `Layer_Dense(16, 16)`, ReLU, `Layer_Dense(16, 1)` or `Layer_Dense(16, 2)`; the He initialisation of post 33 through `init="he"`; the L2 penalty of post 30 at $10^{-4}$ on the two hidden weight arrays; `Optimizer_Adam(learning_rate=0.01)` of post 27; 2,000 full-batch epochs. A seed fixes the data, the split and the weights, and the two heads share the initial weights of the hidden layers.
+**Trained, the two classify alike here.** The same function does not guarantee the same training run, since the two heads have different parameters and Adam scales each one separately. `snippets/seeds.py` trains the network of `nn-p02` with each head. The setup, printed by the script: no `nnfs.init()`, float64 weights; for each seed $s$, 1,000 two-moons points at noise 0.1 from `np.random.default_rng(s)`, split 800 to 200; `np.random.seed(s)`; `Layer_Dense(2, 16)`, ReLU, `Layer_Dense(16, 16)`, ReLU, `Layer_Dense(16, 1)` or `Layer_Dense(16, 2)`; the He initialisation of [post 33](../33-weight-initialisation/index.md) through `init="he"`; the L2 penalty of [post 30](../30-l1-and-l2-regularisation/index.md) at $10^{-4}$ on the two hidden weight arrays; `Optimizer_Adam(learning_rate=0.01)` of [post 27](../27-adam-optimiser/index.md); 2,000 full-batch epochs. A seed fixes the data, the split and the weights, and the two heads share the initial weights of the hidden layers.
 
 | Head | Parameters | Training points correct, of 800 | Test points correct, of 200 | Seeds with 200 of 200 | Test data loss |
 |---|:---:|:---:|:---:|:---:|:---:|
@@ -345,11 +345,11 @@ Seed by seed the test counts are equal on nine seeds and the sigmoid head has on
 | Task | Output | Activation and loss |
 |---|---|---|
 | Two classes | 1 neuron | sigmoid and binary cross-entropy (this post) |
-| $K \ge 3$ classes, one per sample | $K$ neurons | softmax and categorical cross-entropy (post 19) |
+| $K \ge 3$ classes, one per sample | $K$ neurons | softmax and categorical cross-entropy ([post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md)) |
 | $K$ labels, any number per sample | $K$ neurons | one sigmoid and one binary cross-entropy per output |
 | A real number | 1 or more neurons | no activation, mean squared error (`nn-p04`) |
 
-For two classes either head is correct, and the choice is one of convenience: one output and scalar labels, or the same code path as a multi-class problem. The choice matters for **multi-label** data: softmax makes the outputs sum to 1 and so asserts exactly one label, and the class of section 5 does not cover several outputs as written (section 9). A dense layer followed directly by the sigmoid head, with no hidden layer, is **logistic regression**.
+For two classes either head is correct, and the choice is one of convenience: one output and scalar labels, or the same code path as a multi-class problem. The choice matters for **multi-label** data: softmax makes the outputs sum to 1 and so asserts exactly one label, and the class of [section 5](#5-the-combined-class) does not cover several outputs as written ([section 9](#9-what-can-go-wrong)). A dense layer followed directly by the sigmoid head, with no hidden layer, is **logistic regression**.
 
 ---
 
@@ -364,15 +364,15 @@ python posts/34-sigmoid-and-binary-cross-entropy/snippets/seeds.py
 | Script | Contents | Time |
 |---|---|---|
 | `binary_classes.py` | the two classes, the worked batch | 1 s |
-| `sigmoid_overflow.py` | section 2.1 | 1 s |
-| `loss_forms.py` | section 3.1 | 1 s |
-| `gradient_check.py` | sections 4 and 6 | 1 s |
-| `softmax_equivalence.py` | section 7 | 1 s |
+| `sigmoid_overflow.py` | [section 2.1](#21-the-overflow-trap) | 1 s |
+| `loss_forms.py` | [section 3.1](#31-what-the-clip-protects) | 1 s |
+| `gradient_check.py` | sections [4](#4-the-combined-gradient) and [6](#6-checking-the-gradient) | 1 s |
+| `softmax_equivalence.py` | [section 7](#7-one-sigmoid-output-or-two-softmax-outputs) | 1 s |
 | `network.py` | the earlier posts' classes, the two-moons network, seed 0 | 3 to 10 s |
 | `seeds.py` | ten seeds with each head | 15 to 40 s |
-| `what_can_go_wrong.py` | section 9 | 1 s |
+| `what_can_go_wrong.py` | [section 9](#9-what-can-go-wrong) | 1 s |
 
-All need only NumPy, run in float64, and do not call `nnfs.init()`. `network.py` holds `Layer_Dense` with the arguments of posts 30 and 33, and the classes of posts 16, 19 and 27 unchanged.
+All need only NumPy, run in float64, and do not call `nnfs.init()`. `network.py` holds `Layer_Dense` with the arguments of posts [30](../30-l1-and-l2-regularisation/index.md) and [33](../33-weight-initialisation/index.md), and the classes of posts [16](../16-coding-backpropagation/index.md), [19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) and [27](../27-adam-optimiser/index.md) unchanged.
 
 ---
 
@@ -416,9 +416,9 @@ logits (4, 2), labels (4,): loss 1.0532, dinputs shape (4, 2), no error
 logits (4, 2), one-hot labels (4, 2): ValueError: operands could not be broadcast together with shapes (8,1) (4,2) 
 ```
 
-With flat labels the column of labels broadcasts across both logit columns: each output is trained as its own predictor of the same label, with the mismatched divisions of section 5. With one label per output the reshape fails.
+With flat labels the column of labels broadcasts across both logit columns: each output is trained as its own predictor of the same label, with the mismatched divisions of [section 5](#5-the-combined-class). With one label per output the reshape fails.
 
-**A sigmoid output with the categorical loss of post 19.**
+**A sigmoid output with the categorical loss of [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md).**
 
 ```text
 integer labels: IndexError: index 1 is out of bounds for axis 1 with size 1
@@ -448,7 +448,7 @@ Integer labels fail as soon as a label is 1. One-hot labels do not fail: the sin
 
 1. **Comparing a column of predictions with flat labels.** The result has shape $(N, N)$ and its mean is not an accuracy. Predictions are flattened first.
 2. **Taking the logarithm without the clip.** From $z = 37$ in float64 (17 in float32) the sigmoid is exactly 1, and the loss is `inf` for a wrong prediction and `nan` for a right one.
-3. **Reading a clipped loss as exact.** 16.118 is a cap, not a value (sections 3.1 and 6).
+3. **Reading a clipped loss as exact.** 16.118 is a cap, not a value (sections [3.1](#31-what-the-clip-protects) and [6](#6-checking-the-gradient)).
 4. **Running the loss backward and the sigmoid backward separately.** Correct on paper; `nan` on saturated logits, or 0 when the prediction is clipped first.
 5. **Softmax for labels that are not exclusive.** Softmax asserts one label per sample. Several labels need one sigmoid per output.
 6. **Labels other than 0 and 1.** The class does not check them, and $-1$ and $+1$ give a loss that falls below zero.
@@ -457,11 +457,9 @@ Integer labels fail as soon as a label is 1. One-hot labels do not fail: the sin
 
 ## Further reading
 
-- Bishop, C. M., *Pattern Recognition and Machine Learning*, section 4.3.2 (Springer, 2006). Logistic regression.
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, section 6.2.2.2 (MIT Press, 2016). Sigmoid units for a yes-or-no output.
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 16 (2020).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Bishop, C. M., *[Pattern Recognition and Machine Learning](https://www.microsoft.com/en-us/research/people/cmbishop/prml-book/)*, section 4.3.2 (Springer, 2006). Logistic regression.
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/mlp.html)*, section 6.2.2.2 (MIT Press, 2016). Sigmoid units for a yes-or-no output.
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 16 (2020).
 
 ---
 
