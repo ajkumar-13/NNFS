@@ -22,7 +22,7 @@
 
 [Post 28](../28-generalization-and-testing/index.md) measured the gap between training accuracy and test accuracy and named the levers that narrow it. One of them is to constrain the weights. The question of this post is: **how does a penalty on weight magnitude change the loss, the gradient, and the weights the optimiser prefers?**
 
-The reason to look at weight size is geometric. The output of a dense, ReLU, dense network changes with its input no faster than the weights allow: the steepness of the logits is bounded by the product of the sizes of the two weight matrices. A decision boundary that bends sharply around a handful of training points therefore needs large weights, and a network that fits noise tends to have them. On the runs of section 7 the 128 weights of the first layer, which start at a scale of 0.01, end with a sum of squares between 1,936 and 4,184 when nothing holds them back.
+The reason to look at weight size is geometric. The output of a dense, ReLU, dense network changes with its input no faster than the weights allow: the steepness of the logits is bounded by the product of the sizes of the two weight matrices. A decision boundary that bends sharply around a handful of training points therefore needs large weights, and a network that fits noise tends to have them. On the runs of [section 7](#7-results-on-the-spiral) the 128 weights of the first layer, which start at a scale of 0.01, end with a sum of squares between 1,936 and 4,184 when nothing holds them back.
 
 There are two ways to act on that. More data makes memorising harder than learning the pattern, and is often not available. A constraint on the weights is available in every training run. It takes the form of a second term in the loss:
 
@@ -44,7 +44,7 @@ Only one term of the sum contains $w_m$. For $w_m > 0$ that term is $\lambda w_m
 
 $$\frac{\partial L_{\text{reg}}^{\text{L1}}}{\partial w_m} = \lambda \, \text{sign}(w_m) \qquad (w_m \ne 0)$$
 
-At $w_m = 0$ the absolute value has a corner and no derivative: the slope is $-\lambda$ on one side and $+\lambda$ on the other. Code has to pick a value there, and section 5 shows which one this series' class picks.
+At $w_m = 0$ the absolute value has a corner and no derivative: the slope is $-\lambda$ on one side and $+\lambda$ on the other. Code has to pick a value there, and [section 5](#5-the-backward-pass-extra-terms-in-layer_dense) shows which one this series' class picks.
 
 **L2** is the sum of the squares:
 
@@ -94,7 +94,7 @@ The figure below draws both paths from the same steps, the first 20 on the left 
 
 **L1 subtracts.** Each step moves the weight by the same amount, $\alpha \lambda = 0.001$, towards zero. The weight reaches the neighbourhood of zero in a finite number of steps, ten here, however small it has become. This constant pull is why L1 is called sparsity-inducing: among weights the data loss barely needs, L1 removes all of them at the same rate, where L2 spares the small ones.
 
-**A plain gradient step does not stop at zero.** From step 10 on, the L1 weight jumps between $0.0005$ and $-0.0005$: a step of fixed size $\alpha \lambda$ oversteps zero unless the weight is an exact multiple of it. Even a weight that is exactly zero does not stay, because the class of section 5 uses a sign of $+1$ there and the next step moves the weight to $-0.001$. So the result of L1 with plain gradient steps is weights within $\alpha \lambda$ of zero, not weights equal to zero. Exact zeros belong to the minimiser of an L1-penalised loss. In one dimension, $\frac{1}{2}(w - a)^2 + \lambda |w|$ is smallest at $w = 0$ whenever $|a| \le \lambda$. Methods that are built to return that minimiser handle the corner explicitly; the gradient step of this series does not. This is the setting of the lasso of Tibshirani (1996), which put the L1 penalty on linear regression to select variables.
+**A plain gradient step does not stop at zero.** From step 10 on, the L1 weight jumps between $0.0005$ and $-0.0005$: a step of fixed size $\alpha \lambda$ oversteps zero unless the weight is an exact multiple of it. Even a weight that is exactly zero does not stay, because the class of [section 5](#5-the-backward-pass-extra-terms-in-layer_dense) uses a sign of $+1$ there and the next step moves the weight to $-0.001$. So the result of L1 with plain gradient steps is weights within $\alpha \lambda$ of zero, not weights equal to zero. Exact zeros belong to the minimiser of an L1-penalised loss. In one dimension, $\frac{1}{2}(w - a)^2 + \lambda |w|$ is smallest at $w = 0$ whenever $|a| \le \lambda$. Methods that are built to return that minimiser handle the corner explicitly; the gradient step of this series does not. This is the setting of the lasso of Tibshirani (1996), which put the L1 penalty on linear regression to select variables.
 
 | Property | L1 | L2 |
 |---|---|---|
@@ -109,7 +109,7 @@ The figure below draws both paths from the same steps, the first 20 on the left 
 
 ## 4. The forward pass: the penalty joins the reported loss
 
-The penalty is computed per layer. It is a new method of the `Loss` base class of [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md), which takes a layer and reads the strengths stored on it. `calculate` is unchanged, and so is every other class of posts 16 and 19 except `Layer_Dense`. These are the added lines:
+The penalty is computed per layer. It is a new method of the `Loss` base class of [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md), which takes a layer and reads the strengths stored on it. `calculate` is unchanged, and so is every other class of posts [16](../16-coding-backpropagation/index.md) and [19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) except `Layer_Dense`. These are the added lines:
 
 ```python
     # Added in post 30: the penalty of one layer, zero when no strength is set.
@@ -128,7 +128,7 @@ The penalty is computed per layer. It is a new method of the `Loss` base class o
         return regularization_loss
 ```
 
-The combined class of post 19 already holds a `Loss_CategoricalCrossentropy` in its attribute `loss`, so the training loop reaches the method through `loss_activation.loss`. One call per dense layer, added up:
+The combined class of [post 19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) already holds a `Loss_CategoricalCrossentropy` in its attribute `loss`, so the training loop reaches the method through `loss_activation.loss`. One call per dense layer, added up:
 
 ```python
 data_loss = loss_activation.forward(dense2.output, y)
@@ -146,13 +146,13 @@ Three points about the term.
 
 **The penalty does not depend on the batch.** The data loss is a mean over $N$ samples; the penalty is not divided by anything. The same $\lambda$ therefore weighs more against a data loss that is itself small.
 
-**Biases have their own two strengths.** A bias shifts a neuron's threshold and does not steepen the output, so it is often left unpenalised. The method supports both, and the runs of section 7 penalise the biases of the first layer as well as its weights.
+**Biases have their own two strengths.** A bias shifts a neuron's threshold and does not steepen the output, so it is often left unpenalised. The method supports both, and the runs of [section 7](#7-results-on-the-spiral) penalise the biases of the first layer as well as its weights.
 
 ---
 
 ## 5. The backward pass: extra terms in `Layer_Dense`
 
-The total loss is a sum, so its gradient is the sum of the two gradients (post 10). The data gradient of a weight array is what `backward` of [post 16](../16-coding-backpropagation/index.md) already stores in `dweights`. The penalty gradient of section 2 is added to it, in the layer that owns the weights. The constructor gains four arguments, all 0.0 by default, and stores them:
+The total loss is a sum, so its gradient is the sum of the two gradients ([post 10](../10-derivatives-partial-derivatives-and-gradients/index.md)). The data gradient of a weight array is what `backward` of [post 16](../16-coding-backpropagation/index.md) already stores in `dweights`. The penalty gradient of [section 2](#2-the-two-penalties-and-their-gradients) is added to it, in the layer that owns the weights. The constructor gains four arguments, all 0.0 by default, and stores them:
 
 ```python
     def __init__(self, n_inputs, n_neurons,
@@ -168,7 +168,7 @@ The total loss is a sum, so its gradient is the sum of the two gradients (post 1
         self.bias_regularizer_l2 = bias_regularizer_l2
 ```
 
-`forward` is unchanged. `backward` keeps its three lines of post 16 and gains the block between the second and the third:
+`forward` is unchanged. `backward` keeps its three lines of [post 16](../16-coding-backpropagation/index.md) and gains the block between the second and the third:
 
 ```python
     def backward(self, dvalues):
@@ -192,9 +192,9 @@ The total loss is a sum, so its gradient is the sum of the two gradients (post 1
         self.dinputs = np.dot(dvalues, self.weights.T)          # shape of inputs
 ```
 
-**The data gradient is assigned and the penalty is added to it.** `dweights` is still written afresh on every call (post 16), and the `+=` lines add to that fresh array within the same call. Nothing accumulates across calls. `dinputs` gets no extra term, because the penalty does not depend on the layer's inputs.
+**The data gradient is assigned and the penalty is added to it.** `dweights` is still written afresh on every call ([post 16](../16-coding-backpropagation/index.md)), and the `+=` lines add to that fresh array within the same call. Nothing accumulates across calls. `dinputs` gets no extra term, because the penalty does not depend on the layer's inputs.
 
-**The sign at zero is $+1$.** `dL1` starts as an array of ones and only the entries of negative weights are flipped, so a weight of exactly zero receives $+\lambda$. Any value between $-\lambda$ and $+\lambda$ is defensible at the corner; $+1$ is the choice of this class. For the layer of section 4 the script prints the penalty terms on their own, and the zero weight in the top right gets 0.01:
+**The sign at zero is $+1$.** `dL1` starts as an array of ones and only the entries of negative weights are flipped, so a weight of exactly zero receives $+\lambda$. Any value between $-\lambda$ and $+\lambda$ is defensible at the corner; $+1$ is the choice of this class. For the layer of [section 4](#4-the-forward-pass-the-penalty-joins-the-reported-loss) the script prints the penalty terms on their own, and the zero weight in the top right gets 0.01:
 
 ```text
 dweights, penalty terms only:
@@ -204,7 +204,7 @@ dweights, penalty terms only:
 
 The entry for the weight $-2$ is $-0.01 + 2 \cdot 0.01 \cdot (-2) = -0.05$: both penalties were on, and their gradients add.
 
-**The strengths live on the layer.** With all four at their default the class behaves exactly as the class of post 16, and the optimisers of Part VI need no change: they read `dweights` and `dbiases`, which now hold the gradient of the total loss. Each layer can have its own strengths:
+**The strengths live on the layer.** With all four at their default the class behaves exactly as the class of [post 16](../16-coding-backpropagation/index.md), and the optimisers of Part VI need no change: they read `dweights` and `dbiases`, which now hold the gradient of the total loss. Each layer can have its own strengths:
 
 ```python
 dense1 = Layer_Dense(2, 64,
@@ -218,7 +218,7 @@ dense2 = Layer_Dense(64, 3)
 
 ## 6. Checking the new terms
 
-A wrong penalty gradient raises no error, so it is checked the way post 21 checked the whole network: a central difference with $h = 10^{-5}$ in float64 on every parameter, with the penalty included in the loss that is differenced. `snippets/gradient_check.py` does this on the small network of post 21 (two inputs, three ReLU neurons, three classes) with penalties on all four parameter arrays. It does not call `nnfs.init()`, since post 21 measured that the `np.dot` installed by that call returns float32 even for float64 inputs.
+A wrong penalty gradient raises no error, so it is checked the way [post 21](../21-coding-the-full-backpropagation/index.md) checked the whole network: a central difference with $h = 10^{-5}$ in float64 on every parameter, with the penalty included in the loss that is differenced. `snippets/gradient_check.py` does this on the small network of [post 21](../21-coding-the-full-backpropagation/index.md) (two inputs, three ReLU neurons, three classes) with penalties on all four parameter arrays. It does not call `nnfs.init()`, since [post 21](../21-coding-the-full-backpropagation/index.md) measured that the `np.dot` installed by that call returns float32 even for float64 inputs.
 
 ```text
 h = 1e-05, pass mark 1e-07; X float64, weights float64, np.dot returns float64
@@ -237,7 +237,7 @@ L1 = 0.01             1.4e-08                  6.4e-11                []
 L1 = L2 = 0.01        1.8e-08                  8.6e-11                []
 ```
 
-Twenty-nine of the thirty checks are below the pass mark of $10^{-7}$. The one above it, seed 6 under L2, has an absolute gap of at most $6.9 \times 10^{-11}$: it is the tiny-gradient case of post 21, where rounding in the difference is divided by a very small gradient, and not a wrong formula.
+Twenty-nine of the thirty checks are below the pass mark of $10^{-7}$. The one above it, seed 6 under L2, has an absolute gap of at most $6.9 \times 10^{-11}$: it is the tiny-gradient case of [post 21](../21-coding-the-full-backpropagation/index.md), where rounding in the difference is divided by a very small gradient, and not a wrong formula.
 
 The corner of L1 is the one place where the check cannot pass:
 
@@ -254,7 +254,7 @@ The central difference straddles the corner, sees $|h| = |-h|$, and measures a s
 
 ## 7. Results on the spiral
 
-The setup, printed by every training script of this post: `nnfs.init()` once (seed 0, float32, and its own `np.dot`); then for each seed $s$, `np.random.seed(s)`, the training set `spiral_data(samples=100, classes=3)`, the test set by a second identical call, `Layer_Dense(2, 64)` with the penalties, ReLU, `Layer_Dense(64, 3)` without penalties, the combined softmax and loss, `Optimizer_Adam(learning_rate=0.05, decay=1e-5)`, and 10,001 full-batch epochs. `spiral_data` draws from NumPy's global stream, so the test set is the 300 points that follow the training set in the stream, and the weights are drawn after both. The penalties sit on the weights and the biases of `dense1` only. Two things differ from the run of posts 27 and 28: the learning rate, 0.05 here against 0.02 there, and the test set, drawn here before the weights and there after them, so a seed gives other initial weights. The unpenalised figures below are therefore not post 28's (96.33 and 82.33 percent on seed 0), and every comparison in this post is with its own unpenalised run. Seed 0 is the seed `nnfs.init()` sets.
+The setup, printed by every training script of this post: `nnfs.init()` once (seed 0, float32, and its own `np.dot`); then for each seed $s$, `np.random.seed(s)`, the training set `spiral_data(samples=100, classes=3)`, the test set by a second identical call, `Layer_Dense(2, 64)` with the penalties, ReLU, `Layer_Dense(64, 3)` without penalties, the combined softmax and loss, `Optimizer_Adam(learning_rate=0.05, decay=1e-5)`, and 10,001 full-batch epochs. `spiral_data` draws from NumPy's global stream, so the test set is the 300 points that follow the training set in the stream, and the weights are drawn after both. The penalties sit on the weights and the biases of `dense1` only. Two things differ from the run of posts [27](../27-adam-optimiser/index.md) and [28](../28-generalization-and-testing/index.md): the learning rate, 0.05 here against 0.02 there, and the test set, drawn here before the weights and there after them, so a seed gives other initial weights. The unpenalised figures below are therefore not [post 28](../28-generalization-and-testing/index.md)'s (96.33 and 82.33 percent on seed 0), and every comparison in this post is with its own unpenalised run. Seed 0 is the seed `nnfs.init()` sets.
 
 Each row is a range over seeds 0 to 4, measured forward-only after the last update. Accuracies are in percent, the gap is training minus test accuracy in points, and the test loss is the data loss.
 
@@ -273,7 +273,7 @@ The figure below draws every run of the first three rows seed by seed, each as a
 
 **L2 helped on each of the five seeds.** Seed by seed, test accuracy rose by 3.33 to 12.67 points, the gap narrowed by 3.00 to 5.67 points, and the test data loss fell, in all five runs. On seed 0 the figures are 95.33 percent in training with and without the penalty, and 78.67 against 84.00 percent on the test set. The ranges of the two rows overlap, so a single run of each on different seeds could show the opposite; the claim rests on the paired comparison.
 
-**L1 raised test accuracy on each of the five seeds too, and narrowed the gap by less.** Test accuracy rose by 1.00 to 13.67 points and the gap narrowed by 0.67 to 3.33 points, against 3.00 to 5.67 under L2, because L1 kept the higher training accuracy on all five seeds. A rise of 1.00 point is 3 test points of 300, where one test accuracy scatters by about 2.2 points (post 28, section 4): on such a seed the run shows that L1 did no harm, and no more. Between L1 and L2 at this strength the runs give no order in test accuracy: L2 is higher on three seeds and L1 on two.
+**L1 raised test accuracy on each of the five seeds too, and narrowed the gap by less.** Test accuracy rose by 1.00 to 13.67 points and the gap narrowed by 0.67 to 3.33 points, against 3.00 to 5.67 under L2, because L1 kept the higher training accuracy on all five seeds. A rise of 1.00 point is 3 test points of 300, where one test accuracy scatters by about 2.2 points ([post 28](../28-generalization-and-testing/index.md), [section 4](../28-generalization-and-testing/index.md#4-reading-the-gap)): on such a seed the run shows that L1 did no harm, and no more. Between L1 and L2 at this strength the runs give no order in test accuracy: L2 is higher on three seeds and L1 on two.
 
 **Five further seeds keep the direction and not the "every".** Given the arguments `5 6 7 8 9`, the scripts run a second set of seeds. On it L2 raised test accuracy on three seeds, by 2.67 to 7.00 points, left it unchanged on one and lowered it by 1.00 point on one; L1 raised it on all five, by 0.33 to 7.33 points. Each narrowed the gap on four seeds, widened it on seed 5, and lowered the test data loss on all five. Over the ten seeds L2 has the higher test accuracy on four and L1 on six. With both penalties, seed 7 ends at 56.67 percent on the test set, 24.00 points below its unpenalised run.
 
@@ -290,13 +290,13 @@ What the penalties did to the 128 weights of `dense1`, over the same five seeds:
 
 **Both penalties shrink the weights a great deal.** The sum of squares falls by a factor of roughly 14 to 39 under L2 and 5 to 11 under L1.
 
-**No weight is exactly zero in any of the twenty runs,** as section 3 predicts for gradient steps. With a threshold of 0.001 for "near zero", L1 leaves 6 to 22 of the 128 weights there and L2 leaves 0 to 18, which reads as no contrast. The count mixes two kinds of weight. A dead neuron (post 06), with zero output on every training point, passes no data gradient to its two incoming weights, so they move under the penalty alone, towards zero under either one. Without a penalty 12 to 23 of the 64 neurons end dead and their weights stay where they were. Under L2 every near-zero weight belongs to a dead neuron, on all five seeds; among live neurons L2 leaves no weight below the threshold and L1 leaves 4 to 16. The textbook contrast, sparse under L1 and dense under L2, therefore holds on these runs among the weights the network uses, and the raw count hides it. The figure below splits the near-zero weights of each L2 and L1 run by the neuron they belong to.
+**No weight is exactly zero in any of the twenty runs,** as [section 3](#3-what-each-gradient-does-to-a-weight) predicts for gradient steps. With a threshold of 0.001 for "near zero", L1 leaves 6 to 22 of the 128 weights there and L2 leaves 0 to 18, which reads as no contrast. The count mixes two kinds of weight. A dead neuron ([post 06](../06-activation-functions-relu-and-softmax/index.md)), with zero output on every training point, passes no data gradient to its two incoming weights, so they move under the penalty alone, towards zero under either one. Without a penalty 12 to 23 of the 64 neurons end dead and their weights stay where they were. Under L2 every near-zero weight belongs to a dead neuron, on all five seeds; among live neurons L2 leaves no weight below the threshold and L1 leaves 4 to 16. The textbook contrast, sparse under L1 and dense under L2, therefore holds on these runs among the weights the network uses, and the raw count hides it. The figure below splits the near-zero weights of each L2 and L1 run by the neuron they belong to.
 
 ![Two stacked bar charts of the weights of the first layer below 0.001 after training, one bar per seed, 0 to 4. Left, L2 at 5 times 10 to the minus 4: 18, 0, 4, 12 and 6 weights, all of them in dead neurons. Right, L1 at the same strength: 7 and 9, 2 and 4, 3 and 11, 6 and 16, 3 and 8 weights in dead and in live neurons, totals 16, 6, 14, 22 and 11.](diagrams/04-near-zero-weights.svg)
 
 *Grey bars are weights that only the penalty moves; the coloured part, under L1 alone, is near-zero weights of neurons that still fire.*
 
-`snippets/single_weight.py` follows a weight that only the penalty moves. Under `Optimizer_Adam(learning_rate=0.05)` and the L1 penalty alone, a weight starting at 1 crosses zero at step 21 and then keeps moving within 0.0002 to 0.0049 of it, below the threshold on 213 of the last 1,000 steps and never at zero. Over 10,001 steps with the decay of the runs it is below the threshold on 214 of the last 1,000 steps under L1 and on 940 under L2, and in the trained networks 21 of the 52 weights of dead neurons are near zero under L1 against 40 of 44 under L2. For a weight the data has let go, Adam brings L2 closer to zero than L1, the reverse of the plain steps of section 3.
+`snippets/single_weight.py` follows a weight that only the penalty moves. Under `Optimizer_Adam(learning_rate=0.05)` and the L1 penalty alone, a weight starting at 1 crosses zero at step 21 and then keeps moving within 0.0002 to 0.0049 of it, below the threshold on 213 of the last 1,000 steps and never at zero. Over 10,001 steps with the decay of the runs it is below the threshold on 214 of the last 1,000 steps under L1 and on 940 under L2, and in the trained networks 21 of the 52 weights of dead neurons are near zero under L1 against 40 of 44 under L2. For a weight the data has let go, Adam brings L2 closer to zero than L1, the reverse of the plain steps of [section 3](#3-what-each-gradient-does-to-a-weight).
 
 **With ten times the data the gap was already small.** `snippets/jobs/more_data.py` repeats the first two rows with 1,000 samples per class in both sets. Without a penalty the gap is 0.90 to 3.00 points over the five seeds, against 11.67 to 16.67 points with 100 samples per class: the data closed most of it. With L2 the gap is 1.13 to 1.77 points, narrower than without on two seeds and wider on three. Test accuracy is 87.50 to 89.23 percent with L2 and 86.50 to 87.93 percent without on four seeds, a difference of $-0.43$ to $+1.30$ points seed by seed. On the fifth, seed 2, the unpenalised run stalled at 64.43 percent training accuracy and 63.43 percent on the test set, and the run with L2 did not. On these runs, then, L2 adds little to a gap that more data has already narrowed.
 
@@ -304,7 +304,7 @@ What the penalties did to the 128 weights of `dense1`, over the same five seeds:
 
 ## 8. Choosing $\lambda$
 
-$\lambda$ is a hyperparameter, and [post 29](../29-validation-and-hyperparameter-tuning/index.md) gives the procedure: candidates are compared on validation data and the test set is read once, for the winner. The table below reads the test set for every candidate, which is legitimate only because nothing is chosen from it here; it shows the shape of the dependence. The strength $5 \times 10^{-4}$ of section 7 was fixed before this sweep was run and is not a pick from it. The rows for 0 and $5 \times 10^{-4}$ are those of section 7.
+$\lambda$ is a hyperparameter, and [post 29](../29-validation-and-hyperparameter-tuning/index.md) gives the procedure: candidates are compared on validation data and the test set is read once, for the winner. The table below reads the test set for every candidate, which is legitimate only because nothing is chosen from it here; it shows the shape of the dependence. The strength $5 \times 10^{-4}$ of [section 7](#7-results-on-the-spiral) was fixed before this sweep was run and is not a pick from it. The rows for 0 and $5 \times 10^{-4}$ are those of [section 7](#7-results-on-the-spiral).
 
 | L2 strength | Script | Training accuracy | Test accuracy (mean) | Gap | $\sum w^2$ in `dense1` |
 |---|---|:---:|:---:|:---:|:---:|
@@ -338,13 +338,13 @@ A sweep therefore goes by powers of ten first, such as $10^{-5}$ to $10^{-2}$, r
 
 ## 9. Weight decay and priors
 
-**L2 with plain gradient descent is weight decay.** Substituting the gradient of the total loss into the update of post 22 gives
+**L2 with plain gradient descent is weight decay.** Substituting the gradient of the total loss into the update of [post 22](../22-gradient-descent-optimiser/index.md) gives
 
 $$w \leftarrow w - \alpha \left( \frac{\partial L_{\text{data}}}{\partial w} + 2 \lambda w \right) = (1 - 2 \alpha \lambda) \, w - \alpha \frac{\partial L_{\text{data}}}{\partial w}$$
 
-Every step first multiplies each weight by a factor slightly below 1 and then takes the ordinary data step. That multiplication is weight decay, and it is the factor 0.998 of section 3. Krogh and Hertz (1992) analysed why this decay can improve the generalisation of a neural network.
+Every step first multiplies each weight by a factor slightly below 1 and then takes the ordinary data step. That multiplication is weight decay, and it is the factor 0.998 of [section 3](#3-what-each-gradient-does-to-a-weight). Krogh and Hertz (1992) analysed why this decay can improve the generalisation of a neural network.
 
-**With Adam the two are not the same thing.** Adam divides each gradient by a running size of that gradient (post 27), and the L2 term is inside the gradient it divides. `snippets/single_weight.py` hands one weight of 1 with the L2 penalty alone to `Optimizer_Adam(learning_rate=0.001)` for 100 steps:
+**With Adam the two are not the same thing.** Adam divides each gradient by a running size of that gradient ([post 27](../27-adam-optimiser/index.md)), and the L2 term is inside the gradient it divides. `snippets/single_weight.py` hands one weight of 1 with the L2 penalty alone to `Optimizer_Adam(learning_rate=0.001)` for 100 steps:
 
 ```text
 lambda    Adam, L2 in the gradient    w * (1 - 2 * 0.001 * lambda)^100
@@ -353,7 +353,7 @@ lambda    Adam, L2 in the gradient    w * (1 - 2 * 0.001 * lambda)^100
 1         0.901744                    0.818567
 ```
 
-The right column is weight decay by the factor above. The left column barely moves while $\lambda$ changes by four orders of magnitude: Adam's normalisation turns a gradient of any constant size into a step of about the learning rate, so the weight loses close to $100 \cdot 0.001$ whatever $\lambda$ is. In a real run the data gradient is in the same average and the effect is less extreme, but the shrinkage of a weight is no longer a fixed factor per step. Loshchilov and Hutter (2019) made this point and proposed applying the decay to the weights directly, outside the adaptive step. The runs of sections 7 and 8 use the L2 term in the gradient, as the class of section 5 computes it, and their results are results for that combination.
+The right column is weight decay by the factor above. The left column barely moves while $\lambda$ changes by four orders of magnitude: Adam's normalisation turns a gradient of any constant size into a step of about the learning rate, so the weight loses close to $100 \cdot 0.001$ whatever $\lambda$ is. In a real run the data gradient is in the same average and the effect is less extreme, but the shrinkage of a weight is no longer a fixed factor per step. Loshchilov and Hutter (2019) made this point and proposed applying the decay to the weights directly, outside the adaptive step. The runs of sections [7](#7-results-on-the-spiral) and [8](#8-choosing-lambda) use the L2 term in the gradient, as the class of [section 5](#5-the-backward-pass-extra-terms-in-layer_dense) computes it, and their results are results for that combination.
 
 **The penalties are priors.** If the data loss is a negative log-likelihood, minimising the total loss is maximum a posteriori estimation under a prior on the weights. The negative log of a zero-mean Gaussian density with variance $\sigma^2$ is $w^2 / (2 \sigma^2)$ plus a constant, so the L2 penalty $\lambda w^2$ is a Gaussian prior with $\sigma^2 = 1 / (2 \lambda)$ when the data term is the summed loss, and with $\sigma^2 = 1 / (2 N \lambda)$ when it is the mean over $N$ samples, as in this series. The L1 penalty corresponds in the same way to a Laplace prior, whose density has a peak at zero. Neither view changes the code.
 
@@ -369,13 +369,13 @@ python posts/30-l1-and-l2-regularisation/snippets/seeds_l2.py
 
 | Script | Contents | Time |
 |---|---|---|
-| `network.py` | the classes, the loop, the setup; prints the table of section 2 and the layer of sections 4 and 5 | 1 s |
-| `single_weight.py` | one weight under each penalty, plain steps and Adam (sections 3, 7 and 9) | 1 s |
-| `gradient_check.py` | the central-difference check (section 6) | 1 s |
-| `what_can_go_wrong.py` | the mistakes of section 11 | 1 s |
-| `seeds_none.py`, `seeds_l2.py`, `seeds_l1.py`, `seeds_l1_l2.py` | five seeds each (section 7) | 30 to 50 s each |
-| `l2_weak.py`, `l2_strong.py`, `l2_too_strong.py` | five seeds each (section 8) | 30 to 50 s each |
-| `jobs/more_data.py` | ten runs on 3,000 points (section 7) | 10 to 20 min |
+| `network.py` | the classes, the loop, the setup; prints the table of [section 2](#2-the-two-penalties-and-their-gradients) and the layer of sections [4](#4-the-forward-pass-the-penalty-joins-the-reported-loss) and [5](#5-the-backward-pass-extra-terms-in-layer_dense) | 1 s |
+| `single_weight.py` | one weight under each penalty, plain steps and Adam (sections [3](#3-what-each-gradient-does-to-a-weight), [7](#7-results-on-the-spiral) and [9](#9-weight-decay-and-priors)) | 1 s |
+| `gradient_check.py` | the central-difference check ([section 6](#6-checking-the-new-terms)) | 1 s |
+| `what_can_go_wrong.py` | the mistakes of [section 11](#11-what-can-go-wrong) | 1 s |
+| `seeds_none.py`, `seeds_l2.py`, `seeds_l1.py`, `seeds_l1_l2.py` | five seeds each ([section 7](#7-results-on-the-spiral)) | 30 to 50 s each |
+| `l2_weak.py`, `l2_strong.py`, `l2_too_strong.py` | five seeds each ([section 8](#8-choosing-lambda)) | 30 to 50 s each |
+| `jobs/more_data.py` | ten runs on 3,000 points ([section 7](#7-results-on-the-spiral)) | 10 to 20 min |
 
 `jobs/more_data.py` is too slow for the two-minute limit of the other scripts and is run on its own. The training scripts take other seeds as arguments, as in `seeds_l2.py 5 6 7 8 9`. All need NumPy and the `nnfs` package, which supplies `spiral_data` and `nnfs.init()`. The first four run in float64 and do not call `nnfs.init()`; the training scripts call it once and reseed with `np.random.seed` for each run.
 
@@ -383,7 +383,7 @@ python posts/30-l1-and-l2-regularisation/snippets/seeds_l2.py
 
 ## 11. What can go wrong?
 
-`snippets/what_can_go_wrong.py` runs the gradient check of section 6 with L2 at 0.01 on every array and one thing wrong in `backward`:
+`snippets/what_can_go_wrong.py` runs the gradient check of [section 6](#6-checking-the-new-terms) with L2 at 0.01 on every array and one thing wrong in `backward`:
 
 ```text
 gradient         correct              no term in backward   term without the 2
@@ -410,7 +410,7 @@ Three of the four released projects of this series (`nn-p01`, `nn-p03`, `nn-p04`
 
 **The penalty counted on one side of a comparison.** On seed 0 with L2, `seeds_l2.py` prints a training data loss of 0.1396, a penalty of 0.0637 and a test data loss of 0.4823. The loop's `loss` is $0.1396 + 0.0637 = 0.2033$. Set against the test data loss it understates the gap in loss by the penalty; adding the penalty to the test loss instead inflates a number that is supposed to score predictions.
 
-**Judging $\lambda$ by the training loss.** Averaged over the five seeds, the loop's loss, data loss plus penalty, rises with every step of the sweep of section 8, from 0.1603 without a penalty to 0.5161 at $10^{-2}$, while test accuracy first rises and then falls. The training loss does not say which strength generalises. The reading that counts is on held-out data.
+**Judging $\lambda$ by the training loss.** Averaged over the five seeds, the loop's loss, data loss plus penalty, rises with every step of the sweep of [section 8](#8-choosing-lambda), from 0.1603 without a penalty to 0.5161 at $10^{-2}$, while test accuracy first rises and then falls. The training loss does not say which strength generalises. The reading that counts is on held-out data.
 
 ---
 
@@ -442,14 +442,12 @@ Three of the four released projects of this series (`nn-p01`, `nn-p03`, `nn-p04`
 
 ## Further reading
 
-- Bishop, C. M., *Pattern Recognition and Machine Learning*, chapter 3 (Springer, 2006). Regularised least squares and its Bayesian reading.
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, section 7.1 (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 14 (2020).
-- Krogh, A. and Hertz, J. A., *"A Simple Weight Decay Can Improve Generalization"* (NeurIPS, 1992).
-- Loshchilov, I. and Hutter, F., *"Decoupled Weight Decay Regularization"* (ICLR, 2019).
-- Tibshirani, R., *"Regression Shrinkage and Selection via the Lasso"* (Journal of the Royal Statistical Society, 1996).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Bishop, C. M., *[Pattern Recognition and Machine Learning](https://www.microsoft.com/en-us/research/people/cmbishop/prml-book/)*, chapter 3 (Springer, 2006). Regularised least squares and its Bayesian reading.
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/regularization.html)*, section 7.1 (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 14 (2020).
+- Krogh, A. and Hertz, J. A., *["A Simple Weight Decay Can Improve Generalization"](https://papers.nips.cc/paper/1991/hash/8eefcfdf5990e441f0fb6f3fad709e21-Abstract.html)* (NeurIPS, 1992).
+- Loshchilov, I. and Hutter, F., *["Decoupled Weight Decay Regularization"](https://arxiv.org/abs/1711.05101)* (ICLR, 2019).
+- Tibshirani, R., *["Regression Shrinkage and Selection via the Lasso"](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x)* (Journal of the Royal Statistical Society, 1996).
 
 ---
 
