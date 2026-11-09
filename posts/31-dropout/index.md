@@ -1,6 +1,6 @@
 # 31 - Dropout
 
-> **TL;DR.** Dropout sets each activation of a layer to zero with probability $p$ on every training forward pass and divides the survivors by $1 - p$, so the expected activation is unchanged and evaluation uses the layer as the identity. `Layer_Dropout` is three short methods, and the `training` argument of its `forward` is the switch between the two modes. On the 64-neuron spiral network of post 28 it did not help: at $p = 0.1$ the test accuracy fell on each of ten seeds, by 9.33 to 31.33 points, because the network stopped fitting its training data. Test accuracy exceeded training accuracy only where the training figure was measured through the mask; with the mask off, training accuracy was the higher one in every run.
+> **TL;DR.** Dropout sets each activation of a layer to zero with probability $p$ on every training forward pass and divides the survivors by $1 - p$, so the expected activation is unchanged and evaluation uses the layer as the identity. `Layer_Dropout` is three short methods, and the `training` argument of its `forward` is the switch between the two modes. On the 64-neuron spiral network of [post 28](../28-generalization-and-testing/index.md) it did not help: at $p = 0.1$ the test accuracy fell on each of ten seeds, by 9.33 to 31.33 points, because the network stopped fitting its training data. Test accuracy exceeded training accuracy only where the training figure was measured through the mask; with the mask off, training accuracy was the higher one in every run.
 >
 > **Prerequisites:** [Post 28](../28-generalization-and-testing/index.md).
 > **Safe to skip?** Skip it if the reader can already write an inverted-dropout layer with its backward pass from memory, say why evaluation runs it as the identity, and say why a training accuracy measured through the mask cannot be compared with a test accuracy.
@@ -13,7 +13,7 @@
 
 ![Three rows of five cells for one dropout layer at drop rate 0.2. Training, forward: activations of 1 times the stored mask 1.25, 1.25, 1.25, 1.25, 0 give the output 1.25, 1.25, 1.25, 1.25, 0, which sums to 5 as the input does. Training, backward: dvalues 0.1, minus 0.2, 0.3, 0.4, minus 0.5 times the same mask give dinputs 0.125, minus 0.25, 0.375, 0.5, 0. Evaluation with training=False: no mask is drawn and the output is a copy of the input.](diagrams/01-two-modes.svg)
 
-*One layer at a drop rate of 0.2, on the five activations of section 4. In training the stored mask zeroes one entry and scales the other four by 1/0.8, in the forward and the backward pass; in evaluation the layer copies its input.*
+*One layer at a drop rate of 0.2, on the five activations of [section 4](#4-the-inverted-dropout-scale). In training the stored mask zeroes one entry and scales the other four by 1/0.8, in the forward and the backward pass; in evaluation the layer copies its input.*
 
 ---
 
@@ -35,11 +35,11 @@ Both are dependencies that the training set rewards and new data does not. Dropo
 
 The papers give two explanations of why this helps. They describe the same algorithm.
 
-**Co-adaptation.** The first is the mechanical one of section 1: no weight can become critical to the output, because the pass that needs it may not include its neuron.
+**Co-adaptation.** The first is the mechanical one of [section 1](#1-the-question-what-does-zeroing-random-activations-do): no weight can become critical to the output, because the pass that needs it may not include its neuron.
 
 **An ensemble that shares its weights.** The second is statistical. A layer of $n$ neurons has $2^n$ subsets, so a network with one dropout layer contains $2^n$ **thinned networks**, one for each choice of which neurons stay on. The count does not depend on $p$; the rate only sets how often each pattern is drawn. A training pass draws a thinned network and takes one optimiser step on it, and since all of them use the same weight arrays, the step changes every other thinned network too. The 64-neuron layer of this series has $2^{64} \approx 1.8 \times 10^{19}$ of them; the point is the sharing, not the coverage.
 
-Averaging the predictions of many models is a standard way to reduce test error, at the cost of one training run and one forward pass per model. The ensemble reading says that the full network stands in for an average over its thinned networks at the cost of a single pass. For a network with one hidden layer feeding a softmax, Hinton et al. (2012) state the relation exactly: the full network outputs the renormalised geometric mean of the class probabilities of all $2^n$ thinned networks. The reason is one line. The logits are linear in the mask, so with the scale of section 4 their expectation over masks is the logits of the full network, and the softmax of a mean of logits is the renormalised geometric mean of the softmaxes.
+Averaging the predictions of many models is a standard way to reduce test error, at the cost of one training run and one forward pass per model. The ensemble reading says that the full network stands in for an average over its thinned networks at the cost of a single pass. For a network with one hidden layer feeding a softmax, Hinton et al. (2012) state the relation exactly: the full network outputs the renormalised geometric mean of the class probabilities of all $2^n$ thinned networks. The reason is one line. The logits are linear in the mask, so with the scale of [section 4](#4-the-inverted-dropout-scale) their expectation over masks is the logits of the full network, and the softmax of a mean of logits is the renormalised geometric mean of the softmaxes.
 
 `snippets/ensemble.py` checks it by enumeration on a network small enough to list: 2 inputs, 8 ReLU neurons, 3 classes, random parameters at scale 1, $p = 0.5$, all 256 masks on the 300 spiral points.
 
@@ -63,13 +63,13 @@ kept   masks   lowest    mean   highest
    8       1      8.0     8.0       8.0
 ```
 
-The first two lines are equalities up to rounding. The third shows what the identity is not: the full network is not the arithmetic mean of the thinned networks' probabilities, which differs from it by up to 0.23 in a probability, although the two choose the same class on all 300 points here. The sixth line is the reason the switch of section 7 matters: a single thinned network disagrees with the full one on 37.5 percent of the points on average. The table under it, drawn in the figure below, splits that figure by the number of neurons a mask keeps: the mean disagreement falls from 64.6 percent with one neuron kept to 15.4 with seven, and even the mask that keeps all eight, which doubles every activation, picks another class on 8.0 percent of the points.
+The first two lines are equalities up to rounding. The third shows what the identity is not: the full network is not the arithmetic mean of the thinned networks' probabilities, which differs from it by up to 0.23 in a probability, although the two choose the same class on all 300 points here. The sixth line is the reason the switch of [section 7](#7-the-train-versus-test-switch) matters: a single thinned network disagrees with the full one on 37.5 percent of the points on average. The table under it, drawn in the figure below, splits that figure by the number of neurons a mask keeps: the mean disagreement falls from 64.6 percent with one neuron kept to 15.4 with seven, and even the mask that keeps all eight, which doubles every activation, picks another class on 8.0 percent of the points.
 
 ![Left: a network of 2 inputs, 8 ReLU neurons and 3 classes with a mask that keeps 5 neurons; the 3 dropped ones are dashed and unconnected. Right: for 0 to 8 kept neurons, a band from the lowest to the highest share of the 300 points on which a thinned network picks another class than the full network, with its mean: 76.7, 64.6, 54.2, 45.0, 36.8, 29.4, 22.4, 15.4 and 8.0 percent, and a dotted line at the mean over all 256 masks, 37.5.](diagrams/02-thinned-networks.svg)
 
 *All 256 thinned networks of the network of `snippets/ensemble.py` at $p = 0.5$. One of them alone often picks another class than the full network, and the fewer neurons it keeps, the more often; their logits averaged over the masks are the full network's.*
 
-The identity needs the dropped layer to feed the softmax through a linear layer. With a non-linearity after the dropout layer, as in a deeper network, the full network is only an approximation to the average; Srivastava et al. (2014) report that the approximation works well in practice. Neither reading says how much a given network gains; section 8 measures it.
+The identity needs the dropped layer to feed the softmax through a linear layer. With a non-linearity after the dropout layer, as in a deeper network, the full network is only an approximation to the average; Srivastava et al. (2014) report that the approximation works well in practice. Neither reading says how much a given network gains; [section 8](#8-results-on-the-spiral) measures it.
 
 ---
 
@@ -87,7 +87,7 @@ The method has one hyperparameter, the **dropout rate** $p$: the probability tha
 
 The columns are closed forms: the mean is $64(1 - p)$, the standard deviation $\sqrt{64 p (1 - p)}$, and the chance that a sample passes untouched is $(1 - p)^{64}$. Even at $p = 0.1$ only about one sample in 850 sees the whole layer.
 
-The original papers used $p = 0.5$ for hidden layers and a smaller rate, 0.2, on the inputs, in networks with hundreds or thousands of neurons per layer. This post uses 0.1, the rate of the released projects of this series (`nn-p01`, `nn-p03`), and section 8 also runs 0.2 and 0.5. The rate is a hyperparameter like $\lambda$ or the learning rate, and it is chosen on validation data ([post 29](../29-validation-and-hyperparameter-tuning/index.md)), never on the test set.
+The original papers used $p = 0.5$ for hidden layers and a smaller rate, 0.2, on the inputs, in networks with hundreds or thousands of neurons per layer. This post uses 0.1, the rate of the released projects of this series (`nn-p01`, `nn-p03`), and [section 8](#8-results-on-the-spiral) also runs 0.2 and 0.5. The rate is a hyperparameter like $\lambda$ or the learning rate, and it is chosen on validation data ([post 29](../29-validation-and-hyperparameter-tuning/index.md)), never on the test set.
 
 ---
 
@@ -150,7 +150,7 @@ class Layer_Dropout:
 
 **The argument is the drop probability, the attribute is the keep probability.** `Layer_Dropout(0.2)` drops 20 percent and stores `self.rate = 0.8`, because both the draw and the division need $1 - p$. The glossary, the cheatsheet and the released projects use the same convention.
 
-**The mask has the shape of the input.** `np.random.binomial(1, self.rate, size=inputs.shape)` draws one 0 or 1 per entry, so for a batch of 300 samples and 64 neurons it draws 19,200 values and every sample gets its own pattern: one pass trains up to 300 thinned networks at once. Run on the network of section 6, `snippets/network.py` prints:
+**The mask has the shape of the input.** `np.random.binomial(1, self.rate, size=inputs.shape)` draws one 0 or 1 per entry, so for a batch of 300 samples and 64 neurons it draws 19,200 values and every sample gets its own pattern: one pass trains up to 300 thinned networks at once. Run on the network of [section 6](#6-dropout-in-the-network), `snippets/network.py` prints:
 
 ```text
 training mode:   output (300, 64), mask values [0.         1.11111111], entries dropped 1927 of 19200 (0.1004), loss 1.0986
@@ -174,7 +174,7 @@ dinputs: [ 0.125 -0.25   0.375  0.5   -0.   ]
 output: [7. 7. 7. 7. 7.]  equals the input: True  random stream untouched: True
 ```
 
-The default is `training=True`, so a call that omits the argument drops. The class matches the reference implementation in `nn-p01` except for one check: the project's constructor rejects a rate outside $[0, 1)$, and this class does not (section 11).
+The default is `training=True`, so a call that omits the argument drops. The class matches the reference implementation in `nn-p01` except for one check: the project's constructor rejects a rate outside $[0, 1)$, and this class does not ([section 11](#11-what-can-go-wrong)).
 
 ---
 
@@ -186,7 +186,7 @@ The layer goes after the activation and before the next dense layer, so that it 
 X -> Layer_Dense(2, 64) -> ReLU -> Layer_Dropout(0.1) -> Layer_Dense(64, 3) -> softmax and loss
 ```
 
-The loop is the one of posts 27 and 28 with one object and two calls added. From `snippets/network.py`:
+The loop is the one of posts [27](../27-adam-optimiser/index.md) and [28](../28-generalization-and-testing/index.md) with one object and two calls added. From `snippets/network.py`:
 
 ```python
     for epoch in range(epochs):
@@ -211,9 +211,9 @@ The loop is the one of posts 27 and 28 with one object and two calls added. From
         optimizer.post_update_params()
 ```
 
-`dense2` now reads `dropout1.output` and `activation1.backward` reads `dropout1.dinputs`: the layer sits in both directions of the chain, in mirrored order. The optimiser is not told about it, since the layer has no parameters. The `loss` and `accuracy` of this loop are measured through the mask of that epoch; section 8 shows how far that puts them from the figures of the same weights with the mask off. The dense layers are those of post 16.
+`dense2` now reads `dropout1.output` and `activation1.backward` reads `dropout1.dinputs`: the layer sits in both directions of the chain, in mirrored order. The optimiser is not told about it, since the layer has no parameters. The `loss` and `accuracy` of this loop are measured through the mask of that epoch; [section 8](#8-results-on-the-spiral) shows how far that puts them from the figures of the same weights with the mask off. The dense layers are those of [post 16](../16-coding-backpropagation/index.md).
 
-**Checking the backward pass.** A network with a dropout layer is a random function: two forward passes draw two masks, so a central difference across them would compare two different networks. The check therefore draws one mask, keeps it, and differences the loss of that one thinned network, with $h = 10^{-5}$ in float64 and without `nnfs.init()`, as in post 21. `snippets/gradient_check.py`, on 2 inputs, 4 ReLU neurons, `Layer_Dropout(0.5)` and 3 classes with parameters at scale 1:
+**Checking the backward pass.** A network with a dropout layer is a random function: two forward passes draw two masks, so a central difference across them would compare two different networks. The check therefore draws one mask, keeps it, and differences the loss of that one thinned network, with $h = 10^{-5}$ in float64 and without `nnfs.init()`, as in [post 21](../21-coding-the-full-backpropagation/index.md). `snippets/gradient_check.py`, on 2 inputs, 4 ReLU neurons, `Layer_Dropout(0.5)` and 3 classes with parameters at scale 1:
 
 ```text
 gradient         largest relative error   largest absolute gap
@@ -227,7 +227,7 @@ mask values [0. 2.], entries dropped 595 of 1200
 largest relative error 1.1e-06, largest absolute gap 4.6e-11, seeds above the pass mark: [2]
 ```
 
-Nine of the ten seeds are below the pass mark of $10^{-7}$. Seed 2 is above it with an absolute gap of at most $4.6 \times 10^{-11}$, the rounding level of the passing checks: the tiny-gradient case of post 21, not a wrong formula. Section 11 runs the same check on three wrong `backward` methods.
+Nine of the ten seeds are below the pass mark of $10^{-7}$. Seed 2 is above it with an absolute gap of at most $4.6 \times 10^{-11}$, the rounding level of the passing checks: the tiny-gradient case of [post 21](../21-coding-the-full-backpropagation/index.md), not a wrong formula. [Section 11](#11-what-can-go-wrong) runs the same check on three wrong `backward` methods.
 
 ---
 
@@ -241,7 +241,7 @@ The rule is short: the mask is on in the passes that are followed by an update, 
 | Training, backward | none: `backward` takes no flag | multiplies by the stored mask | the same thinned networks |
 | Validation or test, forward | `False` | identity | the full network, the same on every pass |
 
-In this series the switch is an argument of one method of one layer. `Layer_Dropout.forward` takes `training`, the other layers do not know about it, and the caller passes it. In the released projects a model object's `forward(X, y, training)` hands the flag on to each dropout layer. The test pass of post 28 gains one argument:
+In this series the switch is an argument of one method of one layer. `Layer_Dropout.forward` takes `training`, the other layers do not know about it, and the caller passes it. In the released projects a model object's `forward(X, y, training)` hands the flag on to each dropout layer. The test pass of [post 28](../28-generalization-and-testing/index.md) gains one argument:
 
 ```python
     dense1.forward(X)
@@ -256,15 +256,15 @@ In this series the switch is an argument of one method of one layer. `Layer_Drop
 
 These lines are the body of `evaluate` in `snippets/network.py`, whose `training` argument defaults to `False`. It is still forward-only.
 
-**Why evaluation leaves every neuron on.** Three reasons, each from an earlier section. The full network is the ensemble of section 2, and a pass through a mask reports one random member of it. The scale of section 4 was chosen so that the full network needs no correction. And a figure that changes from pass to pass cannot be compared with anything.
+**Why evaluation leaves every neuron on.** Three reasons, each from an earlier section. The full network is the ensemble of [section 2](#2-two-readings-co-adaptation-and-the-implicit-ensemble), and a pass through a mask reports one random member of it. The scale of [section 4](#4-the-inverted-dropout-scale) was chosen so that the full network needs no correction. And a figure that changes from pass to pass cannot be compared with anything.
 
-**`backward` has no switch and must follow a training forward.** It multiplies by `self.binary_mask`, which only a training-mode `forward` writes. Called after an evaluation pass it uses the mask of an earlier pass, or fails if there has been none (section 11). In a correct loop the situation does not arise, because evaluation never calls `backward`.
+**`backward` has no switch and must follow a training forward.** It multiplies by `self.binary_mask`, which only a training-mode `forward` writes. Called after an evaluation pass it uses the mask of an earlier pass, or fails if there has been none ([section 11](#11-what-can-go-wrong)). In a correct loop the situation does not arise, because evaluation never calls `backward`.
 
 ---
 
 ## 8. Results on the spiral
 
-**The setup**, printed by every training script: `nnfs.init()` once (seed 0, float32, and its own `np.dot`); then for each seed $s$, `np.random.seed(s)`, `spiral_data(samples=100, classes=3)`, `Layer_Dense(2, 64)`, ReLU, the dropout layer, `Layer_Dense(64, 3)`, the combined softmax and loss, weights at `0.01 * randn`, a test set from a second `spiral_data` call, `Optimizer_Adam(learning_rate=0.02, decay=1e-5)` and 10,001 full-batch epochs. This is the documented run of post 28 with one layer added, and that run is the baseline. Post 28 drew its test points after training; the loop now draws masks, so they are drawn just before it, which gives the same 300 points. In the baseline a pass-through object, `No_Dropout`, stands where the dropout layer will stand, and `seeds_none.py` reproduces post 28's figures digit for digit: 96.33 and 82.33 percent on seed 0, and 78.00 to 96.33 against 67.33 to 82.67 percent over seeds 0 to 4.
+**The setup**, printed by every training script: `nnfs.init()` once (seed 0, float32, and its own `np.dot`); then for each seed $s$, `np.random.seed(s)`, `spiral_data(samples=100, classes=3)`, `Layer_Dense(2, 64)`, ReLU, the dropout layer, `Layer_Dense(64, 3)`, the combined softmax and loss, weights at `0.01 * randn`, a test set from a second `spiral_data` call, `Optimizer_Adam(learning_rate=0.02, decay=1e-5)` and 10,001 full-batch epochs. This is the documented run of [post 28](../28-generalization-and-testing/index.md) with one layer added, and that run is the baseline. [Post 28](../28-generalization-and-testing/index.md) drew its test points after training; the loop now draws masks, so they are drawn just before it, which gives the same 300 points. In the baseline a pass-through object, `No_Dropout`, stands where the dropout layer will stand, and `seeds_none.py` reproduces [post 28](../28-generalization-and-testing/index.md)'s figures digit for digit: 96.33 and 82.33 percent on seed 0, and 78.00 to 96.33 against 67.33 to 82.67 percent over seeds 0 to 4.
 
 **Three figures per run**, all measured forward-only after the last update, on the same weights:
 
@@ -287,13 +287,13 @@ The figure below draws the three figures of each of these twenty runs.
 
 *Every run of the table, seed by seed. The training figure through the mask sits below the mask-off figure of the same weights, which is why a test accuracy here can exceed the one and never the other.*
 
-**Dropout lowered the test accuracy on every seed, at every rate.** `snippets/jobs/paired.py` runs seeds 0 to 9 and prints every seed-by-seed count of this section. Against the baseline of the same seed, the test accuracy is lower on ten of ten seeds at each rate: by 9.33 to 31.33 points at $p = 0.1$, by 4.33 to 32.00 at $p = 0.2$ and by 5.00 to 23.67 at $p = 0.5$. The test loss, in contrast, is lower with dropout on 2 to 4 of the ten seeds at each rate: the baseline is confidently wrong on some test points (post 28, section 4), and the dropout networks are less confident.
+**Dropout lowered the test accuracy on every seed, at every rate.** `snippets/jobs/paired.py` runs seeds 0 to 9 and prints every seed-by-seed count of this section. Against the baseline of the same seed, the test accuracy is lower on ten of ten seeds at each rate: by 9.33 to 31.33 points at $p = 0.1$, by 4.33 to 32.00 at $p = 0.2$ and by 5.00 to 23.67 at $p = 0.5$. The test loss, in contrast, is lower with dropout on 2 to 4 of the ten seeds at each rate: the baseline is confidently wrong on some test points ([post 28](../28-generalization-and-testing/index.md), [section 4](../28-generalization-and-testing/index.md#4-reading-the-gap)), and the dropout networks are less confident.
 
-**The cause is under-fitting, not better generalisation.** With the mask off, the training accuracy at $p = 0.1$ is 13.00 to 38.33 points below the baseline's over the ten seeds: 55.00 to 74.33 percent where the baseline has 78.00 to 96.33. The network no longer fits the data it is trained on. The gap between training and test accuracy does narrow, on all ten seeds at $p = 0.1$, and it narrows because the training figure falls further than the test figure. This is the pattern post 28 measured when it cut the layer to 8 neurons: a smaller gap and a worse model. The number of dead neurons is no explanation: 10 to 26 of the 64 without dropout and 11 to 27 at $p = 0.1$, over the ten seeds.
+**The cause is under-fitting, not better generalisation.** With the mask off, the training accuracy at $p = 0.1$ is 13.00 to 38.33 points below the baseline's over the ten seeds: 55.00 to 74.33 percent where the baseline has 78.00 to 96.33. The network no longer fits the data it is trained on. The gap between training and test accuracy does narrow, on all ten seeds at $p = 0.1$, and it narrows because the training figure falls further than the test figure. This is the pattern [post 28](../28-generalization-and-testing/index.md) measured when it cut the layer to 8 neurons: a smaller gap and a worse model. The number of dead neurons is no explanation: 10 to 26 of the 64 without dropout and 11 to 27 at $p = 0.1$, over the ten seeds.
 
-**Why so small a rate costs so much.** The last line of `seeds_none.py` scores each baseline network through a `Layer_Dropout(0.1)` it was not trained with: the training accuracy is then 41.10 to 47.73 percent where the mask-off figure is 78.00 to 96.33, and the loss 7.37 to 8.09 where it was 0.08 to 0.47. The fit found without dropout does not survive the mask. By section 4 a mask adds noise of variance $\frac{p}{1 - p} \sum_j w_{kj}^2 a_j^2$ to logit $k$, so the larger the terms a logit is summed from, the more a mask disturbs it, and training with the mask leaves such a fit: `jobs/paired.py` trains the fitted networks of seeds 0 to 4 for 10,001 more epochs with the mask on, and the mask-off training accuracy falls on all five, by 9.33 to 32.33 points.
+**Why so small a rate costs so much.** The last line of `seeds_none.py` scores each baseline network through a `Layer_Dropout(0.1)` it was not trained with: the training accuracy is then 41.10 to 47.73 percent where the mask-off figure is 78.00 to 96.33, and the loss 7.37 to 8.09 where it was 0.08 to 0.47. The fit found without dropout does not survive the mask. By [section 4](#4-the-inverted-dropout-scale) a mask adds noise of variance $\frac{p}{1 - p} \sum_j w_{kj}^2 a_j^2$ to logit $k$, so the larger the terms a logit is summed from, the more a mask disturbs it, and training with the mask leaves such a fit: `jobs/paired.py` trains the fitted networks of seeds 0 to 4 for 10,001 more epochs with the mask on, and the mask-off training accuracy falls on all five, by 9.33 to 32.33 points.
 
-**The mask alone costs 3 to 11 points of training accuracy.** On the same weights, the training accuracy through the mask is below the mask-off figure in every run: by 3.31 to 8.49 points at $p = 0.1$ and by 6.13 to 10.88 points at $p = 0.5$, over ten seeds. This difference says nothing about new data. It is the handicap of scoring thinned networks, the disagreement that section 2 measured on a small network.
+**The mask alone costs 3 to 11 points of training accuracy.** On the same weights, the training accuracy through the mask is below the mask-off figure in every run: by 3.31 to 8.49 points at $p = 0.1$ and by 6.13 to 10.88 points at $p = 0.5$, over ten seeds. This difference says nothing about new data. It is the handicap of scoring thinned networks, the disagreement that [section 2](#2-two-readings-co-adaptation-and-the-implicit-ensemble) measured on a small network.
 
 **Test accuracy above training accuracy is an effect of that handicap.** The claim that goes with dropout, a test accuracy higher than the training accuracy, appears in these runs only when the training figure is taken through the mask: on 4 of ten seeds at $p = 0.1$, 4 of ten at $p = 0.2$ and 9 of ten at $p = 0.5$. With the mask off on both sides, the training accuracy is above the test accuracy in all thirty runs. A negative gap between a masked training figure and an unmasked test figure compares two different networks, and is not a sign of generalisation.
 
@@ -326,25 +326,25 @@ train accuracy, mask on 89.57 to 92.88, mask off 92.00 to 94.33 percent; test ac
 mask off minus test 4.33 to 9.67 (mean 7.67) points; mask on minus test 2.64 to 8.21 (mean 5.95) points; test loss 0.506 to 0.850
 ```
 
-Seed by seed, the test accuracy with dropout is higher on three seeds, by 0.33, 0.67 and 2.67 points, equal on one, and lower by 0.33 points on one. One test point is 0.33 points, and a test accuracy on 300 points scatters by about 2.2 points (post 28, section 4), so this is not a measured gain. Two things did move on all five seeds. The gap narrowed, to 4.33 to 9.67 points from 8.33 to 17.33, with the mask-off training accuracy falling to 92.00 to 94.33 percent from 97.00 to 99.33. And the test loss fell. On a layer with neurons to spare, dropout at 0.1 did what a regulariser is described as doing, less fit and a smaller gap, and left the test accuracy where it was. These are five seeds at one width and one rate.
+Seed by seed, the test accuracy with dropout is higher on three seeds, by 0.33, 0.67 and 2.67 points, equal on one, and lower by 0.33 points on one. One test point is 0.33 points, and a test accuracy on 300 points scatters by about 2.2 points ([post 28](../28-generalization-and-testing/index.md), [section 4](../28-generalization-and-testing/index.md#4-reading-the-gap)), so this is not a measured gain. Two things did move on all five seeds. The gap narrowed, to 4.33 to 9.67 points from 8.33 to 17.33, with the mask-off training accuracy falling to 92.00 to 94.33 percent from 97.00 to 99.33. And the test loss fell. On a layer with neurons to spare, dropout at 0.1 did what a regulariser is described as doing, less fit and a smaller gap, and left the test accuracy where it was. These are five seeds at one width and one rate.
 
-**What these runs support.** On the spiral, with one hidden layer of 64 neurons trained full-batch, dropout at 0.1 to 0.5 is the wrong tool: the network is not too large for the problem (post 28 found that 128 neurons test better than 64), and removing part of it at random on every pass costs more fit than it buys. The runs do not show that dropout is ineffective in general. The released project `nn-p01` trains two hidden layers of 128 neurons on 60,000 images with $p = 0.1$ and an L2 penalty and publishes a test accuracy of 98.00 percent, with a training accuracy of 98.47 percent measured through the mask in the last epoch; it has no run without dropout, so that figure does not measure what dropout contributed either.
+**What these runs support.** On the spiral, with one hidden layer of 64 neurons trained full-batch, dropout at 0.1 to 0.5 is the wrong tool: the network is not too large for the problem ([post 28](../28-generalization-and-testing/index.md) found that 128 neurons test better than 64), and removing part of it at random on every pass costs more fit than it buys. The runs do not show that dropout is ineffective in general. The released project `nn-p01` trains two hidden layers of 128 neurons on 60,000 images with $p = 0.1$ and an L2 penalty and publishes a test accuracy of 98.00 percent, with a training accuracy of 98.47 percent measured through the mask in the last epoch; it has no run without dropout, so that figure does not measure what dropout contributed either.
 
 ---
 
 ## 9. Where dropout sits in the toolkit
 
-Post 28 named four levers. With this post each has been measured on the spiral network, in its own post's setup; the first row is added here:
+[Post 28](../28-generalization-and-testing/index.md) named four levers. With this post each has been measured on the spiral network, in its own post's setup; the first row is added here:
 
 | Lever | Acts on | At evaluation | Measured on the spiral |
 |---|---|---|---|
-| More data | the training set | nothing changes | 1,000 samples per class: gap 1.17 to 3.03 points, from 10.67 to 14.00 (section 8) |
-| Capacity | the architecture | nothing changes | 8 neurons: smaller gap, far lower test accuracy; 128 neurons: higher test accuracy (post 28) |
-| Epoch budget | the schedule | nothing changes | stopping at the lowest test loss lowered the test accuracy in all five runs (post 28) |
-| L1, L2 penalties | the loss and the weight gradients | the penalty is left out of the reported loss | L1 raised test accuracy on ten of ten seeds, L2 on eight (post 30) |
-| Dropout | the forward and backward passes of training | the layer is the identity | lowered test accuracy on ten of ten seeds at each of three rates (section 8) |
+| More data | the training set | nothing changes | 1,000 samples per class: gap 1.17 to 3.03 points, from 10.67 to 14.00 ([section 8](#8-results-on-the-spiral)) |
+| Capacity | the architecture | nothing changes | 8 neurons: smaller gap, far lower test accuracy; 128 neurons: higher test accuracy ([post 28](../28-generalization-and-testing/index.md)) |
+| Epoch budget | the schedule | nothing changes | stopping at the lowest test loss lowered the test accuracy in all five runs ([post 28](../28-generalization-and-testing/index.md)) |
+| L1, L2 penalties | the loss and the weight gradients | the penalty is left out of the reported loss | L1 raised test accuracy on ten of ten seeds, L2 on eight ([post 30](../30-l1-and-l2-regularisation/index.md)) |
+| Dropout | the forward and backward passes of training | the layer is the identity | lowered test accuracy on ten of ten seeds at each of three rates ([section 8](#8-results-on-the-spiral)) |
 
-Dropout is the only one of these that makes the training-time network differ from the evaluation-time network, which is why it is the only one that needs a switch, and why its training figures need the care of section 8.
+Dropout is the only one of these that makes the training-time network differ from the evaluation-time network, which is why it is the only one that needs a switch, and why its training figures need the care of [section 8](#8-results-on-the-spiral).
 
 One deliberate exception to the switch exists. Gal and Ghahramani (2016) keep the mask on at test time, run many passes and read the spread of the predictions as a measure of the model's uncertainty. The default of this series, and of its projects, is the mask off.
 
@@ -360,16 +360,16 @@ python posts/31-dropout/snippets/seeds_rate_10.py
 
 | Script | Contents | Time |
 |---|---|---|
-| `network.py` | the classes, the loop, the setup; prints the two modes of section 5 | 1 s |
-| `layer_dropout.py` | the mask, the scale, the expectation, the table of section 3 | 1 s |
-| `ensemble.py` | all 256 thinned networks against the full one (section 2) | 1 s |
-| `gradient_check.py` | the central-difference check with a fixed mask (section 6) | 1 s |
-| `what_can_go_wrong.py` | the mistakes of section 11 | 30 s |
-| `seeds_none.py`, `seeds_rate_10.py`, `seeds_rate_20.py`, `seeds_rate_50.py` | five seeds each (section 8) | 30 to 60 s each |
-| `jobs/paired.py` | seeds 0 to 9 at every rate, the seed-by-seed counts, fitted networks trained on with the mask (section 8) | 6 to 12 min |
-| `jobs/smaller_step.py` | ten runs at a learning rate of 0.002 (section 8) | 2 to 4 min |
-| `jobs/more_data.py` | ten runs on 3,000 points (section 8) | 20 to 40 min |
-| `jobs/wider.py` | ten runs with 512 neurons (section 8) | 25 to 45 min |
+| `network.py` | the classes, the loop, the setup; prints the two modes of [section 5](#5-the-layer_dropout-class) | 1 s |
+| `layer_dropout.py` | the mask, the scale, the expectation, the table of [section 3](#3-the-dropout-rate) | 1 s |
+| `ensemble.py` | all 256 thinned networks against the full one ([section 2](#2-two-readings-co-adaptation-and-the-implicit-ensemble)) | 1 s |
+| `gradient_check.py` | the central-difference check with a fixed mask ([section 6](#6-dropout-in-the-network)) | 1 s |
+| `what_can_go_wrong.py` | the mistakes of [section 11](#11-what-can-go-wrong) | 30 s |
+| `seeds_none.py`, `seeds_rate_10.py`, `seeds_rate_20.py`, `seeds_rate_50.py` | five seeds each ([section 8](#8-results-on-the-spiral)) | 30 to 60 s each |
+| `jobs/paired.py` | seeds 0 to 9 at every rate, the seed-by-seed counts, fitted networks trained on with the mask ([section 8](#8-results-on-the-spiral)) | 6 to 12 min |
+| `jobs/smaller_step.py` | ten runs at a learning rate of 0.002 ([section 8](#8-results-on-the-spiral)) | 2 to 4 min |
+| `jobs/more_data.py` | ten runs on 3,000 points ([section 8](#8-results-on-the-spiral)) | 20 to 40 min |
+| `jobs/wider.py` | ten runs with 512 neurons ([section 8](#8-results-on-the-spiral)) | 25 to 45 min |
 
 The four scripts under `jobs/` are too slow for the two-minute limit of the others and are run on their own. The seed scripts take other seeds as arguments, as in `seeds_rate_10.py 5 6 7 8 9`. All need NumPy and the `nnfs` package, which supplies `spiral_data` and `nnfs.init()`.
 
@@ -388,7 +388,7 @@ training=True, 100 passes: test accuracy 0.5833 to 0.6633 (mean 0.6222), test lo
 
 Nothing is raised. The reported figure is that of a random thinned network: it changes from pass to pass, and in 99 of 100 passes it is below the full network's, by up to 8.00 points. Two test passes over the same weights that disagree are the symptom.
 
-**A wrong `backward`.** The gradient check of section 6, on seed 0, with three wrong versions of the method: one that ignores the mask, one that applies the 0 and 1 pattern without the scale, and one that draws a new mask. Each cell is the largest relative error with the largest absolute gap in brackets.
+**A wrong `backward`.** The gradient check of [section 6](#6-dropout-in-the-network), on seed 0, with three wrong versions of the method: one that ignores the mask, one that applies the 0 and 1 pattern without the scale, and one that draws a new mask. Each cell is the largest relative error with the largest absolute gap in brackets.
 
 ```text
 gradient         correct              no mask               mask without the scale   a new mask
@@ -422,7 +422,7 @@ no dropout layer  : dense1.dbiases float32, training accuracy 0.9633, test accur
 Layer_Dropout(0.0): dense1.dbiases float64, training accuracy 0.9733, test accuracy 0.7967
 ```
 
-`np.random.binomial` returns integers and the division makes the mask float64, so the gradient behind the layer is float64 and the bias gradient of `dense1`, a plain `np.sum`, stays float64, where the weight gradient passes through the float32 `np.dot` of `nnfs.init()`. The arithmetic is the same and the rounding is not, and after 10,001 epochs the two runs of seed 0 differ by 1.00 point in training accuracy and 2.67 points in test accuracy. This is why the baseline of section 8 runs without the layer. It also shows how little a single run decides: a change in rounding alone moved 8 test points of 300.
+`np.random.binomial` returns integers and the division makes the mask float64, so the gradient behind the layer is float64 and the bias gradient of `dense1`, a plain `np.sum`, stays float64, where the weight gradient passes through the float32 `np.dot` of `nnfs.init()`. The arithmetic is the same and the rounding is not, and after 10,001 epochs the two runs of seed 0 differ by 1.00 point in training accuracy and 2.67 points in test accuracy. This is why the baseline of [section 8](#8-results-on-the-spiral) runs without the layer. It also shows how little a single run decides: a change in rounding alone moved 8 test points of 300.
 
 ---
 
@@ -452,14 +452,12 @@ Layer_Dropout(0.0): dense1.dbiases float64, training accuracy 0.9733, test accur
 
 ## Further reading
 
-- Gal, Y. and Ghahramani, Z., *"Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning"* (ICML, 2016). The mask kept on at test time, read as uncertainty.
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 7 (MIT Press, 2016). Dropout among the other regularisers, with the ensemble view.
-- Hinton, G., Srivastava, N., Krizhevsky, A., Sutskever, I., and Salakhutdinov, R., *"Improving Neural Networks by Preventing Co-adaptation of Feature Detectors"* (arXiv:1207.0580, 2012). The report that introduced dropout.
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 15 (2020).
-- Srivastava, N., Hinton, G., Krizhevsky, A., Sutskever, I., and Salakhutdinov, R., *"Dropout: A Simple Way to Prevent Neural Networks from Overfitting"* (Journal of Machine Learning Research, 2014). The full account, with thinned networks and the choice of rates.
-- Wager, S., Wang, S., and Liang, P., *"Dropout Training as Adaptive Regularization"* (NeurIPS, 2013). Dropout related to an L2 penalty for generalised linear models.
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Gal, Y. and Ghahramani, Z., *["Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning"](https://proceedings.mlr.press/v48/gal16.html)* (ICML, 2016). The mask kept on at test time, read as uncertainty.
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/regularization.html)*, chapter 7 (MIT Press, 2016). Dropout among the other regularisers, with the ensemble view.
+- Hinton, G., Srivastava, N., Krizhevsky, A., Sutskever, I., and Salakhutdinov, R., *["Improving Neural Networks by Preventing Co-adaptation of Feature Detectors"](https://arxiv.org/abs/1207.0580)* (arXiv:1207.0580, 2012). The report that introduced dropout.
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 15 (2020).
+- Srivastava, N., Hinton, G., Krizhevsky, A., Sutskever, I., and Salakhutdinov, R., *["Dropout: A Simple Way to Prevent Neural Networks from Overfitting"](https://jmlr.org/papers/v15/srivastava14a.html)* (Journal of Machine Learning Research, 2014). The full account, with thinned networks and the choice of rates.
+- Wager, S., Wang, S., and Liang, P., *["Dropout Training as Adaptive Regularization"](https://arxiv.org/abs/1307.1493)* (NeurIPS, 2013). Dropout related to an L2 penalty for generalised linear models.
 
 ---
 
