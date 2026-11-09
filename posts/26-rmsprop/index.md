@@ -83,7 +83,7 @@ Suppose the gradient has size $|g| = 0.5$ at every step, so $g^2 = 0.25$. The sc
 | 10,000 | 2,500.000 | 0.0200 | 0.2500 | 2.0000 |
 | 100,000 | 25,000.000 | 0.0063 | 0.2500 | 2.0000 |
 
-AdaGrad's cache is $0.25 \, t$, so its factor falls as $1 / \sqrt{t}$ without end. RMSProp's cache is $0.25 \, (1 - 0.9^t)$, the closed form of section 2; it is within 1 percent of 0.25 from step 44 on and stays there. The factor settles at $1 / \sqrt{0.25} = 2$ and remains useful for as long as the gradient keeps its size.
+AdaGrad's cache is $0.25 \, t$, so its factor falls as $1 / \sqrt{t}$ without end. RMSProp's cache is $0.25 \, (1 - 0.9^t)$, the closed form of [section 2](#2-the-exponential-moving-average); it is within 1 percent of 0.25 from step 44 on and stays there. The factor settles at $1 / \sqrt{0.25} = 2$ and remains useful for as long as the gradient keeps its size.
 
 If the size of the gradient changes, the cache tracks the change. In the script's second stream the gradient is 2 for 1,000 steps and 0.1 afterwards:
 
@@ -109,7 +109,7 @@ The step itself is the one AdaGrad takes:
 
 $$\theta_t = \theta_{t-1} - \frac{\alpha}{\sqrt{G_t} + \epsilon} \, g_t$$
 
-Only the definition of $G_t$ changes. As in post 25 and in the code, $\epsilon$ stands outside the square root.
+Only the definition of $G_t$ changes. As in [post 25](../25-adagrad/index.md) and in the code, $\epsilon$ stands outside the square root.
 
 | Piece | Comes from | What it does |
 |---|---|---|
@@ -161,9 +161,9 @@ class Optimizer_RMSprop:
         self.iterations += 1
 ```
 
-**What differs from `Optimizer_Adagrad`.** Three things, and nothing else. The constructor takes one more argument, `rho`, and stores it. The default `learning_rate` is `0.02` where AdaGrad's is `1.0`. And the cache statement, once for the weights and once for the biases, is an assignment of the moving average where AdaGrad's is `+=` of the squared gradient. The decay in `pre_update_params`, the lazy creation of `weight_cache` and `bias_cache` on the layer, the division by the root of the cache and the counter are those of post 25, so the class obeys the same three-call contract.
+**What differs from `Optimizer_Adagrad`.** Three things, and nothing else. The constructor takes one more argument, `rho`, and stores it. The default `learning_rate` is `0.02` where AdaGrad's is `1.0`. And the cache statement, once for the weights and once for the biases, is an assignment of the moving average where AdaGrad's is `+=` of the squared gradient. The decay in `pre_update_params`, the lazy creation of `weight_cache` and `bias_cache` on the layer, the division by the root of the cache and the counter are those of [post 25](../25-adagrad/index.md), so the class obeys the same three-call contract.
 
-**The default learning rate is small because it is a distance.** By section 4 a parameter moves about `learning_rate` per update. A rate of `1.0`, the default of `Optimizer_SGD`, would move every weight by about 1 at each step, in a network whose weights start near 0.01. Section 11 measures what that does.
+**The default learning rate is small because it is a distance.** By [section 4](#4-the-update-rule) a parameter moves about `learning_rate` per update. A rate of `1.0`, the default of `Optimizer_SGD`, would move every weight by about 1 at each step, in a network whose weights start near 0.01. [Section 11](#11-what-can-go-wrong) measures what that does.
 
 **`rho` defaults to 0.9**, a horizon of about 10 steps, which is also the value in the lecture that introduced the method. RMSProp was never published as a paper: it comes from lecture 6.5 of Geoffrey Hinton's 2012 course Neural Networks for Machine Learning, and is cited as Tieleman and Hinton (2012).
 
@@ -171,7 +171,7 @@ class Optimizer_RMSprop:
 
 ## 6. The training loop
 
-The loop is the one of post 22, and the update is the three-call contract that every optimiser class of Part VI shares:
+The loop is the one of [post 22](../22-gradient-descent-optimiser/index.md), and the update is the three-call contract that every optimiser class of Part VI shares:
 
 ```python
         # Update: the three-call contract.
@@ -181,14 +181,14 @@ The loop is the one of post 22, and the update is the three-call contract that e
         optimizer.post_update_params()
 ```
 
-Only the constructor differs. `snippets/rmsprop.py` wraps the shared setup of Part VI in a function `train(optimizer, seed=0)` and runs it twice, once with post 25's AdaGrad settings and once with this post's:
+Only the constructor differs. `snippets/rmsprop.py` wraps the shared setup of Part VI in a function `train(optimizer, seed=0)` and runs it twice, once with [post 25](../25-adagrad/index.md)'s AdaGrad settings and once with this post's:
 
 ```python
     documented_run("AdaGrad", Optimizer_Adagrad(learning_rate=1.0, decay=1e-4))
     documented_run("RMSProp", Optimizer_RMSprop(learning_rate=0.02, decay=1e-5, rho=0.999))
 ```
 
-The setup is printed by the script: `nnfs.init()` (float32, seed 0), `spiral_data(samples=100, classes=3)`, `Layer_Dense(2, 64)`, ReLU, `Layer_Dense(64, 3)`, the combined softmax and loss, and 10,001 full-batch epochs. The network has 387 parameters. With `decay=1e-5` the rate falls from 0.02 to 0.01818 over the run, so nearly all of the change in step size comes from the cache. The documented run uses `rho=0.999`, not the default; section 8 measures the difference.
+The setup is printed by the script: `nnfs.init()` (float32, seed 0), `spiral_data(samples=100, classes=3)`, `Layer_Dense(2, 64)`, ReLU, `Layer_Dense(64, 3)`, the combined softmax and loss, and 10,001 full-batch epochs. The network has 387 parameters. With `decay=1e-5` the rate falls from 0.02 to 0.01818 over the run, so nearly all of the change in step size comes from the cache. The documented run uses `rho=0.999`, not the default; [section 8](#8-choosing-rho) measures the difference.
 
 ---
 
@@ -196,7 +196,7 @@ The setup is printed by the script: `nnfs.init()` (float32, seed 0), `spiral_dat
 
 ### 7.1 The documented run and its caches
 
-At seven epochs the script reads the caches of all 387 parameters straight after the update. `scale` is `current_learning_rate / (sqrt(cache) + epsilon)`, the number each gradient is multiplied by, and `|update|` is the distance the parameter moved. The last two lines of each run set apart the parameters of dead hidden neurons (post 17): their gradient is exactly zero, so they do not move, whatever their scale.
+At seven epochs the script reads the caches of all 387 parameters straight after the update. `scale` is `current_learning_rate / (sqrt(cache) + epsilon)`, the number each gradient is multiplied by, and `|update|` is the distance the parameter moved. The last two lines of each run set apart the parameters of dead hidden neurons ([post 17](../17-backpropagation-through-activation-functions/index.md)): their gradient is exactly zero, so they do not move, whatever their scale.
 
 ```text
 == AdaGrad: Optimizer_Adagrad, learning_rate 1.0, decay 0.0001
@@ -226,7 +226,7 @@ dead hidden neurons at epoch 10,000: 31 of 64 (the same as at epoch 1,000); thei
 the other 201 parameters: 73 caches smaller; median scale 1.266 at epoch 1,000 and 0.920 at epoch 10,000
 ```
 
-On this seed AdaGrad ends at a loss of 0.3847 and 84.00 percent accuracy, the figures of post 25, and RMSProp at 0.2379 and 90.00 percent. The caches behave as sections 2 and 3 predict.
+On this seed AdaGrad ends at a loss of 0.3847 and 84.00 percent accuracy, the figures of [post 25](../25-adagrad/index.md), and RMSProp at 0.2379 and 90.00 percent. The caches behave as sections [2](#2-the-exponential-moving-average) and [3](#3-adagrad-against-rmsprop-side-by-side) predict.
 
 **AdaGrad's caches only grow.** The median cache rises at every watched epoch, from 0.0671 at epoch 10 to 0.1725 at epoch 10,000, the largest from 8.155 to 122.9, and not one of the 387 is smaller at epoch 10,000 than at epoch 1,000. The median scale falls from 3.858 to 1.204, partly through the cache and partly through the decay, which halves the rate; that median includes the 204 frozen parameters of the dead neurons, and among the other 183 it falls from 1.319 at epoch 1,000 to 0.409. The mean update shrinks from $1.18 \times 10^{-2}$ at epoch 100 to $9.42 \times 10^{-4}$ at epoch 10,000, a factor of 12.5. The steps have not died in 10,001 epochs, but they only ever get shorter.
 
@@ -259,19 +259,19 @@ One seed is one draw. `seeds_adagrad.py`, `seeds_rmsprop.py` and their `_more` c
 
 **RMSProp usually finishes higher, not always.** Its final accuracy runs from 77.00 to 95.00 percent and AdaGrad's from 75.67 to 92.67. RMSProp is ahead in seven of the ten seeds and behind in seeds 3, 5 and 7; the mean accuracy over the last 1,000 epochs, which the scripts also print, gives the same seven and the same three (75.35 to 94.91 percent for RMSProp, 75.94 to 92.57 for AdaGrad). The 90.00 against 84.00 percent of seed 0 is a typical draw, not a guaranteed margin.
 
-**RMSProp's last epoch is a noisy reading.** AdaGrad's curve is smooth at the end: in no seed is its lowest late accuracy more than 1.34 points under its final one, or its highest late loss more than 0.012 above its final loss. RMSProp's loss spikes. In eight of the ten seeds its loss exceeds 1.5 somewhere in the last 1,000 epochs, against a final loss between 0.13 and 0.36 in those seeds, and in eight, not the same eight, its accuracy falls below 70 percent. Section 11 shows one spike epoch by epoch. The bounded cache keeps the steps long enough to go on learning, and steps that stay long can also overshoot. The figure below sets three columns of the table side by side for each seed.
+**RMSProp's last epoch is a noisy reading.** AdaGrad's curve is smooth at the end: in no seed is its lowest late accuracy more than 1.34 points under its final one, or its highest late loss more than 0.012 above its final loss. RMSProp's loss spikes. In eight of the ten seeds its loss exceeds 1.5 somewhere in the last 1,000 epochs, against a final loss between 0.13 and 0.36 in those seeds, and in eight, not the same eight, its accuracy falls below 70 percent. [Section 11](#11-what-can-go-wrong) shows one spike epoch by epoch. The bounded cache keeps the steps long enough to go on learning, and steps that stay long can also overshoot. The figure below sets three columns of the table side by side for each seed.
 
 ![Three dot plots, one row per seed from 0 to 9, AdaGrad as a grey circle and RMSProp as a blue diamond. Final accuracy: RMSProp ahead on seven seeds, behind on seeds 3, 5 and 7, from 77.00 to 95.00 percent against 75.67 to 92.67. Lowest accuracy of the last 1,000 epochs: AdaGrad stays within 1.34 points of its final accuracy, RMSProp falls below a dotted line at 70 percent on eight seeds, to 45.67 at the lowest. Highest loss of the last 1,000 epochs: AdaGrad at most 0.5384, RMSProp above a dotted line at 1.5 on eight seeds, up to 4.7996.](diagrams/04-ten-seeds.svg)
 
 *Over the last 1,000 epochs AdaGrad's runs barely move; RMSProp's, which mostly end higher, dip and spike on most seeds.*
 
-Whether momentum or per-parameter scaling matters more on the spiral is a comparison this post does not run; post 27 puts the optimisers of Part VI side by side.
+Whether momentum or per-parameter scaling matters more on the spiral is a comparison this post does not run; [post 27](../27-adam-optimiser/index.md) puts the optimisers of Part VI side by side.
 
 ---
 
 ## 8. Choosing $\rho$
 
-The decay factor sets the memory horizon of section 2:
+The decay factor sets the memory horizon of [section 2](#2-the-exponential-moving-average):
 
 | $\rho$ | Horizon $1/(1 - \rho)$ | Cache |
 |:---:|:---:|---|
@@ -291,7 +291,7 @@ A long memory does not mean calm training here. `seeds_rho.py` repeats the docum
 | 3 | 80.00 | 0.7170 | 91.67 | 3.6640 |
 | 4 | 88.67 | 0.3980 | 95.00 | 1.6136 |
 
-In all five seeds $\rho = 0.999$ ends at the higher accuracy, by 2.00 to 16.00 points, and in all five its largest late spike is the bigger one: the highest late loss is 0.39 to 0.72 with $\rho = 0.9$ and 1.51 to 3.66 with $\rho = 0.999$. By the mean accuracy of the last 1,000 epochs, the steadier reading of section 7.2, which both scripts print, it is ahead in four seeds and behind on seed 0, with 89.19 against 91.34 percent. Section 3 offers a reading, which is an interpretation and not a measurement: a cache with a horizon of 1,000 steps takes hundreds of steps to register that a gradient has grown, and until it does the steps stay long. On this problem and these five seeds the long memory buys accuracy and pays in spikes.
+In all five seeds $\rho = 0.999$ ends at the higher accuracy, by 2.00 to 16.00 points, and in all five its largest late spike is the bigger one: the highest late loss is 0.39 to 0.72 with $\rho = 0.9$ and 1.51 to 3.66 with $\rho = 0.999$. By the mean accuracy of the last 1,000 epochs, the steadier reading of [section 7.2](#72-ten-seeds), which both scripts print, it is ahead in four seeds and behind on seed 0, with 89.19 against 91.34 percent. [Section 3](#3-adagrad-against-rmsprop-side-by-side) offers a reading, which is an interpretation and not a measurement: a cache with a horizon of 1,000 steps takes hundreds of steps to register that a gradient has grown, and until it does the steps stay long. On this problem and these five seeds the long memory buys accuracy and pays in spikes.
 
 ---
 
@@ -299,17 +299,17 @@ In all five seeds $\rho = 0.999$ ends at the higher accuracy, by 2.00 to 16.00 p
 
 **What RMSProp keeps from AdaGrad** is the per-parameter division by the root of a cache of squared gradients. **What it changes** is how the cache is filled. **What it still lacks** is twofold.
 
-It has no memory of direction. The cache averages $g^2$, which has lost the sign; the step uses the current gradient alone. Momentum (post 24) is the piece that averages $g$ itself.
+It has no memory of direction. The cache averages $g^2$, which has lost the sign; the step uses the current gradient alone. Momentum ([post 24](../24-momentum/index.md)) is the piece that averages $g$ itself.
 
-It starts its cache at zero and does nothing about it. After the first update the cache is $(1 - \rho) g^2$, so the first step has the size $\alpha / \sqrt{1 - \rho}$ for every parameter, whatever its gradient. The script prints the factor: 3.16 for $\rho = 0.9$, 10.00 for 0.99 and 31.62 for 0.999. With the documented settings that is $0.02 \cdot 31.62 = 0.632$ per parameter, in a network initialised at a scale of 0.01. Section 7.1 shows it: the mean first update is 0.584, a little under 0.632 because $\epsilon$ is not negligible beside the smallest gradients, and the loss jumps from 1.0986 to 2.8219 at epoch 1 before it recovers.
+It starts its cache at zero and does nothing about it. After the first update the cache is $(1 - \rho) g^2$, so the first step has the size $\alpha / \sqrt{1 - \rho}$ for every parameter, whatever its gradient. The script prints the factor: 3.16 for $\rho = 0.9$, 10.00 for 0.99 and 31.62 for 0.999. With the documented settings that is $0.02 \cdot 31.62 = 0.632$ per parameter, in a network initialised at a scale of 0.01. [Section 7.1](#71-the-documented-run-and-its-caches) shows it: the mean first update is 0.584, a little under 0.632 because $\epsilon$ is not negligible beside the smallest gradients, and the loss jumps from 1.0986 to 2.8219 at epoch 1 before it recovers.
 
-Adam (post 27) supplies both missing pieces:
+Adam ([post 27](../27-adam-optimiser/index.md)) supplies both missing pieces:
 
 | Adam piece | Introduced in |
 |---|---|
-| EMA of $g$ with factor $\beta_1$ (momentum) | post 24, in a different form |
+| EMA of $g$ with factor $\beta_1$ (momentum) | [post 24](../24-momentum/index.md), in a different form |
 | EMA of $g^2$ with factor $\beta_2$ (the cache) | this post, where the factor is $\rho$ |
-| Bias correction, a division by $1 - \beta^t$ | post 27 |
+| Bias correction, a division by $1 - \beta^t$ | [post 27](../27-adam-optimiser/index.md) |
 
 The correction divides the cache by $1 - \beta_2^t$, which is $1 - \rho$ at the first step and cancels the factor above, so Adam's first step has size $\alpha$. RMSProp with a momentum term added is close to Adam without that correction.
 
@@ -330,7 +330,7 @@ python posts/26-rmsprop/snippets/seeds_rho.py
 python posts/26-rmsprop/snippets/what_can_go_wrong.py
 ```
 
-`ema_cache.py` holds the hand-made streams of sections 2, 3 and 9 and finishes at once. `rmsprop.py` defines the classes of posts 16, 19 and 25 unchanged, `Optimizer_RMSprop`, and `train`, and prints section 7.1 in about 15 seconds. It calls `nnfs.init()` once, when it is loaded, and reseeds with `np.random.seed` for every run. The five `seeds_` scripts import from it and make five full runs each, about 35 seconds apiece; the ten seeds are split over two files per optimiser to keep each script short. `what_can_go_wrong.py` runs section 11 in under 10 seconds.
+`ema_cache.py` holds the hand-made streams of sections [2](#2-the-exponential-moving-average), [3](#3-adagrad-against-rmsprop-side-by-side) and [9](#9-rmsprop-as-the-bridge-to-adam) and finishes at once. `rmsprop.py` defines the classes of posts [16](../16-coding-backpropagation/index.md), [19](../19-softmax-derivatives-and-the-combined-backward-pass/index.md) and [25](../25-adagrad/index.md) unchanged, `Optimizer_RMSprop`, and `train`, and prints [section 7.1](#71-the-documented-run-and-its-caches) in about 15 seconds. It calls `nnfs.init()` once, when it is loaded, and reseeds with `np.random.seed` for every run. The five `seeds_` scripts import from it and make five full runs each, about 35 seconds apiece; the ten seeds are split over two files per optimiser to keep each script short. `what_can_go_wrong.py` runs [section 11](#11-what-can-go-wrong) in under 10 seconds.
 
 ---
 
@@ -349,7 +349,7 @@ around the highest late loss, epoch 9130:
   9139   0.2423   0.8900
 ```
 
-Within 15 epochs the loss climbs from 0.30 to 1.68 and the accuracy drops from 86.67 to 61.33 percent; six epochs later both are back. Over the last 1,000 epochs the accuracy ranges from 59.33 to 91.00 percent. A run stopped at epoch 9,130 would report 61.33 percent for a network that scored 86.67 percent fifteen epochs earlier and scores 89.00 percent nine epochs later. The remedy is to judge an RMSProp run by more than its last epoch, for instance by the mean over a late window, as section 7.2 does.
+Within 15 epochs the loss climbs from 0.30 to 1.68 and the accuracy drops from 86.67 to 61.33 percent; six epochs later both are back. Over the last 1,000 epochs the accuracy ranges from 59.33 to 91.00 percent. A run stopped at epoch 9,130 would report 61.33 percent for a network that scored 86.67 percent fifteen epochs earlier and scores 89.00 percent nine epochs later. The remedy is to judge an RMSProp run by more than its last epoch, for instance by the mean over a late window, as [section 7.2](#72-ten-seeds) does.
 
 **The learning rate of plain gradient descent.** With `learning_rate=1.0` every parameter moves by about 1 per update, and by 31.6 on the first:
 
@@ -389,7 +389,7 @@ no cache on the layer: first step 0.632436
 cache 122.9 on the layer: first step 0.000180; cache within 1 percent of g^2 = 0.01 after 14,015 updates
 ```
 
-With a cache of 122.9, the largest that AdaGrad left in section 7.1, a gradient of 0.1 moves the weight by 0.00018 in place of 0.632, and with $\rho = 0.999$ the stale value needs about 14,000 updates to fade. A new optimiser on a trained layer needs the two cache attributes deleted first, unless continuing the old average is the intent.
+With a cache of 122.9, the largest that AdaGrad left in [section 7.1](#71-the-documented-run-and-its-caches), a gradient of 0.1 moves the weight by 0.00018 in place of 0.632, and with $\rho = 0.999$ the stale value needs about 14,000 updates to fade. A new optimiser on a trained layer needs the two cache attributes deleted first, unless continuing the old average is the intent.
 
 ---
 
@@ -422,12 +422,10 @@ With a cache of 122.9, the largest that AdaGrad left in section 7.1, a gradient 
 
 ## Further reading
 
-- Tieleman, T. and Hinton, G., *"Lecture 6.5: RMSProp"* (Coursera: Neural Networks for Machine Learning, 2012). The lecture that introduced the method; there is no paper.
-- Ruder, S., *"An Overview of Gradient Descent Optimization Algorithms"* (arXiv:1609.04747, 2016), the section on RMSprop.
-- Goodfellow, I., Bengio, Y., and Courville, A., *Deep Learning*, chapter 8, the section on RMSProp (MIT Press, 2016).
-- Kinsley, H. and Kukieła, D., *Neural Networks from Scratch in Python*, chapter 10 (2020).
-
-Full citations are in [REFERENCES.md](../../REFERENCES.md).
+- Tieleman, T. and Hinton, G., *["Lecture 6.5: RMSProp"](https://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf)* (Coursera: Neural Networks for Machine Learning, 2012). The lecture that introduced the method; there is no paper.
+- Ruder, S., *["An Overview of Gradient Descent Optimization Algorithms"](https://arxiv.org/abs/1609.04747)* (arXiv:1609.04747, 2016), the section on RMSprop.
+- Goodfellow, I., Bengio, Y., and Courville, A., *[Deep Learning](https://www.deeplearningbook.org/contents/optimization.html)*, chapter 8, the section on RMSProp (MIT Press, 2016).
+- Kinsley, H. and Kukieła, D., *[Neural Networks from Scratch in Python](https://nnfs.io/)*, chapter 10 (2020).
 
 ---
 
